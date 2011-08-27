@@ -43,7 +43,7 @@ public interface RemoteRepositoryContent
      * 
      * @return the repository id.
      */
-    public String getId();
+    String getId();
 
     /**
      * Get the repository configuration associated with this
@@ -51,7 +51,7 @@ public interface RemoteRepositoryContent
      * 
      * @return the repository that is associated with this repository content.
      */
-    public RemoteRepositoryConfiguration getRepository();
+    RemoteRepositoryConfiguration getRepository();
 
     /**
      * <p>
@@ -64,7 +64,7 @@ public interface RemoteRepositoryContent
      * 
      * @return the repository url.
      */
-    public RepositoryURL getURL();
+    RepositoryURL getURL();
 
     /**
      * Set the repository configuration to associate with this
@@ -72,7 +72,7 @@ public interface RemoteRepositoryContent
      * 
      * @param repo the repository to associate with this repository content.
      */
-    public void setRepository( RemoteRepositoryConfiguration repo );
+    void setRepository( RemoteRepositoryConfiguration repo );
 
     /**
      * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
@@ -82,7 +82,7 @@ public interface RemoteRepositoryContent
      *         a {@link ArtifactReference})
      * @throws LayoutException if there was a problem converting the path to an artifact.
      */
-    public ArtifactReference toArtifactReference( String path )
+    ArtifactReference toArtifactReference( String path )
         throws LayoutException;
 
     /**
@@ -91,7 +91,7 @@ public interface RemoteRepositoryContent
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
      */
-    public String toPath( ArtifactReference reference );
+    String toPath( ArtifactReference reference );
 
     /**
      * Given an ArtifactReference, return the url to the artifact.
@@ -99,5 +99,5 @@ public interface RemoteRepositoryContent
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
      */
-    public RepositoryURL toURL( ArtifactReference reference );
+    RepositoryURL toURL( ArtifactReference reference );
 }

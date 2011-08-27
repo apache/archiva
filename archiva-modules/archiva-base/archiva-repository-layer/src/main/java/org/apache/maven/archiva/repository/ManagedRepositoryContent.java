@@ -44,7 +44,7 @@ public interface ManagedRepositoryContent
      * @param reference the version reference to delete.
      * @throws ContentNotFoundException 
      */
-    public void deleteVersion( VersionedReference reference )
+    void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException;
 
     /**
@@ -58,7 +58,7 @@ public interface ManagedRepositoryContent
      * 
      * @return the repository id.
      */
-    public String getId();
+    String getId();
 
     /**
      * <p>
@@ -76,7 +76,7 @@ public interface ManagedRepositoryContent
      * @throws ContentNotFoundException if the initial artifact reference does not exist within the repository.
      * @throws LayoutException 
      */
-    public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
+    Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException;
 
     /**
@@ -90,7 +90,7 @@ public interface ManagedRepositoryContent
      * 
      * @return the repository (on disk) root directory.
      */
-    public String getRepoRoot();
+    String getRepoRoot();
 
     /**
      * Get the repository configuration associated with this
@@ -98,7 +98,7 @@ public interface ManagedRepositoryContent
      * 
      * @return the repository that is associated with this repository content.
      */
-    public ManagedRepositoryConfiguration getRepository();
+    ManagedRepositoryConfiguration getRepository();
 
     /**
      * Given a specific {@link ProjectReference}, return the list of available versions for
@@ -109,7 +109,7 @@ public interface ManagedRepositoryContent
      * @throws ContentNotFoundException if the project reference does nto exist within the repository.
      * @throws LayoutException 
      */
-    public Set<String> getVersions( ProjectReference reference )
+    Set<String> getVersions( ProjectReference reference )
         throws ContentNotFoundException, LayoutException;
 
     /**

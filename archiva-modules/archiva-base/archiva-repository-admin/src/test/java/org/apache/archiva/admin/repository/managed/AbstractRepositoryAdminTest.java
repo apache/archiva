@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository;
+package org.apache.archiva.admin.repository.managed;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,21 +18,18 @@ package org.apache.archiva.admin.repository;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
  */
-public class RepositoryAdminException
-    extends Exception
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+public abstract class AbstractRepositoryAdminTest
+    extends TestCase
 {
-    public RepositoryAdminException( String s )
-    {
-        super( s );
-    }
-
-    public RepositoryAdminException( String message, Throwable cause )
-    {
-        super( message, cause );
-    }
+    // no op
 }

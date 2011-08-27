@@ -23,7 +23,6 @@ import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
 /**
  * @author Olivier Lamy
- * @since TODO
  */
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest

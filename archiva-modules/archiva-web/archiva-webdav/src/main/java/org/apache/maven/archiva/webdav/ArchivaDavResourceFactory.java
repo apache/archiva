@@ -246,7 +246,7 @@ public class ArchivaDavResourceFactory
                 // make a copy to avoid potential concurrent modifications (eg. by configuration)
                 // TODO: ultimately, locking might be more efficient than copying in this fashion since updates are
                 //  infrequent
-                ArrayList<String> repositories = new ArrayList<String>( repoGroupConfig.getRepositories() );
+                List<String> repositories = new ArrayList<String>( repoGroupConfig.getRepositories() );
                 resource = processRepositoryGroup( request, archivaLocator, repositories, activePrincipal,
                                                    resourcesInAbsolutePath );
             }

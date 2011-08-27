@@ -43,6 +43,8 @@ public class ManagedRepository
 
     private String cronExpression;
 
+    private boolean stageRepoNeeded;
+
     /**
      * not need when creating the repo : only available when reading
      */
@@ -63,7 +65,6 @@ public class ManagedRepository
         this.snapshots = snapshots;
         this.releases = releases;
         this.blockRedeployments = blockRedeployments;
-        this.cronExpression = cronExpression;
     }
 
     public String getId()
@@ -189,8 +190,21 @@ public class ManagedRepository
     @Override
     public String toString()
     {
-        return "ManagedRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", url='" + url + '\''
-            + ", layout='" + layout + '\'' + ", snapshots=" + snapshots + ", releases=" + releases
-            + ", blockRedeployments=" + blockRedeployments + ", cronExpression='" + cronExpression + '\'' + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "ManagedRepository" );
+        sb.append( "{id='" ).append( id ).append( '\'' );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", url='" ).append( url ).append( '\'' );
+        sb.append( ", layout='" ).append( layout ).append( '\'' );
+        sb.append( ", snapshots=" ).append( snapshots );
+        sb.append( ", releases=" ).append( releases );
+        sb.append( ", blockRedeployments=" ).append( blockRedeployments );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
+        sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
+        sb.append( ", stagingRepository=" ).append( stagingRepository );
+        sb.append( '}' );
+        return sb.toString();
     }
+
+
 }

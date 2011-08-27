@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository;
+package org.apache.archiva.admin.repository.managed;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,21 +18,36 @@ package org.apache.archiva.admin.repository;
  * under the License.
  */
 
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
  */
-public class RepositoryAdminException
-    extends Exception
+public class ManagedRepositoryAdminTest
+    extends AbstractRepositoryAdminTest
 {
-    public RepositoryAdminException( String s )
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Test
+    public void getAllManagedRepos()
+        throws Exception
     {
-        super( s );
+        List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        assertTrue( repos.size() > 0 );
     }
 
-    public RepositoryAdminException( String message, Throwable cause )
+    @Test
+    public void getById()
+        throws Exception
     {
-        super( message, cause );
+        ManagedRepository repo = managedRepositoryAdmin.getManagedRepository( "internal" );
+        assertNotNull( repo );
     }
+
 }
