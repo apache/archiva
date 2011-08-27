@@ -19,7 +19,6 @@ package org.apache.archiva.admin.repository.remote;
  * under the License.
  */
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 
