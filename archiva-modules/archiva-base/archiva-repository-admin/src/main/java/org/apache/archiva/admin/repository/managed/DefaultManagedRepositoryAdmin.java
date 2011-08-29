@@ -19,14 +19,21 @@ package org.apache.archiva.admin.repository.managed;
  */
 
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -41,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FIXME remove all generic Exception to have usefull ones
@@ -70,6 +78,13 @@ public class DefaultManagedRepositoryAdmin
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
+
+    @Inject
+    private RepositorySessionFactory repositorySessionFactory;
+
+
+    @Inject
+    private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
@@ -226,14 +241,80 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
+    public Boolean deleteManagedRepository( String repositoryId )
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repositoryId );
+
+        if ( repository == null )
+        {
+            throw new RepositoryAdminException( "A repository with that id does not exist" );
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            metadataRepository.removeRepository( repository.getId() );
+            repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
+            repositorySession.save();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+        config.removeManagedRepository( repository );
+
+        try
+        {
+            saveConfiguration( config );
+        }
+        catch ( Exception e )
+        {
+            throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage() );
+        }
+
+        // TODO could be async ? as directory can be huge
+        File dir = new File( repository.getLocation() );
+        if ( !FileUtils.deleteQuietly( dir ) )
+        {
+            throw new RepositoryAdminException( "Cannot delete repository " + dir );
+        }
+
+        List<ProxyConnectorConfiguration> proxyConnectors = config.getProxyConnectors();
+        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        {
+            if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
+            {
+                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
+            }
+        }
+
+        Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
+        if ( repoToGroupMap != null )
+        {
+            if ( repoToGroupMap.containsKey( repository.getId() ) )
+            {
+                List<String> repoGroups = repoToGroupMap.get( repository.getId() );
+                for ( String repoGroup : repoGroups )
+                {
+                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
+                        repository.getId() );
+                }
+            }
+        }
+
+        return Boolean.TRUE;
     }
 
 
-    public Boolean deleteManagedRepository( String repositoryId )
+    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

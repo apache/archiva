@@ -59,7 +59,7 @@ public class ManagedRepositoryAdminTest
     }
 
     @Test
-    public void addManagedRepo()
+    public void addDeleteManagedRepo()
         throws Exception
     {
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
@@ -77,6 +77,12 @@ public class ManagedRepositoryAdminTest
         assertEquals( initialSize + 1, repos.size() );
 
         assertNotNull( managedRepositoryAdmin.getManagedRepository( "test-new-one" ) );
+
+        managedRepositoryAdmin.deleteManagedRepository( "test-new-one" );
+
+        repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        assertEquals( initialSize, repos.size() );
     }
 
 
