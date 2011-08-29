@@ -25,8 +25,10 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -154,7 +156,8 @@ public class RepositoriesServiceTest
 
     private ManagedRepository getTestManagedRepository()
     {
-        return new ManagedRepository( "TEST", "test", "foo", "default", true, true, false, false, "2 * * * * ?" );
+        String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
+        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, false, "2 * * * * ?" );
     }
 
 }

@@ -113,11 +113,10 @@ public class DefaultRepositoriesService
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO fix resolution of repo url!
             // TODO staging repo too
             ManagedRepository repo =
-                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL", repoConfig.getLayout(),
-                                       repoConfig.isSnapshots(), repoConfig.isReleases(),
+                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
+                                       repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), false,
                                        repoConfig.getRefreshCronExpression() );
             managedRepos.add( repo );
@@ -231,7 +230,7 @@ public class DefaultRepositoriesService
     {
         return
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
-                                  managedRepository.getUrl(), managedRepository.isBlockRedeployments(),
+                                  managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(),
                                   managedRepository.isStageRepoNeeded(), managedRepository.getCronExpression() )
                 != null;
@@ -355,7 +354,7 @@ public class DefaultRepositoriesService
         String result;
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            addManagedRepository( repository.getId(), repository.getLayout(), repository.getName(), repository.getUrl(),
+            addManagedRepository( repository.getId(), repository.getLayout(), repository.getName(), repository.getLocation(),
                                   repository.isBlockRedeployments(), repository.isReleases(), repository.isSnapshots(),
                                   repository.isStageRepoNeeded(), repository.getCronExpression() );
 

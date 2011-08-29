@@ -33,7 +33,7 @@ public class ManagedRepository
 
     private String name;
 
-    private String url;
+    private String location;
 
     private String layout;
 
@@ -52,12 +52,12 @@ public class ManagedRepository
         // no op
     }
 
-    public ManagedRepository( String id, String name, String url, String layout, boolean snapshots, boolean releases,
+    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots, boolean releases,
                               boolean blockRedeployments, boolean stageRepoNeeded, String cronExpression )
     {
         this.id = id;
         this.name = name;
-        this.url = url;
+        this.location = location;
         this.layout = layout;
         this.snapshots = snapshots;
         this.releases = releases;
@@ -81,9 +81,9 @@ public class ManagedRepository
         return this.name;
     }
 
-    public String getUrl()
+    public String getLocation()
     {
-        return this.url;
+        return this.location;
     }
 
 
@@ -125,9 +125,9 @@ public class ManagedRepository
         this.snapshots = snapshots;
     }
 
-    public void setUrl( String url )
+    public void setLocation( String location )
     {
-        this.url = url;
+        this.location = location;
     }
 
     public boolean isBlockRedeployments()
@@ -189,7 +189,7 @@ public class ManagedRepository
     @Override
     public String toString()
     {
-        return "ManagedRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", url='" + url + '\''
+        return "ManagedRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", location='" + location + '\''
             + ", layout='" + layout + '\'' + ", snapshots=" + snapshots + ", releases=" + releases
             + ", blockRedeployments=" + blockRedeployments + ", cronExpression='" + cronExpression + '\''
             + ", stageRepoNeeded=" + stageRepoNeeded + '}';
