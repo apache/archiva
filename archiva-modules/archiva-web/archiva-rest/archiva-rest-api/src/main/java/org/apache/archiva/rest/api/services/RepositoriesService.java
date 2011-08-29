@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -45,13 +46,15 @@ public interface RepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    List<ManagedRepository> getManagedRepositories();
+    List<ManagedRepository> getManagedRepositories()
+        throws RepositoryAdminException;
 
     @Path( "getManagedRepository/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId );
+    ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
+        throws RepositoryAdminException;
 
     @Path( "deleteManagedRepository/{repositoryId}" )
     @GET
@@ -66,7 +69,7 @@ public interface RepositoriesService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean addManagedRepository( ManagedRepository managedRepository )
+    Boolean addManagedRepository( ManagedRepository managedRepository)
         throws Exception;
 
 

@@ -19,11 +19,11 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.rest.api.model.ManagedRepository;
@@ -31,14 +31,11 @@ import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.GenericValidator;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -47,8 +44,8 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
+import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,7 +57,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -104,21 +100,24 @@ public class DefaultRepositoriesService
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
     public List<ManagedRepository> getManagedRepositories()
+        throws RepositoryAdminException
     {
-        List<ManagedRepositoryConfiguration> managedRepoConfigs =
-            archivaConfiguration.getConfiguration().getManagedRepositories();
+        List<org.apache.archiva.admin.repository.managed.ManagedRepository> repos =
+            managedRepositoryAdmin.getManagedRepositories();
 
-        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( managedRepoConfigs.size() );
+        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( repos.size() );
 
-        for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+        for ( org.apache.archiva.admin.repository.managed.ManagedRepository repoConfig : repos )
         {
             // TODO staging repo too
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                       repoConfig.isBlockRedeployments(), false,
-                                       repoConfig.getRefreshCronExpression() );
+                                       repoConfig.isBlockRedeployments(), false, repoConfig.getCronExpression() );
             managedRepos.add( repo );
         }
 
@@ -126,6 +125,7 @@ public class DefaultRepositoriesService
     }
 
     public ManagedRepository getManagedRepository( String repositoryId )
+        throws RepositoryAdminException
     {
         List<ManagedRepository> repos = getManagedRepositories();
         for ( ManagedRepository repo : repos )
@@ -138,74 +138,11 @@ public class DefaultRepositoriesService
         return null;
     }
 
-    // FIXME duplicate of xml rpc
-    // move this in a common place archiva commons remote service
     public Boolean deleteManagedRepository( String repoId )
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
 
-        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repoId );
-
-        if ( repository == null )
-        {
-            throw new Exception( "A repository with that id does not exist" );
-        }
-
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
-        try
-        {
-            MetadataRepository metadataRepository = repositorySession.getRepository();
-            metadataRepository.removeRepository( repository.getId() );
-            repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
-            repositorySession.save();
-        }
-        finally
-        {
-            repositorySession.close();
-        }
-        config.removeManagedRepository( repository );
-
-        try
-        {
-            saveConfiguration( config );
-        }
-        catch ( Exception e )
-        {
-            throw new Exception( "Error saving configuration for delete action" + e.getMessage() );
-        }
-
-        // TODO could be async ? as directory can be huge
-        File dir = new File( repository.getLocation() );
-        if ( !FileUtils.deleteQuietly( dir ) )
-        {
-            throw new IOException( "Cannot delete repository " + dir );
-        }
-
-        List<ProxyConnectorConfiguration> proxyConnectors = config.getProxyConnectors();
-        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
-        {
-            if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
-            {
-                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
-            }
-        }
-
-        Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
-        if ( repoToGroupMap != null )
-        {
-            if ( repoToGroupMap.containsKey( repository.getId() ) )
-            {
-                List<String> repoGroups = repoToGroupMap.get( repository.getId() );
-                for ( String repoGroup : repoGroups )
-                {
-                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
-                        repository.getId() );
-                }
-            }
-        }
-
-        return Boolean.TRUE;
+        return managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation() );
     }
 
     public List<RemoteRepository> getRemoteRepositories()
@@ -228,203 +165,36 @@ public class DefaultRepositoriesService
     public Boolean addManagedRepository( ManagedRepository managedRepository )
         throws Exception
     {
-        return
-            addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
-                                  managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
-                                  managedRepository.isReleases(), managedRepository.isSnapshots(),
-                                  managedRepository.isStageRepoNeeded(), managedRepository.getCronExpression() )
-                != null;
+        org.apache.archiva.admin.repository.managed.ManagedRepository repo =
+            new org.apache.archiva.admin.repository.managed.ManagedRepository();
+        repo.setLocation( managedRepository.getLocation() );
+        repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
+        repo.setCronExpression( managedRepository.getCronExpression() );
+        repo.setId( managedRepository.getId() );
+        repo.setLayout( managedRepository.getLayout() );
+        repo.setName( managedRepository.getName() );
+        repo.setReleases( managedRepository.isReleases() );
+        repo.setSnapshots( managedRepository.isSnapshots() );
+        return managedRepositoryAdmin.addManagedRepository( repo, managedRepository.isStageRepoNeeded(),
+                                                            getAuditInformation() );
     }
 
-    private ManagedRepositoryConfiguration addManagedRepository( String repoId, String layout, String name,
-                                                                 String location, boolean blockRedeployments,
-                                                                 boolean releasesIncluded, boolean snapshotsIncluded,
-                                                                 boolean stageRepoNeeded, String cronExpression )
+
+    public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws Exception
     {
-
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        CronExpressionValidator validator = new CronExpressionValidator();
-
-        if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
-        {
-            throw new Exception( "Unable to add new repository with id [" + repoId
-                                     + "], that id already exists as a managed repository." );
-        }
-        else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
-        {
-            throw new Exception( "Unable to add new repository with id [" + repoId
-                                     + "], that id already exists as a remote repository." );
-        }
-        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
-        {
-            throw new Exception( "Unable to add new repository with id [" + repoId
-                                     + "], that id already exists as a repository group." );
-        }
-
-        if ( !validator.validate( cronExpression ) )
-        {
-            throw new Exception( "Invalid cron expression." );
-        }
-
-        if ( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
-        {
-            throw new Exception(
-                "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        }
-
-        if ( !GenericValidator.matchRegexp( name, REPOSITORY_NAME_VALID_EXPRESSION ) )
-        {
-            throw new Exception(
-                "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), "
-                    + "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-)." );
-        }
-
-        String repoLocation = removeExpressions( location );
-
-        if ( !GenericValidator.matchRegexp( repoLocation, REPOSITORY_LOCATION_VALID_EXPRESSION ) )
-        {
-            throw new Exception(
-                "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
-                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
-        }
-
-        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
-
-        repository.setId( repoId );
-        repository.setBlockRedeployments( blockRedeployments );
-        repository.setReleases( releasesIncluded );
-        repository.setSnapshots( snapshotsIncluded );
-        repository.setName( name );
-        repository.setLocation( repoLocation );
-        repository.setLayout( layout );
-        repository.setRefreshCronExpression( cronExpression );
-
-        addRepository( repository, config );
-
-        if ( stageRepoNeeded )
-        {
-            ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-            addRepository( stagingRepository, config );
-        }
-
-        saveConfiguration( config );
-
-        //MRM-1342 Repository statistics report doesn't appear to be working correctly
-        //scan repository when adding of repository is successful
-        try
-        {
-            executeRepositoryScanner( repoId );
-            if ( stageRepoNeeded )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-                executeRepositoryScanner( stagingRepository.getId() );
-            }
-        }
-        catch ( Exception e )
-        {
-            log.warn( new StringBuilder( "Unable to scan repository [" ).append( repoId ).append( "]: " ).append(
-                e.getMessage() ).toString(), e );
-        }
-
-        return repository;
-    }
-
-    public Boolean updateManagedRepository( ManagedRepository repository )
-        throws Exception
-    {
-        // Ensure that the fields are valid.
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( repository.getId() );
-
-        if ( toremove != null )
-        {
-            configuration.removeManagedRepository( toremove );
-        }
-        // FIXME the case of the attached staging repository
-        /*
-        if ( stagingRepository != null )
-        {
-            removeRepository( stagingRepository.getId(), configuration );
-        }*/
-
-        // Save the repository configuration.
-        String result;
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            addManagedRepository( repository.getId(), repository.getLayout(), repository.getName(), repository.getLocation(),
-                                  repository.isBlockRedeployments(), repository.isReleases(), repository.isSnapshots(),
-                                  repository.isStageRepoNeeded(), repository.getCronExpression() );
-
-        // FIXME only location has changed from previous
-        boolean resetStats = true;
-
-        try
-        {
-            triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
-            addRepositoryRoles( managedRepositoryConfiguration );
-
-            // FIXME this staging part !!
-
-            //update changes of the staging repo
-            /*if ( stageNeeded )
-            {
-
-                stagingRepository = getStageRepoConfig( configuration );
-                addRepository( stagingRepository, configuration );
-                addRepositoryRoles( stagingRepository );
-
-            }*/
-            //delete staging repo when we dont need it
-            /*
-            if ( !stageNeeded )
-            {
-                stagingRepository = getStageRepoConfig( configuration );
-                removeRepository( stagingRepository.getId(), configuration );
-                removeContents( stagingRepository );
-                removeRepositoryRoles( stagingRepository );
-            }*/
-
-            saveConfiguration( this.archivaConfiguration.getConfiguration() );
-            if ( resetStats )
-            {
-                repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(), repository.getId() );
-                repositorySession.save();
-            }
-
-            //MRM-1342 Repository statistics report doesn't appear to be working correctly
-            //scan repository when modification of repository is successful
-            // olamy :  IMHO we are fine to ignore issue with scheduling scanning
-            // as here the repo has been updated
-            scanRepository( repository.getId(), true );
-            // FIXME staging !!
-            /*
-            if ( stageNeeded )
-            {
-                executeRepositoryScanner( stagingRepository.getId() );
-            }*/
-
-        }
-        catch ( IOException e )
-        {
-            throw e;
-        }
-        catch ( RoleManagerException e )
-        {
-            throw e;
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            throw e;
-        }
-        finally
-        {
-            repositorySession.close();
-        }
-
-        return true;
+        org.apache.archiva.admin.repository.managed.ManagedRepository repo =
+            new org.apache.archiva.admin.repository.managed.ManagedRepository();
+        repo.setLocation( managedRepository.getLocation() );
+        repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
+        repo.setCronExpression( managedRepository.getCronExpression() );
+        repo.setId( managedRepository.getId() );
+        repo.setLayout( managedRepository.getLayout() );
+        repo.setName( managedRepository.getName() );
+        repo.setReleases( managedRepository.isReleases() );
+        repo.setSnapshots( managedRepository.isSnapshots() );
+        return managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.isStageRepoNeeded(),
+                                                               getAuditInformation() );
     }
 
 
@@ -477,7 +247,7 @@ public class DefaultRepositoriesService
 
     protected void triggerAuditEvent( String repositoryId, String resource, String action )
     {
-        User user = RedbackAuthenticationThreadLocal.get();
+        User user = RedbackAuthenticationThreadLocal.get().getUser();
         if ( user == null )
         {
             log.warn( "no user found in Redback ThreadLocal" );
@@ -583,6 +353,15 @@ public class DefaultRepositoriesService
         value = StringUtils.replace( value, "${appserver.home}",
                                      registry.getString( "appserver.home", "${appserver.home}" ) );
         return value;
+    }
+
+
+    private AuditInformation getAuditInformation()
+    {
+        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
+        User user = redbackRequestInformation == null ? null : redbackRequestInformation.getUser();
+        String remoteAddr = redbackRequestInformation == null ? null : redbackRequestInformation.getRemoteAddr();
+        return new AuditInformation( user, remoteAddr );
     }
 
 }

@@ -20,8 +20,6 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.rest.api.services.PingService;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.springframework.stereotype.Service;
 
 /**
@@ -39,7 +37,6 @@ public class DefaultPingService
 
     public String pingWithAuthz()
     {
-        User user = RedbackAuthenticationThreadLocal.get();
         return ping();
     }
 }
