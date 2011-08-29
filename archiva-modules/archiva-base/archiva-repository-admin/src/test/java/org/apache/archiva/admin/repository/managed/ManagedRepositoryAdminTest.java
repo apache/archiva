@@ -19,6 +19,7 @@ package org.apache.archiva.admin.repository.managed;
  */
 
 import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.mock.MockAuditListener;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
@@ -38,10 +39,14 @@ public class ManagedRepositoryAdminTest
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    @Inject
+    private MockAuditListener mockAuditListener;
+
     @Test
     public void getAllManagedRepos()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertTrue( repos.size() > 0 );
@@ -52,20 +57,24 @@ public class ManagedRepositoryAdminTest
         assertNotNull( internal );
         assertTrue( internal.isReleases() );
         assertFalse( internal.isSnapshots() );
+        mockAuditListener.clearEvents();
     }
 
     @Test
     public void getById()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         ManagedRepository repo = managedRepositoryAdmin.getManagedRepository( "internal" );
         assertNotNull( repo );
+        mockAuditListener.clearEvents();
     }
 
     @Test
     public void addDeleteManagedRepo()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         int initialSize = repos.size();
@@ -87,12 +96,17 @@ public class ManagedRepositoryAdminTest
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize, repos.size() );
+
+        assertEquals( 0, mockAuditListener.getAuditEvents().size() );
+
+        mockAuditListener.clearEvents();
     }
 
     @Test
     public void updateDeleteManagedRepo()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         int initialSize = repos.size();
@@ -120,6 +134,14 @@ public class ManagedRepositoryAdminTest
         assertEquals( newName, repo.getName() );
         assertEquals( APPSERVER_BASE_PATH + "new-path", repo.getLocation() );
         assertTrue( new File( APPSERVER_BASE_PATH + "new-path" ).exists() );
+
+        managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation() );
+
+        assertEquals( 1, mockAuditListener.getAuditEvents().size() );
+
+        log.info( "audit events {}", mockAuditListener.getAuditEvents()  );
+
+        mockAuditListener.clearEvents();
     }
 
 

@@ -327,8 +327,17 @@ public class AuditEvent
     @Override
     public String toString()
     {
-        return "AuditEvent{" + "repositoryId='" + repositoryId + '\'' + ", userId='" + userId + '\'' + ", remoteIP='" +
-            remoteIP + '\'' + ", resource='" + resource + '\'' + ", action='" + action + '\'' + ", timestamp=" +
-            timestamp + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "AuditEvent" );
+        sb.append( "{repositoryId='" ).append( repositoryId ).append( '\'' );
+        sb.append( ", userId='" ).append( userId ).append( '\'' );
+        sb.append( ", remoteIP='" ).append( remoteIP ).append( '\'' );
+        sb.append( ", resource='" ).append( resource ).append( '\'' );
+        sb.append( ", action='" ).append( action ).append( '\'' );
+        sb.append( ", timestamp=" ).append( timestamp );
+        sb.append( '}' );
+        return sb.toString();
     }
+
+
 }

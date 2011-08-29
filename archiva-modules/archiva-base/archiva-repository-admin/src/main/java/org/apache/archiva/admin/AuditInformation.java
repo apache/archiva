@@ -55,4 +55,15 @@ public class AuditInformation
     {
         this.remoteAddr = remoteAddr;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "AuditInformation" );
+        sb.append( "{user=" ).append( user );
+        sb.append( ", remoteAddr='" ).append( remoteAddr ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }
