@@ -112,7 +112,7 @@ public class DefaultManagedRepositoryAdmin
     {
         return
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
-                                  managedRepository.getUrl(), managedRepository.isBlockRedeployments(),
+                                  managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
                                   managedRepository.getCronExpression() ) != null;
 

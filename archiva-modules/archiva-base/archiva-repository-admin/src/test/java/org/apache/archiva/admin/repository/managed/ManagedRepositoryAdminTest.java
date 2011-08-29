@@ -70,7 +70,7 @@ public class ManagedRepositoryAdminTest
         ManagedRepository repo = new ManagedRepository();
         repo.setId( "test-new-one" );
         repo.setName( "test repo" );
-        repo.setUrl( APPSERVER_BASE_PATH + repo.getId() );
+        repo.setLocation( APPSERVER_BASE_PATH + repo.getId() );
         managedRepositoryAdmin.addManagedRepository( repo, false );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
