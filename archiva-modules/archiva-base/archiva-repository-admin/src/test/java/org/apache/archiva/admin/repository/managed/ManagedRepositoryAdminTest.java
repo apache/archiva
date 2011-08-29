@@ -20,6 +20,7 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.mock.MockAuditListener;
+import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
@@ -97,8 +98,14 @@ public class ManagedRepositoryAdminTest
         assertNotNull( repos );
         assertEquals( initialSize, repos.size() );
 
-        assertEquals( 0, mockAuditListener.getAuditEvents().size() );
+        assertEquals( 2, mockAuditListener.getAuditEvents().size() );
 
+        assertEquals( AuditEvent.ADD_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
+
+        assertEquals( AuditEvent.DELETE_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
         mockAuditListener.clearEvents();
     }
 
@@ -137,9 +144,15 @@ public class ManagedRepositoryAdminTest
 
         managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation() );
 
-        assertEquals( 1, mockAuditListener.getAuditEvents().size() );
+        assertEquals( 3, mockAuditListener.getAuditEvents().size() );
 
-        log.info( "audit events {}", mockAuditListener.getAuditEvents()  );
+        assertEquals( AuditEvent.ADD_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
+
+        assertEquals( AuditEvent.MODIFY_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+
+        assertEquals( AuditEvent.DELETE_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
 
         mockAuditListener.clearEvents();
     }

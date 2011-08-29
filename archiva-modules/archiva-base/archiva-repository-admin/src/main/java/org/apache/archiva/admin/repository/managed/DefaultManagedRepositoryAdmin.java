@@ -138,6 +138,7 @@ public class DefaultManagedRepositoryAdmin
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
     {
+        triggerAuditEvent( managedRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
         return
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
@@ -265,6 +266,8 @@ public class DefaultManagedRepositoryAdmin
         {
             throw new RepositoryAdminException( "A repository with that id does not exist" );
         }
+
+        triggerAuditEvent( repositoryId, null, AuditEvent.DELETE_MANAGED_REPO, auditInformation );
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
