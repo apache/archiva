@@ -18,6 +18,7 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
+import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
@@ -133,7 +134,8 @@ public class DefaultManagedRepositoryAdmin
         return null;
     }
 
-    public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo, User user )
+    public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
+                                         AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return
@@ -252,7 +254,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean deleteManagedRepository( String repositoryId, User user )
+    public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -325,7 +327,8 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo, User user )
+    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
+                                            AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         // Ensure that the fields are valid.
@@ -358,7 +361,7 @@ public class DefaultManagedRepositoryAdmin
 
         try
         {
-            triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO, user );
+            triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO, auditInformation );
             addRepositoryRoles( managedRepositoryConfiguration );
 
             // FIXME this staging part !!
@@ -423,12 +426,12 @@ public class DefaultManagedRepositoryAdmin
     // utils methods
     //--------------------------
 
-    protected void triggerAuditEvent( String repositoryId, String resource, String action, User user )
+    protected void triggerAuditEvent( String repositoryId, String resource, String action,
+                                      AuditInformation auditInformation )
     {
-        log.warn( "no user found in triggerAuditEvent" );
+        User user = auditInformation == null ? null : auditInformation.getUser();
         AuditEvent event = new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
-        // FIXME use a thread local through cxf interceptors to store this
-        //event.setRemoteIP( getRemoteAddr() );
+        event.setRemoteIP( auditInformation == null ? "null" : auditInformation.getRemoteAddr() );
 
         for ( AuditListener listener : auditListeners )
         {

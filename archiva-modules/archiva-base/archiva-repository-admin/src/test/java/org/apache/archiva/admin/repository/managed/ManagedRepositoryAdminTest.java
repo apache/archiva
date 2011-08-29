@@ -18,6 +18,7 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
+import org.apache.archiva.admin.AuditInformation;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
@@ -74,14 +75,14 @@ public class ManagedRepositoryAdminTest
         repo.setId( "test-new-one" );
         repo.setName( "test repo" );
         repo.setLocation( APPSERVER_BASE_PATH + repo.getId() );
-        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeUser() );
+        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize + 1, repos.size() );
 
         assertNotNull( managedRepositoryAdmin.getManagedRepository( "test-new-one" ) );
 
-        managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeUser() );
+        managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation() );
 
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
@@ -101,7 +102,7 @@ public class ManagedRepositoryAdminTest
         repo.setId( "test-new-one" );
         repo.setName( "test repo" );
         repo.setLocation( APPSERVER_BASE_PATH + repo.getId() );
-        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeUser() );
+        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize + 1, repos.size() );
@@ -112,7 +113,7 @@ public class ManagedRepositoryAdminTest
 
         repo.setLocation( APPSERVER_BASE_PATH + "new-path" );
 
-        managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeUser() );
+        managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeAuditInformation() );
 
         repo = managedRepositoryAdmin.getManagedRepository( "test-new-one" );
         assertNotNull( repo );
@@ -132,6 +133,12 @@ public class ManagedRepositoryAdminTest
             }
         }
         return null;
+    }
+
+    AuditInformation getFakeAuditInformation()
+    {
+        AuditInformation auditInformation = new AuditInformation( getFakeUser(), "archiva-localhost" );
+        return auditInformation;
     }
 
     User getFakeUser()
