@@ -213,6 +213,7 @@
         <configuration>
           <systemPropertyVariables>
             <plexus.home>${project.build.outputDirectory}</plexus.home>
+            <appserver.base>${basedir}/target/appserver-base</appserver.base>
           </systemPropertyVariables>
         </configuration>
       </plugin>

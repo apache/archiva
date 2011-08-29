@@ -34,4 +34,26 @@
       </props>
     </property>
   </bean>
+
+  <!-- wire up more basic configuration so it doesn't overwrite any config files -->
+  <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#default"/>
+  </bean>
+
+  <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
+
+  <bean name="registry#default" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <xml fileName="${appserver.base}/conf/archiva.xml" config-forceCreate="true"
+               config-optional="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
 </beans>
