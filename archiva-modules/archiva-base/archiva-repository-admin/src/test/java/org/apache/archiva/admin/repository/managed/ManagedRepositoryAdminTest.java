@@ -19,9 +19,12 @@ package org.apache.archiva.admin.repository.managed;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -71,18 +74,51 @@ public class ManagedRepositoryAdminTest
         repo.setId( "test-new-one" );
         repo.setName( "test repo" );
         repo.setLocation( APPSERVER_BASE_PATH + repo.getId() );
-        managedRepositoryAdmin.addManagedRepository( repo, false );
+        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeUser() );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize + 1, repos.size() );
 
         assertNotNull( managedRepositoryAdmin.getManagedRepository( "test-new-one" ) );
 
-        managedRepositoryAdmin.deleteManagedRepository( "test-new-one" );
+        managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeUser() );
 
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize, repos.size() );
+    }
+
+    @Test
+    public void updateDeleteManagedRepo()
+        throws Exception
+    {
+        List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        int initialSize = repos.size();
+        assertTrue( initialSize > 0 );
+
+        ManagedRepository repo = new ManagedRepository();
+        repo.setId( "test-new-one" );
+        repo.setName( "test repo" );
+        repo.setLocation( APPSERVER_BASE_PATH + repo.getId() );
+        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeUser() );
+        repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        assertEquals( initialSize + 1, repos.size() );
+
+        String newName = "test repo update";
+
+        repo.setName( newName );
+
+        repo.setLocation( APPSERVER_BASE_PATH + "new-path" );
+
+        managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeUser() );
+
+        repo = managedRepositoryAdmin.getManagedRepository( "test-new-one" );
+        assertNotNull( repo );
+        assertEquals( newName, repo.getName() );
+        assertEquals( APPSERVER_BASE_PATH + "new-path", repo.getLocation() );
+        assertTrue( new File( APPSERVER_BASE_PATH + "new-path" ).exists() );
     }
 
 
@@ -96,6 +132,14 @@ public class ManagedRepositoryAdminTest
             }
         }
         return null;
+    }
+
+    User getFakeUser()
+    {
+        SimpleUser user = new SimpleUser();
+        user.setUsername( "root" );
+        user.setFullName( "The top user" );
+        return user;
     }
 
 }

@@ -32,9 +32,17 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-security</artifactId>
+    </dependency>
      <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-repository</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>audit</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
@@ -80,6 +88,26 @@
       <artifactId>spring-quartz</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-rbac-role-manager</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-authentication-api</artifactId>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -88,6 +116,33 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-users-memory</artifactId>
+      <scope>test</scope>
+      <version>${redback.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-keys-memory</artifactId>
+      <scope>test</scope>
+      <version>${redback.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-rbac-cached</artifactId>
+      <version>${redback.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -118,6 +173,7 @@
         <configuration>
           <systemPropertyVariables>
             <appserver.base>${project.build.outputDirectory}</appserver.base>
+            <plexus.home>${project.build.outputDirectory}</plexus.home>
           </systemPropertyVariables>
         </configuration>
 

@@ -20,6 +20,7 @@ package org.apache.archiva.admin.repository.managed;
 
 
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.codehaus.plexus.redback.users.User;
 
 import java.util.List;
 
@@ -35,14 +36,14 @@ public interface ManagedRepositoryAdmin
     ManagedRepository getManagedRepository( String repositoryId )
         throws RepositoryAdminException;
 
-    Boolean deleteManagedRepository( String repositoryId )
+    Boolean deleteManagedRepository( String repositoryId, User user )
         throws RepositoryAdminException;
 
-    Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
+    Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo, User user )
         throws RepositoryAdminException;
 
 
-    Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
+    Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo, User user )
         throws RepositoryAdminException;
 
 

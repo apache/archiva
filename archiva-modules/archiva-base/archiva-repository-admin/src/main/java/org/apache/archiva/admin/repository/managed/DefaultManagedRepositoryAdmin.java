@@ -19,6 +19,8 @@ package org.apache.archiva.admin.repository.managed;
  */
 
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -34,6 +36,10 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -82,9 +88,14 @@ public class DefaultManagedRepositoryAdmin
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
-
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    @Inject
+    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+
+    @Inject
+    protected RoleManager roleManager;
 
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
@@ -122,7 +133,7 @@ public class DefaultManagedRepositoryAdmin
         return null;
     }
 
-    public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
+    public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo, User user )
         throws RepositoryAdminException
     {
         return
@@ -241,7 +252,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean deleteManagedRepository( String repositoryId )
+    public Boolean deleteManagedRepository( String repositoryId, User user )
         throws RepositoryAdminException
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -314,15 +325,117 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
+    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo, User user )
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // Ensure that the fields are valid.
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( managedRepository.getId() );
+
+        if ( toremove != null )
+        {
+            configuration.removeManagedRepository( toremove );
+        }
+        // FIXME the case of the attached staging repository
+        /*
+        if ( stagingRepository != null )
+        {
+            removeRepository( stagingRepository.getId(), configuration );
+        }*/
+
+        // Save the repository configuration.
+        String result;
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        ManagedRepositoryConfiguration managedRepositoryConfiguration =
+            addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
+                                  managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
+                                  managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
+                                  managedRepository.getCronExpression() );
+
+        // FIXME only location has changed from previous
+        boolean resetStats = true;
+
+        try
+        {
+            triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO, user );
+            addRepositoryRoles( managedRepositoryConfiguration );
+
+            // FIXME this staging part !!
+
+            //update changes of the staging repo
+            /*if ( stageNeeded )
+            {
+
+                stagingRepository = getStageRepoConfig( configuration );
+                addRepository( stagingRepository, configuration );
+                addRepositoryRoles( stagingRepository );
+
+            }*/
+            //delete staging repo when we dont need it
+            /*
+            if ( !stageNeeded )
+            {
+                stagingRepository = getStageRepoConfig( configuration );
+                removeRepository( stagingRepository.getId(), configuration );
+                removeContents( stagingRepository );
+                removeRepositoryRoles( stagingRepository );
+            }*/
+
+            saveConfiguration( this.archivaConfiguration.getConfiguration() );
+            if ( resetStats )
+            {
+                repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(),
+                                                              managedRepository.getId() );
+                repositorySession.save();
+            }
+
+            //MRM-1342 Repository statistics report doesn't appear to be working correctly
+            //scan repository when modification of repository is successful
+            // olamy :  IMHO we are fine to ignore issue with scheduling scanning
+            // as here the repo has been updated
+            scanRepository( managedRepository.getId(), true );
+            // FIXME staging !!
+            /*
+            if ( stageNeeded )
+            {
+                executeRepositoryScanner( stagingRepository.getId() );
+            }*/
+
+        }
+        catch ( RoleManagerException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+
+        return true;
     }
 
     //--------------------------
     // utils methods
     //--------------------------
+
+    protected void triggerAuditEvent( String repositoryId, String resource, String action, User user )
+    {
+        log.warn( "no user found in triggerAuditEvent" );
+        AuditEvent event = new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
+        // FIXME use a thread local through cxf interceptors to store this
+        //event.setRemoteIP( getRemoteAddr() );
+
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
+        }
+
+    }
 
     private String removeExpressions( String directory )
     {
@@ -409,5 +522,24 @@ public class DefaultManagedRepositoryAdmin
             return false;
         }
         return true;
+    }
+
+    protected void addRepositoryRoles( ManagedRepositoryConfiguration newRepository )
+        throws RoleManagerException
+    {
+        String repoId = newRepository.getId();
+
+        // TODO: double check these are configured on start up
+        // TODO: belongs in the business logic
+
+        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        {
+            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        }
+
+        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        {
+            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        }
     }
 }
