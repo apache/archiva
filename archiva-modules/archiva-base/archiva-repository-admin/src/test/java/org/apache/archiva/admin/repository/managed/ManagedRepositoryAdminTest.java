@@ -18,6 +18,7 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -40,6 +41,13 @@ public class ManagedRepositoryAdminTest
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertTrue( repos.size() > 0 );
+        log.info( "repos " + repos );
+
+        // check default internal
+        ManagedRepository internal = findManagedRepoById( repos, "internal" );
+        assertNotNull( internal );
+        assertTrue( internal.isReleases() );
+        assertFalse( internal.isSnapshots() );
     }
 
     @Test
@@ -48,6 +56,40 @@ public class ManagedRepositoryAdminTest
     {
         ManagedRepository repo = managedRepositoryAdmin.getManagedRepository( "internal" );
         assertNotNull( repo );
+    }
+
+    @Test
+    public void addManagedRepo()
+        throws Exception
+    {
+        List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        int initialSize = repos.size();
+        assertTrue( initialSize > 0 );
+
+        ManagedRepository repo = new ManagedRepository();
+        repo.setId( "test-new-one" );
+        repo.setName( "test repo" );
+        repo.setUrl( APPSERVER_BASE_PATH + repo.getId() );
+        managedRepositoryAdmin.addManagedRepository( repo, false );
+        repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        assertEquals( initialSize + 1, repos.size() );
+
+        assertNotNull( managedRepositoryAdmin.getManagedRepository( "test-new-one" ) );
+    }
+
+
+    private ManagedRepository findManagedRepoById( List<ManagedRepository> repos, String id )
+    {
+        for ( ManagedRepository repo : repos )
+        {
+            if ( StringUtils.equals( id, repo.getId() ) )
+            {
+                return repo;
+            }
+        }
+        return null;
     }
 
 }

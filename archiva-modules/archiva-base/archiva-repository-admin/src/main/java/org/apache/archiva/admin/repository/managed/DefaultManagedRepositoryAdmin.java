@@ -107,12 +107,6 @@ public class DefaultManagedRepositoryAdmin
         return null;
     }
 
-    public Boolean deleteManagedRepository( String repositoryId )
-        throws RepositoryAdminException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
         throws RepositoryAdminException
     {
@@ -133,17 +127,10 @@ public class DefaultManagedRepositoryAdmin
 
         Configuration config = archivaConfiguration.getConfiguration();
 
-        CronExpressionValidator validator = new CronExpressionValidator();
-
         if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
         {
             throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
                                                     + "], that id already exists as a managed repository." );
-        }
-        else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
-        {
-            throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
-                                                    + "], that id already exists as a remote repository." );
         }
         else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
         {
@@ -151,15 +138,28 @@ public class DefaultManagedRepositoryAdmin
                                                     + "], that id already exists as a repository group." );
         }
 
-        if ( !validator.validate( cronExpression ) )
+        // FIXME : olamy can be empty to avoid scheduled scan ?
+        if ( StringUtils.isNotBlank( cronExpression ) )
         {
-            throw new RepositoryAdminException( "Invalid cron expression." );
+            CronExpressionValidator validator = new CronExpressionValidator();
+
+            if ( !validator.validate( cronExpression ) )
+            {
+                throw new RepositoryAdminException( "Invalid cron expression." );
+            }
         }
+
+        // FIXME checKid non empty
 
         if ( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
         {
             throw new RepositoryAdminException(
                 "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        }
+
+        if ( StringUtils.isBlank( name ) )
+        {
+            throw new RepositoryAdminException( "repository name cannot be empty" );
         }
 
         if ( !GenericValidator.matchRegexp( name, REPOSITORY_NAME_VALID_EXPRESSION ) )
@@ -227,6 +227,13 @@ public class DefaultManagedRepositoryAdmin
 
 
     public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo )
+        throws RepositoryAdminException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    public Boolean deleteManagedRepository( String repositoryId )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

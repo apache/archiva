@@ -20,6 +20,8 @@ package org.apache.archiva.admin.repository.managed;
 
 import junit.framework.TestCase;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,5 +33,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public abstract class AbstractRepositoryAdminTest
     extends TestCase
 {
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+
+    public static final String APPSERVER_BASE_PATH = System.getProperty( "appserver.base" );
     // no op
 }
