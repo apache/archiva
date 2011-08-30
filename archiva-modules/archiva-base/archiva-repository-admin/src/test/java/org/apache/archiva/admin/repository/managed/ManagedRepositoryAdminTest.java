@@ -139,6 +139,12 @@ public class ManagedRepositoryAdminTest
         repo.setName( "test repo" );
         repo.setLocation( APPSERVER_BASE_PATH + repo.getId() );
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
+
+        assertTrue(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
+        assertTrue(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
+
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize + 1, repos.size() );
@@ -157,7 +163,17 @@ public class ManagedRepositoryAdminTest
         assertEquals( APPSERVER_BASE_PATH + "new-path", repo.getLocation() );
         assertTrue( new File( APPSERVER_BASE_PATH + "new-path" ).exists() );
 
+        assertTrue(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
+        assertTrue(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
+
         managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation() );
+
+        assertFalse(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
+        assertFalse(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
 
         assertEquals( "not 3 audit events " + mockAuditListener.getAuditEvents(), 3,
                       mockAuditListener.getAuditEvents().size() );
