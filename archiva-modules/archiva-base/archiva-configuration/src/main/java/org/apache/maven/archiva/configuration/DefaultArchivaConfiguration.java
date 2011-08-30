@@ -193,6 +193,7 @@ public class DefaultArchivaConfiguration
         }
 
         Configuration config = new ConfigurationRegistryReader().read( subset );
+
         config.getRepositoryGroups();
         config.getRepositoryGroupsAsMap();
         if ( !config.getRepositories().isEmpty() )

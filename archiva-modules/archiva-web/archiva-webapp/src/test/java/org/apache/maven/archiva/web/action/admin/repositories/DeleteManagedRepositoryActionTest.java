@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -38,9 +40,12 @@ import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.jdo.JdoUser;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -103,7 +108,6 @@ public class DeleteManagedRepositoryActionTest
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
-        action.setRepositoryStatisticsManager( repositoryStatisticsManager );
 
         metadataRepositoryControl = MockControl.createControl( MetadataRepository.class );
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
@@ -111,10 +115,17 @@ public class DeleteManagedRepositoryActionTest
 
         respositorySession = mock( RepositorySession.class );
         when( respositorySession.getRepository() ).thenReturn( metadataRepository );
-        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
+
         TestRepositorySessionFactory factory = new TestRepositorySessionFactory();
         factory.setRepositorySession( respositorySession );
         action.setRepositorySessionFactory( factory );
+
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRoleManager( roleManager );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryStatisticsManager(
+            repositoryStatisticsManager );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositorySessionFactory( factory );
+        action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
 
         metadataRepositoryControl.replay();
     }
@@ -229,6 +240,8 @@ public class DeleteManagedRepositoryActionTest
         control.setMatcher( new AuditEventArgumentsMatcher() );
         control.replay();
         action.setAuditListeners( Arrays.asList( listener ) );
+
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setAuditListeners( Arrays.asList( listener ) );
         return control;
     }
 
@@ -437,5 +450,10 @@ public class DeleteManagedRepositoryActionTest
         roleManagerControl.setReturnValue( true );
         roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.replay();
+    }
+
+    protected ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return applicationContext.getBean( ManagedRepositoryAdmin.class );
     }
 }

@@ -102,7 +102,7 @@ public class ManagedRepositoryAdminTest
         assertTrue(
             roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
 
-        managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation() );
+        managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation(), false );
 
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
@@ -169,7 +169,7 @@ public class ManagedRepositoryAdminTest
         assertTrue(
             roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
 
-        managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation() );
+        managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation(), false );
 
         assertFalse(
             roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
@@ -211,7 +211,16 @@ public class ManagedRepositoryAdminTest
 
     User getFakeUser()
     {
-        SimpleUser user = new SimpleUser();
+        SimpleUser user = new SimpleUser()
+        {
+            @Override
+            public Object getPrincipal()
+            {
+                return "root";
+            }
+
+        };
+
         user.setUsername( "root" );
         user.setFullName( "The top user" );
         return user;

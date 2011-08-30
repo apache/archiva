@@ -19,10 +19,9 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.interceptor.ParameterNameAware;
+import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
@@ -31,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.security.ArchivaXworkUser;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
+import org.codehaus.plexus.redback.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,5 +181,180 @@ public abstract class AbstractActionSupport
         }
         return beans;
     }
+
+
+    protected AuditInformation getAuditInformation()
+    {
+        AuditInformation auditInformation = new AuditInformation( new SimpleUser( getPrincipal() ), getRemoteAddr() );
+
+        return auditInformation;
+    }
+
+    /**
+     * dummy information for audit events
+     * @since 1.4
+     */
+    private static class SimpleUser
+        implements User
+    {
+
+        private String principal;
+
+        protected SimpleUser( String principal )
+        {
+            this.principal = principal;
+        }
+
+        public Object getPrincipal()
+        {
+            return this.principal;
+        }
+
+        public String getUsername()
+        {
+            return null;
+        }
+
+        public void setUsername( String name )
+        {
+
+        }
+
+        public String getFullName()
+        {
+            return null;
+        }
+
+        public void setFullName( String name )
+        {
+
+        }
+
+        public String getEmail()
+        {
+            return null;
+        }
+
+        public void setEmail( String address )
+        {
+
+        }
+
+        public String getPassword()
+        {
+            return null;
+        }
+
+        public void setPassword( String rawPassword )
+        {
+
+        }
+
+        public String getEncodedPassword()
+        {
+            return null;
+        }
+
+        public void setEncodedPassword( String encodedPassword )
+        {
+
+        }
+
+        public Date getLastPasswordChange()
+        {
+            return null;
+        }
+
+        public void setLastPasswordChange( Date passwordChangeDate )
+        {
+
+        }
+
+        public List<String> getPreviousEncodedPasswords()
+        {
+            return null;
+        }
+
+        public void setPreviousEncodedPasswords( List<String> encodedPasswordList )
+        {
+
+        }
+
+        public void addPreviousEncodedPassword( String encodedPassword )
+        {
+
+        }
+
+        public boolean isPermanent()
+        {
+            return false;
+        }
+
+        public void setPermanent( boolean permanent )
+        {
+
+        }
+
+        public boolean isLocked()
+        {
+            return false;
+        }
+
+        public void setLocked( boolean locked )
+        {
+
+        }
+
+        public boolean isPasswordChangeRequired()
+        {
+            return false;
+        }
+
+        public void setPasswordChangeRequired( boolean changeRequired )
+        {
+
+        }
+
+        public boolean isValidated()
+        {
+            return false;
+        }
+
+        public void setValidated( boolean valid )
+        {
+
+        }
+
+        public int getCountFailedLoginAttempts()
+        {
+            return 0;
+        }
+
+        public void setCountFailedLoginAttempts( int count )
+        {
+
+        }
+
+        public Date getAccountCreationDate()
+        {
+            return null;
+        }
+
+        public void setAccountCreationDate( Date date )
+        {
+
+        }
+
+        public Date getLastLoginDate()
+        {
+            return null;
+        }
+
+        public void setLastLoginDate( Date date )
+        {
+
+        }
+    }
+
 
 }

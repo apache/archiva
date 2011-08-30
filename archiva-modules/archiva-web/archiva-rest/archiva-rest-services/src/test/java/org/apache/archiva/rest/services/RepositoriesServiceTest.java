@@ -118,7 +118,7 @@ public class RepositoriesServiceTest
         ManagedRepository repo = getTestManagedRepository();
         if ( service.getManagedRepository( repo.getId() ) != null )
         {
-            service.deleteManagedRepository( repo.getId() );
+            service.deleteManagedRepository( repo.getId(), true );
             assertNull( service.getManagedRepository( repo.getId() ) );
         }
         service.addManagedRepository( repo );
@@ -135,7 +135,7 @@ public class RepositoriesServiceTest
         ManagedRepository repo = getTestManagedRepository();
         if ( service.getManagedRepository( repo.getId() ) != null )
         {
-            service.deleteManagedRepository( repo.getId() );
+            service.deleteManagedRepository( repo.getId(), true );
             assertNull( service.getManagedRepository( repo.getId() ) );
         }
         service.addManagedRepository( repo );

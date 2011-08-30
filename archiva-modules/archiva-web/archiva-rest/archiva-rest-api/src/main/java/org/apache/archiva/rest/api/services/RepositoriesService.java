@@ -60,7 +60,7 @@ public interface RepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean deleteManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
+    Boolean deleteManagedRepository( @PathParam( "repositoryId" ) String repositoryId, boolean deleteContent )
         throws Exception;
 
 
@@ -69,7 +69,7 @@ public interface RepositoriesService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean addManagedRepository( ManagedRepository managedRepository)
+    Boolean addManagedRepository( ManagedRepository managedRepository )
         throws Exception;
 
 

@@ -263,7 +263,12 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation )
+    // FIXME delete stagedRepo if exists !!!!
+    // find it tru :
+    // stagingRepository =
+    //            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid + "-stage" );
+    public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
+                                            boolean deleteContent )
         throws RepositoryAdminException
     {
         Configuration config = archivaConfiguration.getConfiguration();
@@ -282,6 +287,7 @@ public class DefaultManagedRepositoryAdmin
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
             metadataRepository.removeRepository( repository.getId() );
+            log.debug( "call repositoryStatisticsManager.deleteStatistics" );
             repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
             repositorySession.save();
         }
@@ -304,14 +310,19 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage() );
         }
 
-        // TODO could be async ? as directory can be huge
-        File dir = new File( repository.getLocation() );
-        if ( !FileUtils.deleteQuietly( dir ) )
+        if ( deleteContent )
         {
-            throw new RepositoryAdminException( "Cannot delete repository " + dir );
+            // TODO could be async ? as directory can be huge
+            File dir = new File( repository.getLocation() );
+            if ( !FileUtils.deleteQuietly( dir ) )
+            {
+                throw new RepositoryAdminException( "Cannot delete repository " + dir );
+            }
         }
 
-        List<ProxyConnectorConfiguration> proxyConnectors = config.getProxyConnectors();
+        // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
+        List<ProxyConnectorConfiguration> proxyConnectors =
+            new ArrayList<ProxyConnectorConfiguration>( config.getProxyConnectors() );
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
@@ -408,6 +419,7 @@ public class DefaultManagedRepositoryAdmin
             saveConfiguration( this.archivaConfiguration.getConfiguration() );
             if ( resetStats )
             {
+                log.debug( "call repositoryStatisticsManager.deleteStatistics" );
                 repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(),
                                                               managedRepository.getId() );
                 repositorySession.save();
@@ -450,7 +462,8 @@ public class DefaultManagedRepositoryAdmin
                                       AuditInformation auditInformation )
     {
         User user = auditInformation == null ? null : auditInformation.getUser();
-        AuditEvent event = new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
+        AuditEvent event =
+            new AuditEvent( repositoryId, user == null ? "null" : (String) user.getPrincipal(), resource, action );
         event.setRemoteIP( auditInformation == null ? "null" : auditInformation.getRemoteAddr() );
 
         for ( AuditListener listener : auditListeners )
@@ -603,5 +616,35 @@ public class DefaultManagedRepositoryAdmin
     public void setRoleManager( RoleManager roleManager )
     {
         this.roleManager = roleManager;
+    }
+
+    public RepositoryStatisticsManager getRepositoryStatisticsManager()
+    {
+        return repositoryStatisticsManager;
+    }
+
+    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
+    {
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory()
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
+
+    public List<AuditListener> getAuditListeners()
+    {
+        return auditListeners;
+    }
+
+    public void setAuditListeners( List<AuditListener> auditListeners )
+    {
+        this.auditListeners = auditListeners;
     }
 }

@@ -44,6 +44,10 @@
     <level value="error"/>
   </logger>
 
+  <logger name="org.apache.archiva.admin.repository.managed">
+    <level value="debug"/>
+  </logger>
+
   <root>
     <priority value ="info" />
     <appender-ref ref="console" />

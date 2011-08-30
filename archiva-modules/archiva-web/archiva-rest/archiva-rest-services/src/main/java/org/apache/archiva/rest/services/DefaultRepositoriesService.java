@@ -138,11 +138,11 @@ public class DefaultRepositoriesService
         return null;
     }
 
-    public Boolean deleteManagedRepository( String repoId )
+    public Boolean deleteManagedRepository( String repoId, boolean deleteContent )
         throws Exception
     {
 
-        return managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation() );
+        return managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation(), deleteContent );
     }
 
     public List<RemoteRepository> getRemoteRepositories()

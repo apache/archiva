@@ -41,6 +41,7 @@ import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -127,16 +128,6 @@ public abstract class AbstractRepositoriesAdminAction
     }
 
 
-    protected AuditInformation getAuditInformation()
-    {
-        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
-        User user = redbackRequestInformation == null ? null : redbackRequestInformation.getUser();
-        String remoteAddr = redbackRequestInformation == null ? "null" : redbackRequestInformation.getRemoteAddr();
-        AuditInformation auditInformation = new AuditInformation( user, remoteAddr);
-
-        return auditInformation;
-    }
-
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {
         return managedRepositoryAdmin;
@@ -146,4 +137,5 @@ public abstract class AbstractRepositoriesAdminAction
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
+
 }

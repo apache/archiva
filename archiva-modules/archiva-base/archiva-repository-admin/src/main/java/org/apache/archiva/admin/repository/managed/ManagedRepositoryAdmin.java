@@ -21,7 +21,6 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public interface ManagedRepositoryAdmin
     ManagedRepository getManagedRepository( String repositoryId )
         throws RepositoryAdminException;
 
-    Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation )
+    Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation, boolean deleteContent )
         throws RepositoryAdminException;
 
     Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
