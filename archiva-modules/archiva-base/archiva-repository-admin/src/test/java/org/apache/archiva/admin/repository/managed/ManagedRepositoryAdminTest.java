@@ -153,7 +153,7 @@ public class ManagedRepositoryAdminTest
 
         repo.setName( newName );
 
-        repo.setLocation( APPSERVER_BASE_PATH + "new-path" );
+        repo.setLocation( APPSERVER_BASE_PATH + "/new-path" );
 
         managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeAuditInformation() );
 
@@ -162,7 +162,7 @@ public class ManagedRepositoryAdminTest
         assertEquals( newName, repo.getName() );
         assertEquals( new File( APPSERVER_BASE_PATH + "/new-path" ).getCanonicalPath(),
                       new File( repo.getLocation() ).getCanonicalPath() );
-        assertTrue( new File( APPSERVER_BASE_PATH + "new-path" ).exists() );
+        assertTrue( new File( APPSERVER_BASE_PATH + "/new-path" ).exists() );
 
         assertTrue(
             roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
