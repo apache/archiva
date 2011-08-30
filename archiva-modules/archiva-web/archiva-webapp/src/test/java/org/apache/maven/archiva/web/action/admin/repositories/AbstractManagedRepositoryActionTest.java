@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
 import java.io.File;
 
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.struts2.StrutsSpringTestCase;
 
@@ -120,5 +121,10 @@ public abstract class AbstractManagedRepositoryActionTest
         managedRepositoryConfiguration.setIndexDir(indexDir);
 
         return managedRepositoryConfiguration;
+    }
+
+    protected ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return applicationContext.getBean( ManagedRepositoryAdmin.class );
     }
 }

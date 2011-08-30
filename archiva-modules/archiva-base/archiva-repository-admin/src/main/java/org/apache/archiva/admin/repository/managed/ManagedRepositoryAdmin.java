@@ -21,6 +21,7 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 
 import java.util.List;
 
@@ -47,6 +48,5 @@ public interface ManagedRepositoryAdmin
     Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                      AuditInformation auditInformation )
         throws RepositoryAdminException;
-
 
 }

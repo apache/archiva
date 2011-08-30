@@ -19,6 +19,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.Auditable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -28,10 +30,13 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
+import org.codehaus.redback.rest.services.RedbackRequestInformation;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -55,6 +60,9 @@ public abstract class AbstractRepositoriesAdminAction
      */
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     public ArchivaConfiguration getArchivaConfiguration()
     {
@@ -116,5 +124,26 @@ public abstract class AbstractRepositoriesAdminAction
     {
         return new ArrayList<ProxyConnectorConfiguration>(
             archivaConfiguration.getConfiguration().getProxyConnectors() );
+    }
+
+
+    protected AuditInformation getAuditInformation()
+    {
+        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
+        User user = redbackRequestInformation == null ? null : redbackRequestInformation.getUser();
+        String remoteAddr = redbackRequestInformation == null ? "null" : redbackRequestInformation.getRemoteAddr();
+        AuditInformation auditInformation = new AuditInformation( user, remoteAddr);
+
+        return auditInformation;
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }

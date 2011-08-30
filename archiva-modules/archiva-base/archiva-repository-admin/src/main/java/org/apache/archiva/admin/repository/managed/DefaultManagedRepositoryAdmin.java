@@ -108,7 +108,7 @@ public class DefaultManagedRepositoryAdmin
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO staging repo too
+            // TODO add staging repo too
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
@@ -179,7 +179,7 @@ public class DefaultManagedRepositoryAdmin
             }
         }
 
-        // FIXME checKid non empty
+        // FIXME checkId non empty
 
         if ( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
         {
@@ -582,5 +582,26 @@ public class DefaultManagedRepositoryAdmin
         }
 
         log.debug( "removed user roles associated with repository {}", repoId );
+    }
+
+
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public RoleManager getRoleManager()
+    {
+        return roleManager;
+    }
+
+    public void setRoleManager( RoleManager roleManager )
+    {
+        this.roleManager = roleManager;
     }
 }

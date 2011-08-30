@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FileUtils;
@@ -63,10 +64,11 @@ public class AddManagedRepositoryActionTest
     private MockControl registryControl;
 
     private ArchivaConfiguration archivaConfiguration;
-    
+
     private MockControl repositoryTaskSchedulerControl;
-    
+
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
+
 
     @Override
     protected void setUp()
@@ -89,10 +91,14 @@ public class AddManagedRepositoryActionTest
         action.setRegistry( registry );
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
-        repositoryTaskScheduler = ( RepositoryArchivaTaskScheduler ) repositoryTaskSchedulerControl.getMock();
+        repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
         action.setRepositoryTaskScheduler( repositoryTaskScheduler );
-        
+
         location = new File( "target/test/location" );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRoleManager( roleManager );
+        action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
+
     }
 
     public void testSecureActionBundle()
@@ -157,7 +163,7 @@ public class AddManagedRepositoryActionTest
         registryControl.setReturnValue( "target/test" );
 
         registryControl.replay();
-        
+
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( REPO_ID );
         repositoryTaskScheduler.isProcessingRepositoryTask( REPO_ID );

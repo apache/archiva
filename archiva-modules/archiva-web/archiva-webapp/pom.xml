@@ -276,7 +276,6 @@
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
-      <scope>runtime</scope>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

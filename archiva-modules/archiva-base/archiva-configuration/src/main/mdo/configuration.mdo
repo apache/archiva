@@ -415,6 +415,37 @@
           <defaultValue>default</defaultValue>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+            <code><![CDATA[
+            public int hashCode()
+            {
+                int result = 17;
+                result = 37 * result + ( id != null ? id.hashCode() : 0 );
+                return result;
+            }
+
+            public boolean equals( Object other )
+            {
+                if ( this == other )
+                {
+                    return true;
+                }
+
+                if ( !( other instanceof AbstractRepositoryConfiguration ) )
+                {
+                    return false;
+                }
+
+                AbstractRepositoryConfiguration that = (AbstractRepositoryConfiguration) other;
+                boolean result = true;
+                result = result && ( getId() == null ? that.getId() == null : getId().equals( that.getId() ) );
+                return result;
+            }
+       ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     <class>
       <name>RemoteRepositoryConfiguration</name>

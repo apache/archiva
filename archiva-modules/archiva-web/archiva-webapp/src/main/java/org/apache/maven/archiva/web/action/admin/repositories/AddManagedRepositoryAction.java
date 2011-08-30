@@ -21,25 +21,23 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * AddManagedRepositoryAction
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="addManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 @Controller( "addManagedRepositoryAction" )
 @Scope( "prototype" )
@@ -48,6 +46,7 @@ public class AddManagedRepositoryAction
     implements Preparable, Validateable
 {
     /**
+     * FIXME we must manipulate beans from repo admin api
      * The model for this action.
      */
     private ManagedRepositoryConfiguration repository;
@@ -93,56 +92,18 @@ public class AddManagedRepositoryAction
 
     private String save()
     {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        String result;
+        String result = SUCCESS;
         try
         {
-            addRepository( repository, configuration );
-            triggerAuditEvent( repository.getId(), null, AuditEvent.ADD_MANAGED_REPO );
-            addRepositoryRoles( repository );
-
-            if ( stageNeeded )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig();
-
-                addRepository( stagingRepository, configuration );
-                triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO );
-                addRepositoryRoles( stagingRepository );
-
-            }
-
-            result = saveConfiguration( configuration );
-            
-            //MRM-1342 Repository statistics report doesn't appear to be working correctly
-            //scan repository when adding of repository is successful
-            if ( result.equals( SUCCESS ) )
-            {
-                try
-                {
-                    executeRepositoryScanner( repository.getId() );
-
-                    if ( stageNeeded )
-                    {
-                        ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig();
-                        executeRepositoryScanner( stagingRepository.getId() );
-                    }
-                }
-                catch ( TaskQueueException e )
-                {
-                    log.warn( new StringBuilder( "Unable to scan repository [" ).append( repository.getId() ).append( "]: " ).append(
-                              e.getMessage() ).toString(), e );
-                }
-            }
+            ManagedRepository managedRepository =
+                new ManagedRepository( repository.getId(), repository.getName(), repository.getLocation(),
+                                       repository.getLayout(), repository.isSnapshots(), repository.isReleases(),
+                                       repository.isBlockRedeployments(), repository.getRefreshCronExpression() );
+            getManagedRepositoryAdmin().addManagedRepository( managedRepository, stageNeeded, getAuditInformation() );
         }
-        catch ( RoleManagerException e )
+        catch ( RepositoryAdminException e )
         {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-        catch ( IOException e )
-        {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
+            addActionError( "Repository Administration Exception: " + e.getMessage() );
             result = INPUT;
         }
 
