@@ -160,7 +160,8 @@ public class ManagedRepositoryAdminTest
         repo = managedRepositoryAdmin.getManagedRepository( "test-new-one" );
         assertNotNull( repo );
         assertEquals( newName, repo.getName() );
-        assertEquals( APPSERVER_BASE_PATH + "new-path", repo.getLocation() );
+        assertEquals( new File( APPSERVER_BASE_PATH + "/new-path" ).getCanonicalPath(),
+                      new File( repo.getLocation() ).getCanonicalPath() );
         assertTrue( new File( APPSERVER_BASE_PATH + "new-path" ).exists() );
 
         assertTrue(
