@@ -22,6 +22,8 @@ import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.mock.MockAuditListener;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.junit.Test;
@@ -42,6 +44,9 @@ public class ManagedRepositoryAdminTest
 
     @Inject
     private MockAuditListener mockAuditListener;
+
+    @Inject
+    protected RoleManager roleManager;
 
     @Test
     public void getAllManagedRepos()
@@ -92,11 +97,21 @@ public class ManagedRepositoryAdminTest
 
         assertNotNull( managedRepositoryAdmin.getManagedRepository( "test-new-one" ) );
 
+        assertTrue(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
+        assertTrue(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
+
         managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation() );
 
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize, repos.size() );
+
+        assertFalse(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "test-new-one" ) );
+        assertFalse(
+            roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, "test-new-one" ) );
 
         assertEquals( 2, mockAuditListener.getAuditEvents().size() );
 
@@ -144,7 +159,8 @@ public class ManagedRepositoryAdminTest
 
         managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation() );
 
-        assertEquals( 3, mockAuditListener.getAuditEvents().size() );
+        assertEquals( "not 3 audit events " + mockAuditListener.getAuditEvents(), 3,
+                      mockAuditListener.getAuditEvents().size() );
 
         assertEquals( AuditEvent.ADD_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );

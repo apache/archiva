@@ -143,14 +143,15 @@ public class DefaultManagedRepositoryAdmin
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression() ) != null;
+                                  managedRepository.getCronExpression(), auditInformation ) != null;
 
     }
 
     private ManagedRepositoryConfiguration addManagedRepository( String repoId, String layout, String name,
                                                                  String location, boolean blockRedeployments,
                                                                  boolean releasesIncluded, boolean snapshotsIncluded,
-                                                                 boolean stageRepoNeeded, String cronExpression )
+                                                                 boolean stageRepoNeeded, String cronExpression,
+                                                                 AuditInformation auditInformation )
         throws RepositoryAdminException
     {
 
@@ -220,12 +221,19 @@ public class DefaultManagedRepositoryAdmin
         try
         {
             addRepository( repository, config );
+            addRepositoryRoles( repository );
 
             if ( stageRepoNeeded )
             {
                 ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
                 addRepository( stagingRepository, config );
+                addRepositoryRoles( stagingRepository );
+                triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
             }
+        }
+        catch ( RoleManagerException e )
+        {
+            throw new RepositoryAdminException( "failed to add repository roles " + e.getMessage(), e );
         }
         catch ( IOException e )
         {
@@ -326,6 +334,15 @@ public class DefaultManagedRepositoryAdmin
             }
         }
 
+        try
+        {
+            removeRepositoryRoles( repository );
+        }
+        catch ( RoleManagerException e )
+        {
+            throw new RepositoryAdminException(
+                "fail to remove repository roles for repository " + repository.getId() + " : " + e.getMessage(), e );
+        }
         return Boolean.TRUE;
     }
 
@@ -357,7 +374,7 @@ public class DefaultManagedRepositoryAdmin
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression() );
+                                  managedRepository.getCronExpression(), auditInformation );
 
         // FIXME only location has changed from previous
         boolean resetStats = true;
@@ -547,5 +564,23 @@ public class DefaultManagedRepositoryAdmin
         {
             roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
         }
+    }
+
+    protected void removeRepositoryRoles( ManagedRepositoryConfiguration existingRepository )
+        throws RoleManagerException
+    {
+        String repoId = existingRepository.getId();
+
+        if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        {
+            roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        }
+
+        if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        {
+            roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        }
+
+        log.debug( "removed user roles associated with repository {}", repoId );
     }
 }
