@@ -280,24 +280,17 @@ public class DefaultManagedRepositoryAdmin
 
         triggerAuditEvent( repositoryId, null, AuditEvent.DELETE_MANAGED_REPO, auditInformation );
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
-        try
+        deleteManagedRepository( repository, deleteContent, config, false );
+
+        // stage repo exists ?
+        ManagedRepositoryConfiguration stagingRepository =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
+        if ( stagingRepository != null )
         {
-            MetadataRepository metadataRepository = repositorySession.getRepository();
-            metadataRepository.removeRepository( repository.getId() );
-            log.debug( "call repositoryStatisticsManager.deleteStatistics" );
-            repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
-            repositorySession.save();
+            // do not trigger event when deleting the staged one
+            //triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.DELETE_MANAGED_REPO, auditInformation );
+            deleteManagedRepository( stagingRepository, deleteContent, config, true );
         }
-        catch ( MetadataRepositoryException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        finally
-        {
-            repositorySession.close();
-        }
-        config.removeManagedRepository( repository );
 
         try
         {
@@ -308,6 +301,35 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage() );
         }
 
+        return Boolean.TRUE;
+    }
+
+    private Boolean deleteManagedRepository( ManagedRepositoryConfiguration repository, boolean deleteContent,
+                                             Configuration config, boolean stagedOne )
+        throws RepositoryAdminException
+    {
+        if ( !stagedOne )
+        {
+            RepositorySession repositorySession = repositorySessionFactory.createSession();
+            try
+            {
+                MetadataRepository metadataRepository = repositorySession.getRepository();
+                metadataRepository.removeRepository( repository.getId() );
+                log.debug( "call repositoryStatisticsManager.deleteStatistics" );
+                repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
+                repositorySession.save();
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                throw new RepositoryAdminException( e.getMessage(), e );
+            }
+            finally
+            {
+                repositorySession.close();
+            }
+        }
+        config.removeManagedRepository( repository );
+
         if ( deleteContent )
         {
             // TODO could be async ? as directory can be huge
@@ -317,6 +339,7 @@ public class DefaultManagedRepositoryAdmin
                 throw new RepositoryAdminException( "Cannot delete repository " + dir );
             }
         }
+
 
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
         List<ProxyConnectorConfiguration> proxyConnectors =
@@ -329,7 +352,7 @@ public class DefaultManagedRepositoryAdmin
             }
         }
 
-        Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
+        Map<String, List<String>> repoToGroupMap = config.getRepositoryToGroupMap();
         if ( repoToGroupMap != null )
         {
             if ( repoToGroupMap.containsKey( repository.getId() ) )
@@ -352,15 +375,6 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException(
                 "fail to remove repository roles for repository " + repository.getId() + " : " + e.getMessage(), e );
         }
-
-        // stage repo exists ?
-        ManagedRepositoryConfiguration stagingRepository =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
-        if ( stagingRepository != null )
-        {
-            deleteManagedRepository( stagingRepository.getId(), auditInformation, deleteContent );
-        }
-
         return Boolean.TRUE;
     }
 

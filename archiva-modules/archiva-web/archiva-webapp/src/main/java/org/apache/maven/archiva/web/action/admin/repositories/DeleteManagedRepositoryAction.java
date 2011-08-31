@@ -101,6 +101,7 @@ public class DeleteManagedRepositoryAction
         {
             addActionError(
                 "Unable to delete repository, content may already be partially removed: " + e.getMessage() );
+            log.error( e.getMessage(), e );
             result = ERROR;
         }
         return result;

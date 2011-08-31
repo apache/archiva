@@ -340,6 +340,10 @@ public class DeleteManagedRepositoryActionTest
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
         archivaConfiguration.save( configuration );
+
+        // save for staging repo delete
+        archivaConfiguration.save( configuration );
+
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
