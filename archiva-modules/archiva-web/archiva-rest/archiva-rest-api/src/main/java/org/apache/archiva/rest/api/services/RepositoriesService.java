@@ -56,12 +56,12 @@ public interface RepositoriesService
     ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
         throws RepositoryAdminException;
 
-    @Path( "deleteManagedRepository/{repositoryId}/{deleteContent}" )
+    @Path( "deleteManagedRepository" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean deleteManagedRepository( @PathParam( "repositoryId" ) String repositoryId,
-                                     @PathParam( "deleteContent" ) boolean deleteContent )
+    Boolean deleteManagedRepository( @QueryParam( "repositoryId" ) String repositoryId,
+                                     @QueryParam( "deleteContent" ) boolean deleteContent )
         throws Exception;
 
 
