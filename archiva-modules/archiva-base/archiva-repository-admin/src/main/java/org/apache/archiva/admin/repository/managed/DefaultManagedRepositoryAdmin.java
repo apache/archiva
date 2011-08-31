@@ -75,6 +75,8 @@ public class DefaultManagedRepositoryAdmin
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    public static final String STAGE_REPO_ID_END = "-stage";
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
@@ -108,7 +110,7 @@ public class DefaultManagedRepositoryAdmin
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO add staging repo too
+            // TODO add staging repo information back too
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
@@ -263,10 +265,6 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    // FIXME delete stagedRepo if exists !!!!
-    // find it tru :
-    // stagingRepository =
-    //            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid + "-stage" );
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
                                             boolean deleteContent )
         throws RepositoryAdminException
@@ -354,6 +352,15 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException(
                 "fail to remove repository roles for repository " + repository.getId() + " : " + e.getMessage(), e );
         }
+
+        // stage repo exists ?
+        ManagedRepositoryConfiguration stagingRepository =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
+        if ( stagingRepository != null )
+        {
+            deleteManagedRepository( stagingRepository.getId(), auditInformation, deleteContent );
+        }
+
         return Boolean.TRUE;
     }
 
@@ -521,9 +528,9 @@ public class DefaultManagedRepositoryAdmin
     private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )
     {
         ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
-        stagingRepository.setId( repository.getId() + "-stage" );
+        stagingRepository.setId( repository.getId() + STAGE_REPO_ID_END );
         stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + "-stage" );
+        stagingRepository.setName( repository.getName() + STAGE_REPO_ID_END );
         stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
         stagingRepository.setDaysOlder( repository.getDaysOlder() );
         stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );

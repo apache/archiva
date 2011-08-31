@@ -49,6 +49,8 @@ public class ManagedRepositoryAdminTest
     @Inject
     protected RoleManager roleManager;
 
+    public static final String STAGE_REPO_ID_END = DefaultManagedRepositoryAdmin.STAGE_REPO_ID_END;
+
     @Test
     public void getAllManagedRepos()
         throws Exception
@@ -108,7 +110,6 @@ public class ManagedRepositoryAdminTest
         assertTemplateRoleExists( repoId );
 
         managedRepositoryAdmin.deleteManagedRepository( repoId, getFakeAuditInformation(), false );
-
 
         // deleteContents false
         assertTrue( repoDir.exists() );
@@ -221,15 +222,27 @@ public class ManagedRepositoryAdminTest
 
         assertTemplateRoleExists( repoId );
 
+        assertTrue( repoDir.exists() );
+
+        assertNotNull( managedRepositoryAdmin.getManagedRepository( repoId + STAGE_REPO_ID_END ) );
+
+        assertTemplateRoleExists( repoId + STAGE_REPO_ID_END );
+
+        assertTrue( new File( repoLocation + STAGE_REPO_ID_END ).exists() );
+
         managedRepositoryAdmin.deleteManagedRepository( repoId, getFakeAuditInformation(), true );
 
         assertFalse( repoDir.exists() );
+
+        assertFalse( new File( repoLocation + STAGE_REPO_ID_END ).exists() );
 
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize, repos.size() );
 
         assertTemplateRoleNotExists( repoId );
+
+        assertTemplateRoleNotExists( repoId + STAGE_REPO_ID_END );
 
         mockAuditListener.clearEvents();
     }
@@ -265,7 +278,8 @@ public class ManagedRepositoryAdminTest
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
     }
 
-    private File clearRepoLocation(String path) throws Exception
+    private File clearRepoLocation( String path )
+        throws Exception
     {
         File repoDir = new File( path );
         if ( repoDir.exists() )
