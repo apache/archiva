@@ -258,10 +258,8 @@ public class ManagedRepositoryAdminTest
         int initialSize = repos.size();
         assertTrue( initialSize > 0 );
 
-        ManagedRepository repo = new ManagedRepository();
-        repo.setId( repoId );
-        repo.setName( "test repo" );
-        repo.setLocation( repoLocation );
+        ManagedRepository repo = getTestManagedRepository( repoId, repoLocation );
+
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
 
         assertTemplateRoleExists( repoId );
@@ -287,7 +285,9 @@ public class ManagedRepositoryAdminTest
         assertEquals( newName, repo.getName() );
         assertEquals( new File( repoLocation ).getCanonicalPath(), new File( repo.getLocation() ).getCanonicalPath() );
         assertTrue( new File( repoLocation ).exists() );
-
+        assertEquals( getTestManagedRepository( repoId, repoLocation ).getCronExpression(), repo.getCronExpression() );
+        assertEquals( getTestManagedRepository( repoId, repoLocation ).getLayout(), repo.getLayout() );
+        assertEquals( getTestManagedRepository( repoId, repoLocation ).getId(), repo.getId() );
         assertTemplateRoleExists( repoId );
 
         assertTrue( new File( stageRepoLocation + STAGE_REPO_ID_END ).exists() );
@@ -416,6 +416,11 @@ public class ManagedRepositoryAdminTest
         user.setUsername( "root" );
         user.setFullName( "The top user" );
         return user;
+    }
+
+    ManagedRepository getTestManagedRepository( String repoId, String repoLocation )
+    {
+        return new ManagedRepository( repoId, "test repo", repoLocation, "default", false, true, true, "0 0 * * * ?" );
     }
 
 }

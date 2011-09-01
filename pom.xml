@@ -1614,6 +1614,8 @@
         </repository>
       </repositories>
     </profile>
+    <!--
+    jrebel tests doesn't work very well : too investigate
     <profile>
       <id>jrebel</id>
       <build>
@@ -1635,5 +1637,6 @@
         </plugins>
       </build>
     </profile>
+    -->
   </profiles>
 </project>
