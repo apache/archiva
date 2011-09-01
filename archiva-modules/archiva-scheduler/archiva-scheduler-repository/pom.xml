@@ -27,7 +27,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-repository</artifactId>
-  <name>Archiva Base :: Scheduled Tasks :: Repository Scanning</name>
+  <name>Archiva Scheduler :: Repository Scanning</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

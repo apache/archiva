@@ -26,7 +26,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>generic-metadata-support</artifactId>
-  <name>Generic Metadata Support</name>
+  <name>Archiva Core Plugins :: Generic Metadata Support</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

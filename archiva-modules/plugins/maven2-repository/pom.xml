@@ -27,7 +27,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>maven2-repository</artifactId>
-  <name>Maven 2.x Repository Support</name>
+  <name>Archiva Core Plugins :: Maven 2.x Repository Support</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

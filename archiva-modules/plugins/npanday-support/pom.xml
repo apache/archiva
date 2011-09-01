@@ -27,7 +27,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>npanday-support</artifactId>
-  <name>NPanday Support for Archiva</name>
+  <name>Archiva Core Plugins :: NPanday Support for Archiva</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

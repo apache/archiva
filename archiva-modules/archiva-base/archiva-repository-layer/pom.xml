@@ -27,7 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-repository-layer</artifactId>
-  <name>Archiva Repository Interface Layer</name>
+  <name>Archiva Base :: Repository Interface Layer</name>
   <dependencies>
     <dependency>
       <groupId>commons-lang</groupId>

@@ -28,7 +28,7 @@
   </parent>
   <groupId>org.apache.archiva</groupId>
   <artifactId>stage-repository-merge</artifactId>
-  <name>Stage Repository Merge</name>
+  <name>Archiva Core Plugins :: Stage Repository Merge</name>
 
   <dependencies>
     <dependency>

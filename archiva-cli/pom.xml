@@ -26,7 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-cli</artifactId>
-  <name>Archiva Command Line Client</name>
+  <name>Archiva :: Command Line Client</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

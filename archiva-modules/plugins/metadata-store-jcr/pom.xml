@@ -28,7 +28,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-store-jcr</artifactId>
-  <name>JCR Storage for Metadata</name>
+  <name>Archiva Core Plugins :: JCR Storage for Metadata</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

@@ -26,7 +26,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-indexing</artifactId>
-  <name>Archiva Base :: Scheduled Tasks :: Indexing</name>
+  <name>Archiva Scheduler :: Indexing</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

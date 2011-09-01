@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>archiva-lucene-consumers</artifactId>
-  <name>Archiva Consumers :: Lucene Consumers</name>
+  <name>Archiva Base :: Consumers :: Lucene</name>
 
   <dependencies>
     <dependency>

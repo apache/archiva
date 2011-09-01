@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>archiva-consumers</artifactId>
-  <name>Archiva Consumers</name>
+  <name>Archiva Base :: Consumers</name>
   <packaging>pom</packaging>
 
   <modules>

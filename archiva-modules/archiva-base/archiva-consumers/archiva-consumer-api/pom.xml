@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>archiva-consumer-api</artifactId>
-  <name>Archiva Consumer API</name>
+  <name>Archiva Base :: Consumers :: API</name>
 
   <dependencies>
     <dependency>

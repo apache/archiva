@@ -27,5 +27,5 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>maven1-repository</artifactId>
-  <name>Maven 1.x Repository Support</name>
+  <name>Archiva Core Plugins :: Maven 1.x Repository Support</name>
 </project>

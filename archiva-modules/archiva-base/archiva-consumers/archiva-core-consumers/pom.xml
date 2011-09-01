@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>archiva-core-consumers</artifactId>
-  <name>Archiva Consumers :: Core Consumers</name>
+  <name>Archiva Base :: Consumers :: Core Consumers</name>
 
   <dependencies>
     <!-- TODO: remove this hard dependency by using an event mechanism -->

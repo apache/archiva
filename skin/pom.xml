@@ -26,5 +26,5 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>skin</artifactId>
-  <name>Archiva Documentation Skin</name>
+  <name>Archiva :: Documentation Skin</name>
 </project>
