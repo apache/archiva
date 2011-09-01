@@ -467,7 +467,7 @@ public class DefaultManagedRepositoryAdmin
 
     }
 
-    private String removeExpressions( String directory )
+    public String removeExpressions( String directory )
     {
         String value = StringUtils.replace( directory, "${appserver.base}",
                                             registry.getString( "appserver.base", "${appserver.base}" ) );
@@ -653,5 +653,15 @@ public class DefaultManagedRepositoryAdmin
     public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
     {
         this.repositoryTaskScheduler = repositoryTaskScheduler;
+    }
+
+    public Registry getRegistry()
+    {
+        return registry;
+    }
+
+    public void setRegistry( Registry registry )
+    {
+        this.registry = registry;
     }
 }

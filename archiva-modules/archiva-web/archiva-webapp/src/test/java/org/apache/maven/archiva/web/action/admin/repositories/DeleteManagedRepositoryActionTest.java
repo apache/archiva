@@ -103,7 +103,7 @@ public class DeleteManagedRepositoryActionTest
 
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
-        action.setRoleManager( roleManager );
+        //action.setRoleManager( roleManager );
         location = new File( "target/test/location" );
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );

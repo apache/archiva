@@ -93,11 +93,11 @@ public class EditManagedRepositoryActionTest
 
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
-        action.setRoleManager( roleManager );
+        //action.setRoleManager( roleManager );
 
         registryControl = MockControl.createControl( Registry.class );
         registry = (Registry) registryControl.getMock();
-        action.setRegistry( registry );
+        //action.setRegistry( registry );
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
@@ -117,6 +117,8 @@ public class EditManagedRepositoryActionTest
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryTaskScheduler(
             repositoryTaskScheduler );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositorySessionFactory( factory );
+
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRegistry( registry );
 
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setAuditListeners(
             new ArrayList<AuditListener>( 0 ) );
@@ -194,6 +196,11 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
+
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
 
         registry.getString( "appserver.base", "${appserver.base}" );
         registryControl.setReturnValue( "target/test" );
@@ -297,6 +304,11 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
+
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
 
         registry.getString( "appserver.base", "${appserver.base}" );
         registryControl.setReturnValue( "target/test" );

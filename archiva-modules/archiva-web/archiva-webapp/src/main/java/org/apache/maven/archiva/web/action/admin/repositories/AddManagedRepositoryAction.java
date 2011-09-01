@@ -23,7 +23,6 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -31,7 +30,6 @@ import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
-import javax.inject.Inject;
 import java.io.File;
 
 /**
@@ -79,7 +77,7 @@ public class AddManagedRepositoryAction
 
     public String commit()
     {
-        repository.setLocation( removeExpressions( repository.getLocation() ) );
+        repository.setLocation( getManagedRepositoryAdmin().removeExpressions( repository.getLocation() ) );
 
         File location = new File( repository.getLocation() );
         if ( location.exists() )
@@ -110,27 +108,7 @@ public class AddManagedRepositoryAction
         return result;
     }
 
-    private ManagedRepositoryConfiguration getStageRepoConfig()
-    {
-        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
-        stagingRepository.setId( repository.getId() + "-stage" );
-        stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + "-stage" );
-        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setDaysOlder( repository.getDaysOlder() );
-        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
-        stagingRepository.setIndexDir( repository.getIndexDir() );
-        String path = repository.getLocation();
-        int lastIndex = path.lastIndexOf( '/' );
-        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
-        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
-        stagingRepository.setReleases( repository.isReleases() );
-        stagingRepository.setRetentionCount( repository.getRetentionCount() );
-        stagingRepository.setScanned( repository.isScanned() );
-        stagingRepository.setSnapshots( repository.isSnapshots() );
-        return stagingRepository;
-    }
-
+    // FIXME olamy dupe with admin repo componennt
     @Override
     public void validate()
     {

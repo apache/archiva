@@ -84,11 +84,10 @@ public class AddManagedRepositoryActionTest
 
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
-        action.setRoleManager( roleManager );
 
         registryControl = MockControl.createControl( Registry.class );
         registry = (Registry) registryControl.getMock();
-        action.setRegistry( registry );
+        //action.setRegistry( registry );
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
@@ -97,6 +96,7 @@ public class AddManagedRepositoryActionTest
         location = new File( "target/test/location" );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfiguration );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRoleManager( roleManager );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRegistry( registry );
         action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
 
     }
@@ -156,6 +156,11 @@ public class AddManagedRepositoryActionTest
         roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
+
+        registry.getString( "appserver.base", "${appserver.base}" );
+        registryControl.setReturnValue( "target/test" );
+        registry.getString( "appserver.home", "${appserver.home}" );
+        registryControl.setReturnValue( "target/test" );
 
         registry.getString( "appserver.base", "${appserver.base}" );
         registryControl.setReturnValue( "target/test" );

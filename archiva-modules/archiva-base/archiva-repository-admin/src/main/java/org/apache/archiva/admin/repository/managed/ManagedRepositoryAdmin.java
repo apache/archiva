@@ -48,4 +48,11 @@ public interface ManagedRepositoryAdmin
                                      AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException;
 
+    /**
+     * replace some interpolations ${appserver.base} with correct values
+     * @param directory
+     * @return
+     */
+    String removeExpressions( String directory );
+
 }

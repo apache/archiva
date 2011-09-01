@@ -49,6 +49,7 @@ public class DeleteManagedRepositoryAction
 
     private String repoid;
 
+    // FIXME olamy use ManagedRepositoryAdmin rather tha, directly archivaConfiguration
     public void prepare()
     {
         if ( StringUtils.isNotBlank( repoid ) )
@@ -83,7 +84,6 @@ public class DeleteManagedRepositoryAction
     private String deleteRepository( boolean deleteContents )
     {
         ManagedRepositoryConfiguration existingRepository = repository;
-        ManagedRepositoryConfiguration attachedStagingRepo = stagingRepository;
         if ( existingRepository == null )
         {
             addActionError( "A repository with that id does not exist" );
