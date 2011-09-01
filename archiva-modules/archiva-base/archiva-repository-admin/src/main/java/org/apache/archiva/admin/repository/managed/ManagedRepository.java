@@ -65,6 +65,7 @@ public class ManagedRepository
         this.snapshots = snapshots;
         this.releases = releases;
         this.blockRedeployments = blockRedeployments;
+        this.cronExpression = cronExpression;
     }
 
     public String getId()

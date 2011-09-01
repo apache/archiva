@@ -101,7 +101,8 @@ public class AddManagedRepositoryAction
         }
         catch ( RepositoryAdminException e )
         {
-            addActionError( "Repository Administration Exception: " + e.getMessage() );
+            log.error( e.getMessage(), e );
+            addActionError( "Check your server logs, Repository Administration Exception: " + e.getMessage() );
             result = INPUT;
         }
 

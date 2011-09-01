@@ -48,6 +48,10 @@
     <level value="debug"/>
   </logger>
 
+  <logger name="com.opensymphony.xwork2.ognl.OgnlValueStack">
+    <level value="error"/>
+  </logger>
+
   <root>
     <priority value ="info" />
     <appender-ref ref="console" />
