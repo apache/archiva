@@ -21,6 +21,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
@@ -43,7 +44,6 @@ import org.easymock.classextension.MockClassControl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +117,12 @@ public class EditManagedRepositoryActionTest
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryTaskScheduler(
             repositoryTaskScheduler );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositorySessionFactory( factory );
+
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setAuditListeners(
+            new ArrayList<AuditListener>( 0 ) );
+
         action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
+
     }
 
     public void testSecureActionBundle()
@@ -178,17 +183,15 @@ public class EditManagedRepositoryActionTest
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setVoidCallable();
 
-
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, stageRepoId );
         roleManagerControl.setReturnValue( false );
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, stageRepoId );
-        roleManagerControl.setVoidCallable( );
+        roleManagerControl.setVoidCallable();
 
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, stageRepoId );
         roleManagerControl.setReturnValue( false );
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, stageRepoId );
-        roleManagerControl.setVoidCallable( );
-
+        roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
 
