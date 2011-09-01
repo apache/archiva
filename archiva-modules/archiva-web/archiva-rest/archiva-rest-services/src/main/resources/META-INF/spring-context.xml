@@ -50,6 +50,7 @@
     <jaxrs:serviceBeans>
       <ref bean="pingService#rest"/>
       <ref bean="repositoriesService#rest"/>
+      <ref bean="managedRepositoriesService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>

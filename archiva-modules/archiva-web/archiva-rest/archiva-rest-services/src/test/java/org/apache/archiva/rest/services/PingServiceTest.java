@@ -20,10 +20,8 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.rest.api.services.PingService;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -34,13 +32,6 @@ import org.junit.Test;
 public class PingServiceTest
     extends AbstractArchivaRestTest
 {
-
-    PingService getPingService()
-    {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          PingService.class );
-
-    }
 
 
     @Test
@@ -83,7 +74,7 @@ public class PingServiceTest
         assertEquals( "Yeah Baby It rocks!", res );
     }
 
-    @Ignore("FIXME guest failed ???")
+    @Ignore( "FIXME guest failed ???" )
     public void pingWithAuthzGuest()
         throws Exception
     {

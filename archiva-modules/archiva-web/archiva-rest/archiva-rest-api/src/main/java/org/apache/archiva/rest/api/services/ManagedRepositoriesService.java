@@ -39,35 +39,49 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4
  */
-@Path( "/repositoriesService/" )
-public interface RepositoriesService
+@Path( "/managedRepositoriesService/" )
+public interface ManagedRepositoriesService
 {
-
-
-    @Path( "getRemoteRepositories" )
+    @Path( "getManagedRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    List<RemoteRepository> getRemoteRepositories();
+    List<ManagedRepository> getManagedRepositories()
+        throws RepositoryAdminException;
 
-    @Path( "scanRepository" )
+    @Path( "getManagedRepository/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
-    Boolean scanRepository( @QueryParam( "repositoryId" ) String repositoryId,
-                            @QueryParam( "fullScan" ) boolean fullScan );
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
+        throws RepositoryAdminException;
 
-
-    @Path( "alreadyScanning/{repositoryId}" )
+    @Path( "deleteManagedRepository" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
-    Boolean alreadyScanning( @PathParam( "repositoryId" ) String repositoryId );
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean deleteManagedRepository( @QueryParam( "repositoryId" ) String repositoryId,
+                                     @QueryParam( "deleteContent" ) boolean deleteContent )
+        throws Exception;
 
-    @Path( "removeScanningTaskFromQueue/{repositoryId}" )
-    @GET
+
+    @Path( "addManagedRepository" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
-    Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId );
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean addManagedRepository( ManagedRepository managedRepository )
+        throws Exception;
+
+
+    @Path( "updateManagedRepository" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean updateManagedRepository( ManagedRepository managedRepository )
+        throws Exception;
+
+
 
 }

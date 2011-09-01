@@ -19,6 +19,10 @@ package org.apache.archiva.rest.services;
  */
 
 
+import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
+import org.apache.archiva.rest.api.services.PingService;
+import org.apache.archiva.rest.api.services.RepositoriesService;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
 /**
@@ -34,5 +38,26 @@ public abstract class AbstractArchivaRestTest
     protected String getSpringConfigLocation()
     {
         return "classpath*:META-INF/spring-context.xml,classpath:META-INF/spring-context-test.xml";
+    }
+
+    protected RepositoriesService getRepositoriesService()
+    {
+        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                          RepositoriesService.class );
+
+    }
+
+    protected ManagedRepositoriesService getManagedRepositoriesService()
+    {
+        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                          ManagedRepositoriesService.class );
+
+    }
+
+    protected PingService getPingService()
+    {
+        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                          PingService.class );
+
     }
 }

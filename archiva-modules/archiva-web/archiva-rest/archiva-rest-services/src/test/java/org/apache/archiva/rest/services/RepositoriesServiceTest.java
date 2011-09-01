@@ -21,8 +21,8 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.model.RemoteRepository;
+import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.maven.archiva.common.utils.FileUtil;
@@ -38,12 +38,6 @@ public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
 
-    RepositoriesService getRepositoriesService()
-    {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          RepositoriesService.class );
-
-    }
 
     @Test( expected = ServerWebApplicationException.class )
     public void listRemoteRepositoriesKarmaFailed()
@@ -98,58 +92,18 @@ public class RepositoriesServiceTest
         RepositoriesService service = getRepositoriesService();
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
-        String repoId = service.getManagedRepositories().get( 0 ).getId();
+
+        ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
+        WebClient.client( managedRepositoriesService ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( managedRepositoriesService ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+
+        String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();
 
         assertTrue( service.scanRepository( repoId, true ) );
 
         log.info( "sanRepo call ok " );
 
         assertTrue( service.alreadyScanning( repoId ) );
-
-    }
-
-    @Test
-    public void addManagedRepo()
-        throws Exception
-    {
-        RepositoriesService service = getRepositoriesService();
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
-        ManagedRepository repo = getTestManagedRepository();
-        if ( service.getManagedRepository( repo.getId() ) != null )
-        {
-            service.deleteManagedRepository( repo.getId(), true );
-            assertNull( service.getManagedRepository( repo.getId() ) );
-        }
-        service.addManagedRepository( repo );
-        assertNotNull( service.getManagedRepository( repo.getId() ) );
-    }
-
-    @Test
-    public void updateManagedRepo()
-        throws Exception
-    {
-        RepositoriesService service = getRepositoriesService();
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
-        ManagedRepository repo = getTestManagedRepository();
-        if ( service.getManagedRepository( repo.getId() ) != null )
-        {
-            service.deleteManagedRepository( repo.getId(), true );
-            assertNull( service.getManagedRepository( repo.getId() ) );
-        }
-        service.addManagedRepository( repo );
-        repo = service.getManagedRepository( repo.getId() );
-        assertNotNull( repo );
-        assertEquals( "test", repo.getName() );
-        // toto is foo in French :-)
-        repo.setName( "toto" );
-
-        service.updateManagedRepository( repo );
-
-        repo = service.getManagedRepository( repo.getId() );
-        assertNotNull( repo );
-        assertEquals( "toto", repo.getName() );
 
     }
 
