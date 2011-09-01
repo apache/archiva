@@ -54,6 +54,7 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -340,7 +341,6 @@ public class DefaultManagedRepositoryAdmin
             }
         }
 
-
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
         List<ProxyConnectorConfiguration> proxyConnectors =
             new ArrayList<ProxyConnectorConfiguration>( config.getProxyConnectors() );
@@ -380,11 +380,14 @@ public class DefaultManagedRepositoryAdmin
 
 
     public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                            AuditInformation auditInformation )
+                                            AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException
     {
         // Ensure that the fields are valid.
         Configuration configuration = archivaConfiguration.getConfiguration();
+
+        log.debug( "updateManagedConfiguration repo {} needStage {} resetStats {} ",
+                   Arrays.asList( managedRepository, needStageRepo, resetStats ).toArray() );
 
         ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( managedRepository.getId() );
 
@@ -392,50 +395,34 @@ public class DefaultManagedRepositoryAdmin
         {
             configuration.removeManagedRepository( toremove );
         }
-        // FIXME the case of the attached staging repository
-        /*
+
+        ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( toremove );
+
+        // TODO remove content from old if path has changed !!!!!
+
         if ( stagingRepository != null )
         {
-            removeRepository( stagingRepository.getId(), configuration );
-        }*/
+            configuration.removeManagedRepository( stagingRepository );
+        }
 
-        // Save the repository configuration.
-        String result;
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        if ( toremove != null && stagingRepository != null )
+        {
+            saveConfiguration( configuration );
+        }
+
         ManagedRepositoryConfiguration managedRepositoryConfiguration =
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
                                   managedRepository.getCronExpression(), auditInformation );
 
-        // FIXME only location has changed from previous
-        boolean resetStats = true;
+        // Save the repository configuration.
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
 
         try
         {
             triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO, auditInformation );
             addRepositoryRoles( managedRepositoryConfiguration );
-
-            // FIXME this staging part !!
-
-            //update changes of the staging repo
-            /*if ( stageNeeded )
-            {
-
-                stagingRepository = getStageRepoConfig( configuration );
-                addRepository( stagingRepository, configuration );
-                addRepositoryRoles( stagingRepository );
-
-            }*/
-            //delete staging repo when we dont need it
-            /*
-            if ( !stageNeeded )
-            {
-                stagingRepository = getStageRepoConfig( configuration );
-                removeRepository( stagingRepository.getId(), configuration );
-                removeContents( stagingRepository );
-                removeRepositoryRoles( stagingRepository );
-            }*/
 
             saveConfiguration( this.archivaConfiguration.getConfiguration() );
             if ( resetStats )
@@ -451,7 +438,7 @@ public class DefaultManagedRepositoryAdmin
             // olamy :  IMHO we are fine to ignore issue with scheduling scanning
             // as here the repo has been updated
             scanRepository( managedRepository.getId(), true );
-            // FIXME staging !!
+            // TODO indexing staging repo really needed ??
             /*
             if ( stageNeeded )
             {
@@ -564,7 +551,7 @@ public class DefaultManagedRepositoryAdmin
     {
         if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
         {
-            log.info( "scanning of repository with id {} already scheduled" );
+            log.info( "scanning of repository with id {} already scheduled", repositoryId );
         }
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
@@ -618,6 +605,9 @@ public class DefaultManagedRepositoryAdmin
         log.debug( "removed user roles associated with repository {}", repoId );
     }
 
+    //--------------------------
+    // setters/getters
+    //--------------------------
 
     public ArchivaConfiguration getArchivaConfiguration()
     {
@@ -667,5 +657,15 @@ public class DefaultManagedRepositoryAdmin
     public void setAuditListeners( List<AuditListener> auditListeners )
     {
         this.auditListeners = auditListeners;
+    }
+
+    public RepositoryArchivaTaskScheduler getRepositoryTaskScheduler()
+    {
+        return repositoryTaskScheduler;
+    }
+
+    public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
+    {
+        this.repositoryTaskScheduler = repositoryTaskScheduler;
     }
 }

@@ -161,7 +161,7 @@ public class ManagedRepositoryAdminTest
 
         repo.setLocation( repoLocation );
 
-        managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeAuditInformation() );
+        managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeAuditInformation(), false );
 
         repo = managedRepositoryAdmin.getManagedRepository( repoId );
         assertNotNull( repo );
@@ -178,16 +178,7 @@ public class ManagedRepositoryAdminTest
 
         assertTemplateRoleNotExists( repoId );
 
-        assertEquals( "not 3 audit events " + mockAuditListener.getAuditEvents(), 3,
-                      mockAuditListener.getAuditEvents().size() );
-
-        assertEquals( AuditEvent.ADD_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
-        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
-        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
-
-        assertEquals( AuditEvent.MODIFY_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
-
-        assertEquals( AuditEvent.DELETE_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
+        assertAuditListenerCallAndUpdateAddAndDelete( false );
 
         mockAuditListener.clearEvents();
     }
@@ -236,6 +227,8 @@ public class ManagedRepositoryAdminTest
 
         assertFalse( new File( repoLocation + STAGE_REPO_ID_END ).exists() );
 
+        assertTemplateRoleNotExists( repoId + STAGE_REPO_ID_END );
+
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize, repos.size() );
@@ -243,6 +236,76 @@ public class ManagedRepositoryAdminTest
         assertTemplateRoleNotExists( repoId );
 
         assertTemplateRoleNotExists( repoId + STAGE_REPO_ID_END );
+
+        mockAuditListener.clearEvents();
+    }
+
+    @Test
+    public void updateDeleteManagedRepoWithStagedRepo()
+        throws Exception
+    {
+        String repoId = "test-new-one";
+
+        String repoLocation = APPSERVER_BASE_PATH + File.separator + "new-path";
+
+        String stageRepoLocation = APPSERVER_BASE_PATH + File.separator + repoId;
+
+        File repoDir = clearRepoLocation( repoLocation );
+
+        mockAuditListener.clearEvents();
+        List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        int initialSize = repos.size();
+        assertTrue( initialSize > 0 );
+
+        ManagedRepository repo = new ManagedRepository();
+        repo.setId( repoId );
+        repo.setName( "test repo" );
+        repo.setLocation( repoLocation );
+        managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
+
+        assertTemplateRoleExists( repoId );
+
+        assertFalse( new File( repoLocation + STAGE_REPO_ID_END ).exists() );
+
+        assertTemplateRoleNotExists( repoId + STAGE_REPO_ID_END );
+
+        repos = managedRepositoryAdmin.getManagedRepositories();
+        assertNotNull( repos );
+        assertEquals( initialSize + 1, repos.size() );
+
+        String newName = "test repo update";
+
+        repo.setName( newName );
+
+        repo.setLocation( repoLocation );
+
+        managedRepositoryAdmin.updateManagedRepository( repo, true, getFakeAuditInformation(), false );
+
+        repo = managedRepositoryAdmin.getManagedRepository( repoId );
+        assertNotNull( repo );
+        assertEquals( newName, repo.getName() );
+        assertEquals( new File( repoLocation ).getCanonicalPath(), new File( repo.getLocation() ).getCanonicalPath() );
+        assertTrue( new File( repoLocation ).exists() );
+
+        assertTemplateRoleExists( repoId );
+
+        assertTrue( new File( stageRepoLocation + STAGE_REPO_ID_END ).exists() );
+
+        assertTemplateRoleExists( repoId + STAGE_REPO_ID_END );
+
+        managedRepositoryAdmin.deleteManagedRepository( repo.getId(), getFakeAuditInformation(), false );
+
+        // check deleteContents false
+        assertTrue( repoDir.exists() );
+
+        assertTemplateRoleNotExists( repoId );
+
+        assertTrue( new File( stageRepoLocation + STAGE_REPO_ID_END ).exists() );
+
+        assertTemplateRoleNotExists( repoId + STAGE_REPO_ID_END );
+
+        assertAuditListenerCallAndUpdateAddAndDelete( true );
 
         mockAuditListener.clearEvents();
     }
@@ -276,6 +339,36 @@ public class ManagedRepositoryAdminTest
 
         assertEquals( AuditEvent.DELETE_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+    }
+
+    private void assertAuditListenerCallAndUpdateAddAndDelete( boolean stageNeeded )
+    {
+        if ( stageNeeded )
+        {
+            assertEquals( "not 4 audit events " + mockAuditListener.getAuditEvents(), 4,
+                          mockAuditListener.getAuditEvents().size() );
+        }
+        else
+        {
+            assertEquals( "not 3 audit events " + mockAuditListener.getAuditEvents(), 3,
+                          mockAuditListener.getAuditEvents().size() );
+        }
+        assertEquals( AuditEvent.ADD_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
+
+        if ( stageNeeded )
+        {
+            assertEquals( AuditEvent.ADD_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+            assertEquals( AuditEvent.MODIFY_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
+            assertEquals( AuditEvent.DELETE_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 3 ).getAction() );
+        }
+        else
+        {
+            assertEquals( AuditEvent.MODIFY_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+            assertEquals( AuditEvent.DELETE_MANAGED_REPO, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
+        }
+
     }
 
     private File clearRepoLocation( String path )

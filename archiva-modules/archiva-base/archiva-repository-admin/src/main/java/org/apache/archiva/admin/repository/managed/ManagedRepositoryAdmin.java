@@ -45,7 +45,7 @@ public interface ManagedRepositoryAdmin
 
 
     Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                     AuditInformation auditInformation )
+                                     AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException;
 
 }

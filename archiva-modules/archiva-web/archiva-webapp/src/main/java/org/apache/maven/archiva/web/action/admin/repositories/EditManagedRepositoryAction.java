@@ -50,6 +50,7 @@ public class EditManagedRepositoryAction
     implements Preparable, Validateable
 {
     /**
+     * FIXME we must manipulate beans from repo admin api
      * The model for this action.
      */
     private ManagedRepositoryConfiguration repository;

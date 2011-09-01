@@ -30,7 +30,7 @@
 
 
 
-  <logger name="org.codehaus.redback.rest.services" >
+  <logger name="org.apache.archiva.admin.repository.managed" >
     <level value="debug"/>
   </logger>
   <logger name="JPOX">
@@ -38,7 +38,7 @@
   </logger>
 
   <logger name="org.springframework">
-    <level value="info"/>
+    <level value="error"/>
   </logger>
 
   <root>

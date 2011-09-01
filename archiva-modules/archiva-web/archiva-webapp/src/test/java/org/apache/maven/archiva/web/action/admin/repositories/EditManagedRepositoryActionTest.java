@@ -107,7 +107,6 @@ public class EditManagedRepositoryActionTest
         metadataRepository = mock( MetadataRepository.class );
         RepositorySession repositorySession = mock( RepositorySession.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
-        //TestRepositorySessionFactory factory = (TestRepositorySessionFactory) lookup( RepositorySessionFactory.class );
         TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
         factory.setRepositorySession( repositorySession );
         action.setRepositorySessionFactory( factory );
