@@ -250,11 +250,13 @@ public class DefaultManagedRepositoryAdmin
         try
         {
             scanRepository( repoId, true );
+            // olamy no need of scanning staged repo
+            /*
             if ( stageRepoNeeded )
             {
                 ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
                 scanRepository( stagingRepository.getId(), true );
-            }
+            }*/
         }
         catch ( Exception e )
         {
@@ -421,34 +423,18 @@ public class DefaultManagedRepositoryAdmin
 
         try
         {
-            triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO, auditInformation );
-            addRepositoryRoles( managedRepositoryConfiguration );
+            triggerAuditEvent( managedRepositoryConfiguration.getId(), null, AuditEvent.MODIFY_MANAGED_REPO,
+                               auditInformation );
 
             saveConfiguration( this.archivaConfiguration.getConfiguration() );
             if ( resetStats )
             {
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
                 repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(),
-                                                              managedRepository.getId() );
+                                                              managedRepositoryConfiguration.getId() );
                 repositorySession.save();
             }
 
-            //MRM-1342 Repository statistics report doesn't appear to be working correctly
-            //scan repository when modification of repository is successful
-            // olamy :  IMHO we are fine to ignore issue with scheduling scanning
-            // as here the repo has been updated
-            scanRepository( managedRepository.getId(), true );
-            // TODO indexing staging repo really needed ??
-            /*
-            if ( stageNeeded )
-            {
-                executeRepositoryScanner( stagingRepository.getId() );
-            }*/
-
-        }
-        catch ( RoleManagerException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
         }
         catch ( MetadataRepositoryException e )
         {

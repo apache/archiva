@@ -21,22 +21,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
-import java.io.IOException;
-import javax.inject.Inject;
 
 /**
  * AddManagedRepositoryAction
@@ -63,11 +56,6 @@ public class EditManagedRepositoryAction
 
     private boolean stageNeeded;
 
-    /**
-     * plexus.requirement
-     */
-    @Inject
-    private RepositoryStatisticsManager repositoryStatisticsManager;
 
     public void prepare()
     {
@@ -125,128 +113,27 @@ public class EditManagedRepositoryAction
 
     private String save( boolean resetStats )
     {
-        // Ensure that the fields are valid.
-        Configuration configuration = archivaConfiguration.getConfiguration();
 
-        // We are in edit mode, remove the old repository configuration.
-        removeRepository( repository.getId(), configuration );
-        if ( stagingRepository != null )
-        {
-            removeRepository( stagingRepository.getId(), configuration );
-        }
-
-        // Save the repository configuration.
-        String result;
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        String result = SUCCESS;
         try
         {
-            addRepository( repository, configuration );
-            triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO );
-            addRepositoryRoles( repository );
+            ManagedRepository managedRepository =
+                new ManagedRepository( repository.getId(), repository.getName(), repository.getLocation(),
+                                       repository.getLayout(), repository.isSnapshots(), repository.isReleases(),
+                                       repository.isBlockRedeployments(), repository.getRefreshCronExpression() );
 
-            //update changes of the staging repo
-            if ( stageNeeded )
-            {
-
-                stagingRepository = getStageRepoConfig( configuration );
-                addRepository( stagingRepository, configuration );
-                addRepositoryRoles( stagingRepository );
-
-            }
-            //delete staging repo when we dont need it
-            if ( !stageNeeded )
-            {
-                stagingRepository = getStageRepoConfig( configuration );
-                removeRepository( stagingRepository.getId(), configuration );
-                removeContents( stagingRepository );
-                removeRepositoryRoles( stagingRepository );
-            }
-
-            result = saveConfiguration( configuration );
-            if ( resetStats )
-            {
-                repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(), repository.getId() );
-                repositorySession.save();
-            }
-            //MRM-1342 Repository statistics report doesn't appear to be working correctly
-            //scan repository when modification of repository is successful 
-            if ( result.equals( SUCCESS ) )
-            {
-                try
-                {
-                    executeRepositoryScanner( repository.getId() );
-                    if ( stageNeeded )
-                    {
-                        executeRepositoryScanner( stagingRepository.getId() );
-                    }
-                }
-                catch ( TaskQueueException e )
-                {
-                    log.warn( new StringBuilder( "Unable to scan repository [" ).append( repository.getId() ).append( "]: " ).append(
-                              e.getMessage() ).toString(), e );
-                }
-            }
+            getManagedRepositoryAdmin().updateManagedRepository( managedRepository, stageNeeded, getAuditInformation(),
+                                                                 resetStats );
         }
-        catch ( IOException e )
+        catch ( RepositoryAdminException e )
         {
-            addActionError( "I/O Exception: " + e.getMessage() );
+            addActionError( "Repository Administration Exception: " + e.getMessage() );
             result = ERROR;
-        }
-        catch ( RoleManagerException e )
-        {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
-            result = ERROR;
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            addActionError( "Metadata Exception: " + e.getMessage() );
-            result = ERROR;
-        }
-        finally
-        {
-            repositorySession.close();
         }
 
         return result;
     }
 
-    private ManagedRepositoryConfiguration getStageRepoConfig( Configuration configuration )
-    {
-        for ( ManagedRepositoryConfiguration repoConf : configuration.getManagedRepositories() )
-        {
-            if ( repoConf.getId().equals( repository.getId() + "-stage" ) )
-            {
-                stagingRepository = repoConf;
-                removeRepository( repoConf.getId(), configuration );
-                updateStagingRepository( stagingRepository );
-                return stagingRepository;
-            }
-        }
-
-        stagingRepository = new ManagedRepositoryConfiguration();
-        updateStagingRepository( stagingRepository );
-
-        return stagingRepository;
-    }
-
-    private void updateStagingRepository( ManagedRepositoryConfiguration stagingRepository )
-    {
-        stagingRepository.setId( repository.getId() + "-stage" );
-        stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + "-stage" );
-        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setDaysOlder( repository.getDaysOlder() );
-        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
-        stagingRepository.setIndexDir( repository.getIndexDir() );
-        String path = repository.getLocation();
-        int lastIndex = path.lastIndexOf( '/' );
-        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
-        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
-        stagingRepository.setReleases( repository.isReleases() );
-        stagingRepository.setRetentionCount( repository.getRetentionCount() );
-        stagingRepository.setScanned( repository.isScanned() );
-        stagingRepository.setSnapshots( repository.isSnapshots() );
-    }
 
     @Override
     public void validate()
@@ -263,24 +150,24 @@ public class EditManagedRepositoryAction
 
     private void trimAllRequestParameterValues()
     {
-        if(StringUtils.isNotEmpty(repository.getId()))
+        if ( StringUtils.isNotEmpty( repository.getId() ) )
         {
-            repository.setId(repository.getId().trim());
+            repository.setId( repository.getId().trim() );
         }
 
-        if(StringUtils.isNotEmpty(repository.getName()))
+        if ( StringUtils.isNotEmpty( repository.getName() ) )
         {
-            repository.setName(repository.getName().trim());
+            repository.setName( repository.getName().trim() );
         }
 
-        if(StringUtils.isNotEmpty(repository.getLocation()))
+        if ( StringUtils.isNotEmpty( repository.getLocation() ) )
         {
-            repository.setLocation(repository.getLocation().trim());
+            repository.setLocation( repository.getLocation().trim() );
         }
 
-        if(StringUtils.isNotEmpty(repository.getIndexDir()))
+        if ( StringUtils.isNotEmpty( repository.getIndexDir() ) )
         {
-            repository.setIndexDir(repository.getIndexDir().trim());
+            repository.setIndexDir( repository.getIndexDir().trim() );
         }
     }
 
@@ -311,18 +198,13 @@ public class EditManagedRepositoryAction
 
     public void setStageNeeded( boolean stageNeeded )
     {
-        
+
         this.stageNeeded = stageNeeded;
     }
 
     public String getAction()
     {
         return action;
-    }
-
-    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
-    {
-        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 
     public ManagedRepositoryConfiguration getStagingRepository()
