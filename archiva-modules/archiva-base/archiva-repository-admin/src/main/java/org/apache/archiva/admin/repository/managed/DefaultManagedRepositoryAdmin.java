@@ -181,8 +181,15 @@ public class DefaultManagedRepositoryAdmin
                 throw new RepositoryAdminException( "Invalid cron expression." );
             }
         }
+        else
+        {
+            throw new RepositoryAdminException( "Cron expression cannot be empty." );
+        }
 
-        // FIXME checkId non empty
+        if (StringUtils.isBlank( repoId  ))
+        {
+            throw new RepositoryAdminException( "Repository ID cannot be empty." );
+        }
 
         if ( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
         {

@@ -100,6 +100,7 @@ public class ManagedRepositoryAdminTest
         repo.setId( repoId );
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
+        repo.setCronExpression(  "0 0 * * * ?" );
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
@@ -147,6 +148,7 @@ public class ManagedRepositoryAdminTest
         repo.setId( repoId );
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
+        repo.setCronExpression(  "0 0 * * * ?" );
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
 
         assertTemplateRoleExists( repoId );
@@ -160,6 +162,7 @@ public class ManagedRepositoryAdminTest
         repo.setName( newName );
 
         repo.setLocation( repoLocation );
+        repo.setCronExpression(  "0 0 * * * ?" );
 
         managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeAuditInformation(), false );
 
@@ -204,6 +207,7 @@ public class ManagedRepositoryAdminTest
         repo.setId( repoId );
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
+        repo.setCronExpression(  "0 0 * * * ?" );
         managedRepositoryAdmin.addManagedRepository( repo, true, getFakeAuditInformation() );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
