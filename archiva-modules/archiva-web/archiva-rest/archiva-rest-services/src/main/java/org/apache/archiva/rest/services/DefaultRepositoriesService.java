@@ -194,7 +194,7 @@ public class DefaultRepositoriesService
         repo.setReleases( managedRepository.isReleases() );
         repo.setSnapshots( managedRepository.isSnapshots() );
         return managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.isStageRepoNeeded(),
-                                                               getAuditInformation() );
+                                                               getAuditInformation(), managedRepository.isResetStats() );
     }
 
 

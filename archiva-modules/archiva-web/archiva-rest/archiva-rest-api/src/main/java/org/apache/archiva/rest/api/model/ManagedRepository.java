@@ -47,6 +47,8 @@ public class ManagedRepository
 
     private String cronExpression;
 
+    private boolean resetStats;
+
     public ManagedRepository()
     {
         // no op
@@ -160,6 +162,15 @@ public class ManagedRepository
         this.stageRepoNeeded = stageRepoNeeded;
     }
 
+    public boolean isResetStats()
+    {
+        return resetStats;
+    }
+
+    public void setResetStats( boolean resetStats )
+    {
+        this.resetStats = resetStats;
+    }
 
     public int hashCode()
     {
@@ -189,9 +200,19 @@ public class ManagedRepository
     @Override
     public String toString()
     {
-        return "ManagedRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", location='" + location + '\''
-            + ", layout='" + layout + '\'' + ", snapshots=" + snapshots + ", releases=" + releases
-            + ", blockRedeployments=" + blockRedeployments + ", cronExpression='" + cronExpression + '\''
-            + ", stageRepoNeeded=" + stageRepoNeeded + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "ManagedRepository" );
+        sb.append( "{id='" ).append( id ).append( '\'' );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", location='" ).append( location ).append( '\'' );
+        sb.append( ", layout='" ).append( layout ).append( '\'' );
+        sb.append( ", snapshots=" ).append( snapshots );
+        sb.append( ", releases=" ).append( releases );
+        sb.append( ", blockRedeployments=" ).append( blockRedeployments );
+        sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
+        sb.append( ", resetStats=" ).append( resetStats );
+        sb.append( '}' );
+        return sb.toString();
     }
 }
