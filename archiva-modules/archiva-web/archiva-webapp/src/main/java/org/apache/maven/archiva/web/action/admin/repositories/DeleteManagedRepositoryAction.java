@@ -30,7 +30,6 @@ import org.springframework.stereotype.Controller;
  * DeleteManagedRepositoryAction
  *
  * @version $Id$
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteManagedRepositoryAction" instantiation-strategy="per-lookup"
  */
 @Controller( "deleteManagedRepositoryAction" )
 @Scope( "prototype" )
@@ -39,10 +38,7 @@ public class DeleteManagedRepositoryAction
     implements Preparable
 {
 
-    /**
-     * FIXME we must manipulate beans from repo admin api
-     * The model for this action.
-     */
+
     private ManagedRepositoryConfiguration repository;
 
     private ManagedRepositoryConfiguration stagingRepository;
