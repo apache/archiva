@@ -19,75 +19,78 @@ package org.apache.archiva.web.xmlrpc.api;
  * under the License.
  */
 
-import java.util.List;
-
 import com.atlassian.xmlrpc.ServiceObject;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+
+import java.util.List;
 
 @ServiceObject( "AdministrationService" )
 public interface AdministrationService
 {
     /**
      * Executes repository scanner on the given repository.
-     * 
+     *
      * @param repoId id of the repository to be scanned
      * @return
      * @throws Exception
      */
-    public Boolean executeRepositoryScanner( String repoId )
+    Boolean executeRepositoryScanner( String repoId )
         throws Exception;
 
     /**
      * Gets all available repository consumers.
-     * 
+     *
      * @return
      */
-    public List<String> getAllRepositoryConsumers();
+    List<String> getAllRepositoryConsumers();
 
     // TODO should we already implement config of consumers per repository?
+
     /**
      * Configures (enable or disable) repository consumer.
-     * 
+     *
      * @param repoId
      * @param consumerId
      * @param enable
      * @return
      * @throws Exception
      */
-    public Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
+    Boolean configureRepositoryConsumer( String repoId, String consumerId, boolean enable )
         throws Exception;
 
     /**
      * Gets all managed repositories.
-     * 
+     *
      * @return
      */
-    public List<ManagedRepository> getAllManagedRepositories();
+    List<ManagedRepository> getAllManagedRepositories()
+        throws RepositoryAdminException;
 
     /**
      * Gets all remote repositories.
-     * 
+     *
      * @return
      */
-    public List<RemoteRepository> getAllRemoteRepositories();
+    List<RemoteRepository> getAllRemoteRepositories();
 
     /**
      * Deletes given artifact from the specified repository.
-     * 
-     * @param repoId id of the repository where the artifact to be deleted resides
-     * @param groupId groupId of the artifact to be deleted
+     *
+     * @param repoId     id of the repository where the artifact to be deleted resides
+     * @param groupId    groupId of the artifact to be deleted
      * @param artifactId artifactId of the artifact to be deleted
-     * @param version version of the artifact to be deleted
+     * @param version    version of the artifact to be deleted
      * @return
      * @throws Exception
      */
-    public Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
+    Boolean deleteArtifact( String repoId, String groupId, String artifactId, String version )
         throws Exception;
 
     /**
      * Create a new managed repository with the given parameters.
-     * 
+     *
      * @param repoId
      * @param layout
      * @param name
@@ -99,37 +102,39 @@ public interface AdministrationService
      * @return
      * @throws Exception
      */
-    public Boolean addManagedRepository( String repoId, String layout, String name, String location,
-                                         boolean blockRedeployments, boolean releasesIncluded,
-                                         boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression )
+    Boolean addManagedRepository( String repoId, String layout, String name, String location,
+                                  boolean blockRedeployments, boolean releasesIncluded, boolean snapshotsIncluded,
+                                  boolean stageRepoNeeded, String cronExpression )
         throws Exception;
 
     /**
      * Deletes a managed repository with the given repository id.
-     * 
+     *
      * @param repoId
      * @return
      */
-    public Boolean deleteManagedRepository( String repoId )
+    Boolean deleteManagedRepository( String repoId )
         throws Exception;
 
     /**
      * Deletes a managed repository content with the given repository id
-     * 
+     *
      * @param repoId
      * @return
      * @throws Exception
      */
-    public Boolean deleteManagedRepositoryContent( String repoId )
+    Boolean deleteManagedRepositoryContent( String repoId )
         throws Exception;
 
     /**
      * Get a managed repository with the given repository id.
+     *
      * @param repoId
      * @return
      * @throws Exception
      */
-    public ManagedRepository getManagedRepository(String repoId) throws Exception;
+    ManagedRepository getManagedRepository( String repoId )
+        throws Exception;
     // TODO
     // consider the following as additional services:
     // - getAllConfiguredRepositoryConsumers( String repoId ) - list all enabled consumers for the repo
@@ -137,11 +142,13 @@ public interface AdministrationService
 
     /**
      * Merge staging repository with the managed repository and skips if there are conflicts
+     *
      * @param repoId
      * @param skipConflicts
      * @return
      * @throws Exception
      */
-    public boolean merge( String repoId, boolean skipConflicts ) throws Exception;
-   
+    boolean merge( String repoId, boolean skipConflicts )
+        throws Exception;
+
 }

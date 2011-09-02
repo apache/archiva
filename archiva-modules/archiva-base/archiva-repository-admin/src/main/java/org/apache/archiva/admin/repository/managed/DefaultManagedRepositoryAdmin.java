@@ -105,7 +105,7 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
         List<ManagedRepositoryConfiguration> managedRepoConfigs =
-            archivaConfiguration.getConfiguration().getManagedRepositories();
+            getArchivaConfiguration().getConfiguration().getManagedRepositories();
 
         List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( managedRepoConfigs.size() );
 
@@ -158,7 +158,7 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
 
-        Configuration config = archivaConfiguration.getConfiguration();
+        Configuration config = getArchivaConfiguration().getConfiguration();
 
         if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
         {
@@ -186,7 +186,7 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException( "Cron expression cannot be empty." );
         }
 
-        if (StringUtils.isBlank( repoId  ))
+        if ( StringUtils.isBlank( repoId ) )
         {
             throw new RepositoryAdminException( "Repository ID cannot be empty." );
         }
@@ -279,7 +279,7 @@ public class DefaultManagedRepositoryAdmin
                                             boolean deleteContent )
         throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
+        Configuration config = getArchivaConfiguration().getConfiguration();
 
         ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repositoryId );
 
@@ -294,7 +294,7 @@ public class DefaultManagedRepositoryAdmin
 
         // stage repo exists ?
         ManagedRepositoryConfiguration stagingRepository =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
+            getArchivaConfiguration().getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
         if ( stagingRepository != null )
         {
             // do not trigger event when deleting the staged one
@@ -320,13 +320,13 @@ public class DefaultManagedRepositoryAdmin
     {
         if ( !stagedOne )
         {
-            RepositorySession repositorySession = repositorySessionFactory.createSession();
+            RepositorySession repositorySession = getRepositorySessionFactory().createSession();
             try
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
                 metadataRepository.removeRepository( repository.getId() );
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
-                repositoryStatisticsManager.deleteStatistics( metadataRepository, repository.getId() );
+                getRepositoryStatisticsManager().deleteStatistics( metadataRepository, repository.getId() );
                 repositorySession.save();
             }
             catch ( MetadataRepositoryException e )
@@ -357,7 +357,7 @@ public class DefaultManagedRepositoryAdmin
         {
             if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
             {
-                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
+                config.removeProxyConnector( proxyConnector );
             }
         }
 
@@ -369,7 +369,7 @@ public class DefaultManagedRepositoryAdmin
                 List<String> repoGroups = repoToGroupMap.get( repository.getId() );
                 for ( String repoGroup : repoGroups )
                 {
-                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
+                    config.findRepositoryGroupById( repoGroup ).removeRepository(
                         repository.getId() );
                 }
             }
@@ -384,6 +384,9 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException(
                 "fail to remove repository roles for repository " + repository.getId() + " : " + e.getMessage(), e );
         }
+
+        saveConfiguration( config );
+
         return Boolean.TRUE;
     }
 
@@ -393,7 +396,7 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
         // Ensure that the fields are valid.
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         log.debug( "updateManagedConfiguration repo {} needStage {} resetStats {} ",
                    Arrays.asList( managedRepository, needStageRepo, resetStats ).toArray() );
@@ -426,19 +429,19 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.getCronExpression(), auditInformation );
 
         // Save the repository configuration.
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = getRepositorySessionFactory().createSession();
 
         try
         {
             triggerAuditEvent( managedRepositoryConfiguration.getId(), null, AuditEvent.MODIFY_MANAGED_REPO,
                                auditInformation );
 
-            saveConfiguration( this.archivaConfiguration.getConfiguration() );
+            saveConfiguration( this.getArchivaConfiguration().getConfiguration() );
             if ( resetStats )
             {
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
-                repositoryStatisticsManager.deleteStatistics( repositorySession.getRepository(),
-                                                              managedRepositoryConfiguration.getId() );
+                getRepositoryStatisticsManager().deleteStatistics( repositorySession.getRepository(),
+                                                                   managedRepositoryConfiguration.getId() );
                 repositorySession.save();
             }
 
@@ -467,7 +470,7 @@ public class DefaultManagedRepositoryAdmin
             new AuditEvent( repositoryId, user == null ? "null" : (String) user.getPrincipal(), resource, action );
         event.setRemoteIP( auditInformation == null ? "null" : auditInformation.getRemoteAddr() );
 
-        for ( AuditListener listener : auditListeners )
+        for ( AuditListener listener : getAuditListeners() )
         {
             listener.auditEvent( event );
         }
@@ -477,9 +480,9 @@ public class DefaultManagedRepositoryAdmin
     public String removeExpressions( String directory )
     {
         String value = StringUtils.replace( directory, "${appserver.base}",
-                                            registry.getString( "appserver.base", "${appserver.base}" ) );
+                                            getRegistry().getString( "appserver.base", "${appserver.base}" ) );
         value = StringUtils.replace( value, "${appserver.home}",
-                                     registry.getString( "appserver.home", "${appserver.home}" ) );
+                                     getRegistry().getString( "appserver.home", "${appserver.home}" ) );
         return value;
     }
 
@@ -488,7 +491,7 @@ public class DefaultManagedRepositoryAdmin
     {
         try
         {
-            archivaConfiguration.save( config );
+            getArchivaConfiguration().save( config );
         }
         catch ( RegistryException e )
         {
@@ -542,7 +545,7 @@ public class DefaultManagedRepositoryAdmin
 
     public Boolean scanRepository( String repositoryId, boolean fullScan )
     {
-        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
+        if ( getRepositoryTaskScheduler().isProcessingRepositoryTask( repositoryId ) )
         {
             log.info( "scanning of repository with id {} already scheduled", repositoryId );
         }
@@ -551,7 +554,7 @@ public class DefaultManagedRepositoryAdmin
         task.setScanAll( fullScan );
         try
         {
-            repositoryTaskScheduler.queueTask( task );
+            getRepositoryTaskScheduler().queueTask( task );
         }
         catch ( TaskQueueException e )
         {
@@ -569,14 +572,14 @@ public class DefaultManagedRepositoryAdmin
         // TODO: double check these are configured on start up
         // TODO: belongs in the business logic
 
-        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
         {
-            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
         }
 
-        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
         {
-            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
         }
     }
 
@@ -585,14 +588,14 @@ public class DefaultManagedRepositoryAdmin
     {
         String repoId = existingRepository.getId();
 
-        if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        if ( getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
         {
-            roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+            getRoleManager().removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
         }
 
-        if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        if ( getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
         {
-            roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+            getRoleManager().removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
         }
 
         log.debug( "removed user roles associated with repository {}", repoId );

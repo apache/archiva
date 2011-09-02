@@ -36,6 +36,10 @@
       <artifactId>stage-repository-merge</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.atlassian.xmlrpc</groupId>
       <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
     </dependency>

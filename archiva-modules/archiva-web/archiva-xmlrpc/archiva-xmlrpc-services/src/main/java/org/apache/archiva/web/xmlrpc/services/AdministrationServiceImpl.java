@@ -19,6 +19,9 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -38,7 +41,6 @@ import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.GenericValidator;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -54,9 +56,7 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +98,7 @@ public class AdministrationServiceImpl
 
     private RepositorySessionFactory repositorySessionFactory;
 
-    private Registry registry;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
 
@@ -113,7 +113,7 @@ public class AdministrationServiceImpl
                                       Collection<RepositoryListener> listeners,
                                       RepositoryStatisticsManager repositoryStatisticsManager,
                                       RepositoryMerger repositoryMerger, AuditListener auditListener,
-                                      Registry registry )
+                                      ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -124,7 +124,7 @@ public class AdministrationServiceImpl
         this.repositoryStatisticsManager = repositoryStatisticsManager;
         this.repositoryMerger = repositoryMerger;
         this.auditListener = auditListener;
-        this.registry = registry;
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
     /**
@@ -214,8 +214,8 @@ public class AdministrationServiceImpl
             repoContent.deleteVersion( ref );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            Collection<ArtifactMetadata> artifacts = metadataRepository.getArtifacts( repoId, groupId, artifactId,
-                                                                                      version );
+            Collection<ArtifactMetadata> artifacts =
+                metadataRepository.getArtifacts( repoId, groupId, artifactId, version );
 
             for ( ArtifactMetadata artifact : artifacts )
             {
@@ -307,18 +307,15 @@ public class AdministrationServiceImpl
      * @see AdministrationService#getAllManagedRepositories()
      */
     public List<ManagedRepository> getAllManagedRepositories()
+        throws RepositoryAdminException
     {
         List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>();
 
-        Configuration config = archivaConfiguration.getConfiguration();
-        List<ManagedRepositoryConfiguration> managedRepoConfigs = config.getManagedRepositories();
-
-        for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+        for ( org.apache.archiva.admin.repository.managed.ManagedRepository repoConfig : managedRepositoryAdmin.getManagedRepositories() )
         {
-            // TODO fix resolution of repo url!
-            ManagedRepository repo = new ManagedRepository( repoConfig.getId(), repoConfig.getName(), "URL",
-                                                            repoConfig.getLayout(), repoConfig.isSnapshots(),
-                                                            repoConfig.isReleases() );
+            ManagedRepository repo =
+                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
+                                       repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases() );
             managedRepos.add( repo );
         }
 
@@ -368,89 +365,12 @@ public class AdministrationServiceImpl
         throws Exception
     {
 
-        Configuration config = archivaConfiguration.getConfiguration();
+        org.apache.archiva.admin.repository.managed.ManagedRepository repository =
+            new org.apache.archiva.admin.repository.managed.ManagedRepository( repoId, name, location, layout,
+                                                                               snapshotsIncluded, releasesIncluded,
+                                                                               blockRedeployments, cronExpression );
+        return managedRepositoryAdmin.addManagedRepository( repository, stageRepoNeeded, getAuditInformation() );
 
-        CronExpressionValidator validator = new CronExpressionValidator();
-
-        if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
-        {
-            throw new Exception( "Unable to add new repository with id [" + repoId +
-                                     "], that id already exists as a managed repository." );
-        }
-        else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
-        {
-            throw new Exception( "Unable to add new repository with id [" + repoId +
-                                     "], that id already exists as a remote repository." );
-        }
-        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
-        {
-            throw new Exception( "Unable to add new repository with id [" + repoId +
-                                     "], that id already exists as a repository group." );
-        }
-
-        if ( !validator.validate( cronExpression ) )
-        {
-            throw new Exception( "Invalid cron expression." );
-        }
-
-        if( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
-        {
-            throw new Exception( "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        }
-
-        if( !GenericValidator.matchRegexp( name, REPOSITORY_NAME_VALID_EXPRESSION ) )
-        {
-            throw new Exception( "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), " +
-                "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-)." );
-        }
-
-        String repoLocation = removeExpressions( location );
-
-        if( !GenericValidator.matchRegexp( repoLocation, REPOSITORY_LOCATION_VALID_EXPRESSION ) )
-        {
-            throw new Exception( "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), " +
-                "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
-        }
-
-        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
-
-        repository.setId( repoId );
-        repository.setBlockRedeployments( blockRedeployments );
-        repository.setReleases( releasesIncluded );
-        repository.setSnapshots( snapshotsIncluded );
-        repository.setName( name );
-        repository.setLocation( repoLocation );
-        repository.setLayout( layout );
-        repository.setRefreshCronExpression( cronExpression );
-
-        addRepository( repository, config );
-
-        if ( stageRepoNeeded )
-        {
-            ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-            addRepository( stagingRepository, config );
-        }
-
-        saveConfiguration( config );
-
-        //MRM-1342 Repository statistics report doesn't appear to be working correctly
-        //scan repository when adding of repository is successful 
-        try
-        {
-            executeRepositoryScanner( repoId );
-            if ( stageRepoNeeded )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-                executeRepositoryScanner( stagingRepository.getId() );
-            }
-        }
-        catch ( Exception e )
-        {
-            log.warn( new StringBuilder( "Unable to scan repository [" ).append( repoId ).append( "]: " ).append(
-                      e.getMessage() ).toString(), e );
-        }
-    
-        return Boolean.TRUE;
     }
 
     public Boolean deleteManagedRepository( String repoId )
@@ -608,16 +528,16 @@ public class AdministrationServiceImpl
                         log.info( "Repository to be merged contains releases only.." );
                         if ( skipConflicts )
                         {
-                            List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts(
-                                metadataRepository, repoId, stagingId );
+                            List<ArtifactMetadata> conflicts =
+                                repositoryMerger.getConflictingArtifacts( metadataRepository, repoId, stagingId );
 
                             if ( log.isDebugEnabled() )
                             {
                                 log.debug( "Artifacts in conflict.." );
                                 for ( ArtifactMetadata metadata : conflicts )
                                 {
-                                    log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                                   metadata.getProjectVersion() );
+                                    log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":"
+                                                   + metadata.getProjectVersion() );
                                 }
                             }
 
@@ -637,16 +557,16 @@ public class AdministrationServiceImpl
                         log.info( "Repository to be merged has snapshot artifacts.." );
                         if ( skipConflicts )
                         {
-                            List<ArtifactMetadata> conflicts = repositoryMerger.getConflictingArtifacts(
-                                metadataRepository, repoId, stagingId );
+                            List<ArtifactMetadata> conflicts =
+                                repositoryMerger.getConflictingArtifacts( metadataRepository, repoId, stagingId );
 
                             if ( log.isDebugEnabled() )
                             {
                                 log.debug( "Artifacts in conflict.." );
                                 for ( ArtifactMetadata metadata : conflicts )
                                 {
-                                    log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":" +
-                                                   metadata.getProjectVersion() );
+                                    log.debug( metadata.getNamespace() + ":" + metadata.getProject() + ":"
+                                                   + metadata.getProjectVersion() );
                                 }
                             }
 
@@ -654,19 +574,19 @@ public class AdministrationServiceImpl
 
                             log.debug( "Source artifacts size :: " + sourceArtifacts.size() );
 
-                            Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
-                                sourceArtifacts );
+                            Filter<ArtifactMetadata> artifactsWithOutConflicts =
+                                new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
                             repositoryMerger.merge( metadataRepository, stagingId, repoId, artifactsWithOutConflicts );
 
-                            log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
-                                          repoId + "'." );
+                            log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '"
+                                          + repoId + "'." );
                         }
                         else
                         {
                             repositoryMerger.merge( metadataRepository, stagingId, repoId );
 
-                            log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '" +
-                                          repoId + "'." );
+                            log.info( "Staging repository '" + stagingId + "' merged successfully with managed repo '"
+                                          + repoId + "'." );
                         }
                     }
                 }
@@ -703,25 +623,6 @@ public class AdministrationServiceImpl
         }
 
         return true;
-    }
-
-    protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
-        throws IOException
-    {
-        // Normalize the path
-        File file = new File( repository.getLocation() );
-        repository.setLocation( file.getCanonicalPath() );
-        if ( !file.exists() )
-        {
-            file.mkdirs();
-        }
-        if ( !file.exists() || !file.isDirectory() )
-        {
-            throw new IOException(
-                "Unable to add repository - no write access, can not create the root directory: " + file );
-        }
-
-        configuration.addManagedRepository( repository );
     }
 
     // todo: setting userid of audit event
@@ -779,12 +680,9 @@ public class AdministrationServiceImpl
         return stagingRepository;
     }
 
-    private String removeExpressions( String directory )
+    // FIXME find a way to get user id and adress
+    private AuditInformation getAuditInformation()
     {
-        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
-                                                                                                "${appserver.base}" ) );
-        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
-                                                                                     "${appserver.home}" ) );
-        return value;
+        return new AuditInformation( null, null );
     }
 }

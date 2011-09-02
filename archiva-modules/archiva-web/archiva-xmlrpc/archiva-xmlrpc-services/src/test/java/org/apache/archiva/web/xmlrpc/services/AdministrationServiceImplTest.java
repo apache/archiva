@@ -20,6 +20,8 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -53,6 +55,8 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
@@ -65,6 +69,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -140,11 +145,17 @@ public class AdministrationServiceImplTest
 
     private AuditListener auditListener;
 
+    private MockControl roleManagerControl;
+
+    private RoleManager roleManager;
+
     private MockControl registryControl;
 
     private Registry registry;
 
     private static final String STAGE = "-stage";
+
+    private DefaultManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Before
     public void setUp()
@@ -189,6 +200,9 @@ public class AdministrationServiceImplTest
         listenerControl = MockControl.createControl( RepositoryListener.class );
         listener = (RepositoryListener) listenerControl.getMock();
 
+        roleManagerControl = MockControl.createControl( RoleManager.class );
+        roleManager = (RoleManager) roleManagerControl.getMock();
+
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
 
@@ -201,10 +215,20 @@ public class AdministrationServiceImplTest
         registryControl = MockControl.createControl( Registry.class );
         registry = (Registry) registryControl.getMock();
 
+
+        managedRepositoryAdmin = new DefaultManagedRepositoryAdmin();
+        managedRepositoryAdmin.setArchivaConfiguration( archivaConfig );
+        managedRepositoryAdmin.setRegistry( registry );
+        managedRepositoryAdmin.setRepositoryStatisticsManager( repositoryStatisticsManager );
+        managedRepositoryAdmin.setRepositoryTaskScheduler( repositoryTaskScheduler );
+        managedRepositoryAdmin.setRepositorySessionFactory( repositorySessionFactory );
+        managedRepositoryAdmin.setAuditListeners( Arrays.asList( auditListener ) );
+        managedRepositoryAdmin.setRoleManager( roleManager );
+
         service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
                                                  repositorySessionFactory, repositoryTaskScheduler,
                                                  Collections.singletonList( listener ), repositoryStatisticsManager,
-                                                 repositoryMerger, auditListener, registry );
+                                                 repositoryMerger, auditListener, managedRepositoryAdmin );
     }
 
     /* Tests for repository consumers */
@@ -948,6 +972,27 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
         configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
         configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
+
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        roleManagerControl.setVoidCallable();
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        roleManagerControl.setVoidCallable();
+
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId + "-stage" );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId + "-stage" );
+        roleManagerControl.setVoidCallable();
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId + "-stage" );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId + "-stage" );
+        roleManagerControl.setVoidCallable();
+
+        roleManagerControl.replay();
+
         registryControl.expectAndReturn( registry.getString( "appserver.base", "${appserver.base}" ), appserverBase );
         registryControl.expectAndReturn( registry.getString( "appserver.home", "${appserver.home}" ), appserverBase );
         config.addManagedRepository( managedRepo );
@@ -958,6 +1003,9 @@ public class AdministrationServiceImplTest
         configControl.setVoidCallable();
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
+
+
+
 
         //managed repo
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( repoId ), false );
