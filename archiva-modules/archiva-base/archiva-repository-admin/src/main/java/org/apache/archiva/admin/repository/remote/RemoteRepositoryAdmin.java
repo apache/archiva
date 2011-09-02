@@ -41,7 +41,6 @@ public interface RemoteRepositoryAdmin
     Boolean addRemoteRepository( RemoteRepository remoteRepository )
         throws RepositoryAdminException;
 
-
     Boolean updateRemoteRepository( RemoteRepository remoteRepository )
         throws RepositoryAdminException;
 }

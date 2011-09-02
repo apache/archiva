@@ -34,8 +34,6 @@ import java.io.IOException;
  * AddRemoteRepositoryAction
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="addRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
 @Controller( "addRemoteRepositoryAction" )
 @Scope( "prototype" )
