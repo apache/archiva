@@ -258,7 +258,7 @@ public class RepositoryArchivaTaskScheduler
         {
             if ( isProcessingRepositoryTask( task ) )
             {
-                log.info( "cannot unuqueue Repository task '{}' not already queued.", task );
+                log.info( "cannot unqueue Repository task '{}' not already queued.", task );
                 return false;
             }
             else
