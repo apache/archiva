@@ -22,10 +22,10 @@
 
 <s:textfield name="repository.name" label="Name" size="50" required="true"/>
 <s:textfield name="repository.location" label="Directory" size="50" required="true"/>
-<s:textfield name="repository.indexDir" label="Index Directory" size="50"/>
+<s:textfield name="repository.indexDirectory" label="Index Directory" size="50"/>
 <s:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="repository.layout" label="Type"/>
-<s:textfield name="repository.refreshCronExpression" label="Cron" size="40" required="true"/>
+<s:textfield name="repository.cronExpression" label="Cron" size="40" required="true"/>
 <s:textfield name="repository.daysOlder" label="Repository Purge By Days Older Than" size="5"/>
 <s:textfield name="repository.retentionCount" label="Repository Purge By Retention Count" size="5"/>
 <s:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
