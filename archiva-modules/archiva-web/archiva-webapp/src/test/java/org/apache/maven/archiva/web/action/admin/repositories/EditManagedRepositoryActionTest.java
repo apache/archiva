@@ -20,7 +20,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -124,7 +126,7 @@ public class EditManagedRepositoryActionTest
     }
 
     public void testSecureActionBundle()
-        throws SecureActionException
+        throws SecureActionException, RepositoryAdminException
     {
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
@@ -153,10 +155,10 @@ public class EditManagedRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         assertNotNull( repository );
 
-        ManagedRepositoryConfiguration newRepository = createRepository();
+        ManagedRepository newRepository = createRepository();
         assertRepositoryEquals( repository, newRepository );
         assertEquals( repository.getLocation(), newRepository.getLocation() );
 
@@ -245,7 +247,7 @@ public class EditManagedRepositoryActionTest
         action.setRepoid( REPO_ID );
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
 
@@ -264,7 +266,7 @@ public class EditManagedRepositoryActionTest
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
 
-        ManagedRepositoryConfiguration newRepository = createRepository();
+        ManagedRepository newRepository = createRepository();
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );
         //assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
@@ -360,7 +362,7 @@ public class EditManagedRepositoryActionTest
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
 
-        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
+        ManagedRepository repository = new ManagedRepository();
         populateRepository( repository );
         File testFile = new File( "target/test/location/new" );
         FileUtils.deleteDirectory( testFile );
@@ -382,8 +384,7 @@ public class EditManagedRepositoryActionTest
     {
         // prep
         // 0 is the default value for primitive int; null for objects
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( null, null, null, null );
+        ManagedRepository managedRepositoryConfiguration = createManagedRepository( null, null, null, null, 1, 1 );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -418,8 +419,8 @@ public class EditManagedRepositoryActionTest
     {
         // prep
         // 0 is the default value for primitive int
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
+        ManagedRepository managedRepositoryConfiguration =
+            createManagedRepository( EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, 1, 1 );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -453,11 +454,10 @@ public class EditManagedRepositoryActionTest
         throws Exception
     {
         // prep
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( REPOSITORY_ID_INVALID_INPUT, REPOSITORY_NAME_INVALID_INPUT,
-                                                  REPOSITORY_LOCATION_INVALID_INPUT, REPOSITORY_INDEX_DIR_INVALID_INPUT,
-                                                  REPOSITORY_DAYS_OLDER_INVALID_INPUT,
-                                                  REPOSITORY_RETENTION_COUNT_INVALID_INPUT );
+        ManagedRepository managedRepositoryConfiguration =
+            createManagedRepository( REPOSITORY_ID_INVALID_INPUT, REPOSITORY_NAME_INVALID_INPUT,
+                                     REPOSITORY_LOCATION_INVALID_INPUT, REPOSITORY_INDEX_DIR_INVALID_INPUT,
+                                     REPOSITORY_DAYS_OLDER_INVALID_INPUT, REPOSITORY_RETENTION_COUNT_INVALID_INPUT );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -490,7 +490,7 @@ public class EditManagedRepositoryActionTest
         expectedErrorMessages = new ArrayList<String>();
         expectedErrorMessages.add(
             "Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
-        expectedFieldErrors.put( "repository.indexDir", expectedErrorMessages );
+        expectedFieldErrors.put( "repository.indexDirectory", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
         expectedErrorMessages.add( "Repository Purge By Retention Count needs to be between 1 and 100." );
@@ -507,11 +507,10 @@ public class EditManagedRepositoryActionTest
         throws Exception
     {
         // prep
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( REPOSITORY_ID_VALID_INPUT, REPOSITORY_NAME_VALID_INPUT,
-                                                  REPOSITORY_LOCATION_VALID_INPUT, REPOSITORY_INDEX_DIR_VALID_INPUT,
-                                                  REPOSITORY_DAYS_OLDER_VALID_INPUT,
-                                                  REPOSITORY_RETENTION_COUNT_VALID_INPUT );
+        ManagedRepository managedRepositoryConfiguration =
+            createManagedRepository( REPOSITORY_ID_VALID_INPUT, REPOSITORY_NAME_VALID_INPUT,
+                                     REPOSITORY_LOCATION_VALID_INPUT, REPOSITORY_INDEX_DIR_VALID_INPUT,
+                                     REPOSITORY_DAYS_OLDER_VALID_INPUT, REPOSITORY_RETENTION_COUNT_VALID_INPUT );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -521,15 +520,14 @@ public class EditManagedRepositoryActionTest
         assertFalse( action.hasFieldErrors() );
     }
 
-    private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
-                                         ManagedRepositoryConfiguration actualRepository )
+    private void assertRepositoryEquals( ManagedRepository expectedRepository, ManagedRepository actualRepository )
     {
         assertEquals( expectedRepository.getDaysOlder(), actualRepository.getDaysOlder() );
         assertEquals( expectedRepository.getId(), actualRepository.getId() );
-        assertEquals( expectedRepository.getIndexDir(), actualRepository.getIndexDir() );
+        assertEquals( expectedRepository.getIndexDirectory(), actualRepository.getIndexDirectory() );
         assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
-        assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
+        assertEquals( expectedRepository.getCronExpression(), actualRepository.getCronExpression() );
         assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
         assertEquals( expectedRepository.isDeleteReleasedSnapshots(), actualRepository.isDeleteReleasedSnapshots() );
         assertEquals( expectedRepository.isScanned(), actualRepository.isScanned() );
@@ -537,11 +535,28 @@ public class EditManagedRepositoryActionTest
         assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
     }
 
-    private Configuration createConfigurationForEditing( ManagedRepositoryConfiguration repositoryConfiguration )
+    private Configuration createConfigurationForEditing( ManagedRepository repositoryConfiguration )
         throws Exception
     {
         Configuration configuration = buildEasyConfiguration();
-        configuration.addManagedRepository( repositoryConfiguration );
+
+        ManagedRepositoryConfiguration managedRepositoryConfiguration = new ManagedRepositoryConfiguration();
+
+        managedRepositoryConfiguration.setDaysOlder( repositoryConfiguration.getDaysOlder() );
+        managedRepositoryConfiguration.setIndexDir( repositoryConfiguration.getIndexDirectory() );
+        managedRepositoryConfiguration.setRetentionCount( repositoryConfiguration.getRetentionCount() );
+        managedRepositoryConfiguration.setBlockRedeployments( repositoryConfiguration.isBlockRedeployments() );
+        managedRepositoryConfiguration.setDeleteReleasedSnapshots(
+            repositoryConfiguration.isDeleteReleasedSnapshots() );
+        managedRepositoryConfiguration.setLocation( repositoryConfiguration.getLocation() );
+        managedRepositoryConfiguration.setRefreshCronExpression( repositoryConfiguration.getCronExpression() );
+        managedRepositoryConfiguration.setReleases( repositoryConfiguration.isReleases() );
+        managedRepositoryConfiguration.setScanned( repositoryConfiguration.isScanned() );
+        managedRepositoryConfiguration.setId( repositoryConfiguration.getId() );
+        managedRepositoryConfiguration.setName( repositoryConfiguration.getName() );
+        managedRepositoryConfiguration.setLayout( repositoryConfiguration.getLayout() );
+
+        configuration.addManagedRepository( managedRepositoryConfiguration );
         return configuration;
     }
 
@@ -564,10 +579,10 @@ public class EditManagedRepositoryActionTest
         };
     }
 
-    private ManagedRepositoryConfiguration createRepository()
+    private ManagedRepository createRepository()
         throws IOException
     {
-        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        ManagedRepository r = new ManagedRepository();
         r.setId( REPO_ID );
         populateRepository( r );
         return r;

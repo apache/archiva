@@ -46,9 +46,9 @@ public class EditManagedRepositoryAction
      * FIXME we must manipulate beans from repo admin api
      * The model for this action.
      */
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
-    private ManagedRepositoryConfiguration stagingRepository;
+    private ManagedRepository stagingRepository;
 
     private String repoid;
 
@@ -57,12 +57,14 @@ public class EditManagedRepositoryAction
     private boolean stageNeeded;
 
 
+    // FIXME better error message
     public void prepare()
+        throws RepositoryAdminException
     {
         if ( StringUtils.isNotBlank( repoid ) )
         {
-            repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid );
-            stagingRepository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid + "-stage" );
+            repository = getManagedRepositoryAdmin().getManagedRepository( repoid );
+            stagingRepository = getManagedRepositoryAdmin().getManagedRepository( repoid + "-stage" );
         }
         else if ( repository != null )
         {
@@ -118,12 +120,7 @@ public class EditManagedRepositoryAction
         String result = SUCCESS;
         try
         {
-            ManagedRepository managedRepository =
-                new ManagedRepository( repository.getId(), repository.getName(), repository.getLocation(),
-                                       repository.getLayout(), repository.isSnapshots(), repository.isReleases(),
-                                       repository.isBlockRedeployments(), repository.getRefreshCronExpression() );
-
-            getManagedRepositoryAdmin().updateManagedRepository( managedRepository, stageNeeded, getAuditInformation(),
+            getManagedRepositoryAdmin().updateManagedRepository( repository, stageNeeded, getAuditInformation(),
                                                                  resetStats );
         }
         catch ( RepositoryAdminException e )
@@ -141,7 +138,7 @@ public class EditManagedRepositoryAction
     {
         CronExpressionValidator validator = new CronExpressionValidator();
 
-        if ( !validator.validate( repository.getRefreshCronExpression() ) )
+        if ( !validator.validate( repository.getCronExpression() ) )
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
         }
@@ -166,9 +163,9 @@ public class EditManagedRepositoryAction
             repository.setLocation( repository.getLocation().trim() );
         }
 
-        if ( StringUtils.isNotEmpty( repository.getIndexDir() ) )
+        if ( StringUtils.isNotEmpty( repository.getIndexDirectory() ) )
         {
-            repository.setIndexDir( repository.getIndexDir().trim() );
+            repository.setIndexDirectory( repository.getIndexDirectory().trim() );
         }
     }
 
@@ -182,15 +179,6 @@ public class EditManagedRepositoryAction
         this.repoid = repoid;
     }
 
-    public ManagedRepositoryConfiguration getRepository()
-    {
-        return repository;
-    }
-
-    public void setRepository( ManagedRepositoryConfiguration repository )
-    {
-        this.repository = repository;
-    }
 
     public boolean isStageNeeded()
     {
@@ -208,12 +196,22 @@ public class EditManagedRepositoryAction
         return action;
     }
 
-    public ManagedRepositoryConfiguration getStagingRepository()
+    public ManagedRepository getRepository()
+    {
+        return repository;
+    }
+
+    public void setRepository( ManagedRepository repository )
+    {
+        this.repository = repository;
+    }
+
+    public ManagedRepository getStagingRepository()
     {
         return stagingRepository;
     }
 
-    public void setStagingRepository( ManagedRepositoryConfiguration stagingRepository )
+    public void setStagingRepository( ManagedRepository stagingRepository )
     {
         this.stagingRepository = stagingRepository;
     }

@@ -21,12 +21,12 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -123,7 +123,7 @@ public class AddManagedRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        ManagedRepositoryConfiguration configuration = action.getRepository();
+        ManagedRepository configuration = action.getRepository();
         assertNotNull( configuration );
         assertNull( configuration.getId() );
         // check all booleans are false
@@ -182,19 +182,23 @@ public class AddManagedRepositoryActionTest
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
 
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
         archivaConfiguration.save( configuration );
 
         archivaConfigurationControl.replay();
 
         action.prepare();
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         populateRepository( repository );
 
         assertFalse( location.exists() );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
         assertTrue( location.exists() );
-        assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
+
+        assertEquals( Collections.singletonList( repository ), getManagedRepositoryAdmin().getManagedRepositories() );
         assertEquals( location.getCanonicalPath(), new File( repository.getLocation() ).getCanonicalPath() );
 
         roleManagerControl.verify();
@@ -219,7 +223,7 @@ public class AddManagedRepositoryActionTest
         registryControl.replay();
 
         action.prepare();
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         populateRepository( repository );
 
         assertTrue( location.exists() );
@@ -234,8 +238,7 @@ public class AddManagedRepositoryActionTest
     {
         // prep
         // 0 is the default value for primitive int; null for objects
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( null, null, null, null );
+        ManagedRepository managedRepositoryConfiguration = createManagedRepository( null, null, null, null );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -270,8 +273,8 @@ public class AddManagedRepositoryActionTest
     {
         // prep
         // 0 is the default value for primitive int
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
+        ManagedRepository managedRepositoryConfiguration =
+            createManagedRepository( EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -305,11 +308,10 @@ public class AddManagedRepositoryActionTest
         throws Exception
     {
         // prep
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( REPOSITORY_ID_INVALID_INPUT, REPOSITORY_NAME_INVALID_INPUT,
-                                                  REPOSITORY_LOCATION_INVALID_INPUT, REPOSITORY_INDEX_DIR_INVALID_INPUT,
-                                                  REPOSITORY_DAYS_OLDER_INVALID_INPUT,
-                                                  REPOSITORY_RETENTION_COUNT_INVALID_INPUT );
+        ManagedRepository managedRepositoryConfiguration =
+            createManagedRepository( REPOSITORY_ID_INVALID_INPUT, REPOSITORY_NAME_INVALID_INPUT,
+                                     REPOSITORY_LOCATION_INVALID_INPUT, REPOSITORY_INDEX_DIR_INVALID_INPUT,
+                                     REPOSITORY_DAYS_OLDER_INVALID_INPUT, REPOSITORY_RETENTION_COUNT_INVALID_INPUT );
         action.setRepository( managedRepositoryConfiguration );
 
         // test
@@ -342,7 +344,7 @@ public class AddManagedRepositoryActionTest
         expectedErrorMessages = new ArrayList<String>();
         expectedErrorMessages.add(
             "Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
-        expectedFieldErrors.put( "repository.indexDir", expectedErrorMessages );
+        expectedFieldErrors.put( "repository.indexDirectory", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
         expectedErrorMessages.add( "Repository Purge By Retention Count needs to be between 1 and 100." );
@@ -359,11 +361,10 @@ public class AddManagedRepositoryActionTest
         throws Exception
     {
         // prep
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            createManagedRepositoryConfiguration( REPOSITORY_ID_VALID_INPUT, REPOSITORY_NAME_VALID_INPUT,
-                                                  REPOSITORY_LOCATION_VALID_INPUT, REPOSITORY_INDEX_DIR_VALID_INPUT,
-                                                  REPOSITORY_DAYS_OLDER_VALID_INPUT,
-                                                  REPOSITORY_RETENTION_COUNT_VALID_INPUT );
+        ManagedRepository managedRepositoryConfiguration =
+            createManagedRepository( REPOSITORY_ID_VALID_INPUT, REPOSITORY_NAME_VALID_INPUT,
+                                     REPOSITORY_LOCATION_VALID_INPUT, REPOSITORY_INDEX_DIR_VALID_INPUT,
+                                     REPOSITORY_DAYS_OLDER_VALID_INPUT, REPOSITORY_RETENTION_COUNT_VALID_INPUT );
         action.setRepository( managedRepositoryConfiguration );
 
         // test

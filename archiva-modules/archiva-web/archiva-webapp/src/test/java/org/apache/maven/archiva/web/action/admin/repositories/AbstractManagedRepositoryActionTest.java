@@ -20,11 +20,11 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
-import java.io.File;
-
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.struts2.StrutsSpringTestCase;
+
+import java.io.File;
 
 public abstract class AbstractManagedRepositoryActionTest
     extends StrutsSpringTestCase
@@ -71,57 +71,73 @@ public abstract class AbstractManagedRepositoryActionTest
     }
 
     @Override
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
 
-        DefaultActionValidatorManagerFactory defaultActionValidatorManagerFactory = new DefaultActionValidatorManagerFactory();
+        DefaultActionValidatorManagerFactory defaultActionValidatorManagerFactory =
+            new DefaultActionValidatorManagerFactory();
 
         actionValidatorManager = defaultActionValidatorManagerFactory.createDefaultActionValidatorManager();
     }
 
-    protected void populateRepository( ManagedRepositoryConfiguration repository )
+    protected void populateRepository( ManagedRepository repository )
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
         repository.setLocation( location.getAbsolutePath() );
         repository.setLayout( "default" );
-        repository.setRefreshCronExpression( "* 0/5 * * * ?" );
+        repository.setCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );
         repository.setRetentionCount( 20 );
         repository.setReleases( true );
-        repository.setSnapshots( true );
+        repository.setSnapshots( false );
         repository.setScanned( false );
         repository.setDeleteReleasedSnapshots( true );
     }
 
-    protected ManagedRepositoryConfiguration createManagedRepositoryConfiguration(String id, String name, String location, String indexDir, int daysOlder, int retentionCount)
+    protected ManagedRepository createManagedRepository( String id, String name, String location )
     {
-        ManagedRepositoryConfiguration managedRepositoryConfiguration = new ManagedRepositoryConfiguration();
+        ManagedRepository managedRepositoryConfiguration = new ManagedRepository();
 
-        managedRepositoryConfiguration.setId(id);
-        managedRepositoryConfiguration.setName(name);
-        managedRepositoryConfiguration.setLocation(location);
-        managedRepositoryConfiguration.setIndexDir(indexDir);
-        managedRepositoryConfiguration.setDaysOlder(daysOlder);
-        managedRepositoryConfiguration.setRetentionCount(retentionCount);
+        managedRepositoryConfiguration.setId( id );
+        managedRepositoryConfiguration.setName( name );
+        managedRepositoryConfiguration.setLocation( location );
 
         return managedRepositoryConfiguration;
     }
 
     // over-loaded
     // for simulating empty/null form purposes; excluding primitive data-typed values
-    protected ManagedRepositoryConfiguration createManagedRepositoryConfiguration(String id, String name, String location, String indexDir)
+    protected ManagedRepository createManagedRepository( String id, String name, String location,
+                                                                      String indexDir )
     {
-        ManagedRepositoryConfiguration managedRepositoryConfiguration = new ManagedRepositoryConfiguration();
+        ManagedRepository managedRepositoryConfiguration = new ManagedRepository();
 
-        managedRepositoryConfiguration.setId(id);
-        managedRepositoryConfiguration.setName(name);
-        managedRepositoryConfiguration.setLocation(location);
-        managedRepositoryConfiguration.setIndexDir(indexDir);
+        managedRepositoryConfiguration.setId( id );
+        managedRepositoryConfiguration.setName( name );
+        managedRepositoryConfiguration.setLocation( location );
+        managedRepositoryConfiguration.setIndexDirectory( indexDir );
 
         return managedRepositoryConfiguration;
     }
+
+    protected ManagedRepository createManagedRepository( String id, String name, String location, String indexDir,
+                                                         int daysOlder, int retentionCount )
+    {
+        ManagedRepository managedRepositoryConfiguration = new ManagedRepository();
+
+        managedRepositoryConfiguration.setId( id );
+        managedRepositoryConfiguration.setName( name );
+        managedRepositoryConfiguration.setLocation( location );
+        managedRepositoryConfiguration.setIndexDirectory( indexDir );
+        managedRepositoryConfiguration.setDaysOlder( daysOlder );
+        managedRepositoryConfiguration.setRetentionCount( retentionCount );
+
+        return managedRepositoryConfiguration;
+    }
+
 
     protected ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {

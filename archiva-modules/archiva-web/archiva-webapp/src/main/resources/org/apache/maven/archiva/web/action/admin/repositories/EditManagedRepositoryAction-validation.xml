@@ -42,7 +42,7 @@
         <message>Directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).</message>
     </field-validator>
   </field>
-  <field name="repository.indexDir">
+  <field name="repository.indexDirectory">
     <!-- no requiredstring validation, because there was none before(being consistent). -->
     <field-validator type="regex">
         <param name="trim">true</param>

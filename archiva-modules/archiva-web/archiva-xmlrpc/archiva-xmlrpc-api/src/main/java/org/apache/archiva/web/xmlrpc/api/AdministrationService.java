@@ -104,7 +104,8 @@ public interface AdministrationService
      */
     Boolean addManagedRepository( String repoId, String layout, String name, String location,
                                   boolean blockRedeployments, boolean releasesIncluded, boolean snapshotsIncluded,
-                                  boolean stageRepoNeeded, String cronExpression )
+                                  boolean stageRepoNeeded, String cronExpression, int daysOlder, int retentionCount,
+                                  boolean deleteReleasedSnapshots )
         throws Exception;
 
     /**

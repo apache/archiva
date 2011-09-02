@@ -47,7 +47,7 @@ public class AddManagedRepositoryAction
      * FIXME we must manipulate beans from repo admin api
      * The model for this action.
      */
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
     private boolean stageNeeded;
 
@@ -55,7 +55,7 @@ public class AddManagedRepositoryAction
 
     public void prepare()
     {
-        this.repository = new ManagedRepositoryConfiguration();
+        this.repository = new ManagedRepository();
         this.repository.setReleases( false );
         this.repository.setScanned( false );
         this.repository.setBlockRedeployments( false );
@@ -93,11 +93,7 @@ public class AddManagedRepositoryAction
         String result = SUCCESS;
         try
         {
-            ManagedRepository managedRepository =
-                new ManagedRepository( repository.getId(), repository.getName(), repository.getLocation(),
-                                       repository.getLayout(), repository.isSnapshots(), repository.isReleases(),
-                                       repository.isBlockRedeployments(), repository.getRefreshCronExpression() );
-            getManagedRepositoryAdmin().addManagedRepository( managedRepository, stageNeeded, getAuditInformation() );
+            getManagedRepositoryAdmin().addManagedRepository( repository, stageNeeded, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -139,7 +135,7 @@ public class AddManagedRepositoryAction
                 + "], repository id cannot contains word stage" );
         }
 
-        if ( !validator.validate( repository.getRefreshCronExpression() ) )
+        if ( !validator.validate( repository.getCronExpression() ) )
         {
             addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
         }
@@ -165,18 +161,18 @@ public class AddManagedRepositoryAction
             repository.setLocation( repository.getLocation().trim() );
         }
 
-        if ( StringUtils.isNotEmpty( repository.getIndexDir() ) )
+        if ( StringUtils.isNotEmpty( repository.getIndexDirectory() ) )
         {
-            repository.setIndexDir( repository.getIndexDir().trim() );
+            repository.setIndexDirectory( repository.getIndexDirectory().trim() );
         }
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
 
-    public void setRepository( ManagedRepositoryConfiguration repository )
+    public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
     }

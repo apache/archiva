@@ -115,7 +115,9 @@ public class DefaultManagedRepositoryAdmin
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                       repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression() );
+                                       repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
+                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
+                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots() );
 
             managedRepos.add( repo );
         }
@@ -146,7 +148,9 @@ public class DefaultManagedRepositoryAdmin
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression(), auditInformation ) != null;
+                                  managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
+                                  managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
+                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation ) != null;
 
     }
 
@@ -154,6 +158,8 @@ public class DefaultManagedRepositoryAdmin
                                                                  String location, boolean blockRedeployments,
                                                                  boolean releasesIncluded, boolean snapshotsIncluded,
                                                                  boolean stageRepoNeeded, String cronExpression,
+                                                                 String indexDir, int daysOlder, int retentionCount,
+                                                                 boolean deteleReleasedSnapshots,
                                                                  AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -228,6 +234,10 @@ public class DefaultManagedRepositoryAdmin
         repository.setLocation( repoLocation );
         repository.setLayout( layout );
         repository.setRefreshCronExpression( cronExpression );
+        repository.setIndexDir( indexDir );
+        repository.setDaysOlder( daysOlder );
+        repository.setRetentionCount( retentionCount );
+        repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
         try
         {
             addRepository( repository, config );
@@ -369,8 +379,7 @@ public class DefaultManagedRepositoryAdmin
                 List<String> repoGroups = repoToGroupMap.get( repository.getId() );
                 for ( String repoGroup : repoGroups )
                 {
-                    config.findRepositoryGroupById( repoGroup ).removeRepository(
-                        repository.getId() );
+                    config.findRepositoryGroupById( repoGroup ).removeRepository( repository.getId() );
                 }
             }
         }
@@ -426,7 +435,9 @@ public class DefaultManagedRepositoryAdmin
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression(), auditInformation );
+                                  managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
+                                  managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
+                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation );
 
         // Save the repository configuration.
         RepositorySession repositorySession = getRepositorySessionFactory().createSession();

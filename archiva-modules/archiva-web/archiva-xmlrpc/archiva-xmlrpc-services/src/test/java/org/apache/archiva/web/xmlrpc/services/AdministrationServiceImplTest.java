@@ -21,7 +21,6 @@ package org.apache.archiva.web.xmlrpc.services;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -215,7 +214,6 @@ public class AdministrationServiceImplTest
         registryControl = MockControl.createControl( Registry.class );
         registry = (Registry) registryControl.getMock();
 
-
         managedRepositoryAdmin = new DefaultManagedRepositoryAdmin();
         managedRepositoryAdmin.setArchivaConfiguration( archivaConfig );
         managedRepositoryAdmin.setRegistry( registry );
@@ -388,11 +386,9 @@ public class AdministrationServiceImplTest
         List<ArtifactMetadata> artifacts = getArtifacts();
         ArtifactMetadata artifact = artifacts.get( 0 );
 
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( repoContent.getId(),
-                                                                                    artifact.getNamespace(),
-                                                                                    artifact.getProject(),
-                                                                                    artifact.getVersion() ),
-                                                   artifacts );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                             artifact.getVersion() ), artifacts );
         metadataRepository.removeArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
                                            artifact.getVersion(), artifact.getId() );
 
@@ -446,11 +442,9 @@ public class AdministrationServiceImplTest
         List<ArtifactMetadata> artifacts = getArtifacts();
         ArtifactMetadata artifact = artifacts.get( 0 );
 
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( repoContent.getId(),
-                                                                                    artifact.getNamespace(),
-                                                                                    artifact.getProject(),
-                                                                                    artifact.getVersion() ),
-                                                   artifacts );
+        metadataRepositoryControl.expectAndReturn(
+            metadataRepository.getArtifacts( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
+                                             artifact.getVersion() ), artifacts );
         metadataRepository.removeArtifact( repoContent.getId(), artifact.getNamespace(), artifact.getProject(),
                                            artifact.getVersion(), artifact.getId() );
 
@@ -531,8 +525,8 @@ public class AdministrationServiceImplTest
 
         FileUtils.copyDirectory( srcDir, repoDir, FileFilterUtils.makeSVNAware( null ) );
 
-        ManagedRepositoryConfiguration managedRepo = createManagedRepo( "internal", layout, "Internal Repository", true,
-                                                                        false );
+        ManagedRepositoryConfiguration managedRepo =
+            createManagedRepo( "internal", layout, "Internal Repository", true, false );
         managedRepo.setLocation( repoDir.getAbsolutePath() );
         return managedRepo;
     }
@@ -567,16 +561,13 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), createManagedRepo( "internal",
-                                                                                                          "default",
-                                                                                                          "Internal Repository",
-                                                                                                          true,
-                                                                                                          false ) );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
+                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
 
         RepositoryTask task = new RepositoryTask();
 
-        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask(
-            "internal" ), false );
+        repositoryTaskSchedulerControl.expectAndReturn(
+            repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ), false );
 
         repositoryTaskScheduler.queueTask( task );
         repositoryTaskSchedulerControl.setMatcher( MockControl.ALWAYS_MATCHER );
@@ -606,14 +597,11 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), createManagedRepo( "internal",
-                                                                                                          "default",
-                                                                                                          "Internal Repository",
-                                                                                                          true,
-                                                                                                          false ) );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
+                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
 
-        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask(
-            "internal" ), true );
+        repositoryTaskSchedulerControl.expectAndReturn(
+            repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ), true );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -690,10 +678,10 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         List<RemoteRepositoryConfiguration> remoteRepos = new ArrayList<RemoteRepositoryConfiguration>();
-        remoteRepos.add( createRemoteRepository( "central", "Central Repository", "default",
-                                                 "http://repo1.maven.org/maven2" ) );
-        remoteRepos.add( createRemoteRepository( "dummy", "Dummy Remote Repository", "legacy",
-                                                 "http://dummy.com/dummy" ) );
+        remoteRepos.add(
+            createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2" ) );
+        remoteRepos.add(
+            createRemoteRepository( "dummy", "Dummy Remote Repository", "legacy", "http://dummy.com/dummy" ) );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.getRemoteRepositories(), remoteRepos );
@@ -745,7 +733,7 @@ public class AdministrationServiceImplTest
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
         metadataRepository.removeRepository( "internal" );
-        
+
         archivaConfigControl.replay();
         configControl.replay();
         metadataRepositoryControl.replay();
@@ -790,9 +778,8 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "repo" ), createManagedRepo( "repo", "default",
-                                                                                                      "repo", true,
-                                                                                                      false ) );
+        configControl.expectAndReturn( config.findManagedRepositoryById( "repo" ),
+                                       createManagedRepo( "repo", "default", "repo", true, false ) );
         configControl.expectAndReturn( config.findManagedRepositoryById( "repo-stage" ), null );
 
         archivaConfigControl.replay();
@@ -835,10 +822,8 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "merge-stage" ), staging );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
-        repositoryMergerControl.expectAndDefaultReturn( repositoryMerger.getConflictingArtifacts( metadataRepository,
-                                                                                                  staging.getId(),
-                                                                                                  merge.getId() ),
-                                                        sources );
+        repositoryMergerControl.expectAndDefaultReturn(
+            repositoryMerger.getConflictingArtifacts( metadataRepository, staging.getId(), merge.getId() ), sources );
         repositoryMerger.merge( metadataRepository, staging.getId(), merge.getId() );
         repositoryMergerControl.setVoidCallable();
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "merge" ),
@@ -906,10 +891,8 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "repo-stage" ), staging );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
-        repositoryMergerControl.expectAndDefaultReturn( repositoryMerger.getConflictingArtifacts( metadataRepository,
-                                                                                                  staging.getId(),
-                                                                                                  repo.getId() ),
-                                                        conflicts );
+        repositoryMergerControl.expectAndDefaultReturn(
+            repositoryMerger.getConflictingArtifacts( metadataRepository, staging.getId(), repo.getId() ), conflicts );
         repositoryMerger.merge( metadataRepository, staging.getId(), repo.getId(), artifactsWithOutConflicts );
         repositoryMergerControl.setMatcher( MockControl.ALWAYS_MATCHER );
         repositoryMergerControl.setVoidCallable();
@@ -954,8 +937,8 @@ public class AdministrationServiceImplTest
         String appserverBase = "target";
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
-        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
-                                                                           "http://repo1.maven.org/maven2" );
+        RemoteRepositoryConfiguration remoteRepo =
+            createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2" );
         List<String> repositories = new ArrayList<String>();
         repositories.add( managedRepo.getName() );
         RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
@@ -1004,11 +987,9 @@ public class AdministrationServiceImplTest
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
 
-
-
-
         //managed repo
-        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( repoId ), false );
+        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( repoId ),
+                                                        false );
 
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repoId );
@@ -1019,7 +1000,8 @@ public class AdministrationServiceImplTest
         repositoryTaskSchedulerControl.setVoidCallable();
 
         //staged repo
-        repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( repoId + STAGE ), false );
+        repositoryTaskSchedulerControl.expectAndReturn(
+            repositoryTaskScheduler.isProcessingRepositoryTask( repoId + STAGE ), false );
         task = new RepositoryTask();
         task.setRepositoryId( repoId + STAGE );
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
@@ -1034,8 +1016,9 @@ public class AdministrationServiceImplTest
         repositoryTaskSchedulerControl.replay();
         assertFalse( new File( releaseLocation ).isDirectory() );
         assertFalse( new File( stageLocation ).isDirectory() );
-        boolean success = service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,
-                                                        "0 15 3 * * ? *" );
+        boolean success = service.addManagedRepository( repoId, layout, name,
+                                                        "${appserver.base}/test-repository/" + projId + ".releases",
+                                                        true, true, false, true, "0 15 3 * * ? *", 1, 1, true );
         assertTrue( success );
         assertTrue( new File( releaseLocation ).isDirectory() );
         assertTrue( new File( stageLocation ).isDirectory() );
@@ -1055,8 +1038,8 @@ public class AdministrationServiceImplTest
         String name = projId + " Releases";
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
-        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
-                                                                           "http://repo1.maven.org/maven2" );
+        RemoteRepositoryConfiguration remoteRepo =
+            createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2" );
         List<String> repositories = new ArrayList<String>();
         repositories.add( managedRepo.getName() );
         RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
@@ -1079,14 +1062,16 @@ public class AdministrationServiceImplTest
 
         try
         {
-            service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,
-                                                        "0 15 3 * * ? *" );
+            service.addManagedRepository( repoId, layout, name,
+                                          "${appserver.base}/test-repository/" + projId + ".releases", true, true,
+                                          false, true, "0 15 3 * * ? *", 1, 1, true );
             fail( "An exception should have been thrown! Repository ID is not valid." );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
-            assertEquals( "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).",
-                          e.getMessage() );    
+            assertEquals(
+                "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).",
+                e.getMessage() );
         }
     }
 
@@ -1100,8 +1085,8 @@ public class AdministrationServiceImplTest
         String name = projId + " <script>alert('xss')</script>";
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
-        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
-                                                                           "http://repo1.maven.org/maven2" );
+        RemoteRepositoryConfiguration remoteRepo =
+            createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2" );
         List<String> repositories = new ArrayList<String>();
         repositories.add( managedRepo.getName() );
         RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
@@ -1124,15 +1109,17 @@ public class AdministrationServiceImplTest
 
         try
         {
-            service.addManagedRepository( repoId, layout, name, "${appserver.base}/test-repository/" + projId + ".releases", true, true, false, true,
-                                                        "0 15 3 * * ? *" );
+            service.addManagedRepository( repoId, layout, name,
+                                          "${appserver.base}/test-repository/" + projId + ".releases", true, true,
+                                          false, true, "0 15 3 * * ? *", 1, 1, true );
             fail( "An exception should have been thrown! Repository name is not valid." );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
-            assertEquals( "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), " +
-                "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-).",
-                          e.getMessage() );
+            assertEquals(
+                "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), "
+                    + "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-).",
+                e.getMessage() );
         }
     }
 
@@ -1147,8 +1134,8 @@ public class AdministrationServiceImplTest
         String appserverBase = "target";
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "repo1", "default", "repo", true, false );
-        RemoteRepositoryConfiguration remoteRepo = createRemoteRepository( "central", "Central Repository", "default",
-                                                                           "http://repo1.maven.org/maven2" );
+        RemoteRepositoryConfiguration remoteRepo =
+            createRemoteRepository( "central", "Central Repository", "default", "http://repo1.maven.org/maven2" );
         List<String> repositories = new ArrayList<String>();
         repositories.add( managedRepo.getName() );
         RepositoryGroupConfiguration repoGroup = createRepoGroupConfig( "repoGroup", repositories );
@@ -1174,15 +1161,17 @@ public class AdministrationServiceImplTest
 
         try
         {
-            service.addManagedRepository( repoId, layout, name, "${appserver.base}/<script>alert('xss')</script>" + projId + ".releases", true, true, false, true,
-                                                        "0 15 3 * * ? *" );
+            service.addManagedRepository( repoId, layout, name,
+                                          "${appserver.base}/<script>alert('xss')</script>" + projId + ".releases",
+                                          true, true, false, true, "0 15 3 * * ? *", 1, 1, true );
             fail( "An exception should have been thrown! Repository location is not valid." );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
-            assertEquals( "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), " +
-                "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).",
-                          e.getMessage() );
+            assertEquals(
+                "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
+                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).",
+                e.getMessage() );
         }
 
         registryControl.verify();

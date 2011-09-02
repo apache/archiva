@@ -33,30 +33,49 @@ public class ManagedRepository
 
     private String location;
 
-    private String layout;
+    private String layout = "default";
 
     private boolean snapshots = false;
 
-    private boolean releases = false;
+    private boolean releases = true;
 
-    private boolean blockRedeployments;
+    private boolean blockRedeployments = false;
 
-    private String cronExpression;
+    /**
+     * default model value
+     */
+    private String cronExpression = "0 0 * * * ?";
 
-    private boolean stageRepoNeeded;
 
     /**
      * not need when creating the repo : only available when reading
      */
     private ManagedRepository stagingRepository;
 
+    private boolean scanned = true;
+
+    private String indexDirectory;
+
+    /**
+     * default model value
+     */
+    private int daysOlder = 100;
+
+    /**
+     * default model value
+     */
+    private int retentionCount = 2;
+
+    private boolean deleteReleasedSnapshots;
+
     public ManagedRepository()
     {
         // no op
     }
 
-    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots, boolean releases,
-                              boolean blockRedeployments, String cronExpression )
+    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
+                              boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
+                              boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots )
     {
         this.id = id;
         this.name = name;
@@ -66,6 +85,11 @@ public class ManagedRepository
         this.releases = releases;
         this.blockRedeployments = blockRedeployments;
         this.cronExpression = cronExpression;
+        this.indexDirectory = indexDir;
+        this.scanned = scanned;
+        this.daysOlder = daysOlder;
+        this.retentionCount = retentionCount;
+        this.deleteReleasedSnapshots = deleteReleasedSnapshots;
     }
 
     public String getId()
@@ -163,6 +187,56 @@ public class ManagedRepository
         this.stagingRepository = stagingRepository;
     }
 
+    public boolean isScanned()
+    {
+        return scanned;
+    }
+
+    public void setScanned( boolean scanned )
+    {
+        this.scanned = scanned;
+    }
+
+    public String getIndexDirectory()
+    {
+        return indexDirectory;
+    }
+
+    public void setIndexDirectory( String indexDirectory )
+    {
+        this.indexDirectory = indexDirectory;
+    }
+
+    public int getDaysOlder()
+    {
+        return daysOlder;
+    }
+
+    public void setDaysOlder( int daysOlder )
+    {
+        this.daysOlder = daysOlder;
+    }
+
+    public int getRetentionCount()
+    {
+        return retentionCount;
+    }
+
+    public void setRetentionCount( int retentionCount )
+    {
+        this.retentionCount = retentionCount;
+    }
+
+    public boolean isDeleteReleasedSnapshots()
+    {
+        return deleteReleasedSnapshots;
+    }
+
+    public void setDeleteReleasedSnapshots( boolean deleteReleasedSnapshots )
+    {
+        this.deleteReleasedSnapshots = deleteReleasedSnapshots;
+    }
+
     public int hashCode()
     {
         int result = 17;
@@ -201,8 +275,9 @@ public class ManagedRepository
         sb.append( ", releases=" ).append( releases );
         sb.append( ", blockRedeployments=" ).append( blockRedeployments );
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
-        sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
         sb.append( ", stagingRepository=" ).append( stagingRepository );
+        sb.append( ", scanned=" ).append( scanned );
+        sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

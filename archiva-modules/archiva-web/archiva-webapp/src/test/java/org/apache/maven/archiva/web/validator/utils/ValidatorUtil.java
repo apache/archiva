@@ -19,44 +19,52 @@ package org.apache.maven.archiva.web.validator.utils;
  * under the License.
  */
 
+import junit.framework.Assert;
+import org.apache.commons.lang.SystemUtils;
+
 import java.util.List;
 import java.util.Map;
-import junit.framework.Assert;
 
 public class ValidatorUtil
 {
-    public static void assertFieldErrors(Map<String, List<String>> expectedFieldErrors, Map<String, List<String>> actualFieldErrors)
+    public static void assertFieldErrors( Map<String, List<String>> expectedFieldErrors,
+                                          Map<String, List<String>> actualFieldErrors )
     {
-        if(expectedFieldErrors != null)
+        if ( expectedFieldErrors != null )
         {
-            Assert.assertNotNull(actualFieldErrors);
+            Assert.assertNotNull( actualFieldErrors );
             // checks the number of field errors
-            Assert.assertEquals(expectedFieldErrors.size(), actualFieldErrors.size());
+            Assert.assertEquals(
+                "expected " + expectedFieldErrors + SystemUtils.LINE_SEPARATOR + ", found " + actualFieldErrors,
+                expectedFieldErrors.size(), actualFieldErrors.size() );
 
             // check every content of the field error
-            for(Map.Entry<String, List<String>> expectedEntry : expectedFieldErrors.entrySet())
+            for ( Map.Entry<String, List<String>> expectedEntry : expectedFieldErrors.entrySet() )
             {
-                if(expectedEntry.getValue() != null)
+                if ( expectedEntry.getValue() != null )
                 {
-                    Assert.assertNotNull(actualFieldErrors.get(expectedEntry.getKey()));
+                    Assert.assertNotNull( "actual with key " + expectedEntry.getKey() + " is null",
+                                          actualFieldErrors.get( expectedEntry.getKey() ) );
                     // checks the error message count per error field
-                    Assert.assertEquals(expectedEntry.getValue().size(), actualFieldErrors.get(expectedEntry.getKey()).size());
+                    Assert.assertEquals( expectedEntry.getValue().size(),
+                                         actualFieldErrors.get( expectedEntry.getKey() ).size() );
 
                     // check the contents of error messages per field error
-                    for(int i = 0; i < expectedEntry.getValue().size(); i++)
+                    for ( int i = 0; i < expectedEntry.getValue().size(); i++ )
                     {
-                        Assert.assertEquals(expectedEntry.getValue().get(i), actualFieldErrors.get(expectedEntry.getKey()).get(i));
+                        Assert.assertEquals( expectedEntry.getValue().get( i ),
+                                             actualFieldErrors.get( expectedEntry.getKey() ).get( i ) );
                     }
                 }
                 else
                 {
-                    Assert.assertNull(actualFieldErrors.get(expectedEntry.getKey()));
+                    Assert.assertNull( actualFieldErrors.get( expectedEntry.getKey() ) );
                 }
             }
         }
         else
         {
-            Assert.assertNull(actualFieldErrors);
+            Assert.assertNull( actualFieldErrors );
         }
     }
 }

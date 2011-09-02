@@ -361,14 +361,17 @@ public class AdministrationServiceImpl
 
     public Boolean addManagedRepository( String repoId, String layout, String name, String location,
                                          boolean blockRedeployments, boolean releasesIncluded,
-                                         boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression )
+                                         boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression,
+                                         int daysOlder, int retentionCount, boolean deleteReleasedSnapshots )
         throws Exception
     {
 
         org.apache.archiva.admin.repository.managed.ManagedRepository repository =
             new org.apache.archiva.admin.repository.managed.ManagedRepository( repoId, name, location, layout,
                                                                                snapshotsIncluded, releasesIncluded,
-                                                                               blockRedeployments, cronExpression );
+                                                                               blockRedeployments, cronExpression, null,
+                                                                               false, daysOlder, retentionCount,
+                                                                               deleteReleasedSnapshots );
         return managedRepositoryAdmin.addManagedRepository( repository, stageRepoNeeded, getAuditInformation() );
 
     }
