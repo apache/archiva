@@ -19,21 +19,20 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.AbstractRepository;
+
 import java.io.Serializable;
 
 /**
+ * @author Olivier Lamy
  * @since 1.4
  */
 public class ManagedRepository
+    extends AbstractRepository
     implements Serializable
 {
-    private String id;
-
-    private String name;
 
     private String location;
-
-    private String layout = "default";
 
     private boolean snapshots = false;
 
@@ -77,10 +76,9 @@ public class ManagedRepository
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
                               boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots )
     {
-        this.id = id;
-        this.name = name;
+        super(id, name, layout);
+
         this.location = location;
-        this.layout = layout;
         this.snapshots = snapshots;
         this.releases = releases;
         this.blockRedeployments = blockRedeployments;
@@ -90,21 +88,6 @@ public class ManagedRepository
         this.daysOlder = daysOlder;
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
-    }
-
-    public String getId()
-    {
-        return this.id;
-    }
-
-    public String getLayout()
-    {
-        return this.layout;
-    }
-
-    public String getName()
-    {
-        return this.name;
     }
 
     public String getLocation()
@@ -126,20 +109,6 @@ public class ManagedRepository
         return this.snapshots;
     }
 
-    public void setId( String id )
-    {
-        this.id = id;
-    }
-
-    public void setLayout( String layout )
-    {
-        this.layout = layout;
-    }
-
-    public void setName( String name )
-    {
-        this.name = name;
-    }
 
     public void setReleases( boolean releases )
     {
@@ -237,40 +206,13 @@ public class ManagedRepository
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
     }
 
-    public int hashCode()
-    {
-        int result = 17;
-        result = 37 * result + ( id != null ? id.hashCode() : 0 );
-        return result;
-    }
-
-    public boolean equals( Object other )
-    {
-        if ( this == other )
-        {
-            return true;
-        }
-
-        if ( !( other instanceof ManagedRepository ) )
-        {
-            return false;
-        }
-
-        ManagedRepository that = (ManagedRepository) other;
-        boolean result = true;
-        result = result && ( getId() == null ? that.getId() == null : getId().equals( that.getId() ) );
-        return result;
-    }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "ManagedRepository" );
-        sb.append( "{id='" ).append( id ).append( '\'' );
-        sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", location='" ).append( location ).append( '\'' );
-        sb.append( ", layout='" ).append( layout ).append( '\'' );
+        sb.append( "{location='" ).append( location ).append( '\'' );
         sb.append( ", snapshots=" ).append( snapshots );
         sb.append( ", releases=" ).append( releases );
         sb.append( ", blockRedeployments=" ).append( blockRedeployments );
@@ -278,7 +220,11 @@ public class ManagedRepository
         sb.append( ", stagingRepository=" ).append( stagingRepository );
         sb.append( ", scanned=" ).append( scanned );
         sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
+        sb.append( ", daysOlder=" ).append( daysOlder );
+        sb.append( ", retentionCount=" ).append( retentionCount );
+        sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );
         sb.append( '}' );
+        sb.append( super.toString() );
         return sb.toString();
     }
 
