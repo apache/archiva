@@ -91,12 +91,13 @@ public class AddManagedRepositoryActionTest
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
-        action.setRepositoryTaskScheduler( repositoryTaskScheduler );
 
         location = new File( "target/test/location" );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfiguration );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRoleManager( roleManager );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRegistry( registry );
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryTaskScheduler(
+            repositoryTaskScheduler );
         action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
 
     }
