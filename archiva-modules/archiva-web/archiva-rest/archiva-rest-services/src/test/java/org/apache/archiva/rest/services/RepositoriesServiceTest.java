@@ -101,7 +101,7 @@ public class RepositoriesServiceTest
 
         assertTrue( service.scanRepository( repoId, true ) );
 
-        log.info( "sanRepo call ok " );
+        log.info( "scanRepo call ok " );
 
         assertTrue( service.alreadyScanning( repoId ) );
 
