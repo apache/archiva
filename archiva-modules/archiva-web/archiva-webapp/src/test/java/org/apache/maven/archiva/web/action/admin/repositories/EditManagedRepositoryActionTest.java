@@ -93,15 +93,12 @@ public class EditManagedRepositoryActionTest
 
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
-        //action.setRoleManager( roleManager );
 
         registryControl = MockControl.createControl( Registry.class );
         registry = (Registry) registryControl.getMock();
-        //action.setRegistry( registry );
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
-        action.setRepositoryTaskScheduler( repositoryTaskScheduler );
 
         location = new File( "target/test/location" );
 
@@ -110,7 +107,6 @@ public class EditManagedRepositoryActionTest
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
         TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
         factory.setRepositorySession( repositorySession );
-        action.setRepositorySessionFactory( factory );
 
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfiguration );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRoleManager( roleManager );

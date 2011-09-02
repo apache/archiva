@@ -19,12 +19,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 
@@ -38,37 +35,5 @@ import java.io.IOException;
 public abstract class AbstractManagedRepositoriesAction
     extends AbstractRepositoriesAdminAction
 {
-
-
-    @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
-    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
-
     public static final String CONFIRM = "confirm";
-
-    
-    public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
-    {
-        this.repositoryTaskScheduler = repositoryTaskScheduler;
-    }
-
-    protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
-        throws IOException
-    {
-        // Normalize the path
-        File file = new File( repository.getLocation() );
-        repository.setLocation( file.getCanonicalPath() );
-        if ( !file.exists() )
-        {
-            file.mkdirs();
-        }
-        if ( !file.exists() || !file.isDirectory() )
-        {
-            throw new IOException(
-                "Unable to add repository - no write access, can not create the root directory: " + file );
-        }
-
-        configuration.addManagedRepository( repository );
-
-    }
 }
