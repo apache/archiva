@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.transaction;
+package org.apache.archiva.transaction;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva.transaction;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,27 +19,32 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
-import java.io.IOException;
-
 /**
- * Interface for individual events in a transaction.
+ * TransactionException 
  *
+ * @version $Id$
  */
-public interface TransactionEvent
+public class TransactionException
+    extends Exception
 {
-    /**
-     * Commit this event.
-     *
-     * @throws IOException if an error occurred committing the change
-     */
-    void commit()
-        throws IOException;
 
-    /**
-     * Rollback the even already committed.
-     *
-     * @throws IOException if an error occurred reverting the change
-     */
-    void rollback()
-        throws IOException;
+    public TransactionException()
+    {
+    }
+
+    public TransactionException( String message )
+    {
+        super( message );
+    }
+
+    public TransactionException( Throwable cause )
+    {
+        super( cause );
+    }
+
+    public TransactionException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
 }

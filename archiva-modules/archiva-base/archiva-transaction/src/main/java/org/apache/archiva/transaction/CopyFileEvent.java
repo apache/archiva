@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.transaction;
+package org.apache.archiva.transaction;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
