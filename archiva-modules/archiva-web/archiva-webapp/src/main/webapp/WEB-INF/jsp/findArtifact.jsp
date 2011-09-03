@@ -95,7 +95,7 @@
       </p>
 
       <p>
-        <applet code="org/apache/maven/archiva/applet/ChecksumApplet.class"
+        <applet code="org/apache/archiva/applet/ChecksumApplet.class"
                 archive="archiva-applet.jar"
                 width="400" height="20" name="ChecksumApplet">
         </applet>

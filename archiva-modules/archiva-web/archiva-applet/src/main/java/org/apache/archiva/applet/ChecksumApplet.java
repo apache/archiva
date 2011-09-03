@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.applet;
+package org.apache.archiva.applet;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
