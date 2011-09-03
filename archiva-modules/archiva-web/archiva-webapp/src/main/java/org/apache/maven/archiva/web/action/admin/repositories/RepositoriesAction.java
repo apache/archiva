@@ -32,7 +32,7 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
-import org.apache.maven.archiva.web.util.ContextUtils;
+import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;

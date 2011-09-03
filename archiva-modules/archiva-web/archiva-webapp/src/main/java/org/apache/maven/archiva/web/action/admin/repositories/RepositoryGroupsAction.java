@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.web.util.ContextUtils;
+import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;

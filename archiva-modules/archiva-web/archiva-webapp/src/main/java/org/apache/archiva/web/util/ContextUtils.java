@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.util;
+package org.apache.archiva.web.util;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

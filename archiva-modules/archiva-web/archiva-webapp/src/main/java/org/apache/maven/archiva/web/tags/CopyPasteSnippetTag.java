@@ -28,7 +28,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.web.util.ContextUtils;
+import org.apache.archiva.web.util.ContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
