@@ -42,7 +42,6 @@ import java.util.List;
  * DependencyTree
  *
  * @version $Id$
- *          plexus.component role="org.apache.archiva.web.tags.DependencyTree"
  */
 @Service( "dependencyTree" )
 public class DependencyTree
