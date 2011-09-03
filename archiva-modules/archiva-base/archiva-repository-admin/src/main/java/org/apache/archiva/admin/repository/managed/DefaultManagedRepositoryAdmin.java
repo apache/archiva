@@ -20,6 +20,7 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -29,6 +30,7 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
@@ -37,7 +39,6 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.users.User;
@@ -68,9 +69,6 @@ import java.util.Map;
 public class DefaultManagedRepositoryAdmin
     implements ManagedRepositoryAdmin
 {
-    public static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
-
-    public static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
 
     public static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
@@ -97,6 +95,9 @@ public class DefaultManagedRepositoryAdmin
 
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+
+    @Inject
+    private RepositoryCommonValidator repositoryCommonValidator;
 
     @Inject
     protected RoleManager roleManager;
@@ -143,6 +144,8 @@ public class DefaultManagedRepositoryAdmin
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
     {
+
+        repositoryCommonValidator.basicValidation( managedRepository, false );
         triggerAuditEvent( managedRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
         return
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
@@ -166,17 +169,6 @@ public class DefaultManagedRepositoryAdmin
 
         Configuration config = getArchivaConfiguration().getConfiguration();
 
-        if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
-        {
-            throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
-                                                    + "], that id already exists as a managed repository." );
-        }
-        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
-        {
-            throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
-                                                    + "], that id already exists as a repository group." );
-        }
-
         // FIXME : olamy can be empty to avoid scheduled scan ?
         if ( StringUtils.isNotBlank( cronExpression ) )
         {
@@ -192,30 +184,7 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException( "Cron expression cannot be empty." );
         }
 
-        if ( StringUtils.isBlank( repoId ) )
-        {
-            throw new RepositoryAdminException( "Repository ID cannot be empty." );
-        }
-
-        if ( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
-        {
-            throw new RepositoryAdminException(
-                "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        }
-
-        if ( StringUtils.isBlank( name ) )
-        {
-            throw new RepositoryAdminException( "repository name cannot be empty" );
-        }
-
-        if ( !GenericValidator.matchRegexp( name, REPOSITORY_NAME_VALID_EXPRESSION ) )
-        {
-            throw new RepositoryAdminException(
-                "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), "
-                    + "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-)." );
-        }
-
-        String repoLocation = removeExpressions( location );
+        String repoLocation = repositoryCommonValidator.removeExpressions( location );
 
         if ( !GenericValidator.matchRegexp( repoLocation, REPOSITORY_LOCATION_VALID_EXPRESSION ) )
         {
@@ -404,11 +373,15 @@ public class DefaultManagedRepositoryAdmin
                                             AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException
     {
-        // Ensure that the fields are valid.
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         log.debug( "updateManagedConfiguration repo {} needStage {} resetStats {} ",
                    Arrays.asList( managedRepository, needStageRepo, resetStats ).toArray() );
+
+        // Ensure that the fields are valid.
+
+        repositoryCommonValidator.basicValidation( managedRepository, true );
+
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( managedRepository.getId() );
 
@@ -488,14 +461,6 @@ public class DefaultManagedRepositoryAdmin
 
     }
 
-    public String removeExpressions( String directory )
-    {
-        String value = StringUtils.replace( directory, "${appserver.base}",
-                                            getRegistry().getString( "appserver.base", "${appserver.base}" ) );
-        value = StringUtils.replace( value, "${appserver.home}",
-                                     getRegistry().getString( "appserver.home", "${appserver.home}" ) );
-        return value;
-    }
 
     private void saveConfiguration( Configuration config )
         throws RepositoryAdminException
@@ -684,5 +649,15 @@ public class DefaultManagedRepositoryAdmin
     public void setRegistry( Registry registry )
     {
         this.registry = registry;
+    }
+
+    public RepositoryCommonValidator getRepositoryCommonValidator()
+    {
+        return repositoryCommonValidator;
+    }
+
+    public void setRepositoryCommonValidator( RepositoryCommonValidator repositoryCommonValidator )
+    {
+        this.repositoryCommonValidator = repositoryCommonValidator;
     }
 }

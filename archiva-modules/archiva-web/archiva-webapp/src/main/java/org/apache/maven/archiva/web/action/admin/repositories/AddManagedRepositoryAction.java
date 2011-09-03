@@ -25,7 +25,6 @@ import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -74,7 +73,7 @@ public class AddManagedRepositoryAction
 
     public String commit()
     {
-        repository.setLocation( getManagedRepositoryAdmin().removeExpressions( repository.getLocation() ) );
+        repository.setLocation( getRepositoryCommonValidator().removeExpressions( repository.getLocation() ) );
 
         File location = new File( repository.getLocation() );
         if ( location.exists() )

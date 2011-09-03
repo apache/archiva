@@ -20,6 +20,7 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
@@ -34,6 +35,7 @@ import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.archiva.stagerepository.merge.RepositoryMerger;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
@@ -54,7 +56,6 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.easymock.MockControl;
@@ -62,6 +63,7 @@ import org.easymock.classextension.MockClassControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -156,6 +158,8 @@ public class AdministrationServiceImplTest
 
     private DefaultManagedRepositoryAdmin managedRepositoryAdmin;
 
+    private ApplicationContext applicationContext;
+
     @Before
     public void setUp()
         throws Exception
@@ -222,6 +226,12 @@ public class AdministrationServiceImplTest
         managedRepositoryAdmin.setRepositorySessionFactory( repositorySessionFactory );
         managedRepositoryAdmin.setAuditListeners( Arrays.asList( auditListener ) );
         managedRepositoryAdmin.setRoleManager( roleManager );
+
+        RepositoryCommonValidator repositoryCommonValidator = new RepositoryCommonValidator();
+        repositoryCommonValidator.setArchivaConfiguration( archivaConfig );
+        repositoryCommonValidator.setRegistry( registry );
+
+        managedRepositoryAdmin.setRepositoryCommonValidator( repositoryCommonValidator );
 
         service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
                                                  repositorySessionFactory, repositoryTaskScheduler,
@@ -1148,6 +1158,7 @@ public class AdministrationServiceImplTest
         repoGroupMap.put( "repo1", repoGroup );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
         configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
         configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
@@ -1168,10 +1179,10 @@ public class AdministrationServiceImplTest
         }
         catch ( Exception e )
         {
-            assertEquals(
-                "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
-                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).",
-                e.getMessage() );
+            assertEquals( "message found " + e.getMessage(),
+                          "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
+                              + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).",
+                          e.getMessage() );
         }
 
         registryControl.verify();

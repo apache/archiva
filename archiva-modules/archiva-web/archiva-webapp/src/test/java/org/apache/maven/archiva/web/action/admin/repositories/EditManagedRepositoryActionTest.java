@@ -21,6 +21,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.audit.AuditListener;
@@ -120,6 +121,15 @@ public class EditManagedRepositoryActionTest
 
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setAuditListeners(
             new ArrayList<AuditListener>( 0 ) );
+
+        RepositoryCommonValidator repositoryCommonValidator = new RepositoryCommonValidator();
+        repositoryCommonValidator.setArchivaConfiguration( archivaConfiguration );
+        repositoryCommonValidator.setRegistry( registry );
+
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryCommonValidator(
+            repositoryCommonValidator );
+
+        action.setRepositoryCommonValidator( repositoryCommonValidator );
 
         action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
 
@@ -230,6 +240,7 @@ public class EditManagedRepositoryActionTest
         archivaConfigurationControl.setReturnValue( configuration );
 
         archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration );
 
         Configuration stageRepoConfiguration = new Configuration();
         stageRepoConfiguration.addManagedRepository( createStagingRepository() );
@@ -329,6 +340,8 @@ public class EditManagedRepositoryActionTest
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration );
+
         archivaConfigurationControl.setReturnValue( configuration );
 
         archivaConfigurationControl.setReturnValue( buildEasyConfiguration() );

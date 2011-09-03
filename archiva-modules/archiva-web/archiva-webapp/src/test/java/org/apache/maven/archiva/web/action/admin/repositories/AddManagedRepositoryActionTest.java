@@ -20,15 +20,16 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.archiva.security.ArchivaRoleConstants;
-import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
@@ -98,6 +99,16 @@ public class AddManagedRepositoryActionTest
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRegistry( registry );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryTaskScheduler(
             repositoryTaskScheduler );
+
+        RepositoryCommonValidator repositoryCommonValidator = new RepositoryCommonValidator();
+        repositoryCommonValidator.setArchivaConfiguration( archivaConfiguration );
+        repositoryCommonValidator.setRegistry( registry );
+
+        ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryCommonValidator(
+            repositoryCommonValidator );
+
+        action.setRepositoryCommonValidator( repositoryCommonValidator );
+
         action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
 
     }
@@ -118,6 +129,8 @@ public class AddManagedRepositoryActionTest
     public void testAddRepositoryInitialPage()
         throws Exception
     {
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( new Configuration() );
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
         archivaConfigurationControl.replay();
@@ -179,6 +192,9 @@ public class AddManagedRepositoryActionTest
         repositoryTaskSchedulerControl.replay();
 
         Configuration configuration = new Configuration();
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
 

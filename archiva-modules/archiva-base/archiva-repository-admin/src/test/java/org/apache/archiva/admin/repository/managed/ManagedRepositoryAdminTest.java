@@ -21,9 +21,9 @@ package org.apache.archiva.admin.repository.managed;
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.mock.MockAuditListener;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
@@ -184,6 +184,7 @@ public class ManagedRepositoryAdminTest
         assertAuditListenerCallAndUpdateAddAndDelete( false );
 
         mockAuditListener.clearEvents();
+
     }
 
 
@@ -242,6 +243,7 @@ public class ManagedRepositoryAdminTest
         assertTemplateRoleNotExists( repoId + STAGE_REPO_ID_END );
 
         mockAuditListener.clearEvents();
+
     }
 
     @Test
@@ -263,6 +265,8 @@ public class ManagedRepositoryAdminTest
         assertTrue( initialSize > 0 );
 
         ManagedRepository repo = getTestManagedRepository( repoId, repoLocation );
+
+
 
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
 
@@ -323,6 +327,7 @@ public class ManagedRepositoryAdminTest
         assertAuditListenerCallAndUpdateAddAndDelete( true );
 
         mockAuditListener.clearEvents();
+
     }
 
     //----------------------------------

@@ -19,14 +19,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
@@ -59,6 +60,9 @@ public abstract class AbstractRepositoriesAdminAction
 
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private RepositoryCommonValidator repositoryCommonValidator;
 
     public ArchivaConfiguration getArchivaConfiguration()
     {
@@ -133,4 +137,13 @@ public abstract class AbstractRepositoriesAdminAction
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
+    public RepositoryCommonValidator getRepositoryCommonValidator()
+    {
+        return repositoryCommonValidator;
+    }
+
+    public void setRepositoryCommonValidator( RepositoryCommonValidator repositoryCommonValidator )
+    {
+        this.repositoryCommonValidator = repositoryCommonValidator;
+    }
 }

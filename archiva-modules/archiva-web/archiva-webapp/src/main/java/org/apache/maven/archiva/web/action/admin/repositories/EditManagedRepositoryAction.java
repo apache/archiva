@@ -95,7 +95,7 @@ public class EditManagedRepositoryAction
         boolean resetStats = false;
 
         // check if the location was changed
-        repository.setLocation( getManagedRepositoryAdmin().removeExpressions( repository.getLocation() ) );
+        repository.setLocation( getRepositoryCommonValidator().removeExpressions( repository.getLocation() ) );
 
         if ( !StringUtils.equalsIgnoreCase( existingConfig.getLocation().trim(), repository.getLocation().trim() ) )
         {
