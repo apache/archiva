@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.action.admin;
 
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.redback.rbac.Resource;

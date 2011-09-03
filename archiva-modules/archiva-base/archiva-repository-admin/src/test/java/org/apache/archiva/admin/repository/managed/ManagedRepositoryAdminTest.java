@@ -23,7 +23,7 @@ import org.apache.archiva.admin.mock.MockAuditListener;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.security;
+package org.apache.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @version
- * plexus.component role="org.apache.maven.archiva.security.ServletAuthenticator" role-hint="default"
+ * plexus.component role="org.apache.archiva.security.ServletAuthenticator" role-hint="default"
  */
 @Service("servletAuthenticator")
 public class ArchivaServletAuthenticator

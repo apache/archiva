@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.security;
+package org.apache.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,12 +19,9 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
-import net.sf.ehcache.CacheManager;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.users.User;
@@ -36,7 +33,6 @@ import org.junit.Test;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 
 /**
  * ArchivaServletAuthenticatorTest

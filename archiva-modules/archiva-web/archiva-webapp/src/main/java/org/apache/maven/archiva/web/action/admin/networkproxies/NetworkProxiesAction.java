@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;

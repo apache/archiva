@@ -27,7 +27,7 @@ import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.ArchivaXworkUser;
+import org.apache.archiva.security.ArchivaXworkUser;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.codehaus.plexus.redback.users.User;

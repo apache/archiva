@@ -30,7 +30,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractRepositoryBasedAction;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;

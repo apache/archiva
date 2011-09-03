@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.security;
+package org.apache.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,19 +20,19 @@ package org.apache.maven.archiva.security;
  */
 
 /**
- * PrincipalNotFoundException 
+ * AccessDeniedException 
  *
  * @version $Id$
  */
-public class PrincipalNotFoundException
+public class AccessDeniedException
     extends ArchivaSecurityException
 {
-    public PrincipalNotFoundException( String message, Throwable cause )
+    public AccessDeniedException( String message, Throwable cause )
     {
         super( message, cause );
     }
 
-    public PrincipalNotFoundException( String message )
+    public AccessDeniedException( String message )
     {
         super( message );
     }

@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;

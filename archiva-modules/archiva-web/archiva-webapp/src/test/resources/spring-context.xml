@@ -34,7 +34,7 @@
 
   <alias name="repositorySessionFactory#test" alias="repositorySessionFactory"/>
 
-  <bean name="userRepositories#test" class="org.apache.maven.archiva.security.UserRepositoriesStub"/>
+  <bean name="userRepositories#test" class="org.apache.archiva.security.UserRepositoriesStub"/>
 
   <alias name="userRepositories#test" alias="userRepositories"/>
 

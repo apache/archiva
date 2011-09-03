@@ -19,7 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.apache.maven.archiva.security.ArchivaServletAuthenticator;
+import org.apache.archiva.security.ArchivaServletAuthenticator;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 
 public class MockServletAuthenticator

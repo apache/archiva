@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.security;
+package org.apache.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,20 +19,22 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.ArchivaException;
+
 /**
- * AccessDeniedException 
+ * ArchivaSecurityException 
  *
  * @version $Id$
  */
-public class AccessDeniedException
-    extends ArchivaSecurityException
+public class ArchivaSecurityException
+    extends ArchivaException
 {
-    public AccessDeniedException( String message, Throwable cause )
+    public ArchivaSecurityException( String message, Throwable cause )
     {
         super( message, cause );
     }
 
-    public AccessDeniedException( String message )
+    public ArchivaSecurityException( String message )
     {
         super( message );
     }

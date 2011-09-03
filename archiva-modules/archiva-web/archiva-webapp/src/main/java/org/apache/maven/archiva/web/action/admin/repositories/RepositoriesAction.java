@@ -30,7 +30,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;

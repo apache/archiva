@@ -33,7 +33,7 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;

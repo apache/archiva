@@ -29,7 +29,7 @@ import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.security.UserRepositoriesStub;
+import org.apache.archiva.security.UserRepositoriesStub;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
 import org.junit.After;

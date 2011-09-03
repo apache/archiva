@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.security;
+package org.apache.archiva.security;
 
 /* 
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -23,7 +23,7 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.apache.maven.archiva.security.ServletAuthenticator;
+import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;

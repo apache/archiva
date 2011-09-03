@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.admin;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.taskqueue.TaskQueueException;

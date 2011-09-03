@@ -21,9 +21,9 @@ package org.apache.archiva.web.xmlrpc.security;
 
 import java.util.List;
 
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 import org.apache.xmlrpc.server.AbstractReflectiveHandlerMapping.AuthenticationHandler;
 
 public class XmlRpcUserRepositories

@@ -54,7 +54,7 @@ import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryConte
 import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.content.PathParser;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.easymock.MockControl;

@@ -36,10 +36,9 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
-import org.apache.maven.archiva.security.UserRepositoriesStub;
+import org.apache.archiva.security.UserRepositoriesStub;
 import org.apache.struts2.StrutsSpringTestCase;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

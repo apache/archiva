@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.security;
+package org.apache.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -43,7 +43,7 @@ import java.util.List;
  * DefaultUserRepositories
  *
  * @version $Id$
- *          plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
+ *          plexus.component role="org.apache.archiva.security.UserRepositories" role-hint="default"
  */
 @Service( "userRepositories" )
 public class DefaultUserRepositories

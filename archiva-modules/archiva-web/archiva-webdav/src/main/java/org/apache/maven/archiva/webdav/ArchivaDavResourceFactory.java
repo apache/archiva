@@ -56,7 +56,7 @@ import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataMerge;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.security.ServletAuthenticator;
+import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;

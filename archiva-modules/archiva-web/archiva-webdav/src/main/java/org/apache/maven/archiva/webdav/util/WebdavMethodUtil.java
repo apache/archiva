@@ -20,7 +20,7 @@ package org.apache.maven.archiva.webdav.util;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 
 import java.util.ArrayList;
 import java.util.List;

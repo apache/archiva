@@ -35,17 +35,14 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.jdo.JdoUser;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.easymock.MockControl;
 
 import java.io.File;

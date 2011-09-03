@@ -19,7 +19,6 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.audit.AuditEvent;
@@ -48,10 +47,10 @@ import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

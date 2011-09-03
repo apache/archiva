@@ -19,10 +19,10 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import org.apache.maven.archiva.security.AccessDeniedException;
-import org.apache.maven.archiva.security.ArchivaSecurityException;
-import org.apache.maven.archiva.security.PrincipalNotFoundException;
-import org.apache.maven.archiva.security.UserRepositories;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 
 import javax.inject.Inject;
 import java.util.Collections;

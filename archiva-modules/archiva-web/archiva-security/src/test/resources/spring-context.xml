@@ -34,7 +34,7 @@
 
   <alias name="securitySystem#testable" alias="securitySystem"/>
 
-  <bean name="userRepositories" class="org.apache.maven.archiva.security.DefaultUserRepositories">
+  <bean name="userRepositories" class="org.apache.archiva.security.DefaultUserRepositories">
     <property name="securitySystem" ref="securitySystem#testable"/>
     <property name="roleManager" ref="roleManager"/>
     <property name="archivaConfiguration" ref="archivaConfiguration"/>
@@ -72,7 +72,7 @@
 
   <alias name="roleTemplateProcessor" alias="roleTemplateProcessor#test"/>
 
-  <bean name="servletAuthenticator" class="org.apache.maven.archiva.security.ArchivaServletAuthenticator">
+  <bean name="servletAuthenticator" class="org.apache.archiva.security.ArchivaServletAuthenticator">
     <property name="securitySystem" ref="securitySystem#testable"/>
   </bean>
 

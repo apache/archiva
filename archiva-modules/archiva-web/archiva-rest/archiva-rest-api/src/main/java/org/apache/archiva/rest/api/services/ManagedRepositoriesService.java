@@ -21,8 +21,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.rest.api.model.ManagedRepository;
-import org.apache.archiva.rest.api.model.RemoteRepository;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;

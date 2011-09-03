@@ -35,7 +35,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ServletAuthenticator;
+import org.apache.archiva.security.ServletAuthenticator;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
