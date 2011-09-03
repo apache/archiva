@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.tags;
+package org.apache.archiva.web.tags;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -42,7 +42,7 @@ import java.util.List;
  * DependencyTree
  *
  * @version $Id$
- *          plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree"
+ *          plexus.component role="org.apache.archiva.web.tags.DependencyTree"
  */
 @Service( "dependencyTree" )
 public class DependencyTree

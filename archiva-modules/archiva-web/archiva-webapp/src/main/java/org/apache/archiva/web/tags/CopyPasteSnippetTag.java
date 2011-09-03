@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.tags;
+package org.apache.archiva.web.tags;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -33,7 +33,7 @@
    <tag>
 
       <name>groupIdLink</name>
-      <tag-class>org.apache.maven.archiva.web.tags.GroupIdLinkTag</tag-class>
+      <tag-class>org.apache.archiva.web.tags.GroupIdLinkTag</tag-class>
       <body-content>empty</body-content>
       <description><![CDATA[Render a groupId as a set of Links]]></description>
 
@@ -58,7 +58,7 @@
    <tag>
 
       <name>copy-paste-snippet</name>
-      <tag-class>org.apache.maven.archiva.web.tags.CopyPasteSnippetTag</tag-class>
+      <tag-class>org.apache.archiva.web.tags.CopyPasteSnippetTag</tag-class>
       <body-content>empty</body-content>
       <description><![CDATA[Render a copy paste snippet for the provided object]]></description>
 
@@ -82,7 +82,7 @@
    <tag>
    
       <name>dependency-tree</name>
-      <tag-class>org.apache.maven.archiva.web.tags.DependencyTreeTag</tag-class>
+      <tag-class>org.apache.archiva.web.tags.DependencyTreeTag</tag-class>
       <body-content>JSP</body-content>
       <description><![CDATA[Render a dependency tree for the provided project.]]></description>
 

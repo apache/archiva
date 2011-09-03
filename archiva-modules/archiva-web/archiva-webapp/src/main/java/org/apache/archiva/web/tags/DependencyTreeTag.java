@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.tags;
+package org.apache.archiva.web.tags;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,7 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
-import org.apache.maven.archiva.web.tags.DependencyTree.TreeEntry;
+import org.apache.archiva.web.tags.DependencyTree.TreeEntry;
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
