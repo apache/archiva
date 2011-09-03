@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.mapper;
+package org.apache.archiva.web.mapper;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
