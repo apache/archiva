@@ -20,8 +20,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.maven.archiva.xml.XMLException;
-import org.apache.maven.archiva.xml.XMLReader;
+import org.apache.archiva.xml.XMLException;
+import org.apache.archiva.xml.XMLReader;
 import org.dom4j.Element;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public final class MavenRepositoryMetadataReader
      *
      * @param metadataFile the maven-metadata.xml file to read.
      * @return the archiva repository metadata object that represents the provided file contents.
-     * @throws org.apache.maven.archiva.xml.XMLException
+     * @throws org.apache.archiva.xml.XMLException
      *
      */
     public static MavenRepositoryMetadata read( File metadataFile )

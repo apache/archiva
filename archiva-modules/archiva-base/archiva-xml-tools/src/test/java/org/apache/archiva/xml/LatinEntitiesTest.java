@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.xml;
+package org.apache.archiva.xml;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,33 +19,26 @@ package org.apache.maven.archiva.xml;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
-import org.dom4j.Element;
-
-import java.util.ArrayList;
-import java.util.List;
+import junit.framework.TestCase;
 
 /**
- * Gather the text from a collection of {@link Element}'s into a {@link List}
+ * LatinEntitiesTest 
  *
  * @version $Id$
  */
-public class ElementTextListClosure
-    implements Closure
+public class LatinEntitiesTest
+    extends TestCase
 {
-    private List<String> list = new ArrayList<String>();
-
-    public void execute( Object input )
+    public void testResolveEntity()
     {
-        if ( input instanceof Element )
-        {
-            Element elem = (Element) input;
-            list.add( elem.getTextTrim() );
-        }
-    }
+        // Good Entities.
+        assertEquals( "\u00a9", LatinEntities.resolveEntity( "&copy;" ) );
+        assertEquals( "\u221e", LatinEntities.resolveEntity( "&infin;" ) );
+        assertEquals( "\u00f8", LatinEntities.resolveEntity( "&oslash;" ) );
 
-    public List<String> getList()
-    {
-        return list;
+        // Bad Entities.
+        assertEquals( "", LatinEntities.resolveEntity( "" ) );
+        assertEquals( "&amp;", LatinEntities.resolveEntity( "&amp;" ) );
+        assertEquals( null, LatinEntities.resolveEntity( null ) );
     }
 }

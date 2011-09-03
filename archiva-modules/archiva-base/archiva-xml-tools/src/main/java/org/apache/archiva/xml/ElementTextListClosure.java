@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.xml;
+package org.apache.archiva.xml;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,22 +19,33 @@ package org.apache.maven.archiva.xml;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.commons.collections.Closure;
+import org.dom4j.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * XMLException 
+ * Gather the text from a collection of {@link Element}'s into a {@link List}
  *
  * @version $Id$
  */
-public class XMLException extends ArchivaException
+public class ElementTextListClosure
+    implements Closure
 {
-    public XMLException( String message, Throwable cause )
+    private List<String> list = new ArrayList<String>();
+
+    public void execute( Object input )
     {
-        super( message, cause );
+        if ( input instanceof Element )
+        {
+            Element elem = (Element) input;
+            list.add( elem.getTextTrim() );
+        }
     }
 
-    public XMLException( String message )
+    public List<String> getList()
     {
-        super( message );
+        return list;
     }
 }

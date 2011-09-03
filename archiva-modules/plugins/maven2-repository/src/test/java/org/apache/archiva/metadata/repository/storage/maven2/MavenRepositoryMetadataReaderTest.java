@@ -20,7 +20,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import junit.framework.TestCase;
-import org.apache.maven.archiva.xml.XMLException;
+import org.apache.archiva.xml.XMLException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

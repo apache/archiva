@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.xml;
+package org.apache.archiva.xml;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,26 +19,22 @@ package org.apache.maven.archiva.xml;
  * under the License.
  */
 
-import junit.framework.TestCase;
+import org.apache.maven.archiva.common.ArchivaException;
 
 /**
- * LatinEntitiesTest 
+ * XMLException 
  *
  * @version $Id$
  */
-public class LatinEntitiesTest
-    extends TestCase
+public class XMLException extends ArchivaException
 {
-    public void testResolveEntity()
+    public XMLException( String message, Throwable cause )
     {
-        // Good Entities.
-        assertEquals( "\u00a9", LatinEntities.resolveEntity( "&copy;" ) );
-        assertEquals( "\u221e", LatinEntities.resolveEntity( "&infin;" ) );
-        assertEquals( "\u00f8", LatinEntities.resolveEntity( "&oslash;" ) );
+        super( message, cause );
+    }
 
-        // Bad Entities.
-        assertEquals( "", LatinEntities.resolveEntity( "" ) );
-        assertEquals( "&amp;", LatinEntities.resolveEntity( "&amp;" ) );
-        assertEquals( null, LatinEntities.resolveEntity( null ) );
+    public XMLException( String message )
+    {
+        super( message );
     }
 }

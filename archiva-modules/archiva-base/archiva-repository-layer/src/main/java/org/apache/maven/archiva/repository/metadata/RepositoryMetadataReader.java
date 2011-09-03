@@ -26,8 +26,8 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.Plugin;
 import org.apache.maven.archiva.model.SnapshotVersion;
-import org.apache.maven.archiva.xml.XMLException;
-import org.apache.maven.archiva.xml.XMLReader;
+import org.apache.archiva.xml.XMLException;
+import org.apache.archiva.xml.XMLReader;
 import org.dom4j.Element;
 
 /**

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.xml;
+package org.apache.archiva.xml;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
