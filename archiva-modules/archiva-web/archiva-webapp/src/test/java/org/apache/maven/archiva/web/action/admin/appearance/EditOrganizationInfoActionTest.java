@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.admin.appearance;
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
 import org.apache.maven.archiva.configuration.OrganisationInformation;
 import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
-import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
+import org.apache.archiva.web.validator.utils.ValidatorUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

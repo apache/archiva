@@ -19,18 +19,16 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  * under the License.
  */
 
-import com.opensymphony.xwork2.ObjectFactory;
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.opensymphony.xwork2.validator.DefaultActionValidatorManager;
 import junit.framework.TestCase;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
-import org.apache.maven.archiva.web.validator.utils.ValidatorUtil;
+import org.apache.archiva.web.validator.utils.ValidatorUtil;
 
 public class AddLegacyArtifactPathActionTest extends TestCase
 {

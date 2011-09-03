@@ -37,8 +37,8 @@
   <validator name="conversion" class="com.opensymphony.xwork2.validator.validators.ConversionErrorFieldValidator"/>
   <validator name="stringlength" class="com.opensymphony.xwork2.validator.validators.StringLengthFieldValidator"/>
   <validator name="regex" class="com.opensymphony.xwork2.validator.validators.RegexFieldValidator"/>
-  <validator name="interval" class="org.apache.maven.archiva.web.validator.IntervalValidator"/>
-  <validator name="syncedrepo" class="org.apache.maven.archiva.web.validator.SyncedRepositoryValidator"/>
-  <validator name="crontab" class="org.apache.maven.archiva.web.validator.CronExpressionValidator"/>
+  <validator name="interval" class="org.apache.archiva.web.validator.IntervalValidator"/>
+  <validator name="syncedrepo" class="org.apache.archiva.web.validator.SyncedRepositoryValidator"/>
+  <validator name="crontab" class="org.apache.archiva.web.validator.CronExpressionValidator"/>
 </validators>
 

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.validator;
+package org.apache.archiva.web.validator;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
