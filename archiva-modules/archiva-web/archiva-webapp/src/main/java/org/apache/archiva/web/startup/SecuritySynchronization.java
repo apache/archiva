@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.startup;
+package org.apache.archiva.web.startup;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -53,7 +53,7 @@ import java.util.Map.Entry;
  * ConfigurationSynchronization
  *
  * @version $Id$
- * plexus.component role="org.apache.maven.archiva.web.startup.SecuritySynchronization"
+ * plexus.component role="org.apache.archiva.web.startup.SecuritySynchronization"
  * role-hint="default"
  */
 @Service

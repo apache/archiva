@@ -81,8 +81,8 @@
 	<listener>
 		<!-- TODO: some Spring technique for this? -->
 		<listener-class>
-			org.apache.maven.archiva.web.startup.ArchivaStartup
-		</listener-class>
+      org.apache.archiva.web.startup.ArchivaStartup
+    </listener-class>
 	</listener>
 
 	<context-param>

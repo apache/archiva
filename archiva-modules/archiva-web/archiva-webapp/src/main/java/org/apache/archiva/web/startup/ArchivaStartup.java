@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.startup;
+package org.apache.archiva.web.startup;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,7 +34,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutorService;
 

@@ -26,7 +26,7 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ page import="java.util.Calendar" %>
-<%@ page import="org.apache.maven.archiva.web.startup.ArchivaVersion" %>
+<%@ page import="org.apache.archiva.web.startup.ArchivaVersion" %>
 
 <html>
 <head>
