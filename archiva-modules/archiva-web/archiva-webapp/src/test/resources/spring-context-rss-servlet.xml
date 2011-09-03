@@ -39,7 +39,7 @@
   <alias name="userRepositories#test" alias="userRepositories"/>
 
 
-  <bean name="securitySystem#test" class="org.apache.maven.archiva.web.rss.SecuritySystemStub"/>
+  <bean name="securitySystem#test" class="org.apache.archiva.web.rss.SecuritySystemStub"/>
 
   <alias name="securitySystem#test" alias="securitySystem"/>
 

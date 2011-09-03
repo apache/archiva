@@ -35,7 +35,7 @@
 
   <servlet>
     <servlet-name>RssFeedServlet</servlet-name>
-    <servlet-class>org.apache.maven.archiva.web.rss.RssFeedServlet</servlet-class>
+    <servlet-class>org.apache.archiva.web.rss.RssFeedServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
