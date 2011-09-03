@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.interceptor;
+package org.apache.archiva.web.interceptor;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,19 +30,14 @@ import javax.inject.Inject;
 import javax.servlet.ServletContext;
 
 /**
- * An interceptor that makes the configuration bits available, both to the application and the webapp
- *
- * plexus.component role="com.opensymphony.xwork2.interceptor.Interceptor"
- * role-hint="configurationInterceptor"
+ * An interceptor that makes the configuration bits available, both to the application and the webapp.
  */
 @Service( "configurationInterceptor" )
 @Scope( "prototype" )
 public class ConfigurationInterceptor
     implements Interceptor
 {
-    /**
-     * plexus.requirement role-hint="default"
-     */
+
     @Inject
     private ArchivaConfiguration configuration;
 
