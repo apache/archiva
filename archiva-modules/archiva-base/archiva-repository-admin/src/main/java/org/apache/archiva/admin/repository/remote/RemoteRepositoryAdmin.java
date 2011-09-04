@@ -19,6 +19,7 @@ package org.apache.archiva.admin.repository.remote;
  */
 
 
+import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 
 import java.util.List;
@@ -35,12 +36,12 @@ public interface RemoteRepositoryAdmin
     RemoteRepository getRemoteRepository( String repositoryId )
         throws RepositoryAdminException;
 
-    Boolean deleteRemoteRepository( String repositoryId )
+    Boolean deleteRemoteRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-    Boolean addRemoteRepository( RemoteRepository remoteRepository )
+    Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-    Boolean updateRemoteRepository( RemoteRepository remoteRepository )
+    Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException;
 }

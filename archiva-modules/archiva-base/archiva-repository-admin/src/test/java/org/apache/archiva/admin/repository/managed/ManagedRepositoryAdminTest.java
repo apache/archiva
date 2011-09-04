@@ -44,8 +44,7 @@ public class ManagedRepositoryAdminTest
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    @Inject
-    private MockAuditListener mockAuditListener;
+
 
     @Inject
     protected RoleManager roleManager;
@@ -416,28 +415,7 @@ public class ManagedRepositoryAdminTest
         return null;
     }
 
-    AuditInformation getFakeAuditInformation()
-    {
-        AuditInformation auditInformation = new AuditInformation( getFakeUser(), "archiva-localhost" );
-        return auditInformation;
-    }
 
-    User getFakeUser()
-    {
-        SimpleUser user = new SimpleUser()
-        {
-            @Override
-            public Object getPrincipal()
-            {
-                return "root";
-            }
-
-        };
-
-        user.setUsername( "root" );
-        user.setFullName( "The top user" );
-        return user;
-    }
 
     ManagedRepository getTestManagedRepository( String repoId, String repoLocation )
     {

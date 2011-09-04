@@ -19,6 +19,7 @@ package org.apache.archiva.admin.repository.remote;
  */
 
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
+import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -60,11 +61,12 @@ public class RemoteRepositoryAdminTest
     public void addAndDelete()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         int initialSize = remoteRepositoryAdmin.getRemoteRepositories().size();
 
         RemoteRepository remoteRepository = getRemoteRepository();
 
-        remoteRepositoryAdmin.addRemoteRepository( remoteRepository );
+        remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getFakeAuditInformation() );
 
         assertEquals( initialSize + 1, remoteRepositoryAdmin.getRemoteRepositories().size() );
 
@@ -76,12 +78,22 @@ public class RemoteRepositoryAdminTest
         assertEquals( getRemoteRepository().getName(), repo.getName() );
         assertEquals( getRemoteRepository().getTimeout(), repo.getTimeout() );
 
-        remoteRepositoryAdmin.deleteRemoteRepository( "foo" );
+        remoteRepositoryAdmin.deleteRemoteRepository( "foo", getFakeAuditInformation() );
 
         assertEquals( initialSize, remoteRepositoryAdmin.getRemoteRepositories().size() );
 
         repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
         assertNull( repo );
+
+        assertEquals( 2, mockAuditListener.getAuditEvents().size() );
+
+        assertEquals( AuditEvent.ADD_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
+
+        assertEquals( AuditEvent.DELETE_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+
     }
 
 

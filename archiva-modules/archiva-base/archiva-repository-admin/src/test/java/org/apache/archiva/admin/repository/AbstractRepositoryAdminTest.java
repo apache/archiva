@@ -19,11 +19,17 @@ package org.apache.archiva.admin.repository;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.mock.MockAuditListener;
+import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
 
 /**
  * @author Olivier Lamy
@@ -36,5 +42,30 @@ public abstract class AbstractRepositoryAdminTest
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String APPSERVER_BASE_PATH = System.getProperty( "appserver.base" );
-    // no op
+
+    @Inject
+    protected MockAuditListener mockAuditListener;
+
+    protected AuditInformation getFakeAuditInformation()
+    {
+        AuditInformation auditInformation = new AuditInformation( getFakeUser(), "archiva-localhost" );
+        return auditInformation;
+    }
+
+    protected User getFakeUser()
+    {
+        SimpleUser user = new SimpleUser()
+        {
+            @Override
+            public Object getPrincipal()
+            {
+                return "root";
+            }
+
+        };
+
+        user.setUsername( "root" );
+        user.setFullName( "The top user" );
+        return user;
+    }
 }

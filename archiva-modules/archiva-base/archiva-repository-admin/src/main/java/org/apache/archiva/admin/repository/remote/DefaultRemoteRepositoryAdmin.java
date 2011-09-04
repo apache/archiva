@@ -18,8 +18,10 @@ package org.apache.archiva.admin.repository.remote;
  * under the License.
  */
 
+import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
@@ -68,9 +70,10 @@ public class DefaultRemoteRepositoryAdmin
         return null;
     }
 
-    public Boolean addRemoteRepository( RemoteRepository remoteRepository )
+    public Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
+        triggerAuditEvent( remoteRepository.getId(), null, AuditEvent.ADD_REMOTE_REPO, auditInformation );
         getRepositoryCommonValidator().basicValidation( remoteRepository, false );
 
         //TODO we can validate it's a good uri/url
@@ -94,12 +97,17 @@ public class DefaultRemoteRepositoryAdmin
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         configuration.addRemoteRepository( remoteRepositoryConfiguration );
         saveConfiguration( configuration );
+
+
         return Boolean.TRUE;
     }
 
-    public Boolean deleteRemoteRepository( String repositoryId )
+    public Boolean deleteRemoteRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
+
+        triggerAuditEvent( repositoryId, null, AuditEvent.DELETE_REMOTE_REPO, auditInformation );
+
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         RemoteRepositoryConfiguration remoteRepositoryConfiguration =
@@ -127,7 +135,7 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
-    public Boolean updateRemoteRepository( RemoteRepository remoteRepository )
+    public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
