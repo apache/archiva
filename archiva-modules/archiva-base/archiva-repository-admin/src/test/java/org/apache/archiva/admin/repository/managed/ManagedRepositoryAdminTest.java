@@ -20,6 +20,7 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.mock.MockAuditListener;
+import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
