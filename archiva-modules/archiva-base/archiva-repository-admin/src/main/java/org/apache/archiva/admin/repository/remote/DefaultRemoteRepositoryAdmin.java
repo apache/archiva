@@ -18,13 +18,14 @@ package org.apache.archiva.admin.repository.remote;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,16 +35,16 @@ import java.util.List;
  */
 @Service( "remoteRepositoryAdmin#default" )
 public class DefaultRemoteRepositoryAdmin
+    extends AbstractRepositoryAdmin
     implements RemoteRepositoryAdmin
 {
-    @Inject
-    private ArchivaConfiguration archivaConfiguration;
+
 
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
         List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-        for ( RemoteRepositoryConfiguration repositoryConfiguration : archivaConfiguration.getConfiguration().getRemoteRepositories() )
+        for ( RemoteRepositoryConfiguration repositoryConfiguration : getArchivaConfiguration().getConfiguration().getRemoteRepositories() )
         {
             remoteRepositories.add(
                 new RemoteRepository( repositoryConfiguration.getId(), repositoryConfiguration.getName(),
@@ -67,16 +68,63 @@ public class DefaultRemoteRepositoryAdmin
         return null;
     }
 
-    public Boolean deleteRemoteRepository( String repositoryId )
-        throws RepositoryAdminException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public Boolean addRemoteRepository( RemoteRepository remoteRepository )
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        getRepositoryCommonValidator().basicValidation( remoteRepository, false );
+
+        //TODO we can validate it's a good uri/url
+        if ( StringUtils.isEmpty( remoteRepository.getUrl() ) )
+        {
+            throw new RepositoryAdminException( "url cannot be null" );
+        }
+
+        //MRM-752 - url needs trimming
+        remoteRepository.setUrl( StringUtils.trim( remoteRepository.getUrl() ) );
+
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration = new RemoteRepositoryConfiguration();
+        remoteRepositoryConfiguration.setId( remoteRepository.getId() );
+        remoteRepositoryConfiguration.setPassword( remoteRepository.getPassword() );
+        remoteRepositoryConfiguration.setTimeout( remoteRepository.getTimeout() );
+        remoteRepositoryConfiguration.setUrl( remoteRepository.getUrl() );
+        remoteRepositoryConfiguration.setUsername( remoteRepository.getUserName() );
+        remoteRepositoryConfiguration.setLayout( remoteRepository.getLayout() );
+        remoteRepositoryConfiguration.setName( remoteRepository.getName() );
+
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        configuration.addRemoteRepository( remoteRepositoryConfiguration );
+        saveConfiguration( configuration );
+        return Boolean.TRUE;
+    }
+
+    public Boolean deleteRemoteRepository( String repositoryId )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
+            configuration.getRemoteRepositoriesAsMap().get( repositoryId );
+        if ( remoteRepositoryConfiguration == null )
+        {
+            throw new RepositoryAdminException(
+                "remoteRepository with id " + repositoryId + " not exist cannot remove it" );
+        }
+
+        configuration.removeRemoteRepository( remoteRepositoryConfiguration );
+
+        // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
+        List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
+        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        {
+            if ( StringUtils.equals( proxyConnector.getTargetRepoId(), repositoryId ) )
+            {
+                configuration.removeProxyConnector( proxyConnector );
+            }
+        }
+
+        saveConfiguration( configuration );
+
+        return Boolean.TRUE;
     }
 
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository )

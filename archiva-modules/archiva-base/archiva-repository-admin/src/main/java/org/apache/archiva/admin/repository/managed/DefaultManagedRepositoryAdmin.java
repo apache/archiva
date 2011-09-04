@@ -19,10 +19,9 @@ package org.apache.archiva.admin.repository.managed;
  */
 
 import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -34,16 +33,11 @@ import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
@@ -67,6 +61,7 @@ import java.util.Map;
  */
 @Service( "managedRepositoryAdmin#default" )
 public class DefaultManagedRepositoryAdmin
+    extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
 {
 
@@ -76,12 +71,6 @@ public class DefaultManagedRepositoryAdmin
 
     public static final String STAGE_REPO_ID_END = "-stage";
 
-    @Inject
-    private ArchivaConfiguration archivaConfiguration;
-
-    @Inject
-    @Named( value = "commons-configuration" )
-    private Registry registry;
 
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
@@ -93,11 +82,6 @@ public class DefaultManagedRepositoryAdmin
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
-    @Inject
-    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
-
-    @Inject
-    private RepositoryCommonValidator repositoryCommonValidator;
 
     @Inject
     protected RoleManager roleManager;
@@ -145,7 +129,7 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
 
-        repositoryCommonValidator.basicValidation( managedRepository, false );
+        getRepositoryCommonValidator().basicValidation( managedRepository, false );
         triggerAuditEvent( managedRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
         return
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
@@ -184,7 +168,7 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException( "Cron expression cannot be empty." );
         }
 
-        String repoLocation = repositoryCommonValidator.removeExpressions( location );
+        String repoLocation = getRepositoryCommonValidator().removeExpressions( location );
 
         if ( !GenericValidator.matchRegexp( repoLocation, REPOSITORY_LOCATION_VALID_EXPRESSION ) )
         {
@@ -379,7 +363,7 @@ public class DefaultManagedRepositoryAdmin
 
         // Ensure that the fields are valid.
 
-        repositoryCommonValidator.basicValidation( managedRepository, true );
+        getRepositoryCommonValidator().basicValidation( managedRepository, true );
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
@@ -446,38 +430,6 @@ public class DefaultManagedRepositoryAdmin
     // utils methods
     //--------------------------
 
-    protected void triggerAuditEvent( String repositoryId, String resource, String action,
-                                      AuditInformation auditInformation )
-    {
-        User user = auditInformation == null ? null : auditInformation.getUser();
-        AuditEvent event =
-            new AuditEvent( repositoryId, user == null ? "null" : (String) user.getPrincipal(), resource, action );
-        event.setRemoteIP( auditInformation == null ? "null" : auditInformation.getRemoteAddr() );
-
-        for ( AuditListener listener : getAuditListeners() )
-        {
-            listener.auditEvent( event );
-        }
-
-    }
-
-
-    private void saveConfiguration( Configuration config )
-        throws RepositoryAdminException
-    {
-        try
-        {
-            getArchivaConfiguration().save( config );
-        }
-        catch ( RegistryException e )
-        {
-            throw new RepositoryAdminException( "Error occurred in the registry.", e );
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            throw new RepositoryAdminException( "Error occurred while saving the configuration.", e );
-        }
-    }
 
     protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
         throws RepositoryAdminException, IOException
@@ -581,15 +533,6 @@ public class DefaultManagedRepositoryAdmin
     // setters/getters
     //--------------------------
 
-    public ArchivaConfiguration getArchivaConfiguration()
-    {
-        return archivaConfiguration;
-    }
-
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
-    }
 
     public RoleManager getRoleManager()
     {
@@ -621,15 +564,6 @@ public class DefaultManagedRepositoryAdmin
         this.repositorySessionFactory = repositorySessionFactory;
     }
 
-    public List<AuditListener> getAuditListeners()
-    {
-        return auditListeners;
-    }
-
-    public void setAuditListeners( List<AuditListener> auditListeners )
-    {
-        this.auditListeners = auditListeners;
-    }
 
     public RepositoryArchivaTaskScheduler getRepositoryTaskScheduler()
     {
@@ -639,25 +573,5 @@ public class DefaultManagedRepositoryAdmin
     public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
     {
         this.repositoryTaskScheduler = repositoryTaskScheduler;
-    }
-
-    public Registry getRegistry()
-    {
-        return registry;
-    }
-
-    public void setRegistry( Registry registry )
-    {
-        this.registry = registry;
-    }
-
-    public RepositoryCommonValidator getRepositoryCommonValidator()
-    {
-        return repositoryCommonValidator;
-    }
-
-    public void setRepositoryCommonValidator( RepositoryCommonValidator repositoryCommonValidator )
-    {
-        this.repositoryCommonValidator = repositoryCommonValidator;
     }
 }

@@ -55,4 +55,45 @@ public class RemoteRepositoryAdminTest
         assertNull( central.getUserName() );
         assertNull( central.getPassword() );
     }
+
+    @Test
+    public void addAndDelete()
+        throws Exception
+    {
+        int initialSize = remoteRepositoryAdmin.getRemoteRepositories().size();
+
+        RemoteRepository remoteRepository = getRemoteRepository();
+
+        remoteRepositoryAdmin.addRemoteRepository( remoteRepository );
+
+        assertEquals( initialSize + 1, remoteRepositoryAdmin.getRemoteRepositories().size() );
+
+        RemoteRepository repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
+        assertNotNull( repo );
+        assertEquals( getRemoteRepository().getPassword(), repo.getPassword() );
+        assertEquals( getRemoteRepository().getUrl(), repo.getUrl() );
+        assertEquals( getRemoteRepository().getUserName(), repo.getUserName() );
+        assertEquals( getRemoteRepository().getName(), repo.getName() );
+        assertEquals( getRemoteRepository().getTimeout(), repo.getTimeout() );
+
+        remoteRepositoryAdmin.deleteRemoteRepository( "foo" );
+
+        assertEquals( initialSize, remoteRepositoryAdmin.getRemoteRepositories().size() );
+
+        repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
+        assertNull( repo );
+    }
+
+
+    private RemoteRepository getRemoteRepository()
+    {
+        RemoteRepository remoteRepository = new RemoteRepository();
+        remoteRepository.setUrl( "http://foo.com/maven-it-rocks" );
+        remoteRepository.setTimeout( 10 );
+        remoteRepository.setName( "maven foo" );
+        remoteRepository.setUserName( "foo-name" );
+        remoteRepository.setPassword( "toto" );
+        remoteRepository.setId( "foo" );
+        return remoteRepository;
+    }
 }
