@@ -73,7 +73,8 @@ public interface AdministrationService
      *
      * @return
      */
-    List<RemoteRepository> getAllRemoteRepositories();
+    List<RemoteRepository> getAllRemoteRepositories()
+        throws RepositoryAdminException;
 
     /**
      * Deletes given artifact from the specified repository.

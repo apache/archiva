@@ -22,6 +22,7 @@ package org.apache.archiva.web.xmlrpc.services;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -158,6 +159,8 @@ public class AdministrationServiceImplTest
 
     private DefaultManagedRepositoryAdmin managedRepositoryAdmin;
 
+    private DefaultRemoteRepositoryAdmin remoteRepositoryAdmin;
+
     private ApplicationContext applicationContext;
 
     @Before
@@ -233,10 +236,17 @@ public class AdministrationServiceImplTest
 
         managedRepositoryAdmin.setRepositoryCommonValidator( repositoryCommonValidator );
 
+        remoteRepositoryAdmin = new DefaultRemoteRepositoryAdmin();
+        remoteRepositoryAdmin.setArchivaConfiguration( archivaConfig );
+        remoteRepositoryAdmin.setAuditListeners( Arrays.asList( auditListener ) );
+
+        remoteRepositoryAdmin.setRepositoryCommonValidator( repositoryCommonValidator );
+
         service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
                                                  repositorySessionFactory, repositoryTaskScheduler,
                                                  Collections.singletonList( listener ), repositoryStatisticsManager,
-                                                 repositoryMerger, auditListener, managedRepositoryAdmin );
+                                                 repositoryMerger, auditListener, managedRepositoryAdmin,
+                                                 remoteRepositoryAdmin );
     }
 
     /* Tests for repository consumers */

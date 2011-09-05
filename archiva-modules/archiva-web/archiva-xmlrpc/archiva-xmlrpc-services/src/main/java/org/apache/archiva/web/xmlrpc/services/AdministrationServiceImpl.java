@@ -22,6 +22,7 @@ package org.apache.archiva.web.xmlrpc.services;
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -46,7 +47,6 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -100,6 +100,8 @@ public class AdministrationServiceImpl
 
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
     private static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
 
     private static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
@@ -113,7 +115,8 @@ public class AdministrationServiceImpl
                                       Collection<RepositoryListener> listeners,
                                       RepositoryStatisticsManager repositoryStatisticsManager,
                                       RepositoryMerger repositoryMerger, AuditListener auditListener,
-                                      ManagedRepositoryAdmin managedRepositoryAdmin )
+                                      ManagedRepositoryAdmin managedRepositoryAdmin,
+                                      RemoteRepositoryAdmin remoteRepositoryAdmin )
     {
         this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
@@ -125,6 +128,7 @@ public class AdministrationServiceImpl
         this.repositoryMerger = repositoryMerger;
         this.auditListener = auditListener;
         this.managedRepositoryAdmin = managedRepositoryAdmin;
+        this.remoteRepositoryAdmin = remoteRepositoryAdmin;
     }
 
     /**
@@ -326,13 +330,11 @@ public class AdministrationServiceImpl
      * @see AdministrationService#getAllRemoteRepositories()
      */
     public List<RemoteRepository> getAllRemoteRepositories()
+        throws RepositoryAdminException
     {
         List<RemoteRepository> remoteRepos = new ArrayList<RemoteRepository>();
 
-        Configuration config = archivaConfiguration.getConfiguration();
-        List<RemoteRepositoryConfiguration> remoteRepoConfigs = config.getRemoteRepositories();
-
-        for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
+        for ( org.apache.archiva.admin.repository.remote.RemoteRepository repoConfig : remoteRepositoryAdmin.getRemoteRepositories() )
         {
             RemoteRepository repo = new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
                                                           repoConfig.getLayout() );
