@@ -92,7 +92,67 @@ public class RemoteRepositoryAdminTest
         assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
 
         assertEquals( AuditEvent.DELETE_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 1 ).getUserId() );
+
+    }
+
+
+    @Test
+    public void addAndUpdateAndDelete()
+        throws Exception
+    {
+        mockAuditListener.clearEvents();
+        int initialSize = remoteRepositoryAdmin.getRemoteRepositories().size();
+
+        RemoteRepository remoteRepository = getRemoteRepository();
+
+        remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1, remoteRepositoryAdmin.getRemoteRepositories().size() );
+
+        RemoteRepository repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
+        assertNotNull( repo );
+        assertEquals( getRemoteRepository().getPassword(), repo.getPassword() );
+        assertEquals( getRemoteRepository().getUrl(), repo.getUrl() );
+        assertEquals( getRemoteRepository().getUserName(), repo.getUserName() );
+        assertEquals( getRemoteRepository().getName(), repo.getName() );
+        assertEquals( getRemoteRepository().getTimeout(), repo.getTimeout() );
+
+        repo.setUserName( "foo-name-changed" );
+        repo.setPassword( "titi" );
+        repo.setUrl( "http://foo.com/maven-really-rocks" );
+
+
+        remoteRepositoryAdmin.updateRemoteRepository( repo, getFakeAuditInformation() );
+
+
+        repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
+
+        assertEquals( "foo-name-changed", repo.getUserName() );
+        assertEquals( "titi", repo.getPassword() );
+        assertEquals( "http://foo.com/maven-really-rocks", repo.getUrl() );
+
+
+
+        remoteRepositoryAdmin.deleteRemoteRepository( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize, remoteRepositoryAdmin.getRemoteRepositories().size() );
+
+        repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
+        assertNull( repo );
+
+        assertEquals( 3, mockAuditListener.getAuditEvents().size() );
+
+        assertEquals( AuditEvent.ADD_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 0 ).getUserId() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 0 ).getRemoteIP() );
+
+        assertEquals( AuditEvent.MODIFY_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 1 ).getUserId() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get(1 ).getRemoteIP() );
+
+        assertEquals( AuditEvent.DELETE_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
+        assertEquals( "root", mockAuditListener.getAuditEvents().get( 2 ).getUserId() );
 
     }
 

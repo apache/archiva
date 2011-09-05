@@ -85,19 +85,12 @@ public class DefaultRemoteRepositoryAdmin
         //MRM-752 - url needs trimming
         remoteRepository.setUrl( StringUtils.trim( remoteRepository.getUrl() ) );
 
-        RemoteRepositoryConfiguration remoteRepositoryConfiguration = new RemoteRepositoryConfiguration();
-        remoteRepositoryConfiguration.setId( remoteRepository.getId() );
-        remoteRepositoryConfiguration.setPassword( remoteRepository.getPassword() );
-        remoteRepositoryConfiguration.setTimeout( remoteRepository.getTimeout() );
-        remoteRepositoryConfiguration.setUrl( remoteRepository.getUrl() );
-        remoteRepositoryConfiguration.setUsername( remoteRepository.getUserName() );
-        remoteRepositoryConfiguration.setLayout( remoteRepository.getLayout() );
-        remoteRepositoryConfiguration.setName( remoteRepository.getName() );
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
+            getRemoteRepositoryConfiguration( remoteRepository );
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         configuration.addRemoteRepository( remoteRepositoryConfiguration );
         saveConfiguration( configuration );
-
 
         return Boolean.TRUE;
     }
@@ -138,6 +131,43 @@ public class DefaultRemoteRepositoryAdmin
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+        String repositoryId = remoteRepository.getId();
+
+        triggerAuditEvent( repositoryId, null, AuditEvent.MODIFY_REMOTE_REPO, auditInformation );
+
+        // update means : remove and add
+
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
+            configuration.getRemoteRepositoriesAsMap().get( repositoryId );
+        if ( remoteRepositoryConfiguration == null )
+        {
+            throw new RepositoryAdminException(
+                "remoteRepository with id " + repositoryId + " not exist cannot remove it" );
+        }
+
+        configuration.removeRemoteRepository( remoteRepositoryConfiguration );
+
+        remoteRepositoryConfiguration = getRemoteRepositoryConfiguration( remoteRepository );
+        configuration.addRemoteRepository( remoteRepositoryConfiguration );
+        saveConfiguration( configuration );
+
+        return Boolean.TRUE;
     }
+
+    private RemoteRepositoryConfiguration getRemoteRepositoryConfiguration( RemoteRepository remoteRepository )
+    {
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration = new RemoteRepositoryConfiguration();
+        remoteRepositoryConfiguration.setId( remoteRepository.getId() );
+        remoteRepositoryConfiguration.setPassword( remoteRepository.getPassword() );
+        remoteRepositoryConfiguration.setTimeout( remoteRepository.getTimeout() );
+        remoteRepositoryConfiguration.setUrl( remoteRepository.getUrl() );
+        remoteRepositoryConfiguration.setUsername( remoteRepository.getUserName() );
+        remoteRepositoryConfiguration.setLayout( remoteRepository.getLayout() );
+        remoteRepositoryConfiguration.setName( remoteRepository.getName() );
+        return remoteRepositoryConfiguration;
+    }
+
 }
