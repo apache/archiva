@@ -35,6 +35,12 @@ public class RemoteRepository
 
     private String layout;
 
+    private String userName;
+
+    private String password;
+
+    private int timeOut = 60;
+
     public RemoteRepository()
     {
         // no op
@@ -116,10 +122,50 @@ public class RemoteRepository
         return result;
     }
 
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    public void setUserName( String userName )
+    {
+        this.userName = userName;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword( String password )
+    {
+        this.password = password;
+    }
+
+    public int getTimeOut()
+    {
+        return timeOut;
+    }
+
+    public void setTimeOut( int timeOut )
+    {
+        this.timeOut = timeOut;
+    }
+
+
     @Override
     public String toString()
     {
-        return "RemoteRepository{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", url='" + url + '\''
-            + ", layout='" + layout + '\'' + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "RemoteRepository" );
+        sb.append( "{id='" ).append( id ).append( '\'' );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", url='" ).append( url ).append( '\'' );
+        sb.append( ", layout='" ).append( layout ).append( '\'' );
+        sb.append( ", userName='" ).append( userName ).append( '\'' );
+        sb.append( ", password='" ).append( password ).append( '\'' );
+        sb.append( ", timeOut=" ).append( timeOut );
+        sb.append( '}' );
+        return sb.toString();
     }
 }
