@@ -40,6 +40,7 @@
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
     <seleniumPluginVersion>2.0</seleniumPluginVersion>
+    <selenium-server.version>2.5.0</selenium-server.version>
   </properties>
 
   <dependencies>
@@ -145,6 +146,25 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>selenium-maven-plugin</artifactId>
           <version>${seleniumPluginVersion}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-server</artifactId>
+              <version>${selenium-server.version}</version>
+            </dependency>
+
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-remote-driver</artifactId>
+              <version>${selenium-server.version}</version>
+            </dependency>
+
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-api</artifactId>
+              <version>${selenium-server.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
