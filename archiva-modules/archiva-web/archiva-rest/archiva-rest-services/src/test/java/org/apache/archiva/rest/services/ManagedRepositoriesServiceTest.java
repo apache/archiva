@@ -50,6 +50,9 @@ public class ManagedRepositoriesServiceTest
         }
         service.addManagedRepository( repo );
         assertNotNull( service.getManagedRepository( repo.getId() ) );
+
+        service.deleteManagedRepository( repo.getId(), true );
+        assertNull( service.getManagedRepository( repo.getId() ) );
     }
 
     @Test
@@ -77,6 +80,10 @@ public class ManagedRepositoriesServiceTest
         repo = service.getManagedRepository( repo.getId() );
         assertNotNull( repo );
         assertEquals( "toto", repo.getName() );
+
+
+        service.deleteManagedRepository( repo.getId(), true );
+        assertNull( service.getManagedRepository( repo.getId() ) );
 
     }
 

@@ -84,24 +84,6 @@ public class DefaultRepositoriesService
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-
-    public List<RemoteRepository> getRemoteRepositories()
-    {
-        Configuration config = archivaConfiguration.getConfiguration();
-        List<RemoteRepositoryConfiguration> remoteRepoConfigs = config.getRemoteRepositories();
-
-        List<RemoteRepository> remoteRepos = new ArrayList<RemoteRepository>( remoteRepoConfigs.size() );
-
-        for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
-        {
-            RemoteRepository repo = new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
-                                                          repoConfig.getLayout() );
-            remoteRepos.add( repo );
-        }
-
-        return remoteRepos;
-    }
-
     // FIXME olamy move this to repository admin component !
     public Boolean scanRepository( String repositoryId, boolean fullScan )
     {

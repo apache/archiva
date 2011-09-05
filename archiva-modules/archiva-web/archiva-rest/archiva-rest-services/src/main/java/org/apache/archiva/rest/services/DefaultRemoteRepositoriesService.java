@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +57,7 @@ public class DefaultRemoteRepositoriesService
         return remoteRepositories;
     }
 
-    public RemoteRepository getRemoteRepository( @PathParam( "repositoryId" ) String repositoryId )
+    public RemoteRepository getRemoteRepository( String repositoryId )
         throws RepositoryAdminException
     {
         List<RemoteRepository> remoteRepositories = getRemoteRepositories();
@@ -72,7 +71,7 @@ public class DefaultRemoteRepositoriesService
         return null;
     }
 
-    public Boolean deleteRemoteRepository( @PathParam( "repositoryId" ) String repositoryId )
+    public Boolean deleteRemoteRepository( String repositoryId )
         throws Exception
     {
         return remoteRepositoryAdmin.deleteRemoteRepository( repositoryId, getAuditInformation() );

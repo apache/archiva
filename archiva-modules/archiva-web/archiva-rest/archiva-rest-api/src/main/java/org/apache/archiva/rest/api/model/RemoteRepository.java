@@ -54,6 +54,14 @@ public class RemoteRepository
         this.layout = layout;
     }
 
+    public RemoteRepository( String id, String name, String url, String layout, String userName, String password,
+                             int timeOut )
+    {
+        this( id, name, url, layout );
+        this.userName = userName;
+        this.password = password;
+        this.timeOut = timeOut;
+    }
 
     public String getId()
     {

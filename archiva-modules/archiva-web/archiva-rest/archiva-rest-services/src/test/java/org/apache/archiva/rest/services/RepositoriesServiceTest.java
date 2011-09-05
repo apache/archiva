@@ -20,7 +20,6 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.rest.api.model.ManagedRepository;
-import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
@@ -29,7 +28,6 @@ import org.apache.maven.archiva.common.utils.FileUtil;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -37,37 +35,6 @@ import java.util.List;
 public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
-
-
-    @Test( expected = ServerWebApplicationException.class )
-    public void listRemoteRepositoriesKarmaFailed()
-        throws Exception
-    {
-        RepositoriesService service = getRepositoriesService();
-        try
-        {
-            assertFalse( service.getRemoteRepositories().isEmpty() );
-        }
-        catch ( ServerWebApplicationException e )
-        {
-            assertEquals( 403, e.getStatus() );
-            throw e;
-        }
-    }
-
-    @Test
-    public void listRemoteRepositoriesKarma()
-        throws Exception
-    {
-        RepositoriesService service = getRepositoriesService();
-
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
-        List<RemoteRepository> repos = service.getRemoteRepositories();
-        assertFalse( repos.isEmpty() );
-        log.info( "repos {}", repos );
-
-    }
 
     @Test( expected = ServerWebApplicationException.class )
     public void scanRepoKarmaFailed()

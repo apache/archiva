@@ -65,5 +65,87 @@ public class RemoteRepositoriesServiceTest
 
     }
 
+    @Test
+    public void addAndDeleteRemoteRepository()
+        throws Exception
+    {
+        RemoteRepositoriesService service = getRemoteRepositoriesService();
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+
+        int initialSize = service.getRemoteRepositories().size();
+
+        service.addRemoteRepository( getRemoteRepository() );
+
+        assertNotNull( service.getRemoteRepository( "id-new" ) );
+
+        assertEquals( getRemoteRepository().getName(), service.getRemoteRepository( "id-new" ).getName() );
+        assertEquals( getRemoteRepository().getUrl(), service.getRemoteRepository( "id-new" ).getUrl() );
+        assertEquals( getRemoteRepository().getLayout(), service.getRemoteRepository( "id-new" ).getLayout() );
+        assertEquals( getRemoteRepository().getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
+        assertEquals( getRemoteRepository().getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
+        assertEquals( getRemoteRepository().getTimeOut(), service.getRemoteRepository( "id-new" ).getTimeOut() );
+
+        assertEquals( initialSize + 1, service.getRemoteRepositories().size() );
+
+        service.deleteRemoteRepository( "id-new" );
+
+        assertNull( service.getRemoteRepository( "id-new" ) );
+
+        assertEquals( initialSize, service.getRemoteRepositories().size() );
+
+    }
+
+    @Test
+    public void addAndUpdateAndDeleteRemoteRepository()
+        throws Exception
+    {
+        RemoteRepositoriesService service = getRemoteRepositoriesService();
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+
+        int initialSize = service.getRemoteRepositories().size();
+
+        service.addRemoteRepository( getRemoteRepository() );
+
+        assertNotNull( service.getRemoteRepository( "id-new" ) );
+
+        assertEquals( getRemoteRepository().getName(), service.getRemoteRepository( "id-new" ).getName() );
+        assertEquals( getRemoteRepository().getUrl(), service.getRemoteRepository( "id-new" ).getUrl() );
+        assertEquals( getRemoteRepository().getLayout(), service.getRemoteRepository( "id-new" ).getLayout() );
+        assertEquals( getRemoteRepository().getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
+        assertEquals( getRemoteRepository().getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
+        assertEquals( getRemoteRepository().getTimeOut(), service.getRemoteRepository( "id-new" ).getTimeOut() );
+
+        assertEquals( initialSize + 1, service.getRemoteRepositories().size() );
+
+        RemoteRepository repo = getRemoteRepository();
+        repo.setName( "name changed" );
+        repo.setPassword( "new password" );
+        repo.setUserName( "new username" );
+        repo.setUrl( "http://foo.new.org" );
+
+        service.updateRemoteRepository( repo );
+
+        assertEquals( repo.getName(), service.getRemoteRepository( "id-new" ).getName() );
+        assertEquals( repo.getUrl(), service.getRemoteRepository( "id-new" ).getUrl() );
+        assertEquals( repo.getLayout(), service.getRemoteRepository( "id-new" ).getLayout() );
+        assertEquals( repo.getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
+        assertEquals( repo.getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
+        assertEquals( repo.getTimeOut(), service.getRemoteRepository( "id-new" ).getTimeOut() );
+
+        service.deleteRemoteRepository( "id-new" );
+
+        assertNull( service.getRemoteRepository( "id-new" ) );
+
+        assertEquals( initialSize, service.getRemoteRepositories().size() );
+
+    }
+
+    RemoteRepository getRemoteRepository()
+    {
+        return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120 );
+    }
+
 
 }

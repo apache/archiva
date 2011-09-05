@@ -19,7 +19,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -29,7 +28,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -38,13 +36,6 @@ import java.util.List;
 @Path( "/repositoriesService/" )
 public interface RepositoriesService
 {
-
-
-    @Path( "getRemoteRepositories" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    List<RemoteRepository> getRemoteRepositories();
 
     @Path( "scanRepository" )
     @GET
