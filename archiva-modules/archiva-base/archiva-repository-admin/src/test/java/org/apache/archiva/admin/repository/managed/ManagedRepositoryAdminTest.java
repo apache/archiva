@@ -18,16 +18,12 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
-import org.apache.archiva.admin.AuditInformation;
-import org.apache.archiva.admin.mock.MockAuditListener;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.junit.Test;
 
 import javax.inject.Inject;

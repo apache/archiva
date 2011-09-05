@@ -334,6 +334,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-security-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-signature-consumers</artifactId>
         <version>${project.version}</version>
       </dependency>

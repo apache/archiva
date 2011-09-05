@@ -47,5 +47,6 @@
     <module>archiva-repository-scanner</module>
     <module>archiva-proxy-common</module>
     <module>archiva-repository-admin</module>
+    <module>archiva-security-common</module>
   </modules>
 </project>
