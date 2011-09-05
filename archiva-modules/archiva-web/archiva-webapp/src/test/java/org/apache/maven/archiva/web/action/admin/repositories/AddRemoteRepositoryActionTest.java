@@ -20,9 +20,10 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
@@ -31,7 +32,7 @@ import org.easymock.MockControl;
 import java.util.Collections;
 
 /**
- * AddRemoteRepositoryActionTest 
+ * AddRemoteRepositoryActionTest
  *
  * @version $Id$
  */
@@ -51,12 +52,13 @@ public class AddRemoteRepositoryActionTest
     {
         super.setUp();
 
-        //action = (AddRemoteRepositoryAction) lookup( Action.class.getName(), "addRemoteRepositoryAction" );
         action = (AddRemoteRepositoryAction) getActionProxy( "/admin/addRemoteRepository.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
     }
 
     public void testSecureActionBundle()
@@ -80,7 +82,7 @@ public class AddRemoteRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        RemoteRepositoryConfiguration configuration = action.getRepository();
+        RemoteRepository configuration = action.getRepository();
         assertNotNull( configuration );
         assertNull( configuration.getId() );
 
@@ -97,31 +99,35 @@ public class AddRemoteRepositoryActionTest
 
         archivaConfiguration.save( configuration );
 
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
         archivaConfigurationControl.replay();
 
         action.prepare();
-        RemoteRepositoryConfiguration repository = action.getRepository();
+        RemoteRepository repository = action.getRepository();
         populateRepository( repository );
-        
-        assertEquals("url ", repository.getUrl());
+
+        assertEquals( "url ", repository.getUrl() );
 
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
 
-        assertEquals( Collections.singletonList( repository ), configuration.getRemoteRepositories() );
-        
-        assertEquals("url", repository.getUrl());
+        assertEquals( Collections.singletonList( repository ),
+                      action.getRemoteRepositoryAdmin().getRemoteRepositories() );
+
+        assertEquals( "url", repository.getUrl() );
 
         archivaConfigurationControl.verify();
     }
-    
-    private void populateRepository( RemoteRepositoryConfiguration repository )
+
+    private void populateRepository( RemoteRepository repository )
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
         repository.setUrl( "url " );
         repository.setLayout( "default" );
     }
-    
+
     // TODO: test errors during add, other actions
 }

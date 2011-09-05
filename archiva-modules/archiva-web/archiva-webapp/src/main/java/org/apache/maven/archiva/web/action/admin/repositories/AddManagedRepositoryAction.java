@@ -101,7 +101,7 @@ public class AddManagedRepositoryAction
         return result;
     }
 
-    // FIXME olamy dupe with admin repo componennt
+    // FIXME olamy dupe with admin repo component
     @Override
     public void validate()
     {

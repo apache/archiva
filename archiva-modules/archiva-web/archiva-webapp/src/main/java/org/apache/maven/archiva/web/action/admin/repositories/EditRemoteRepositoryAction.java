@@ -20,22 +20,16 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-
-import java.io.IOException;
 
 /**
  * EditRemoteRepositoryAction
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="editRemoteRepositoryAction" instantiation-strategy="per-lookup"
  */
 @Controller( "editRemoteRepositoryAction" )
 @Scope( "prototype" )
@@ -46,7 +40,7 @@ public class EditRemoteRepositoryAction
     /**
      * The model for this action.
      */
-    private RemoteRepositoryConfiguration repository;
+    private RemoteRepository repository;
 
     /**
      * The repository id to edit.
@@ -54,11 +48,11 @@ public class EditRemoteRepositoryAction
     private String repoid;
 
     public void prepare()
+        throws RepositoryAdminException
     {
-        String id = repoid;
         if ( StringUtils.isNotBlank( repoid ) )
         {
-            this.repository = archivaConfiguration.getConfiguration().findRemoteRepositoryById( id );
+            this.repository = getRemoteRepositoryAdmin().getRemoteRepository( repoid );
         }
     }
 
@@ -75,39 +69,26 @@ public class EditRemoteRepositoryAction
 
     public String commit()
     {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        // We are in edit mode, remove the old repository configuration.
-        removeRepository( repository.getId(), configuration );
-
-        // Save the repository configuration.
-        String result;
+        String result = SUCCESS;
         try
         {
-            addRepository( repository, configuration );
-            triggerAuditEvent( repository.getId(), null, AuditEvent.MODIFY_REMOTE_REPO );
-            result = saveConfiguration( configuration );
+            getRemoteRepositoryAdmin().updateRemoteRepository( getRepository(), getAuditInformation() );
         }
-        catch ( IOException e )
+        catch ( RepositoryAdminException e )
         {
-            addActionError( "I/O Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-        catch ( RoleManagerException e )
-        {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
+            addActionError( "RepositoryAdminException: " + e.getMessage() );
             result = INPUT;
         }
 
         return result;
     }
 
-    public RemoteRepositoryConfiguration getRepository()
+    public RemoteRepository getRepository()
     {
         return repository;
     }
 
-    public void setRepository( RemoteRepositoryConfiguration repository )
+    public void setRepository( RemoteRepository repository )
     {
         this.repository = repository;
     }

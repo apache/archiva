@@ -1,10 +1,8 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
 
-import java.io.IOException;
+import javax.inject.Inject;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,25 +24,23 @@ import java.io.IOException;
  */
 
 /**
- * AbstractRemoteRepositoriesAction 
+ * AbstractRemoteRepositoriesAction
  *
  * @version $Id$
  */
 public class AbstractRemoteRepositoriesAction
     extends AbstractRepositoriesAdminAction
 {
-    protected void addRepository( RemoteRepositoryConfiguration repository, Configuration configuration )
-        throws IOException, RoleManagerException
+    @Inject
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    public RemoteRepositoryAdmin getRemoteRepositoryAdmin()
     {
-        configuration.addRemoteRepository( repository );
+        return remoteRepositoryAdmin;
     }
 
-    protected void removeRepository( String repoId, Configuration configuration )
+    public void setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
     {
-        RemoteRepositoryConfiguration toremove = configuration.findRemoteRepositoryById( repoId );
-        if ( toremove != null )
-        {
-            configuration.removeRemoteRepository( toremove );
-        }
+        this.remoteRepositoryAdmin = remoteRepositoryAdmin;
     }
 }

@@ -21,14 +21,11 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-
-import java.io.IOException;
 
 /**
  * AddRemoteRepositoryAction
@@ -44,11 +41,11 @@ public class AddRemoteRepositoryAction
     /**
      * The model for this action.
      */
-    private RemoteRepositoryConfiguration repository;
+    private RemoteRepository repository;
 
     public void prepare()
     {
-        this.repository = new RemoteRepositoryConfiguration();
+        this.repository = new RemoteRepository();
     }
 
     public String input()
@@ -58,33 +55,22 @@ public class AddRemoteRepositoryAction
 
     public String commit()
     {
-        Configuration configuration = archivaConfiguration.getConfiguration();
 
-        //MRM-752 - url needs trimming
-        repository.setUrl( repository.getUrl().trim() );
-
-        // Save the repository configuration.
-        String result;
+        String result = SUCCESS;
         try
         {
-            addRepository( repository, configuration );
-            triggerAuditEvent( repository.getId(), null, AuditEvent.ADD_REMOTE_REPO );
-            result = saveConfiguration( configuration );
+            getRemoteRepositoryAdmin().addRemoteRepository( repository, getAuditInformation() );
         }
-        catch ( IOException e )
+        catch ( RepositoryAdminException e )
         {
-            addActionError( "I/O Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-        catch ( RoleManagerException e )
-        {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
+            addActionError( "RepositoryAdminException: " + e.getMessage() );
             result = INPUT;
         }
 
         return result;
     }
 
+    // FIXME olamy dupe with admin repo component
     @Override
     public void validate()
     {
@@ -109,12 +95,12 @@ public class AddRemoteRepositoryAction
         }
     }
 
-    public RemoteRepositoryConfiguration getRepository()
+    public RemoteRepository getRepository()
     {
         return repository;
     }
 
-    public void setRepository( RemoteRepositoryConfiguration repository )
+    public void setRepository( RemoteRepository repository )
     {
         this.repository = repository;
     }

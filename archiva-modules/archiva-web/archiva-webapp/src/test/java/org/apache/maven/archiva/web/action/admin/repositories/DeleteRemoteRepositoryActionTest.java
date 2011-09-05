@@ -20,6 +20,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -59,23 +62,30 @@ public class DeleteRemoteRepositoryActionTest
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
+
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
     }
 
     public void testDeleteRemoteRepositoryConfirmation()
         throws Exception
     {
-        RemoteRepositoryConfiguration originalRepository = createRepository();
+        RemoteRepository originalRepository = createRepository();
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        RemoteRepositoryConfiguration repository = action.getRepository();
+        RemoteRepository repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -83,17 +93,16 @@ public class DeleteRemoteRepositoryActionTest
         assertEquals( Action.INPUT, status );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
-        assertEquals( Collections.singletonList( originalRepository ), configuration.getRemoteRepositories() );
+        assertEquals( Collections.singletonList( originalRepository ),
+                      action.getRemoteRepositoryAdmin().getRemoteRepositories() );
     }
 
     public void testDeleteRemoteRepository()
-        throws RegistryException, IndeterminateConfigurationException
+        throws RegistryException, IndeterminateConfigurationException, RepositoryAdminException
     {
         Configuration configuration = createConfigurationForEditing( createRepository() );
-        configuration.addManagedRepository(
-            createManagedRepository( "internal", "target/repo/internal" ));
-        configuration.addManagedRepository(
-            createManagedRepository( "snapshots", "target/repo/snapshots" ) );
+        configuration.addManagedRepository( createManagedRepository( "internal", "target/repo/internal" ) );
+        configuration.addManagedRepository( createManagedRepository( "snapshots", "target/repo/snapshots" ) );
         configuration.addProxyConnector( createProxyConnector( "internal", REPO_ID ) );
 
         archivaConfiguration.getConfiguration();
@@ -106,7 +115,7 @@ public class DeleteRemoteRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        RemoteRepositoryConfiguration repository = action.getRepository();
+        RemoteRepository repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -122,7 +131,7 @@ public class DeleteRemoteRepositoryActionTest
     public void testDeleteRemoteRepositoryCancelled()
         throws Exception
     {
-        RemoteRepositoryConfiguration originalRepository = createRepository();
+        RemoteRepository originalRepository = createRepository();
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
@@ -135,35 +144,40 @@ public class DeleteRemoteRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        RemoteRepositoryConfiguration repositoryConfiguration = action.getRepository();
+        RemoteRepository repositoryConfiguration = action.getRepository();
         assertNotNull( repositoryConfiguration );
         assertRepositoryEquals( repositoryConfiguration, createRepository() );
 
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
 
-        RemoteRepositoryConfiguration repository = action.getRepository();
+        RemoteRepository repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
-        assertEquals( Collections.singletonList( originalRepository ), configuration.getRemoteRepositories() );
+        assertEquals( Collections.singletonList( originalRepository ),
+                      action.getRemoteRepositoryAdmin().getRemoteRepositories() );
     }
 
-    private Configuration createConfigurationForEditing( RemoteRepositoryConfiguration repositoryConfiguration )
+    private Configuration createConfigurationForEditing( RemoteRepository repositoryConfiguration )
     {
         Configuration configuration = new Configuration();
-        configuration.addRemoteRepository( repositoryConfiguration );
+        RemoteRepositoryConfiguration conf = new RemoteRepositoryConfiguration();
+        conf.setId( repositoryConfiguration.getId() );
+        conf.setLayout( repositoryConfiguration.getLayout() );
+        conf.setUrl( repositoryConfiguration.getUrl() );
+        conf.setName( repositoryConfiguration.getName() );
+        configuration.addRemoteRepository( conf );
         return configuration;
     }
 
-    private RemoteRepositoryConfiguration createRepository()
+    private RemoteRepository createRepository()
     {
-        RemoteRepositoryConfiguration r = new RemoteRepositoryConfiguration();
+        RemoteRepository r = new RemoteRepository();
         r.setId( REPO_ID );
         populateRepository( r );
         return r;
     }
 
-    private void assertRepositoryEquals( RemoteRepositoryConfiguration expectedRepository,
-                                         RemoteRepositoryConfiguration actualRepository )
+    private void assertRepositoryEquals( RemoteRepository expectedRepository, RemoteRepository actualRepository )
     {
         assertEquals( expectedRepository.getId(), actualRepository.getId() );
         assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
@@ -197,7 +211,7 @@ public class DeleteRemoteRepositoryActionTest
         return connector;
     }
 
-    private void populateRepository( RemoteRepositoryConfiguration repository )
+    private void populateRepository( RemoteRepository repository )
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );

@@ -20,6 +20,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
@@ -31,7 +34,7 @@ import org.easymock.MockControl;
 import java.util.Collections;
 
 /**
- * EditRemoteRepositoryActionTest 
+ * EditRemoteRepositoryActionTest
  *
  * @version $Id$
  */
@@ -52,6 +55,21 @@ public class EditRemoteRepositoryActionTest
         return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
     }
 
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        action = (EditRemoteRepositoryAction) getActionProxy( "/admin/editRemoteRepository.action" ).getAction();
+
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        action.setArchivaConfiguration( archivaConfiguration );
+
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+    }
+
     public void testEditRemoteRepository()
         throws Exception
     {
@@ -59,23 +77,26 @@ public class EditRemoteRepositoryActionTest
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
         action.prepare();
+
         assertEquals( REPO_ID, action.getRepoid() );
-        RemoteRepositoryConfiguration repository = action.getRepository();
+        RemoteRepository repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
 
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
 
-        RemoteRepositoryConfiguration newRepository = createRepository();
+        RemoteRepository newRepository = createRepository();
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );
-        assertEquals( Collections.singletonList( repository ), configuration.getRemoteRepositories() );
+        assertEquals( Collections.singletonList( repository ),
+                      action.getRemoteRepositoryAdmin().getRemoteRepositories() );
 
         archivaConfigurationControl.verify();
     }
@@ -93,7 +114,7 @@ public class EditRemoteRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        RemoteRepositoryConfiguration repository = action.getRepository();
+        RemoteRepository repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -104,7 +125,7 @@ public class EditRemoteRepositoryActionTest
     }
 
     public void testSecureActionBundle()
-        throws SecureActionException
+        throws SecureActionException, RepositoryAdminException
     {
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
@@ -116,8 +137,7 @@ public class EditRemoteRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
-    private void assertRepositoryEquals( RemoteRepositoryConfiguration expectedRepository,
-                                         RemoteRepositoryConfiguration actualRepository )
+    private void assertRepositoryEquals( RemoteRepository expectedRepository, RemoteRepository actualRepository )
     {
         assertEquals( expectedRepository.getId(), actualRepository.getId() );
         assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
@@ -125,40 +145,31 @@ public class EditRemoteRepositoryActionTest
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
     }
 
-    private Configuration createConfigurationForEditing( RemoteRepositoryConfiguration repositoryConfiguration )
+    private Configuration createConfigurationForEditing( RemoteRepository repositoryConfiguration )
     {
         Configuration configuration = new Configuration();
-        configuration.addRemoteRepository( repositoryConfiguration );
+        RemoteRepositoryConfiguration conf = new RemoteRepositoryConfiguration();
+        conf.setId( repositoryConfiguration.getId() );
+        conf.setLayout( repositoryConfiguration.getLayout() );
+        conf.setUrl( repositoryConfiguration.getUrl() );
+        conf.setName( repositoryConfiguration.getName() );
+        configuration.addRemoteRepository( conf );
         return configuration;
     }
-    
-    private RemoteRepositoryConfiguration createRepository()
+
+    private RemoteRepository createRepository()
     {
-        RemoteRepositoryConfiguration r = new RemoteRepositoryConfiguration();
+        RemoteRepository r = new RemoteRepository();
         r.setId( REPO_ID );
         populateRepository( r );
         return r;
     }
-    
-    private void populateRepository( RemoteRepositoryConfiguration repository )
+
+    private void populateRepository( RemoteRepository repository )
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
         repository.setUrl( "url" );
         repository.setLayout( "default" );
-    }
-    
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        //action = (EditRemoteRepositoryAction) lookup( Action.class.getName(), "editRemoteRepositoryAction" );
-
-        action = (EditRemoteRepositoryAction) getActionProxy( "/admin/editRemoteRepository.action" ).getAction();
-
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
     }
 }
