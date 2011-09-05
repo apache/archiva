@@ -273,9 +273,9 @@ public abstract class AbstractRepositoryTest
         assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
         setFieldValue( "repository.name" , name );
         setFieldValue( "repository.location" , directory );
-        setFieldValue( "repository.indexDir" , indexDirectory );
+        setFieldValue( "repository.indexDirectory" , indexDirectory );
         selectValue( "repository.layout", type );
-        setFieldValue( "repository.refreshCronExpression" , cron );
+        setFieldValue( "repository.cronExpression" , cron );
         setFieldValue( "repository.daysOlder" , daysOlder );
         setFieldValue( "repository.retentionCount" , retentionCount );
         clickButtonWithValue( "Update Repository" );

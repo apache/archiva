@@ -1,9 +1,9 @@
 package org.apache.archiva.web.test.parent;
 
+import org.apache.archiva.web.test.XPathExpressionUtil;
+
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.archiva.web.test.XPathExpressionUtil;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -103,7 +103,17 @@ public abstract class AbstractArchivaTest
     public void goToLoginPage()
     {
         getSelenium().open( baseUrl );
-        clickLinkWithLocator( "loginLink" );
+        // are we already logged in ?
+        if ( isElementPresent( "logoutLink" ) )
+        {
+            // so logout
+            clickLinkWithLocator( "logoutLink" );
+            clickLinkWithLocator( "loginLink" );
+        }
+        else if ( isElementPresent( "loginLink" ) )
+        {
+            clickLinkWithLocator( "loginLink" );
+        }
         assertLoginPage();
     }
 
@@ -202,7 +212,9 @@ public abstract class AbstractArchivaTest
             "Guest,Registered User,System Administrator,User Administrator,Global Repository Observer,Global Repository Manager,Repository Observer,Repository Manager,internal";
         String[] arrayRole = userRoles.split( "," );
         for ( String userroles : arrayRole )
+        {
             assertTextPresent( userroles );
+        }
     }
 
     public void assertDeleteUserPage( String username )
@@ -336,8 +348,8 @@ public abstract class AbstractArchivaTest
     public void assertUserRoleCheckBoxPresent( String value )
     {
         getSelenium().isElementPresent(
-                                        "xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='"
-                                            + value + "']" );
+            "xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='" + value
+                + "']" );
     }
 
     public void assertResourceRolesCheckBoxPresent( String value )
@@ -349,8 +361,8 @@ public abstract class AbstractArchivaTest
     {
         assertUserRoleCheckBoxPresent( value );
         getSelenium().click(
-                             "xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='"
-                                 + value + "']" );
+            "xpath=//input[@id='addRolesToUser_addNDSelectedRoles' and @name='addNDSelectedRoles' and @value='" + value
+                + "']" );
     }
 
     public void checkResourceRoleWithValue( String value )
@@ -421,7 +433,9 @@ public abstract class AbstractArchivaTest
                 "Find Artifact,Browse,Reports,User Management,User Roles,Appearance,Upload Artifact,Delete Artifact,Repository Groups,Repositories,Proxy Connectors,Legacy Support,Network Proxies,Repository Scanning";
             String[] arrayMenu = navMenu.split( "," );
             for ( String navmenu : arrayMenu )
+            {
                 assertLinkPresent( navmenu );
+            }
         }
     }
 
@@ -459,7 +473,9 @@ public abstract class AbstractArchivaTest
             "Appearance,Organization Details,The logo in the top right of the screen is controlled by the following settings.,Organization Information,Name,URL,Logo URL";
         String[] arrayAppearance = appearance.split( "," );
         for ( String appear : arrayAppearance )
+        {
             assertTextPresent( appear );
+        }
         assertLinkPresent( "Edit" );
         assertLinkPresent( "Change your appearance" );
     }
@@ -474,8 +490,9 @@ public abstract class AbstractArchivaTest
 
     public void goToHomePage()
     {
-         getSelenium().open( "");
+        getSelenium().open( "" );
     }
+
     // Upload Artifact
     public void goToAddArtifactPage()
     {
@@ -577,9 +594,9 @@ public abstract class AbstractArchivaTest
         setFieldValue( "repository.id", identifier );
         setFieldValue( "repository.name", name );
         setFieldValue( "repository.location", directory );
-        setFieldValue( "repository.indexDir", indexDirectory );
+        setFieldValue( "repository.indexDirectory", indexDirectory );
         selectValue( "repository.layout", type );
-        setFieldValue( "repository.refreshCronExpression", cron );
+        setFieldValue( "repository.cronExpression", cron );
         setFieldValue( "repository.daysOlder", daysOlder );
         setFieldValue( "repository.retentionCount", retentionCount );
         // TODO
@@ -611,23 +628,24 @@ public abstract class AbstractArchivaTest
 
     public void assertNetworkProxiesPage()
     {
-	assertPage( "Apache Archiva \\ Administration - Network Proxies" );
+        assertPage( "Apache Archiva \\ Administration - Network Proxies" );
         assertTextPresent( "Administration - Network Proxies" );
         assertTextPresent( "Network Proxies" );
         assertLinkPresent( "Add Network Proxy" );
     }
 
-    public void addNetworkProxy( String identifier, String protocol, String hostname, String port, String username, String password )
+    public void addNetworkProxy( String identifier, String protocol, String hostname, String port, String username,
+                                 String password )
     {
         //goToNetworkProxiesPage();
         clickLinkWithText( "Add Network Proxy" );
         assertAddNetworkProxy();
-        setFieldValue( "proxy.id" , identifier );
-        setFieldValue( "proxy.protocol" , protocol );
-        setFieldValue( "proxy.host" , hostname );
-        setFieldValue( "proxy.port" , port );
-        setFieldValue( "proxy.username" , username );
-        setFieldValue( "proxy.password" , password );
+        setFieldValue( "proxy.id", identifier );
+        setFieldValue( "proxy.protocol", protocol );
+        setFieldValue( "proxy.host", hostname );
+        setFieldValue( "proxy.port", port );
+        setFieldValue( "proxy.username", username );
+        setFieldValue( "proxy.password", password );
         clickButtonWithValue( "Save Network Proxy" );
     }
 
@@ -654,21 +672,22 @@ public abstract class AbstractArchivaTest
 
     public void assertLegacySupportPage()
     {
-	assertPage( "Apache Archiva \\ Administration - Legacy Support" );
-	assertTextPresent( "Administration - Legacy Artifact Path Resolution" );
-	assertTextPresent( "Path Mappings" );
-	assertLinkPresent( "Add" );
+        assertPage( "Apache Archiva \\ Administration - Legacy Support" );
+        assertTextPresent( "Administration - Legacy Artifact Path Resolution" );
+        assertTextPresent( "Path Mappings" );
+        assertLinkPresent( "Add" );
     }
 
-    public void addLegacyArtifactPath( String path, String groupId, String artifactId, String version, String classifier, String type)
+    public void addLegacyArtifactPath( String path, String groupId, String artifactId, String version,
+                                       String classifier, String type )
     {
         assertAddLegacyArtifactPathPage();
-        setFieldValue( "legacyArtifactPath.path" , path );
-        setFieldValue( "groupId" , groupId );
-        setFieldValue( "artifactId" , artifactId );
-        setFieldValue( "version" , version );
-        setFieldValue( "classifier" , classifier );
-        setFieldValue( "type" , type );
+        setFieldValue( "legacyArtifactPath.path", path );
+        setFieldValue( "groupId", groupId );
+        setFieldValue( "artifactId", artifactId );
+        setFieldValue( "version", version );
+        setFieldValue( "classifier", classifier );
+        setFieldValue( "type", type );
         clickButtonWithValue( "Add Legacy Artifact Path" );
     }
 
@@ -676,11 +695,15 @@ public abstract class AbstractArchivaTest
     {
         assertPage( "Apache Archiva \\ Admin: Add Legacy Artifact Path" );
         assertTextPresent( "Admin: Add Legacy Artifact Path" );
-        assertTextPresent( "Enter the legacy path to map to a particular artifact reference, then adjust the fields as necessary." );
-        String element = "addLegacyArtifactPath_legacyArtifactPath_path,addLegacyArtifactPath_groupId,addLegacyArtifactPath_artifactId,addLegacyArtifactPath_version,addLegacyArtifactPath_classifier,addLegacyArtifactPath_type";
+        assertTextPresent(
+            "Enter the legacy path to map to a particular artifact reference, then adjust the fields as necessary." );
+        String element =
+            "addLegacyArtifactPath_legacyArtifactPath_path,addLegacyArtifactPath_groupId,addLegacyArtifactPath_artifactId,addLegacyArtifactPath_version,addLegacyArtifactPath_classifier,addLegacyArtifactPath_type";
         String[] arrayElement = element.split( "," );
         for ( String arrayelement : arrayElement )
-                assertElementPresent( arrayelement );
+        {
+            assertElementPresent( arrayelement );
+        }
         assertButtonWithValuePresent( "Add Legacy Artifact Path" );
     }
 
@@ -691,9 +714,9 @@ public abstract class AbstractArchivaTest
         setFieldValue( "repository.id", identifier );
         setFieldValue( "repository.name", name );
         setFieldValue( "repository.location", directory );
-        setFieldValue( "repository.indexDir", indexDirectory );
+        setFieldValue( "repository.indexDirectory", indexDirectory );
         selectValue( "repository.layout", type );
-        setFieldValue( "repository.refreshCronExpression", cron );
+        setFieldValue( "repository.cronExpression", cron );
         setFieldValue( "repository.daysOlder", daysOlder );
         setFieldValue( "repository.retentionCount", retentionCount );
         checkField( "stageNeeded" );

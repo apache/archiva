@@ -142,21 +142,21 @@ public class ArtifactManagementTest
         assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deleted from repository 'internal'" );
     }
 
-    @Test( alwaysRun = true )
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactNoGroupId()
     {
         deleteArtifact( " ", "delete", "1.0", "internal" );
         assertTextPresent( "You must enter a groupId." );
     }
 
-    @Test( alwaysRun = true )
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactNoArtifactId()
     {
         deleteArtifact( "delete", " ", "1.0", "internal" );
         assertTextPresent( "You must enter an artifactId." );
     }
 
-    @Test( alwaysRun = true)
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactNoVersion()
     {
         deleteArtifact( "delete", "delete", " ", "internal" );
@@ -164,7 +164,7 @@ public class ArtifactManagementTest
         assertTextPresent( "You must enter a version." );
     }
 
-    @Test( alwaysRun = true)
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactInvalidVersion()
     {
         deleteArtifact( "delete", "delete", "asdf", "internal" );
@@ -172,7 +172,7 @@ public class ArtifactManagementTest
     }
 
     // HTML select should have the proper value, else it will cause a selenium error: Option with label 'customValue' not found
-    @Test( alwaysRun = true)
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactInvalidValues()
     {
         deleteArtifact( "<> \\/~+[ ]'\"", "<> \\/~+[ ]'\"", "<>", "internal" );
@@ -183,7 +183,7 @@ public class ArtifactManagementTest
             "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
     }
 
-    @Test( alwaysRun = true)
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactInvalidGroupId()
     {
         deleteArtifact( "<> \\/~+[ ]'\"", "delete", "1.0", "internal" );
@@ -191,7 +191,7 @@ public class ArtifactManagementTest
             "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
     }
 
-    @Test( alwaysRun = true)
+    @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactInvalidArtifactId()
     {
         deleteArtifact( "delete", "<> \\/~+[ ]'\"", "1.0", "internal" );
