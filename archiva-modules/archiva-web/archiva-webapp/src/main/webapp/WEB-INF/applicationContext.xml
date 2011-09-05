@@ -86,6 +86,7 @@
     <constructor-arg ref="repositoryMerger#maven2"/>
     <constructor-arg ref="auditListener#logging"/>
     <constructor-arg ref="managedRepositoryAdmin#default"/>
+    <constructor-arg ref="remoteRepositoryAdmin#default"/>
   </bean>
 
   <!-- Redback Web Services -->

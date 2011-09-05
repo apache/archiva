@@ -22,7 +22,7 @@
 
 <s:textfield name="repository.name" label="Name" size="50" required="true"/>
 <s:textfield name="repository.url" label="URL" size="50" required="true"/>
-<s:textfield name="repository.username" label="Username" size="25" required="false"/>
+<s:textfield name="repository.userName" label="Username" size="25" required="false"/>
 <s:password name="repository.password" label="Password" size="25" required="false"/>
 <s:textfield name="repository.timeout" label="Timeout in seconds" size="3" required="false"/>
 <s:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
