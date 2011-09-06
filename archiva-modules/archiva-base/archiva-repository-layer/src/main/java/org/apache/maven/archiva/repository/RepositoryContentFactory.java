@@ -43,7 +43,7 @@ public class RepositoryContentFactory
     implements RegistryListener
 {
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ArchivaConfiguration archivaConfiguration;

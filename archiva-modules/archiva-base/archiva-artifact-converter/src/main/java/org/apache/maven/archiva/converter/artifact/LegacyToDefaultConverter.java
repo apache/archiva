@@ -75,7 +75,7 @@ public class LegacyToDefaultConverter
 {
     /**
      * {@link List}&lt;{@link Digester}
-     * plexus.requirement role="org.codehaus.plexus.digest.Digester"
+     *
      */
     private List<? extends Digester> digesters;
 
@@ -86,17 +86,17 @@ public class LegacyToDefaultConverter
     private DigesterUtils digesterUtils;
 
     /**
-     * plexus.requirement
+     *
      */
     private ModelConverter translator;
 
     /**
-     * plexus.requirement
+     *
      */
     private ArtifactFactory artifactFactory;
 
     /**
-     * plexus.requirement
+     *
      */
     private ArtifactHandlerManager artifactHandlerManager;
 

@@ -55,7 +55,7 @@ public class NewArtifactsRssFeedProcessor
     private static final String desc = "These are the new artifacts found in the repository ";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RssFeedGenerator generator;

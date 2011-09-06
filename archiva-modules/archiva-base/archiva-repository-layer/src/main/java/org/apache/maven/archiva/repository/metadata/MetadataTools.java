@@ -88,14 +88,14 @@ public class MetadataTools
     private static final char GROUP_SEPARATOR = '.';
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named(value = "fileTypes")

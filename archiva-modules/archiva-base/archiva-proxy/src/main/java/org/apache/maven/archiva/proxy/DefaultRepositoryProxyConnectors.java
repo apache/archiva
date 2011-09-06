@@ -95,49 +95,46 @@ public class DefaultRepositoryProxyConnectors
     private Logger log = LoggerFactory.getLogger( DefaultRepositoryProxyConnectors.class );
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "metadataTools#default" )
     private MetadataTools metadataTools;
 
-    //@Inject
-    //private ApplicationContext applicationContext;
-
     /**
-     * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     *
      */
     @Inject
     private Map<String, PreDownloadPolicy> preDownloadPolicies;
 
     /**
-     * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     *
      */
     @Inject
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
     /**
-     * plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
+     *
      */
     @Inject
     private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
 
     /**
-     * plexus.requirement role-hint="default"
+     *
      */
     @Inject
     private UrlFailureCache urlFailureCache;
@@ -147,13 +144,13 @@ public class DefaultRepositoryProxyConnectors
     private Map<String, ProxyInfo> networkProxyMap = new HashMap<String, ProxyInfo>();
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private WagonFactory wagonFactory;
 
     /**
-     * plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+     *
      */
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )

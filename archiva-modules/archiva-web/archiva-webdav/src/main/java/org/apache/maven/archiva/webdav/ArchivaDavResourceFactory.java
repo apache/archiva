@@ -108,54 +108,54 @@ public class ArchivaDavResourceFactory
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**
-     * plexus.requirement role="org.apache.archiva.audit.AuditListener"
+     *
      */
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * plexus.requirement
+     *
      */
     private RepositoryRequest repositoryRequest;
 
     /**
-     * plexus.requirement role-hint="default"
+     *
      */
     @Inject
     @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private MetadataTools metadataTools;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private MimeTypes mimeTypes;
 
     /**
-     * plexus.requirement
+     *
      */
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ServletAuthenticator servletAuth;
 
     /**
-     * plexus.requirement role-hint="basic"
+     *
      */
     @Inject
     @Named( value = "httpAuthenticator#basic" )
@@ -167,22 +167,22 @@ public class ArchivaDavResourceFactory
     private final LockManager lockManager = new SimpleLockManager();
 
     /**
-     * plexus.requirement
+     *
      */
     private ChecksumFile checksum;
 
     /**
-     * plexus.requirement role-hint="sha1"
+     *
      */
     private Digester digestSha1;
 
     /**
-     * plexus.requirement role-hint="md5";
+     *
      */
     private Digester digestMd5;
 
     /**
-     * plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
+     *
      */
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )

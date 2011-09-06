@@ -49,19 +49,19 @@ public class DefaultUserRepositories
     implements UserRepositories
 {
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private SecuritySystem securitySystem;
 
     /**
-     * plexus.requirement role-hint="default"
+     *
      */
     @Inject
     private RoleManager roleManager;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ArchivaConfiguration archivaConfiguration;

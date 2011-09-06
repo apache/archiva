@@ -53,7 +53,7 @@ public class ManagedLegacyRepositoryContent
     implements ManagedRepositoryContent
 {
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private FileTypes filetypes;

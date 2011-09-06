@@ -43,19 +43,19 @@ public class FileRepositorySessionFactory
     implements RepositorySessionFactory
 {
     /**
-     * plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
+     *
      */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private MetadataResolver metadataResolver;

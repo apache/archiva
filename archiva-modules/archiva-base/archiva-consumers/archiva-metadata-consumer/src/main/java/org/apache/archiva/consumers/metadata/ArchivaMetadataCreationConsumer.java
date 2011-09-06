@@ -73,13 +73,11 @@ public class ArchivaMetadataCreationConsumer
     private String description = "Create basic metadata for Archiva to be able to reference the artifact";
 
     /**
-     * plexus.requirement
      */
     @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
      */
     @Inject
     private FileTypes filetypes;
@@ -91,7 +89,6 @@ public class ArchivaMetadataCreationConsumer
     /**
      * FIXME: can be of other types
      *
-     * @plexus.requirement
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -100,7 +97,6 @@ public class ArchivaMetadataCreationConsumer
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
      * factory.
      *
-     * plexus.requirement role-hint="maven2"
      */
     @Inject
     @Named(value = "repositoryStorage#maven2")

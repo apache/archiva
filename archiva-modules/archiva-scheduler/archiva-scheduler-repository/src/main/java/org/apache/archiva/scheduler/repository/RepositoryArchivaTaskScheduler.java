@@ -64,7 +64,7 @@ public class RepositoryArchivaTaskScheduler
     private Logger log = LoggerFactory.getLogger( RepositoryArchivaTaskScheduler.class );
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private Scheduler scheduler;
@@ -73,20 +73,20 @@ public class RepositoryArchivaTaskScheduler
     private CronExpressionValidator cronValidator;
 
     /**
-     * plexus.requirement role-hint="repository-scanning"
+     *
      */
     @Inject
     @Named( value = "taskQueue#repository-scanning" )
     private TaskQueue repositoryScanningQueue;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "repositoryStatisticsManager#default" )
@@ -94,8 +94,7 @@ public class RepositoryArchivaTaskScheduler
 
     /**
      * TODO: could have multiple implementations
-     * <p/>
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

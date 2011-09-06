@@ -66,7 +66,7 @@ public class ArchivaIndexingTaskExecutor
     private Logger log = LoggerFactory.getLogger( ArchivaIndexingTaskExecutor.class );
 
     /**
-     * plexus.requirement
+     *
      */
     private IndexPacker indexPacker;
 

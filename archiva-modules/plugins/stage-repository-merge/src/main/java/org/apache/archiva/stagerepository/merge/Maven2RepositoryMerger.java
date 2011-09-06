@@ -60,12 +60,12 @@ public class Maven2RepositoryMerger
     implements RepositoryMerger
 {
     /**
-     * plexus.requirement role-hint="default"
+     *
      */
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement role-hint="maven2"
+     *
      */
     private RepositoryPathTranslator pathTranslator;
 

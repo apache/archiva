@@ -45,13 +45,13 @@ public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private FileTypes filetypes;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryContentConsumers consumerUtil;

@@ -94,8 +94,7 @@ public class DefaultArchivaConfiguration
 
     /**
      * Plexus registry to read the configuration from.
-     * <p/>
-     * plexus.requirement role-hint="commons-configuration"
+     *
      */
     @Inject
     @Named( value = "commons-configuration" )
@@ -111,7 +110,6 @@ public class DefaultArchivaConfiguration
 
     /**
      * see #initialize
-     * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
      *
      * @todo these don't strictly belong in here
      */
@@ -119,7 +117,6 @@ public class DefaultArchivaConfiguration
 
     /**
      * see #initialize
-     * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
      *
      * @todo these don't strictly belong in here
      */

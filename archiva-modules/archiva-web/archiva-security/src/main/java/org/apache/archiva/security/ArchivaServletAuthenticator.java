@@ -48,7 +48,7 @@ public class ArchivaServletAuthenticator
     private Logger log = LoggerFactory.getLogger( ArchivaServletAuthenticator.class );
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private SecuritySystem securitySystem;

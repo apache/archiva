@@ -38,7 +38,7 @@ public class MetadataAuditListener
     private static final Logger log = LoggerFactory.getLogger( MetadataAuditListener.class );
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private AuditManager auditManager;
@@ -47,7 +47,7 @@ public class MetadataAuditListener
      * FIXME: this could be multiple implementations and needs to be configured. It also starts a separate session to
      * the originator of the audit event that we may rather want to pass through.
      *
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

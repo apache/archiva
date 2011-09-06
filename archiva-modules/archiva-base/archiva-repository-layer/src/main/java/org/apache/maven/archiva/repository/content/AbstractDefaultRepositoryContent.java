@@ -60,19 +60,15 @@ public abstract class AbstractDefaultRepositoryContent
     private PathParser defaultPathParser = new DefaultPathParser();
 
     /**
-     * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     *
      */
     @Inject
     protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
-    //@Inject
-    //protected ApplicationContext applicationContext;
-
     @PostConstruct
     protected void initialize()
     {
-        //artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
-        //    applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
+        // no op
     }
 
     public ArtifactReference toArtifactReference( String path )

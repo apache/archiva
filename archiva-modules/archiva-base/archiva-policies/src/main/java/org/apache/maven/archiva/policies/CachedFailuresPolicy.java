@@ -56,7 +56,7 @@ public class CachedFailuresPolicy
     public static final String YES = "yes";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private UrlFailureCache urlFailureCache;

@@ -88,19 +88,19 @@ public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
     /**
-     * plexus.requirement
+     *
      */
     private ModelBuilder builder;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * plexus.requirement role-hint="maven2"
+     *
      */
     @Inject
     @Named( value = "repositoryPathTranslator#maven2" )

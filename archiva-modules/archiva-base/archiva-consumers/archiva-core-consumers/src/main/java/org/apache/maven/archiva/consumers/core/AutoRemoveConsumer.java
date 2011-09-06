@@ -62,13 +62,13 @@ public class AutoRemoveConsumer
     private String description = "Automatically Remove File from Filesystem.";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private FileTypes filetypes;

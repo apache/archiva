@@ -77,25 +77,25 @@ public class MetadataUpdaterConsumer
     private String description = "Update / Create maven-metadata.xml files";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private MetadataTools metadataTools;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private FileTypes filetypes;

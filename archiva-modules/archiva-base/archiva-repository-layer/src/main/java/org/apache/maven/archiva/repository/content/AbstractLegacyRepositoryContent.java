@@ -51,7 +51,7 @@ public abstract class AbstractLegacyRepositoryContent
     }
 
     /**
-     * plexus.requirement role-hint="legacy"
+     *
      */
     @Inject
     @Named( value = "pathParser#legacy" )

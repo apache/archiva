@@ -47,18 +47,18 @@ public class JcrRepositorySessionFactory
     private ApplicationContext applicationContext;
 
     /**
-     * plexus.requirement role="org.apache.archiva.metadata.model.MetadataFacetFactory"
+     *
      */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private Repository repository;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private MetadataResolver metadataResolver;

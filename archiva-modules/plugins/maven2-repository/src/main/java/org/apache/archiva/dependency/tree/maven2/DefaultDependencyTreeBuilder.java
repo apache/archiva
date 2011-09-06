@@ -103,37 +103,36 @@ public class DefaultDependencyTreeBuilder
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     /**
-     * plexus.requirement
+     *
      */
     private ArtifactFactory factory;
 
     /**
-     * plexus.requirement
+     *
      */
     private ArtifactCollector collector;
 
     /**
-     * plexus.requirement
+     *
      */
     private ModelBuilder builder;
 
     /**
      * TODO: can have other types, and this might eventually come through from the main request
-     * <p/>
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
     /**
-     * plexus.requirement role-hint="maven2"
+     *
      */
     @Inject
     @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )

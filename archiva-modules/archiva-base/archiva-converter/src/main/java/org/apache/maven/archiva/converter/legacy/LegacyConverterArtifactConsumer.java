@@ -59,13 +59,13 @@ public class LegacyConverterArtifactConsumer
     private Logger log = LoggerFactory.getLogger( LegacyConverterArtifactConsumer.class );
 
     /**
-     * plexus.requirement role-hint="legacy-to-default"
+     *
      */
     @Inject
     private ArtifactConverter artifactConverter;
 
     /**
-     * plexus.requirement
+     *
      */
     private ArtifactFactory artifactFactory;
 

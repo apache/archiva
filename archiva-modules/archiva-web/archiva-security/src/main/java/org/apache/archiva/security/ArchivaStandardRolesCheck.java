@@ -42,7 +42,7 @@ public class ArchivaStandardRolesCheck
     private Logger log = LoggerFactory.getLogger( ArchivaStandardRolesCheck.class );
     
     /**
-     * plexus.requirement role-hint="cached"
+     *
      */
     @Inject @Named(value = "rBACManager#cached")
     private RBACManager rbacManager;

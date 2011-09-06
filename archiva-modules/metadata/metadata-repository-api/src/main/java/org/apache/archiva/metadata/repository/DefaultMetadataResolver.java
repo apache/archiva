@@ -72,27 +72,22 @@ public class DefaultMetadataResolver
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
      *
-     * plexus.requirement role-hint="maven2"
+     *
      */
     @Inject
     @Named( value = "repositoryStorage#maven2" )
     private RepositoryStorage repositoryStorage;
 
     /**
-     * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
+     *
      */
     @Inject
     private List<RepositoryListener> listeners;
 
-
-    //@Inject
-    //private ApplicationContext applicationContext;
-
     @PostConstruct
     private void initialize()
     {
-        //listeners =
-        //    new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
+        // no op
     }
 
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,

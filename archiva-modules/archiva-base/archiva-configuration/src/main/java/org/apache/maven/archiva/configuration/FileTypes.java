@@ -60,7 +60,7 @@ public class FileTypes
     public static final String IGNORED = "ignored";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )

@@ -72,12 +72,12 @@ public class ValidateChecksumConsumer
     private String description = "Validate checksums against file.";
 
     /**
-     * plexus.requirement
+     *
      */
     private ChecksumFile checksum;
 
     /**
-     * plexus.requirement role="org.codehaus.plexus.digest.Digester"
+     *
      */
     private List<Digester> allDigesters;
 

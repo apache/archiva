@@ -69,27 +69,27 @@ public class RepositoryPurgeConsumer
     private String description = "Purge repository of old snapshots";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named(value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryContentFactory;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private MetadataTools metadataTools;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named(value = "fileTypes")
@@ -103,19 +103,15 @@ public class RepositoryPurgeConsumer
 
     private boolean deleteReleasedSnapshots;
 
-    //@Inject
-    //private ApplicationContext applicationContext;
-
     /**
-     * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
+     *
      */
     @Inject
     private List<RepositoryListener> listeners = Collections.emptyList();
 
     /**
      * TODO: this could be multiple implementations and needs to be configured.
-     * <p/>
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

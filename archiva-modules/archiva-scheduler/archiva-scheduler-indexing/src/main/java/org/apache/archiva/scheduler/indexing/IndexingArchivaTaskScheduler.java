@@ -41,7 +41,7 @@ public class IndexingArchivaTaskScheduler
     private Logger log = LoggerFactory.getLogger( IndexingArchivaTaskScheduler.class );
 
     /**
-     * plexus.requirement role-hint="indexing"
+     *
      */
     @Inject
     @Named(value = "taskQueue#indexing")

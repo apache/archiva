@@ -51,25 +51,24 @@ public class DefaultLegacyRepositoryConverter
     implements LegacyRepositoryConverter
 {
     /**
-     * plexus.requirement
+     *
      */
     private ArtifactRepositoryFactory artifactRepositoryFactory;
 
     /**
-     * plexus.requirement role-hint="default"
+     *
      */
     private ArtifactRepositoryLayout defaultLayout;
 
     /**
-     * plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
-     * role-hint="artifact-legacy-to-default-converter"
+     *
      */
     @Inject
     @Named( value = "knownRepositoryContentConsumer#artifact-legacy-to-default-converter" )
     private LegacyConverterArtifactConsumer legacyConverterConsumer;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryScanner repoScanner;

@@ -79,21 +79,20 @@ public class DuplicateArtifactsConsumer
     private String description = "Check for Duplicate Artifacts via SHA1 Checksums";
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private ArchivaConfiguration configuration;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private FileTypes filetypes;
 
     /**
      * FIXME: can be of other types
-     * <p/>
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -106,8 +105,7 @@ public class DuplicateArtifactsConsumer
 
     /**
      * FIXME: needs to be selected based on the repository in question
-     * <p/>
-     * plexus.requirement role-hint="maven2"
+     *
      */
     @Inject
     @Named( value = "repositoryPathTranslator#maven2" )

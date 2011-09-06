@@ -59,7 +59,7 @@ public class ArchivaRepositoryScanningTaskExecutor
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     @Named(value="archivaConfiguration#default")
@@ -68,13 +68,13 @@ public class ArchivaRepositoryScanningTaskExecutor
     /**
      * The repository scanner component.
      *
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryScanner repoScanner;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryContentConsumers consumers;
@@ -82,7 +82,7 @@ public class ArchivaRepositoryScanningTaskExecutor
     private Task task;
 
     /**
-     * plexus.requirement
+     *
      */
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
@@ -90,7 +90,6 @@ public class ArchivaRepositoryScanningTaskExecutor
     /**
      * TODO: may be different implementations
      *
-     * plexus.requirement
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
