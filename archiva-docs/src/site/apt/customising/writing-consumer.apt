@@ -2,8 +2,9 @@
  Writing a Consumer Plugin
  ------
  Maria Odea Ching
+ Olivier Lamy
  ------
- 23 Nov 2007
+ 06 Sep 2011
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -29,6 +30,7 @@
 Writing a Consumer Plugin
 
  For a sample custom consumer, you can checkout the archiva-consumer-plugin at the archiva sandbox in the SVN repository:
+ Prior to release 1.4, plexus components are not anymore supported, you must use Spring components.
 
 +----+
 http://svn.apache.org/repos/asf/archiva/sandbox/archiva-consumer-plugin
@@ -43,33 +45,12 @@ http://svn.apache.org/repos/asf/archiva/sandbox/archiva-consumer-plugin
 
 +----+
 Ex.
-@plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
-                  role-hint="discover-new-artifact"
-                  instantiation-strategy="per-lookup"
+@Service("knownRepositoryContentConsumer#discover-new-artifact")
+@Scope("prototype")
 
 where,
-  role: the interface that your class implements
-  role-hint: the lookup name of the component (your class/consumer)
-  instantiation-strategy: how your class will be instantiated
-+----+
-
- [[3]] Make sure to add the snippet below in the <build> section of the project's pom. This is needed to
-   generate the components.xml.
-
-+----+
-<plugin>
-  <groupId>org.codehaus.plexus</groupId>
-  <artifactId>plexus-maven-plugin</artifactId>
-  <version>1.3.5</version>
-  <executions>
-    <execution>
-      <id>generate</id>
-      <goals>
-        <goal>descriptor</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
+  Servide: unique id for your consumer.
+  Scope: the creation strategy prototype or singleton.
 +----+
 
  [[4]] Package your project by executing 'mvn clean package'
