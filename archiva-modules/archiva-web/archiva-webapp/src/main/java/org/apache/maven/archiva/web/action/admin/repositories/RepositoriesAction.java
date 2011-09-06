@@ -115,8 +115,6 @@ public class RepositoriesAction
     public void prepare()
         throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-
         remoteRepositories = new ArrayList<RemoteRepository>( getRemoteRepositoryAdmin().getRemoteRepositories() );
         managedRepositories = new ArrayList<ManagedRepository>( getManagedRepositoryAdmin().getManagedRepositories() );
         repositoryToGroupMap = getRepositoryGroupAdmin().getRepositoryToGroupMap();

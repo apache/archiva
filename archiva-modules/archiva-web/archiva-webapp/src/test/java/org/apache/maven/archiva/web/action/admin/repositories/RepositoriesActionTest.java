@@ -22,15 +22,20 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.struts2.StrutsSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -43,14 +48,41 @@ import static org.mockito.Mockito.when;
 public class RepositoriesActionTest
     extends StrutsSpringTestCase
 {
+    private Logger log = LoggerFactory.getLogger( getClass() );
+
     private RepositoriesAction action;
+
+    ArchivaConfiguration originalArchivaConfiguration;
 
     protected void setUp()
         throws Exception
     {
-        super.setUp();
-        action = (RepositoriesAction) getActionProxy( "/admin/index.action" ).getAction();
 
+        super.setUp();
+
+        action = (RepositoriesAction) getActionProxy( "/admin/index.action" ).getAction();
+        originalArchivaConfiguration =
+            ( (DefaultRepositoryGroupAdmin) action.getRepositoryGroupAdmin() ).getArchivaConfiguration();
+        // some other test are modifying archivaConfiguration with a mocked instance : this test need the real one
+        // so use the real one from spring, backup the mock and restore it at the end (tearDown)
+        ArchivaConfiguration real = applicationContext.getBean( ArchivaConfiguration.class );
+        ( (DefaultRepositoryGroupAdmin) action.getRepositoryGroupAdmin() ).setArchivaConfiguration( real );
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration( real );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration( real );
+    }
+
+
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        ( (DefaultRepositoryGroupAdmin) action.getRepositoryGroupAdmin() ).setArchivaConfiguration(
+            originalArchivaConfiguration );
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            originalArchivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            originalArchivaConfiguration );
     }
 
     @Override
@@ -62,47 +94,55 @@ public class RepositoriesActionTest
     public void testGetRepositories()
         throws Exception
     {
-        MockControl control = MockControl.createControl( MetadataRepository.class );
-        MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
-        control.expectAndReturn( metadataRepository.getMetadataFacets( "internal", RepositoryStatistics.FACET_ID ),
-                                 Arrays.asList( "20091125.123456.678" ) );
-        control.expectAndReturn(
-            metadataRepository.getMetadataFacet( "internal", RepositoryStatistics.FACET_ID, "20091125.123456.678" ),
-            new RepositoryStatistics() );
-        control.expectAndReturn( metadataRepository.getMetadataFacets( "snapshots", RepositoryStatistics.FACET_ID ),
-                                 Arrays.asList( "20091112.012345.012" ) );
-        control.expectAndReturn(
-            metadataRepository.getMetadataFacet( "snapshots", RepositoryStatistics.FACET_ID, "20091112.012345.012" ),
-            new RepositoryStatistics() );
-        control.replay();
+        try
+        {
+            MockControl control = MockControl.createControl( MetadataRepository.class );
+            MetadataRepository metadataRepository = (MetadataRepository) control.getMock();
+            control.expectAndReturn( metadataRepository.getMetadataFacets( "internal", RepositoryStatistics.FACET_ID ),
+                                     Arrays.asList( "20091125.123456.678" ) );
+            control.expectAndReturn(
+                metadataRepository.getMetadataFacet( "internal", RepositoryStatistics.FACET_ID, "20091125.123456.678" ),
+                new RepositoryStatistics() );
+            control.expectAndReturn( metadataRepository.getMetadataFacets( "snapshots", RepositoryStatistics.FACET_ID ),
+                                     Arrays.asList( "20091112.012345.012" ) );
+            control.expectAndReturn( metadataRepository.getMetadataFacet( "snapshots", RepositoryStatistics.FACET_ID,
+                                                                          "20091112.012345.012" ),
+                                     new RepositoryStatistics() );
+            control.replay();
 
-        RepositorySession session = mock( RepositorySession.class );
-        when( session.getRepository() ).thenReturn( metadataRepository );
-        TestRepositorySessionFactory factory =
-            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
-        factory.setRepositorySession( session );
+            RepositorySession session = mock( RepositorySession.class );
+            when( session.getRepository() ).thenReturn( metadataRepository );
+            TestRepositorySessionFactory factory =
+                applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
+            factory.setRepositorySession( session );
 
-        ServletRunner sr = new ServletRunner();
-        ServletUnitClient sc = sr.newClient();
+            ServletRunner sr = new ServletRunner();
+            ServletUnitClient sc = sr.newClient();
 
-        action.setServletRequest( sc.newInvocation( "http://localhost/admin/repositories.action" ).getRequest() );
+            action.setServletRequest( sc.newInvocation( "http://localhost/admin/repositories.action" ).getRequest() );
 
-        action.prepare();
-        String result = action.execute();
-        assertEquals( Action.SUCCESS, result );
+            action.prepare();
+            String result = action.execute();
+            assertEquals( Action.SUCCESS, result );
 
-        // TODO: for some reason servletunit is not populating the port of the servlet request
-        assertEquals( "http://localhost:0/repository", action.getBaseUrl() );
+            // TODO: for some reason servletunit is not populating the port of the servlet request
+            assertEquals( "http://localhost:0/repository", action.getBaseUrl() );
 
-        assertNotNull( action.getManagedRepositories() );
-        assertNotNull( action.getRemoteRepositories() );
-        assertNotNull( action.getRepositoryStatistics() );
+            assertNotNull( action.getManagedRepositories() );
+            assertNotNull( action.getRemoteRepositories() );
+            assertNotNull( action.getRepositoryStatistics() );
 
-        assertEquals( 2, action.getManagedRepositories().size() );
-        assertEquals( 2, action.getRemoteRepositories().size() );
-        assertEquals( 2, action.getRepositoryStatistics().size() );
+            assertEquals( 2, action.getManagedRepositories().size() );
+            assertEquals( 2, action.getRemoteRepositories().size() );
+            assertEquals( 2, action.getRepositoryStatistics().size() );
 
-        control.verify();
+            control.verify();
+        }
+        catch ( Exception e )
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
     }
 
     public void testSecureActionBundle()
