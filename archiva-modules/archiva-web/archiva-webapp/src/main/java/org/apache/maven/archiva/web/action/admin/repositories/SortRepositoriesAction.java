@@ -30,7 +30,6 @@ import java.util.List;
 /**
  * SortRepositoriesAction
  *
- * @version plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortRepositoriesAction" instantiation-strategy="per-lookup"
  */
 @Controller( "sortRepositoriesAction" )
 @Scope( "prototype" )

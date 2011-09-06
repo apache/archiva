@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 /**
  * RepositoryGroupsAction
  *
- * @version plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryGroupsAction" instantiation-strategy="per-lookup"
  */
 @Controller( "repositoryGroupsAction" )
 @Scope( "prototype" )

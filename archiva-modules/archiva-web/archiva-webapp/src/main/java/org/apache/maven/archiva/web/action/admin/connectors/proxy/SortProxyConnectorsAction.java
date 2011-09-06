@@ -30,8 +30,6 @@ import java.util.List;
  * SortProxyConnectorsAction -
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="sortProxyConnectorsAction" instantiation-strategy="per-lookup"
  */
 @Controller( "sortProxyConnectorsAction" )
 @Scope( "prototype" )

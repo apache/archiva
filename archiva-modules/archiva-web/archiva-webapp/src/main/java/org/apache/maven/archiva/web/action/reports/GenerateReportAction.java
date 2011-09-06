@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="generateReport" instantiation-strategy="per-lookup"
+ *
  */
 @Controller( "generateReport" )
 @Scope( "prototype" )

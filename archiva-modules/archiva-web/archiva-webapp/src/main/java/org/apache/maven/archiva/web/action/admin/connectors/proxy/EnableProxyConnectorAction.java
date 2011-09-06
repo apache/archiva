@@ -25,8 +25,6 @@ import org.springframework.stereotype.Controller;
 
 /**
  * EnableProxyConnectorAction
- * <p/>
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="enableProxyConnectorAction" instantiation-strategy="per-lookup"
  */
 @Controller( "enableProxyConnectorAction" )
 @Scope( "prototype" )

@@ -42,7 +42,6 @@ import java.util.Set;
  * Browse the repository.
  *
  * @todo implement repository selectors (all or specific repository)
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="browseAction" instantiation-strategy="per-lookup"
  */
 @Controller( "browseAction" )
 @Scope( "prototype" )

@@ -27,8 +27,7 @@ import org.springframework.stereotype.Controller;
  * DeleteProxyConnectorAction 
  *
  * @version $Id$
- * 
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteProxyConnectorAction" instantiation-strategy="per-lookup"
+ *
  */
 @Controller( "deleteProxyConnectorAction" )
 @Scope( "prototype" )

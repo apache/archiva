@@ -49,8 +49,6 @@ import java.util.Map;
 
 /**
  * Search all indexed fields by the given criteria.
- * <p/>
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="searchAction" instantiation-strategy="per-lookup"
  */
 @Controller( "searchAction" )
 @Scope( "prototype" )

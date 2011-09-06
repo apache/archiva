@@ -35,8 +35,7 @@ import java.util.Map;
  * ProxyConnectorsAction
  *
  * @version $Id$
- * 
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="proxyConnectorsAction" instantiation-strategy="per-lookup"
+ *
  */
 @Controller( "proxyConnectorsAction" )
 @Scope( "prototype" )

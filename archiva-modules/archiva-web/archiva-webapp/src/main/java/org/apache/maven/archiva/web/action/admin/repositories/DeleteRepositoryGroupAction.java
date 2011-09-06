@@ -30,7 +30,6 @@ import org.springframework.stereotype.Controller;
 /**
  * DeleteRepositoryGroupAction
  *
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteRepositoryGroupAction" instantiation-strategy="per-lookup"
  */
 @Controller( "deleteRepositoryGroupAction" )
 @Scope( "prototype" )

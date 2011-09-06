@@ -69,8 +69,6 @@ import java.util.TimeZone;
 
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
- * <p/>
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteArtifactAction" instantiation-strategy="per-lookup"
  */
 @Controller( "deleteArtifactAction" )
 @Scope( "prototype" )
