@@ -21,6 +21,12 @@ package org.apache.archiva.admin.repository;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.mock.MockAuditListener;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.junit.runner.RunWith;
@@ -30,6 +36,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -45,6 +53,15 @@ public abstract class AbstractRepositoryAdminTest
 
     @Inject
     protected MockAuditListener mockAuditListener;
+
+    @Inject
+    protected RoleManager roleManager;
+
+    @Inject
+    protected RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    @Inject
+    protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     protected AuditInformation getFakeAuditInformation()
     {
@@ -67,5 +84,35 @@ public abstract class AbstractRepositoryAdminTest
         user.setUsername( "root" );
         user.setFullName( "The top user" );
         return user;
+    }
+
+    protected ManagedRepository getTestManagedRepository( String repoId, String repoLocation )
+    {
+        return new ManagedRepository( repoId, "test repo", repoLocation, "default", false, true, true, "0 0 * * * ?",
+                                      repoLocation + "/.index", false, 1, 2, true );
+    }
+
+    protected File clearRepoLocation( String path )
+        throws Exception
+    {
+        File repoDir = new File( path );
+        if ( repoDir.exists() )
+        {
+            FileUtils.deleteDirectory( repoDir );
+        }
+        assertFalse( repoDir.exists() );
+        return repoDir;
+    }
+
+    protected ManagedRepository findManagedRepoById( List<ManagedRepository> repos, String id )
+    {
+        for ( ManagedRepository repo : repos )
+        {
+            if ( StringUtils.equals( id, repo.getId() ) )
+            {
+                return repo;
+            }
+        }
+        return null;
     }
 }

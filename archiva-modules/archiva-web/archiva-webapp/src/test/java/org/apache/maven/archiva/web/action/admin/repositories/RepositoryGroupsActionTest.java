@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -36,20 +37,18 @@ import java.util.List;
 
 /**
  * RepositoryGroupsActionTest
- * 
- * @version
  */
-public class RepositoryGroupsActionTest 
+public class RepositoryGroupsActionTest
     extends AbstractActionTestCase
 {
     private static final String REPO_GROUP_ID = "repo-group-ident";
-	
+
     private static final String REPO1_ID = "managed-repo-ident-1";
-	
+
     private static final String REPO2_ID = "managed-repo-ident-2";
-	
+
     private RepositoryGroupsAction action;
-	
+
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
@@ -58,22 +57,21 @@ public class RepositoryGroupsActionTest
         throws Exception
     {
         super.setUp();
-	
-        //action = (RepositoryGroupsAction) lookup( Action.class.getName(), "repositoryGroupsAction" );
+
         action = (RepositoryGroupsAction) getActionProxy( "/admin/repositoryGroups.action" ).getAction();
-	    
+
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
     }
 
     public void testSecureActionBundle()
-        throws SecureActionException
+        throws SecureActionException, RepositoryAdminException
     {
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
         archivaConfigurationControl.replay();
-	
+
         action.prepare();
         SecureActionBundle bundle = action.getSecureActionBundle();
         assertTrue( bundle.requiresAuthentication() );
@@ -86,41 +84,41 @@ public class RepositoryGroupsActionTest
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 2 );
-	
+
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
-	
+
         action.prepare();
         RepositoryGroupConfiguration repositoryGroup = action.getRepositoryGroup();
         repositoryGroup.setId( REPO_GROUP_ID );
-	
+
         String status = action.addRepositoryGroup();
         assertEquals( Action.SUCCESS, status );
-	
+
         assertEquals( Collections.singletonList( repositoryGroup ), configuration.getRepositoryGroups() );
-	
+
         archivaConfigurationControl.verify();
     }
-	
+
     public void testAddEmptyRepositoryGroup()
         throws Exception
     {
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 2 );
-	
+
         archivaConfiguration.save( configuration );
-	
+
         archivaConfigurationControl.replay();
-	
+
         action.prepare();
-	    
+
         String status = action.addRepositoryGroup();
         assertEquals( Action.ERROR, status );
-	    
+
         assertEquals( 0, configuration.getRepositoryGroups().size() );
     }
-	
+
     public void testAddDuplicateRepositoryGroup()
         throws Exception
     {
@@ -129,21 +127,21 @@ public class RepositoryGroupsActionTest
         archivaConfigurationControl.setReturnValue( configuration, 3 );
 
         archivaConfiguration.save( configuration );
-	
+
         archivaConfigurationControl.replay();
-	
+
         action.prepare();
         RepositoryGroupConfiguration repositoryGroup = action.getRepositoryGroup();
         repositoryGroup.setId( REPO_GROUP_ID );
-	
+
         String status = action.addRepositoryGroup();
         assertEquals( Action.SUCCESS, status );
-	
+
         assertEquals( Collections.singletonList( repositoryGroup ), configuration.getRepositoryGroups() );
-		    
+
         repositoryGroup.setId( REPO_GROUP_ID );
         status = action.addRepositoryGroup();
-	    
+
         assertEquals( Action.ERROR, status );
         assertEquals( Collections.singletonList( repositoryGroup ), configuration.getRepositoryGroups() );
     }
@@ -155,79 +153,79 @@ public class RepositoryGroupsActionTest
         ServletUnitClient sc = sr.newClient();
 
         Configuration configuration = createInitialConfiguration();
-        
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.replay();
-        
+
         action.setServletRequest( sc.newInvocation( "http://localhost/admin/repositoryGroups.action" ).getRequest() );
         action.prepare();
         String result = action.execute();
         assertEquals( Action.SUCCESS, result );
-        
+
         assertEquals( "http://localhost:0/repository", action.getBaseUrl() );
-        
+
         assertNotNull( action.getRepositoryGroups() );
         assertEquals( 1, action.getRepositoryGroups().size() );
         assertEquals( 2, action.getManagedRepositories().size() );
-        
+
         RepositoryGroupConfiguration repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
-        
+
         assertEquals( 1, repoGroup.getRepositories().size() );
         assertEquals( REPO1_ID, repoGroup.getRepositories().get( 0 ) );
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
-        
+
         List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
     }
-	
+
     public void testAddRepositoryToGroup()
         throws Exception
     {
         Configuration configuration = createInitialConfiguration();
-        
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 6 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
-        
+
         action.prepare();
         String result = action.execute();
         assertEquals( Action.SUCCESS, result );
-        
+
         assertNotNull( action.getRepositoryGroups() );
         assertEquals( 1, action.getRepositoryGroups().size() );
         assertEquals( 2, action.getManagedRepositories().size() );
-        
+
         RepositoryGroupConfiguration repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
-        assertEquals( 1 , repoGroup.getRepositories().size() );
+        assertEquals( 1, repoGroup.getRepositories().size() );
         assertEquals( REPO1_ID, repoGroup.getRepositories().get( 0 ) );
-        
+
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
-        
+
         List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
-        
+
         action.setRepoGroupId( REPO_GROUP_ID );
         action.setRepoId( REPO2_ID );
-        
+
         result = action.addRepositoryToGroup();
         assertEquals( Action.SUCCESS, result );
-        
+
         action.prepare();
         result = action.execute();
         assertEquals( Action.SUCCESS, result );
-     
+
         assertEquals( 1, action.getRepositoryGroups().size() );
         repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
         assertEquals( 2, repoGroup.getRepositories().size() );
         assertEquals( REPO1_ID, repoGroup.getRepositories().get( 0 ) );
         assertEquals( REPO2_ID, repoGroup.getRepositories().get( 1 ) );
-        
+
         assertEquals( 0, action.getGroupToRepositoryMap().size() );
         assertNull( action.getGroupToRepositoryMap().get( repoGroup.getId() ) );
     }
@@ -236,47 +234,47 @@ public class RepositoryGroupsActionTest
         throws Exception
     {
         Configuration configuration = createInitialConfiguration();
-        
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 6 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
-        
+
         action.prepare();
         String result = action.execute();
         assertEquals( Action.SUCCESS, result );
-        
+
         assertNotNull( action.getRepositoryGroups() );
         assertEquals( 1, action.getRepositoryGroups().size() );
         assertEquals( 2, action.getManagedRepositories().size() );
-        
+
         RepositoryGroupConfiguration repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
-        assertEquals( 1 , repoGroup.getRepositories().size() );
+        assertEquals( 1, repoGroup.getRepositories().size() );
         assertEquals( REPO1_ID, repoGroup.getRepositories().get( 0 ) );
-        
+
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
-        
+
         List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
-        
+
         action.setRepoGroupId( REPO_GROUP_ID );
         action.setRepoId( REPO1_ID );
-        
+
         result = action.removeRepositoryFromGroup();
         assertEquals( Action.SUCCESS, result );
-        
+
         action.prepare();
         result = action.execute();
         assertEquals( Action.SUCCESS, result );
-        
+
         repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
         assertEquals( 0, repoGroup.getRepositories().size() );
-        
+
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
-        
+
         repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 2, repos.size() );
         assertEquals( REPO1_ID, repos.get( 0 ) );
@@ -287,70 +285,70 @@ public class RepositoryGroupsActionTest
         throws Exception
     {
         Configuration configuration = createInitialConfiguration();
-        
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 6 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
-        
+
         action.prepare();
         String result = action.execute();
         assertEquals( Action.SUCCESS, result );
-        
+
         assertNotNull( action.getRepositoryGroups() );
         assertEquals( 1, action.getRepositoryGroups().size() );
         assertEquals( 2, action.getManagedRepositories().size() );
-        
+
         RepositoryGroupConfiguration repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
-        assertEquals( 1 , repoGroup.getRepositories().size() );
+        assertEquals( 1, repoGroup.getRepositories().size() );
         assertEquals( REPO1_ID, repoGroup.getRepositories().get( 0 ) );
-        
+
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
-        
+
         List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
-        
+
         action.setRepoGroupId( REPO_GROUP_ID );
         action.setRepoId( REPO1_ID );
-        
+
         result = action.addRepositoryToGroup();
         assertEquals( Action.ERROR, result );
     }
-	
+
     public void testRemoveRepositoryNotInGroup()
         throws Exception
     {
         Configuration configuration = createInitialConfiguration();
-        
+
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, 6 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
-        
+
         action.prepare();
         String result = action.execute();
         assertEquals( Action.SUCCESS, result );
-        
+
         assertNotNull( action.getRepositoryGroups() );
         assertEquals( 1, action.getRepositoryGroups().size() );
         assertEquals( 2, action.getManagedRepositories().size() );
-        
+
         RepositoryGroupConfiguration repoGroup = action.getRepositoryGroups().get( REPO_GROUP_ID );
-        assertEquals( 1 , repoGroup.getRepositories().size() );
+        assertEquals( 1, repoGroup.getRepositories().size() );
         assertEquals( REPO1_ID, repoGroup.getRepositories().get( 0 ) );
-        
+
         assertNotNull( action.getGroupToRepositoryMap() );
         assertEquals( 1, action.getGroupToRepositoryMap().size() );
-        
+
         List<String> repos = action.getGroupToRepositoryMap().get( repoGroup.getId() );
         assertEquals( 1, repos.size() );
         assertEquals( REPO2_ID, repos.get( 0 ) );
-        
+
         action.setRepoGroupId( REPO_GROUP_ID );
         action.setRepoId( REPO2_ID );
-        
+
         result = action.removeRepositoryFromGroup();
         assertEquals( Action.ERROR, result );
     }
@@ -358,23 +356,23 @@ public class RepositoryGroupsActionTest
     private Configuration createInitialConfiguration()
     {
         Configuration config = new Configuration();
-		
+
         ManagedRepositoryConfiguration managedRepo1 = new ManagedRepositoryConfiguration();
         managedRepo1.setId( REPO1_ID );
-        
+
         config.addManagedRepository( managedRepo1 );
-        
+
         ManagedRepositoryConfiguration managedRepo2 = new ManagedRepositoryConfiguration();
         managedRepo2.setId( REPO2_ID );
-        
+
         config.addManagedRepository( managedRepo2 );
-        
+
         RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
         repoGroup.setId( REPO_GROUP_ID );
         repoGroup.addRepository( REPO1_ID );
-		
+
         config.addRepositoryGroup( repoGroup );
-		
+
         return config;
     }
 }

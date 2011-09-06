@@ -89,6 +89,8 @@ public class AuditEvent
 
     public static final String DELETE_REPO_GROUP = "Deleted Repository Group";
 
+    public static final String MODIFY_REPO_GROUP = "Modify Repository Group";
+
     public static final String ADD_REPO_TO_GROUP = "Added Repository to Group";
 
     public static final String DELETE_REPO_FROM_GROUP = "Deleted Repository from Group";

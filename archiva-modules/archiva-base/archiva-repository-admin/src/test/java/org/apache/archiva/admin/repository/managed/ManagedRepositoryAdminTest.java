@@ -23,10 +23,8 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.redback.role.RoleManager;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 
@@ -36,15 +34,6 @@ import java.util.List;
 public class ManagedRepositoryAdminTest
     extends AbstractRepositoryAdminTest
 {
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-
-
-    @Inject
-    protected RoleManager roleManager;
-
     public static final String STAGE_REPO_ID_END = DefaultManagedRepositoryAdmin.STAGE_REPO_ID_END;
 
     @Test
@@ -262,8 +251,6 @@ public class ManagedRepositoryAdminTest
 
         ManagedRepository repo = getTestManagedRepository( repoId, repoLocation );
 
-
-
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
 
         assertTemplateRoleExists( repoId );
@@ -387,36 +374,6 @@ public class ManagedRepositoryAdminTest
 
     }
 
-    private File clearRepoLocation( String path )
-        throws Exception
-    {
-        File repoDir = new File( path );
-        if ( repoDir.exists() )
-        {
-            FileUtils.deleteDirectory( repoDir );
-        }
-        assertFalse( repoDir.exists() );
-        return repoDir;
-    }
 
-    private ManagedRepository findManagedRepoById( List<ManagedRepository> repos, String id )
-    {
-        for ( ManagedRepository repo : repos )
-        {
-            if ( StringUtils.equals( id, repo.getId() ) )
-            {
-                return repo;
-            }
-        }
-        return null;
-    }
-
-
-
-    ManagedRepository getTestManagedRepository( String repoId, String repoLocation )
-    {
-        return new ManagedRepository( repoId, "test repo", repoLocation, "default", false, true, true, "0 0 * * * ?",
-                                      repoLocation + "/.index", false, 1, 2, true );
-    }
 
 }

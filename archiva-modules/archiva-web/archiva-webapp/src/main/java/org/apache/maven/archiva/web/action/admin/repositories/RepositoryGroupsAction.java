@@ -20,12 +20,14 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.web.util.ContextUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -38,7 +40,6 @@ import java.util.regex.Pattern;
 
 /**
  * RepositoryGroupsAction
- *
  */
 @Controller( "repositoryGroupsAction" )
 @Scope( "prototype" )
@@ -50,7 +51,7 @@ public class RepositoryGroupsAction
 
     private Map<String, RepositoryGroupConfiguration> repositoryGroups;
 
-    private Map<String, ManagedRepositoryConfiguration> managedRepositories;
+    private Map<String, ManagedRepository> managedRepositories;
 
     private Map<String, List<String>> groupToRepositoryMap;
 
@@ -71,12 +72,13 @@ public class RepositoryGroupsAction
     }
 
     public void prepare()
+        throws RepositoryAdminException
     {
         Configuration config = archivaConfiguration.getConfiguration();
 
         repositoryGroup = new RepositoryGroupConfiguration();
         repositoryGroups = config.getRepositoryGroupsAsMap();
-        managedRepositories = config.getManagedRepositoriesAsMap();
+        managedRepositories = getManagedRepositoryAdmin().getManagedRepositoriesAsMap();
         groupToRepositoryMap = config.getGroupToRepositoryMap();
     }
 
@@ -233,7 +235,7 @@ public class RepositoryGroupsAction
         this.repositoryGroups = repositoryGroups;
     }
 
-    public Map<String, ManagedRepositoryConfiguration> getManagedRepositories()
+    public Map<String, ManagedRepository> getManagedRepositories()
     {
         return managedRepositories;
     }

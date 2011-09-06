@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository.managed;
+package org.apache.archiva.admin.repository.group;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,39 +18,36 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
-
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-public interface ManagedRepositoryAdmin
+public interface RepositoryGroupAdmin
 {
-    List<ManagedRepository> getManagedRepositories()
+    List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException;
 
-    Map<String, ManagedRepository> getManagedRepositoriesAsMap()
+    RepositoryGroup getRepositoryGroup( String repositoryGroupId )
         throws RepositoryAdminException;
 
-    ManagedRepository getManagedRepository( String repositoryId )
+    Boolean addRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-    Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation, boolean deleteContent )
+    Boolean updateRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-    Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                  AuditInformation auditInformation )
+    Boolean deleteRepositoryGroup( String repositoryGroupId, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-
-    Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                     AuditInformation auditInformation, boolean resetStats )
+    Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-
+    Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId,
+                                       AuditInformation auditInformation )
+        throws RepositoryAdminException;
 }

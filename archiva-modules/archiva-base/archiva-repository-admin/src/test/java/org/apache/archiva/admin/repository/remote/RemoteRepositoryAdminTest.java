@@ -22,7 +22,6 @@ import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -31,9 +30,6 @@ import java.util.List;
 public class RemoteRepositoryAdminTest
     extends AbstractRepositoryAdminTest
 {
-
-    @Inject
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
     @Test
     public void getAll()
@@ -122,17 +118,13 @@ public class RemoteRepositoryAdminTest
         repo.setPassword( "titi" );
         repo.setUrl( "http://foo.com/maven-really-rocks" );
 
-
         remoteRepositoryAdmin.updateRemoteRepository( repo, getFakeAuditInformation() );
-
 
         repo = remoteRepositoryAdmin.getRemoteRepository( "foo" );
 
         assertEquals( "foo-name-changed", repo.getUserName() );
         assertEquals( "titi", repo.getPassword() );
         assertEquals( "http://foo.com/maven-really-rocks", repo.getUrl() );
-
-
 
         remoteRepositoryAdmin.deleteRemoteRepository( "foo", getFakeAuditInformation() );
 
@@ -149,7 +141,7 @@ public class RemoteRepositoryAdminTest
 
         assertEquals( AuditEvent.MODIFY_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 1 ).getUserId() );
-        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get(1 ).getRemoteIP() );
+        assertEquals( "archiva-localhost", mockAuditListener.getAuditEvents().get( 1 ).getRemoteIP() );
 
         assertEquals( AuditEvent.DELETE_REMOTE_REPO, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 2 ).getUserId() );

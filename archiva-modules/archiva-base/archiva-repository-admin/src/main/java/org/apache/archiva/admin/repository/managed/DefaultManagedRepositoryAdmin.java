@@ -36,6 +36,7 @@ import org.apache.commons.validator.GenericValidator;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -50,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +110,19 @@ public class DefaultManagedRepositoryAdmin
         }
 
         return managedRepos;
+    }
+
+    public Map<String, ManagedRepository> getManagedRepositoriesAsMap()
+        throws RepositoryAdminException
+    {
+        List<ManagedRepository> managedRepositories = getManagedRepositories();
+        Map<String, ManagedRepository> repositoriesMap =
+            new HashMap<String, ManagedRepository>( managedRepositories.size() );
+        for ( ManagedRepository managedRepository : managedRepositories )
+        {
+            repositoriesMap.put( managedRepository.getId(), managedRepository );
+        }
+        return repositoriesMap;
     }
 
     public ManagedRepository getManagedRepository( String repositoryId )
@@ -238,6 +253,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
+    // FIXME cleanup repositoryGroups when deleting a ManagedRepo
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
                                             boolean deleteContent )
         throws RepositoryAdminException
@@ -332,7 +348,13 @@ public class DefaultManagedRepositoryAdmin
                 List<String> repoGroups = repoToGroupMap.get( repository.getId() );
                 for ( String repoGroup : repoGroups )
                 {
-                    config.findRepositoryGroupById( repoGroup ).removeRepository( repository.getId() );
+                    // copy to prevent UnsupportedOperationException
+                    RepositoryGroupConfiguration repositoryGroupConfiguration = config.findRepositoryGroupById( repoGroup );
+                    List<String> repos = new ArrayList<String>( repositoryGroupConfiguration.getRepositories() );
+                    config.removeRepositoryGroup( repositoryGroupConfiguration );
+                    repos.remove( repository.getId() );
+                    repositoryGroupConfiguration.setRepositories( repos );
+                    config.addRepositoryGroup( repositoryGroupConfiguration );
                 }
             }
         }
