@@ -21,6 +21,7 @@ package org.apache.archiva.admin.repository.group;
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +34,9 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -156,8 +159,8 @@ public class DefaultRepositoryGroupAdmin
 
         if ( repositoryGroup.getRepositories().contains( repositoryId ) )
         {
-            log.info( "repositoryGroup {} already contains repository {} so skip adding it" );
-            return Boolean.TRUE;
+            throw new RepositoryAdminException(
+                "repositoryGroup with id " + repositoryGroupId + " already contain repository with id" + repositoryId );
         }
         validateManagedRepositoriesExists( Arrays.asList( repositoryId ) );
 
@@ -180,14 +183,74 @@ public class DefaultRepositoryGroupAdmin
 
         if ( !repositoryGroup.getRepositories().contains( repositoryId ) )
         {
-            log.info( "repositoryGroup {} already contains repository {} so skip removing it" );
-            return Boolean.TRUE;
+            throw new RepositoryAdminException(
+                "repositoryGroup with id " + repositoryGroupId + " doesn't not contains repository with id"
+                    + repositoryId );
         }
 
         repositoryGroup.removeRepository( repositoryId );
         updateRepositoryGroup( repositoryGroup, auditInformation, false );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.DELETE_REPO_FROM_GROUP, auditInformation );
         return Boolean.TRUE;
+    }
+
+    public Map<String, RepositoryGroup> getRepositoryGroupsAsMap()
+        throws RepositoryAdminException
+    {
+        List<RepositoryGroup> repositoriesGroups = getRepositoriesGroups();
+        Map<String, RepositoryGroup> map = new HashMap<String, RepositoryGroup>( repositoriesGroups.size() );
+        for ( RepositoryGroup repositoryGroup : repositoriesGroups )
+        {
+            map.put( repositoryGroup.getId(), repositoryGroup );
+        }
+        return map;
+    }
+
+    public Map<String, List<String>> getGroupToRepositoryMap()
+        throws RepositoryAdminException
+    {
+
+        java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+
+        for ( ManagedRepository repo : getManagedRepositoryAdmin().getManagedRepositories() )
+        {
+            for ( RepositoryGroup group : getRepositoriesGroups() )
+            {
+                if ( !group.getRepositories().contains( repo.getId() ) )
+                {
+                    String groupId = group.getId();
+                    java.util.List<String> repos = map.get( groupId );
+                    if ( repos == null )
+                    {
+                        repos = new java.util.ArrayList<String>();
+                        map.put( groupId, repos );
+                    }
+                    repos.add( repo.getId() );
+                }
+            }
+        }
+        return map;
+    }
+
+    public Map<String, List<String>> getRepositoryToGroupMap()
+        throws RepositoryAdminException
+    {
+        java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+
+        for ( RepositoryGroup group : getRepositoriesGroups() )
+        {
+            for ( String repositoryId : group.getRepositories() )
+            {
+                java.util.List<String> groups = map.get( repositoryId );
+                if ( groups == null )
+                {
+                    groups = new java.util.ArrayList<String>();
+                    map.put( repositoryId, groups );
+                }
+                groups.add( group.getId() );
+            }
+        }
+        return map;
     }
 
     public Boolean validateRepositoryGroup( RepositoryGroup repositoryGroup, boolean updateMode )

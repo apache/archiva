@@ -22,6 +22,7 @@ import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -49,5 +50,26 @@ public interface RepositoryGroupAdmin
 
     Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId,
                                        AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    /**
+     * @return Map with key repoGroupId and value repoGroup
+     * @throws RepositoryAdminException
+     */
+    Map<String, RepositoryGroup> getRepositoryGroupsAsMap()
+        throws RepositoryAdminException;
+
+    /**
+     * @return Map with key repoGroupId and value List of ManagedRepositories
+     * @throws RepositoryAdminException
+     */
+    Map<String, List<String>> getGroupToRepositoryMap()
+        throws RepositoryAdminException;
+
+    /**
+     * @return Map with key managedRepo id and value List of repositoryGroup ids where the repo is
+     * @throws RepositoryAdminException
+     */
+    Map<String, List<String>> getRepositoryToGroupMap()
         throws RepositoryAdminException;
 }

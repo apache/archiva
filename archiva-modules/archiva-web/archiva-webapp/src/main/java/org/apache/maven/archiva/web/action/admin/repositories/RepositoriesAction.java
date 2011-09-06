@@ -21,6 +21,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.remote.RemoteRepository;
@@ -73,6 +74,9 @@ public class RepositoriesAction
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Inject
+    private RepositoryGroupAdmin repositoryGroupAdmin;
+
     private List<ManagedRepository> managedRepositories;
 
     private List<RemoteRepository> remoteRepositories;
@@ -115,7 +119,7 @@ public class RepositoriesAction
 
         remoteRepositories = new ArrayList<RemoteRepository>( getRemoteRepositoryAdmin().getRemoteRepositories() );
         managedRepositories = new ArrayList<ManagedRepository>( getManagedRepositoryAdmin().getManagedRepositories() );
-        repositoryToGroupMap = config.getRepositoryToGroupMap();
+        repositoryToGroupMap = getRepositoryGroupAdmin().getRepositoryToGroupMap();
 
         Collections.sort( managedRepositories, new RepositoryComparator() );
         Collections.sort( remoteRepositories, new RepositoryComparator() );
@@ -201,5 +205,25 @@ public class RepositoriesAction
     public void setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
     {
         this.remoteRepositoryAdmin = remoteRepositoryAdmin;
+    }
+
+    public RepositoryGroupAdmin getRepositoryGroupAdmin()
+    {
+        return repositoryGroupAdmin;
+    }
+
+    public void setRepositoryGroupAdmin( RepositoryGroupAdmin repositoryGroupAdmin )
+    {
+        this.repositoryGroupAdmin = repositoryGroupAdmin;
+    }
+
+    public RepositoryStatisticsManager getRepositoryStatisticsManager()
+    {
+        return repositoryStatisticsManager;
+    }
+
+    public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
+    {
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 }

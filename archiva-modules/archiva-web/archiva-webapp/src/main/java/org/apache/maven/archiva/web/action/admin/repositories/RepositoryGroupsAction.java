@@ -21,21 +21,18 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.group.RepositoryGroup;
+import org.apache.archiva.admin.repository.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.web.util.ContextUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -47,9 +44,13 @@ public class RepositoryGroupsAction
     extends AbstractRepositoriesAdminAction
     implements ServletRequestAware, Preparable
 {
-    private RepositoryGroupConfiguration repositoryGroup;
 
-    private Map<String, RepositoryGroupConfiguration> repositoryGroups;
+    @Inject
+    private RepositoryGroupAdmin repositoryGroupAdmin;
+
+    private RepositoryGroup repositoryGroup;
+
+    private Map<String, RepositoryGroup> repositoryGroups;
 
     private Map<String, ManagedRepository> managedRepositories;
 
@@ -74,163 +75,73 @@ public class RepositoryGroupsAction
     public void prepare()
         throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
 
-        repositoryGroup = new RepositoryGroupConfiguration();
-        repositoryGroups = config.getRepositoryGroupsAsMap();
+        repositoryGroup = new RepositoryGroup();
+        repositoryGroups = getRepositoryGroupAdmin().getRepositoryGroupsAsMap();
         managedRepositories = getManagedRepositoryAdmin().getManagedRepositoriesAsMap();
-        groupToRepositoryMap = config.getGroupToRepositoryMap();
+        groupToRepositoryMap = getRepositoryGroupAdmin().getGroupToRepositoryMap();
     }
 
     public String addRepositoryGroup()
     {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        String repoGroupId = repositoryGroup.getId();
-
-        if ( repoGroupId == null || "".equals( repoGroupId.trim() ) )
+        try
         {
-            addActionError( "Identifier field is required." );
+            getRepositoryGroupAdmin().addRepositoryGroup( repositoryGroup, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( e.getMessage() );
             return ERROR;
         }
 
-        if ( repoGroupId.length() > 100 )
-        {
-            addActionError( "Identifier [" + repoGroupId + "] is over the maximum limit of 100 characters" );
-            return ERROR;
-        }
-
-        Matcher matcher = REPO_GROUP_ID_PATTERN.matcher( repoGroupId );
-        if ( !matcher.matches() )
-        {
-            addActionError(
-                "Invalid character(s) found in identifier. Only the following characters are allowed: alphanumeric, '.', '-' and '_'" );
-            return ERROR;
-        }
-
-        if ( StringUtils.isBlank( repoGroupId ) )
-        {
-            addActionError( "You must enter a repository group id." );
-            return ERROR;
-        }
-
-        if ( configuration.getRepositoryGroupsAsMap().containsKey( repoGroupId ) )
-        {
-            addActionError( "Unable to add new repository group with id [" + repoGroupId
-                                + "], that id already exists as a repository group." );
-            return ERROR;
-        }
-        else if ( configuration.getManagedRepositoriesAsMap().containsKey( repoGroupId ) )
-        {
-            addActionError( "Unable to add new repository group with id [" + repoGroupId
-                                + "], that id already exists as a managed repository." );
-            return ERROR;
-        }
-        else if ( configuration.getRemoteRepositoriesAsMap().containsKey( repoGroupId ) )
-        {
-            addActionError( "Unable to add new repository group with id [" + repoGroupId
-                                + "], that id already exists as a remote repository." );
-            return ERROR;
-        }
-
-        configuration.addRepositoryGroup( repositoryGroup );
-        triggerAuditEvent( AuditEvent.ADD_REPO_GROUP + " " + repoGroupId );
-        return saveConfiguration( configuration );
+        return SUCCESS;
     }
 
     public String addRepositoryToGroup()
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        RepositoryGroupConfiguration group = config.findRepositoryGroupById( repoGroupId );
-
-        validateRepository();
-
-        if ( hasErrors() )
+        try
         {
+            getRepositoryGroupAdmin().addRepositoryToGroup( repoGroupId, repoId, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( e.getMessage() );
             return ERROR;
         }
-
-        if ( group.getRepositories().contains( repoId ) )
-        {
-            addActionError( "Repository with id [" + repoId + "] is already in the group" );
-            return ERROR;
-        }
-
-        // remove the old repository group configuration
-        config.removeRepositoryGroup( group );
-
-        // save repository group configuration
-        group.addRepository( repoId );
-        config.addRepositoryGroup( group );
-
-        triggerAuditEvent( repoId, null, AuditEvent.ADD_REPO_TO_GROUP + " " + repoGroupId );
-
-        return saveConfiguration( config );
+        return SUCCESS;
     }
 
     public String removeRepositoryFromGroup()
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        RepositoryGroupConfiguration group = config.findRepositoryGroupById( repoGroupId );
-
-        validateRepository();
-
-        if ( hasErrors() )
+        try
         {
+            getRepositoryGroupAdmin().deleteRepositoryFromGroup( repoGroupId, repoId, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( e.getMessage() );
             return ERROR;
         }
-
-        if ( !group.getRepositories().contains( repoId ) )
-        {
-            addActionError( "No repository with id[" + repoId + "] found in the group" );
-            return ERROR;
-        }
-
-        // remove the old repository group configuration
-        config.removeRepositoryGroup( group );
-
-        // save repository group configuration
-        group.removeRepository( repoId );
-        config.addRepositoryGroup( group );
-
-        triggerAuditEvent( repoId, null, AuditEvent.DELETE_REPO_FROM_GROUP + " " + repoGroupId );
-
-        return saveConfiguration( config );
+        return SUCCESS;
     }
 
-    public void validateRepository()
-    {
-        Configuration config = archivaConfiguration.getConfiguration();
-        RepositoryGroupConfiguration group = config.findRepositoryGroupById( repoGroupId );
-        ManagedRepositoryConfiguration repo = config.findManagedRepositoryById( repoId );
 
-        if ( group == null )
-        {
-            addActionError( "A repository group with that id does not exist." );
-        }
-
-        if ( repo == null )
-        {
-            addActionError( "A repository with that id does not exist." );
-        }
-    }
-
-    public RepositoryGroupConfiguration getRepositoryGroup()
+    public RepositoryGroup getRepositoryGroup()
     {
         return repositoryGroup;
     }
 
-    public void setRepositoryGroup( RepositoryGroupConfiguration repositoryGroup )
+    public void setRepositoryGroup( RepositoryGroup repositoryGroup )
     {
         this.repositoryGroup = repositoryGroup;
     }
 
-    public Map<String, RepositoryGroupConfiguration> getRepositoryGroups()
+    public Map<String, RepositoryGroup> getRepositoryGroups()
     {
         return repositoryGroups;
     }
 
-    public void setRepositoryGroups( Map<String, RepositoryGroupConfiguration> repositoryGroups )
+    public void setRepositoryGroups( Map<String, RepositoryGroup> repositoryGroups )
     {
         this.repositoryGroups = repositoryGroups;
     }
@@ -268,5 +179,15 @@ public class RepositoryGroupsAction
     public String getBaseUrl()
     {
         return baseUrl;
+    }
+
+    public RepositoryGroupAdmin getRepositoryGroupAdmin()
+    {
+        return repositoryGroupAdmin;
+    }
+
+    public void setRepositoryGroupAdmin( RepositoryGroupAdmin repositoryGroupAdmin )
+    {
+        this.repositoryGroupAdmin = repositoryGroupAdmin;
     }
 }

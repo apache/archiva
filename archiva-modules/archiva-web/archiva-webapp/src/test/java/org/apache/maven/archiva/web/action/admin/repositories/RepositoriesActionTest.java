@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
@@ -48,8 +49,6 @@ public class RepositoriesActionTest
         throws Exception
     {
         super.setUp();
-
-        //action = (RepositoriesAction) lookup( Action.class.getName(), "repositoriesAction" );
         action = (RepositoriesAction) getActionProxy( "/admin/index.action" ).getAction();
 
     }
@@ -87,6 +86,7 @@ public class RepositoriesActionTest
         ServletUnitClient sc = sr.newClient();
 
         action.setServletRequest( sc.newInvocation( "http://localhost/admin/repositories.action" ).getRequest() );
+
         action.prepare();
         String result = action.execute();
         assertEquals( Action.SUCCESS, result );

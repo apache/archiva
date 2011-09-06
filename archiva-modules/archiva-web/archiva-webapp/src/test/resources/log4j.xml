@@ -52,6 +52,28 @@
     <level value="error"/>
   </logger>
 
+  <!-- reduce noise for unit tests -->
+
+  <logger name="org.springframework">
+    <level value="error"/>
+  </logger>
+
+  <logger name="org.codehaus.plexus">
+    <level value="error"/>
+  </logger>
+
+  <logger name="org.codehaus.redback">
+    <level value="error"/>
+  </logger>
+
+  <logger name="org.apache.cxf">
+    <level value="error"/>
+  </logger>
+
+  <logger name="org.quartz">
+    <level value="error"/>
+  </logger>
+
   <root>
     <priority value ="info" />
     <appender-ref ref="console" />
