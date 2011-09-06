@@ -49,7 +49,7 @@ Ex.
 @Scope("prototype")
 
 where,
-  Servide: unique id for your consumer.
+  Service: unique id for your consumer.
   Scope: the creation strategy prototype or singleton.
 +----+
 
