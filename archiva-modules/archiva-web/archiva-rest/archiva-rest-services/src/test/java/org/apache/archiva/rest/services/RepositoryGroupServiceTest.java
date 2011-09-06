@@ -1,5 +1,4 @@
 package org.apache.archiva.rest.services;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,65 +19,47 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.rest.api.model.RepositoryGroup;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
-import org.apache.archiva.rest.api.services.RepositoriesService;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.maven.archiva.common.utils.FileUtil;
 import org.junit.Test;
 
-import java.io.File;
+import java.util.Arrays;
 
 /**
  * @author Olivier Lamy
  */
-public class RepositoriesServiceTest
+public class RepositoryGroupServiceTest
     extends AbstractArchivaRestTest
 {
-
-    @Test( expected = ServerWebApplicationException.class )
-    public void scanRepoKarmaFailed()
-        throws Exception
-    {
-        RepositoriesService service = getRepositoriesService();
-        try
-        {
-            service.scanRepository( "id", true );
-        }
-        catch ( ServerWebApplicationException e )
-        {
-            assertEquals( 403, e.getStatus() );
-            throw e;
-        }
-    }
-
     @Test
-    public void scanRepo()
+    public void addAndDelete()
         throws Exception
     {
-        RepositoriesService service = getRepositoriesService();
+        RepositoryGroupService service = getRepositoryGroupService();
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
+        assertTrue( service.getRepositoriesGroups().isEmpty() );
+
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
         WebClient.client( managedRepositoriesService ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( managedRepositoriesService ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
-        String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();
+        ManagedRepository managedRepository = getTestManagedRepository();
 
-        assertTrue( service.scanRepository( repoId, true ) );
+        managedRepositoriesService.addManagedRepository( managedRepository );
 
-        log.info( "scanRepo call ok " );
+        RepositoryGroup repositoryGroup = new RepositoryGroup( "one", Arrays.asList( managedRepository.getId() ) );
 
-        assertTrue( service.alreadyScanning( repoId ) );
+        service.addRepositoryGroup( repositoryGroup );
+        assertFalse( service.getRepositoriesGroups().isEmpty() );
+        assertEquals( 1, service.getRepositoriesGroups().size() );
 
+        service.deleteRepositoryGroup( "one" );
+
+        assertTrue( service.getRepositoriesGroups().isEmpty() );
+        assertEquals( 0, service.getRepositoriesGroups().size() );
     }
-
-
-    protected ManagedRepository getTestManagedRepository()
-    {
-        String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
-        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, false, "2 * * * * ?" );
-    }
-
 }

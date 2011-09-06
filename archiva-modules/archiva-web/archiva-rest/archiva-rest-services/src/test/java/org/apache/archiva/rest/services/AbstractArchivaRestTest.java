@@ -19,12 +19,17 @@ package org.apache.archiva.rest.services;
  */
 
 
+import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.PingService;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
+import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.maven.archiva.common.utils.FileUtil;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
+
+import java.io.File;
 
 /**
  * @author Olivier Lamy
@@ -67,5 +72,17 @@ public abstract class AbstractArchivaRestTest
                                           RemoteRepositoriesService.class );
 
 
+    }
+
+    protected RepositoryGroupService getRepositoryGroupService()
+    {
+        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                          RepositoryGroupService.class );
+    }
+
+    protected ManagedRepository getTestManagedRepository()
+    {
+        String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
+        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, false, "2 * * * * ?" );
     }
 }

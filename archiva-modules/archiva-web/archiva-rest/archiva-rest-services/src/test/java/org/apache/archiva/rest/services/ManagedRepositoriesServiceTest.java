@@ -88,10 +88,6 @@ public class ManagedRepositoriesServiceTest
     }
 
 
-    private ManagedRepository getTestManagedRepository()
-    {
-        String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
-        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, false, "2 * * * * ?" );
-    }
+
 
 }
