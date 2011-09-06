@@ -23,6 +23,7 @@ import org.apache.archiva.admin.repository.group.RepositoryGroupAdmin;
 import org.apache.archiva.rest.api.model.RepositoryGroup;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
+@Service( "repositoryGroupService#rest" )
 public class DefaultRepositoryGroupService
     extends AbstractRestService
     implements RepositoryGroupService

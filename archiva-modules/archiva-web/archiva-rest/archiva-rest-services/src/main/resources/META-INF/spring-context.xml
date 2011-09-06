@@ -52,6 +52,7 @@
       <ref bean="repositoriesService#rest"/>
       <ref bean="managedRepositoriesService#rest"/>
       <ref bean="remoteRepositoriesService#rest"/>
+      <ref bean="repositoryGroupService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>
