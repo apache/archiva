@@ -47,8 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="viewAuditLogReport"
- * instantiation-strategy="per-lookup"
+ *
  */
 @Controller( "viewAuditLogReport" )
 @Scope( "prototype" )
@@ -58,11 +57,11 @@ public class ViewAuditLogReportAction
 {
     protected HttpServletRequest request;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private UserRepositories userRepositories;
+
+    @Inject
+    private AuditManager auditManager;
 
     private String repository;
 
@@ -95,14 +94,10 @@ public class ViewAuditLogReportAction
     private static final String HEADER_RESULTS = "Results";
 
     private String[] datePatterns =
-        new String[]{ "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
-            "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy" };
+    new String[]{ "MM/dd/yy", "MM/dd/yyyy", "MMMMM/dd/yyyy", "MMMMM/dd/yy", "dd MMMMM yyyy", "dd/MM/yy",
+    "dd/MM/yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyy-dd-MM", "MM-dd-yyyy", "MM-dd-yy" };
 
-    /**
-     * plexus.requirement
-     */
-    @Inject
-    private AuditManager auditManager;
+
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException

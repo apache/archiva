@@ -76,8 +76,6 @@ import java.util.TimeZone;
 /**
  * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
  * will also be updated if one exists, otherwise it would be created.
- * <p/>
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="uploadAction" instantiation-strategy="per-lookup"
  */
 @SuppressWarnings( "serial" )
 @Controller( "uploadAction" )
@@ -136,27 +134,15 @@ public class UploadAction
      */
     private List<String> managedRepoIdList;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private UserRepositories userRepositories;
 
-    /**
-     * plexus.requirement role-hint="default"
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     * lexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
-     */
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;

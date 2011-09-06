@@ -61,8 +61,6 @@ import javax.inject.Inject;
  *
  * TODO change name to ShowVersionedAction to conform to terminology.
  *
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="showArtifactAction"
- * instantiation-strategy="per-lookup"
  */
 @SuppressWarnings( "serial" )
 @Controller( "showArtifactAction" )
@@ -73,9 +71,6 @@ public class ShowArtifactAction
 {
     /* .\ Not Exposed \._____________________________________________ */
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 

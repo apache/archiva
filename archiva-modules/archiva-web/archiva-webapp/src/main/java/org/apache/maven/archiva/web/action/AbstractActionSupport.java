@@ -56,15 +56,10 @@ public abstract class AbstractActionSupport
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    /**
-     * plexus.requirement role="org.apache.archiva.audit.AuditListener"
-     */
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     @Named( value = "repositorySessionFactory" )
     protected RepositorySessionFactory repositorySessionFactory;

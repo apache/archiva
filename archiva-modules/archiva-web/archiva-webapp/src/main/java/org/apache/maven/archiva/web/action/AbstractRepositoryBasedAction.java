@@ -31,9 +31,7 @@ import java.util.List;
 public class AbstractRepositoryBasedAction
     extends AbstractActionSupport
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private UserRepositories userRepositories;
 

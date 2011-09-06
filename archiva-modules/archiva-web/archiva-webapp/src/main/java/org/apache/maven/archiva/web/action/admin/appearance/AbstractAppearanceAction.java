@@ -36,10 +36,7 @@ public abstract class AbstractAppearanceAction
     extends AbstractActionSupport
     implements Preparable
 {
-    /**
-     * Archiva Application Configuration
-     * plexus.requirement
-     */
+
     @Inject
     protected ArchivaConfiguration configuration;
 

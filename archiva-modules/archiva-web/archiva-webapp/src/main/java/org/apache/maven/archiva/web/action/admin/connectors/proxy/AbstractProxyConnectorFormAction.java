@@ -48,34 +48,17 @@ public abstract class AbstractProxyConnectorFormAction
     implements Preparable
 {
 
-    /**
-     * plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
-     */
+
     private Map<String, PreDownloadPolicy> preDownloadPolicyMap;
 
-    /**
-     * plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
-     */
     private Map<String, PostDownloadPolicy> postDownloadPolicyMap;
 
-    /**
-     * plexus.requirement role="org.apache.maven.archiva.policies.DownloadErrorPolicy"
-     */
     private Map<String, DownloadErrorPolicy> downloadErrorPolicyMap;
 
-    /**
-     * The list of network proxy ids that are available.
-     */
     private List<String> proxyIdOptions;
 
-    /**
-     * The list of managed repository ids that are available.
-     */
     private List<String> managedRepoIdList;
 
-    /**
-     * The list of remove repository ids that are available.
-     */
     private List<String> remoteRepoIdList;
 
     /**

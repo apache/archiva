@@ -48,15 +48,10 @@ public class DependencyTree
 {
     private Logger log = LoggerFactory.getLogger( DependencyTree.class );
 
-    /**
-     * plexus.requirement role-hint="maven2"
-     */
+
     @Inject
     private DependencyTreeBuilder dependencyTreeBuilder;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private UserRepositories userRepositories;
 

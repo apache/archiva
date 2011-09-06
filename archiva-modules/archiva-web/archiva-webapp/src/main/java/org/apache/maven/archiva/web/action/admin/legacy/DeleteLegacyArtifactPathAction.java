@@ -35,16 +35,13 @@ import java.util.Iterator;
  * Delete a LegacyArtifactPath to archiva configuration
  *
  * @since 1.1
- *        plexus.component role="com.opensymphony.xwork2.Action" role-hint="deleteLegacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
 @Controller( "deleteLegacyArtifactPathAction" )
 @Scope( "prototype" )
 public class DeleteLegacyArtifactPathAction
     extends AbstractActionSupport
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 

@@ -47,19 +47,11 @@ public class SystemStatusAction
     extends AbstractActionSupport
     implements SecureAction
 {
-    /**
-     * plexus.requirement role="org.codehaus.plexus.taskqueue.TaskQueue"
-     */
+
     private Map<String, TaskQueue> queues;
 
-    /**
-     * plexus.requirement role="org.codehaus.plexus.cache.Cache"
-     */
     private Map<String, Cache> caches;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private RepositoryScanner scanner;
 

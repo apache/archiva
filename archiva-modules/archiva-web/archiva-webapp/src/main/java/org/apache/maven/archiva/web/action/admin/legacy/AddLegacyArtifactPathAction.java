@@ -49,15 +49,10 @@ public class AddLegacyArtifactPathAction
     extends AbstractActionSupport
     implements Preparable, Validateable
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     * plexus.requirement role-hint="legacy"
-     */
     @Inject
     @Named(value = "managedRepositoryContent#legacy")
     private ManagedRepositoryContent repositoryContent;

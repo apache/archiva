@@ -45,7 +45,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="mergeAction" instantiation-strategy="per-lookup"
+ *
  */
 @Controller( "mergeAction" )
 @Scope( "prototype" )
@@ -54,16 +54,11 @@ public class MergeAction
     implements Validateable, Preparable, Auditable
 
 {
-    /**
-     * plexus.requirement role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
-     */
+
     @Inject
     @Named( value = "repositoryMerger#maven2" )
     private Maven2RepositoryMerger repositoryMerger;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
 

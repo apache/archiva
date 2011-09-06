@@ -103,27 +103,15 @@ public class DeleteArtifactAction
      */
     private List<String> managedRepos;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private UserRepositories userRepositories;
 
-    /**
-     * plexus.requirement role-hint="default"
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     * plexus.requirement role="org.apache.archiva.repository.events.RepositoryListener"
-     */
     @Inject
     private List<RepositoryListener> listeners;
 
