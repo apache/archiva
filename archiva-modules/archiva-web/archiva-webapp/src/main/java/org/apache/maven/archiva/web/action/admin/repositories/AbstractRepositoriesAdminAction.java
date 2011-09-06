@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.Auditable;
-import org.apache.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -52,9 +52,7 @@ public abstract class AbstractRepositoriesAdminAction
     extends AbstractActionSupport
     implements SecureAction, Auditable
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
 

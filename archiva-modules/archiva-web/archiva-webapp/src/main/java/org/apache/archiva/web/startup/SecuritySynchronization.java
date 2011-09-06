@@ -19,13 +19,13 @@ package org.apache.archiva.web.startup;
  * under the License.
  */
 
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
@@ -53,8 +53,6 @@ import java.util.Map.Entry;
  * ConfigurationSynchronization
  *
  * @version $Id$
- * plexus.component role="org.apache.archiva.web.startup.SecuritySynchronization"
- * role-hint="default"
  */
 @Service
 public class SecuritySynchronization
@@ -62,27 +60,15 @@ public class SecuritySynchronization
 {
     private Logger log = LoggerFactory.getLogger( SecuritySynchronization.class );
 
-    /**
-     * plexus.requirement role-hint="default"
-     */
     @Inject
     private RoleManager roleManager;
 
-    /**
-     * plexus.requirement role-hint="cached"
-     */
     @Inject
     @Named( value = "rBACManager#cached" )
     private RBACManager rbacManager;
 
-    /**
-     * plexus.requirement role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
-     */
     private Map<String, EnvironmentCheck> checkers;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 

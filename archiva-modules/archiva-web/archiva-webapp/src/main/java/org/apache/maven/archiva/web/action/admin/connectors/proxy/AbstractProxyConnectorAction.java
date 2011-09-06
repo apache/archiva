@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +28,6 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
@@ -51,9 +51,6 @@ public abstract class AbstractProxyConnectorAction
 {
     public static final String DIRECT_CONNECTION = "(direct connection)";
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
 

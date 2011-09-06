@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -33,7 +34,6 @@ import org.apache.maven.archiva.configuration.IndeterminateConfigurationExceptio
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
@@ -53,7 +53,6 @@ import java.util.Map;
  * RepositoryScanningAction
  *
  * @version $Id$
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoryScanningAction" instantiation-strategy="per-lookup"
  */
 @Controller( "repositoryScanningAction" )
 @Scope( "prototype" )
@@ -61,15 +60,10 @@ public class RepositoryScanningAction
     extends AbstractActionSupport
     implements Preparable, Validateable, SecureAction, Auditable
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     * plexus.requirement
-     */
     @Inject
     private RepositoryContentConsumers repoconsumerUtil;
 

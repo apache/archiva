@@ -21,6 +21,7 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
@@ -29,7 +30,6 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
@@ -45,7 +45,6 @@ import javax.inject.Inject;
  * ConfigureNetworkProxyAction
  *
  * @version $Id$
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="configureNetworkProxyAction" instantiation-strategy="per-lookup"
  */
 @Controller( "configureNetworkProxyAction" )
 @Scope( "prototype" )
@@ -53,9 +52,7 @@ public class ConfigureNetworkProxyAction
     extends AbstractActionSupport
     implements SecureAction, Preparable, Validateable
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 

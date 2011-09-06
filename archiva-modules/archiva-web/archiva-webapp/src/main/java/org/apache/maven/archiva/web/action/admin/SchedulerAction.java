@@ -21,8 +21,8 @@ package org.apache.maven.archiva.web.action.admin;
 
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -37,8 +37,6 @@ import javax.inject.Named;
 
 /**
  * Configures the application.
- * <p/>
- * plexus.component role="com.opensymphony.xwork2.Action" role-hint="schedulerAction" instantiation-strategy="per-lookup"
  */
 @Controller( "schedulerAction" )
 @Scope( "prototype" )
@@ -46,9 +44,7 @@ public class SchedulerAction
     extends AbstractActionSupport
     implements SecureAction
 {
-    /**
-     * plexus.requirement role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="repository"
-     */
+
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;

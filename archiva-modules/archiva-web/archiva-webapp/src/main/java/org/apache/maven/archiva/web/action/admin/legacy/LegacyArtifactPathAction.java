@@ -20,10 +20,10 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -43,7 +43,6 @@ import java.util.List;
  * Shows the LegacyArtifactPath Tab for the administrator.
  *
  * @since 1.1
- *        plexus.component role="com.opensymphony.xwork2.Action" role-hint="legacyArtifactPathAction" instantiation-strategy="per-lookup"
  */
 @Controller( "legacyArtifactPathAction" )
 @Scope( "prototype" )
@@ -51,9 +50,7 @@ public class LegacyArtifactPathAction
     extends AbstractActionSupport
     implements SecureAction, ServletRequestAware, Preparable
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 

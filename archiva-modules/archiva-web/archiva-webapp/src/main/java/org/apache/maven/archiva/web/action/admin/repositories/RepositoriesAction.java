@@ -25,12 +25,12 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -53,7 +53,6 @@ import javax.servlet.http.HttpServletRequest;
  * Shows the Repositories Tab for the administrator.
  *
  * @version $Id$
- *          plexus.component role="com.opensymphony.xwork2.Action" role-hint="repositoriesAction" instantiation-strategy="per-lookup"
  */
 @Controller( "repositoriesAction" )
 @Scope( "prototype" )
@@ -61,9 +60,7 @@ public class RepositoriesAction
     extends AbstractActionSupport
     implements SecureAction, ServletRequestAware, Preparable
 {
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
@@ -80,9 +77,7 @@ public class RepositoriesAction
      */
     private String baseUrl;
 
-    /**
-     * plexus.requirement
-     */
+
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
