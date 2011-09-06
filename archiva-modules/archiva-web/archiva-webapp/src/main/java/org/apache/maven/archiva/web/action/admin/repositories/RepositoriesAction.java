@@ -20,19 +20,22 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
+import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.admin.repository.utils.RepositoryComparator;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.web.util.ContextUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
-import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
@@ -41,13 +44,13 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Shows the Repositories Tab for the administrator.
@@ -64,9 +67,15 @@ public class RepositoriesAction
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    private List<ManagedRepositoryConfiguration> managedRepositories;
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    private List<RemoteRepositoryConfiguration> remoteRepositories;
+    @Inject
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    private List<ManagedRepository> managedRepositories;
+
+    private List<RemoteRepository> remoteRepositories;
 
     private Map<String, RepositoryStatistics> repositoryStatistics;
 
@@ -100,22 +109,23 @@ public class RepositoriesAction
 
     @SuppressWarnings( "unchecked" )
     public void prepare()
+        throws RepositoryAdminException
     {
         Configuration config = archivaConfiguration.getConfiguration();
 
-        remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>( config.getRemoteRepositories() );
-        managedRepositories = new ArrayList<ManagedRepositoryConfiguration>( config.getManagedRepositories() );
+        remoteRepositories = new ArrayList<RemoteRepository>( getRemoteRepositoryAdmin().getRemoteRepositories() );
+        managedRepositories = new ArrayList<ManagedRepository>( getManagedRepositoryAdmin().getManagedRepositories() );
         repositoryToGroupMap = config.getRepositoryToGroupMap();
 
-        Collections.sort( managedRepositories, new RepositoryConfigurationComparator() );
-        Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );
+        Collections.sort( managedRepositories, new RepositoryComparator() );
+        Collections.sort( remoteRepositories, new RepositoryComparator() );
 
         repositoryStatistics = new HashMap<String, RepositoryStatistics>();
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            for ( ManagedRepositoryConfiguration repo : managedRepositories )
+            for ( ManagedRepository repo : managedRepositories )
             {
                 RepositoryStatistics stats = null;
                 try
@@ -140,10 +150,10 @@ public class RepositoriesAction
         }
     }
 
-    public List<ManagedRepositoryConfiguration> getManagedRepositories()
+    public List<ManagedRepository> getManagedRepositories()
     {
-        List<ManagedRepositoryConfiguration> managedRepositoriesList = new ArrayList<ManagedRepositoryConfiguration>();
-        for ( ManagedRepositoryConfiguration repoConfig : managedRepositories )
+        List<ManagedRepository> managedRepositoriesList = new ArrayList<ManagedRepository>();
+        for ( ManagedRepository repoConfig : managedRepositories )
         {
             if ( !repoConfig.getId().endsWith( "-stage" ) )
             {
@@ -153,7 +163,7 @@ public class RepositoriesAction
         return managedRepositoriesList;
     }
 
-    public List<RemoteRepositoryConfiguration> getRemoteRepositories()
+    public List<RemoteRepository> getRemoteRepositories()
     {
         return remoteRepositories;
     }
@@ -171,5 +181,25 @@ public class RepositoriesAction
     public Map<String, List<String>> getRepositoryToGroupMap()
     {
         return repositoryToGroupMap;
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    public RemoteRepositoryAdmin getRemoteRepositoryAdmin()
+    {
+        return remoteRepositoryAdmin;
+    }
+
+    public void setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
+    {
+        this.remoteRepositoryAdmin = remoteRepositoryAdmin;
     }
 }

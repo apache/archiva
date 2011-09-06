@@ -148,10 +148,10 @@
   <th>Directory</th>
   <td><c:out value="${repository.location}" /></td>
 </tr>
-<c:if test="${!empty (repository.indexDir)}">
+<c:if test="${!empty (repository.indexDirectory)}">
 	<tr>
 	  <th>Index Directory</th>
-	  <td><c:out value="${repository.indexDir}" /></td>
+	  <td><c:out value="${repository.indexDirectory}" /></td>
 	</tr>
 </c:if>
 <tr>
@@ -211,7 +211,7 @@
 <c:if test="${repository.scanned}">
   <tr>
     <th>Scanning Cron</th>
-    <td><c:out value="${repository.refreshCronExpression}" /></td>
+    <td><c:out value="${repository.cronExpression}" /></td>
   </tr>
   <tr>
     <th>
