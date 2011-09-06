@@ -37,7 +37,7 @@ public class InvalidScanConsumer
     implements InvalidRepositoryContentConsumer
 {
     /**
-     * plexus.configuration default-value="unset-id"
+     * default-value="unset-id"
      */
     private String id = "unset-id";
     

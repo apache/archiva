@@ -62,12 +62,12 @@ public class ValidateChecksumConsumer
     private static final String CHECKSUM_IO_ERROR = "checksum-io-error";
 
     /**
-     * plexus.configuration default-value="validate-checksums"
+     * default-value="validate-checksums"
      */
     private String id = "validate-checksums";
 
     /**
-     * plexus.configuration default-value="Validate checksums against file."
+     * default-value="Validate checksums against file."
      */
     private String description = "Validate checksums against file.";
 

@@ -38,12 +38,12 @@ public class ArtifactCountConsumer
     implements KnownRepositoryContentConsumer
 {
     /**
-     * plexus.configuration default-value="count-artifacts"
+     * default-value="count-artifacts"
      */
     private String id = "count-artifacts";
 
     /**
-     * plexus.configuration default-value="Count Artifacts"
+     * default-value="Count Artifacts"
      */
     private String description = "Count Artifacts";
 

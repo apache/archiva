@@ -67,12 +67,12 @@ public class MetadataUpdaterConsumer
     private Logger log = LoggerFactory.getLogger( MetadataUpdaterConsumer.class );
     
     /**
-     * plexus.configuration default-value="metadata-updater"
+     * default-value="metadata-updater"
      */
     private String id = "metadata-updater";
 
     /**
-     * plexus.configuration default-value="Update / Create maven-metadata.xml files"
+     * default-value="Update / Create maven-metadata.xml files"
      */
     private String description = "Update / Create maven-metadata.xml files";
 

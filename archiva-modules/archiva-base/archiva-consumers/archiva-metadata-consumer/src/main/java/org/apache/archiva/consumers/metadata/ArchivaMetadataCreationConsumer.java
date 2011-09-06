@@ -63,12 +63,12 @@ public class ArchivaMetadataCreationConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
     /**
-     * plexus.configuration default-value="create-archiva-metadata"
+     * default-value="create-archiva-metadata"
      */
     private String id = "create-archiva-metadata";
 
     /**
-     * plexus.configuration default-value="Create basic metadata for Archiva to be able to reference the artifact"
+     * default-value="Create basic metadata for Archiva to be able to reference the artifact"
      */
     private String description = "Create basic metadata for Archiva to be able to reference the artifact";
 

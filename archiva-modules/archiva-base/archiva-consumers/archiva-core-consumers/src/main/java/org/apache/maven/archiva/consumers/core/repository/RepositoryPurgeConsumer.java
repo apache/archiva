@@ -59,12 +59,12 @@ public class RepositoryPurgeConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
     /**
-     * plexus.configuration default-value="repository-purge"
+     * default-value="repository-purge"
      */
     private String id = "repository-purge";
 
     /**
-     * plexus.configuration default-value="Purge repository of old snapshots"
+     * default-value="Purge repository of old snapshots"
      */
     private String description = "Purge repository of old snapshots";
 

@@ -124,13 +124,13 @@ public class DefaultArchivaConfiguration
 
     /**
      * see #initialize
-     * plexus.configuration default-value="${user.home}/.m2/archiva.xml"
+     * default-value="${user.home}/.m2/archiva.xml"
      */
     private String userConfigFilename = "${user.home}/.m2/archiva.xml";
 
     /**
      * see #initialize
-     * plexus.configuration default-value="${appserver.base}/conf/archiva.xml"
+     * default-value="${appserver.base}/conf/archiva.xml"
      */
     private String altConfigFilename = "${appserver.base}/conf/archiva.xml";
 

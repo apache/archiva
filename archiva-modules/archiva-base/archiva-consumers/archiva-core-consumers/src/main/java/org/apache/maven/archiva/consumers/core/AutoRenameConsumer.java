@@ -48,12 +48,12 @@ public class AutoRenameConsumer
     implements KnownRepositoryContentConsumer
 {
     /**
-     * plexus.configuration default-value="auto-rename"
+     * default-value="auto-rename"
      */
     private String id = "auto-rename";
 
     /**
-     * plexus.configuration default-value="Automatically rename common artifact mistakes."
+     * default-value="Automatically rename common artifact mistakes."
      */
     private String description = "Automatically rename common artifact mistakes.";
 

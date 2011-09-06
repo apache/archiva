@@ -69,12 +69,12 @@ public class DuplicateArtifactsConsumer
     private Logger log = LoggerFactory.getLogger( DuplicateArtifactsConsumer.class );
 
     /**
-     * plexus.configuration default-value="duplicate-artifacts"
+     * default-value="duplicate-artifacts"
      */
     private String id = "duplicate-artifacts";
 
     /**
-     * plexus.configuration default-value="Check for Duplicate Artifacts via SHA1 Checksums"
+     * default-value="Check for Duplicate Artifacts via SHA1 Checksums"
      */
     private String description = "Check for Duplicate Artifacts via SHA1 Checksums";
 

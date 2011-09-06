@@ -52,12 +52,12 @@ public class AutoRemoveConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
     /**
-     * plexus.configuration default-value="auto-remove"
+     * default-value="auto-remove"
      */
     private String id = "auto-remove";
 
     /**
-     * plexus.configuration default-value="Automatically Remove File from Filesystem."
+     * default-value="Automatically Remove File from Filesystem."
      */
     private String description = "Automatically Remove File from Filesystem.";
 

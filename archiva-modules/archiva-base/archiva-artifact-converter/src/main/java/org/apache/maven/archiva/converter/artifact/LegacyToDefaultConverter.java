@@ -101,12 +101,12 @@ public class LegacyToDefaultConverter
     private ArtifactHandlerManager artifactHandlerManager;
 
     /**
-     * plexus.configuration default-value="false"
+     * default-value="false"
      */
     private boolean force;
 
     /**
-     * plexus.configuration default-value="false"
+     * default-value="false"
      */
     private boolean dryrun;
 
