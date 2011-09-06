@@ -114,4 +114,40 @@ public class RepositoryGroup
     {
         this.repositories = repositories;
     }
+
+    public boolean equals( Object other )
+    {
+        if ( this == other )
+        {
+            return true;
+        }
+
+        if ( !( other instanceof RepositoryGroup ) )
+        {
+            return false;
+        }
+
+        RepositoryGroup that = (RepositoryGroup) other;
+        boolean result = true;
+        result = result && ( getId() == null ? that.getId() == null : getId().equals( that.getId() ) );
+        return result;
+    }
+
+    public int hashCode()
+    {
+        int result = 17;
+        result = 37 * result + ( id != null ? id.hashCode() : 0 );
+        return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "RepositoryGroup" );
+        sb.append( "{id='" ).append( id ).append( '\'' );
+        sb.append( ", repositories=" ).append( repositories );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }
