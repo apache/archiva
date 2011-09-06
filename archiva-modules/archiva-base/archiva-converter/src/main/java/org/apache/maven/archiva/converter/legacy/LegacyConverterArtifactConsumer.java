@@ -49,10 +49,6 @@ import java.util.List;
  * into the destination repository.
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *          role-hint="artifact-legacy-to-default-converter"
- *          instantiation-strategy="per-lookup"
  */
 @Service( "knownRepositoryContentConsumer#artifact-legacy-to-default-converter" )
 @Scope( "prototype" )

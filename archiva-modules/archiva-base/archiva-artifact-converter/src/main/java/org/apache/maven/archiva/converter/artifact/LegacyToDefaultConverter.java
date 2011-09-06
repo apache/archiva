@@ -68,8 +68,6 @@ import java.util.regex.Matcher;
  * LegacyToDefaultConverter
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.converter.artifact.ArtifactConverter"
- * role-hint="legacy-to-default"
  */
 @Service( "artifactConverter#legacy-to-default" )
 public class LegacyToDefaultConverter

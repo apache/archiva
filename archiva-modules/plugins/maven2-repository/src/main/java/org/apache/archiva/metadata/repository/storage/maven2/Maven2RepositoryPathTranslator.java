@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator" role-hint="maven2"
+ *
  */
 @Service( "repositoryPathTranslator#maven2" )
 public class Maven2RepositoryPathTranslator
@@ -46,11 +46,8 @@ public class Maven2RepositoryPathTranslator
 
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
 
-    //@Inject
-    //private ApplicationContext applicationContext;
-
     /**
-     * plexus.requirement role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider"
+     *
      * see #initialize
      */
     @Inject

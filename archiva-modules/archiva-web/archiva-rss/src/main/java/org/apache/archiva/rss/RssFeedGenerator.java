@@ -36,11 +36,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Generates RSS feeds.
- * 
- * plexus.component role="org.apache.archiva.rss.RssFeedGenerator"
- *      instantiation-strategy="per-lookup"
- * 
- * @version
+ *
  */
 @Service("rssFeedGenerator#default")
 @Scope("prototype")

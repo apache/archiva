@@ -43,7 +43,6 @@ import java.util.TimeZone;
  * The artifacts will be grouped by the date when the artifacts were gathered.
  * Each group will appear as one entry in the feed.
  *
- * plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-artifacts"
  */
 @Service("rssFeedProcessor#new-artifacts")
 public class NewArtifactsRssFeedProcessor

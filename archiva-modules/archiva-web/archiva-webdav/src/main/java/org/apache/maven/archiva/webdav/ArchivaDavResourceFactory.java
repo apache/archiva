@@ -95,7 +95,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * plexus.component role="org.apache.maven.archiva.webdav.ArchivaDavResourceFactory"
+ *
  */
 @Service( "davResourceFactory#archiva" )
 public class ArchivaDavResourceFactory

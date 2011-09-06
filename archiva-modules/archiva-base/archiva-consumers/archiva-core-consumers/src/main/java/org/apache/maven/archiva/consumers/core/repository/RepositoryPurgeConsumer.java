@@ -51,10 +51,6 @@ import java.util.List;
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
  * specified by the user.
- * <p/>
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="repository-purge"
- * instantiation-strategy="per-lookup"
  */
 @Service( "knownRepositoryContentConsumer#repository-purge" )
 @Scope( "prototype" )

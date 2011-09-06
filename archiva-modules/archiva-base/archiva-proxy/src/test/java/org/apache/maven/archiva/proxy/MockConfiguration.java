@@ -41,9 +41,6 @@ import javax.annotation.PostConstruct;
  * MockConfiguration
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
- *          role-hint="mock"
  */
 @Service( "archivaConfiguration#mock" )
 public class MockConfiguration

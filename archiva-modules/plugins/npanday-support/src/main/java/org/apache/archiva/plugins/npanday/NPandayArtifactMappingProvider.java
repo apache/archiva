@@ -20,13 +20,14 @@ package org.apache.archiva.plugins.npanday;
  */
 
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @plexus.component role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider" role-hint="npanday"
  */
+@Service( "artifactMappingProvider#npanday" )
 public class NPandayArtifactMappingProvider
     implements ArtifactMappingProvider
 {

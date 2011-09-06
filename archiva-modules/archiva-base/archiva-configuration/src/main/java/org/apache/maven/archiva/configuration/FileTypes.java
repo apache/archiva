@@ -46,8 +46,6 @@ import java.util.Map;
  * FileTypes
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
  */
 @Service( "fileTypes" )
 public class FileTypes

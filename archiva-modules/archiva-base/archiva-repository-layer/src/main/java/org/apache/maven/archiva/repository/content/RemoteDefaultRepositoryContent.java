@@ -31,11 +31,6 @@ import org.springframework.stereotype.Service;
  * RemoteDefaultRepositoryContent
  *
  * @version $Id$
- *          <p/>
- *          plexus.component
- *          role="org.apache.maven.archiva.repository.RemoteRepositoryContent"
- *          role-hint="default"
- *          instantiation-strategy="per-lookup"
  */
 @Service( "remoteRepositoryContent#default" )
 @Scope( "prototype" )

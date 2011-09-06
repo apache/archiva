@@ -26,9 +26,6 @@ import org.springframework.stereotype.Service;
  * {@link PreDownloadPolicy} to apply for snapshot versions. 
  *
  * @version $Id$
- * 
- * plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="snapshots"
  */
 @Service("preDownloadPolicy#snapshots")
 public class SnapshotsPolicy

@@ -33,7 +33,6 @@ import javax.inject.Named;
  * Default implementation of a scheduling component for archiva.
  *
  * @todo TODO - consider just folding in, not really scheduled
- * @plexus.component role="org.apache.archiva.scheduler.ArchivaTaskScheduler" role-hint="indexing"
  */
 @Service("archivaTaskScheduler#indexing")
 public class IndexingArchivaTaskScheduler

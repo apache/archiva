@@ -46,11 +46,6 @@ import java.util.Set;
  * ManagedDefaultRepositoryContent 
  *
  * @version $Id$
- * 
- * plexus.component
- *      role="org.apache.maven.archiva.repository.ManagedRepositoryContent"
- *      role-hint="default"
- *      instantiation-strategy="per-lookup"
  */
 @Service("managedRepositoryContent#default")
 @Scope("prototype")

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * plexus.component role="org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider" role-hint="default"
+ *
  */
 @Service( "artifactMappingProvider#default" )
 public class DefaultArtifactMappingProvider

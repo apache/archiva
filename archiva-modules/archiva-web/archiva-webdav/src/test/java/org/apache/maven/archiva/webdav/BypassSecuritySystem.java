@@ -43,9 +43,6 @@ import org.springframework.stereotype.Service;
  * for every request to respond as success / true. 
  *
  * @version $Id$
- * 
- * plexus.component
- *      role="org.codehaus.plexus.redback.system.SecuritySystem"
  */
 @Service("securitySystem#bypass")
 public class BypassSecuritySystem

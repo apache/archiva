@@ -31,9 +31,6 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
  * SampleKnownConsumer 
  *
  * @version $Id$
- * 
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="sample-known"
  */
 public class SampleKnownConsumer
   extends AbstractMonitoredConsumer

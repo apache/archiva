@@ -94,8 +94,6 @@ import javax.inject.Named;
  * Default implementation of <code>DependencyTreeBuilder</code>. Customized wrapper for maven-dependency-tree to use
  * maven-model-builder instead of maven-project. Note that the role must differ to avoid conflicting with the
  * maven-shared implementation.
- * <p/>
- * plexus.component role="org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder" role-hint="maven2"
  */
 @Service( "dependencyTreeBuilder#maven2" )
 public class DefaultDependencyTreeBuilder

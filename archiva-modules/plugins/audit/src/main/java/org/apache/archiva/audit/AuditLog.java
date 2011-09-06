@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  * AuditLog - Audit Log.
  * 
  * @version $Id$
- * @plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="logging"
+ *
  */
 @Service("auditListener#logging")
 public class AuditLog

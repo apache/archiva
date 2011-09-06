@@ -82,7 +82,6 @@ import javax.inject.Named;
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
  * <p/>
- * plexus.component role="org.apache.archiva.metadata.repository.storage.RepositoryStorage" role-hint="maven2"
  */
 @Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage

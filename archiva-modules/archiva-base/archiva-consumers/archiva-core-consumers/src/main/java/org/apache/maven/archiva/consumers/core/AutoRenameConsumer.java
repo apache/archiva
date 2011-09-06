@@ -40,9 +40,6 @@ import java.util.Map;
  * AutoRenameConsumer
  *
  * @version $Id$
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="auto-rename"
- * instantiation-strategy="per-lookup"
  */
 @Service("knownRepositoryContentConsumer#auto-rename")
 @Scope("prototype")

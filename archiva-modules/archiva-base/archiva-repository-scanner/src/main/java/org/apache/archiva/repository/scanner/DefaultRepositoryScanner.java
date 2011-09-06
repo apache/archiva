@@ -39,7 +39,6 @@ import javax.inject.Inject;
  * DefaultRepositoryScanner
  *
  * @version $Id$
- * plexus.component role="org.apache.archiva.repository.scanner.RepositoryScanner"
  */
 @Service("repositoryScanner#default")
 public class DefaultRepositoryScanner

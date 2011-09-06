@@ -45,7 +45,6 @@ import java.util.List;
  * DefaultLegacyRepositoryConverter
  *
  * @version $Id$
- *          plexus.component
  */
 @Service( "legacyRepositoryConverter#default" )
 public class DefaultLegacyRepositoryConverter

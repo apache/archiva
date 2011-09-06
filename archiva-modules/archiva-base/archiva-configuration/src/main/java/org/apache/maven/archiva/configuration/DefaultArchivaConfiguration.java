@@ -85,8 +85,6 @@ import java.util.Set;
  * If the configuration is outdated, it will be upgraded when it is loaded. This is done by checking the version flag
  * before reading it from the registry.
  * </p>
- * <p/>
- * plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
 @Service( "archivaConfiguration#default" )
 public class DefaultArchivaConfiguration

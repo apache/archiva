@@ -56,7 +56,6 @@ import java.util.List;
  * having a bi-directional link with the session factory, and saving the existing session might save other changes
  * unknowingly by the caller.
  * <p/>
- * plexus.component role="org.apache.archiva.metadata.repository.MetadataResolver"
  */
 @Service( "metadataResolver#default" )
 public class DefaultMetadataResolver

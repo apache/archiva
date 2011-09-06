@@ -34,9 +34,6 @@ import javax.inject.Named;
  * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions. 
  *
  * @version $Id$
- * 
- * plexus.component role="org.codehaus.plexus.redback.system.check.EnvironmentCheck"
- *                   role-hint="required-roles"
  */
 @Service("environmentCheck#archiva-required-roles")
 public class ArchivaStandardRolesCheck

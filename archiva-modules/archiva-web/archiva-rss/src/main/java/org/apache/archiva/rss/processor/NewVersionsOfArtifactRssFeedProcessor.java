@@ -43,7 +43,6 @@ import java.util.Map;
  * generate a rss feed. The versions will be grouped by the date when the artifact
  * was gathered. Each group will appear as one entry in the feed.
  *
- * plexus.component role="org.apache.archiva.rss.processor.RssFeedProcessor" role-hint="new-versions"
  */
 @Service("rssFeedProcessor#new-versions")
 public class NewVersionsOfArtifactRssFeedProcessor

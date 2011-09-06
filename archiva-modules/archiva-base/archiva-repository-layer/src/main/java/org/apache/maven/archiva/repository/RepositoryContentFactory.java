@@ -37,9 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * RepositoryContentRequest
  *
  * @version $Id$
- *          <p/>
- *          plexus.component
- *          role="org.apache.maven.archiva.repository.RepositoryContentFactory"
  */
 @Service( "repositoryContentFactory#default" )
 public class RepositoryContentFactory

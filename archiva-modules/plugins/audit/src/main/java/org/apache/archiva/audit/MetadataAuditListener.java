@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 /**
- * plexus.component role="org.apache.archiva.audit.AuditListener" role-hint="metadata"
+ *
  */
 @Service("uuditListener#metadata")
 public class MetadataAuditListener

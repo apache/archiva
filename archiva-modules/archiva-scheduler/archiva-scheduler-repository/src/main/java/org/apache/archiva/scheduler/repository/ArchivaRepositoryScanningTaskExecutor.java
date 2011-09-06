@@ -51,8 +51,6 @@ import java.util.Date;
  * ArchivaRepositoryScanningTaskExecutor
  *
  * @version $Id$
- * plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor"
- * role-hint="repository-scanning"
  */
 @Service("taskExecutor#repository-scanning")
 public class ArchivaRepositoryScanningTaskExecutor

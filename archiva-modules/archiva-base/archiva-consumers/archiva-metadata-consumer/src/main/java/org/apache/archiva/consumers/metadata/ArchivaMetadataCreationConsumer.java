@@ -55,8 +55,6 @@ import java.util.List;
  * Take an artifact off of disk and put it into the metadata repository.
  *
  * @version $Id: ArtifactUpdateDatabaseConsumer.java 718864 2008-11-19 06:33:35Z brett $
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="create-archiva-metadata" instantiation-strategy="per-lookup"
  */
 @Service("knownRepositoryContentConsumer#create-archiva-metadata")
 @Scope("prototype")

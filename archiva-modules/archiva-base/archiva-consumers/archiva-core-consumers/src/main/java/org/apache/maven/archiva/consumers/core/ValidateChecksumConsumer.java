@@ -46,9 +46,6 @@ import java.util.List;
  * ValidateChecksumConsumer - validate the provided checksum against the file it represents.
  *
  * @version $Id$
- *          plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *          role-hint="validate-checksum"
- *          instantiation-strategy="per-lookup"
  */
 @Service( "knownRepositoryContentConsumer#validate-checksum" )
 @Scope( "prototype" )

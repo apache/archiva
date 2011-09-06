@@ -24,7 +24,7 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * plexus.component role="org.apache.archiva.metadata.model.MetadataFacetFactory" role-hint="org.apache.archiva.metadata.repository.storage.maven2.artifact"
+ *
  */
 @Service("metadataFacetFactory#org.apache.archiva.metadata.repository.storage.maven2.artifact")
 public class MavenArtifactFacetFactory

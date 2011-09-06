@@ -31,8 +31,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Process repository management events and respond appropriately.
- * <p/>
- * plexus.component role="org.apache.archiva.repository.events.RepositoryListener" role-hint="problem-reports"
+ *
  */
 @Service( "repositoryListener#problem-reports" )
 public class RepositoryProblemEventListener

@@ -48,7 +48,7 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
 /**
- * plexus.component role="org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager" role-hint="default"
+ *
  */
 @Service("repositoryStatisticsManager#default")
 public class DefaultRepositoryStatisticsManager

@@ -30,9 +30,6 @@ import java.util.List;
  * ArtifactCountConsumer
  *
  * @version $Id$
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="count-artifacts"
- * instantiation-strategy="per-lookup"
  */
 @Service("knownRepositoryContentConsumer#count-artifacts")
 @Scope("prototype")

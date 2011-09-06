@@ -32,9 +32,6 @@ import org.springframework.stereotype.Service;
  *
  * @version $Id$
  * @todo no need to be a component once legacy path parser is not
- * plexus.component role="org.apache.maven.archiva.repository.RemoteRepositoryContent"
- * role-hint="legacy"
- * instantiation-strategy="per-lookup"
  */
 @Service( "remoteRepositoryContent#legacy" )
 @Scope( "prototype" )

@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * plexus.component role="org.apache.archiva.metadata.repository.RepositorySessionFactory" role-hint="file"
+ *
  */
 @Service( "repositorySessionFactory#file" )
 public class FileRepositorySessionFactory

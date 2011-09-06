@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * @version
- * plexus.component role="org.apache.archiva.security.ServletAuthenticator" role-hint="default"
+ *
  */
 @Service("servletAuthenticator")
 public class ArchivaServletAuthenticator

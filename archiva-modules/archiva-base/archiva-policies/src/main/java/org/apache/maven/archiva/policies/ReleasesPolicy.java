@@ -26,9 +26,6 @@ import org.springframework.stereotype.Service;
  * {@link PreDownloadPolicy} to apply for released versions.
  *
  * @version $Id$
- * 
- * plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
  */
 @Service("preDownloadPolicy#releases")
 public class ReleasesPolicy

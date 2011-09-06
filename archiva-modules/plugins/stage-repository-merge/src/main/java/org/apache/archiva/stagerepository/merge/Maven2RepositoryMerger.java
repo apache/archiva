@@ -53,7 +53,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * plexus.component role="org.apache.archiva.stagerepository.merge.RepositoryMerger" role-hint="maven2"
+ *
  */
 @Service( "repositoryMerger#maven2" )
 public class Maven2RepositoryMerger

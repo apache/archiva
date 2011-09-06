@@ -27,7 +27,7 @@ import org.apache.maven.model.plugin.LifecycleBindingsInjector;
 /**
  * Required as plexus-spring doesn't understand the optional = true argument added to Plexus and used here.
  *
- * @plexus.component role="org.apache.maven.model.plugin.LifecycleBindingsInjector"
+ *
  */
 public class DummyLifecycleBindingsInjector
     implements LifecycleBindingsInjector

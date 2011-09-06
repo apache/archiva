@@ -74,8 +74,6 @@ import java.util.regex.Matcher;
  * MetadataTools
  *
  * @version $Id$
- *          <p/>
- *          plexus.component role="org.apache.maven.archiva.repository.metadata.MetadataTools"
  */
 @Service( "metadataTools#default" )
 public class MetadataTools

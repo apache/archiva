@@ -33,5 +33,9 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>maven2-repository</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
   </dependencies>
 </project>

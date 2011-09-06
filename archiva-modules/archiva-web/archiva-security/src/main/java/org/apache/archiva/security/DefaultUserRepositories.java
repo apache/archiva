@@ -43,7 +43,6 @@ import java.util.List;
  * DefaultUserRepositories
  *
  * @version $Id$
- *          plexus.component role="org.apache.archiva.security.UserRepositories" role-hint="default"
  */
 @Service( "userRepositories" )
 public class DefaultUserRepositories

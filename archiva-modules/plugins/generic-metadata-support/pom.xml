@@ -27,16 +27,18 @@
   </parent>
   <artifactId>generic-metadata-support</artifactId>
   <name>Archiva Core Plugins :: Generic Metadata Support</name>
-  <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

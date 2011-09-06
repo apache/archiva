@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * @plexus.component role="org.apache.archiva.audit.AuditManager"
+ *
  */
 @Service("auditManager#default")
 public class DefaultAuditManager

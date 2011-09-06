@@ -44,9 +44,6 @@ import java.util.List;
  * AutoRemoveConsumer
  *
  * @version $Id$
- * plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="auto-remove"
- * instantiation-strategy="per-lookup"
  */
 @Service("knownRepositoryContentConsumer#auto-remove")
 @Scope("prototype")
