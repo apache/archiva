@@ -23,6 +23,8 @@ import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.mock.MockAuditListener;
 import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -62,6 +64,9 @@ public abstract class AbstractRepositoryAdminTest
 
     @Inject
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    protected ProxyConnectorAdmin proxyConnectorAdmin;
 
     protected AuditInformation getFakeAuditInformation()
     {
@@ -114,5 +119,22 @@ public abstract class AbstractRepositoryAdminTest
             }
         }
         return null;
+    }
+
+    protected RemoteRepository getRemoteRepository()
+    {
+        return getRemoteRepository( "foo" );
+    }
+
+    protected RemoteRepository getRemoteRepository(String id)
+    {
+        RemoteRepository remoteRepository = new RemoteRepository();
+        remoteRepository.setUrl( "http://foo.com/maven-it-rocks" );
+        remoteRepository.setTimeout( 10 );
+        remoteRepository.setName( "maven foo" );
+        remoteRepository.setUserName( "foo-name" );
+        remoteRepository.setPassword( "toto" );
+        remoteRepository.setId( id );
+        return remoteRepository;
     }
 }

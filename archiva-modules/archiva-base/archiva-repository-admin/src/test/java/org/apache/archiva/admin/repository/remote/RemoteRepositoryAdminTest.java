@@ -149,15 +149,5 @@ public class RemoteRepositoryAdminTest
     }
 
 
-    private RemoteRepository getRemoteRepository()
-    {
-        RemoteRepository remoteRepository = new RemoteRepository();
-        remoteRepository.setUrl( "http://foo.com/maven-it-rocks" );
-        remoteRepository.setTimeout( 10 );
-        remoteRepository.setName( "maven foo" );
-        remoteRepository.setUserName( "foo-name" );
-        remoteRepository.setPassword( "toto" );
-        remoteRepository.setId( "foo" );
-        return remoteRepository;
-    }
+
 }

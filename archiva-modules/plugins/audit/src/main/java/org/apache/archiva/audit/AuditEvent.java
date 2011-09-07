@@ -104,6 +104,12 @@ public class AuditEvent
     public static final String REMOVE_PATTERN = "Removed File Type Pattern";
 
     public static final String MERGE_REPO_REMOTE = "Merged Staging Repository Triggered Remotely";
+
+    public static final String ADD_PROXY_CONNECTOR = "Added Proxy Connector";
+
+    public static final String DELETE_PROXY_CONNECTOR = "Deleted Proxy Connector";
+
+    public static final String MODIFY_PROXY_CONNECTOR = "Updated Proxy Connector";
     
     private String repositoryId;
 

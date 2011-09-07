@@ -42,6 +42,9 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
+      <!-- TODO uncomment when repository admin will be finished
+      <scope>runtime</scope>
+      -->
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

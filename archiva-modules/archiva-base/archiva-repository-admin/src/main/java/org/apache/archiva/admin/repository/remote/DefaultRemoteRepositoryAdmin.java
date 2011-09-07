@@ -113,8 +113,9 @@ public class DefaultRemoteRepositoryAdmin
 
         configuration.removeRemoteRepository( remoteRepositoryConfiguration );
 
+        // TODO use ProxyConnectorAdmin interface ?
         // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
-        List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
+        List<ProxyConnectorConfiguration> proxyConnectors = configuration.getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getTargetRepoId(), repositoryId ) )

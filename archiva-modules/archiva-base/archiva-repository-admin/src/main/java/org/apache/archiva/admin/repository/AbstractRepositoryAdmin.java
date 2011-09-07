@@ -87,12 +87,6 @@ public abstract class AbstractRepositoryAdmin
         }
     }
 
-    protected List<ProxyConnectorConfiguration> getProxyConnectors()
-    {
-        return new ArrayList<ProxyConnectorConfiguration>(
-            archivaConfiguration.getConfiguration().getProxyConnectors() );
-    }
-
     public List<AuditListener> getAuditListeners()
     {
         return auditListeners;

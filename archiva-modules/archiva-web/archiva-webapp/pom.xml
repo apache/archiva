@@ -76,6 +76,13 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
+      <!-- TODO uncomment when repository admin will be finished
+      <scope>runtime</scope>
+      -->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-metadata-consumer</artifactId>
       <scope>runtime</scope>
     </dependency>
@@ -739,7 +746,7 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <copy overwrite="true" file="${basedir}/src/test/resources/log4j.xml" todir="${project.build.directory}/classes" />
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml" todir="${project.build.directory}/classes" />
                     <delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
                   </tasks>
                 </configuration>
