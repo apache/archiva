@@ -27,7 +27,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.registry.RegistryException;
@@ -37,8 +36,6 @@ import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Abstract AdminRepositories Action base.
@@ -112,18 +109,6 @@ public abstract class AbstractRepositoriesAdminAction
 
         return SUCCESS;
     }
-
-    /**
-     * Get the list of ProxyConnectors that are present in the configuration.
-     *
-     * @return a new list of ProxyConnectors present in the configuration.
-     */
-    protected List<ProxyConnectorConfiguration> getProxyConnectors()
-    {
-        return new ArrayList<ProxyConnectorConfiguration>(
-            archivaConfiguration.getConfiguration().getProxyConnectors() );
-    }
-
 
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {

@@ -21,7 +21,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
