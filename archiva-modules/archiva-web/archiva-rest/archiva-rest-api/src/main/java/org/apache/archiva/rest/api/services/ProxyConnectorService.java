@@ -31,7 +31,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <b>No update method for changing source and target here as id is : sourceRepoId and targetRepoId, use delete then add.</b>
@@ -53,7 +52,8 @@ public interface ProxyConnectorService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    ProxyConnector getProxyConnector( @QueryParam( "sourceRepoId" ) String sourceRepoId, @QueryParam( "targetRepoId" ) String targetRepoId )
+    ProxyConnector getProxyConnector( @QueryParam( "sourceRepoId" ) String sourceRepoId,
+                                      @QueryParam( "targetRepoId" ) String targetRepoId )
         throws RepositoryAdminException;
 
     @Path( "addProxyConnector" )
@@ -88,12 +88,5 @@ public interface ProxyConnectorService
     Boolean updateProxyConnector( ProxyConnector proxyConnector )
         throws RepositoryAdminException;
 
-
-    @Path( "getProxyConnectorAsMap" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
-        throws RepositoryAdminException;
 
 }

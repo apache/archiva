@@ -22,10 +22,12 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.PingService;
+import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.maven.archiva.common.utils.FileUtil;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
@@ -78,6 +80,17 @@ public abstract class AbstractArchivaRestTest
     {
         return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
                                           RepositoryGroupService.class );
+    }
+
+    protected ProxyConnectorService getProxyConnectorService()
+    {
+        ProxyConnectorService service =
+            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                       ProxyConnectorService.class );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        return service;
     }
 
     protected ManagedRepository getTestManagedRepository()

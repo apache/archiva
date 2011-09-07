@@ -100,29 +100,6 @@ public class DefaultProxyConnectorService
                                                          getAuditInformation() );
     }
 
-    public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
-        throws RepositoryAdminException
-    {
-        Map<String, List<org.apache.archiva.admin.repository.proxyconnector.ProxyConnector>> modelMap =
-            proxyConnectorAdmin.getProxyConnectorAsMap();
-        if ( modelMap == null || modelMap.isEmpty() )
-        {
-            return Collections.emptyMap();
-        }
-        Map<String, List<ProxyConnector>> map = new HashMap<String, List<ProxyConnector>>( modelMap.size() );
-        for ( Map.Entry<String, List<org.apache.archiva.admin.repository.proxyconnector.ProxyConnector>> entry : modelMap.entrySet() )
-        {
-            List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>( entry.getValue().size() );
-            for ( org.apache.archiva.admin.repository.proxyconnector.ProxyConnector proxyConnector : entry.getValue() )
-            {
-                proxyConnectors.add( new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class ) );
-            }
-            map.put( entry.getKey(), proxyConnectors );
-        }
-        return map;
-    }
-
-
     public ProxyConnectorAdmin getProxyConnectorAdmin()
     {
         return proxyConnectorAdmin;
