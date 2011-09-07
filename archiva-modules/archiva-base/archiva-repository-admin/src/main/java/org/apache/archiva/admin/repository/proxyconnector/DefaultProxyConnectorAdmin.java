@@ -64,17 +64,7 @@ public class DefaultProxyConnectorAdmin
         List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>( proxyConnectorConfigurations.size() );
         for ( ProxyConnectorConfiguration configuration : proxyConnectorConfigurations )
         {
-            ProxyConnector proxyConnector = new ProxyConnector();
-            proxyConnectors.add( proxyConnector );
-            proxyConnector.setOrder( configuration.getOrder() );
-            proxyConnector.setBlackListPatterns( new ArrayList<String>( configuration.getBlackListPatterns() ) );
-            proxyConnector.setWhiteListPatterns( new ArrayList<String>( configuration.getWhiteListPatterns() ) );
-            proxyConnector.setDisabled( configuration.isDisabled() );
-            proxyConnector.setPolicies( new HashMap<String, String>( configuration.getPolicies() ) );
-            proxyConnector.setProperties( new HashMap<String, String>( configuration.getProperties() ) );
-            proxyConnector.setProxyId( configuration.getProxyId() );
-            proxyConnector.setSourceRepoId( configuration.getSourceRepoId() );
-            proxyConnector.setTargetRepoId( configuration.getTargetRepoId() );
+            proxyConnectors.add( getProxyConnector( configuration ) );
         }
 
         return proxyConnectors;
@@ -191,13 +181,6 @@ public class DefaultProxyConnectorAdmin
         }
 
         return proxyConnectorMap;
-    }
-
-    public ProxyConnector findProxyConnector( String sourceId, String targetId )
-        throws RepositoryAdminException
-    {
-        return getProxyConnector(
-            findProxyConnector( sourceId, targetId, getArchivaConfiguration().getConfiguration() ) );
     }
 
     private ProxyConnectorConfiguration findProxyConnector( String sourceId, String targetId,

@@ -132,30 +132,29 @@ public class ProxyConnectorAdminTest
     public void findProxyConnector()
         throws Exception
     {
-        ProxyConnector proxyConnector = proxyConnectorAdmin.findProxyConnector( "internal", "central" );
+        ProxyConnector proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertNotNull( proxyConnector );
     }
 
-        @Test
+    @Test
     public void updateProxyConnector()
         throws Exception
     {
-        ProxyConnector proxyConnector = proxyConnectorAdmin.findProxyConnector( "internal", "central" );
+        ProxyConnector proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertNotNull( proxyConnector );
         proxyConnector.setDisabled( false );
         proxyConnectorAdmin.updateProxyConnector( proxyConnector, getFakeAuditInformation() );
-        proxyConnector = proxyConnectorAdmin.findProxyConnector( "internal", "central" );
+        proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertFalse( proxyConnector.isDisabled() );
-
 
         proxyConnector.setDisabled( true );
         proxyConnectorAdmin.updateProxyConnector( proxyConnector, getFakeAuditInformation() );
-        proxyConnector = proxyConnectorAdmin.findProxyConnector( "internal", "central" );
+        proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertTrue( proxyConnector.isDisabled() );
 
         proxyConnector.setOrder( 4 );
         proxyConnectorAdmin.updateProxyConnector( proxyConnector, getFakeAuditInformation() );
-        proxyConnector = proxyConnectorAdmin.findProxyConnector( "internal", "central" );
+        proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertEquals( 4, proxyConnector.getOrder() );
 
     }

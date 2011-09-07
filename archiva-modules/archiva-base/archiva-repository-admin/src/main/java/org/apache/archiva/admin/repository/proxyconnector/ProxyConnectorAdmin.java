@@ -58,8 +58,4 @@ public interface ProxyConnectorAdmin
     Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException;
 
-    ProxyConnector findProxyConnector( String sourceId, String targetId )
-        throws RepositoryAdminException;
-
-
 }

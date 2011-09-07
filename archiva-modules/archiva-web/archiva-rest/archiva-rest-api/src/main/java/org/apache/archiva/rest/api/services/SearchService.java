@@ -23,11 +23,12 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
 
+import javax.ws.rs.Path;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 import java.util.List;
 
-@XmlRootElement( name = "searchRequest" )
+@Path( "/searchService/" )
 public interface SearchService
 {
     /*

@@ -77,7 +77,7 @@ public class ProxyConnector
      */
     public static final String POLICY_CACHE_FAILURES = "cache-failures";
 
-/**
+    /**
      *
      * The order of the proxy connectors. (0 means no order specified)
      *           .

@@ -33,9 +33,9 @@ public class ManagedRepository
 
     private String name;
 
-    private String location;
-
     private String layout;
+
+    private String location;
 
     private boolean snapshots = false;
 
@@ -54,8 +54,9 @@ public class ManagedRepository
         // no op
     }
 
-    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots, boolean releases,
-                              boolean blockRedeployments, boolean stageRepoNeeded, String cronExpression )
+    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
+                              boolean releases, boolean blockRedeployments, boolean stageRepoNeeded,
+                              String cronExpression )
     {
         this.id = id;
         this.name = name;

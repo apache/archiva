@@ -107,6 +107,21 @@
       <artifactId>jsr311-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>net.sf.beanlib</groupId>
+      <artifactId>beanlib</artifactId>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
+        </exclusions>
+    </dependency>
+
     <!-- normally not needed but here for wadl feature currently in cxf -->
     <dependency>
       <groupId>org.apache.cxf</groupId>

@@ -31,9 +31,9 @@ public class RemoteRepository
 
     private String name;
 
-    private String url;
-
     private String layout;
+
+    private String url;
 
     private String userName;
 
