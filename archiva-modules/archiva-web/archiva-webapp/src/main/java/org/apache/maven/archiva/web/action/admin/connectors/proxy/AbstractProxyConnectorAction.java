@@ -87,7 +87,7 @@ public abstract class AbstractProxyConnectorAction
             return null;
         }
 
-        return getProxyConnectorAdmin().findProxyConnector( sourceId, targetId );
+        return getProxyConnectorAdmin().getProxyConnector( sourceId, targetId );
     }
 
     protected Map<String, List<ProxyConnector>> createProxyConnectorMap()
