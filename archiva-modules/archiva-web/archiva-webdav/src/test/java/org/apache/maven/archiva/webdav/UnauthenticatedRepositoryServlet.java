@@ -19,10 +19,12 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+
 import javax.servlet.ServletConfig;
 
 /**
- * UnauthenticatedRepositoryServlet 
+ * UnauthenticatedRepositoryServlet
  *
  * @version $Id$
  */
@@ -32,9 +34,16 @@ public class UnauthenticatedRepositoryServlet
     @Override
     public synchronized void initServers( ServletConfig servletConfig )
     {
-        super.initServers(servletConfig);
-        
+        try
+        {
+            super.initServers( servletConfig );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
+
         UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider();
-        setDavSessionProvider(sessionProvider);
+        setDavSessionProvider( sessionProvider );
     }
 }

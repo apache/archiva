@@ -26,6 +26,7 @@ import com.meterware.servletunit.ServletUnitClient;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -173,8 +174,9 @@ public abstract class AbstractRepositoryServletTestCase
     }
 
     protected void assertRepositoryValid( RepositoryServlet servlet, String repoId )
+        throws Exception
     {
-        ManagedRepositoryConfiguration repository = servlet.getRepository( repoId );
+        ManagedRepository repository = servlet.getRepository( repoId );
         assertNotNull( "Archiva Managed Repository id:<" + repoId + "> should exist.", repository );
         File repoRoot = new File( repository.getLocation() );
         assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.",

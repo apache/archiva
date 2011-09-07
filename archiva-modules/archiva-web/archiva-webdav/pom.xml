@@ -41,14 +41,18 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-scanner</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
-      <!-- TODO uncomment when repository admin will be finished
+      <!-- should be runtime but currently not possible due ConfigurationListener
       <scope>runtime</scope>
       -->
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-scanner</artifactId>
+      <artifactId>archiva-repository-admin</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -166,6 +170,8 @@
           <argLine>-Xmx512m -Xms512m -client</argLine>
           <systemPropertyVariables>
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
+            <plexus.home>${project.build.outputDirectory}</plexus.home>
+            <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

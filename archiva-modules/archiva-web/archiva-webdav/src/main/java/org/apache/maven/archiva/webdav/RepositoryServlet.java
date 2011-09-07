@@ -19,6 +19,10 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavMethods;
@@ -34,8 +38,6 @@ import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.security.ServletAuthenticator;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +64,9 @@ public class RepositoryServlet
 
     private ArchivaConfiguration configuration;
 
-    private Map<String, ManagedRepositoryConfiguration> repositoryMap;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    private Map<String, ManagedRepository> repositoryMap;
 
     private DavLocatorFactory locatorFactory;
 
@@ -76,7 +80,15 @@ public class RepositoryServlet
         throws ServletException
     {
         super.init( servletConfig );
-        initServers( servletConfig );
+        try
+        {
+            initServers( servletConfig );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ServletException( e.getMessage(), e );
+        }
     }
 
     /**
@@ -156,6 +168,7 @@ public class RepositoryServlet
     }
 
     public synchronized void initServers( ServletConfig servletConfig )
+        throws RepositoryAdminException
     {
         WebApplicationContext wac =
             WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
@@ -163,9 +176,11 @@ public class RepositoryServlet
         configuration = wac.getBean( "archivaConfiguration#default", ArchivaConfiguration.class );
         configuration.addListener( this );
 
-        repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
+        managedRepositoryAdmin = wac.getBean( ManagedRepositoryAdmin.class );
 
-        for ( ManagedRepositoryConfiguration repo : repositoryMap.values() )
+        repositoryMap = managedRepositoryAdmin.getManagedRepositoriesAsMap();
+
+        for ( ManagedRepository repo : repositoryMap.values() )
         {
             File repoDir = new File( repo.getLocation() );
 
@@ -180,7 +195,7 @@ public class RepositoryServlet
             }
         }
 
-        resourceFactory = wac.getBean("davResourceFactory#archiva",  DavResourceFactory.class );
+        resourceFactory = wac.getBean( "davResourceFactory#archiva", DavResourceFactory.class );
         locatorFactory = new ArchivaDavLocatorFactory();
 
         ServletAuthenticator servletAuth = wac.getBean( ServletAuthenticator.class );
@@ -195,16 +210,25 @@ public class RepositoryServlet
     {
         if ( event.getType() == ConfigurationEvent.SAVED )
         {
-            initRepositories();
+            try
+            {
+                initRepositories();
+            }
+            catch ( RepositoryAdminException e )
+            {
+                log.error( e.getMessage(), e );
+                throw new RuntimeException( e.getMessage(), e );
+            }
         }
     }
 
     private void initRepositories()
+        throws RepositoryAdminException
     {
         synchronized ( repositoryMap )
         {
             repositoryMap.clear();
-            repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
+            repositoryMap.putAll( managedRepositoryAdmin.getManagedRepositoriesAsMap() );
         }
 
         synchronized ( reloadLock )
@@ -213,11 +237,12 @@ public class RepositoryServlet
         }
     }
 
-    public synchronized ManagedRepositoryConfiguration getRepository( String prefix )
+    public synchronized ManagedRepository getRepository( String prefix )
+        throws RepositoryAdminException
     {
         if ( repositoryMap.isEmpty() )
         {
-            repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
+            repositoryMap.putAll( managedRepositoryAdmin.getManagedRepositoriesAsMap() );
         }
         return repositoryMap.get( prefix );
     }

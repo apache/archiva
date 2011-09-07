@@ -19,6 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -67,7 +68,7 @@ public class RepositoryServletTest
         c.removeManagedRepository( c.findManagedRepositoryById( REPOID_INTERNAL ) );
         saveConfiguration( archivaConfiguration );
 
-        ManagedRepositoryConfiguration repository = servlet.getRepository( REPOID_INTERNAL );
+        ManagedRepository repository = servlet.getRepository( REPOID_INTERNAL );
         assertNull( repository );
     }
 
@@ -92,7 +93,7 @@ public class RepositoryServletTest
         c.addManagedRepository( repo );
         saveConfiguration( archivaConfiguration );
 
-        ManagedRepositoryConfiguration repository = servlet.getRepository( NEW_REPOSITORY_ID );
+        ManagedRepository repository = servlet.getRepository( NEW_REPOSITORY_ID );
         assertNotNull( repository );
         assertEquals( NEW_REPOSITORY_NAME, repository.getName() );
 
