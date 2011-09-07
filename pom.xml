@@ -1491,8 +1491,6 @@
           <configuration>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <systemPropertyVariables>
-              <appserver.base>${basedir}/target/appserver-base</appserver.base>
-              <plexus.home>${project.build.outputDirectory}</plexus.home>
               <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
             </systemPropertyVariables>
           </configuration>
