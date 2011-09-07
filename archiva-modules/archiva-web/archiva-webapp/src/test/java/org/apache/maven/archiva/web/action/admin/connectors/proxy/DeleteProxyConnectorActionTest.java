@@ -20,7 +20,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
-
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -28,12 +30,12 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 /**
- * DeleteProxyConnectorActionTest 
+ * DeleteProxyConnectorActionTest
  *
  * @version $Id$
  */
@@ -49,6 +51,24 @@ public class DeleteProxyConnectorActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        action = (DeleteProxyConnectorAction) getActionProxy( "/admin/deleteProxyConnector.action" ).getAction();
+
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+    }
 
     public void testConfirmDelete()
         throws Exception
@@ -71,7 +91,7 @@ public class DeleteProxyConnectorActionTest
         expectConfigurationRequests( 4 );
         archivaConfigurationControl.replay();
 
-        // Attempt to show the confirm delete screen, but provide 
+        // Attempt to show the confirm delete screen, but provide
         // a bad source id or target id to actually delete
 
         preRequest( action );
@@ -105,7 +125,7 @@ public class DeleteProxyConnectorActionTest
         expectConfigurationRequests( 1 );
         archivaConfigurationControl.replay();
 
-        // Attempt to show the confirm delete screen, but don't provide 
+        // Attempt to show the confirm delete screen, but don't provide
         // the source id or target id to actually delete
 
         preRequest( action );
@@ -209,18 +229,4 @@ public class DeleteProxyConnectorActionTest
         archivaConfiguration.save( config );
     }
 
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        //action = (DeleteProxyConnectorAction) lookup( Action.class.getName(), "deleteProxyConnectorAction" );
-
-        action = (DeleteProxyConnectorAction) getActionProxy( "/admin/deleteProxyConnector.action" ).getAction();
-
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
-    }
 }

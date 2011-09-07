@@ -20,6 +20,10 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -61,11 +65,16 @@ public class AddProxyConnectorActionTest
         super.setUp();
 
         action = (AddProxyConnectorAction) getActionProxy( "/admin/addProxyConnector.action" ).getAction();
-        //action = (AddProxyConnectorAction) lookup( Action.class.getName(), "addProxyConnectorAction" );
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
     }
 
     public void testAddBlackListPattern()
@@ -76,7 +85,7 @@ public class AddProxyConnectorActionTest
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
 
         // Perform Test w/no values.
@@ -107,7 +116,7 @@ public class AddProxyConnectorActionTest
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
 
         // Perform Test w/no values.
@@ -135,15 +144,17 @@ public class AddProxyConnectorActionTest
     public void testAddProxyConnectorCommit()
         throws Exception
     {
-        expectConfigurationRequests( 7 );
+        expectConfigurationRequests( 9 );
         archivaConfigurationControl.replay();
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
         // forms will use an array
-        connector.getProperties().put( "eat-a", new String[] { "gramov-a-bits" } );
+        //connector.getProperties().put( "eat-a", new String[] { "gramov-a-bits" } );
+        // FIXME olamy check the array mode !!!
+        connector.getProperties().put( "eat-a", "gramov-a-bits" );
 
         // Create the input screen.
         assertRequestStatus( action, Action.SUCCESS, "commit" );
@@ -171,7 +182,7 @@ public class AddProxyConnectorActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        ProxyConnectorConfiguration configuration = action.getConnector();
+        ProxyConnector configuration = action.getConnector();
         assertNotNull( configuration );
         assertNull( configuration.getProxyId() );
         assertNull( configuration.getSourceRepoId() );
@@ -193,7 +204,7 @@ public class AddProxyConnectorActionTest
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
 
         // Perform Test w/no values.
@@ -224,7 +235,7 @@ public class AddProxyConnectorActionTest
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
 
         // Add some arbitrary blacklist patterns.
@@ -270,7 +281,7 @@ public class AddProxyConnectorActionTest
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
 
         // Add some arbitrary properties.
@@ -316,7 +327,7 @@ public class AddProxyConnectorActionTest
 
         // Prepare Test.
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         populateProxyConnector( connector );
 
         // Add some arbitrary whitelist patterns.
@@ -401,7 +412,7 @@ public class AddProxyConnectorActionTest
     }
 
     @SuppressWarnings("unchecked")
-    private void populateProxyConnector( ProxyConnectorConfiguration connector )
+    private void populateProxyConnector( ProxyConnector connector )
     {
         connector.setProxyId( AbstractProxyConnectorFormAction.DIRECT_CONNECTION );
         connector.setSourceRepoId( "corporate" );

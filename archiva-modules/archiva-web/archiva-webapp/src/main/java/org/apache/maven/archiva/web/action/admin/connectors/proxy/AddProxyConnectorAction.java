@@ -19,8 +19,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -36,9 +37,10 @@ public class AddProxyConnectorAction
 {
     @Override
     public void prepare()
+        throws RepositoryAdminException
     {
         super.prepare();
-        connector = new ProxyConnectorConfiguration();
+        connector = new ProxyConnector();
     }
 
     @Override
@@ -55,6 +57,7 @@ public class AddProxyConnectorAction
     }
 
     public String commit()
+        throws RepositoryAdminException
     {
         /* Too complex for webwork's ${Action}-validation.xml techniques.
          * Not appropriate for use with webwork's implements Validatable, as that validates regardless of
@@ -65,7 +68,7 @@ public class AddProxyConnectorAction
         String sourceId = connector.getSourceRepoId();
         String targetId = connector.getTargetRepoId();
 
-        ProxyConnectorConfiguration otherConnector = findProxyConnector( sourceId, targetId );
+        ProxyConnector otherConnector = findProxyConnector( sourceId, targetId );
         if ( otherConnector != null )
         {
             addActionError(
@@ -90,6 +93,6 @@ public class AddProxyConnectorAction
         connector.setWhiteListPatterns( unescapePatterns( connector.getWhiteListPatterns() ) );
 
         addProxyConnector( connector );
-        return saveConfiguration();
+        return SUCCESS;
     }
 }

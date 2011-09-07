@@ -21,6 +21,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import com.opensymphony.xwork2.Action;
 
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -58,19 +61,21 @@ public class ProxyConnectorsActionTest
     {
         super.setUp();
 
-        //action = (ProxyConnectorsAction) lookup( Action.class.getName(), "proxyConnectorsAction" );
-
         action = (ProxyConnectorsAction) getActionProxy("/admin/proxyConnectors.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration( archivaConfiguration );
     }
 
     public void testSecureActionBundle()
         throws Exception
     {
-        expectConfigurationRequests( 3 );
+        expectConfigurationRequests( 4 );
         archivaConfigurationControl.replay();
 
         action.prepare();
@@ -82,7 +87,7 @@ public class ProxyConnectorsActionTest
     public void testExecute()
         throws Exception
     {
-        expectConfigurationRequests( 3 );
+        expectConfigurationRequests( 5 );
         archivaConfigurationControl.replay();
 
         action.prepare();

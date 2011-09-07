@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * No update method here as id is : sourceRepoId and targetRepoId, use delete then add.
+ * <b>No update method for changing source and target here as id is : sourceRepoId and targetRepoId, use delete then add.</b>
  *
  * @author Olivier Lamy
  * @since 1.4
@@ -44,10 +44,22 @@ public interface ProxyConnectorAdmin
     Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
+    /**
+     * <b>only for enabled/disable or changing bean values except target/source</b>
+     * @param proxyConnector
+     * @param auditInformation
+     * @return
+     * @throws RepositoryAdminException
+     */
+    Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
+            throws RepositoryAdminException;
+
+
     Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException;
 
     ProxyConnector findProxyConnector( String sourceId, String targetId )
         throws RepositoryAdminException;
+
 
 }

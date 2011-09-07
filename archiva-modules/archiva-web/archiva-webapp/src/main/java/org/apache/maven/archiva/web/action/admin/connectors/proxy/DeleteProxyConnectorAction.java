@@ -19,15 +19,16 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 /**
- * DeleteProxyConnectorAction 
+ * DeleteProxyConnectorAction
  *
  * @version $Id$
- *
  */
 @Controller( "deleteProxyConnectorAction" )
 @Scope( "prototype" )
@@ -38,17 +39,19 @@ public class DeleteProxyConnectorAction
 
     private String target;
 
-    private ProxyConnectorConfiguration proxyConfig;
+    private ProxyConnector proxyConfig;
 
     public String confirmDelete()
+        throws RepositoryAdminException
     {
         this.proxyConfig = findProxyConnector( source, target );
 
         // Not set? Then there is nothing to delete.
         if ( this.proxyConfig == null )
         {
-            addActionError( "Unable to delete proxy configuration, configuration with source [" + source
-                + "], and target [" + target + "] does not exist." );
+            addActionError(
+                "Unable to delete proxy configuration, configuration with source [" + source + "], and target ["
+                    + target + "] does not exist." );
             return ERROR;
         }
 
@@ -56,14 +59,16 @@ public class DeleteProxyConnectorAction
     }
 
     public String delete()
+        throws RepositoryAdminException
     {
         this.proxyConfig = findProxyConnector( source, target );
 
         // Not set? Then there is nothing to delete.
         if ( this.proxyConfig == null )
         {
-            addActionError( "Unable to delete proxy configuration, configuration with source [" + source
-                + "], and target [" + target + "] does not exist." );
+            addActionError(
+                "Unable to delete proxy configuration, configuration with source [" + source + "], and target ["
+                    + target + "] does not exist." );
             return ERROR;
         }
 
@@ -71,14 +76,14 @@ public class DeleteProxyConnectorAction
         {
             return ERROR;
         }
-        
-        removeProxyConnector( proxyConfig );
+
+        getProxyConnectorAdmin().deleteProxyConnector( proxyConfig, getAuditInformation() );
         addActionMessage( "Successfully removed proxy connector [" + source + " , " + target + " ]" );
 
         setSource( null );
         setTarget( null );
-        
-        return saveConfiguration();
+
+        return SUCCESS;
     }
 
     public String getSource()
@@ -101,7 +106,7 @@ public class DeleteProxyConnectorAction
         this.target = id;
     }
 
-    public ProxyConnectorConfiguration getProxyConfig()
+    public ProxyConnector getProxyConfig()
     {
         return proxyConfig;
     }

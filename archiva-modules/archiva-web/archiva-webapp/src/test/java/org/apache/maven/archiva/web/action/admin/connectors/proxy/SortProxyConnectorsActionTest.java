@@ -20,6 +20,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -57,6 +60,35 @@ public class SortProxyConnectorsActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        action = (SortProxyConnectorsAction) getActionProxy( "/admin/sortUpProxyConnector.action" ).getAction();
+
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+    }
+
+    private void expectConfigurationRequests( int requestConfigCount )
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        Configuration config = createInitialConfiguration();
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( config, requestConfigCount );
+
+        archivaConfiguration.save( config );
+    }
 
     public void testSecureActionBundle()
         throws Exception
@@ -220,33 +252,5 @@ public class SortProxyConnectorsActionTest
         config.addProxyConnector( connector );
 
         return config;
-    }
-
-    private void expectConfigurationRequests( int requestConfigCount )
-        throws RegistryException, IndeterminateConfigurationException
-    {
-        Configuration config = createInitialConfiguration();
-
-        for ( int i = 0; i < requestConfigCount; i++ )
-        {
-            archivaConfiguration.getConfiguration();
-            archivaConfigurationControl.setReturnValue( config );
-        }
-
-        archivaConfiguration.save( config );
-    }
-
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        //action = (SortProxyConnectorsAction) lookup( Action.class.getName(), "sortProxyConnectorsAction" );
-        action = (SortProxyConnectorsAction) getActionProxy( "/admin/sortUpProxyConnector.action" ).getAction();
-
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
     }
 }

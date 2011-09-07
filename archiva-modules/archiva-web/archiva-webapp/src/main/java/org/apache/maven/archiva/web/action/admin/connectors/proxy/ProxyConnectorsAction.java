@@ -20,10 +20,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Preparable;
-
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.admin.repository.AbstractRepository;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -35,7 +34,6 @@ import java.util.Map;
  * ProxyConnectorsAction
  *
  * @version $Id$
- *
  */
 @Controller( "proxyConnectorsAction" )
 @Scope( "prototype" )
@@ -43,42 +41,43 @@ public class ProxyConnectorsAction
     extends AbstractProxyConnectorAction
     implements Preparable
 {
-    private Map<String, AbstractRepositoryConfiguration> repoMap;
+    private Map<String, AbstractRepository> repoMap;
 
     /**
      * boolean to indicate that remote repo is present. Used for Add Link
      */
-    private boolean remoteRepoExists=false;
-    
+    private boolean remoteRepoExists = false;
+
     /**
      * Map of Proxy Connectors.
      */
-    private Map<String, List<ProxyConnectorConfiguration>> proxyConnectorMap;
+    private Map<String, List<ProxyConnector>> proxyConnectorMap;
 
     public void prepare()
+        throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        repoMap = new HashMap<String, AbstractRepositoryConfiguration>();
-        repoMap.putAll( config.getRemoteRepositoriesAsMap() );
-        repoMap.putAll( config.getManagedRepositoriesAsMap() );
+        repoMap = new HashMap<String, AbstractRepository>();
+        repoMap.putAll( getRemoteRepositoryAdmin().getRemoteRepositoriesAsMap() );
+        // FIXME olamy : are we sure we want Managed too ???
+        repoMap.putAll( getManagedRepositoryAdmin().getManagedRepositoriesAsMap() );
 
         proxyConnectorMap = createProxyConnectorMap();
-        
-        remoteRepoExists=config.getRemoteRepositories().size()>0;
+
+        remoteRepoExists = getRemoteRepositoryAdmin().getRemoteRepositories().size() > 0;
     }
 
-    public Map<String, AbstractRepositoryConfiguration> getRepoMap()
+    public Map<String, AbstractRepository> getRepoMap()
     {
         return repoMap;
     }
 
-    public Map<String, List<ProxyConnectorConfiguration>> getProxyConnectorMap()
+    public Map<String, List<ProxyConnector>> getProxyConnectorMap()
     {
         return proxyConnectorMap;
     }
 
-	public boolean getRemoteRepoExists()
+    // FIXME olamy should be is !
+    public boolean getRemoteRepoExists()
     {
         return remoteRepoExists;
     }

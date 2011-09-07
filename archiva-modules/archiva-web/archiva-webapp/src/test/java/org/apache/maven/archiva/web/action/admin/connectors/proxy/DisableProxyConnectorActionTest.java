@@ -18,6 +18,9 @@
 package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -42,13 +45,30 @@ public class DisableProxyConnectorActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        action = (DisableProxyConnectorAction) getActionProxy( "/admin/disableProxyConnector.action" ).getAction();
+
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration( archivaConfiguration );
+    }
+
     public void testConfirmDisableBadSourceOrTarget()
         throws Exception
     {
         expectConfigurationRequests( 4 );
         archivaConfigurationControl.replay();
 
-        // Attempt to show the confirm disable screen, but provide 
+        // Attempt to show the confirm disable screen, but provide
         // a bad source id or target id to actually delete
 
         preRequest( action );
@@ -82,7 +102,7 @@ public class DisableProxyConnectorActionTest
         expectConfigurationRequests( 1 );
         archivaConfigurationControl.replay();
 
-        // Attempt to show the confirm disable screen, but don't provide 
+        // Attempt to show the confirm disable screen, but don't provide
         // the source id or target id to actually delete
 
         preRequest( action );
@@ -204,19 +224,5 @@ public class DisableProxyConnectorActionTest
         }
 
         archivaConfiguration.save( config );
-    }
-
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        //action = (DisableProxyConnectorAction) lookup( Action.class.getName(), "disableProxyConnectorAction" );
-        action = (DisableProxyConnectorAction) getActionProxy( "/admin/disableProxyConnector.action" ).getAction();
-
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
     }
 }

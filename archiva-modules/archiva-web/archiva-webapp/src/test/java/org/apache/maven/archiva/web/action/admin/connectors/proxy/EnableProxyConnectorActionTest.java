@@ -18,6 +18,9 @@
 package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -29,25 +32,51 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
-public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
+public class EnableProxyConnectorActionTest
+    extends AbstractWebworkTestCase
 {
     private static final String TEST_TARGET_ID = "central";
 
     private static final String TEST_SOURCE_ID = "corporate";
-    
+
     private EnableProxyConnectorAction action;
-    
+
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
 
-        public void testConfirmDeleteBadSourceOrTarget()
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+        action = (EnableProxyConnectorAction) getActionProxy( "/admin/enableProxyConnector.action" ).getAction();
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration( archivaConfiguration );
+    }
+
+    private void expectConfigurationRequests( int requestConfigCount )
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        Configuration config = createInitialConfiguration();
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( config, requestConfigCount );
+        archivaConfiguration.save( config );
+    }
+
+    public void testConfirmDeleteBadSourceOrTarget()
         throws Exception
     {
         expectConfigurationRequests( 4 );
         archivaConfigurationControl.replay();
 
-        // Attempt to show the confirm enable screen, but provide 
+        // Attempt to show the confirm enable screen, but provide
         // a bad source id or target id to actually enable
 
         preRequest( action );
@@ -81,7 +110,7 @@ public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
         expectConfigurationRequests( 1 );
         archivaConfigurationControl.replay();
 
-        // Attempt to show the confirm enable screen, but don't provide 
+        // Attempt to show the confirm enable screen, but don't provide
         // the source id or target id to actually delete
 
         preRequest( action );
@@ -132,8 +161,9 @@ public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
 
         // Test the configuration.
         assertEquals( 1, archivaConfiguration.getConfiguration().getProxyConnectors().size() );
-        ProxyConnectorConfiguration config = (ProxyConnectorConfiguration)archivaConfiguration.getConfiguration().getProxyConnectors().get(0);
-        assertFalse(config.isDisabled());
+        ProxyConnectorConfiguration config =
+            (ProxyConnectorConfiguration) archivaConfiguration.getConfiguration().getProxyConnectors().get( 0 );
+        assertFalse( config.isDisabled() );
     }
 
     public void testSecureActionBundle()
@@ -146,7 +176,7 @@ public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
         assertTrue( bundle.requiresAuthentication() );
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
-    
+
     public void testConfirmEnable()
         throws Exception
     {
@@ -161,7 +191,7 @@ public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
         assertEquals( Action.INPUT, status );
         assertNoErrors( action );
     }
-    
+
     private Configuration createInitialConfiguration()
     {
         Configuration config = new Configuration();
@@ -182,38 +212,10 @@ public class EnableProxyConnectorActionTest extends AbstractWebworkTestCase
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
         connector.setSourceRepoId( TEST_SOURCE_ID );
         connector.setTargetRepoId( TEST_TARGET_ID );
-        connector.setDisabled(true);
+        connector.setDisabled( true );
 
         config.addProxyConnector( connector );
 
         return config;
-    }
-
-    private void expectConfigurationRequests( int requestConfigCount )
-        throws RegistryException, IndeterminateConfigurationException
-    {
-        Configuration config = createInitialConfiguration();
-
-        for ( int i = 0; i < requestConfigCount; i++ )
-        {
-            archivaConfiguration.getConfiguration();
-            archivaConfigurationControl.setReturnValue( config );
-        }
-
-        archivaConfiguration.save( config );
-    }
-
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        //action = (EnableProxyConnectorAction) lookup( Action.class.getName(), "enableProxyConnectorAction" );
-
-        action = (EnableProxyConnectorAction) getActionProxy( "/admin/enableProxyConnector.action" ).getAction();
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
     }
 }

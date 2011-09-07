@@ -140,6 +140,19 @@ public class DefaultProxyConnectorAdmin
         return Boolean.TRUE;
     }
 
+    public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        ProxyConnectorConfiguration proxyConnectorConfiguration =
+            findProxyConnector( proxyConnector.getSourceRepoId(), proxyConnector.getTargetRepoId(), configuration );
+        configuration.removeProxyConnector( proxyConnectorConfiguration );
+        configuration.addProxyConnector( getProxyConnectorConfiguration( proxyConnector ) );
+        triggerAuditEvent( proxyConnector.getSourceRepoId() + "-" + proxyConnector.getTargetRepoId(), null,
+                           AuditEvent.MODIFY_PROXY_CONNECTOR, auditInformation );
+        return Boolean.TRUE;
+    }
+
     protected List<String> unescapePatterns( List<String> patterns )
     {
         List<String> rawPatterns = new ArrayList<String>();
@@ -157,8 +170,7 @@ public class DefaultProxyConnectorAdmin
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException
     {
-        java.util.Map<String, List<ProxyConnector>> proxyConnectorMap =
-            new HashMap<String, java.util.List<ProxyConnector>>();
+        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, java.util.List<ProxyConnector>>();
 
         Iterator<ProxyConnector> it = getProxyConnectors().iterator();
         while ( it.hasNext() )
@@ -166,7 +178,7 @@ public class DefaultProxyConnectorAdmin
             ProxyConnector proxyConfig = it.next();
             String key = proxyConfig.getSourceRepoId();
 
-            java.util.List<ProxyConnector> connectors = proxyConnectorMap.get( key );
+            List<ProxyConnector> connectors = proxyConnectorMap.get( key );
             if ( connectors == null )
             {
                 connectors = new ArrayList<ProxyConnector>();
@@ -221,12 +233,17 @@ public class DefaultProxyConnectorAdmin
         proxyConnectorConfiguration.setSourceRepoId( proxyConnector.getSourceRepoId() );
         proxyConnectorConfiguration.setTargetRepoId( proxyConnector.getTargetRepoId() );
         return proxyConnectorConfiguration;*/
-        return new BeanReplicator().replicateBean( proxyConnector, ProxyConnectorConfiguration.class );
+
+        return proxyConnector == null
+            ? null
+            : new BeanReplicator().replicateBean( proxyConnector, ProxyConnectorConfiguration.class );
     }
 
     protected ProxyConnector getProxyConnector( ProxyConnectorConfiguration proxyConnectorConfiguration )
     {
-        return new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
+        return proxyConnectorConfiguration == null
+            ? null
+            : new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
     }
 
     protected void validateProxyConnector( ProxyConnector proxyConnector )
@@ -246,6 +263,6 @@ public class DefaultProxyConnectorAdmin
                     + " is not a RemoteRepository" );
         }
 
-        // FIXME validate NetworkProxyConfiguration too
+        // FIXME validate NetworkProxyConfiguration too when available
     }
 }

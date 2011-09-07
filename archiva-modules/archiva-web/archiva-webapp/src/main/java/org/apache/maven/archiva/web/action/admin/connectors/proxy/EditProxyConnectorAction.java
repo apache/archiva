@@ -19,18 +19,18 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 /**
- * EditProxyConnectorAction 
+ * EditProxyConnectorAction
  *
  * @version $Id$
- *
  */
 @Controller( "editProxyConnectorAction" )
-@Scope( "prototype")
+@Scope( "prototype" )
 public class EditProxyConnectorAction
     extends AbstractProxyConnectorFormAction
 {
@@ -46,24 +46,26 @@ public class EditProxyConnectorAction
 
     @Override
     public void prepare()
+        throws RepositoryAdminException
     {
         super.prepare();
 
-        connector = findProxyConnector( source, target );        
+        connector = findProxyConnector( source, target );
     }
 
     public String input()
     {
         if ( connector == null )
         {
-            addActionError( "Unable to edit non existant proxy connector with source [" + source + "] and target ["
-                + target + "]" );
+            addActionError(
+                "Unable to edit non existant proxy connector with source [" + source + "] and target [" + target
+                    + "]" );
             return ERROR;
         }
-        
-        if( connector != null )
+
+        if ( connector != null )
         {
-         // MRM-1135
+            // MRM-1135
             connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
             connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
         }
@@ -72,6 +74,7 @@ public class EditProxyConnectorAction
     }
 
     public String commit()
+        throws RepositoryAdminException
     {
         validateConnector();
 
@@ -83,7 +86,7 @@ public class EditProxyConnectorAction
         String sourceId = connector.getSourceRepoId();
         String targetId = connector.getTargetRepoId();
 
-        ProxyConnectorConfiguration otherConnector = findProxyConnector( sourceId, targetId );
+        ProxyConnector otherConnector = findProxyConnector( sourceId, targetId );
         if ( otherConnector != null )
         {
             // Remove the previous connector.
@@ -95,12 +98,8 @@ public class EditProxyConnectorAction
             return INPUT;
         }
 
-        // MRM-1135
-        connector.setBlackListPatterns( unescapePatterns( connector.getBlackListPatterns() ) );
-        connector.setWhiteListPatterns( unescapePatterns( connector.getWhiteListPatterns() ) );
-        
         addProxyConnector( connector );
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     public String getSource()

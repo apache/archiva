@@ -485,6 +485,7 @@ public abstract class AbstractProxyConnectorFormAction
         }
     }
 
+    // FIXME remove
     public ArchivaConfiguration getArchivaConfiguration()
     {
         return archivaConfiguration;

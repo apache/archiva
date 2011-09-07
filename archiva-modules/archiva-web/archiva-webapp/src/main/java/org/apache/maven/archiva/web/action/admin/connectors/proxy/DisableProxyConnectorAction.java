@@ -1,6 +1,7 @@
 package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Controller;
 
 /**
  * DisableProxyConnectorAction
- *
  */
 @Controller( "disableProxyConnectorAction" )
 @Scope( "prototype" )
@@ -36,9 +36,10 @@ public class DisableProxyConnectorAction
 
     private String target;
 
-    private ProxyConnectorConfiguration proxyConfig;
+    private ProxyConnector proxyConfig;
 
     public String confirmDisable()
+        throws RepositoryAdminException
     {
         this.proxyConfig = findProxyConnector( source, target );
 
@@ -55,6 +56,7 @@ public class DisableProxyConnectorAction
     }
 
     public String disable()
+        throws RepositoryAdminException
     {
         this.proxyConfig = findProxyConnector( source, target );
 
@@ -79,7 +81,8 @@ public class DisableProxyConnectorAction
         setSource( null );
         setTarget( null );
 
-        return saveConfiguration();
+        getProxyConnectorAdmin().updateProxyConnector( proxyConfig, getAuditInformation() );
+        return SUCCESS;
     }
 
     public String getSource()

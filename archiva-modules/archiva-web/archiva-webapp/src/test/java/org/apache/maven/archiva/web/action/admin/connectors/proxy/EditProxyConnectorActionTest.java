@@ -20,6 +20,10 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
+import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -33,15 +37,15 @@ import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * EditProxyConnectorActionTest 
+ * EditProxyConnectorActionTest
  *
  * @version $Id$
  */
@@ -58,6 +62,51 @@ public class EditProxyConnectorActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        //action = (EditProxyConnectorAction) lookup( Action.class.getName(), "editProxyConnectorAction" );
+        action = (EditProxyConnectorAction) getActionProxy( "/admin/editProxyConnector.action" ).getAction();
+
+        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
+        action.setArchivaConfiguration( archivaConfiguration );
+
+        /* Configuration will be requested at least 3 times. */
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( new Configuration(), 3 );
+
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+    }
+
+    private void expectConfigurationRequests( int requestConfigCount )
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        expectConfigurationRequests( requestConfigCount, 1 );
+    }
+
+    private void expectConfigurationRequests( int requestConfigCount, int saveRequestCount )
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        Configuration config = createInitialConfiguration();
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( config, requestConfigCount );
+
+        for ( int i = 0; i <= saveRequestCount; i++ )
+        {
+            archivaConfiguration.save( config );
+        }
+    }
+
     public void testAddBlackListPattern()
         throws Exception
     {
@@ -68,7 +117,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         // Perform Test w/no values.
@@ -101,7 +150,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         // Perform Test w/no values.
@@ -136,7 +185,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         // Perform Test w/no values.
@@ -159,21 +208,23 @@ public class EditProxyConnectorActionTest
         assertEquals( 1, connector.getWhiteListPatterns().size() );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void testEditProxyConnectorCommit()
         throws Exception
     {
-        expectConfigurationRequests( 7 );
+        expectConfigurationRequests( 9, 2 );
         archivaConfigurationControl.replay();
 
         // Prepare Test.
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
         // forms will use an array
-        connector.getProperties().put( "eat-a", new String[] { "gramov-a-bits" } );
+        //connector.getProperties().put( "eat-a", new String[]{ "gramov-a-bits" } );
+        // FIXME check the array mode
+        connector.getProperties().put( "eat-a", "gramov-a-bits" );
 
         // Create the input screen.
         assertRequestStatus( action, Action.SUCCESS, "commit" );
@@ -203,7 +254,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         String status = action.input();
@@ -220,7 +271,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         // Add some arbitrary blacklist patterns.
@@ -268,7 +319,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         // Add some arbitrary properties.
@@ -316,7 +367,7 @@ public class EditProxyConnectorActionTest
         action.setSource( TEST_SOURCE_ID );
         action.setTarget( TEST_TARGET_ID );
         action.prepare();
-        ProxyConnectorConfiguration connector = action.getConnector();
+        ProxyConnector connector = action.getConnector();
         assertInitialProxyConnector( connector );
 
         // Add some arbitrary whitelist patterns.
@@ -365,7 +416,7 @@ public class EditProxyConnectorActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
-    private void assertInitialProxyConnector( ProxyConnectorConfiguration connector )
+    private void assertInitialProxyConnector( ProxyConnector connector )
     {
         assertNotNull( connector );
         assertNotNull( connector.getBlackListPatterns() );
@@ -376,7 +427,7 @@ public class EditProxyConnectorActionTest
         assertEquals( TEST_TARGET_ID, connector.getTargetRepoId() );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private Configuration createInitialConfiguration()
     {
         Configuration config = new Configuration();
@@ -397,7 +448,7 @@ public class EditProxyConnectorActionTest
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
         connector.setSourceRepoId( TEST_SOURCE_ID );
         connector.setTargetRepoId( TEST_TARGET_ID );
-        
+
         // TODO: Set these options programatically via list of available policies.
         Map<String, String> policies = connector.getPolicies();
         policies.put( "releases", new ReleasesPolicy().getDefaultOption() );
@@ -410,40 +461,5 @@ public class EditProxyConnectorActionTest
         config.addProxyConnector( connector );
 
         return config;
-    }
-
-    private void expectConfigurationRequests( int requestConfigCount )
-        throws RegistryException, IndeterminateConfigurationException
-    {
-        Configuration config = createInitialConfiguration();
-
-        for ( int i = 0; i < requestConfigCount; i++ )
-        {
-            archivaConfiguration.getConfiguration();
-            archivaConfigurationControl.setReturnValue( config );
-        }
-
-        archivaConfiguration.save( config );
-    }
-
-    @Override
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        //action = (EditProxyConnectorAction) lookup( Action.class.getName(), "editProxyConnectorAction" );
-        action = (EditProxyConnectorAction) getActionProxy( "/admin/editProxyConnector.action" ).getAction();
-
-        archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
-
-        /* Configuration will be requested at least 3 times. */
-        for ( int i = 0; i < 3; i++ )
-        {
-            archivaConfiguration.getConfiguration();
-            archivaConfigurationControl.setReturnValue( new Configuration() );
-        }
     }
 }

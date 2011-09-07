@@ -19,8 +19,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -61,8 +62,9 @@ public class SortProxyConnectorsAction
     }
 
     public String sortDown()
+        throws RepositoryAdminException
     {
-        List<ProxyConnectorConfiguration> connectors = createProxyConnectorMap().get( source );
+        List<ProxyConnector> connectors = createProxyConnectorMap().get( source );
 
         int idx = findTargetConnector( connectors, target );
 
@@ -72,12 +74,17 @@ public class SortProxyConnectorsAction
             decrementConnectorOrder( connectors, idx + 1 );
         }
 
-        return saveConfiguration();
+        for ( ProxyConnector proxyConnector : connectors )
+        {
+            getProxyConnectorAdmin().updateProxyConnector( proxyConnector, getAuditInformation() );
+        }
+        return SUCCESS;
     }
 
     public String sortUp()
+        throws RepositoryAdminException
     {
-        List<ProxyConnectorConfiguration> connectors = createProxyConnectorMap().get( source );
+        List<ProxyConnector> connectors = createProxyConnectorMap().get( source );
 
         int idx = findTargetConnector( connectors, target );
 
@@ -87,10 +94,14 @@ public class SortProxyConnectorsAction
             incrementConnectorOrder( connectors, idx - 1 );
         }
 
-        return saveConfiguration();
+        for ( ProxyConnector proxyConnector : connectors )
+        {
+            getProxyConnectorAdmin().updateProxyConnector( proxyConnector, getAuditInformation() );
+        }
+        return SUCCESS;
     }
 
-    private void decrementConnectorOrder( List<ProxyConnectorConfiguration> connectors, int idx )
+    private void decrementConnectorOrder( List<ProxyConnector> connectors, int idx )
     {
         if ( !validIndex( connectors, idx ) )
         {
@@ -102,7 +113,7 @@ public class SortProxyConnectorsAction
         connectors.get( idx ).setOrder( Math.max( 1, order - 1 ) );
     }
 
-    private int findTargetConnector( List<ProxyConnectorConfiguration> connectors, String targetRepoId )
+    private int findTargetConnector( List<ProxyConnector> connectors, String targetRepoId )
     {
         int idx = ( -1 );
 
@@ -118,7 +129,7 @@ public class SortProxyConnectorsAction
         return idx;
     }
 
-    private void incrementConnectorOrder( List<ProxyConnectorConfiguration> connectors, int idx )
+    private void incrementConnectorOrder( List<ProxyConnector> connectors, int idx )
     {
         if ( !validIndex( connectors, idx ) )
         {
@@ -130,7 +141,7 @@ public class SortProxyConnectorsAction
         connectors.get( idx ).setOrder( order + 1 );
     }
 
-    private boolean validIndex( List<ProxyConnectorConfiguration> connectors, int idx )
+    private boolean validIndex( List<ProxyConnector> connectors, int idx )
     {
         return ( idx >= 0 ) && ( idx < connectors.size() );
     }

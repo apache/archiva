@@ -464,6 +464,16 @@
         <groupId>net.sf.beanlib</groupId>
         <artifactId>beanlib</artifactId>
         <version>5.0.2beta</version>
+        <exclusions>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -564,6 +574,11 @@
             <artifactId>jta</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>jpox</groupId>
+        <artifactId>jpox-ehcache</artifactId>
+        <version>1.1.9</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -1244,9 +1259,10 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>jpox</groupId>
-        <artifactId>jpox-ehcache</artifactId>
-        <version>1.1.9</version>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.8.3</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
