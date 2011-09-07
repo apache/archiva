@@ -18,6 +18,7 @@ package org.apache.archiva.admin.repository.proxyconnector;
  * under the License.
  */
 
+import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
@@ -33,8 +34,11 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -150,8 +154,42 @@ public class DefaultProxyConnectorAdmin
         return rawPatterns;
     }
 
-    protected ProxyConnectorConfiguration findProxyConnector( String sourceId, String targetId,
-                                                              Configuration configuration )
+    public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
+        throws RepositoryAdminException
+    {
+        java.util.Map<String, List<ProxyConnector>> proxyConnectorMap =
+            new HashMap<String, java.util.List<ProxyConnector>>();
+
+        Iterator<ProxyConnector> it = getProxyConnectors().iterator();
+        while ( it.hasNext() )
+        {
+            ProxyConnector proxyConfig = it.next();
+            String key = proxyConfig.getSourceRepoId();
+
+            java.util.List<ProxyConnector> connectors = proxyConnectorMap.get( key );
+            if ( connectors == null )
+            {
+                connectors = new ArrayList<ProxyConnector>();
+                proxyConnectorMap.put( key, connectors );
+            }
+
+            connectors.add( proxyConfig );
+
+            Collections.sort( connectors, ProxyConnectorOrderComparator.getInstance() );
+        }
+
+        return proxyConnectorMap;
+    }
+
+    public ProxyConnector findProxyConnector( String sourceId, String targetId )
+        throws RepositoryAdminException
+    {
+        return getProxyConnector(
+            findProxyConnector( sourceId, targetId, getArchivaConfiguration().getConfiguration() ) );
+    }
+
+    private ProxyConnectorConfiguration findProxyConnector( String sourceId, String targetId,
+                                                            Configuration configuration )
     {
         if ( StringUtils.isBlank( sourceId ) )
         {
@@ -169,6 +207,7 @@ public class DefaultProxyConnectorAdmin
 
     protected ProxyConnectorConfiguration getProxyConnectorConfiguration( ProxyConnector proxyConnector )
     {
+        /*
         ProxyConnectorConfiguration proxyConnectorConfiguration = new ProxyConnectorConfiguration();
         proxyConnectorConfiguration.setOrder( proxyConnector.getOrder() );
         proxyConnectorConfiguration.setBlackListPatterns(
@@ -181,7 +220,13 @@ public class DefaultProxyConnectorAdmin
         proxyConnectorConfiguration.setProxyId( proxyConnector.getProxyId() );
         proxyConnectorConfiguration.setSourceRepoId( proxyConnector.getSourceRepoId() );
         proxyConnectorConfiguration.setTargetRepoId( proxyConnector.getTargetRepoId() );
-        return proxyConnectorConfiguration;
+        return proxyConnectorConfiguration;*/
+        return new BeanReplicator().replicateBean( proxyConnector, ProxyConnectorConfiguration.class );
+    }
+
+    protected ProxyConnector getProxyConnector( ProxyConnectorConfiguration proxyConnectorConfiguration )
+    {
+        return new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
     }
 
     protected void validateProxyConnector( ProxyConnector proxyConnector )

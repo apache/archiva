@@ -19,29 +19,25 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.registry.RegistryException;
-
-import java.util.List;
-import java.util.Map;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
 
 /**
- * AbstractProxyConnectorAction 
+ * AbstractProxyConnectorAction
  *
  * @version $Id$
  */
@@ -52,7 +48,13 @@ public abstract class AbstractProxyConnectorAction
     public static final String DIRECT_CONNECTION = "(direct connection)";
 
     @Inject
-    protected ArchivaConfiguration archivaConfiguration;
+    private ProxyConnectorAdmin proxyConnectorAdmin;
+
+    @Inject
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
@@ -65,17 +67,15 @@ public abstract class AbstractProxyConnectorAction
         return bundle;
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+
+    protected void addProxyConnector( ProxyConnector proxyConnector )
+        throws RepositoryAdminException
     {
-        this.archivaConfiguration = archivaConfiguration;
+        getProxyConnectorAdmin().addProxyConnector( proxyConnector, getAuditInformation() );
     }
 
-    protected void addProxyConnector( ProxyConnectorConfiguration proxyConnector )
-    {
-        getConfig().addProxyConnector( proxyConnector );
-    }
-
-    protected ProxyConnectorConfiguration findProxyConnector( String sourceId, String targetId )
+    protected ProxyConnector findProxyConnector( String sourceId, String targetId )
+        throws RepositoryAdminException
     {
         if ( StringUtils.isBlank( sourceId ) )
         {
@@ -87,50 +87,59 @@ public abstract class AbstractProxyConnectorAction
             return null;
         }
 
-        ProxyConnectorSelectionPredicate selectedProxy = new ProxyConnectorSelectionPredicate( sourceId, targetId );
-        return (ProxyConnectorConfiguration) CollectionUtils.find( getConfig().getProxyConnectors(), selectedProxy );
+        return getProxyConnectorAdmin().findProxyConnector( sourceId, targetId );
     }
 
-    protected Configuration getConfig()
+    protected Map<String, List<ProxyConnector>> createProxyConnectorMap()
+        throws RepositoryAdminException
     {
-        return this.archivaConfiguration.getConfiguration();
-    }
-
-    protected Map<String, List<ProxyConnectorConfiguration>> createProxyConnectorMap()
-    {
-        return getConfig().getProxyConnectorAsMap();
+        return getProxyConnectorAdmin().getProxyConnectorAsMap();
     }
 
     protected void removeConnector( String sourceId, String targetId )
+        throws RepositoryAdminException
     {
-        ProxyConnectorSelectionPredicate selectedProxy = new ProxyConnectorSelectionPredicate( sourceId, targetId );
-        NotPredicate notSelectedProxy = new NotPredicate( selectedProxy );
-        CollectionUtils.filter( getConfig().getProxyConnectors(), notSelectedProxy );
+        ProxyConnector proxyConnector = findProxyConnector( sourceId, targetId );
+        if ( proxyConnector != null )
+        {
+            getProxyConnectorAdmin().deleteProxyConnector( proxyConnector, getAuditInformation() );
+        }
     }
 
-    protected void removeProxyConnector( ProxyConnectorConfiguration connector )
+    protected void removeProxyConnector( ProxyConnector connector )
+        throws RepositoryAdminException
     {
-        getConfig().removeProxyConnector( connector );
+        getProxyConnectorAdmin().deleteProxyConnector( connector, getAuditInformation() );
     }
 
-    protected String saveConfiguration()
-    {
-        try
-        {
-            archivaConfiguration.save( getConfig() );
-            addActionMessage( "Successfully saved configuration" );
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Unable to save configuration: " + e.getMessage() );
-            return INPUT;
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            addActionError( e.getMessage() );
-            return INPUT;
-        }
 
-        return SUCCESS;
+    public ProxyConnectorAdmin getProxyConnectorAdmin()
+    {
+        return proxyConnectorAdmin;
+    }
+
+    public void setProxyConnectorAdmin( ProxyConnectorAdmin proxyConnectorAdmin )
+    {
+        this.proxyConnectorAdmin = proxyConnectorAdmin;
+    }
+
+    public RemoteRepositoryAdmin getRemoteRepositoryAdmin()
+    {
+        return remoteRepositoryAdmin;
+    }
+
+    public void setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
+    {
+        this.remoteRepositoryAdmin = remoteRepositoryAdmin;
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }

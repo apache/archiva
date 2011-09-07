@@ -23,6 +23,7 @@ import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -43,5 +44,8 @@ public interface RemoteRepositoryAdmin
         throws RepositoryAdminException;
 
     Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException;
 }

@@ -19,27 +19,26 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Lists;
-import org.apache.archiva.audit.AuditListener;
+import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;
 import org.apache.maven.archiva.policies.Policy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 
-import com.opensymphony.xwork2.Preparable;
-
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * AbstractProxyConnectorFormAction - generic fields and methods for either add or edit actions related with the 
- * Proxy Connector. 
+ * AbstractProxyConnectorFormAction - generic fields and methods for either add or edit actions related with the
+ * Proxy Connector.
  *
  * @version $Id$
  */
@@ -94,8 +93,10 @@ public abstract class AbstractProxyConnectorFormAction
     /**
      * The model for this action.
      */
-    protected ProxyConnectorConfiguration connector;
+    protected ProxyConnector connector;
 
+    @Inject
+    private ArchivaConfiguration archivaConfiguration;
 
     @PostConstruct
     public void initialize()
@@ -107,38 +108,38 @@ public abstract class AbstractProxyConnectorFormAction
     }
 
     protected List<String> escapePatterns( List<String> patterns )
-    {   
+    {
         List<String> escapedPatterns = new ArrayList<String>();
-        if( patterns != null )
+        if ( patterns != null )
         {
-            for( String pattern : patterns )
+            for ( String pattern : patterns )
             {
                 escapedPatterns.add( StringUtils.replace( pattern, "\\", "\\\\" ) );
             }
         }
-        
+
         return escapedPatterns;
     }
-    
+
     protected List<String> unescapePatterns( List<String> patterns )
     {
         List<String> rawPatterns = new ArrayList<String>();
-        if( patterns != null )
+        if ( patterns != null )
         {
-            for( String pattern : patterns )
+            for ( String pattern : patterns )
             {
                 rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
             }
         }
-        
+
         return rawPatterns;
     }
-    
+
     private String escapePattern( String pattern )
     {
         return StringUtils.replace( pattern, "\\", "\\\\" );
     }
-        
+
     public String addBlackListPattern()
     {
         String pattern = getBlackListPattern();
@@ -147,17 +148,17 @@ public abstract class AbstractProxyConnectorFormAction
         {
             addActionError( "Cannot add a blank black list pattern." );
         }
-        
+
         if ( !hasActionErrors() )
         {
             getConnector().getBlackListPatterns().add( escapePattern( pattern ) );
             setBlackListPattern( null );
         }
-        
+
         return INPUT;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public String addProperty()
     {
         String key = getPropertyKey();
@@ -197,7 +198,7 @@ public abstract class AbstractProxyConnectorFormAction
             getConnector().getWhiteListPatterns().add( escapePattern( pattern ) );
             setWhiteListPattern( null );
         }
-        
+
         return INPUT;
     }
 
@@ -206,7 +207,7 @@ public abstract class AbstractProxyConnectorFormAction
         return blackListPattern;
     }
 
-    public ProxyConnectorConfiguration getConnector()
+    public ProxyConnector getConnector()
     {
         return connector;
     }
@@ -252,6 +253,7 @@ public abstract class AbstractProxyConnectorFormAction
     }
 
     public void prepare()
+        throws RepositoryAdminException
     {
         proxyIdOptions = createNetworkProxyOptions();
         managedRepoIdList = createManagedRepoOptions();
@@ -262,14 +264,14 @@ public abstract class AbstractProxyConnectorFormAction
     public String removeBlackListPattern()
     {
         String pattern = getPattern();
-        
+
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot remove a blank black list pattern." );
         }
 
-        if ( !getConnector().getBlackListPatterns().contains( pattern ) && 
-            !getConnector().getBlackListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
+        if ( !getConnector().getBlackListPatterns().contains( pattern )
+            && !getConnector().getBlackListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant black list pattern [" + pattern + "], no black list pattern removed." );
         }
@@ -319,8 +321,8 @@ public abstract class AbstractProxyConnectorFormAction
             addActionError( "Cannot remove a blank white list pattern." );
         }
 
-        if ( !getConnector().getWhiteListPatterns().contains( pattern ) &&
-                !getConnector().getWhiteListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
+        if ( !getConnector().getWhiteListPatterns().contains( pattern )
+            && !getConnector().getWhiteListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant white list pattern [" + pattern + "], no white list pattern removed." );
         }
@@ -341,7 +343,7 @@ public abstract class AbstractProxyConnectorFormAction
         this.blackListPattern = blackListPattern;
     }
 
-    public void setConnector( ProxyConnectorConfiguration connector )
+    public void setConnector( ProxyConnector connector )
     {
         this.connector = connector;
     }
@@ -387,8 +389,9 @@ public abstract class AbstractProxyConnectorFormAction
     }
 
     protected List<String> createManagedRepoOptions()
+        throws RepositoryAdminException
     {
-        return new ArrayList<String>( getConfig().getManagedRepositoriesAsMap().keySet() );
+        return new ArrayList<String>( getManagedRepositoryAdmin().getManagedRepositoriesAsMap().keySet() );
     }
 
     protected List<String> createNetworkProxyOptions()
@@ -396,7 +399,7 @@ public abstract class AbstractProxyConnectorFormAction
         List<String> options = new ArrayList<String>();
 
         options.add( DIRECT_CONNECTION );
-        options.addAll( getConfig().getNetworkProxiesAsMap().keySet() );
+        options.addAll( archivaConfiguration.getConfiguration().getNetworkProxiesAsMap().keySet() );
 
         return options;
     }
@@ -413,11 +416,12 @@ public abstract class AbstractProxyConnectorFormAction
     }
 
     protected List<String> createRemoteRepoOptions()
+        throws RepositoryAdminException
     {
-        return new ArrayList<String>( getConfig().getRemoteRepositoriesAsMap().keySet() );
+        return new ArrayList<String>( getRemoteRepositoryAdmin().getRemoteRepositoriesAsMap().keySet() );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     protected void validateConnector()
     {
         if ( connector.getPolicies() == null )
@@ -439,8 +443,8 @@ public abstract class AbstractProxyConnectorFormAction
                     continue;
                 }
 
-                Map<String, Object> properties = connector.getProperties();
-                for ( Map.Entry<String, Object> entry2 : properties.entrySet())
+                Map<String, String> properties = connector.getProperties();
+                for ( Map.Entry<String, String> entry2 : properties.entrySet() )
                 {
                     Object value = entry2.getValue();
                     if ( value.getClass().isArray() )
@@ -473,11 +477,21 @@ public abstract class AbstractProxyConnectorFormAction
 
                 if ( !options.contains( value ) )
                 {
-                    addActionError( "Value of [" + value + "] is invalid for policy [" + policyId + "], valid values: "
-                        + options );
+                    addActionError(
+                        "Value of [" + value + "] is invalid for policy [" + policyId + "], valid values: " + options );
                     continue;
                 }
             }
         }
+    }
+
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }

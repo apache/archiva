@@ -22,6 +22,7 @@ import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * No update method here as id is : sourceRepoId and targetRepoId, use delete then add.
@@ -41,6 +42,12 @@ public interface ProxyConnectorAdmin
         throws RepositoryAdminException;
 
     Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
+        throws RepositoryAdminException;
+
+    ProxyConnector findProxyConnector( String sourceId, String targetId )
         throws RepositoryAdminException;
 
 }

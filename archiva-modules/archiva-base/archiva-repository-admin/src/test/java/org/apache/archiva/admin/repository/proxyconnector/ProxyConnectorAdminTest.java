@@ -23,6 +23,8 @@ import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * @author Olivier Lamy
  */
@@ -81,12 +83,15 @@ public class ProxyConnectorAdminTest
         ProxyConnector proxyConnector = new ProxyConnector();
         proxyConnector.setSourceRepoId( "snapshots" );
         proxyConnector.setTargetRepoId( "central" );
+        proxyConnector.setWhiteListPatterns( Arrays.asList( "foo", "bar" ) );
         proxyConnectorAdmin.addProxyConnector( proxyConnector, getFakeAuditInformation() );
 
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
         assertEquals( 3, proxyConnectorAdmin.getProxyConnectors().size() );
 
         assertNotNull( proxyConnectorAdmin.getProxyConnector( "snapshots", "central" ) );
+        assertEquals( Arrays.asList( "foo", "bar" ),
+                      proxyConnectorAdmin.getProxyConnector( "snapshots", "central" ).getWhiteListPatterns() );
 
         proxyConnectorAdmin.deleteProxyConnector( proxyConnector, getFakeAuditInformation() );
 
@@ -121,6 +126,14 @@ public class ProxyConnectorAdminTest
 
         remoteRepositoryAdmin.deleteRemoteRepository( remoteRepository.getId(), getFakeAuditInformation() );
         mockAuditListener.clearEvents();
+    }
+
+    @Test
+    public void findProxyConnector()
+        throws Exception
+    {
+        ProxyConnector proxyConnector = proxyConnectorAdmin.findProxyConnector( "internal", "central" );
+        assertNotNull( proxyConnector );
     }
 
 }

@@ -1,5 +1,4 @@
-package org.apache.maven.archiva.configuration.functors;
-
+package org.apache.archiva.admin.repository.proxyconnector;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +8,7 @@ package org.apache.maven.archiva.configuration.functors;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -21,11 +20,10 @@ package org.apache.maven.archiva.configuration.functors;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 
 /**
- * ProxyConnectorPredicate
- * @version $Id$
+ * @author Olivier Lamy
+ * @since 1.4
  */
 public class ProxyConnectorSelectionPredicate
     implements Predicate
@@ -44,14 +42,13 @@ public class ProxyConnectorSelectionPredicate
     {
         boolean satisfies = false;
 
-        if ( object instanceof ProxyConnectorConfiguration )
+        if ( object instanceof ProxyConnector )
         {
-            ProxyConnectorConfiguration connector = (ProxyConnectorConfiguration) object;
-            return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils
-                .equals( targetId, connector.getTargetRepoId() ) );
+            ProxyConnector connector = (ProxyConnector) object;
+            return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils.equals( targetId,
+                                                                                                        connector.getTargetRepoId() ) );
         }
 
         return satisfies;
     }
-
 }

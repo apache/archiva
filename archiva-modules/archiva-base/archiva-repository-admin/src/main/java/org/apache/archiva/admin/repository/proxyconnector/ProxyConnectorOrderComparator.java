@@ -1,5 +1,4 @@
-package org.apache.maven.archiva.configuration.functors;
-
+package org.apache.archiva.admin.repository.proxyconnector;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +8,7 @@ package org.apache.maven.archiva.configuration.functors;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,22 +18,18 @@ package org.apache.maven.archiva.configuration.functors;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-
 import java.util.Comparator;
 
 /**
- * @deprecated
- * ProxyConnectorConfigurationOrderComparator 
- *
- * @version $Id$
+ * @author Olivier Lamy
+ * @since 1.4
  */
-public class ProxyConnectorConfigurationOrderComparator
-    implements Comparator<ProxyConnectorConfiguration>
+public class ProxyConnectorOrderComparator
+    implements Comparator<ProxyConnector>
 {
-    private static ProxyConnectorConfigurationOrderComparator INSTANCE = new ProxyConnectorConfigurationOrderComparator();
-    
-    public int compare( ProxyConnectorConfiguration o1, ProxyConnectorConfiguration o2 )
+    private static ProxyConnectorOrderComparator INSTANCE = new ProxyConnectorOrderComparator();
+
+    public int compare( ProxyConnector o1, ProxyConnector o2 )
     {
         if ( o1 == null && o2 == null )
         {
@@ -57,7 +52,7 @@ public class ProxyConnectorConfigurationOrderComparator
         {
             return 1;
         }
-        
+
         if ( o1.getOrder() != 0 && o2.getOrder() == 0 )
         {
             return -1;
@@ -66,7 +61,7 @@ public class ProxyConnectorConfigurationOrderComparator
         return o1.getOrder() - o2.getOrder();
     }
 
-    public static ProxyConnectorConfigurationOrderComparator getInstance()
+    public static ProxyConnectorOrderComparator getInstance()
     {
         return INSTANCE;
     }

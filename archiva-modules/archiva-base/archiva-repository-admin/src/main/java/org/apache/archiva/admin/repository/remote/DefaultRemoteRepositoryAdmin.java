@@ -29,7 +29,9 @@ import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -157,6 +159,19 @@ public class DefaultRemoteRepositoryAdmin
         saveConfiguration( configuration );
 
         return Boolean.TRUE;
+    }
+
+    public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
+        throws RepositoryAdminException
+    {
+        java.util.Map<String, RemoteRepository> map = new HashMap<String, RemoteRepository>();
+
+        for ( RemoteRepository repo : getRemoteRepositories() )
+        {
+            map.put( repo.getId(), repo );
+        }
+
+        return map;
     }
 
     private RemoteRepositoryConfiguration getRemoteRepositoryConfiguration( RemoteRepository remoteRepository )
