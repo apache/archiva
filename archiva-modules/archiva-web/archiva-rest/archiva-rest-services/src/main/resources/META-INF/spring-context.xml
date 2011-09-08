@@ -54,6 +54,7 @@
       <ref bean="remoteRepositoriesService#rest"/>
       <ref bean="repositoryGroupService#rest"/>
       <ref bean="proxyConnectorService#rest"/>
+      <ref bean="networkProxyService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>
