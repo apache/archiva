@@ -20,9 +20,9 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.repository.networkproxy.NetworkProxy;
+import org.apache.archiva.admin.repository.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
@@ -47,14 +47,14 @@ public class NetworkProxiesAction
 {
 
     @Inject
-    private ArchivaConfiguration configuration;
+    private NetworkProxyAdmin networkProxyAdmin;
 
-    private List<NetworkProxyConfiguration> networkProxies;
+    private List<NetworkProxy> networkProxies;
 
     public void prepare()
         throws Exception
     {
-        networkProxies = configuration.getConfiguration().getNetworkProxies();
+        networkProxies = getNetworkProxyAdmin().getNetworkProxies();
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -68,13 +68,23 @@ public class NetworkProxiesAction
         return bundle;
     }
 
-    public List<NetworkProxyConfiguration> getNetworkProxies()
+    public List<NetworkProxy> getNetworkProxies()
     {
         return networkProxies;
     }
 
-    public void setNetworkProxies( List<NetworkProxyConfiguration> networkProxies )
+    public void setNetworkProxies( List<NetworkProxy> networkProxies )
     {
         this.networkProxies = networkProxies;
+    }
+
+    public NetworkProxyAdmin getNetworkProxyAdmin()
+    {
+        return networkProxyAdmin;
+    }
+
+    public void setNetworkProxyAdmin( NetworkProxyAdmin networkProxyAdmin )
+    {
+        this.networkProxyAdmin = networkProxyAdmin;
     }
 }
