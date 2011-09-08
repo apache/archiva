@@ -20,17 +20,18 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  */
 
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
+import junit.framework.TestCase;
+import org.apache.archiva.admin.repository.admin.LegacyArtifactPath;
+import org.apache.archiva.web.validator.utils.ValidatorUtil;
+import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-import org.apache.maven.archiva.configuration.LegacyArtifactPath;
-import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
-import org.apache.archiva.web.validator.utils.ValidatorUtil;
-
-public class AddLegacyArtifactPathActionTest extends TestCase
+public class AddLegacyArtifactPathActionTest
+    extends TestCase
 {
     private static final String EMPTY_STRING = "";
 
@@ -66,26 +67,29 @@ public class AddLegacyArtifactPathActionTest extends TestCase
     private ActionValidatorManager actionValidatorManager;
 
     @Override
-    public void setUp() throws Exception
+    public void setUp()
+        throws Exception
     {
         addLegacyArtifactPathAction = new AddLegacyArtifactPathAction();
-        
+
         DefaultActionValidatorManagerFactory factory = new DefaultActionValidatorManagerFactory();
 
         actionValidatorManager = factory.createDefaultActionValidatorManager();
     }
 
-    public void testStruts2ValidationFrameworkWithNullInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithNullInputs()
+        throws Exception
     {
         // prep
-        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath(null);
-        populateAddLegacyArtifactPathActionFields(addLegacyArtifactPathAction, legacyArtifactPath, null, null, null, null, null);
+        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath( null );
+        populateAddLegacyArtifactPathActionFields( addLegacyArtifactPathAction, legacyArtifactPath, null, null, null,
+                                                   null, null );
 
         // test
-        actionValidatorManager.validate(addLegacyArtifactPathAction, EMPTY_STRING);
+        actionValidatorManager.validate( addLegacyArtifactPathAction, EMPTY_STRING );
 
         // verify
-        assertTrue(addLegacyArtifactPathAction.hasFieldErrors());
+        assertTrue( addLegacyArtifactPathAction.hasFieldErrors() );
 
         Map<String, List<String>> fieldErrors = addLegacyArtifactPathAction.getFieldErrors();
 
@@ -94,39 +98,41 @@ public class AddLegacyArtifactPathActionTest extends TestCase
 
         // populate
         List<String> expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a legacy path.");
-        expectedFieldErrors.put("legacyArtifactPath.path", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a legacy path." );
+        expectedFieldErrors.put( "legacyArtifactPath.path", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a groupId.");
-        expectedFieldErrors.put("groupId", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a groupId." );
+        expectedFieldErrors.put( "groupId", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter an artifactId.");
-        expectedFieldErrors.put("artifactId", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter an artifactId." );
+        expectedFieldErrors.put( "artifactId", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a version.");
-        expectedFieldErrors.put("version", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a version." );
+        expectedFieldErrors.put( "version", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a type.");
-        expectedFieldErrors.put("type", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a type." );
+        expectedFieldErrors.put( "type", expectedErrorMessages );
 
-        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+        ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
-    public void testStruts2ValidationFrameworkWithBlankInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithBlankInputs()
+        throws Exception
     {
         // prep
-        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath(EMPTY_STRING);
-        populateAddLegacyArtifactPathActionFields(addLegacyArtifactPathAction, legacyArtifactPath, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
+        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath( EMPTY_STRING );
+        populateAddLegacyArtifactPathActionFields( addLegacyArtifactPathAction, legacyArtifactPath, EMPTY_STRING,
+                                                   EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING );
 
         // test
-        actionValidatorManager.validate(addLegacyArtifactPathAction, EMPTY_STRING);
+        actionValidatorManager.validate( addLegacyArtifactPathAction, EMPTY_STRING );
 
         // verify
-        assertTrue(addLegacyArtifactPathAction.hasFieldErrors());
+        assertTrue( addLegacyArtifactPathAction.hasFieldErrors() );
 
         Map<String, List<String>> fieldErrors = addLegacyArtifactPathAction.getFieldErrors();
 
@@ -135,39 +141,43 @@ public class AddLegacyArtifactPathActionTest extends TestCase
 
         // populate
         List<String> expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a legacy path.");
-        expectedFieldErrors.put("legacyArtifactPath.path", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a legacy path." );
+        expectedFieldErrors.put( "legacyArtifactPath.path", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a groupId.");
-        expectedFieldErrors.put("groupId", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a groupId." );
+        expectedFieldErrors.put( "groupId", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter an artifactId.");
-        expectedFieldErrors.put("artifactId", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter an artifactId." );
+        expectedFieldErrors.put( "artifactId", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a version.");
-        expectedFieldErrors.put("version", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a version." );
+        expectedFieldErrors.put( "version", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("You must enter a type.");
-        expectedFieldErrors.put("type", expectedErrorMessages);
+        expectedErrorMessages.add( "You must enter a type." );
+        expectedFieldErrors.put( "type", expectedErrorMessages );
 
-        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+        ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
-    public void testStruts2ValidationFrameworkWithInvalidInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithInvalidInputs()
+        throws Exception
     {
         // prep
-        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath(LEGACY_ARTIFACT_PATH_PATH_INVALID_INPUT);
-        populateAddLegacyArtifactPathActionFields(addLegacyArtifactPathAction, legacyArtifactPath, GROUP_ID_INVALID_INPUT, ARTIFACT_ID_INVALID_INPUT, VERSION_INVALID_INPUT, CLASSIFIER_INVALID_INPUT, TYPE_INVALID_INPUT);
+        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath( LEGACY_ARTIFACT_PATH_PATH_INVALID_INPUT );
+        populateAddLegacyArtifactPathActionFields( addLegacyArtifactPathAction, legacyArtifactPath,
+                                                   GROUP_ID_INVALID_INPUT, ARTIFACT_ID_INVALID_INPUT,
+                                                   VERSION_INVALID_INPUT, CLASSIFIER_INVALID_INPUT,
+                                                   TYPE_INVALID_INPUT );
 
         // test
-        actionValidatorManager.validate(addLegacyArtifactPathAction, EMPTY_STRING);
+        actionValidatorManager.validate( addLegacyArtifactPathAction, EMPTY_STRING );
 
         // verify
-        assertTrue(addLegacyArtifactPathAction.hasFieldErrors());
+        assertTrue( addLegacyArtifactPathAction.hasFieldErrors() );
 
         Map<String, List<String>> fieldErrors = addLegacyArtifactPathAction.getFieldErrors();
 
@@ -176,59 +186,71 @@ public class AddLegacyArtifactPathActionTest extends TestCase
 
         // populate
         List<String> expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-).");
-        expectedFieldErrors.put("legacyArtifactPath.path", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
+        expectedFieldErrors.put( "legacyArtifactPath.path", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).");
-        expectedFieldErrors.put("groupId", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        expectedFieldErrors.put( "groupId", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).");
-        expectedFieldErrors.put("artifactId", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        expectedFieldErrors.put( "artifactId", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).");
-        expectedFieldErrors.put("version", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        expectedFieldErrors.put( "version", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).");
-        expectedFieldErrors.put("classifier", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        expectedFieldErrors.put( "classifier", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add("Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).");
-        expectedFieldErrors.put("type", expectedErrorMessages);
+        expectedErrorMessages.add(
+            "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        expectedFieldErrors.put( "type", expectedErrorMessages );
 
-        ValidatorUtil.assertFieldErrors(expectedFieldErrors, fieldErrors);
+        ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
-    public void testStruts2ValidationFrameworkWithValidInputs() throws Exception
+    public void testStruts2ValidationFrameworkWithValidInputs()
+        throws Exception
     {
         // prep
-        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath(LEGACY_ARTIFACT_PATH_PATH_VALID_INPUT);
-        populateAddLegacyArtifactPathActionFields(addLegacyArtifactPathAction, legacyArtifactPath, GROUP_ID_VALID_INPUT, ARTIFACT_ID_VALID_INPUT, VERSION_VALID_INPUT, CLASSIFIER_VALID_INPUT, TYPE_VALID_INPUT);
+        LegacyArtifactPath legacyArtifactPath = createLegacyArtifactPath( LEGACY_ARTIFACT_PATH_PATH_VALID_INPUT );
+        populateAddLegacyArtifactPathActionFields( addLegacyArtifactPathAction, legacyArtifactPath,
+                                                   GROUP_ID_VALID_INPUT, ARTIFACT_ID_VALID_INPUT, VERSION_VALID_INPUT,
+                                                   CLASSIFIER_VALID_INPUT, TYPE_VALID_INPUT );
 
         // test
-        actionValidatorManager.validate(addLegacyArtifactPathAction, EMPTY_STRING);
+        actionValidatorManager.validate( addLegacyArtifactPathAction, EMPTY_STRING );
 
         // verify
-        assertFalse(addLegacyArtifactPathAction.hasFieldErrors());
+        assertFalse( addLegacyArtifactPathAction.hasFieldErrors() );
     }
 
-    private LegacyArtifactPath createLegacyArtifactPath(String path)
+    private LegacyArtifactPath createLegacyArtifactPath( String path )
     {
         LegacyArtifactPath legacyArtifactPath = new LegacyArtifactPath();
-        legacyArtifactPath.setPath(path);
+        legacyArtifactPath.setPath( path );
         return legacyArtifactPath;
     }
 
-    private void populateAddLegacyArtifactPathActionFields(AddLegacyArtifactPathAction addLegacyArtifactPathAction, LegacyArtifactPath legacyArtifactPath, String groupId, String artifactId, String version, String classifier, String type)
+    private void populateAddLegacyArtifactPathActionFields( AddLegacyArtifactPathAction addLegacyArtifactPathAction,
+                                                            LegacyArtifactPath legacyArtifactPath, String groupId,
+                                                            String artifactId, String version, String classifier,
+                                                            String type )
     {
-        addLegacyArtifactPathAction.setLegacyArtifactPath(legacyArtifactPath);
-        addLegacyArtifactPathAction.setGroupId(groupId);
-        addLegacyArtifactPathAction.setArtifactId(artifactId);
-        addLegacyArtifactPathAction.setVersion(version);
-        addLegacyArtifactPathAction.setClassifier(classifier);
-        addLegacyArtifactPathAction.setType(type);
+        addLegacyArtifactPathAction.setLegacyArtifactPath( legacyArtifactPath );
+        addLegacyArtifactPathAction.setGroupId( groupId );
+        addLegacyArtifactPathAction.setArtifactId( artifactId );
+        addLegacyArtifactPathAction.setVersion( version );
+        addLegacyArtifactPathAction.setClassifier( classifier );
+        addLegacyArtifactPathAction.setType( type );
     }
 }

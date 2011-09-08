@@ -19,17 +19,13 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.LegacyArtifactPath;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
-import org.codehaus.plexus.registry.RegistryException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.inject.Inject;
-import java.util.Iterator;
 
 /**
  * Delete a LegacyArtifactPath to archiva configuration
@@ -43,44 +39,22 @@ public class DeleteLegacyArtifactPathAction
 {
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private ArchivaAdministration archivaAdministration;
 
     private String path;
 
     public String delete()
     {
         log.info( "remove [" + path + "] from legacy artifact path resolution" );
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        for ( Iterator<LegacyArtifactPath> iterator = configuration.getLegacyArtifactPaths().iterator();
-              iterator.hasNext(); )
-        {
-            LegacyArtifactPath legacyArtifactPath = (LegacyArtifactPath) iterator.next();
-            if ( legacyArtifactPath.match( path ) )
-            {
-                iterator.remove();
-            }
-        }
-        return saveConfiguration( configuration );
-    }
-
-    protected String saveConfiguration( Configuration configuration )
-    {
         try
         {
-            archivaConfiguration.save( configuration );
-            addActionMessage( "Successfully saved configuration" );
+            getArchivaAdministration().deleteLegacyArtifactPath( path );
         }
-        catch ( IndeterminateConfigurationException e )
+        catch ( RepositoryAdminException e )
         {
-            addActionError( e.getMessage() );
-            return INPUT;
+            log.error( e.getMessage(), e );
+            addActionError( "Exception during delete " + e.getMessage() );
         }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
-            return INPUT;
-        }
-
         return SUCCESS;
     }
 
@@ -92,5 +66,15 @@ public class DeleteLegacyArtifactPathAction
     public void setPath( String path )
     {
         this.path = path;
+    }
+
+    public ArchivaAdministration getArchivaAdministration()
+    {
+        return archivaAdministration;
+    }
+
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
+    {
+        this.archivaAdministration = archivaAdministration;
     }
 }

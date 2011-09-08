@@ -20,12 +20,12 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.admin.repository.admin.LegacyArtifactPath;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.LegacyArtifactPath;
-import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.archiva.web.util.ContextUtils;
+import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
@@ -52,7 +52,7 @@ public class LegacyArtifactPathAction
 {
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private ArchivaAdministration archivaAdministration;
 
     private List<LegacyArtifactPath> legacyArtifactPaths;
 
@@ -79,10 +79,9 @@ public class LegacyArtifactPathAction
     }
 
     public void prepare()
+        throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        legacyArtifactPaths = new ArrayList<LegacyArtifactPath>( config.getLegacyArtifactPaths() );
+        legacyArtifactPaths = new ArrayList<LegacyArtifactPath>( getArchivaAdministration().getLegacyArtifactPaths() );
     }
 
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
@@ -93,5 +92,15 @@ public class LegacyArtifactPathAction
     public String getBaseUrl()
     {
         return baseUrl;
+    }
+
+    public ArchivaAdministration getArchivaAdministration()
+    {
+        return archivaAdministration;
+    }
+
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
+    {
+        this.archivaAdministration = archivaAdministration;
     }
 }

@@ -19,17 +19,14 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.LegacyArtifactPath;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.codehaus.plexus.registry.RegistryException;
-
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.admin.repository.admin.LegacyArtifactPath;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -50,10 +47,10 @@ public class AddLegacyArtifactPathAction
 {
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private ArchivaAdministration archivaAdministration;
 
     @Inject
-    @Named(value = "managedRepositoryContent#legacy")
+    @Named( value = "managedRepositoryContent#legacy" )
     private ManagedRepositoryContent repositoryContent;
 
 
@@ -82,28 +79,36 @@ public class AddLegacyArtifactPathAction
 
     public String commit()
     {
-        this.legacyArtifactPath.setArtifact( this.groupId + ":" + this.artifactId + ":" + this.version + ":" +
-            this.classifier + ":" + this.type );
+        this.legacyArtifactPath.setArtifact(
+            this.groupId + ":" + this.artifactId + ":" + this.version + ":" + this.classifier + ":" + this.type );
 
         // Check the proposed Artifact macthes the path
         ArtifactReference artifact = new ArtifactReference();
 
-		artifact.setGroupId( this.groupId );
-		artifact.setArtifactId( this.artifactId );
-		artifact.setClassifier( this.classifier );
-		artifact.setVersion( this.version );
-		artifact.setType( this.type );
+        artifact.setGroupId( this.groupId );
+        artifact.setArtifactId( this.artifactId );
+        artifact.setClassifier( this.classifier );
+        artifact.setVersion( this.version );
+        artifact.setType( this.type );
 
         String path = repositoryContent.toPath( artifact );
-        if ( ! path.equals( this.legacyArtifactPath.getPath() ) )
+        if ( !path.equals( this.legacyArtifactPath.getPath() ) )
         {
             addActionError( "artifact reference does not match the initial path : " + path );
             return ERROR;
         }
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        configuration.addLegacyArtifactPath( legacyArtifactPath );
-        return saveConfiguration( configuration );
+        try
+        {
+            getArchivaAdministration().addLegacyArtifactPath( legacyArtifactPath );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            addActionError( "Error occured " + e.getMessage() );
+            return INPUT;
+        }
+        return SUCCESS;
     }
 
     public LegacyArtifactPath getLegacyArtifactPath()
@@ -122,55 +127,34 @@ public class AddLegacyArtifactPathAction
         trimAllRequestParameterValues();
     }
 
-    protected String saveConfiguration( Configuration configuration )
-    {
-        try
-        {
-            archivaConfiguration.save( configuration );
-            addActionMessage( "Successfully saved configuration" );
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            addActionError( e.getMessage() );
-            return INPUT;
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
-            return INPUT;
-        }
-
-        return SUCCESS;
-    }
-
     private void trimAllRequestParameterValues()
     {
-        if(StringUtils.isNotEmpty(legacyArtifactPath.getPath()))
+        if ( StringUtils.isNotEmpty( legacyArtifactPath.getPath() ) )
         {
-            legacyArtifactPath.setPath(legacyArtifactPath.getPath().trim());
+            legacyArtifactPath.setPath( legacyArtifactPath.getPath().trim() );
         }
 
-        if(StringUtils.isNotEmpty(groupId))
+        if ( StringUtils.isNotEmpty( groupId ) )
         {
             groupId = groupId.trim();
         }
 
-        if(StringUtils.isNotEmpty(artifactId))
+        if ( StringUtils.isNotEmpty( artifactId ) )
         {
             artifactId = artifactId.trim();
         }
 
-        if(StringUtils.isNotEmpty(version))
+        if ( StringUtils.isNotEmpty( version ) )
         {
             version = version.trim();
         }
 
-        if(StringUtils.isNotEmpty(classifier))
+        if ( StringUtils.isNotEmpty( classifier ) )
         {
             classifier = classifier.trim();
         }
 
-        if(StringUtils.isNotEmpty(type))
+        if ( StringUtils.isNotEmpty( type ) )
         {
             type = type.trim();
         }
@@ -224,5 +208,15 @@ public class AddLegacyArtifactPathAction
     public void setType( String type )
     {
         this.type = type;
+    }
+
+    public ArchivaAdministration getArchivaAdministration()
+    {
+        return archivaAdministration;
+    }
+
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
+    {
+        this.archivaAdministration = archivaAdministration;
     }
 }
