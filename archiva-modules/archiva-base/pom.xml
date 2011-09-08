@@ -30,22 +30,22 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>archiva-checksum</module>
     <module>archiva-common</module>
+    <module>archiva-model</module>
+    <module>archiva-configuration</module>
+    <module>archiva-checksum</module>
     <module>archiva-plexus-bridge</module>
     <module>archiva-policies</module>
-    <module>archiva-configuration</module>
     <module>archiva-consumers</module>
     <module>archiva-indexer</module>
-    <module>archiva-model</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
+    <module>archiva-proxy-common</module>
     <module>archiva-proxy</module>
     <module>archiva-transaction</module>
     <module>archiva-artifact-converter</module>
     <module>archiva-converter</module>
     <module>archiva-repository-scanner</module>
-    <module>archiva-proxy-common</module>
     <module>archiva-repository-admin</module>
     <module>archiva-security-common</module>
   </modules>
