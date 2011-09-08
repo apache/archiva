@@ -494,18 +494,7 @@ public class DefaultArchivaConfiguration
                 section.removeSubset( "repositoryScanning.invalidContentConsumers" );
             }
         }
-        if ( configuration.getDatabaseScanning() != null )
-        {
-            if ( configuration.getDatabaseScanning().getCleanupConsumers().isEmpty() && section != null )
-            {
-                section.removeSubset( "databaseScanning.cleanupConsumers" );
 
-            }
-            if ( configuration.getDatabaseScanning().getUnprocessedConsumers().isEmpty() && section != null )
-            {
-                section.removeSubset( "databaseScanning.unprocessedConsumers" );
-            }
-        }
 
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
@@ -522,11 +511,7 @@ public class DefaultArchivaConfiguration
             c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
         }
 
-        DatabaseScanningConfiguration scanning = configuration.getDatabaseScanning();
-        if ( scanning != null )
-        {
-            scanning.setCronExpression( escapeCronExpression( scanning.getCronExpression() ) );
-        }
+
     }
 
     private Registry createDefaultConfigurationFile()
@@ -735,12 +720,7 @@ public class DefaultArchivaConfiguration
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }
 
-        DatabaseScanningConfiguration databaseScanning = config.getDatabaseScanning();
-        if ( databaseScanning != null )
-        {
-            String cron = databaseScanning.getCronExpression();
-            databaseScanning.setCronExpression( unescapeCronExpression( cron ) );
-        }
+
 
         return config;
     }

@@ -137,17 +137,6 @@
           </description>
         </field>
         <field>
-          <name>databaseScanning</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>DatabaseScanningConfiguration</type>
-            <multiplicity>1</multiplicity>
-          </association>
-          <description>
-            The database scanning configuration.
-          </description>
-        </field>
-        <field>
           <name>webapp</name>
           <version>1.0.0+</version>
           <association>
@@ -1073,50 +1062,6 @@
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
-        </field>
-      </fields>
-    </class>
-    <class>
-      <name>DatabaseScanningConfiguration</name>
-      <version>1.0.0+</version>
-      <description>
-        The scanning configuration for unprocessed ArchivaArtifact database objects.
-      </description>
-      <fields>
-        <field>
-          <name>cronExpression</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <description>When to run the database scanning mechanism. Default is every two hours on the hour.
-          </description>
-          <defaultValue>0 0 0/2 * * ?</defaultValue>
-        </field>
-        <field>
-          <name>unprocessedConsumers</name>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <association>
-            <type>String</type>
-            <multiplicity>*</multiplicity>
-          </association>
-          <description>
-            The list of consumers for the unprocessed ArchivaArtifact database objects.
-          </description>
-        </field>
-        <field>
-          <name>cleanupConsumers</name>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <deprecated>true</deprecated>
-          <association>
-            <type>String</type>
-            <multiplicity>*</multiplicity>
-          </association>
-          <description>
-            The list of consumers for previously processed ArchivaArtifact database
-            objects that no longer exist on the filesystem, and might need to
-            undergo a cleanup.
-          </description>
         </field>
       </fields>
     </class>

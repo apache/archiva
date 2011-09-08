@@ -174,11 +174,6 @@ public class ArchivaConfigurationTest
         assertNotNull( "check 'artifacts' file type", patterns );
         assertEquals( "check 'artifacts' patterns", 13, patterns.size() );
 
-        DatabaseScanningConfiguration dbScanning = configuration.getDatabaseScanning();
-        assertNotNull( "check database scanning", dbScanning );
-        assertEquals( "check unprocessed consumers", 6, dbScanning.getUnprocessedConsumers().size() );
-        assertEquals( "check cleanup consumers", 3, dbScanning.getCleanupConsumers().size() );
-
         WebappConfiguration webapp = configuration.getWebapp();
         assertNotNull( "check webapp", webapp );
 
@@ -731,7 +726,6 @@ public class ArchivaConfigurationTest
 
         assertEquals( "check cron expression", "0 0,30 * * * ?", repository.getRefreshCronExpression().trim() );
 
-        configuration.getDatabaseScanning().setCronExpression( "0 0,15 0 * * ?" );
 
         // add a test listener to confirm it doesn't see the escaped format. We don't need to test the number of calls,
         // etc. as it's done in other tests
@@ -741,19 +735,12 @@ public class ArchivaConfigurationTest
             {
                 assertEquals( ConfigurationEvent.SAVED, event.getType() );
 
-                Configuration configuration = archivaConfiguration.getConfiguration();
-
-                assertEquals( "check cron expression", "0 0,15 0 * * ?",
-                              configuration.getDatabaseScanning().getCronExpression() );
             }
         } );
 
         archivaConfiguration.save( configuration );
 
         configuration = archivaConfiguration.getConfiguration();
-
-        assertEquals( "check cron expression", "0 0,15 0 * * ?",
-                      configuration.getDatabaseScanning().getCronExpression() );
 
         // test for the escape character '\' showing up on repositories.jsp
         repository.setRefreshCronExpression( "0 0,20 0 * * ?" );
@@ -833,16 +820,6 @@ public class ArchivaConfigurationTest
         scanning.removeInvalidContentConsumer( consumer );
         assertTrue( scanning.getInvalidContentConsumers().isEmpty() );
 
-        DatabaseScanningConfiguration databaseScanning = configuration.getDatabaseScanning();
-        consumer = (String) databaseScanning.getCleanupConsumers().get( 0 );
-        assertNotNull( consumer );
-        databaseScanning.removeCleanupConsumer( consumer );
-        assertTrue( databaseScanning.getCleanupConsumers().isEmpty() );
-        consumer = (String) databaseScanning.getUnprocessedConsumers().get( 0 );
-        assertNotNull( consumer );
-        databaseScanning.removeUnprocessedConsumer( consumer );
-        assertTrue( databaseScanning.getUnprocessedConsumers().isEmpty() );
-
         archivaConfiguration.save( configuration );
 
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
@@ -856,9 +833,6 @@ public class ArchivaConfigurationTest
         scanning = configuration.getRepositoryScanning();
         assertTrue( scanning.getKnownContentConsumers().isEmpty() );
         assertTrue( scanning.getInvalidContentConsumers().isEmpty() );
-        databaseScanning = configuration.getDatabaseScanning();
-        assertTrue( databaseScanning.getCleanupConsumers().isEmpty() );
-        assertTrue( databaseScanning.getUnprocessedConsumers().isEmpty() );
     }
 
     /**
