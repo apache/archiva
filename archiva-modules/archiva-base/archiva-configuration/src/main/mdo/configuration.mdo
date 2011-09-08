@@ -646,6 +646,34 @@
     {
         return artifact.split( ":" )[4];
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        LegacyArtifactPath that = (LegacyArtifactPath) o;
+
+        if ( path != null ? !path.equals( that.path ) : that.path != null )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return path != null ? 37 + path.hashCode() : 0;
+    }
        ]]></code>
         </codeSegment>
       </codeSegments>

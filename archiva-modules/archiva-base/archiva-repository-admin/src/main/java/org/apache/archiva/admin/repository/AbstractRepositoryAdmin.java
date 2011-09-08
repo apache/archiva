@@ -24,10 +24,11 @@ import org.apache.archiva.audit.AuditListener;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 public abstract class AbstractRepositoryAdmin
 {
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
