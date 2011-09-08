@@ -21,18 +21,13 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.networkproxy.NetworkProxy;
+import org.apache.archiva.admin.repository.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
@@ -54,13 +49,13 @@ public class ConfigureNetworkProxyAction
 {
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private NetworkProxyAdmin networkProxyAdmin;
 
     private String mode;
 
     private String proxyid;
 
-    private NetworkProxyConfiguration proxy;
+    private NetworkProxy proxy;
 
     public String add()
     {
@@ -74,8 +69,8 @@ public class ConfigureNetworkProxyAction
     }
 
     public String delete()
+        throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
 
         String id = getProxyid();
         if ( StringUtils.isBlank( id ) )
@@ -84,18 +79,16 @@ public class ConfigureNetworkProxyAction
             return SUCCESS;
         }
 
-        NetworkProxySelectionPredicate networkProxySelection = new NetworkProxySelectionPredicate( id );
-        NetworkProxyConfiguration proxyConfig =
-            (NetworkProxyConfiguration) CollectionUtils.find( config.getNetworkProxies(), networkProxySelection );
-        if ( proxyConfig == null )
+        NetworkProxy networkProxy = getNetworkProxyAdmin().getNetworkProxy( id );
+        if ( networkProxy == null )
         {
             addActionError( "Unable to remove network proxy, proxy with id [" + id + "] not found." );
             return SUCCESS;
         }
 
-        archivaConfiguration.getConfiguration().removeNetworkProxy( proxyConfig );
+        getNetworkProxyAdmin().deleteNetworkProxy( id, getAuditInformation() );
         addActionMessage( "Successfully removed network proxy [" + id + "]" );
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     public String edit()
@@ -109,7 +102,7 @@ public class ConfigureNetworkProxyAction
         return mode;
     }
 
-    public NetworkProxyConfiguration getProxy()
+    public NetworkProxy getProxy()
     {
         return proxy;
     }
@@ -147,11 +140,12 @@ public class ConfigureNetworkProxyAction
 
         if ( proxy == null )
         {
-            proxy = new NetworkProxyConfiguration();
+            proxy = new NetworkProxy();
         }
     }
 
     public String save()
+        throws RepositoryAdminException
     {
         String mode = getMode();
 
@@ -159,19 +153,14 @@ public class ConfigureNetworkProxyAction
 
         if ( StringUtils.equalsIgnoreCase( "edit", mode ) )
         {
-            removeNetworkProxy( id );
+            getNetworkProxyAdmin().updateNetworkProxy( proxy, getAuditInformation() );
         }
         else
         {
-            if ( findNetworkProxy( id ) != null )
-            {
-                addActionError( "Unable to add new repository with id [" + id + "], that id already exists." );
-                return INPUT;
-            }
+            getNetworkProxyAdmin().addNetworkProxy( proxy, getAuditInformation() );
         }
 
-        addNetworkProxy( getProxy() );
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     public void validate()
@@ -185,7 +174,7 @@ public class ConfigureNetworkProxyAction
         this.mode = mode;
     }
 
-    public void setProxy( NetworkProxyConfiguration proxy )
+    public void setProxy( NetworkProxy proxy )
     {
         this.proxy = proxy;
     }
@@ -195,47 +184,19 @@ public class ConfigureNetworkProxyAction
         this.proxyid = proxyid;
     }
 
-    private void addNetworkProxy( NetworkProxyConfiguration proxy )
+
+    private NetworkProxy findNetworkProxy( String id )
+        throws RepositoryAdminException
     {
-        archivaConfiguration.getConfiguration().addNetworkProxy( proxy );
-    }
-
-    private NetworkProxyConfiguration findNetworkProxy( String id )
-    {
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        NetworkProxySelectionPredicate selectedProxy = new NetworkProxySelectionPredicate( id );
-
-        return (NetworkProxyConfiguration) CollectionUtils.find( config.getNetworkProxies(), selectedProxy );
+        return getNetworkProxyAdmin().getNetworkProxy( id );
     }
 
     private void removeNetworkProxy( String id )
+        throws RepositoryAdminException
     {
-        NetworkProxySelectionPredicate selectedProxy = new NetworkProxySelectionPredicate( id );
-        NotPredicate notSelectedProxy = new NotPredicate( selectedProxy );
-        CollectionUtils.filter( archivaConfiguration.getConfiguration().getNetworkProxies(), notSelectedProxy );
+        getNetworkProxyAdmin().deleteNetworkProxy( id, getAuditInformation() );
     }
 
-    private String saveConfiguration()
-    {
-        try
-        {
-            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
-            addActionMessage( "Successfully saved configuration" );
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Unable to save configuration: " + e.getMessage() );
-            return INPUT;
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            addActionError( e.getMessage() );
-            return INPUT;
-        }
-
-        return SUCCESS;
-    }
 
     private void trimAllRequestParameterValues()
     {
@@ -264,4 +225,15 @@ public class ConfigureNetworkProxyAction
             proxy.setUsername( proxy.getUsername().trim() );
         }
     }
+
+    public NetworkProxyAdmin getNetworkProxyAdmin()
+    {
+        return networkProxyAdmin;
+    }
+
+    public void setNetworkProxyAdmin( NetworkProxyAdmin networkProxyAdmin )
+    {
+        this.networkProxyAdmin = networkProxyAdmin;
+    }
 }
+

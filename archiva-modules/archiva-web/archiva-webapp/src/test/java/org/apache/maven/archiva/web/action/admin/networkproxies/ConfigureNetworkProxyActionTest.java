@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.repository.networkproxy.NetworkProxy;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
@@ -77,8 +78,8 @@ public class ConfigureNetworkProxyActionTest extends TestCase
     public void testStruts2ValidationFrameworkWithNullInputs() throws Exception
     {
         // prep
-        NetworkProxyConfiguration networkProxyConfiguration = createNetworkProxyConfiguration(null, null, null, null);
-        configureNetworkProxyAction.setProxy(networkProxyConfiguration);
+        NetworkProxy networkProxy = createNetworkProxy(null, null, null, null);
+        configureNetworkProxyAction.setProxy(networkProxy);
 
         // test
         actionValidatorManager.validate(configureNetworkProxyAction, VALIDATION_CONTEXT);
@@ -110,8 +111,8 @@ public class ConfigureNetworkProxyActionTest extends TestCase
     public void testStruts2ValidationFrameworkWithBlankInputs() throws Exception
     {
         // prep
-        NetworkProxyConfiguration networkProxyConfiguration = createNetworkProxyConfiguration(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
-        configureNetworkProxyAction.setProxy(networkProxyConfiguration);
+        NetworkProxy networkProxy = createNetworkProxy(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, EMPTY_STRING);
+        configureNetworkProxyAction.setProxy(networkProxy);
 
         // test
         actionValidatorManager.validate(configureNetworkProxyAction, VALIDATION_CONTEXT);
@@ -143,8 +144,10 @@ public class ConfigureNetworkProxyActionTest extends TestCase
     public void testStruts2ValidationFrameworkWithInvalidInputs() throws Exception
     {
         // prep
-        NetworkProxyConfiguration networkProxyConfiguration = createNetworkProxyConfiguration(PROXY_ID_INVALID_INPUT, PROXY_HOST_INVALID_INPUT, PROXY_PORT_INVALID_INPUT, PROXY_PROTOCOL_INVALID_INPUT, PROXY_USERNAME_INVALID_INPUT);
-        configureNetworkProxyAction.setProxy(networkProxyConfiguration);
+        NetworkProxy networkProxy = createNetworkProxy( PROXY_ID_INVALID_INPUT, PROXY_HOST_INVALID_INPUT,
+                                                        PROXY_PORT_INVALID_INPUT, PROXY_PROTOCOL_INVALID_INPUT,
+                                                        PROXY_USERNAME_INVALID_INPUT );
+        configureNetworkProxyAction.setProxy(networkProxy);
 
         // test
         actionValidatorManager.validate(configureNetworkProxyAction, VALIDATION_CONTEXT);
@@ -184,8 +187,8 @@ public class ConfigureNetworkProxyActionTest extends TestCase
     public void testStruts2ValidationFrameworkWithValidInputs() throws Exception
     {
         // prep
-        NetworkProxyConfiguration networkProxyConfiguration = createNetworkProxyConfiguration(PROXY_ID_VALID_INPUT, PROXY_HOST_VALID_INPUT, PROXY_PORT_VALID_INPUT, PROXY_PROTOCOL_VALID_INPUT, PROXY_USERNAME_VALID_INPUT);
-        configureNetworkProxyAction.setProxy(networkProxyConfiguration);
+        NetworkProxy networkProxy = createNetworkProxy(PROXY_ID_VALID_INPUT, PROXY_HOST_VALID_INPUT, PROXY_PORT_VALID_INPUT, PROXY_PROTOCOL_VALID_INPUT, PROXY_USERNAME_VALID_INPUT);
+        configureNetworkProxyAction.setProxy(networkProxy);
 
         // test
         actionValidatorManager.validate(configureNetworkProxyAction, VALIDATION_CONTEXT);
@@ -194,26 +197,26 @@ public class ConfigureNetworkProxyActionTest extends TestCase
         assertFalse(configureNetworkProxyAction.hasFieldErrors());
     }
 
-    private NetworkProxyConfiguration createNetworkProxyConfiguration(String id, String host, int port, String protocol, String username)
+    private NetworkProxy createNetworkProxy(String id, String host, int port, String protocol, String username)
     {
-        NetworkProxyConfiguration networkProxyConfiguration = new NetworkProxyConfiguration();
-        networkProxyConfiguration.setId(id);
-        networkProxyConfiguration.setHost(host);
-        networkProxyConfiguration.setPort(port);
-        networkProxyConfiguration.setProtocol(protocol);
-        networkProxyConfiguration.setUsername(username);
-        return networkProxyConfiguration;
+        NetworkProxy networkProxy = new NetworkProxy();
+        networkProxy.setId( id );
+        networkProxy.setHost( host );
+        networkProxy.setPort( port );
+        networkProxy.setProtocol( protocol );
+        networkProxy.setUsername( username );
+        return networkProxy;
     }
 
     // over-loaded
     // for simulating empty/null form purposes; excluding primitive data-typed values
-    private NetworkProxyConfiguration createNetworkProxyConfiguration(String id, String host, String protocol, String username)
+    private NetworkProxy createNetworkProxy(String id, String host, String protocol, String username)
     {
-        NetworkProxyConfiguration networkProxyConfiguration = new NetworkProxyConfiguration();
-        networkProxyConfiguration.setId(id);
-        networkProxyConfiguration.setHost(host);
-        networkProxyConfiguration.setProtocol(protocol);
-        networkProxyConfiguration.setUsername(username);
-        return networkProxyConfiguration;
+        NetworkProxy networkProxy = new NetworkProxy();
+        networkProxy.setId( id );
+        networkProxy.setHost( host );
+        networkProxy.setProtocol( protocol );
+        networkProxy.setUsername( username );
+        return networkProxy;
     }
 }
