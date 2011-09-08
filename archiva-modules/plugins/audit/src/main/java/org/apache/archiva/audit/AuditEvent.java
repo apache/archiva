@@ -110,6 +110,12 @@ public class AuditEvent
     public static final String DELETE_PROXY_CONNECTOR = "Deleted Proxy Connector";
 
     public static final String MODIFY_PROXY_CONNECTOR = "Updated Proxy Connector";
+
+    public static final String ADD_NETWORK_PROXY = "Added Network Proxy";
+
+    public static final String DELETE_NETWORK_PROXY = "Deleted Network Proxy";
+
+    public static final String MODIFY_NETWORK_PROXY = "Updated Network Proxy";
     
     private String repositoryId;
 

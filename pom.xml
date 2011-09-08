@@ -1511,6 +1511,7 @@
           <version>2.9</version>
           <configuration>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
+            <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
             </systemPropertyVariables>

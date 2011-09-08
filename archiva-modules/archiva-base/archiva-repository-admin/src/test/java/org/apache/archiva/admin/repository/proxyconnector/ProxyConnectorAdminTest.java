@@ -36,6 +36,7 @@ public class ProxyConnectorAdminTest
     public void addAndDelete()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         assertEquals( "not proxyConnectors 2 " + proxyConnectorAdmin.getProxyConnectors(), 2,
                       proxyConnectorAdmin.getProxyConnectors().size() );
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
@@ -72,7 +73,7 @@ public class ProxyConnectorAdminTest
     public void addAndUpdateAndDelete()
         throws Exception
     {
-
+        mockAuditListener.clearEvents();
         RemoteRepository remoteRepository = getRemoteRepository( "test-new-one" );
 
         remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getFakeAuditInformation() );
@@ -140,6 +141,7 @@ public class ProxyConnectorAdminTest
     public void updateProxyConnector()
         throws Exception
     {
+        mockAuditListener.clearEvents();
         ProxyConnector proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertNotNull( proxyConnector );
         proxyConnector.setDisabled( false );
@@ -156,6 +158,7 @@ public class ProxyConnectorAdminTest
         proxyConnectorAdmin.updateProxyConnector( proxyConnector, getFakeAuditInformation() );
         proxyConnector = proxyConnectorAdmin.getProxyConnector( "internal", "central" );
         assertEquals( 4, proxyConnector.getOrder() );
+        mockAuditListener.clearEvents();
 
     }
 
