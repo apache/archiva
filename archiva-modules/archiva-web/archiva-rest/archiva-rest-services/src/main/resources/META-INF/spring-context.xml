@@ -55,6 +55,7 @@
       <ref bean="repositoryGroupService#rest"/>
       <ref bean="proxyConnectorService#rest"/>
       <ref bean="networkProxyService#rest"/>
+      <ref bean="archivaAdministrationService#default"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>

@@ -48,7 +48,7 @@ public class DeleteLegacyArtifactPathAction
         log.info( "remove [" + path + "] from legacy artifact path resolution" );
         try
         {
-            getArchivaAdministration().deleteLegacyArtifactPath( path );
+            getArchivaAdministration().deleteLegacyArtifactPath( path, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {

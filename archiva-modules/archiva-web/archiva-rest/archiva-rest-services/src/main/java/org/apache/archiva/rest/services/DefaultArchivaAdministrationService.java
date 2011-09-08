@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository.admin;
+package org.apache.archiva.rest.services;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,28 +19,33 @@ package org.apache.archiva.admin.repository.admin;
  */
 
 import net.sf.beanlib.provider.replicator.BeanReplicator;
-import org.apache.archiva.admin.AuditInformation;
-import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.rest.api.model.LegacyArtifactPath;
+import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Olivier Lamy
+ * @since 1.4
  */
-@Service( "archivaAdministration#default" )
-public class DefaultArchivaAdministration
-    extends AbstractRepositoryAdmin
-    implements ArchivaAdministration
+@Service( "archivaAdministrationService#default" )
+public class DefaultArchivaAdministrationService
+    extends AbstractRestService
+    implements ArchivaAdministrationService
 {
+    @Inject
+    private ArchivaAdministration archivaAdministration;
+
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
         List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>();
-        for ( org.apache.maven.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
+        for ( org.apache.archiva.admin.repository.admin.LegacyArtifactPath legacyArtifactPath : archivaAdministration.getLegacyArtifactPaths() )
         {
             legacyArtifactPaths.add(
                 new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
@@ -48,27 +53,18 @@ public class DefaultArchivaAdministration
         return legacyArtifactPaths;
     }
 
-    public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
+    public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
         throws RepositoryAdminException
     {
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-
-        configuration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
-                                                                                 org.apache.maven.archiva.configuration.LegacyArtifactPath.class ) );
-
-        saveConfiguration( configuration );
+        archivaAdministration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
+                                                                                         org.apache.archiva.admin.repository.admin.LegacyArtifactPath.class ),
+                                                     getAuditInformation() );
     }
 
-    public void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
+    public Boolean deleteLegacyArtifactPath( String path )
         throws RepositoryAdminException
     {
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-        org.apache.maven.archiva.configuration.LegacyArtifactPath legacyArtifactPath =
-            new org.apache.maven.archiva.configuration.LegacyArtifactPath();
-
-        legacyArtifactPath.setPath( path );
-        configuration.removeLegacyArtifactPath( legacyArtifactPath );
-
-        saveConfiguration( configuration );
+        archivaAdministration.deleteLegacyArtifactPath( path, getAuditInformation() );
+        return Boolean.TRUE;
     }
 }

@@ -49,12 +49,12 @@ public class ArchivaAdministrationTest
         int initialSize = archivaAdministration.getLegacyArtifactPaths().size();
 
         LegacyArtifactPath legacyArtifactPath = new LegacyArtifactPath( "foo", "bar" );
-        archivaAdministration.addLegacyArtifactPath( legacyArtifactPath );
+        archivaAdministration.addLegacyArtifactPath( legacyArtifactPath, getFakeAuditInformation() );
 
         assertTrue( archivaAdministration.getLegacyArtifactPaths().contains( new LegacyArtifactPath( "foo", "bar" ) ) );
         assertEquals( initialSize + 1, archivaAdministration.getLegacyArtifactPaths().size() );
 
-        archivaAdministration.deleteLegacyArtifactPath( legacyArtifactPath.getPath() );
+        archivaAdministration.deleteLegacyArtifactPath( legacyArtifactPath.getPath(), getFakeAuditInformation() );
 
         assertFalse(
             archivaAdministration.getLegacyArtifactPaths().contains( new LegacyArtifactPath( "foo", "bar" ) ) );

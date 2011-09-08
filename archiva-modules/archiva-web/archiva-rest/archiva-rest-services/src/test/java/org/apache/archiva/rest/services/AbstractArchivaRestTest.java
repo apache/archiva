@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 
 import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
 import org.apache.archiva.rest.api.services.PingService;
@@ -99,6 +100,17 @@ public abstract class AbstractArchivaRestTest
         NetworkProxyService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
                                        NetworkProxyService.class );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        return service;
+    }
+
+    protected ArchivaAdministrationService getArchivaAdministrationService()
+    {
+        ArchivaAdministrationService service =
+            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                       ArchivaAdministrationService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );

@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository.admin;
+package org.apache.archiva.rest.services;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,24 +18,19 @@ package org.apache.archiva.admin.repository.admin;
  * under the License.
  */
 
-import org.apache.archiva.admin.AuditInformation;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-
-import java.util.List;
+import org.junit.Test;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
  */
-public interface ArchivaAdministration
+public class ArchivaAdministrationServiceTest
+    extends AbstractArchivaRestTest
 {
-
-    List<LegacyArtifactPath> getLegacyArtifactPaths()
-        throws RepositoryAdminException;
-
-    void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
-        throws RepositoryAdminException;
-
-    void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
-        throws RepositoryAdminException;
+    @Test
+    public void getAllLegacyPaths()
+        throws Exception
+    {
+        assertNotNull( getArchivaAdministrationService().getLegacyArtifactPaths() );
+        assertFalse( getArchivaAdministrationService().getLegacyArtifactPaths().isEmpty() );
+    }
 }

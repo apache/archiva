@@ -100,7 +100,7 @@ public class AddLegacyArtifactPathAction
 
         try
         {
-            getArchivaAdministration().addLegacyArtifactPath( legacyArtifactPath );
+            getArchivaAdministration().addLegacyArtifactPath( legacyArtifactPath, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
