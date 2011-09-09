@@ -109,6 +109,7 @@ public class DefaultArchivaAdministration
         fileType.addPattern( pattern );
 
         saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.ADD_PATTERN, auditInformation );
     }
 
     public void removeFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
@@ -124,6 +125,7 @@ public class DefaultArchivaAdministration
         fileType.removePattern( pattern );
 
         saveConfiguration( configuration );
+                triggerAuditEvent( "", "", AuditEvent.REMOVE_PATTERN, auditInformation );
     }
 
     public FileType getFileType( String fileTypeId )
@@ -200,7 +202,33 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
     }
 
-//-------------------------
+    public void setKnownContentConsumers( List<String> knownContentConsumers, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        if ( knownContentConsumers == null )
+        {
+            return;
+        }
+        for ( String knowContentConsumer : knownContentConsumers )
+        {
+            addKnownContentConsumer( knowContentConsumer, auditInformation );
+        }
+    }
+
+    public void setInvalidContentConsumers( List<String> invalidContentConsumers, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        if ( invalidContentConsumers == null )
+        {
+            return;
+        }
+        for ( String invalidContentConsumer : invalidContentConsumers )
+        {
+            addKnownContentConsumer( invalidContentConsumer, auditInformation );
+        }
+    }
+
+    //-------------------------
     //
     //-------------------------
 

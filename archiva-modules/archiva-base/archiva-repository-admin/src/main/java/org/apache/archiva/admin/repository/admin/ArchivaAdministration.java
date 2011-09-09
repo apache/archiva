@@ -63,13 +63,20 @@ public interface ArchivaAdministration
     void addKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
+    void setKnownContentConsumers( List<String> knownContentConsumers, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+
     void removeKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-    void addInvalidContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+    void addInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
-    void removeInvalidContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+    void setInvalidContentConsumers( List<String> invalidContentConsumers, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void removeInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
 }
