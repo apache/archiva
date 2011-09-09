@@ -79,6 +79,11 @@ public class FileType
         getPatterns().add( pattern );
     }
 
+    public void removePattern( String pattern )
+    {
+        getPatterns().remove( pattern );
+    }
+
     @Override
     public boolean equals( Object o )
     {
@@ -105,5 +110,16 @@ public class FileType
     public int hashCode()
     {
         return id != null ? 37 + id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "FileType" );
+        sb.append( "{id='" ).append( id ).append( '\'' );
+        sb.append( ", patterns=" ).append( patterns );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

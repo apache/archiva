@@ -1092,6 +1092,41 @@
           </association>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+
+            @Override
+            public boolean equals( Object o )
+            {
+                if ( this == o )
+                {
+                    return true;
+                }
+                if ( o == null || getClass() != o.getClass() )
+                {
+                    return false;
+                }
+
+                FileType fileType = (FileType) o;
+
+                if ( id != null ? !id.equals( fileType.id ) : fileType.id != null )
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            @Override
+            public int hashCode()
+            {
+                return id != null ? 37 + id.hashCode() : 0;
+            }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
 
     <!--

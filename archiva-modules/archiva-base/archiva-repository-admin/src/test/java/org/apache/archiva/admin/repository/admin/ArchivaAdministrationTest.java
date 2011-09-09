@@ -19,9 +19,11 @@ package org.apache.archiva.admin.repository.admin;
  */
 
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * @author Olivier Lamy
@@ -34,7 +36,7 @@ public class ArchivaAdministrationTest
 
 
     @Test
-    public void getAll()
+    public void getAllLegacyPaths()
         throws Exception
     {
         assertNotNull( archivaAdministration.getLegacyArtifactPaths() );
@@ -43,7 +45,7 @@ public class ArchivaAdministrationTest
         log.info( "all legacy paths {}", archivaAdministration.getLegacyArtifactPaths() );
     }
 
-    public void addAndDelete()
+    public void addAndDeleteLegacyPath()
         throws Exception
     {
         int initialSize = archivaAdministration.getLegacyArtifactPaths().size();
@@ -59,5 +61,45 @@ public class ArchivaAdministrationTest
         assertFalse(
             archivaAdministration.getLegacyArtifactPaths().contains( new LegacyArtifactPath( "foo", "bar" ) ) );
         assertEquals( initialSize, archivaAdministration.getLegacyArtifactPaths().size() );
+    }
+
+    @Test
+    public void addAndUpdateAndDeleteFileType()
+        throws RepositoryAdminException
+    {
+        int initialSize = archivaAdministration.getRepositoryScanning().getFileTypes().size();
+
+        FileType fileType = new FileType();
+        fileType.setId( "foo" );
+        fileType.setPatterns( Arrays.asList( "bar", "toto" ) );
+
+        archivaAdministration.addFileType( fileType, getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+
+        archivaAdministration.addFileTypePattern( "foo", "zorro", getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+
+        assertEquals( 3, archivaAdministration.getFileType( "foo" ).getPatterns().size() );
+
+        assertTrue( archivaAdministration.getFileType( "foo" ).getPatterns().contains( "bar" ) );
+        assertTrue( archivaAdministration.getFileType( "foo" ).getPatterns().contains( "toto" ) );
+        assertTrue( archivaAdministration.getFileType( "foo" ).getPatterns().contains( "zorro" ) );
+
+        archivaAdministration.removeFileTypePattern( "foo", "zorro", getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+
+        assertEquals( 2, archivaAdministration.getFileType( "foo" ).getPatterns().size() );
+
+        assertTrue( archivaAdministration.getFileType( "foo" ).getPatterns().contains( "bar" ) );
+        assertTrue( archivaAdministration.getFileType( "foo" ).getPatterns().contains( "toto" ) );
+        assertFalse( archivaAdministration.getFileType( "foo" ).getPatterns().contains( "zorro" ) );
+
+        archivaAdministration.removeFileType( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+        assertNull( archivaAdministration.getFileType( "foo" ) );
     }
 }

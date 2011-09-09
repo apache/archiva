@@ -38,4 +38,38 @@ public interface ArchivaAdministration
 
     void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
         throws RepositoryAdminException;
+
+    RepositoryScanning getRepositoryScanning()
+        throws RepositoryAdminException;
+
+    void updateRepositoryScanning( RepositoryScanning repositoryScanning, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void removeFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    FileType getFileType( String fileTypeId )
+        throws RepositoryAdminException;
+
+    void addFileType( FileType fileType, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void removeFileType( String fileTypeId, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void addKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void removeKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void addInvalidContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    void removeInvalidContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
 }

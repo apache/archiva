@@ -22,7 +22,10 @@ import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.AuditInformation;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ public class DefaultArchivaAdministration
                 new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
         }
         return legacyArtifactPaths;
+
     }
 
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
@@ -57,6 +61,7 @@ public class DefaultArchivaAdministration
                                                                                  org.apache.maven.archiva.configuration.LegacyArtifactPath.class ) );
 
         saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.ADD_LEGACY_PATH, auditInformation );
     }
 
     public void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
@@ -70,5 +75,144 @@ public class DefaultArchivaAdministration
         configuration.removeLegacyArtifactPath( legacyArtifactPath );
 
         saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.REMOVE_LEGACY_PATH, auditInformation );
+    }
+
+    public void updateRepositoryScanning( RepositoryScanning repositoryScanning, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+
+        configuration.setRepositoryScanning(
+            new BeanReplicator().replicateBean( repositoryScanning, RepositoryScanningConfiguration.class ) );
+
+        saveConfiguration( configuration );
+    }
+
+    public RepositoryScanning getRepositoryScanning()
+        throws RepositoryAdminException
+    {
+        return new BeanReplicator().replicateBean( getArchivaConfiguration().getConfiguration().getRepositoryScanning(),
+                                                   RepositoryScanning.class );
+    }
+
+    public void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+
+        org.apache.maven.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
+        if ( fileType == null )
+        {
+            return;
+        }
+        fileType.addPattern( pattern );
+
+        saveConfiguration( configuration );
+    }
+
+    public void removeFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+
+        org.apache.maven.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
+        if ( fileType == null )
+        {
+            return;
+        }
+        fileType.removePattern( pattern );
+
+        saveConfiguration( configuration );
+    }
+
+    public FileType getFileType( String fileTypeId )
+        throws RepositoryAdminException
+    {
+        org.apache.maven.archiva.configuration.FileType fileType =
+            getFileTypeById( fileTypeId, getArchivaConfiguration().getConfiguration() );
+        if ( fileType == null )
+        {
+            return null;
+        }
+        return new BeanReplicator().replicateBean( fileType, FileType.class );
+    }
+
+    public void addFileType( FileType fileType, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        if ( getFileTypeById( fileType.getId(), configuration ) != null )
+        {
+            throw new RepositoryAdminException(
+                "impossible to FileType with id " + fileType.getId() + " already exists" );
+        }
+
+        configuration.getRepositoryScanning().addFileType(
+            new BeanReplicator().replicateBean( fileType, org.apache.maven.archiva.configuration.FileType.class ) );
+        saveConfiguration( configuration );
+    }
+
+    public void removeFileType( String fileTypeId, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        org.apache.maven.archiva.configuration.FileType fileType =
+            new org.apache.maven.archiva.configuration.FileType();
+        fileType.setId( fileTypeId );
+        configuration.getRepositoryScanning().removeFileType( fileType );
+        saveConfiguration( configuration );
+    }
+
+    public void addKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        configuration.getRepositoryScanning().addKnownContentConsumer( knownContentConsumer );
+        saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.ENABLE_REPO_CONSUMER, auditInformation );
+    }
+
+    public void removeKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        configuration.getRepositoryScanning().removeKnownContentConsumer( knownContentConsumer );
+        saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
+    }
+
+    public void addInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        configuration.getRepositoryScanning().addInvalidContentConsumer( invalidContentConsumer );
+        saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.ENABLE_REPO_CONSUMER, auditInformation );
+    }
+
+    public void removeInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        configuration.getRepositoryScanning().removeInvalidContentConsumer( invalidContentConsumer );
+        saveConfiguration( configuration );
+        triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
+    }
+
+//-------------------------
+    //
+    //-------------------------
+
+    private org.apache.maven.archiva.configuration.FileType getFileTypeById( String id, Configuration configuration )
+    {
+        for ( org.apache.maven.archiva.configuration.FileType fileType : configuration.getRepositoryScanning().getFileTypes() )
+        {
+            if ( StringUtils.equals( id, fileType.getId() ) )
+            {
+                return fileType;
+            }
+        }
+        return null;
     }
 }

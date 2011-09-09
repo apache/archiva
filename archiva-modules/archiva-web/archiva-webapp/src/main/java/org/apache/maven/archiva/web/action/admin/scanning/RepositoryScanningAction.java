@@ -140,6 +140,29 @@ public class RepositoryScanningAction
         return saveConfiguration();
     }
 
+    public String removeFiletypePattern()
+    {
+        log.info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+
+        if ( !isValidFiletypeCommand() )
+        {
+            return INPUT;
+        }
+
+        FileType filetype = findFileType( getFileTypeId() );
+        if ( filetype == null )
+        {
+            addActionError( "Pattern not removed, unable to find filetype " + getFileTypeId() );
+            return INPUT;
+        }
+
+        filetype.removePattern( getPattern() );
+
+        triggerAuditEvent( AuditEvent.REMOVE_PATTERN + " " + pattern );
+
+        return saveConfiguration();
+    }
+
     public String getFileTypeId()
     {
         return fileTypeId;
@@ -192,9 +215,8 @@ public class RepositoryScanningAction
         CollectionUtils.forAllDo( reposcanning.getFileTypes(), filetypeToMapClosure );
         fileTypeMap = filetypeToMapClosure.getMap();
 
-        AddAdminRepoConsumerClosure addAdminRepoConsumer;
-
-        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( reposcanning.getKnownContentConsumers() );
+        AddAdminRepoConsumerClosure addAdminRepoConsumer =
+            new AddAdminRepoConsumerClosure( reposcanning.getKnownContentConsumers() );
         CollectionUtils.forAllDo( repoconsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
         this.knownContentConsumers = addAdminRepoConsumer.getList();
         Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
@@ -207,29 +229,6 @@ public class RepositoryScanningAction
         fileTypeIds = new ArrayList<String>();
         fileTypeIds.addAll( fileTypeMap.keySet() );
         Collections.sort( fileTypeIds );
-    }
-
-    public String removeFiletypePattern()
-    {
-        log.info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
-
-        if ( !isValidFiletypeCommand() )
-        {
-            return INPUT;
-        }
-
-        FileType filetype = findFileType( getFileTypeId() );
-        if ( filetype == null )
-        {
-            addActionError( "Pattern not removed, unable to find filetype " + getFileTypeId() );
-            return INPUT;
-        }
-
-        filetype.removePattern( getPattern() );
-
-        triggerAuditEvent( AuditEvent.REMOVE_PATTERN + " " + pattern );
-
-        return saveConfiguration();
     }
 
     public void setFileTypeId( String fileTypeId )

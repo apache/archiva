@@ -18,8 +18,6 @@ package org.apache.archiva.admin.repository.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.FileType;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
