@@ -19,8 +19,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -31,7 +29,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -47,14 +44,14 @@ public interface RemoteRepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<RemoteRepository> getRemoteRepositories()
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "getRemoteRepository/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     RemoteRepository getRemoteRepository( @PathParam( "repositoryId" ) String repositoryId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "deleteRemoteRepository/{repositoryId}" )
     @GET

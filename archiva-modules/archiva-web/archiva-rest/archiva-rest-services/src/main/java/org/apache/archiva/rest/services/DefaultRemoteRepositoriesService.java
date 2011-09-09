@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.rest.api.model.RemoteRepository;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -43,22 +44,30 @@ public class DefaultRemoteRepositoriesService
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
     public List<RemoteRepository> getRemoteRepositories()
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-        for ( org.apache.archiva.admin.repository.remote.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+        try
         {
-            RemoteRepository repo =
-                new RemoteRepository( remoteRepository.getId(), remoteRepository.getName(), remoteRepository.getUrl(),
-                                      remoteRepository.getLayout(), remoteRepository.getUserName(),
-                                      remoteRepository.getPassword(), remoteRepository.getTimeout() );
-            remoteRepositories.add( repo );
+            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+            for ( org.apache.archiva.admin.repository.remote.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+            {
+                RemoteRepository repo = new RemoteRepository( remoteRepository.getId(), remoteRepository.getName(),
+                                                              remoteRepository.getUrl(), remoteRepository.getLayout(),
+                                                              remoteRepository.getUserName(),
+                                                              remoteRepository.getPassword(),
+                                                              remoteRepository.getTimeout() );
+                remoteRepositories.add( repo );
+            }
+            return remoteRepositories;
         }
-        return remoteRepositories;
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public RemoteRepository getRemoteRepository( String repositoryId )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
         List<RemoteRepository> remoteRepositories = getRemoteRepositories();
         for ( RemoteRepository repository : remoteRepositories )

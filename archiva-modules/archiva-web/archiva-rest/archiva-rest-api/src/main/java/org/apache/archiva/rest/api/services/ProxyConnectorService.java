@@ -18,7 +18,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.rest.api.model.ProxyConnector;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -46,7 +45,7 @@ public interface ProxyConnectorService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<ProxyConnector> getProxyConnectors()
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "getProxyConnector" )
     @GET
@@ -54,7 +53,7 @@ public interface ProxyConnectorService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     ProxyConnector getProxyConnector( @QueryParam( "sourceRepoId" ) String sourceRepoId,
                                       @QueryParam( "targetRepoId" ) String targetRepoId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "addProxyConnector" )
     @POST
@@ -62,7 +61,7 @@ public interface ProxyConnectorService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addProxyConnector( ProxyConnector proxyConnector )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "deleteProxyConnector" )
     @POST
@@ -70,14 +69,13 @@ public interface ProxyConnectorService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteProxyConnector( ProxyConnector proxyConnector )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     /**
      * <b>only for enabled/disable or changing bean values except target/source</b>
      *
      * @param proxyConnector
      * @return
-     * @throws org.apache.archiva.admin.repository.RepositoryAdminException
      *
      */
     @Path( "updateProxyConnector" )
@@ -86,7 +84,7 @@ public interface ProxyConnectorService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateProxyConnector( ProxyConnector proxyConnector )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
 
 }

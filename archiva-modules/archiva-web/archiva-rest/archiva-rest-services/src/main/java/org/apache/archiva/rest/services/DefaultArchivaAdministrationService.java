@@ -25,6 +25,7 @@ import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
 import org.apache.archiva.rest.api.model.RepositoryScanning;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -44,125 +45,237 @@ public class DefaultArchivaAdministrationService
     private ArchivaAdministration archivaAdministration;
 
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>();
-        for ( org.apache.archiva.admin.repository.admin.LegacyArtifactPath legacyArtifactPath : archivaAdministration.getLegacyArtifactPaths() )
+        try
         {
-            legacyArtifactPaths.add(
-                new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
+            List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>();
+            for ( org.apache.archiva.admin.repository.admin.LegacyArtifactPath legacyArtifactPath : archivaAdministration.getLegacyArtifactPaths() )
+            {
+                legacyArtifactPaths.add(
+                    new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
+            }
+            return legacyArtifactPaths;
         }
-        return legacyArtifactPaths;
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
-                                                                                         org.apache.archiva.admin.repository.admin.LegacyArtifactPath.class ),
-                                                     getAuditInformation() );
+        try
+        {
+            archivaAdministration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
+                                                                                             org.apache.archiva.admin.repository.admin.LegacyArtifactPath.class ),
+                                                         getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean deleteLegacyArtifactPath( String path )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.deleteLegacyArtifactPath( path, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.deleteLegacyArtifactPath( path, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public RepositoryScanning getRepositoryScanning()
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        return new BeanReplicator().replicateBean( archivaAdministration.getRepositoryScanning(),
-                                                   RepositoryScanning.class );
+        try
+        {
+            return new BeanReplicator().replicateBean( archivaAdministration.getRepositoryScanning(),
+                                                       RepositoryScanning.class );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public void updateRepositoryScanning( RepositoryScanning repositoryScanning )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.updateRepositoryScanning( new BeanReplicator().replicateBean( getRepositoryScanning(),
-                                                                                            org.apache.archiva.admin.repository.admin.RepositoryScanning.class ),
-                                                        getAuditInformation() );
+        try
+        {
+            archivaAdministration.updateRepositoryScanning( new BeanReplicator().replicateBean( getRepositoryScanning(),
+                                                                                                org.apache.archiva.admin.repository.admin.RepositoryScanning.class ),
+                                                            getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean addFileTypePattern( String fileTypeId, String pattern )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.addFileTypePattern( fileTypeId, pattern, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.addFileTypePattern( fileTypeId, pattern, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean removeFileTypePattern( String fileTypeId, String pattern )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.removeFileTypePattern( fileTypeId, pattern, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.removeFileTypePattern( fileTypeId, pattern, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public FileType getFileType( String fileTypeId )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        org.apache.archiva.admin.repository.admin.FileType fileType = archivaAdministration.getFileType( fileTypeId );
-        if ( fileType == null )
+        try
         {
-            return null;
+            org.apache.archiva.admin.repository.admin.FileType fileType =
+                archivaAdministration.getFileType( fileTypeId );
+            if ( fileType == null )
+            {
+                return null;
+            }
+            return new BeanReplicator().replicateBean( fileType, FileType.class );
         }
-        return new BeanReplicator().replicateBean( fileType, FileType.class );
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public void addFileType( FileType fileType )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.addFileType(
-            new BeanReplicator().replicateBean( fileType, org.apache.archiva.admin.repository.admin.FileType.class ),
-            getAuditInformation() );
-
+        try
+        {
+            archivaAdministration.addFileType( new BeanReplicator().replicateBean( fileType,
+                                                                                   org.apache.archiva.admin.repository.admin.FileType.class ),
+                                               getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean removeFileType( String fileTypeId )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.removeFileType( fileTypeId, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.removeFileType( fileTypeId, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean addKnownContentConsumer( String knownContentConsumer )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.addKnownContentConsumer( knownContentConsumer, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.addKnownContentConsumer( knownContentConsumer, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public void setKnownContentConsumers( List<String> knownContentConsumers )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.setKnownContentConsumers( knownContentConsumers, getAuditInformation() );
+        try
+        {
+            archivaAdministration.setKnownContentConsumers( knownContentConsumers, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean removeKnownContentConsumer( String knownContentConsumer )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.removeKnownContentConsumer( knownContentConsumer, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.removeKnownContentConsumer( knownContentConsumer, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean addInvalidContentConsumer( String invalidContentConsumer )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.addInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.addInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public void setInvalidContentConsumers( List<String> invalidContentConsumers )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.setInvalidContentConsumers( invalidContentConsumers, getAuditInformation() );
+        try
+        {
+            archivaAdministration.setInvalidContentConsumers( invalidContentConsumers, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean removeInvalidContentConsumer( String invalidContentConsumer )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        archivaAdministration.removeInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
-        return Boolean.TRUE;
+        try
+        {
+            archivaAdministration.removeInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
+            return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 }

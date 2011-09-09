@@ -22,15 +22,13 @@ import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.rest.api.model.ProxyConnector;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -44,60 +42,95 @@ public class DefaultProxyConnectorService
     private ProxyConnectorAdmin proxyConnectorAdmin;
 
     public List<ProxyConnector> getProxyConnectors()
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>();
-        for ( org.apache.archiva.admin.repository.proxyconnector.ProxyConnector proxyConnector : proxyConnectorAdmin.getProxyConnectors() )
+        try
         {
-            proxyConnectors.add( new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class ) );
+            List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>();
+            for ( org.apache.archiva.admin.repository.proxyconnector.ProxyConnector proxyConnector : proxyConnectorAdmin.getProxyConnectors() )
+            {
+                proxyConnectors.add( new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class ) );
+            }
+            return proxyConnectors;
         }
-        return proxyConnectors;
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        org.apache.archiva.admin.repository.proxyconnector.ProxyConnector proxyConnector =
-            proxyConnectorAdmin.getProxyConnector( sourceRepoId, targetRepoId );
-        return proxyConnector == null
-            ? null
-            : new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class );
+        try
+        {
+            org.apache.archiva.admin.repository.proxyconnector.ProxyConnector proxyConnector =
+                proxyConnectorAdmin.getProxyConnector( sourceRepoId, targetRepoId );
+            return proxyConnector == null
+                ? null
+                : new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean addProxyConnector( ProxyConnector proxyConnector )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
         if ( proxyConnector == null )
         {
             return Boolean.FALSE;
         }
-        return proxyConnectorAdmin.addProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
-                                                                                          org.apache.archiva.admin.repository.proxyconnector.ProxyConnector.class ),
-                                                      getAuditInformation() );
+        try
+        {
+            return proxyConnectorAdmin.addProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
+                                                                                              org.apache.archiva.admin.repository.proxyconnector.ProxyConnector.class ),
+                                                          getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
         if ( proxyConnector == null )
         {
             return Boolean.FALSE;
         }
-        return proxyConnectorAdmin.deleteProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
-                                                                                             org.apache.archiva.admin.repository.proxyconnector.ProxyConnector.class ),
-                                                         getAuditInformation() );
+        try
+        {
+            return proxyConnectorAdmin.deleteProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
+                                                                                                 org.apache.archiva.admin.repository.proxyconnector.ProxyConnector.class ),
+                                                             getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean updateProxyConnector( ProxyConnector proxyConnector )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
         if ( proxyConnector == null )
         {
             return Boolean.FALSE;
         }
-        return proxyConnectorAdmin.updateProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
-                                                                                             org.apache.archiva.admin.repository.proxyconnector.ProxyConnector.class ),
-                                                         getAuditInformation() );
+        try
+        {
+            return proxyConnectorAdmin.updateProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
+                                                                                                 org.apache.archiva.admin.repository.proxyconnector.ProxyConnector.class ),
+                                                             getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public ProxyConnectorAdmin getProxyConnectorAdmin()

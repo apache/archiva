@@ -19,7 +19,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -46,14 +45,14 @@ public interface ManagedRepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<ManagedRepository> getManagedRepositories()
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "getManagedRepository/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "deleteManagedRepository" )
     @GET

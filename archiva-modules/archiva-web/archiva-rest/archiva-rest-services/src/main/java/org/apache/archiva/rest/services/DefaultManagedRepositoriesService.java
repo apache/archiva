@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -43,28 +44,35 @@ public class DefaultManagedRepositoriesService
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     public List<ManagedRepository> getManagedRepositories()
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
-        List<org.apache.archiva.admin.repository.managed.ManagedRepository> repos =
-            managedRepositoryAdmin.getManagedRepositories();
-
-        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( repos.size() );
-
-        for ( org.apache.archiva.admin.repository.managed.ManagedRepository repoConfig : repos )
+        try
         {
-            // TODO staging repo too
-            ManagedRepository repo =
-                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
-                                       repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                       repoConfig.isBlockRedeployments(), false, repoConfig.getCronExpression() );
-            managedRepos.add( repo );
-        }
+            List<org.apache.archiva.admin.repository.managed.ManagedRepository> repos =
+                managedRepositoryAdmin.getManagedRepositories();
 
-        return managedRepos;
+            List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( repos.size() );
+
+            for ( org.apache.archiva.admin.repository.managed.ManagedRepository repoConfig : repos )
+            {
+                // TODO staging repo too
+                ManagedRepository repo =
+                    new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
+                                           repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
+                                           repoConfig.isBlockRedeployments(), false, repoConfig.getCronExpression() );
+                managedRepos.add( repo );
+            }
+
+            return managedRepos;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public ManagedRepository getManagedRepository( String repositoryId )
-        throws RepositoryAdminException
+        throws ArchivaRestServiceException
     {
         List<ManagedRepository> repos = getManagedRepositories();
         for ( ManagedRepository repo : repos )

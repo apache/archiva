@@ -18,7 +18,6 @@ package org.apache.archiva.rest.api.model;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.admin.FileType;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -52,8 +51,8 @@ public class RepositoryScanning
         // no op
     }
 
-    public RepositoryScanning( List<FileType> fileTypes,
-                               List<String> knownContentConsumers, List<String> invalidContentConsumers )
+    public RepositoryScanning( List<FileType> fileTypes, List<String> knownContentConsumers,
+                               List<String> invalidContentConsumers )
     {
         this.fileTypes = fileTypes;
         this.knownContentConsumers = knownContentConsumers;

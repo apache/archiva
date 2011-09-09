@@ -18,7 +18,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.rest.api.model.NetworkProxy;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -44,14 +43,14 @@ public interface NetworkProxyService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<NetworkProxy> getNetworkProxies()
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "getNetworkProxy/{networkProxyId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     NetworkProxy getNetworkProxy( @PathParam( "networkProxyId" ) String networkProxyId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "addNetworkProxy" )
     @POST
@@ -59,7 +58,7 @@ public interface NetworkProxyService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void addNetworkProxy( NetworkProxy networkProxy )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "updateNetworkProxy" )
     @POST
@@ -67,12 +66,12 @@ public interface NetworkProxyService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void updateNetworkProxy( NetworkProxy networkProxy )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "deleteNetworkProxy/{networkProxyId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteNetworkProxy( @PathParam( "networkProxyId" ) String networkProxyId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 }

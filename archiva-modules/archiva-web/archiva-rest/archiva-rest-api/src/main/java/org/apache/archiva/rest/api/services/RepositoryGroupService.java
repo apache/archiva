@@ -18,7 +18,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.rest.api.model.RepositoryGroup;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -45,14 +44,14 @@ public interface RepositoryGroupService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<RepositoryGroup> getRepositoriesGroups()
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "getRepositoryGroup/{repositoryGroupId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     RepositoryGroup getRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "addRepositoryGroup" )
     @POST
@@ -60,7 +59,7 @@ public interface RepositoryGroupService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addRepositoryGroup( RepositoryGroup repositoryGroup )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "updateRepositoryGroup" )
     @POST
@@ -68,14 +67,14 @@ public interface RepositoryGroupService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateRepositoryGroup( RepositoryGroup repositoryGroup )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "deleteRepositoryGroup/{repositoryGroupId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "addRepositoryToGroup" )
     @GET
@@ -83,7 +82,7 @@ public interface RepositoryGroupService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addRepositoryToGroup( @QueryParam( "repositoryGroupId" ) String repositoryGroupId,
                                   @QueryParam( "repositoryId" ) String repositoryId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
     @Path( "addRepositoryToGroup" )
     @GET
@@ -91,7 +90,7 @@ public interface RepositoryGroupService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteRepositoryFromGroup( @QueryParam( "repositoryGroupId" ) String repositoryGroupId,
                                        @QueryParam( "repositoryId" ) String repositoryId )
-        throws RepositoryAdminException;
+        throws ArchivaRestServiceException;
 
 
 }
