@@ -21,22 +21,18 @@ package org.apache.maven.archiva.web.action.admin.scanning;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.admin.repository.admin.FileType;
+import org.apache.archiva.admin.repository.admin.FiletypeToMapClosure;
+import org.apache.archiva.admin.repository.admin.RepositoryScanning;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.FileType;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
-import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
-import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
@@ -62,10 +58,10 @@ public class RepositoryScanningAction
 {
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private RepositoryContentConsumers repoconsumerUtil;
 
     @Inject
-    private RepositoryContentConsumers repoconsumerUtil;
+    private ArchivaAdministration archivaAdministration;
 
     private Map<String, FileType> fileTypeMap;
 
@@ -109,58 +105,46 @@ public class RepositoryScanningAction
 
     public String addFiletypePattern()
     {
-        log.info( "Add New File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+        log.info( "Add New File Type Pattern [{}:{}]", getFileTypeId(), getPattern() );
 
         if ( !isValidFiletypeCommand() )
         {
             return INPUT;
         }
 
-        String id = getFileTypeId();
-        String pattern = getPattern();
-
-        FileType filetype = findFileType( id );
-        if ( filetype == null )
+        try
         {
-            addActionError( "Pattern not added, unable to find filetype " + id );
+            getArchivaAdministration().addFileTypePattern( getFileTypeId(), getPattern(), getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( "error adding file type pattern " + e.getMessage() );
             return INPUT;
         }
-
-        if ( filetype.getPatterns().contains( pattern ) )
-        {
-            addActionError( "Not adding pattern \"" + pattern + "\" to filetype " + id + " as it already exists." );
-            return INPUT;
-        }
-
-        filetype.addPattern( pattern );
-        addActionMessage( "Added pattern \"" + pattern + "\" to filetype " + id );
-
-        triggerAuditEvent( AuditEvent.ADD_PATTERN + " " + pattern );
-
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     public String removeFiletypePattern()
+        throws RepositoryAdminException
     {
-        log.info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+        log.info( "Remove File Type Pattern [{}:{}]", getFileTypeId(), getPattern() );
 
         if ( !isValidFiletypeCommand() )
         {
             return INPUT;
         }
 
-        FileType filetype = findFileType( getFileTypeId() );
-        if ( filetype == null )
+        try
         {
-            addActionError( "Pattern not removed, unable to find filetype " + getFileTypeId() );
+            getArchivaAdministration().removeFileTypePattern( getFileTypeId(), getPattern(), getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( "error adding file type pattern " + e.getMessage() );
             return INPUT;
         }
 
-        filetype.removePattern( getPattern() );
-
-        triggerAuditEvent( AuditEvent.REMOVE_PATTERN + " " + pattern );
-
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     public String getFileTypeId()
@@ -207,8 +191,7 @@ public class RepositoryScanningAction
     public void prepare()
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        RepositoryScanningConfiguration reposcanning = config.getRepositoryScanning();
+        RepositoryScanning reposcanning = archivaAdministration.getRepositoryScanning();
 
         FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
 
@@ -243,54 +226,90 @@ public class RepositoryScanningAction
 
     public String updateInvalidConsumers()
     {
+
+        try
+        {
+            List<String> oldConsumers = getArchivaAdministration().getRepositoryScanning().getInvalidContentConsumers();
+
+            if ( enabledInvalidContentConsumers != null )
+            {
+                for ( String oldConsumer : oldConsumers )
+                {
+                    if ( !enabledInvalidContentConsumers.contains( oldConsumer ) )
+                    {
+                        getArchivaAdministration().removeInvalidContentConsumer( oldConsumer, getAuditInformation() );
+                    }
+                }
+                for ( String enabledKnowContentConsumer : enabledInvalidContentConsumers )
+                {
+                    getArchivaAdministration().addInvalidContentConsumer( enabledKnowContentConsumer,
+                                                                          getAuditInformation() );
+                }
+            }
+            else
+            {
+                for ( String oldConsumer : oldConsumers )
+                {
+                    getArchivaAdministration().removeInvalidContentConsumer( oldConsumer, getAuditInformation() );
+                }
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            addActionError( "Error update invalidContentConsumers " + e.getMessage() );
+            return INPUT;
+        }
         addActionMessage( "Update Invalid Consumers" );
 
-        List<String> oldConsumers =
-            archivaConfiguration.getConfiguration().getRepositoryScanning().getInvalidContentConsumers();
-
-        archivaConfiguration.getConfiguration().getRepositoryScanning().setInvalidContentConsumers(
-            enabledInvalidContentConsumers );
-
-        if ( enabledInvalidContentConsumers != null )
-        {
-            filterAddedConsumers( oldConsumers, enabledInvalidContentConsumers );
-            filterRemovedConsumers( oldConsumers, enabledInvalidContentConsumers );
-        }
-        else
-        {
-            disableAllEnabledConsumers( oldConsumers );
-        }
-
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     public String updateKnownConsumers()
     {
+
+        try
+        {
+            List<String> oldConsumers = getArchivaAdministration().getRepositoryScanning().getKnownContentConsumers();
+
+            if ( enabledKnownContentConsumers != null )
+            {
+                for ( String oldConsumer : oldConsumers )
+                {
+                    if ( !enabledKnownContentConsumers.contains( oldConsumer ) )
+                    {
+                        getArchivaAdministration().removeKnownContentConsumer( oldConsumer, getAuditInformation() );
+                    }
+                }
+                for ( String enabledKnowContentConsumer : enabledKnownContentConsumers )
+                {
+                    getArchivaAdministration().addKnownContentConsumer( enabledKnowContentConsumer,
+                                                                        getAuditInformation() );
+                }
+            }
+            else
+            {
+                for ( String oldConsumer : oldConsumers )
+                {
+                    getArchivaAdministration().removeKnownContentConsumer( oldConsumer, getAuditInformation() );
+                }
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            addActionError( "Error update knowContentConsumers " + e.getMessage() );
+            return INPUT;
+        }
         addActionMessage( "Update Known Consumers" );
 
-        List<String> oldConsumers =
-            archivaConfiguration.getConfiguration().getRepositoryScanning().getKnownContentConsumers();
-
-        archivaConfiguration.getConfiguration().getRepositoryScanning().setKnownContentConsumers(
-            enabledKnownContentConsumers );
-
-        if ( enabledKnownContentConsumers != null )
-        {
-            filterAddedConsumers( oldConsumers, enabledKnownContentConsumers );
-            filterRemovedConsumers( oldConsumers, enabledKnownContentConsumers );
-        }
-        else
-        {
-            disableAllEnabledConsumers( oldConsumers );
-        }
-
-        return saveConfiguration();
+        return SUCCESS;
     }
 
     private FileType findFileType( String id )
+        throws RepositoryAdminException
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-        return (FileType) CollectionUtils.find( scanning.getFileTypes(), new FiletypeSelectionPredicate( id ) );
+        return getArchivaAdministration().getFileType( id );
     }
 
     private boolean isValidFiletypeCommand()
@@ -308,56 +327,6 @@ public class RepositoryScanningAction
         return !hasActionErrors();
     }
 
-    private String saveConfiguration()
-    {
-        try
-        {
-            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
-            addActionMessage( "Successfully saved configuration" );
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Unable to save configuration: " + e.getMessage() );
-            return INPUT;
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            addActionError( e.getMessage() );
-            return INPUT;
-        }
-
-        return SUCCESS;
-    }
-
-    private void filterAddedConsumers( List<String> oldList, List<String> newList )
-    {
-        for ( String consumer : newList )
-        {
-            if ( !oldList.contains( consumer ) )
-            {
-                triggerAuditEvent( AuditEvent.ENABLE_REPO_CONSUMER + " " + consumer );
-            }
-        }
-    }
-
-    private void filterRemovedConsumers( List<String> oldList, List<String> newList )
-    {
-        for ( String consumer : oldList )
-        {
-            if ( !newList.contains( consumer ) )
-            {
-                triggerAuditEvent( AuditEvent.DISABLE_REPO_CONSUMER + " " + consumer );
-            }
-        }
-    }
-
-    private void disableAllEnabledConsumers( List<String> consumers )
-    {
-        for ( String consumer : consumers )
-        {
-            triggerAuditEvent( AuditEvent.DISABLE_REPO_CONSUMER + " " + consumer );
-        }
-    }
 
     public List<String> getEnabledInvalidContentConsumers()
     {
@@ -379,13 +348,13 @@ public class RepositoryScanningAction
         this.enabledKnownContentConsumers = enabledKnownContentConsumers;
     }
 
-    public ArchivaConfiguration getArchivaConfiguration()
+    public ArchivaAdministration getArchivaAdministration()
     {
-        return archivaConfiguration;
+        return archivaAdministration;
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
     {
-        this.archivaConfiguration = archivaConfiguration;
+        this.archivaAdministration = archivaAdministration;
     }
 }

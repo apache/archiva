@@ -20,6 +20,7 @@ package org.apache.archiva.admin.repository.admin;
 
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -61,6 +62,7 @@ public class ArchivaAdministrationTest
         assertFalse(
             archivaAdministration.getLegacyArtifactPaths().contains( new LegacyArtifactPath( "foo", "bar" ) ) );
         assertEquals( initialSize, archivaAdministration.getLegacyArtifactPaths().size() );
+        mockAuditListener.clearEvents();
     }
 
     @Test
@@ -101,5 +103,54 @@ public class ArchivaAdministrationTest
 
         assertEquals( initialSize, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
         assertNull( archivaAdministration.getFileType( "foo" ) );
+        mockAuditListener.clearEvents();
+    }
+
+    @Test
+    public void knownContentConsumersTest()
+        throws Exception
+    {
+        int initialSize = archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size();
+
+        archivaAdministration.addKnownContentConsumer( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1,
+                      archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
+        assertTrue( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+
+        // ensure we don't add it twice as it's an ArrayList as storage
+        archivaAdministration.addKnownContentConsumer( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1,
+                      archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
+        assertTrue( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+        mockAuditListener.clearEvents();
+
+    }
+
+    @Test
+    public void invalidContentConsumersTest()
+        throws Exception
+    {
+        int initialSize = archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size();
+
+        archivaAdministration.addInvalidContentConsumer( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1,
+                      archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
+        assertTrue( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
+
+        // ensure we don't add it twice as it's an ArrayList as storage
+        archivaAdministration.addInvalidContentConsumer( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1,
+                      archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
+        assertTrue( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
+
+        assertEquals( 1, mockAuditListener.getAuditEvents().size() );
+        assertEquals( AuditEvent.ENABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+
+        mockAuditListener.clearEvents();
+
     }
 }

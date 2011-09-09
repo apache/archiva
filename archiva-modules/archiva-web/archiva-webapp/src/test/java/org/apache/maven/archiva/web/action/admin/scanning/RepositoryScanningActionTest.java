@@ -1,5 +1,6 @@
 package org.apache.maven.archiva.web.action.admin.scanning;
 
+import org.apache.archiva.admin.repository.admin.DefaultArchivaAdministration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
@@ -32,81 +33,94 @@ public class RepositoryScanningActionTest
     extends AbstractActionTestCase
 {
     private RepositoryScanningAction action;
-    
+
     private MockControl archivaConfigControl;
-    
+
     private ArchivaConfiguration archivaConfig;
-    
+
     private Configuration config;
-    
-    protected void setUp() 
-    throws Exception
+
+    protected void setUp()
+        throws Exception
     {
-        
+
         super.setUp();
-    
+
         archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
-    
+
         action = new RepositoryScanningAction();
-    
+
         config = new Configuration();
-        
-        RepositoryScanningConfiguration repositoryScanningConfig = new RepositoryScanningConfiguration( );
-        
+
+        RepositoryScanningConfiguration repositoryScanningConfig = new RepositoryScanningConfiguration();
+
         repositoryScanningConfig.setKnownContentConsumers( createKnownContentConsumersList() );
-        
+
         config.setRepositoryScanning( repositoryScanningConfig );
 
-        action.setArchivaConfiguration( archivaConfig );
+        DefaultArchivaAdministration archivaAdministration = new DefaultArchivaAdministration();
+        archivaAdministration.setArchivaConfiguration( archivaConfig );
+        action.setArchivaAdministration( archivaAdministration );
+
     }
-     
+
     public void testUpdateKnownConsumers()
         throws Exception
     {
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 10 );
+
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
         archivaConfig.save( config );
         archivaConfigControl.replay();
-        
+
         setEnabledKnownContentConsumers();
-        
+
         String returnString = action.updateKnownConsumers();
-        
+
         List<String> results = config.getRepositoryScanning().getKnownContentConsumers();
-        
+
         assertEquals( action.SUCCESS, returnString );
-        assertEquals( 8, results.size() );
+        assertEquals( "results " + results, 8, results.size() );
     }
-    
+
     public void testDisableAllKnownConsumers()
         throws Exception
     {
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 10 );
+
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
+        archivaConfig.save( config );
         archivaConfig.save( config );
         archivaConfigControl.replay();
-        
+
         action.setEnabledKnownContentConsumers( null );
-        
+
         String returnString = action.updateKnownConsumers();
-        
+
         List<String> results = config.getRepositoryScanning().getKnownContentConsumers();
-        
+
         assertEquals( action.SUCCESS, returnString );
         assertEquals( 0, results.size() );
     }
-    
+
     private void setEnabledKnownContentConsumers()
     {
         action.setEnabledKnownContentConsumers( createKnownContentConsumersList() );
     }
-    
-    private List<String> createKnownContentConsumersList( )
+
+    private List<String> createKnownContentConsumersList()
     {
         List<String> knownContentConsumers = new ArrayList<String>();
         knownContentConsumers.add( "auto-remove" );
@@ -117,7 +131,7 @@ public class RepositoryScanningActionTest
         knownContentConsumers.add( "repository-purge" );
         knownContentConsumers.add( "update-db-artifact" );
         knownContentConsumers.add( "validate-checksums" );
-        
+
         return knownContentConsumers;
     }
 }
