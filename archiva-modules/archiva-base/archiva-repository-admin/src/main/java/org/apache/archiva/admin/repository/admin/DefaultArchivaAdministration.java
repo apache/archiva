@@ -25,10 +25,10 @@ import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -78,27 +78,6 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.REMOVE_LEGACY_PATH, auditInformation );
     }
 
-    public void updateRepositoryScanning( RepositoryScanning repositoryScanning, AuditInformation auditInformation )
-        throws RepositoryAdminException
-    {
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-
-        configuration.setRepositoryScanning(
-            new BeanReplicator().replicateBean( repositoryScanning, RepositoryScanningConfiguration.class ) );
-
-        saveConfiguration( configuration );
-    }
-
-    public RepositoryScanning getRepositoryScanning()
-        throws RepositoryAdminException
-    {
-
-        RepositoryScanning repositoryScanning =
-            new BeanReplicator().replicateBean( getArchivaConfiguration().getConfiguration().getRepositoryScanning(),
-                                                RepositoryScanning.class )
-
-        return repositoryScanning;
-    }
 
     public void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -242,6 +221,37 @@ public class DefaultArchivaAdministration
         }
     }
 
+    public List<FileType> getFileTypes()
+        throws RepositoryAdminException
+    {
+        List<org.apache.maven.archiva.configuration.FileType> configFileTypes =
+            getArchivaConfiguration().getConfiguration().getRepositoryScanning().getFileTypes();
+        if ( configFileTypes == null || configFileTypes.isEmpty() )
+        {
+            return Collections.emptyList();
+        }
+        List<FileType> fileTypes = new ArrayList<FileType>();
+        for ( org.apache.maven.archiva.configuration.FileType fileType : configFileTypes )
+        {
+            fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );
+        }
+        return fileTypes;
+    }
+
+    public List<String> getKnownContentConsumers()
+        throws RepositoryAdminException
+    {
+        return new ArrayList<String>(
+            getArchivaConfiguration().getConfiguration().getRepositoryScanning().getKnownContentConsumers() );
+    }
+
+    public List<String> getInvalidContentConsumers()
+        throws RepositoryAdminException
+    {
+        return new ArrayList<String>(
+            getArchivaConfiguration().getConfiguration().getRepositoryScanning().getInvalidContentConsumers() );
+    }
+
     //-------------------------
     //
     //-------------------------
@@ -257,4 +267,5 @@ public class DefaultArchivaAdministration
         }
         return null;
     }
+
 }

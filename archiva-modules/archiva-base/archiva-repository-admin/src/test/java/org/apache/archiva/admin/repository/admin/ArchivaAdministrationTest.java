@@ -69,7 +69,7 @@ public class ArchivaAdministrationTest
     public void addAndUpdateAndDeleteFileType()
         throws RepositoryAdminException
     {
-        int initialSize = archivaAdministration.getRepositoryScanning().getFileTypes().size();
+        int initialSize = archivaAdministration.getFileTypes().size();
 
         FileType fileType = new FileType();
         fileType.setId( "foo" );
@@ -77,11 +77,11 @@ public class ArchivaAdministrationTest
 
         archivaAdministration.addFileType( fileType, getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+        assertEquals( initialSize + 1, archivaAdministration.getFileTypes().size() );
 
         archivaAdministration.addFileTypePattern( "foo", "zorro", getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+        assertEquals( initialSize + 1, archivaAdministration.getFileTypes().size() );
 
         assertEquals( 3, archivaAdministration.getFileType( "foo" ).getPatterns().size() );
 
@@ -91,7 +91,7 @@ public class ArchivaAdministrationTest
 
         archivaAdministration.removeFileTypePattern( "foo", "zorro", getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+        assertEquals( initialSize + 1, archivaAdministration.getFileTypes().size() );
 
         assertEquals( 2, archivaAdministration.getFileType( "foo" ).getPatterns().size() );
 
@@ -101,7 +101,7 @@ public class ArchivaAdministrationTest
 
         archivaAdministration.removeFileType( "foo", getFakeAuditInformation() );
 
-        assertEquals( initialSize, archivaAdministration.getRepositoryScanning().getFileTypes().size() );
+        assertEquals( initialSize, archivaAdministration.getFileTypes().size() );
         assertNull( archivaAdministration.getFileType( "foo" ) );
         mockAuditListener.clearEvents();
     }
@@ -110,27 +110,23 @@ public class ArchivaAdministrationTest
     public void knownContentConsumersTest()
         throws Exception
     {
-        int initialSize = archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size();
+        int initialSize = archivaAdministration.getKnownContentConsumers().size();
 
         archivaAdministration.addKnownContentConsumer( "foo", getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1,
-                      archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
-        assertTrue( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+        assertEquals( initialSize + 1, archivaAdministration.getKnownContentConsumers().size() );
+        assertTrue( archivaAdministration.getKnownContentConsumers().contains( "foo" ) );
 
         // ensure we don't add it twice as it's an ArrayList as storage
         archivaAdministration.addKnownContentConsumer( "foo", getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1,
-                      archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
-        assertTrue( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+        assertEquals( initialSize + 1, archivaAdministration.getKnownContentConsumers().size() );
+        assertTrue( archivaAdministration.getKnownContentConsumers().contains( "foo" ) );
 
         archivaAdministration.removeKnownContentConsumer( "foo", getFakeAuditInformation() );
 
-
-        assertEquals( initialSize ,
-                      archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
-        assertFalse( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+        assertEquals( initialSize, archivaAdministration.getKnownContentConsumers().size() );
+        assertFalse( archivaAdministration.getKnownContentConsumers().contains( "foo" ) );
 
         assertEquals( 2, mockAuditListener.getAuditEvents().size() );
         assertEquals( AuditEvent.ENABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
@@ -144,25 +140,23 @@ public class ArchivaAdministrationTest
     public void invalidContentConsumersTest()
         throws Exception
     {
-        int initialSize = archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size();
+        int initialSize = archivaAdministration.getInvalidContentConsumers().size();
 
         archivaAdministration.addInvalidContentConsumer( "foo", getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1,
-                      archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
-        assertTrue( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
+        assertEquals( initialSize + 1, archivaAdministration.getInvalidContentConsumers().size() );
+        assertTrue( archivaAdministration.getInvalidContentConsumers().contains( "foo" ) );
 
         // ensure we don't add it twice as it's an ArrayList as storage
         archivaAdministration.addInvalidContentConsumer( "foo", getFakeAuditInformation() );
 
-        assertEquals( initialSize + 1,
-                      archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
-        assertTrue( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
+        assertEquals( initialSize + 1, archivaAdministration.getInvalidContentConsumers().size() );
+        assertTrue( archivaAdministration.getInvalidContentConsumers().contains( "foo" ) );
 
         archivaAdministration.removeInvalidContentConsumer( "foo", getFakeAuditInformation() );
 
-        assertEquals( initialSize, archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
-        assertFalse( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
+        assertEquals( initialSize, archivaAdministration.getInvalidContentConsumers().size() );
+        assertFalse( archivaAdministration.getInvalidContentConsumers().contains( "foo" ) );
 
         assertEquals( 2, mockAuditListener.getAuditEvents().size() );
         assertEquals( AuditEvent.ENABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 0 ).getAction() );

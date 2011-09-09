@@ -22,13 +22,9 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -39,8 +35,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.PathParam;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -53,36 +47,13 @@ public class DefaultRepositoriesService
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    // FIXME duplicate from xmlrpc
-    // olamy move this to a common remote services api
-    private static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
-
-    private static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
-
-    private static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
-
     @Inject
     protected RoleManager roleManager;
-
-    @Inject
-    protected ArchivaConfiguration archivaConfiguration;
 
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
-    @Inject
-    @Named( value = "commons-configuration" )
-    private Registry registry;
-
-    @Inject
-    private RepositoryStatisticsManager repositoryStatisticsManager;
-
-    @Inject
-    private RepositorySessionFactory repositorySessionFactory;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     // FIXME olamy move this to repository admin component !
     public Boolean scanRepository( String repositoryId, boolean fullScan )

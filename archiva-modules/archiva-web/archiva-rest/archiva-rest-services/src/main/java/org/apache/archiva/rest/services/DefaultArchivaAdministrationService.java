@@ -18,19 +18,18 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.BeanTransformer;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
 import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
-import org.apache.archiva.rest.api.model.RepositoryScanning;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -93,51 +92,6 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public RepositoryScanning getRepositoryScanning()
-        throws ArchivaRestServiceException
-    {
-        try
-        {
-            BeanTransformer beanTransformer = new BeanTransformer()
-            {
-                @Override
-                protected <T> T createToInstance( Object from, Class<T> toClass )
-                    throws InstantiationException, IllegalAccessException, SecurityException, NoSuchMethodException
-                {
-                    if ( from.getClass().equals( org.apache.maven.archiva.configuration.FileType.class ) )
-                    {
-                        return (T) new FileType();
-                    }
-                    return super.createToInstance( from, toClass );
-                }
-            };
-            BeanReplicator beanReplicator = new BeanReplicator( beanTransformer );
-
-            RepositoryScanning repositoryScanning =
-                beanReplicator.replicateBean( archivaAdministration.getRepositoryScanning(), RepositoryScanning.class );
-
-            return repositoryScanning;
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage() );
-        }
-    }
-
-    public void updateRepositoryScanning( RepositoryScanning repositoryScanning )
-        throws ArchivaRestServiceException
-    {
-        try
-        {
-            archivaAdministration.updateRepositoryScanning( new BeanReplicator().replicateBean( getRepositoryScanning(),
-                                                                                                org.apache.archiva.admin.repository.admin.RepositoryScanning.class ),
-                                                            getAuditInformation() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage() );
-        }
-    }
 
     public Boolean addFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
@@ -290,6 +244,56 @@ public class DefaultArchivaAdministrationService
         {
             archivaAdministration.removeInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
             return Boolean.TRUE;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public List<FileType> getFileTypes()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            List<org.apache.archiva.admin.repository.admin.FileType> modelfileTypes =
+                archivaAdministration.getFileTypes();
+            if ( modelfileTypes == null || modelfileTypes.isEmpty() )
+            {
+                return Collections.emptyList();
+            }
+            List<FileType> fileTypes = new ArrayList<FileType>( modelfileTypes.size() );
+            for ( org.apache.archiva.admin.repository.admin.FileType fileType : modelfileTypes )
+            {
+                fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );
+            }
+            return fileTypes;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public List<String> getKnownContentConsumers()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            return new ArrayList<String>( archivaAdministration.getKnownContentConsumers() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public List<String> getInvalidContentConsumers()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            return new ArrayList<String>( archivaAdministration.getInvalidContentConsumers() );
         }
         catch ( RepositoryAdminException e )
         {

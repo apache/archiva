@@ -57,16 +57,21 @@ public class ArchivaAdministrationServiceTest
     public void addAndDeleteFileType()
         throws Exception
     {
-        int initialSize = getArchivaAdministrationService().getRepositoryScanning().getFileTypes().size();
+        int initialSize = getArchivaAdministrationService().getFileTypes().size();
         FileType fileType = new FileType();
-        fileType.setId( "foo" );
+        fileType.setId( "footwo" );
         fileType.setPatterns( Arrays.asList( "foo", "bar" ) );
         getArchivaAdministrationService().addFileType( fileType );
-        assertEquals( initialSize + 1,
-                      getArchivaAdministrationService().getRepositoryScanning().getFileTypes().size() );
+        assertEquals( initialSize + 1, getArchivaAdministrationService().getFileTypes().size() );
 
-        assertNotNull( getArchivaAdministrationService().getFileType( "foo" ) );
+        assertNotNull( getArchivaAdministrationService().getFileType( "footwo" ) );
         assertEquals( Arrays.asList( "foo", "bar" ),
-                      getArchivaAdministrationService().getFileType( "foo" ).getPatterns() );
+                      getArchivaAdministrationService().getFileType( "footwo" ).getPatterns() );
+
+        getArchivaAdministrationService().removeFileType( "footwo" );
+
+        assertEquals( initialSize , getArchivaAdministrationService().getFileTypes().size() );
+
+        assertNull( getArchivaAdministrationService().getFileType( "footwo" ) );
     }
 }

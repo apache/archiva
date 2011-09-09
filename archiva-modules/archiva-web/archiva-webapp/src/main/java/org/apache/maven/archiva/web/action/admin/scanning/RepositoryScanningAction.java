@@ -191,20 +191,20 @@ public class RepositoryScanningAction
     public void prepare()
         throws Exception
     {
-        RepositoryScanning reposcanning = archivaAdministration.getRepositoryScanning();
+
 
         FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
 
-        CollectionUtils.forAllDo( reposcanning.getFileTypes(), filetypeToMapClosure );
+        CollectionUtils.forAllDo( archivaAdministration.getFileTypes(), filetypeToMapClosure );
         fileTypeMap = filetypeToMapClosure.getMap();
 
         AddAdminRepoConsumerClosure addAdminRepoConsumer =
-            new AddAdminRepoConsumerClosure( reposcanning.getKnownContentConsumers() );
+            new AddAdminRepoConsumerClosure( archivaAdministration.getKnownContentConsumers() );
         CollectionUtils.forAllDo( repoconsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
         this.knownContentConsumers = addAdminRepoConsumer.getList();
         Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
 
-        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( reposcanning.getInvalidContentConsumers() );
+        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( archivaAdministration.getInvalidContentConsumers() );
         CollectionUtils.forAllDo( repoconsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
         this.invalidContentConsumers = addAdminRepoConsumer.getList();
         Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
@@ -229,7 +229,7 @@ public class RepositoryScanningAction
 
         try
         {
-            List<String> oldConsumers = getArchivaAdministration().getRepositoryScanning().getInvalidContentConsumers();
+            List<String> oldConsumers = getArchivaAdministration().getInvalidContentConsumers();
 
             if ( enabledInvalidContentConsumers != null )
             {
@@ -270,7 +270,7 @@ public class RepositoryScanningAction
 
         try
         {
-            List<String> oldConsumers = getArchivaAdministration().getRepositoryScanning().getKnownContentConsumers();
+            List<String> oldConsumers = getArchivaAdministration().getKnownContentConsumers();
 
             if ( enabledKnownContentConsumers != null )
             {
