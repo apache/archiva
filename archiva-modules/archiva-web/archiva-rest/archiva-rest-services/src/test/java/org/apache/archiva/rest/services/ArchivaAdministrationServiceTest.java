@@ -18,7 +18,11 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.FileType;
+import org.apache.archiva.rest.api.model.LegacyArtifactPath;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * @author Olivier Lamy
@@ -32,5 +36,37 @@ public class ArchivaAdministrationServiceTest
     {
         assertNotNull( getArchivaAdministrationService().getLegacyArtifactPaths() );
         assertFalse( getArchivaAdministrationService().getLegacyArtifactPaths().isEmpty() );
+    }
+
+    @Test
+    public void addAndDeleteLegacyPath()
+        throws Exception
+    {
+        int initialSize = getArchivaAdministrationService().getLegacyArtifactPaths().size();
+        LegacyArtifactPath legacyArtifactPath = new LegacyArtifactPath();
+        legacyArtifactPath.setArtifact( "foo" );
+        legacyArtifactPath.setPath( "bar" );
+        getArchivaAdministrationService().addLegacyArtifactPath( legacyArtifactPath );
+        assertEquals( initialSize + 1, getArchivaAdministrationService().getLegacyArtifactPaths().size() );
+
+        getArchivaAdministrationService().deleteLegacyArtifactPath( "bar" );
+        assertEquals( initialSize, getArchivaAdministrationService().getLegacyArtifactPaths().size() );
+    }
+
+    @Test
+    public void addAndDeleteFileType()
+        throws Exception
+    {
+        int initialSize = getArchivaAdministrationService().getRepositoryScanning().getFileTypes().size();
+        FileType fileType = new FileType();
+        fileType.setId( "foo" );
+        fileType.setPatterns( Arrays.asList( "foo", "bar" ) );
+        getArchivaAdministrationService().addFileType( fileType );
+        assertEquals( initialSize + 1,
+                      getArchivaAdministrationService().getRepositoryScanning().getFileTypes().size() );
+
+        assertNotNull( getArchivaAdministrationService().getFileType( "foo" ) );
+        assertEquals( Arrays.asList( "foo", "bar" ),
+                      getArchivaAdministrationService().getFileType( "foo" ).getPatterns() );
     }
 }

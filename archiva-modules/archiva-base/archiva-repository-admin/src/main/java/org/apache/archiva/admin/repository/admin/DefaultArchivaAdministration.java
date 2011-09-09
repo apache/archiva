@@ -92,8 +92,12 @@ public class DefaultArchivaAdministration
     public RepositoryScanning getRepositoryScanning()
         throws RepositoryAdminException
     {
-        return new BeanReplicator().replicateBean( getArchivaConfiguration().getConfiguration().getRepositoryScanning(),
-                                                   RepositoryScanning.class );
+
+        RepositoryScanning repositoryScanning =
+            new BeanReplicator().replicateBean( getArchivaConfiguration().getConfiguration().getRepositoryScanning(),
+                                                RepositoryScanning.class )
+
+        return repositoryScanning;
     }
 
     public void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )

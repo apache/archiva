@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import net.sf.beanlib.provider.BeanTransformer;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
@@ -97,8 +98,25 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            return new BeanReplicator().replicateBean( archivaAdministration.getRepositoryScanning(),
-                                                       RepositoryScanning.class );
+            BeanTransformer beanTransformer = new BeanTransformer()
+            {
+                @Override
+                protected <T> T createToInstance( Object from, Class<T> toClass )
+                    throws InstantiationException, IllegalAccessException, SecurityException, NoSuchMethodException
+                {
+                    if ( from.getClass().equals( org.apache.maven.archiva.configuration.FileType.class ) )
+                    {
+                        return (T) new FileType();
+                    }
+                    return super.createToInstance( from, toClass );
+                }
+            };
+            BeanReplicator beanReplicator = new BeanReplicator( beanTransformer );
+
+            RepositoryScanning repositoryScanning =
+                beanReplicator.replicateBean( archivaAdministration.getRepositoryScanning(), RepositoryScanning.class );
+
+            return repositoryScanning;
         }
         catch ( RepositoryAdminException e )
         {
