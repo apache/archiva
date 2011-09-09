@@ -101,4 +101,15 @@ public class LegacyArtifactPath
     {
         return artifact.split( ":" )[4];
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "LegacyArtifactPath" );
+        sb.append( "{path='" ).append( path ).append( '\'' );
+        sb.append( ", artifact='" ).append( artifact ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

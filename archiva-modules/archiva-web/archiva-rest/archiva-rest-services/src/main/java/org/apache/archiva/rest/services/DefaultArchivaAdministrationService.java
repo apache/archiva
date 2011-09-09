@@ -21,7 +21,9 @@ package org.apache.archiva.rest.services;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
+import org.apache.archiva.rest.api.model.RepositoryScanning;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +67,102 @@ public class DefaultArchivaAdministrationService
         throws RepositoryAdminException
     {
         archivaAdministration.deleteLegacyArtifactPath( path, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public RepositoryScanning getRepositoryScanning()
+        throws RepositoryAdminException
+    {
+        return new BeanReplicator().replicateBean( archivaAdministration.getRepositoryScanning(),
+                                                   RepositoryScanning.class );
+    }
+
+    public void updateRepositoryScanning( RepositoryScanning repositoryScanning )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.updateRepositoryScanning( new BeanReplicator().replicateBean( getRepositoryScanning(),
+                                                                                            org.apache.archiva.admin.repository.admin.RepositoryScanning.class ),
+                                                        getAuditInformation() );
+    }
+
+    public Boolean addFileTypePattern( String fileTypeId, String pattern )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.addFileTypePattern( fileTypeId, pattern, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public Boolean removeFileTypePattern( String fileTypeId, String pattern )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.removeFileTypePattern( fileTypeId, pattern, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public FileType getFileType( String fileTypeId )
+        throws RepositoryAdminException
+    {
+        org.apache.archiva.admin.repository.admin.FileType fileType = archivaAdministration.getFileType( fileTypeId );
+        if ( fileType == null )
+        {
+            return null;
+        }
+        return new BeanReplicator().replicateBean( fileType, FileType.class );
+    }
+
+    public void addFileType( FileType fileType )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.addFileType(
+            new BeanReplicator().replicateBean( fileType, org.apache.archiva.admin.repository.admin.FileType.class ),
+            getAuditInformation() );
+
+    }
+
+    public Boolean removeFileType( String fileTypeId )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.removeFileType( fileTypeId, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public Boolean addKnownContentConsumer( String knownContentConsumer )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.addKnownContentConsumer( knownContentConsumer, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public void setKnownContentConsumers( List<String> knownContentConsumers )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.setKnownContentConsumers( knownContentConsumers, getAuditInformation() );
+    }
+
+    public Boolean removeKnownContentConsumer( String knownContentConsumer )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.removeKnownContentConsumer( knownContentConsumer, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public Boolean addInvalidContentConsumer( String invalidContentConsumer )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.addInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
+        return Boolean.TRUE;
+    }
+
+    public void setInvalidContentConsumers( List<String> invalidContentConsumers )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.setInvalidContentConsumers( invalidContentConsumers, getAuditInformation() );
+    }
+
+    public Boolean removeInvalidContentConsumer( String invalidContentConsumer )
+        throws RepositoryAdminException
+    {
+        archivaAdministration.removeInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
         return Boolean.TRUE;
     }
 }

@@ -19,7 +19,9 @@ package org.apache.archiva.rest.api.services;
  */
 
 import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
+import org.apache.archiva.rest.api.model.RepositoryScanning;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -59,5 +61,98 @@ public interface ArchivaAdministrationService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteLegacyArtifactPath( @QueryParam( "path" ) String path )
+        throws RepositoryAdminException;
+
+    @Path( "getRepositoryScanning" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    RepositoryScanning getRepositoryScanning()
+        throws RepositoryAdminException;
+
+    @Path( "updateRepositoryScanning" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    void updateRepositoryScanning( RepositoryScanning repositoryScanning )
+        throws RepositoryAdminException;
+
+    @Path( "addFileTypePattern" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean addFileTypePattern( @QueryParam( "fileTypeId" ) String fileTypeId, @QueryParam( "pattern" ) String pattern )
+        throws RepositoryAdminException;
+
+    @Path( "removeFileTypePattern" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean removeFileTypePattern( @QueryParam( "fileTypeId" ) String fileTypeId,
+                                   @QueryParam( "pattern" ) String pattern )
+        throws RepositoryAdminException;
+
+    @Path( "getFileType" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    FileType getFileType( String fileTypeId )
+        throws RepositoryAdminException;
+
+    @Path( "addFileType" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    void addFileType( FileType fileType )
+        throws RepositoryAdminException;
+
+    @Path( "removeFileType" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean removeFileType( @QueryParam( "fileTypeId" ) String fileTypeId )
+        throws RepositoryAdminException;
+
+    @Path( "addKnownContentConsumer" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean addKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
+        throws RepositoryAdminException;
+
+    @Path( "setKnownContentConsumers" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    void setKnownContentConsumers( List<String> knownContentConsumers )
+        throws RepositoryAdminException;
+
+
+    @Path( "removeKnownContentConsumer" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean removeKnownContentConsumer( @QueryParam( "knownContentConsumer" )  String knownContentConsumer )
+        throws RepositoryAdminException;
+
+    @Path( "addInvalidContentConsumer" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean addInvalidContentConsumer(@QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
+        throws RepositoryAdminException;
+
+    @Path( "setInvalidContentConsumers" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    void setInvalidContentConsumers( List<String> invalidContentConsumers )
+        throws RepositoryAdminException;
+
+    @Path( "removeInvalidContentConsumer" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean removeInvalidContentConsumer(@QueryParam( "invalidContentConsumer" )  String invalidContentConsumer )
         throws RepositoryAdminException;
 }
