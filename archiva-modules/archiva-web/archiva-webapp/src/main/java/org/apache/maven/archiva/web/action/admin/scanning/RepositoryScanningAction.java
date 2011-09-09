@@ -25,7 +25,6 @@ import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
 import org.apache.archiva.admin.repository.admin.FileType;
 import org.apache.archiva.admin.repository.admin.FiletypeToMapClosure;
-import org.apache.archiva.admin.repository.admin.RepositoryScanning;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
