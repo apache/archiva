@@ -523,6 +523,7 @@
             <appserver.base>${basedir}/appserver-base</appserver.base>
             <appserver.home>${project.build.directory}/appserver-home</appserver.home>
             <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
+            <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -747,6 +748,7 @@
                 <configuration>
                   <tasks>
                     <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml" todir="${project.build.directory}/classes" />
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties" todir="${basedir}/target/" />
                     <delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
                   </tasks>
                 </configuration>

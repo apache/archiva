@@ -12,3 +12,6 @@ No more need to install everything to run the jetty plugin.
 So just use : mvn tomcat:run -Pdev
 and hit in your browser : http://localhost:9091/archiva
 
+note with dev profile admin account is automatically created with password admin123
+see file : archiva-modules/archiva-web/archiva-webapp/src/test/tomcat/auto-admin-creation.properties
+
