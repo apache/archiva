@@ -124,6 +124,18 @@ public class ArchivaAdministrationTest
         assertEquals( initialSize + 1,
                       archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
         assertTrue( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+
+        archivaAdministration.removeKnownContentConsumer( "foo", getFakeAuditInformation() );
+
+
+        assertEquals( initialSize ,
+                      archivaAdministration.getRepositoryScanning().getKnownContentConsumers().size() );
+        assertFalse( archivaAdministration.getRepositoryScanning().getKnownContentConsumers().contains( "foo" ) );
+
+        assertEquals( 2, mockAuditListener.getAuditEvents().size() );
+        assertEquals( AuditEvent.ENABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+        assertEquals( AuditEvent.DISABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
+
         mockAuditListener.clearEvents();
 
     }
@@ -147,8 +159,14 @@ public class ArchivaAdministrationTest
                       archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
         assertTrue( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
 
-        assertEquals( 1, mockAuditListener.getAuditEvents().size() );
+        archivaAdministration.removeInvalidContentConsumer( "foo", getFakeAuditInformation() );
+
+        assertEquals( initialSize, archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().size() );
+        assertFalse( archivaAdministration.getRepositoryScanning().getInvalidContentConsumers().contains( "foo" ) );
+
+        assertEquals( 2, mockAuditListener.getAuditEvents().size() );
         assertEquals( AuditEvent.ENABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 0 ).getAction() );
+        assertEquals( AuditEvent.DISABLE_REPO_CONSUMER, mockAuditListener.getAuditEvents().get( 1 ).getAction() );
 
         mockAuditListener.clearEvents();
 
