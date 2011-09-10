@@ -20,9 +20,8 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.OrganisationInformation;
+import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.admin.repository.admin.OrganisationInformation;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 
 import javax.inject.Inject;
@@ -38,18 +37,13 @@ public abstract class AbstractAppearanceAction
 {
 
     @Inject
-    protected ArchivaConfiguration configuration;
+    protected ArchivaAdministration archivaAdministration;
 
     private String organisationLogo;
 
     private String organisationUrl;
 
     private String organisationName;
-
-    public void setConfiguration( ArchivaConfiguration configuration )
-    {
-        this.configuration = configuration;
-    }
 
     public String getOrganisationLogo()
     {
@@ -84,16 +78,24 @@ public abstract class AbstractAppearanceAction
     public void prepare()
         throws Exception
     {
-        Configuration config = configuration.getConfiguration();
-        if ( config != null )
+
+        OrganisationInformation orgInfo = archivaAdministration.getOrganisationInformation();
+        if ( orgInfo != null )
         {
-            OrganisationInformation orgInfo = config.getOrganisationInfo();
-            if ( orgInfo != null )
-            {
-                setOrganisationLogo( orgInfo.getLogoLocation() );
-                setOrganisationName( orgInfo.getName() );
-                setOrganisationUrl( orgInfo.getUrl() );
-            }
+            setOrganisationLogo( orgInfo.getLogoLocation() );
+            setOrganisationName( orgInfo.getName() );
+            setOrganisationUrl( orgInfo.getUrl() );
         }
+
+    }
+
+    public ArchivaAdministration getArchivaAdministration()
+    {
+        return archivaAdministration;
+    }
+
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
+    {
+        this.archivaAdministration = archivaAdministration;
     }
 }

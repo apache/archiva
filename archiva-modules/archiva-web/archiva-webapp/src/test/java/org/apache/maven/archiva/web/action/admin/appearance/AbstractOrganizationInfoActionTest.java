@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
+import org.apache.archiva.admin.repository.admin.DefaultArchivaAdministration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
@@ -50,17 +51,22 @@ public abstract class AbstractOrganizationInfoActionTest
         configuration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
 
         configuration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( config, 1, 2 );
+        archivaConfigurationControl.setReturnValue( config, 1, 5 );
 
         configuration.save( config );
-        archivaConfigurationControl.setVoidCallable( 1, 2 );
+        archivaConfigurationControl.setVoidCallable( 1, 4 );
 
         archivaConfigurationControl.replay();
+
+        DefaultArchivaAdministration defaultArchivaAdministration = new DefaultArchivaAdministration();
+        defaultArchivaAdministration.setArchivaConfiguration( configuration );
+        getAction().setArchivaAdministration( defaultArchivaAdministration );
     }
 
     protected void reloadAction()
     {
         action = getAction();
-        action.setConfiguration( configuration );
+        ( (DefaultArchivaAdministration) action.getArchivaAdministration() ).setArchivaConfiguration( configuration );
+
     }
 }

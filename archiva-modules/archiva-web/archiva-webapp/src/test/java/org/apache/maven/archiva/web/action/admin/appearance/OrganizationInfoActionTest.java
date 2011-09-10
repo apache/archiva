@@ -49,8 +49,6 @@ public class OrganizationInfoActionTest
     @Override
     protected AbstractAppearanceAction getAction()
     {
-        //return (OrganisationInfoAction) lookup( Action.class.getName(), "organisationInfo" );
-
         return (OrganisationInfoAction) getActionProxy( "/components/companyInfo.action" ).getAction();
     }
 }

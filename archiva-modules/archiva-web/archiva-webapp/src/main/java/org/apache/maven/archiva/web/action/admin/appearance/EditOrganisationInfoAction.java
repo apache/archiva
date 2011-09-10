@@ -20,13 +20,11 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  */
 
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.repository.admin.OrganisationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.OrganisationInformation;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
@@ -44,23 +42,16 @@ public class EditOrganisationInfoAction
 {
     @Override
     public String execute()
-        throws RegistryException, IndeterminateConfigurationException
+        throws RepositoryAdminException
     {
-        Configuration config = configuration.getConfiguration();
-        if ( config != null )
-        {
-            OrganisationInformation orgInfo = config.getOrganisationInfo();
-            if ( orgInfo == null )
-            {
-                config.setOrganisationInfo( orgInfo );
-            }
 
-            orgInfo.setLogoLocation( getOrganisationLogo() );
-            orgInfo.setName( getOrganisationName() );
-            orgInfo.setUrl( getOrganisationUrl() );
+        OrganisationInformation orgInfo = archivaAdministration.getOrganisationInformation();
 
-            configuration.save( config );
-        }
+        orgInfo.setLogoLocation( getOrganisationLogo() );
+        orgInfo.setName( getOrganisationName() );
+        orgInfo.setUrl( getOrganisationUrl() );
+
+        archivaAdministration.setOrganisationInformation( orgInfo );
         return SUCCESS;
     }
 
