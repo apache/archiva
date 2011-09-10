@@ -165,4 +165,26 @@ public class ArchivaAdministrationTest
         mockAuditListener.clearEvents();
 
     }
+
+
+    public void organisationInfoUpdate()
+        throws Exception
+    {
+        OrganisationInformation organisationInformation = archivaAdministration.getOrganisationInformation();
+        assertNull( organisationInformation );
+
+        organisationInformation = new OrganisationInformation();
+        organisationInformation.setLogoLocation( "http://foo.com/bar.png" );
+        organisationInformation.setName( "foo org" );
+        organisationInformation.setUrl( "http:/foo.com" );
+
+        archivaAdministration.setOrganisationInformation( organisationInformation );
+
+        organisationInformation = archivaAdministration.getOrganisationInformation();
+        assertNotNull( organisationInformation );
+        assertEquals( "http://foo.com/bar.png", organisationInformation.getLogoLocation() );
+        assertEquals( "foo org", organisationInformation.getName() );
+        assertEquals( "http://foo.com", organisationInformation.getUrl() );
+
+    }
 }

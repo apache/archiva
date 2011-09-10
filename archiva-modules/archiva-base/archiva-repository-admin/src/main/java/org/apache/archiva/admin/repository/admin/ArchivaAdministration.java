@@ -81,4 +81,10 @@ public interface ArchivaAdministration
     void removeInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
+    OrganisationInformation getOrganisationInformation()
+        throws RepositoryAdminException;
+
+    void setOrganisationInformation( OrganisationInformation organisationInformation )
+        throws RepositoryAdminException;
+
 }

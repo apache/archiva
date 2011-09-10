@@ -252,6 +252,36 @@ public class DefaultArchivaAdministration
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getInvalidContentConsumers() );
     }
 
+    public OrganisationInformation getOrganisationInformation()
+        throws RepositoryAdminException
+    {
+        org.apache.maven.archiva.configuration.OrganisationInformation organisationInformation =
+            getArchivaConfiguration().getConfiguration().getOrganisationInfo();
+        if ( organisationInformation == null )
+        {
+            return null;
+        }
+        return new BeanReplicator().replicateBean( organisationInformation, OrganisationInformation.class );
+    }
+
+    public void setOrganisationInformation( OrganisationInformation organisationInformation )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        if ( organisationInformation != null )
+        {
+            org.apache.maven.archiva.configuration.OrganisationInformation organisationInformationModel =
+                new BeanReplicator().replicateBean( organisationInformation,
+                                                    org.apache.maven.archiva.configuration.OrganisationInformation.class );
+            configuration.setOrganisationInfo( organisationInformationModel );
+        }
+        else
+        {
+            configuration.setOrganisationInfo( null );
+        }
+        saveConfiguration( configuration );
+    }
+
     //-------------------------
     //
     //-------------------------
