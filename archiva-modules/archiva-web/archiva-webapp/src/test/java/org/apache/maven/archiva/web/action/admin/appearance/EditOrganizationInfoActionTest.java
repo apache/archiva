@@ -174,11 +174,11 @@ public class EditOrganizationInfoActionTest
         expectedFieldErrors.put( "organisationName", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add( "You must enter a URL" );
+        expectedErrorMessages.add( "You must enter a URL." );
         expectedFieldErrors.put( "organisationUrl", expectedErrorMessages );
 
         expectedErrorMessages = new ArrayList<String>();
-        expectedErrorMessages.add( "You must enter a URL" );
+        expectedErrorMessages.add( "You must enter a URL for your logo." );
         expectedFieldErrors.put( "organisationLogo", expectedErrorMessages );
 
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );

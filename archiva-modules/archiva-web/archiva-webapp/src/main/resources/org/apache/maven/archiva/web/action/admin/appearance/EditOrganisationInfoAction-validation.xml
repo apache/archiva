@@ -34,7 +34,7 @@
     </field>
     <field name="organisationUrl">
         <field-validator type="url">
-            <message>You must enter a URL</message>
+            <message>You must enter a URL.</message>
         </field-validator>
     </field>
     <field name="organisationLogo">
