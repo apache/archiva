@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
+import org.apache.archiva.rest.api.model.OrganisationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -160,4 +161,19 @@ public interface ArchivaAdministrationService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<String> getInvalidContentConsumers()
         throws ArchivaRestServiceException;
+
+    @Path( "getOrganisationInformation" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    OrganisationInformation getOrganisationInformation()
+        throws ArchivaRestServiceException;
+
+    @Path( "setOrganisationInformation" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    void setOrganisationInformation( OrganisationInformation organisationInformation )
+        throws ArchivaRestServiceException;
 }
+

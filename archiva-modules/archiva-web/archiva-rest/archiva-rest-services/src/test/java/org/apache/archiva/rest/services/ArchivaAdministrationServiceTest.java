@@ -20,6 +20,8 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
+import org.apache.archiva.rest.api.model.OrganisationInformation;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -70,8 +72,35 @@ public class ArchivaAdministrationServiceTest
 
         getArchivaAdministrationService().removeFileType( "footwo" );
 
-        assertEquals( initialSize , getArchivaAdministrationService().getFileTypes().size() );
+        assertEquals( initialSize, getArchivaAdministrationService().getFileTypes().size() );
 
         assertNull( getArchivaAdministrationService().getFileType( "footwo" ) );
+    }
+
+    @Test
+    public void organisationInformationUpdate()
+        throws Exception
+    {
+        OrganisationInformation organisationInformation =
+            getArchivaAdministrationService().getOrganisationInformation();
+
+        // rest return an empty bean
+        assertNotNull( organisationInformation );
+        assertTrue( StringUtils.isBlank( organisationInformation.getLogoLocation() ) );
+        assertTrue( StringUtils.isBlank( organisationInformation.getName() ) );
+        assertTrue( StringUtils.isBlank( organisationInformation.getUrl() ) );
+
+        organisationInformation = new OrganisationInformation();
+        organisationInformation.setLogoLocation( "http://foo.com/bar.png" );
+        organisationInformation.setName( "foo org" );
+        organisationInformation.setUrl( "http://foo.com" );
+
+        getArchivaAdministrationService().setOrganisationInformation( organisationInformation );
+
+        organisationInformation = getArchivaAdministrationService().getOrganisationInformation();
+        assertNotNull( organisationInformation );
+        assertEquals( "http://foo.com/bar.png", organisationInformation.getLogoLocation() );
+        assertEquals( "foo org", organisationInformation.getName() );
+        assertEquals( "http://foo.com", organisationInformation.getUrl() );
     }
 }

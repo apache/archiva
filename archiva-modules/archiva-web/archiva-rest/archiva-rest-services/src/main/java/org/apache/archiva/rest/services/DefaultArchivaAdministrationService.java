@@ -23,6 +23,7 @@ import org.apache.archiva.admin.repository.RepositoryAdminException;
 import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
 import org.apache.archiva.rest.api.model.FileType;
 import org.apache.archiva.rest.api.model.LegacyArtifactPath;
+import org.apache.archiva.rest.api.model.OrganisationInformation;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.springframework.stereotype.Service;
@@ -294,6 +295,46 @@ public class DefaultArchivaAdministrationService
         try
         {
             return new ArrayList<String>( archivaAdministration.getInvalidContentConsumers() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public OrganisationInformation getOrganisationInformation()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            org.apache.archiva.admin.repository.admin.OrganisationInformation organisationInformation =
+                archivaAdministration.getOrganisationInformation();
+
+            return organisationInformation == null
+                ? null
+                : new BeanReplicator().replicateBean( organisationInformation, OrganisationInformation.class );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public void setOrganisationInformation( OrganisationInformation organisationInformation )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            if ( organisationInformation == null )
+            {
+                archivaAdministration.setOrganisationInformation( null );
+            }
+            else
+            {
+                archivaAdministration.setOrganisationInformation(
+                    new BeanReplicator().replicateBean( organisationInformation,
+                                                        org.apache.archiva.admin.repository.admin.OrganisationInformation.class ) );
+            }
         }
         catch ( RepositoryAdminException e )
         {

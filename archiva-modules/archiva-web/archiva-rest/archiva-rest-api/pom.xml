@@ -30,7 +30,8 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-security</artifactId>
+      <artifactId>archiva-security-common</artifactId>
+
     </dependency>
 
     <dependency>
