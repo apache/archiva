@@ -39,7 +39,7 @@
     </field>
     <field name="organisationLogo">
         <field-validator type="url">
-            <message>You must enter a URL</message>
+            <message>You must enter a URL for your logo.</message>
         </field-validator>
     </field>
 </validators>
