@@ -19,19 +19,17 @@ package org.apache.archiva.web.tags;
  * under the License.
  */
 
-import java.io.IOException;
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
+import org.apache.archiva.web.util.ContextUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.archiva.admin.repository.managed.ManagedRepository;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.web.util.ContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
 
 /**
  * CopyPasteSnippetTag 
