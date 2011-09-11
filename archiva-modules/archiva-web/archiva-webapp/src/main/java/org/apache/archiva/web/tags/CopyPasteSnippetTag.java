@@ -26,6 +26,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.archiva.admin.repository.managed.ManagedRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.web.util.ContextUtils;
@@ -70,9 +71,9 @@ public class CopyPasteSnippetTag
             buf.append( "Error generating snippet." );
             log.error( "Unable to generate snippet for null object." );
         }
-        else if ( object instanceof ManagedRepositoryConfiguration )
+        else if ( object instanceof ManagedRepository )
         {
-            ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) object;
+            ManagedRepository repo = (ManagedRepository) object;
             
             if ( TOGGLE.equals( wrapper ) )
             {
@@ -122,7 +123,7 @@ public class CopyPasteSnippetTag
         this.wrapper = wrapper;
     }
 
-    private void createSnippet( StringBuilder snippet, ManagedRepositoryConfiguration repo, PageContext pageContext )
+    private void createSnippet( StringBuilder snippet, ManagedRepository repo, PageContext pageContext )
     {
         snippet.append( "<project>\n" );
         snippet.append( "  ...\n" );
