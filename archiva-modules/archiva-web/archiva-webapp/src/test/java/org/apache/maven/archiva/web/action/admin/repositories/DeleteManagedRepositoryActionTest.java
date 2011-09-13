@@ -186,6 +186,11 @@ public class DeleteManagedRepositoryActionTest
         stageRepoConfiguration.addManagedRepository( createStagingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
+
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
@@ -201,7 +206,8 @@ public class DeleteManagedRepositoryActionTest
 
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
-        assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
+        assertEquals( Collections.singletonList( originalRepository ),
+                      action.getManagedRepositoryAdmin().getManagedRepositories() );
     }
 
     public void testDeleteRepositoryKeepContent()
@@ -316,7 +322,8 @@ public class DeleteManagedRepositoryActionTest
 
         ManagedRepository repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
-        assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
+        assertEquals( Collections.singletonList( originalRepository ),
+                      action.getManagedRepositoryAdmin().getManagedRepositories() );
 
         assertTrue( location.exists() );
 
@@ -327,6 +334,10 @@ public class DeleteManagedRepositoryActionTest
     private Configuration prepDeletionTest( ManagedRepository originalRepository, int expectCountGetConfig )
         throws RegistryException, IndeterminateConfigurationException, RepositoryAdminException
     {
+
+        //Configuration originalConfiguration =
+        //    ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).getArchivaConfiguration().getConfiguration();
+
         location.mkdirs();
 
         Configuration configuration = createConfigurationForEditing( originalRepository );
@@ -376,8 +387,10 @@ public class DeleteManagedRepositoryActionTest
     private Configuration createConfigurationForEditing( ManagedRepository repositoryConfiguration )
     {
         Configuration configuration = new Configuration();
-        configuration.addManagedRepository(
-            new BeanReplicator().replicateBean( repositoryConfiguration, ManagedRepositoryConfiguration.class ) );
+        ManagedRepositoryConfiguration managedRepositoryConfiguration =
+            new BeanReplicator().replicateBean( repositoryConfiguration, ManagedRepositoryConfiguration.class );
+        managedRepositoryConfiguration.setRefreshCronExpression( repositoryConfiguration.getCronExpression() );
+        configuration.addManagedRepository( managedRepositoryConfiguration );
         return configuration;
     }
 
