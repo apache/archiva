@@ -39,12 +39,6 @@ public class SearchServiceTest
         throws Exception
     {
 
-        // olamy temporary disabled due to huge refactoring
-        if (true)
-        {
-            return;
-        }
-
         String testRepoId = "test-repo";
         // force guest user creation if not exists
         if ( getUserService( authorizationHeader ).getGuestUser() == null )
@@ -52,6 +46,22 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
+        createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
+
+        assertNotNull( artifacts );
+        assertTrue( " empty results for commons-logging search", artifacts.size() > 0 );
+        log.info( "artifacts for commons-logginf search {}", artifacts );
+
+        deleteTestRepo( testRepoId );
+    }
+
+    private void createAndIndexRepo( String testRepoId )
+        throws Exception
+    {
         File targetRepo = new File( System.getProperty( "targetDir", "./target" ), "test-repo" );
 
         if ( targetRepo.exists() )
@@ -67,28 +77,14 @@ public class SearchServiceTest
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
         managedRepository.setCronExpression( "* * * * * ?" );
+        managedRepository.setScanned( false );
 
         managedRepository.setLocation( targetRepo.getPath() );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
 
-        getRepositoriesService( authorizationHeader ).scanRepository( testRepoId, true );
-
-        while ( getRepositoriesService( authorizationHeader ).alreadyScanning( testRepoId ) )
-        {
-            Thread.sleep( 1000 );
-        }
-
-        SearchService searchService = getSearchService( authorizationHeader );
-
-        List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
-
-        assertNotNull( artifacts );
-        assertTrue( " empty results for commons-logging search", artifacts.size() > 0 );
-        log.info( "artifacts for commons-logginf search {}", artifacts );
-
-        deleteTestRepo( testRepoId );
+        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
     }
 
     private void deleteTestRepo( String id )

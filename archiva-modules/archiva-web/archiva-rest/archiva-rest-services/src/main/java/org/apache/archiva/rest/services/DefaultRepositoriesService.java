@@ -19,10 +19,19 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
+import org.apache.archiva.scheduler.indexing.ArchivaIndexingTaskExecutor;
+import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.codehaus.plexus.redback.role.RoleManager;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +40,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.PathParam;
+import java.util.ArrayList;
 
 /**
  * @author Olivier Lamy
@@ -44,12 +54,21 @@ public class DefaultRepositoriesService
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    protected RoleManager roleManager;
-
-    @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
+    @Inject
+    @Named( value = "taskExecutor#indexing" )
+    private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private MavenIndexerUtils mavenIndexerUtils;
 
     // FIXME olamy move this to repository admin component !
     public Boolean scanRepository( String repositoryId, boolean fullScan )
@@ -90,6 +109,32 @@ public class DefaultRepositoriesService
         {
             log.error( "failed to unschedule scanning of repo with id {}", repositoryId, e );
             return false;
+        }
+    }
+
+    public Boolean scanRepositoryNow( String repositoryId, boolean fullScan )
+        throws ArchivaRestServiceException
+    {
+
+        try
+        {
+            ManagedRepository repository = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            IndexingContext context =
+                ArtifactIndexingTask.createContext( repository, plexusSisuBridge.lookup( NexusIndexer.class ),
+                                                    new ArrayList<IndexCreator>(
+                                                        mavenIndexerUtils.getAllIndexCreators() ) );
+            ArtifactIndexingTask task =
+                new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
+            task.setExecuteOnEntireRepo( true );
+            task.setOnlyUpdate( false );
+
+            archivaIndexingTaskExecutor.executeTask( task );
+            return Boolean.TRUE;
+        }
+        catch ( Exception e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
     }
 }

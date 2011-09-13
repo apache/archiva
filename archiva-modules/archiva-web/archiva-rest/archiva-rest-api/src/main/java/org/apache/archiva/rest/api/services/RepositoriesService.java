@@ -42,19 +42,30 @@ public interface RepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean scanRepository( @QueryParam( "repositoryId" ) String repositoryId,
-                            @QueryParam( "fullScan" ) boolean fullScan );
+                            @QueryParam( "fullScan" ) boolean fullScan )
+        throws ArchivaRestServiceException;
 
 
     @Path( "alreadyScanning/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
-    Boolean alreadyScanning( @PathParam( "repositoryId" ) String repositoryId );
+    Boolean alreadyScanning( @PathParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
 
     @Path( "removeScanningTaskFromQueue/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
-    Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId );
+    Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
+    @Path( "scanRepositoryNow" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    Boolean scanRepositoryNow( @QueryParam( "repositoryId" ) String repositoryId,
+                               @QueryParam( "fullScan" ) boolean fullScan )
+        throws ArchivaRestServiceException;
 
 }
