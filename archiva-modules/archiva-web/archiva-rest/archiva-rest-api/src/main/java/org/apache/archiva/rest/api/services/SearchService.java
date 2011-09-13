@@ -24,8 +24,6 @@ import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
 
 import javax.ws.rs.Path;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
 import java.util.List;
 
 @Path( "/searchService/" )
@@ -35,10 +33,9 @@ public interface SearchService
     * quick/general text search which returns a list of artifacts
     * query for an artifact based on a checksum
     * query for all available versions of an artifact, sorted in version significance order
-    * query for all available versions of an artifact since a given date
     * query for an artifact's direct dependencies
-    * query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
-    * query for all artifacts that depend on a given artifact
+    * TODO query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
+    * TODO query for all artifacts that depend on a given artifact
     */
 
     List<Artifact> quickSearch( String queryString )
@@ -50,15 +47,7 @@ public interface SearchService
     List<Artifact> getArtifactVersions( String groupId, String artifactId )
         throws Exception;
 
-    List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date whenGathered )
-        throws Exception;
-
     List<Dependency> getDependencies( String groupId, String artifactId, String version )
         throws Exception;
 
-    List<Artifact> getDependencyTree( String groupId, String artifactId, String version )
-        throws Exception;
-
-    List<Artifact> getDependees( String groupId, String artifactId, String version )
-        throws Exception;
 }
