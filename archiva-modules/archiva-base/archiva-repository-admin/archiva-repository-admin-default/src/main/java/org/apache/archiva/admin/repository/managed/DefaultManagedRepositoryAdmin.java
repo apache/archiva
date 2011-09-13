@@ -24,6 +24,8 @@ import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -39,6 +41,8 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -85,6 +89,9 @@ public class DefaultManagedRepositoryAdmin
 
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
 
 
     @Inject
@@ -209,7 +216,6 @@ public class DefaultManagedRepositoryAdmin
         repository.setRetentionCount( retentionCount );
         repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
 
-
         try
         {
             addRepository( repository, config );
@@ -281,7 +287,6 @@ public class DefaultManagedRepositoryAdmin
         if ( stagingRepository != null )
         {
             // do not trigger event when deleting the staged one
-            //triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.DELETE_MANAGED_REPO, auditInformation );
             deleteManagedRepository( stagingRepository, deleteContent, config, true );
         }
 
@@ -301,6 +306,25 @@ public class DefaultManagedRepositoryAdmin
                                              Configuration config, boolean stagedOne )
         throws RepositoryAdminException
     {
+
+        try
+        {
+            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+
+            IndexingContext context = nexusIndexer.getIndexingContexts().get( repository.getId() );
+            if ( context != null )
+            {
+                nexusIndexer.removeIndexingContext( context, deleteContent );
+            }
+        }
+        catch ( PlexusSisuBridgeException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
         if ( !stagedOne )
         {
             RepositorySession repositorySession = getRepositorySessionFactory().createSession();
