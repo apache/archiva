@@ -20,11 +20,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.codehaus.plexus.registry.RegistryException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -40,6 +44,9 @@ public class SortRepositoriesAction
     private String repoGroupId;
 
     private String targetRepo;
+
+    @Inject
+    protected ArchivaConfiguration archivaConfiguration;
 
     public String sortDown()
     {
@@ -73,6 +80,36 @@ public class SortRepositoriesAction
         }
 
         return saveConfiguration( config );
+    }
+
+/**
+     * Save the configuration.
+     *
+     * @param configuration the configuration to save.
+     * @return the webwork result code to issue.
+     * @throws java.io.IOException                   thrown if unable to save file to disk.
+     * @throws org.apache.maven.archiva.configuration.InvalidConfigurationException thrown if configuration is invalid.
+     * @throws org.codehaus.plexus.registry.RegistryException             thrown if configuration subsystem has a problem saving the configuration to disk.
+     */
+    protected String saveConfiguration( Configuration configuration )
+    {
+        try
+        {
+            archivaConfiguration.save( configuration );
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
+            return INPUT;
+        }
+        catch ( RegistryException e )
+        {
+            addActionError( "Configuration Registry Exception: " + e.getMessage() );
+            return INPUT;
+        }
+
+        return SUCCESS;
     }
 
     public String getRepoGroupId()
@@ -120,5 +157,15 @@ public class SortRepositoriesAction
     private boolean validIndex( List<String> repositories, int idx )
     {
         return ( idx >= 0 ) && ( idx < repositories.size() );
+    }
+
+    public ArchivaConfiguration getArchivaConfiguration()
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }

@@ -64,7 +64,6 @@ public class EditRemoteRepositoryActionTest
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
 
         ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
             archivaConfiguration );

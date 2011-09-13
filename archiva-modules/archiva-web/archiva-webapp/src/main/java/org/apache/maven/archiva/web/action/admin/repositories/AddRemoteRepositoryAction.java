@@ -23,7 +23,6 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.remote.RemoteRepository;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -70,30 +69,6 @@ public class AddRemoteRepositoryAction
         return result;
     }
 
-    // FIXME olamy dupe with admin repo component
-    @Override
-    public void validate()
-    {
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        String repoId = repository.getId();
-
-        if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a managed repository." );
-        }
-        else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a remote repository." );
-        }
-        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a repository group." );
-        }
-    }
 
     public RemoteRepository getRepository()
     {

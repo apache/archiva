@@ -92,7 +92,6 @@ public class EditManagedRepositoryActionTest
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
 
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();

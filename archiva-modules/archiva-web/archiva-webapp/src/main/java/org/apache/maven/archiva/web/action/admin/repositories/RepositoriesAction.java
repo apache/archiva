@@ -34,7 +34,6 @@ import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.util.ContextUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.codehaus.plexus.redback.rbac.Resource;

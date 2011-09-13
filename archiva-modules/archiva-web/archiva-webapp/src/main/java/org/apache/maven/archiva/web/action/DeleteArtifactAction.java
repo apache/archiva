@@ -21,6 +21,9 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
@@ -31,11 +34,13 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
@@ -47,10 +52,6 @@ import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.archiva.security.AccessDeniedException;
-import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.security.PrincipalNotFoundException;
-import org.apache.archiva.security.UserRepositories;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -105,13 +106,13 @@ public class DeleteArtifactAction
     private UserRepositories userRepositories;
 
     @Inject
-    private ArchivaConfiguration configuration;
-
-    @Inject
     private RepositoryContentFactory repositoryFactory;
 
     @Inject
     private List<RepositoryListener> listeners;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -193,22 +194,21 @@ public class DeleteArtifactAction
 
     public String doDelete()
     {
-        Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
-
-        TimeZone timezone = TimeZone.getTimeZone( "UTC" );
-        DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-        fmt.setTimeZone( timezone );
-        ManagedRepositoryConfiguration repoConfig =
-            configuration.getConfiguration().findManagedRepositoryById( repositoryId );
-
-        VersionedReference ref = new VersionedReference();
-        ref.setArtifactId( artifactId );
-        ref.setGroupId( groupId );
-        ref.setVersion( version );
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
+            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
+
+            TimeZone timezone = TimeZone.getTimeZone( "UTC" );
+            DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+            fmt.setTimeZone( timezone );
+            ManagedRepository repoConfig = getManagedRepositoryAdmin().getManagedRepository( repositoryId );
+
+            VersionedReference ref = new VersionedReference();
+            ref.setArtifactId( artifactId );
+            ref.setGroupId( groupId );
+            ref.setVersion( version );
             ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
 
             String path = repository.toMetadataPath( ref );
@@ -278,6 +278,11 @@ public class DeleteArtifactAction
         catch ( MetadataRepositoryException e )
         {
             addActionError( "Repository exception: " + e.getMessage() );
+            return ERROR;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( "RepositoryAdmin exception: " + e.getMessage() );
             return ERROR;
         }
         finally
@@ -453,8 +458,13 @@ public class DeleteArtifactAction
         this.repositoryFactory = repositoryFactory;
     }
 
-    public void setConfiguration( ArchivaConfiguration configuration )
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {
-        this.configuration = configuration;
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }

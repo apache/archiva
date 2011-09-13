@@ -24,7 +24,6 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -87,11 +86,10 @@ public class EditManagedRepositoryAction
         return save( true );
     }
 
-    // FIXME olamy use ManagedRepositoryAdmin rather tha, directly archivaConfiguration
     public String commit()
+        throws RepositoryAdminException
     {
-        ManagedRepositoryConfiguration existingConfig =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repository.getId() );
+        ManagedRepository existingConfig = getManagedRepositoryAdmin().getManagedRepository( repository.getId() );
         boolean resetStats = false;
 
         // check if the location was changed

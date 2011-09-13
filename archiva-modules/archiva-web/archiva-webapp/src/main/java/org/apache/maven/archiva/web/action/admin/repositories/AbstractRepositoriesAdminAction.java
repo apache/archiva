@@ -51,18 +51,11 @@ public abstract class AbstractRepositoriesAdminAction
 {
 
     @Inject
-    protected ArchivaConfiguration archivaConfiguration;
-
-    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private RepositoryCommonValidator repositoryCommonValidator;
 
-    public ArchivaConfiguration getArchivaConfiguration()
-    {
-        return archivaConfiguration;
-    }
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
@@ -75,40 +68,7 @@ public abstract class AbstractRepositoriesAdminAction
         return bundle;
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
-    }
 
-    /**
-     * Save the configuration.
-     *
-     * @param configuration the configuration to save.
-     * @return the webwork result code to issue.
-     * @throws IOException                   thrown if unable to save file to disk.
-     * @throws InvalidConfigurationException thrown if configuration is invalid.
-     * @throws RegistryException             thrown if configuration subsystem has a problem saving the configuration to disk.
-     */
-    protected String saveConfiguration( Configuration configuration )
-    {
-        try
-        {
-            archivaConfiguration.save( configuration );
-            addActionMessage( "Successfully saved configuration" );
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            addActionError( e.getMessage() );
-            return INPUT;
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
-            return INPUT;
-        }
-
-        return SUCCESS;
-    }
 
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {

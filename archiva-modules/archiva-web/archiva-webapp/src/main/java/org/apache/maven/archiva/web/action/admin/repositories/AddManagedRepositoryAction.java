@@ -24,8 +24,6 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -101,41 +99,9 @@ public class AddManagedRepositoryAction
         return result;
     }
 
-    // FIXME olamy dupe with admin repo component
     @Override
     public void validate()
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        CronExpressionValidator validator = new CronExpressionValidator();
-        String repoId = repository.getId();
-
-        if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a managed repository." );
-        }
-        else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a remote repository." );
-        }
-        else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], that id already exists as a repository group." );
-        }
-        else if ( repoId.toLowerCase().contains( "stage" ) )
-        {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                + "], repository id cannot contains word stage" );
-        }
-
-        if ( !validator.validate( repository.getCronExpression() ) )
-        {
-            addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
-        }
-
         // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
         trimAllRequestParameterValues();
     }
