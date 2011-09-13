@@ -20,6 +20,7 @@ package org.apache.archiva.indexer.search;
 */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
@@ -94,7 +95,10 @@ public abstract class AbstractNexusRepositorySearch
 
         archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
 
-        search = new NexusRepositorySearch( plexusSisuBridge, archivaConfig, mavenIndexerUtils );
+        DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin = new DefaultManagedRepositoryAdmin();
+        defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfig );
+
+        search = new NexusRepositorySearch( plexusSisuBridge, defaultManagedRepositoryAdmin, mavenIndexerUtils );
 
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
 

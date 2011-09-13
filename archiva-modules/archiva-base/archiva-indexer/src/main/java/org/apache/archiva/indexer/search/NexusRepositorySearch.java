@@ -19,6 +19,9 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -26,9 +29,6 @@ import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -62,17 +62,17 @@ public class NexusRepositorySearch
 
     private NexusIndexer indexer;
 
-    private ArchivaConfiguration archivaConfig;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
-    public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ArchivaConfiguration archivaConfig,
+    public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ManagedRepositoryAdmin managedRepositoryAdmin,
                                   MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
     {
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        this.archivaConfig = archivaConfig;
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
         this.mavenIndexerUtils = mavenIndexerUtils;
 
     }
@@ -283,16 +283,15 @@ public class NexusRepositorySearch
         {
             try
             {
-                Configuration config = archivaConfig.getConfiguration();
-                ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repo );
+                ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repo );
 
                 if ( repoConfig != null )
                 {
-                    String indexDir = repoConfig.getIndexDir();
+                    String indexDir = repoConfig.getIndexDirectory();
                     File indexDirectory = null;
                     if ( indexDir != null && !"".equals( indexDir ) )
                     {
-                        indexDirectory = new File( repoConfig.getIndexDir() );
+                        indexDirectory = new File( repoConfig.getIndexDirectory() );
                     }
                     else
                     {
@@ -337,6 +336,10 @@ public class NexusRepositorySearch
             catch ( IOException e )
             {
                 log.warn( "IO error occured while accessing index of repository '" + repo + "' : " + e.getMessage() );
+                continue;
+            } catch ( RepositoryAdminException e )
+            {
+                  log.warn( "RepositoryAdminException occured while accessing index of repository '" + repo + "' : " + e.getMessage() );
                 continue;
             }
         }

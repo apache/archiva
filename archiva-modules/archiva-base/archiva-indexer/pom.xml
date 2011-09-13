@@ -28,9 +28,10 @@
   <artifactId>archiva-indexer</artifactId>
   <name>Archiva Base :: Indexer</name>
   <dependencies>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
+      <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
@@ -81,6 +82,16 @@
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

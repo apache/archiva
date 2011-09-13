@@ -31,15 +31,8 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.indexer.search"/>
 
-  <!--
-    <bean id="nexusSearch" class="org.apache.archiva.indexer.search.NexusRepositorySearch">
-        <constructor-arg ref="nexusIndexer"/>
-        <constructor-arg ref="archivaConfiguration#default"/>
-    </bean>
-  -->
   <bean id="logger" class="org.apache.maven.archiva.common.utils.Slf4JPlexusLogger">
     <constructor-arg type="java.lang.Class"><value>org.sonatype.nexus.index.DefaultNexusIndexer</value></constructor-arg>
   </bean>
-  
-   <!--  <bean id="indexingContextMap" class="org.apache.archiva.indexer.IndexingContextMap"/>  -->
+
 </beans>
