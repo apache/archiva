@@ -40,7 +40,66 @@ public class Artifact
 
     public Artifact()
     {
+        // no op
+    }
 
+    public Artifact( String repositoryId, String groupId, String artifactId, String version, String type )
+    {
+        this.repositoryId = repositoryId;
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
+        this.type = type;
+    }
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public String getArtifactId()
+    {
+        return artifactId;
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public void setVersion( String version )
+    {
+        this.version = version;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
     }
 
     @Override
@@ -95,79 +154,15 @@ public class Artifact
     @Override
     public String toString()
     {
-        return "Artifact{" + "repositoryId='" + repositoryId + '\'' + ", groupId='" + groupId + '\'' + ", artifactId='"
-            + artifactId + '\'' + ", version='" + version + '\'' + ", type='" + type + '\'' + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "Artifact" );
+        sb.append( "{repositoryId='" ).append( repositoryId ).append( '\'' );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( ", type='" ).append( type ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
 
-    public Artifact( String repositoryId, String groupId, String artifactId, String version, String type )
-//                     String type, Date whenGathered )
-    {
-        this.repositoryId = repositoryId;
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
-        this.type = type;
-        //this.whenGathered = whenGathered;
-    }
-
-    public String getGroupId()
-    {
-        return groupId;
-    }
-
-    public String getArtifactId()
-    {
-        return artifactId;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public String getType()
-    {
-        return type;
-    }
-
-    public String getRepositoryId()
-    {
-        return repositoryId;
-    }
-
-    /*public Date getWhenGathered()
-    {
-        return whenGathered;
-    }*/
-
-    public void setGroupId( String groupId )
-    {
-        this.groupId = groupId;
-    }
-
-    public void setArtifactId( String artifactId )
-    {
-        this.artifactId = artifactId;
-    }
-
-    public void setVersion( String version )
-    {
-        this.version = version;
-    }
-
-    public void setType( String type )
-    {
-        this.type = type;
-    }
-
-    public void setRepositoryId( String repositoryId )
-    {
-        this.repositoryId = repositoryId;
-    }
-
-    /*@ServiceBeanField( "whenGathered" )
-    public void setWhenGathered( Date whenGathered )
-    {
-        this.whenGathered = whenGathered;
-    }*/
 }
