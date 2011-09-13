@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.group.RepositoryGroup;
+import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
@@ -51,12 +52,14 @@ public class DeleteRepositoryGroupActionTest
     {
         super.setUp();
 
-        //action = (DeleteRepositoryGroupAction) lookup ( Action.class.getName(), "deleteRepositoryGroupAction" );
         action = (DeleteRepositoryGroupAction) getActionProxy( "/admin/deleteRepositoryGroup.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
+
+        ( (DefaultRepositoryGroupAdmin) action.getRepositoryGroupAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
     }
 
     public void testSecureActionBundle()
@@ -98,7 +101,7 @@ public class DeleteRepositoryGroupActionTest
         Configuration configuration = createConfigurationForEditing( createRepositoryGroup() );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 3 );
+        archivaConfigurationControl.setReturnValue( configuration, 5 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
@@ -108,7 +111,8 @@ public class DeleteRepositoryGroupActionTest
         assertEquals( REPO_GROUP_ID, action.getRepoGroupId() );
         RepositoryGroup repoGroup = action.getRepositoryGroup();
         assertNotNull( repoGroup );
-        assertEquals( Collections.singletonList( repoGroup ), configuration.getRepositoryGroups() );
+        assertEquals( Collections.singletonList( repoGroup ),
+                      action.getRepositoryGroupAdmin().getRepositoriesGroups() );
 
         String status = action.delete();
         assertEquals( Action.SUCCESS, status );
@@ -136,7 +140,8 @@ public class DeleteRepositoryGroupActionTest
 
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
-        assertEquals( Collections.singletonList( repoGroup ), configuration.getRepositoryGroups() );
+        assertEquals( Collections.singletonList( repoGroup ),
+                      action.getRepositoryGroupAdmin().getRepositoriesGroups() );
     }
 
     private Configuration createConfigurationForEditing( RepositoryGroupConfiguration repoGroup )

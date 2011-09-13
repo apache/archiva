@@ -108,4 +108,14 @@ public class DeleteRepositoryGroupAction
     {
         this.repoGroupId = repoGroupId;
     }
+
+    public RepositoryGroupAdmin getRepositoryGroupAdmin()
+    {
+        return repositoryGroupAdmin;
+    }
+
+    public void setRepositoryGroupAdmin( RepositoryGroupAdmin repositoryGroupAdmin )
+    {
+        this.repositoryGroupAdmin = repositoryGroupAdmin;
+    }
 }
