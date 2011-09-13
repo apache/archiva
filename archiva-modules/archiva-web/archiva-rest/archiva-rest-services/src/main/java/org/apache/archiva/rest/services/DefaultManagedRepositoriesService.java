@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -42,6 +43,10 @@ public class DefaultManagedRepositoriesService
 
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
 
     public List<ManagedRepository> getManagedRepositories()
         throws ArchivaRestServiceException
@@ -87,14 +92,22 @@ public class DefaultManagedRepositoriesService
 
 
     public Boolean deleteManagedRepository( String repoId, boolean deleteContent )
-        throws Exception
+        throws ArchivaRestServiceException
     {
 
-        return managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation(), deleteContent );
+        try
+        {
+            return managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation(), deleteContent );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public Boolean addManagedRepository( ManagedRepository managedRepository )
-        throws Exception
+        throws ArchivaRestServiceException
     {
         org.apache.archiva.admin.model.managed.ManagedRepository repo =
             new org.apache.archiva.admin.model.managed.ManagedRepository();
@@ -106,13 +119,20 @@ public class DefaultManagedRepositoriesService
         repo.setName( managedRepository.getName() );
         repo.setReleases( managedRepository.isReleases() );
         repo.setSnapshots( managedRepository.isSnapshots() );
-        return managedRepositoryAdmin.addManagedRepository( repo, managedRepository.isStageRepoNeeded(),
-                                                            getAuditInformation() );
+        try
+        {
+            return managedRepositoryAdmin.addManagedRepository( repo, managedRepository.isStageRepoNeeded(),
+                                                                getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
 
     public Boolean updateManagedRepository( ManagedRepository managedRepository )
-        throws Exception
+        throws ArchivaRestServiceException
     {
         org.apache.archiva.admin.model.managed.ManagedRepository repo =
             new org.apache.archiva.admin.model.managed.ManagedRepository();
@@ -124,9 +144,16 @@ public class DefaultManagedRepositoriesService
         repo.setName( managedRepository.getName() );
         repo.setReleases( managedRepository.isReleases() );
         repo.setSnapshots( managedRepository.isSnapshots() );
-        return managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.isStageRepoNeeded(),
-                                                               getAuditInformation(),
-                                                               managedRepository.isResetStats() );
+        try
+        {
+            return managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.isStageRepoNeeded(),
+                                                                   getAuditInformation(),
+                                                                   managedRepository.isResetStats() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
 }

@@ -21,22 +21,37 @@ package org.apache.archiva.rest.api.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 
 @XmlRootElement( name = "artifact" )
 public class Artifact
     implements Serializable
 {
-    private String repositoryId;
+    // The (optional) context for this result.
+    private String context;
 
+    // Basic hit, direct to non-artifact resource.
+    private String url;
+
+    // Advanced hit, reference to groupId.
     private String groupId;
 
+    //  Advanced hit, reference to artifactId.
     private String artifactId;
+
+    private String repositoryId;
 
     private String version;
 
-    private String type;
+    /**
+     * Plugin goal prefix (only if packaging is "maven-plugin")
+     */
+    private String prefix;
 
-    private String url;
+    /**
+     * Plugin goals (only if packaging is "maven-plugin")
+     */
+    private List<String> goals;
 
     /**
      * contains osgi metadata Bundle-Version if available
@@ -66,19 +81,52 @@ public class Artifact
      */
     private String bundleExportService;
 
+    /**
+     * contains osgi metadata Bundle-Description if available
+     *
+     * @since 1.4
+     */
+    private String bundleDescription;
+
+    /**
+     * contains osgi metadata Bundle-Name if available
+     *
+     * @since 1.4
+     */
+    private String bundleName;
+
+    /**
+     * contains osgi metadata Bundle-License if available
+     *
+     * @since 1.4
+     */
+    private String bundleLicense;
+
+    /**
+     * contains osgi metadata Bundle-DocURL if available
+     *
+     * @since 1.4
+     */
+    private String bundleDocUrl;
+
+    /**
+     * contains osgi metadata Import-Package if available
+     *
+     * @since 1.4
+     */
+    private String bundleImportPackage;
+
+    /**
+     * contains osgi metadata Require-Bundle if available
+     *
+     * @since 1.4
+     */
+    private String bundleRequireBundle;
+
 
     public Artifact()
     {
         // no op
-    }
-
-    public Artifact( String repositoryId, String groupId, String artifactId, String version, String type )
-    {
-        this.repositoryId = repositoryId;
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
-        this.type = type;
     }
 
     public String getGroupId()
@@ -94,11 +142,6 @@ public class Artifact
     public String getVersion()
     {
         return version;
-    }
-
-    public String getType()
-    {
-        return type;
     }
 
     public String getRepositoryId()
@@ -121,63 +164,149 @@ public class Artifact
         this.version = version;
     }
 
-    public void setType( String type )
-    {
-        this.type = type;
-    }
-
     public void setRepositoryId( String repositoryId )
     {
         this.repositoryId = repositoryId;
     }
 
-    @Override
-    public boolean equals( Object o )
+    public String getContext()
     {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        Artifact artifact = (Artifact) o;
-
-        if ( !artifactId.equals( artifact.artifactId ) )
-        {
-            return false;
-        }
-        if ( !groupId.equals( artifact.groupId ) )
-        {
-            return false;
-        }
-        if ( !repositoryId.equals( artifact.repositoryId ) )
-        {
-            return false;
-        }
-        if ( type != null ? !type.equals( artifact.type ) : artifact.type != null )
-        {
-            return false;
-        }
-        if ( !version.equals( artifact.version ) )
-        {
-            return false;
-        }
-
-        return true;
+        return context;
     }
 
-    @Override
-    public int hashCode()
+    public void setContext( String context )
     {
-        int result = repositoryId.hashCode();
-        result = 31 * result + groupId.hashCode();
-        result = 31 * result + artifactId.hashCode();
-        result = 31 * result + version.hashCode();
-        result = 31 * result + ( type != null ? type.hashCode() : 0 );
-        return result;
+        this.context = context;
+    }
+
+    public String getUrl()
+    {
+        return url;
+    }
+
+    public void setUrl( String url )
+    {
+        this.url = url;
+    }
+
+    public String getPrefix()
+    {
+        return prefix;
+    }
+
+    public void setPrefix( String prefix )
+    {
+        this.prefix = prefix;
+    }
+
+    public List<String> getGoals()
+    {
+        return goals;
+    }
+
+    public void setGoals( List<String> goals )
+    {
+        this.goals = goals;
+    }
+
+    public String getBundleVersion()
+    {
+        return bundleVersion;
+    }
+
+    public void setBundleVersion( String bundleVersion )
+    {
+        this.bundleVersion = bundleVersion;
+    }
+
+    public String getBundleSymbolicName()
+    {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName( String bundleSymbolicName )
+    {
+        this.bundleSymbolicName = bundleSymbolicName;
+    }
+
+    public String getBundleExportPackage()
+    {
+        return bundleExportPackage;
+    }
+
+    public void setBundleExportPackage( String bundleExportPackage )
+    {
+        this.bundleExportPackage = bundleExportPackage;
+    }
+
+    public String getBundleExportService()
+    {
+        return bundleExportService;
+    }
+
+    public void setBundleExportService( String bundleExportService )
+    {
+        this.bundleExportService = bundleExportService;
+    }
+
+    public String getBundleDescription()
+    {
+        return bundleDescription;
+    }
+
+    public void setBundleDescription( String bundleDescription )
+    {
+        this.bundleDescription = bundleDescription;
+    }
+
+    public String getBundleName()
+    {
+        return bundleName;
+    }
+
+    public void setBundleName( String bundleName )
+    {
+        this.bundleName = bundleName;
+    }
+
+    public String getBundleLicense()
+    {
+        return bundleLicense;
+    }
+
+    public void setBundleLicense( String bundleLicense )
+    {
+        this.bundleLicense = bundleLicense;
+    }
+
+    public String getBundleDocUrl()
+    {
+        return bundleDocUrl;
+    }
+
+    public void setBundleDocUrl( String bundleDocUrl )
+    {
+        this.bundleDocUrl = bundleDocUrl;
+    }
+
+    public String getBundleImportPackage()
+    {
+        return bundleImportPackage;
+    }
+
+    public void setBundleImportPackage( String bundleImportPackage )
+    {
+        this.bundleImportPackage = bundleImportPackage;
+    }
+
+    public String getBundleRequireBundle()
+    {
+        return bundleRequireBundle;
+    }
+
+    public void setBundleRequireBundle( String bundleRequireBundle )
+    {
+        this.bundleRequireBundle = bundleRequireBundle;
     }
 
     @Override
@@ -185,11 +314,24 @@ public class Artifact
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "Artifact" );
-        sb.append( "{repositoryId='" ).append( repositoryId ).append( '\'' );
+        sb.append( "{context='" ).append( context ).append( '\'' );
+        sb.append( ", url='" ).append( url ).append( '\'' );
         sb.append( ", groupId='" ).append( groupId ).append( '\'' );
         sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
         sb.append( ", version='" ).append( version ).append( '\'' );
-        sb.append( ", type='" ).append( type ).append( '\'' );
+        sb.append( ", prefix='" ).append( prefix ).append( '\'' );
+        sb.append( ", goals=" ).append( goals );
+        sb.append( ", bundleVersion='" ).append( bundleVersion ).append( '\'' );
+        sb.append( ", bundleSymbolicName='" ).append( bundleSymbolicName ).append( '\'' );
+        sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
+        sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( ", bundleDescription='" ).append( bundleDescription ).append( '\'' );
+        sb.append( ", bundleName='" ).append( bundleName ).append( '\'' );
+        sb.append( ", bundleLicense='" ).append( bundleLicense ).append( '\'' );
+        sb.append( ", bundleDocUrl='" ).append( bundleDocUrl ).append( '\'' );
+        sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
+        sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

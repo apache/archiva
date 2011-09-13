@@ -126,6 +126,7 @@ public class DefaultRepositoriesService
                                                         mavenIndexerUtils.getAllIndexCreators() ) );
             ArtifactIndexingTask task =
                 new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
+
             task.setExecuteOnEntireRepo( true );
             task.setOnlyUpdate( false );
 
@@ -134,6 +135,7 @@ public class DefaultRepositoriesService
         }
         catch ( Exception e )
         {
+            log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage() );
         }
     }

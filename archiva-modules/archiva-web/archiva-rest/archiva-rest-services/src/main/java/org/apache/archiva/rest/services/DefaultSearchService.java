@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
+import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
@@ -85,19 +86,39 @@ public class DefaultSearchService
         }
     }
 
-    public List<Artifact> getArtifactByChecksum( String checksum )
-        throws ArchivaRestServiceException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public List<Artifact> getArtifactVersions( String groupId, String artifactId )
         throws ArchivaRestServiceException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        if ( StringUtils.isBlank( groupId ) || StringUtils.isBlank( artifactId ) )
+        {
+            return Collections.emptyList();
+        }
+        SearchFields searchField = new SearchFields();
+        searchField.setGroupId( groupId );
+        searchField.setArtifactId( artifactId );
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+
+        try
+        {
+            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );
+            return getArtifacts( searchResults );
+        }
+        catch ( RepositorySearchException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+
+
     }
 
     public List<Dependency> getDependencies( String groupId, String artifactId, String version )
+        throws ArchivaRestServiceException
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<Artifact> getArtifactByChecksum( String checksum )
         throws ArchivaRestServiceException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -144,18 +165,45 @@ public class DefaultSearchService
             return Collections.emptyList();
         }
         List<Artifact> artifacts = new ArrayList<Artifact>( searchResults.getReturnedHitsCount() );
-        for ( SearchResultHit searchResultHit : searchResults.getHits() )
+        for ( SearchResultHit hit : searchResults.getHits() )
         {
-            Artifact artifact = new BeanReplicator().replicateBean( searchResultHit, Artifact.class );
-            artifacts.add( artifact );
             // duplicate Artifact one per available version
-            if ( searchResultHit.getVersions().size() > 1 )
+            if ( hit.getVersions().size() > 0 )
             {
-                for ( String version : searchResultHit.getVersions() )
+                for ( String version : hit.getVersions() )
                 {
-                    Artifact versionned = new BeanReplicator().replicateBean( searchResultHit, Artifact.class );
-                    versionned.setVersion( version );
-                    artifacts.add( versionned );
+                    /*
+                    Artifact versionned = new Artifact(  );
+                    versionned.setArtifactId( hit.getArtifactId());
+                    versionned.setGroupId( hit.getGroupId() );
+                    versionned.setRepositoryId(hit.getRepositoryId() );
+
+
+                    versionned.setBundleExportPackage( hit.getBundleExportPackage() );
+                    versionned.setBundleExportService( hit.getBundleExportService());
+                    versionned.setBundleSymbolicName(hit.getBundleSymbolicName() );
+                    versionned.setBundleVersion( artifactInfo.bundleVersion );
+                    versionned.setBundleDescription( artifactInfo.bundleDescription );
+                    versionned.setBundleDocUrl( artifactInfo.bundleDocUrl );
+
+                    versionned.setBundleRequireBundle( artifactInfo.bundleRequireBundle );
+                    versionned.setBundleImportPackage( artifactInfo.bundleImportPackage );
+                    versionned.setBundleLicense( artifactInfo.bundleLicense );
+                    versionned.setBundleName( artifactInfo.bundleName );
+                    versionned.setContext( artifactInfo.context );
+                    versionned.setGoals( artifactInfo.goals );
+                    versionned.setPrefix( artifactInfo.prefix );
+                    // sure ??
+                    versionned.setUrl( artifactInfo.remoteUrl );
+                    */
+                    // FIXME archiva url ??
+
+                    Artifact versionned = new BeanReplicator().replicateBean( hit, Artifact.class );
+                    if ( StringUtils.isNotBlank( version ) )
+                    {
+                        versionned.setVersion( version );
+                        artifacts.add( versionned );
+                    }
                 }
             }
         }

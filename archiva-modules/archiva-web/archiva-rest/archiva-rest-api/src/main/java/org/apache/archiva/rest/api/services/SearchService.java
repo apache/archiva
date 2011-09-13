@@ -50,13 +50,6 @@ public interface SearchService
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
-    @Path( "getArtifactByChecksum" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true )
-    List<Artifact> getArtifactByChecksum( @QueryParam( "checksum" ) String checksum )
-        throws ArchivaRestServiceException;
-
     @Path( "getArtifactVersions" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
@@ -73,5 +66,12 @@ public interface SearchService
                                       @QueryParam( "artifactId" ) String artifactId,
                                       @QueryParam( "version" ) String version )
         throws ArchivaRestServiceException;
+
+    @Path( "getArtifactByChecksum" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> getArtifactByChecksum( @QueryParam( "checksum" ) String checksum )
+    throws ArchivaRestServiceException;
 
 }

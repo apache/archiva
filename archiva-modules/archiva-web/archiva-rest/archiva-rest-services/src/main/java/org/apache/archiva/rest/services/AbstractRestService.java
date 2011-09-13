@@ -23,6 +23,8 @@ import org.apache.archiva.audit.AuditListener;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.codehaus.redback.rest.services.RedbackRequestInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ import java.util.List;
  */
 public abstract class AbstractRestService
 {
+
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();

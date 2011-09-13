@@ -40,42 +40,81 @@ public class SearchResultHit
 
     //  Advanced hit, reference to artifactId.
     private String artifactId;
-
-    // TODO: remove/deprecate this field!
-    private String version = "";
     
     private String repositoryId = "";
 
     private List<String> versions = new ArrayList<String>();
-
+    
+    /**
+     * Plugin goal prefix (only if packaging is "maven-plugin")
+     */
+    public String prefix;
 
     /**
+     * Plugin goals (only if packaging is "maven-plugin")
+     */
+    public List<String> goals; 
+    
+    /**
      * contains osgi metadata Bundle-Version if available
-     *
      * @since 1.4
      */
-    private String bundleVersion;
+    public String bundleVersion;
 
     /**
      * contains osgi metadata Bundle-SymbolicName if available
-     *
      * @since 1.4
      */
-    private String bundleSymbolicName;
+    public String bundleSymbolicName;
 
     /**
      * contains osgi metadata Export-Package if available
-     *
      * @since 1.4
      */
-    private String bundleExportPackage;
+    public String bundleExportPackage;
 
     /**
      * contains osgi metadata Export-Service if available
-     *
      * @since 1.4
      */
-    private String bundleExportService;
+    public String bundleExportService;
+
+    /**
+     * contains osgi metadata Bundle-Description if available
+     * @since 1.4
+     */
+    public String bundleDescription;
+
+    /**
+     * contains osgi metadata Bundle-Name if available
+     * @since 1.4
+     */
+    public String bundleName;
+
+    /**
+     * contains osgi metadata Bundle-License if available
+     * @since 1.4
+     */
+    public String bundleLicense;
+
+    /**
+     * contains osgi metadata Bundle-DocURL if available
+     * @since 1.4
+     */
+    public String bundleDocUrl;
+
+    /**
+     * contains osgi metadata Import-Package if available
+     * @since 1.4
+     */
+    public String bundleImportPackage;
+
+    /**
+     * contains osgi metadata Require-Bundle if available
+     * @since 1.4
+     */
+    public String bundleRequireBundle;    
+    
 
     public String getContext()
     {
@@ -120,16 +159,6 @@ public class SearchResultHit
     public void setGroupId( String groupId )
     {
         this.groupId = groupId;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion(String version)
-    {
-        this.version = version;
     }
 
     public List<String> getVersions()
@@ -197,6 +226,86 @@ public class SearchResultHit
         this.bundleExportService = bundleExportService;
     }
 
+    public String getPrefix()
+    {
+        return prefix;
+    }
+
+    public void setPrefix( String prefix )
+    {
+        this.prefix = prefix;
+    }
+
+    public List<String> getGoals()
+    {
+        return goals;
+    }
+
+    public void setGoals( List<String> goals )
+    {
+        this.goals = goals;
+    }
+
+    public String getBundleDescription()
+    {
+        return bundleDescription;
+    }
+
+    public void setBundleDescription( String bundleDescription )
+    {
+        this.bundleDescription = bundleDescription;
+    }
+
+    public String getBundleName()
+    {
+        return bundleName;
+    }
+
+    public void setBundleName( String bundleName )
+    {
+        this.bundleName = bundleName;
+    }
+
+    public String getBundleLicense()
+    {
+        return bundleLicense;
+    }
+
+    public void setBundleLicense( String bundleLicense )
+    {
+        this.bundleLicense = bundleLicense;
+    }
+
+    public String getBundleDocUrl()
+    {
+        return bundleDocUrl;
+    }
+
+    public void setBundleDocUrl( String bundleDocUrl )
+    {
+        this.bundleDocUrl = bundleDocUrl;
+    }
+
+    public String getBundleImportPackage()
+    {
+        return bundleImportPackage;
+    }
+
+    public void setBundleImportPackage( String bundleImportPackage )
+    {
+        this.bundleImportPackage = bundleImportPackage;
+    }
+
+    public String getBundleRequireBundle()
+    {
+        return bundleRequireBundle;
+    }
+
+    public void setBundleRequireBundle( String bundleRequireBundle )
+    {
+        this.bundleRequireBundle = bundleRequireBundle;
+    }
+
     @Override
     public String toString()
     {
@@ -206,13 +315,20 @@ public class SearchResultHit
         sb.append( ", url='" ).append( url ).append( '\'' );
         sb.append( ", groupId='" ).append( groupId ).append( '\'' );
         sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
-        sb.append( ", version='" ).append( version ).append( '\'' );
         sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
         sb.append( ", versions=" ).append( versions );
+        sb.append( ", prefix='" ).append( prefix ).append( '\'' );
+        sb.append( ", goals=" ).append( goals );
         sb.append( ", bundleVersion='" ).append( bundleVersion ).append( '\'' );
         sb.append( ", bundleSymbolicName='" ).append( bundleSymbolicName ).append( '\'' );
         sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
         sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( ", bundleDescription='" ).append( bundleDescription ).append( '\'' );
+        sb.append( ", bundleName='" ).append( bundleName ).append( '\'' );
+        sb.append( ", bundleLicense='" ).append( bundleLicense ).append( '\'' );
+        sb.append( ", bundleDocUrl='" ).append( bundleDocUrl ).append( '\'' );
+        sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
+        sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

@@ -34,6 +34,8 @@ import java.util.List;
 public class SearchServiceTest
     extends AbstractArchivaRestTest
 {
+
+
     @Test
     public void quickSearchOnArtifactId()
         throws Exception
@@ -46,28 +48,49 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        File targetRepo = createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
         List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
 
         assertNotNull( artifacts );
-        assertTrue( " empty results for commons-logging search", artifacts.size() > 0 );
-        log.info( "artifacts for commons-logginf search {}", artifacts );
+        assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );
+        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
-        deleteTestRepo( testRepoId );
+        deleteTestRepo( testRepoId, targetRepo );
     }
 
-    private void createAndIndexRepo( String testRepoId )
+    @Test
+    public void searchArtifactVersions()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        File targetRepo = createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        List<Artifact> artifacts = searchService.getArtifactVersions( "commons-logging", "commons-logging" );
+
+        assertNotNull( artifacts );
+        assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );
+        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
+
+        deleteTestRepo( testRepoId, targetRepo );
+    }
+
+    private File createAndIndexRepo( String testRepoId )
         throws Exception
     {
         File targetRepo = new File( System.getProperty( "targetDir", "./target" ), "test-repo" );
-
-        if ( targetRepo.exists() )
-        {
-            FileUtils.deleteDirectory( targetRepo );
-        }
+        cleanupFiles( targetRepo );
 
         File sourceRepo = new File( "src/test/repo-with-osgi" );
 
@@ -76,24 +99,54 @@ public class SearchServiceTest
         ManagedRepository managedRepository = new ManagedRepository();
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
-        managedRepository.setCronExpression( "* * * * * ?" );
-        managedRepository.setScanned( false );
 
         managedRepository.setLocation( targetRepo.getPath() );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
 
+
         getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
+
+        return targetRepo;
     }
 
-    private void deleteTestRepo( String id )
+    private void deleteTestRepo( String id, File targetRepo )
         throws Exception
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, true );
         }
+        cleanupFiles( targetRepo );
+
+    }
+
+    private void cleanupFiles(File targetRepo)
+        throws Exception
+    {
+
+        File indexerDir = new File( targetRepo, ".indexer" );
+
+        if ( targetRepo.exists() )
+        {
+            FileUtils.deleteDirectory( targetRepo );
+        }
+
+        if ( indexerDir.exists() )
+        {
+            FileUtils.deleteDirectory( indexerDir );
+        }
+
+        File lockFile = new File( indexerDir, "write.lock" );
+        if ( lockFile.exists() )
+        {
+            FileUtils.forceDelete( lockFile );
+        }
+
+        assertFalse( targetRepo.exists() );
+        assertFalse( indexerDir.exists() );
+        assertFalse( lockFile.exists() );
     }
 
 }

@@ -381,6 +381,18 @@ public class NexusRepositorySearch
                 hit.setBundleExportService( artifactInfo.bundleExportService );
                 hit.setBundleSymbolicName( artifactInfo.bundleSymbolicName );
                 hit.setBundleVersion( artifactInfo.bundleVersion );
+                hit.setBundleDescription( artifactInfo.bundleDescription );
+                hit.setBundleDocUrl( artifactInfo.bundleDocUrl );
+
+                hit.setBundleRequireBundle( artifactInfo.bundleRequireBundle );
+                hit.setBundleImportPackage( artifactInfo.bundleImportPackage );
+                hit.setBundleLicense( artifactInfo.bundleLicense );
+                hit.setBundleName( artifactInfo.bundleName );
+                hit.setContext( artifactInfo.context );
+                hit.setGoals( artifactInfo.goals );
+                hit.setPrefix( artifactInfo.prefix );
+                // sure ??
+                hit.setUrl( artifactInfo.remoteUrl );
             }
 
             results.addHit( id, hit );

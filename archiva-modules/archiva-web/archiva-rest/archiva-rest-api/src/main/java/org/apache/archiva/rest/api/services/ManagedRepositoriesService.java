@@ -60,7 +60,7 @@ public interface ManagedRepositoriesService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteManagedRepository( @QueryParam( "repositoryId" ) String repositoryId,
                                      @QueryParam( "deleteContent" ) boolean deleteContent )
-        throws Exception;
+        throws ArchivaRestServiceException;
 
 
     @Path( "addManagedRepository" )
@@ -69,7 +69,7 @@ public interface ManagedRepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addManagedRepository( ManagedRepository managedRepository )
-        throws Exception;
+        throws ArchivaRestServiceException;
 
 
     @Path( "updateManagedRepository" )
@@ -78,7 +78,7 @@ public interface ManagedRepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateManagedRepository( ManagedRepository managedRepository )
-        throws Exception;
+        throws ArchivaRestServiceException;
 
 
 
