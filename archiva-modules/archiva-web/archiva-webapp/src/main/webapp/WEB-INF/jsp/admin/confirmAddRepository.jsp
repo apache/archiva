@@ -63,7 +63,7 @@
       </tr>
       <tr>
         <td>Index Directory:</td>
-        <td><c:out value="${repository.indexDir}" /></td>
+        <td><c:out value="${repository.indexDirectory}" /></td>
       </tr>
       <tr>
         <td>Type:</td>
@@ -81,7 +81,7 @@
       </tr>
       <tr>
         <td>Cron:</td>
-        <td><c:out value="${repository.refreshCronExpression}" /></td>
+        <td><c:out value="${repository.cronExpression}" /></td>
       </tr>
       <tr>
         <td>Repository Purge By Days Older Than:</td>
@@ -115,9 +115,9 @@
       <s:hidden name="repository.id" value="%{#attr.repository.id}"/>
       <s:hidden name="repository.name" value="%{#attr.repository.name}"/>
       <s:hidden name="repository.location" value="%{#attr.repository.location}"/>
-      <s:hidden name="repository.indexDir" value="%{#attr.repository.indexDir}"/>
+      <s:hidden name="repository.indexDir" value="%{#attr.repository.indexDirectory}"/>
       <s:hidden name="repository.layout" value="%{#attr.repository.layout}"/>
-      <s:hidden name="repository.refreshCronExpression" value="%{#attr.repository.refreshCronExpression}"/>
+      <s:hidden name="repository.cronExpression" value="%{#attr.repository.cronExpression}"/>
       <s:hidden name="repository.daysOlder" value="%{#attr.repository.daysOlder}"/>
       <s:hidden name="repository.retentionCount" value="%{#attr.repository.retentionCount}"/>
       <s:hidden name="repository.releases" value="%{#attr.repository.releases}"/>
