@@ -115,6 +115,7 @@
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
             <plexus.home>${project.build.outputDirectory}</plexus.home>
             <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
+            <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
           </systemPropertyVariables>
         </configuration>
       </plugin>

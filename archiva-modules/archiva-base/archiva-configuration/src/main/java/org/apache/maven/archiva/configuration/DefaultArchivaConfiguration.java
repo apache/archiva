@@ -94,7 +94,6 @@ public class DefaultArchivaConfiguration
 
     /**
      * Plexus registry to read the configuration from.
-     *
      */
     @Inject
     @Named( value = "commons-configuration" )
@@ -495,7 +494,6 @@ public class DefaultArchivaConfiguration
             }
         }
 
-
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
 
@@ -537,9 +535,8 @@ public class DefaultArchivaConfiguration
         }
 
         // olamy hackish I know :-)
-        contents = "<configuration><xml fileName=\"" + fileLocation +"\" config-forceCreate=\"true\" config-name=\"org.apache.maven.archiva.user\"/>"
-                    + "</configuration>";
-
+        contents = "<configuration><xml fileName=\"" + fileLocation
+            + "\" config-forceCreate=\"true\" config-name=\"org.apache.maven.archiva.user\"/>" + "</configuration>";
 
         ( (CommonsConfigurationRegistry) registry ).setProperties( contents );
 
@@ -655,7 +652,15 @@ public class DefaultArchivaConfiguration
         {
             ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
             expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
-            userConfigFilename = expressionEvaluator.expand( userConfigFilename );
+            String userConfigFileNameSysProps = System.getProperty( "archiva.user.configFileName" );
+            if ( StringUtils.isNotBlank( userConfigFileNameSysProps ) )
+            {
+                userConfigFilename = userConfigFileNameSysProps;
+            }
+            else
+            {
+                userConfigFilename = expressionEvaluator.expand( userConfigFilename );
+            }
             altConfigFilename = expressionEvaluator.expand( altConfigFilename );
             loadConfiguration();
         }
@@ -719,8 +724,6 @@ public class DefaultArchivaConfiguration
             c.setLocation( removeExpressions( c.getLocation() ) );
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }
-
-
 
         return config;
     }

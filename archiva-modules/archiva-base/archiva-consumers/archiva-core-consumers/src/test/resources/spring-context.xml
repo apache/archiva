@@ -29,4 +29,19 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.metadata.repository"/>
 
+  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <xml fileName="${appserver.base}/conf/archiva.xml" config-forceCreate="true"
+               config-optional="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
 </beans>
