@@ -152,7 +152,8 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
                                   managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation ) != null;
+                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation,
+                                  getArchivaConfiguration().getConfiguration() ) != null;
 
     }
 
@@ -162,11 +163,10 @@ public class DefaultManagedRepositoryAdmin
                                                                  boolean stageRepoNeeded, String cronExpression,
                                                                  String indexDir, int daysOlder, int retentionCount,
                                                                  boolean deteleReleasedSnapshots,
-                                                                 AuditInformation auditInformation )
+                                                                 AuditInformation auditInformation,
+                                                                 Configuration config )
         throws RepositoryAdminException
     {
-
-        Configuration config = getArchivaConfiguration().getConfiguration();
 
         // FIXME : olamy can be empty to avoid scheduled scan ?
         if ( StringUtils.isNotBlank( cronExpression ) )
@@ -349,7 +349,8 @@ public class DefaultManagedRepositoryAdmin
                 for ( String repoGroup : repoGroups )
                 {
                     // copy to prevent UnsupportedOperationException
-                    RepositoryGroupConfiguration repositoryGroupConfiguration = config.findRepositoryGroupById( repoGroup );
+                    RepositoryGroupConfiguration repositoryGroupConfiguration =
+                        config.findRepositoryGroupById( repoGroup );
                     List<String> repos = new ArrayList<String>( repositoryGroupConfiguration.getRepositories() );
                     config.removeRepositoryGroup( repositoryGroupConfiguration );
                     repos.remove( repository.getId() );
@@ -405,18 +406,14 @@ public class DefaultManagedRepositoryAdmin
             configuration.removeManagedRepository( stagingRepository );
         }
 
-        if ( toremove != null && stagingRepository != null )
-        {
-            saveConfiguration( configuration );
-        }
-
         ManagedRepositoryConfiguration managedRepositoryConfiguration =
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
                                   managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation );
+                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation,
+                                  getArchivaConfiguration().getConfiguration() );
 
         // Save the repository configuration.
         RepositorySession repositorySession = getRepositorySessionFactory().createSession();
