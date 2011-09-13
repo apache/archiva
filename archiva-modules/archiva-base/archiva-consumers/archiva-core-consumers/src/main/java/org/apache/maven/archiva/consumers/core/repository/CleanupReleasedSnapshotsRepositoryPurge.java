@@ -19,13 +19,14 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -50,7 +51,7 @@ import java.util.List;
  * This will look in a single managed repository, and purge any snapshots that are present
  * that have a corresponding released version on the same repository.
  * </p>
- *
+ * <p/>
  * <p>
  * So, if you have the following (presented in the m2/default layout form) ...
  * <pre>
@@ -74,19 +75,19 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 {
     private MetadataTools metadataTools;
 
-    private ArchivaConfiguration archivaConfig;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private RepositoryContentFactory repoContentFactory;
 
     public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, MetadataTools metadataTools,
-                                                    ArchivaConfiguration archivaConfig,
+                                                    ManagedRepositoryAdmin managedRepositoryAdmin,
                                                     RepositoryContentFactory repoContentFactory,
                                                     RepositorySession repositorySession,
                                                     List<RepositoryListener> listeners )
     {
         super( repository, repositorySession, listeners );
         this.metadataTools = metadataTools;
-        this.archivaConfig = archivaConfig;
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
         this.repoContentFactory = repoContentFactory;
     }
 
@@ -118,15 +119,15 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             // Gather up all of the versions.
             List<String> allVersions = new ArrayList<String>( repository.getVersions( reference ) );
 
-            List<ManagedRepositoryConfiguration> repos = archivaConfig.getConfiguration().getManagedRepositories();
-            for ( ManagedRepositoryConfiguration repo : repos )
+            List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+            for ( ManagedRepository repo : repos )
             {
                 if ( repo.isReleases() && !repo.getId().equals( repository.getId() ) )
                 {
                     try
                     {
-                        ManagedRepositoryContent repoContent = repoContentFactory.getManagedRepositoryContent(
-                            repo.getId() );
+                        ManagedRepositoryContent repoContent =
+                            repoContentFactory.getManagedRepositoryContent( repo.getId() );
                         allVersions.addAll( repoContent.getVersions( reference ) );
                     }
                     catch ( RepositoryNotFoundException e )
@@ -167,9 +168,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             versionRef.setGroupId( artifactRef.getGroupId() );
             versionRef.setArtifactId( artifactRef.getArtifactId() );
 
-            ArchivaArtifact artifact = new ArchivaArtifact( artifactRef.getGroupId(), artifactRef.getArtifactId(),
-                                                            artifactRef.getVersion(), artifactRef.getClassifier(),
-                                                            artifactRef.getType(), repository.getId() );
+            ArchivaArtifact artifact =
+                new ArchivaArtifact( artifactRef.getGroupId(), artifactRef.getArtifactId(), artifactRef.getVersion(),
+                                     artifactRef.getClassifier(), artifactRef.getType(), repository.getId() );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( String version : snapshotVersions )
@@ -195,6 +196,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             {
                 updateMetadata( artifactRef );
             }
+        } catch ( RepositoryAdminException e )
+        {
+            throw new RepositoryPurgeException( e.getMessage(), e );
         }
         catch ( LayoutException e )
         {

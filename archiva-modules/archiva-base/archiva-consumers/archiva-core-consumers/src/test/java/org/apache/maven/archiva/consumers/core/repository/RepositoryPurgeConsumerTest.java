@@ -19,14 +19,15 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -43,6 +44,16 @@ import java.io.File;
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
+    @Before
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
+        factory.setRepository( metadataRepository );
+    }
+
     @Test
     public void testConsumption()
         throws Exception
@@ -117,7 +128,7 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( 0 ); // force days older off to allow retention count purge to execute.
         repoConfiguration.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
@@ -163,32 +174,51 @@ public class RepositoryPurgeConsumerTest
         removeRepoFromConfiguration( "retention-count", repoConfiguration );
     }
 
-    private void addRepoToConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
+    private void addRepoToConfiguration( String configHint, ManagedRepository repoConfiguration )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            configuration.findManagedRepositoryById( repoConfiguration.getId() );
-        if ( managedRepositoryConfiguration != null )
+        ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
+            ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
+        /**
+         Configuration configuration = archivaConfiguration.getConfiguration();
+         ManagedRepositoryConfiguration managedRepositoryConfiguration =
+         configuration.findManagedRepositoryById( repoConfiguration.getId() );
+         if ( managedRepositoryConfiguration != null )
+         {
+         configuration.removeManagedRepository( managedRepositoryConfiguration );
+         }
+         configuration.addManagedRepository( repoConfiguration );
+         **/
+        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
+        if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
         {
-            configuration.removeManagedRepository( managedRepositoryConfiguration );
+            managedRepositoryAdmin.deleteManagedRepository( repoConfiguration.getId(), null, false );
         }
-        configuration.addManagedRepository( repoConfiguration );
+        managedRepositoryAdmin.addManagedRepository( repoConfiguration, false, null );
     }
 
-    private void removeRepoFromConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
+    private void removeRepoFromConfiguration( String configHint, ManagedRepository repoConfiguration )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            configuration.findManagedRepositoryById( repoConfiguration.getId() );
-        if ( managedRepositoryConfiguration != null )
+
+        ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
+            ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
+        /**
+         Configuration configuration = archivaConfiguration.getConfiguration();
+         ManagedRepositoryConfiguration managedRepositoryConfiguration =
+         configuration.findManagedRepositoryById( repoConfiguration.getId() );
+         if ( managedRepositoryConfiguration != null )
+         {
+         configuration.removeManagedRepository( managedRepositoryConfiguration );
+         }*/
+        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
+        if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
         {
-            configuration.removeManagedRepository( managedRepositoryConfiguration );
+            managedRepositoryAdmin.deleteManagedRepository( repoConfiguration.getId(), null, true );
         }
     }
 
@@ -200,7 +230,7 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-days-old",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
@@ -258,7 +288,7 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
@@ -303,7 +333,7 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-days-old",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoConfiguration.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
@@ -339,15 +369,5 @@ public class RepositoryPurgeConsumerTest
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
 
         removeRepoFromConfiguration( "days-old", repoConfiguration );
-    }
-
-    @Before
-    public void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
-        factory.setRepository( metadataRepository );
     }
 }

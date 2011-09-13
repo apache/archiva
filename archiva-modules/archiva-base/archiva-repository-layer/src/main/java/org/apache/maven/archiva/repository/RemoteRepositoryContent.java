@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.RepositoryURL;
@@ -51,7 +52,7 @@ public interface RemoteRepositoryContent
      * 
      * @return the repository that is associated with this repository content.
      */
-    RemoteRepositoryConfiguration getRepository();
+    RemoteRepository getRepository();
 
     /**
      * <p>
@@ -72,7 +73,7 @@ public interface RemoteRepositoryContent
      * 
      * @param repo the repository to associate with this repository content.
      */
-    void setRepository( RemoteRepositoryConfiguration repo );
+    void setRepository( RemoteRepository repo );
 
     /**
      * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.

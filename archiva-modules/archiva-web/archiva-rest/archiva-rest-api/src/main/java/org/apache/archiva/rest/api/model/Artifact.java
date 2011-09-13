@@ -36,7 +36,36 @@ public class Artifact
 
     private String type;
 
-    //private Date whenGathered;
+    private String url;
+
+    /**
+     * contains osgi metadata Bundle-Version if available
+     *
+     * @since 1.4
+     */
+    private String bundleVersion;
+
+    /**
+     * contains osgi metadata Bundle-SymbolicName if available
+     *
+     * @since 1.4
+     */
+    private String bundleSymbolicName;
+
+    /**
+     * contains osgi metadata Export-Package if available
+     *
+     * @since 1.4
+     */
+    private String bundleExportPackage;
+
+    /**
+     * contains osgi metadata Export-Service if available
+     *
+     * @since 1.4
+     */
+    private String bundleExportService;
+
 
     public Artifact()
     {

@@ -19,11 +19,11 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
-import org.apache.archiva.admin.repository.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;

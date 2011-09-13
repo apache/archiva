@@ -20,8 +20,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
-import org.apache.archiva.admin.repository.managed.ManagedRepository;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.struts2.StrutsSpringTestCase;
 
 import java.io.File;

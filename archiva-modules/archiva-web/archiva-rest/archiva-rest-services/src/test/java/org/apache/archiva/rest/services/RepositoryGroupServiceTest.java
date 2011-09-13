@@ -43,8 +43,8 @@ public class RepositoryGroupServiceTest
 
         assertTrue( service.getRepositoriesGroups().isEmpty() );
 
-        ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
-        WebClient.client( managedRepositoriesService ).header( "Authorization", authorizationHeader );
+        ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService( authorizationHeader );
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
         ManagedRepository managedRepository = getTestManagedRepository();

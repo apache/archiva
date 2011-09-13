@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -57,7 +58,7 @@ public class ManagedLegacyRepositoryContentTest
     {
         File repoDir = new File( "src/test/repositories/legacy-repository" );
 
-        ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+        ManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
         repository.setLayout( "legacy" );
 
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "legacy" );

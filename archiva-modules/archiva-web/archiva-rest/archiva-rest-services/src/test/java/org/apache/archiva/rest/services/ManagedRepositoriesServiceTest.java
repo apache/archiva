@@ -21,11 +21,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.maven.archiva.common.utils.FileUtil;
 import org.junit.Test;
-
-import java.io.File;
 
 /**
  * @author Olivier Lamy
@@ -39,9 +35,8 @@ public class ManagedRepositoriesServiceTest
     public void addManagedRepo()
         throws Exception
     {
-        ManagedRepositoriesService service = getManagedRepositoriesService();
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
+
         ManagedRepository repo = getTestManagedRepository();
         if ( service.getManagedRepository( repo.getId() ) != null )
         {
@@ -59,9 +54,8 @@ public class ManagedRepositoriesServiceTest
     public void updateManagedRepo()
         throws Exception
     {
-        ManagedRepositoriesService service = getManagedRepositoriesService();
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
+
         ManagedRepository repo = getTestManagedRepository();
         if ( service.getManagedRepository( repo.getId() ) != null )
         {
@@ -81,13 +75,10 @@ public class ManagedRepositoriesServiceTest
         assertNotNull( repo );
         assertEquals( "toto", repo.getName() );
 
-
         service.deleteManagedRepository( repo.getId(), true );
         assertNull( service.getManagedRepository( repo.getId() ) );
 
     }
-
-
 
 
 }

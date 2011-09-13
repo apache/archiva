@@ -20,8 +20,8 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
-import org.apache.archiva.admin.repository.admin.OrganisationInformation;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.admin.OrganisationInformation;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 
 import javax.inject.Inject;

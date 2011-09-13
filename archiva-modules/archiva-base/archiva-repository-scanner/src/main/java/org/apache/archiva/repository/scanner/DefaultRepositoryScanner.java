@@ -19,28 +19,29 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
 
 /**
  * DefaultRepositoryScanner
  *
  * @version $Id$
  */
-@Service("repositoryScanner#default")
+@Service( "repositoryScanner#default" )
 public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
@@ -58,17 +59,24 @@ public class DefaultRepositoryScanner
 
     private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();
 
-    public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository, long changesSince )
+    public RepositoryScanStatistics scan( ManagedRepository repository, long changesSince )
         throws RepositoryScannerException
     {
-        List<KnownRepositoryContentConsumer> knownContentConsumers = consumerUtil.getSelectedKnownConsumers();
-        List<InvalidRepositoryContentConsumer> invalidContentConsumers = consumerUtil.getSelectedInvalidConsumers();
-        List<String> ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
+        try
+        {
+            List<KnownRepositoryContentConsumer> knownContentConsumers = consumerUtil.getSelectedKnownConsumers();
+            List<InvalidRepositoryContentConsumer> invalidContentConsumers = consumerUtil.getSelectedInvalidConsumers();
+            List<String> ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
 
-        return scan( repository, knownContentConsumers, invalidContentConsumers, ignoredPatterns, changesSince );
+            return scan( repository, knownContentConsumers, invalidContentConsumers, ignoredPatterns, changesSince );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new RepositoryScannerException( e.getMessage(), e );
+        }
     }
 
-    public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository,
+    public RepositoryScanStatistics scan( ManagedRepository repository,
                                           List<KnownRepositoryContentConsumer> knownContentConsumers,
                                           List<InvalidRepositoryContentConsumer> invalidContentConsumers,
                                           List<String> ignoredContentPatterns, long changesSince )
@@ -85,14 +93,14 @@ public class DefaultRepositoryScanner
         //create the repo if not existing to have an empty stats
         if ( !repositoryBase.exists() && !repositoryBase.mkdirs() )
         {
-            throw new UnsupportedOperationException( "Unable to scan a repository, directory "
-                + repositoryBase.getPath() + " does not exist." );
+            throw new UnsupportedOperationException(
+                "Unable to scan a repository, directory " + repositoryBase.getPath() + " does not exist." );
         }
 
         if ( !repositoryBase.isDirectory() )
         {
-            throw new UnsupportedOperationException( "Unable to scan a repository, path "
-                + repositoryBase.getPath() + " is not a directory." );
+            throw new UnsupportedOperationException(
+                "Unable to scan a repository, path " + repositoryBase.getPath() + " is not a directory." );
         }
 
         // Setup Includes / Excludes.
@@ -117,8 +125,8 @@ public class DefaultRepositoryScanner
         dirWalker.setExcludes( allExcludes );
 
         // Setup the Scan Instance
-        RepositoryScannerInstance scannerInstance = new RepositoryScannerInstance( repository, knownContentConsumers,
-                                                                                   invalidContentConsumers, changesSince );
+        RepositoryScannerInstance scannerInstance =
+            new RepositoryScannerInstance( repository, knownContentConsumers, invalidContentConsumers, changesSince );
 
         inProgressScans.add( scannerInstance );
 

@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.group.RepositoryGroup;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
@@ -58,7 +60,7 @@ public class DeleteRepositoryGroupActionTest
     }
 
     public void testSecureActionBundle()
-        throws SecureActionException
+        throws SecureActionException, RepositoryAdminException
     {
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
@@ -84,7 +86,7 @@ public class DeleteRepositoryGroupActionTest
 
         action.prepare();
         assertEquals( REPO_GROUP_ID, action.getRepoGroupId() );
-        RepositoryGroupConfiguration repoGroup = action.getRepositoryGroup();
+        RepositoryGroup repoGroup = action.getRepositoryGroup();
         assertNotNull( repoGroup );
         assertEquals( repoGroup.getId(), action.getRepoGroupId() );
         assertEquals( Collections.singletonList( origRepoGroup ), configuration.getRepositoryGroups() );
@@ -104,7 +106,7 @@ public class DeleteRepositoryGroupActionTest
 
         action.prepare();
         assertEquals( REPO_GROUP_ID, action.getRepoGroupId() );
-        RepositoryGroupConfiguration repoGroup = action.getRepositoryGroup();
+        RepositoryGroup repoGroup = action.getRepositoryGroup();
         assertNotNull( repoGroup );
         assertEquals( Collections.singletonList( repoGroup ), configuration.getRepositoryGroups() );
 
@@ -129,7 +131,7 @@ public class DeleteRepositoryGroupActionTest
 
         action.prepare();
         assertEquals( REPO_GROUP_ID, action.getRepoGroupId() );
-        RepositoryGroupConfiguration repoGroup = action.getRepositoryGroup();
+        RepositoryGroup repoGroup = action.getRepositoryGroup();
         assertNotNull( repoGroup );
 
         String status = action.execute();

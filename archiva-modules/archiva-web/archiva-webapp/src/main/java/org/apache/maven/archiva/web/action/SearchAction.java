@@ -59,11 +59,10 @@ public class SearchAction
     /**
      * Query string.
      */
+    private String q;
 
     // FIXME olamy WTF here??
     private ArchivaConfiguration archivaConfiguration;
-
-    private String q;
 
     /**
      * The Search Results.

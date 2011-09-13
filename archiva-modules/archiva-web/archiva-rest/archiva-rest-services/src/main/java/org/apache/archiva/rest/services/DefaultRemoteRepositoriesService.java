@@ -18,8 +18,8 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
@@ -49,7 +49,7 @@ public class DefaultRemoteRepositoriesService
         try
         {
             List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-            for ( org.apache.archiva.admin.repository.remote.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+            for ( org.apache.archiva.admin.model.remote.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
             {
                 RemoteRepository repo = new RemoteRepository( remoteRepository.getId(), remoteRepository.getName(),
                                                               remoteRepository.getUrl(), remoteRepository.getLayout(),
@@ -100,15 +100,15 @@ public class DefaultRemoteRepositoriesService
                                                              getAuditInformation() );
     }
 
-    private org.apache.archiva.admin.repository.remote.RemoteRepository getModelRemoteRepository(
+    private org.apache.archiva.admin.model.remote.RemoteRepository getModelRemoteRepository(
         RemoteRepository remoteRepository )
     {
-        return new org.apache.archiva.admin.repository.remote.RemoteRepository( remoteRepository.getId(),
-                                                                                remoteRepository.getName(),
-                                                                                remoteRepository.getUrl(),
-                                                                                remoteRepository.getLayout(),
-                                                                                remoteRepository.getUserName(),
-                                                                                remoteRepository.getPassword(),
-                                                                                remoteRepository.getTimeOut() );
+        return new org.apache.archiva.admin.model.remote.RemoteRepository( remoteRepository.getId(),
+                                                                           remoteRepository.getName(),
+                                                                           remoteRepository.getUrl(),
+                                                                           remoteRepository.getLayout(),
+                                                                           remoteRepository.getUserName(),
+                                                                           remoteRepository.getPassword(),
+                                                                           remoteRepository.getTimeOut() );
     }
 }

@@ -19,12 +19,7 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
@@ -33,13 +28,18 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * RepositoryScannerInstance 
  *
@@ -60,7 +60,7 @@ public class RepositoryScannerInstance
      */
     private List<InvalidRepositoryContentConsumer> invalidConsumers;
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
     private RepositoryScanStatistics stats;
 
@@ -74,7 +74,7 @@ public class RepositoryScannerInstance
 
     private Map<String, Long> consumerCounts;
 
-    public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
+    public RepositoryScannerInstance( ManagedRepository repository,
                                       List<KnownRepositoryContentConsumer> knownConsumerList,
                                       List<InvalidRepositoryContentConsumer> invalidConsumerList )
     {
@@ -106,7 +106,7 @@ public class RepositoryScannerInstance
         }
     }
 
-    public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
+    public RepositoryScannerInstance( ManagedRepository repository,
                                       List<KnownRepositoryContentConsumer> knownContentConsumers,
                                       List<InvalidRepositoryContentConsumer> invalidContentConsumers, long changesSince )
     {
@@ -187,7 +187,7 @@ public class RepositoryScannerInstance
         log.debug( "Repository Scanner: {}", message );
     }
     
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }

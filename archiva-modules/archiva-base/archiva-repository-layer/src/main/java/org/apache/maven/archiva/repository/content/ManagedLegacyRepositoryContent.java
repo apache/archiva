@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
@@ -58,7 +59,7 @@ public class ManagedLegacyRepositoryContent
     @Inject
     private FileTypes filetypes;
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
     public void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException
@@ -198,7 +199,7 @@ public class ManagedLegacyRepositoryContent
         return repository.getLocation();
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
@@ -315,7 +316,7 @@ public class ManagedLegacyRepositoryContent
         }
     }
 
-    public void setRepository( ManagedRepositoryConfiguration repository )
+    public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
     }

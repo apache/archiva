@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
@@ -43,7 +44,7 @@ public class RemoteDefaultRepositoryContentTest
     public void setUp()
         throws Exception
     {
-        RemoteRepositoryConfiguration repository = createRemoteRepository( "testRemoteRepo", "Unit Test Remote Repo",
+        RemoteRepository repository = createRemoteRepository( "testRemoteRepo", "Unit Test Remote Repo",
                                                                            "http://repo1.maven.org/maven2/" );
 
         //repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, "default" );

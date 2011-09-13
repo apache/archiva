@@ -19,13 +19,13 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * SampleKnownConsumer 
@@ -41,13 +41,13 @@ public class SampleKnownConsumer
      */
     private String id = "unset-id";
     
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
+    public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         /* nothing to do */
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );

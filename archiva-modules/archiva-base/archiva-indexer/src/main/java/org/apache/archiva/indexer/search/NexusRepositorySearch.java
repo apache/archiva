@@ -373,8 +373,8 @@ public class NexusRepositorySearch
                 hit = new SearchResultHit();
                 hit.setArtifactId( artifactInfo.artifactId );
                 hit.setGroupId( artifactInfo.groupId );
-                // do we still need to set the repository id even though we're merging everything?
-                //hit.setRepositoryId( artifactInfo.repository );
+                hit.setRepositoryId( artifactInfo.repository );
+                // FIXME archiva url ??
                 hit.setUrl( artifactInfo.repository + "/" + artifactInfo.fname );
                 hit.addVersion( artifactInfo.version );
                 hit.setBundleExportPackage( artifactInfo.bundleExportPackage );

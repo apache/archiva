@@ -19,8 +19,8 @@ package org.apache.archiva.repository.scanner.functors;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.collections.Closure;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,16 +33,16 @@ public class TriggerScanCompletedClosure
 {
     private Logger log = LoggerFactory.getLogger( TriggerScanCompletedClosure.class );
 
-    private final ManagedRepositoryConfiguration repository;
+    private final ManagedRepository repository;
 
     private boolean executeOnEntireRepo = true;
 
-    public TriggerScanCompletedClosure( ManagedRepositoryConfiguration repository )
+    public TriggerScanCompletedClosure( ManagedRepository repository )
     {
         this.repository = repository;
     }
 
-    public TriggerScanCompletedClosure( ManagedRepositoryConfiguration repository, boolean executeOnEntireRepo )
+    public TriggerScanCompletedClosure( ManagedRepository repository, boolean executeOnEntireRepo )
     {
         this( repository );
         this.executeOnEntireRepo = executeOnEntireRepo;

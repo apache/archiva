@@ -18,8 +18,8 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -48,12 +48,12 @@ public class DefaultManagedRepositoriesService
     {
         try
         {
-            List<org.apache.archiva.admin.repository.managed.ManagedRepository> repos =
+            List<org.apache.archiva.admin.model.managed.ManagedRepository> repos =
                 managedRepositoryAdmin.getManagedRepositories();
 
             List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( repos.size() );
 
-            for ( org.apache.archiva.admin.repository.managed.ManagedRepository repoConfig : repos )
+            for ( org.apache.archiva.admin.model.managed.ManagedRepository repoConfig : repos )
             {
                 // TODO staging repo too
                 ManagedRepository repo =
@@ -96,8 +96,8 @@ public class DefaultManagedRepositoriesService
     public Boolean addManagedRepository( ManagedRepository managedRepository )
         throws Exception
     {
-        org.apache.archiva.admin.repository.managed.ManagedRepository repo =
-            new org.apache.archiva.admin.repository.managed.ManagedRepository();
+        org.apache.archiva.admin.model.managed.ManagedRepository repo =
+            new org.apache.archiva.admin.model.managed.ManagedRepository();
         repo.setLocation( managedRepository.getLocation() );
         repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
         repo.setCronExpression( managedRepository.getCronExpression() );
@@ -114,8 +114,8 @@ public class DefaultManagedRepositoriesService
     public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws Exception
     {
-        org.apache.archiva.admin.repository.managed.ManagedRepository repo =
-            new org.apache.archiva.admin.repository.managed.ManagedRepository();
+        org.apache.archiva.admin.model.managed.ManagedRepository repo =
+            new org.apache.archiva.admin.model.managed.ManagedRepository();
         repo.setLocation( managedRepository.getLocation() );
         repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
         repo.setCronExpression( managedRepository.getCronExpression() );

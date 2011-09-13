@@ -32,7 +32,11 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
+      <artifactId>archiva-repository-admin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-collections</groupId>

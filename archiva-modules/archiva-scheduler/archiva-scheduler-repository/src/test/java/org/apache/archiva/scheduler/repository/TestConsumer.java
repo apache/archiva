@@ -19,7 +19,7 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -31,7 +31,6 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -76,7 +75,7 @@ public class TestConsumer
         return null;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
+    public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         consumed.clear();
@@ -91,7 +90,7 @@ public class TestConsumer
         }
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );

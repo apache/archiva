@@ -20,10 +20,10 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.group.RepositoryGroup;
-import org.apache.archiva.admin.repository.group.RepositoryGroupAdmin;
-import org.apache.archiva.admin.repository.managed.ManagedRepository;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.group.RepositoryGroup;
+import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.springframework.context.annotation.Scope;

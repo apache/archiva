@@ -20,6 +20,7 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
@@ -67,9 +68,7 @@ public class ArchivaIndexingTaskExecutorTest
     @Inject
     private ArchivaIndexingTaskExecutor indexingExecutor;
 
-    private ManagedRepositoryConfiguration repositoryConfig;
-
-    private Configuration configuration;
+    private ManagedRepository repositoryConfig;
 
     private NexusIndexer indexer;
 
@@ -85,7 +84,7 @@ public class ArchivaIndexingTaskExecutorTest
     {
         super.setUp();
 
-        repositoryConfig = new ManagedRepositoryConfiguration();
+        repositoryConfig = new ManagedRepository();
         repositoryConfig.setId( "test-repo" );
         repositoryConfig.setLocation( "target/test-classes/test-repo" );
         repositoryConfig.setLayout( "default" );
@@ -93,9 +92,6 @@ public class ArchivaIndexingTaskExecutorTest
         repositoryConfig.setScanned( true );
         repositoryConfig.setSnapshots( false );
         repositoryConfig.setReleases( true );
-
-        configuration = new Configuration();
-        configuration.addManagedRepository( repositoryConfig );
 
         indexer = plexusSisuBridge.lookup( NexusIndexer.class );
 

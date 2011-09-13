@@ -35,9 +35,9 @@
   -->
   <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
 
-  <context:annotation-config />
+  <context:annotation-config/>
   <context:component-scan
-    base-package="org.apache.archiva.rest.services"/>
+      base-package="org.apache.archiva.rest.services"/>
 
   <jaxrs:server id="archivaServices" address="/archivaServices">
 
@@ -56,12 +56,13 @@
       <ref bean="proxyConnectorService#rest"/>
       <ref bean="networkProxyService#rest"/>
       <ref bean="archivaAdministrationService#default"/>
+      <ref bean="searchService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>
       <ref bean="threadLocalUserCleaner#rest"/>
     </jaxrs:outInterceptors>
 
-   </jaxrs:server>
+  </jaxrs:server>
 
 </beans>

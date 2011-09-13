@@ -31,6 +31,10 @@
     <property name="registry" ref="registry#configured"/>
   </bean>
 
+  <bean name="admin-test-conf" class="org.apache.archiva.repository.scanner.ArchivaAdministrationStub">
+    <constructor-arg ref="archivaConfiguration#test-conf"/>
+  </bean>
+
   <bean name="registry#configured" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
@@ -84,7 +88,7 @@
   </bean>
 
   <bean name="repositoryContentConsumers#test" class="org.apache.archiva.repository.scanner.RepositoryContentConsumersStub">
-    <constructor-arg ref="archivaConfiguration#test-conf"/>
+    <constructor-arg ref="admin-test-conf"/>
   </bean>
 
 

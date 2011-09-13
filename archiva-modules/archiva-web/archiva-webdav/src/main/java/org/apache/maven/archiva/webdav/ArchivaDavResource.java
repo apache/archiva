@@ -19,6 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -90,7 +91,7 @@ public class ArchivaDavResource
 
     private String remoteAddr;
 
-    private final ManagedRepositoryConfiguration repository;
+    private final ManagedRepository repository;
 
     private final MimeTypes mimeTypes;
 
@@ -104,7 +105,7 @@ public class ArchivaDavResource
 
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
-    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
+    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
                                RepositoryArchivaTaskScheduler scheduler )
@@ -124,7 +125,7 @@ public class ArchivaDavResource
         this.scheduler = scheduler;
     }
 
-    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepositoryConfiguration repository,
+    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
                                List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler )

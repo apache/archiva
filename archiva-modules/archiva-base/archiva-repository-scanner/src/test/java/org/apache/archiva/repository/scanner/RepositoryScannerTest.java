@@ -20,6 +20,8 @@ package org.apache.archiva.repository.scanner;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
@@ -56,18 +58,18 @@ public class RepositoryScannerTest
     @Inject
     ApplicationContext applicationContext;
 
-    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    protected ManagedRepository createRepository( String id, String name, File location )
     {
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location.getAbsolutePath() );
         return repo;
     }
 
-    protected RemoteRepositoryConfiguration createRemoteRepository( String id, String name, String url )
+    protected RemoteRepository createRemoteRepository( String id, String name, String url )
     {
-        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+        RemoteRepository repo = new RemoteRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setUrl( url );
@@ -77,7 +79,7 @@ public class RepositoryScannerTest
     private static final String[] ARTIFACT_PATTERNS =
         new String[]{ "**/*.jar", "**/*.pom", "**/*.rar", "**/*.zip", "**/*.war", "**/*.tar.gz" };
 
-    private ManagedRepositoryConfiguration createDefaultRepository()
+    private ManagedRepository createDefaultRepository()
     {
         File repoDir = new File( "src/test/repositories/default-repository" );
 
@@ -86,7 +88,7 @@ public class RepositoryScannerTest
         return createRepository( "testDefaultRepo", "Test Default Repository", repoDir );
     }
 
-    private ManagedRepositoryConfiguration createSimpleRepository()
+    private ManagedRepository createSimpleRepository()
         throws IOException, ParseException
     {
         File srcDir = new File( "src/test/repositories/simple-repository" );
@@ -114,13 +116,13 @@ public class RepositoryScannerTest
         return fmt.parse( timestamp ).getTime();
     }
 
-    private ManagedRepositoryConfiguration createLegacyRepository()
+    private ManagedRepository createLegacyRepository()
     {
         File repoDir = new File( "src/test/repositories/legacy-repository" );
 
         assertTrue( "Legacy Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
-        ManagedRepositoryConfiguration repo = createRepository( "testLegacyRepo", "Test Legacy Repository", repoDir );
+        ManagedRepository repo = createRepository( "testLegacyRepo", "Test Legacy Repository", repoDir );
         repo.setLayout( "legacy" );
 
         return repo;
@@ -152,7 +154,7 @@ public class RepositoryScannerTest
     public void testTimestampRepositoryScanner()
         throws Exception
     {
-        ManagedRepositoryConfiguration repository = createSimpleRepository();
+        ManagedRepository repository = createSimpleRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -179,7 +181,7 @@ public class RepositoryScannerTest
     public void testTimestampRepositoryScannerFreshScan()
         throws Exception
     {
-        ManagedRepositoryConfiguration repository = createSimpleRepository();
+        ManagedRepository repository = createSimpleRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -205,7 +207,7 @@ public class RepositoryScannerTest
     public void testTimestampRepositoryScannerProcessUnmodified()
         throws Exception
     {
-        ManagedRepositoryConfiguration repository = createSimpleRepository();
+        ManagedRepository repository = createSimpleRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -232,7 +234,7 @@ public class RepositoryScannerTest
     public void testDefaultRepositoryScanner()
         throws Exception
     {
-        ManagedRepositoryConfiguration repository = createDefaultRepository();
+        ManagedRepository repository = createDefaultRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -293,7 +295,7 @@ public class RepositoryScannerTest
         actualArtifactPaths.add( "org/apache/testgroup/discovery/1.0/discovery-1.0.pom" );
         actualArtifactPaths.add( "javax/sql/jdbc/2.0/jdbc-2.0.jar" );
 
-        ManagedRepositoryConfiguration repository = createDefaultRepository();
+        ManagedRepository repository = createDefaultRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -330,7 +332,7 @@ public class RepositoryScannerTest
         actualMetadataPaths.add( "javax/sql/maven-metadata-repository.xml" );
         actualMetadataPaths.add( "javax/maven-metadata.xml" );
 
-        ManagedRepositoryConfiguration repository = createDefaultRepository();
+        ManagedRepository repository = createDefaultRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer knownConsumer = new KnownScanConsumer();
@@ -367,7 +369,7 @@ public class RepositoryScannerTest
         actualProjectPaths.add( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" );
         actualProjectPaths.add( "org/apache/testgroup/discovery/1.0/discovery-1.0.pom" );
 
-        ManagedRepositoryConfiguration repository = createDefaultRepository();
+        ManagedRepository repository = createDefaultRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -408,7 +410,7 @@ public class RepositoryScannerTest
         actualArtifactPaths.add( "org.apache.maven.update/jars/test-not-updated-1.0.jar" );
         actualArtifactPaths.add( "org.apache.maven.update/jars/test-updated-1.0.jar" );
 
-        ManagedRepositoryConfiguration repository = createLegacyRepository();
+        ManagedRepository repository = createLegacyRepository();
 
         List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
         KnownScanConsumer consumer = new KnownScanConsumer();

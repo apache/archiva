@@ -19,16 +19,10 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -52,6 +46,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * MetadataUpdaterConsumer will create and update the metadata present within the repository.
@@ -129,7 +128,7 @@ public class MetadataUpdaterConsumer
         this.includes = includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repoConfig, Date whenGathered )
+    public void beginScan( ManagedRepository repoConfig, Date whenGathered )
         throws ConsumerException
     {
         try
@@ -148,7 +147,7 @@ public class MetadataUpdaterConsumer
         }
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );

@@ -1,6 +1,6 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
-import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 
 import javax.inject.Inject;
 

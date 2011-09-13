@@ -20,6 +20,7 @@ package org.apache.archiva.consumers.lucene;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -88,7 +89,7 @@ public class NexusIndexerConsumerTest
 
     private KnownRepositoryContentConsumer nexusIndexerConsumer;
 
-    private ManagedRepositoryConfiguration repositoryConfig;
+    private ManagedRepository repositoryConfig;
 
     private ArchivaTaskSchedulerStub scheduler;
 
@@ -119,9 +120,9 @@ public class NexusIndexerConsumerTest
             new NexusIndexerConsumer( scheduler, configuration, filetypes, plexusSisuBridge, mavenIndexerUtils );
 
         // initialize to set the file types to be processed
-        ( (Initializable) nexusIndexerConsumer ).initialize();
+        ( (NexusIndexerConsumer) nexusIndexerConsumer ).initialize();
 
-        repositoryConfig = new ManagedRepositoryConfiguration();
+        repositoryConfig = new ManagedRepository();
         repositoryConfig.setId( "test-repo" );
         repositoryConfig.setLocation( "target/test-classes/test-repo" );
         repositoryConfig.setLayout( "default" );

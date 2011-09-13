@@ -20,7 +20,7 @@ package org.apache.archiva.web.xmlrpc.api;
  */
 
 import com.atlassian.xmlrpc.ServiceObject;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 

@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
@@ -114,7 +115,7 @@ public class RepositoryScanStatistics
         invalidConsumers = consumers;
     }
 
-    public String toDump( ManagedRepositoryConfiguration repo )
+    public String toDump( ManagedRepository repo )
     {
         StringBuffer buf = new StringBuffer();
 

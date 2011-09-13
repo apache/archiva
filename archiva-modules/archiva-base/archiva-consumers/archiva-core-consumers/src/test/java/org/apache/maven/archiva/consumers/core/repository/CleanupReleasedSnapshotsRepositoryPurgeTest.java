@@ -19,10 +19,11 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -67,7 +68,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         super.setUp();
 
         RepositoryContentFactory factory =
-            applicationContext.getBean( "repositoryContentFactory#cleanup-released-snapshots", RepositoryContentFactory.class );
+            applicationContext.getBean( "repositoryContentFactory#cleanup-released-snapshots",
+                                        RepositoryContentFactory.class );
 
         archivaConfiguration =
             applicationContext.getBean( "archivaConfiguration#cleanup-released-snapshots", ArchivaConfiguration.class );
@@ -76,18 +78,28 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         listener = (RepositoryListener) listenerControl.getMock();
         List<RepositoryListener> listeners = Collections.singletonList( listener );
-        repoPurge =
-            new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools, archivaConfiguration, factory,
-                                                         repositorySession, listeners );
+        repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools,
+                                                                 applicationContext.getBean(
+                                                                     ManagedRepositoryAdmin.class ), factory,
+                                                                 repositorySession, listeners );
+
+        ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
+            ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
     }
 
     @Test
     public void testReleasedSnapshotsExistsInSameRepo()
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
-        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+        /**
+         Configuration config = archivaConfiguration.getConfiguration();
+         config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
+         config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+         **/
+
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
 
         String repoRoot = prepareTestRepos();
 
@@ -142,9 +154,13 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testNonArtifactFile()
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
+        /*Configuration config = archivaConfiguration.getConfiguration();
         config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
-        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );*/
+
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
 
         String repoRoot = prepareTestRepos();
 
@@ -152,7 +168,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         listenerControl.replay();
 
         File file = new File( repoRoot, INDEX_PATH );
-        if (!file.exists())
+        if ( !file.exists() )
         {
             // help windauze to create directory with .
             file.getParentFile().mkdirs();
@@ -171,10 +187,18 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testReleasedSnapshotsExistsInDifferentRepo()
         throws Exception
     {
+        /*
         Configuration config = archivaConfiguration.getConfiguration();
         config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
         config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
         config.addManagedRepository( getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ) );
+        */
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
+            getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ), false, null );
 
         String repoRoot = prepareTestRepos();
 
@@ -217,9 +241,14 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testHigherSnapshotExistsInSameRepo()
         throws Exception
     {
+        /*
         Configuration config = archivaConfiguration.getConfiguration();
         config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
         config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+        */
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
 
         String repoRoot = prepareTestRepos();
 

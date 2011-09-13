@@ -19,14 +19,10 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

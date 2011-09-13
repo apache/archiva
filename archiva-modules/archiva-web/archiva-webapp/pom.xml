@@ -403,6 +403,17 @@
 
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-api</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
     <dependency>

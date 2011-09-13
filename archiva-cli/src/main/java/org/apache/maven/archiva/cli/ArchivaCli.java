@@ -21,6 +21,7 @@ package org.apache.maven.archiva.cli;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
@@ -165,7 +166,7 @@ public class ArchivaCli
         WagonManager wagonManager = plexusSisuBridge.lookup( WagonManager.class );
         wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
 
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        ManagedRepository repo = new ManagedRepository();
         repo.setId( "cliRepo" );
         repo.setName( "Archiva CLI Provided Repo" );
         repo.setLocation( path );

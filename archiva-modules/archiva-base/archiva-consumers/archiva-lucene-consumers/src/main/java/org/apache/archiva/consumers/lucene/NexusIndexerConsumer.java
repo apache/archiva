@@ -19,6 +19,7 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -27,7 +28,6 @@ import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -35,14 +35,13 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ import java.util.List;
  */
 public class NexusIndexerConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
 
@@ -73,7 +72,7 @@ public class NexusIndexerConsumer
 
     private List<String> includes = new ArrayList<String>();
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
     private List<? extends IndexCreator> allIndexCreators;
 
@@ -104,7 +103,7 @@ public class NexusIndexerConsumer
         return false;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
+    public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         this.repository = repository;
@@ -125,7 +124,7 @@ public class NexusIndexerConsumer
         }
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         if ( executeOnEntireRepo )
@@ -238,8 +237,8 @@ public class NexusIndexerConsumer
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
+    @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         configuration.addChangeListener( this );
 

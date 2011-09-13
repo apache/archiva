@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.junit.Before;
@@ -39,7 +40,7 @@ public class RetentionCountRepositoryPurgeTest
     {
         super.setUp();
 
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), repoConfiguration.getRetentionCount(),
                                                        repositorySession, listeners );

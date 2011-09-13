@@ -19,10 +19,10 @@ package org.apache.archiva.web.xmlrpc.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.AuditInformation;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.admin.model.AuditInformation;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -315,7 +315,7 @@ public class AdministrationServiceImpl
     {
         List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>();
 
-        for ( org.apache.archiva.admin.repository.managed.ManagedRepository repoConfig : managedRepositoryAdmin.getManagedRepositories() )
+        for ( org.apache.archiva.admin.model.managed.ManagedRepository repoConfig : managedRepositoryAdmin.getManagedRepositories() )
         {
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
@@ -334,7 +334,7 @@ public class AdministrationServiceImpl
     {
         List<RemoteRepository> remoteRepos = new ArrayList<RemoteRepository>();
 
-        for ( org.apache.archiva.admin.repository.remote.RemoteRepository repoConfig : remoteRepositoryAdmin.getRemoteRepositories() )
+        for ( org.apache.archiva.admin.model.remote.RemoteRepository repoConfig : remoteRepositoryAdmin.getRemoteRepositories() )
         {
             RemoteRepository repo = new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
                                                           repoConfig.getLayout() );
@@ -368,8 +368,8 @@ public class AdministrationServiceImpl
         throws Exception
     {
 
-        org.apache.archiva.admin.repository.managed.ManagedRepository repository =
-            new org.apache.archiva.admin.repository.managed.ManagedRepository( repoId, name, location, layout,
+        org.apache.archiva.admin.model.managed.ManagedRepository repository =
+            new org.apache.archiva.admin.model.managed.ManagedRepository( repoId, name, location, layout,
                                                                                snapshotsIncluded, releasesIncluded,
                                                                                blockRedeployments, cronExpression, null,
                                                                                false, daysOlder, retentionCount,

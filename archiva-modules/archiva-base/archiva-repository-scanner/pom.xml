@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
+      <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -44,6 +44,13 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
+      <!-- FIXME olamy : should be scope test but it depends on FileTypes
+      <scope>test</scope>
+      -->
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

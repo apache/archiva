@@ -20,6 +20,7 @@ package org.apache.archiva.web.xmlrpc.services;
  */
 
 import junit.framework.TestCase;
+import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
@@ -399,7 +400,8 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
-        repoContent.setRepository( managedRepo );
+        repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
+                                                                       org.apache.archiva.admin.model.managed.ManagedRepository.class ) );
 
         repoFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( "internal" ), repoContent );
 
@@ -451,7 +453,8 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
 
         ManagedLegacyRepositoryContent repoContent = new ManagedLegacyRepositoryContent();
-        repoContent.setRepository( managedRepo );
+        repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
+                                                                       org.apache.archiva.admin.model.managed.ManagedRepository.class ) );
         repoContent.setFileTypes( fileTypes );
         repoContent.setLegacyPathParser( parser );
 
@@ -511,7 +514,8 @@ public class AdministrationServiceImplTest
         configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
-        repoContent.setRepository( managedRepo );
+        repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
+                                                                       org.apache.archiva.admin.model.managed.ManagedRepository.class ) );
 
         repoFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( "internal" ), repoContent );
 

@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;

@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.RepositoryURL;
@@ -38,14 +39,14 @@ public class RemoteDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements RemoteRepositoryContent
 {
-    private RemoteRepositoryConfiguration repository;
+    private RemoteRepository repository;
 
     public String getId()
     {
         return repository.getId();
     }
 
-    public RemoteRepositoryConfiguration getRepository()
+    public RemoteRepository getRepository()
     {
         return repository;
     }
@@ -55,7 +56,7 @@ public class RemoteDefaultRepositoryContent
         return new RepositoryURL( repository.getUrl() );
     }
 
-    public void setRepository( RemoteRepositoryConfiguration repository )
+    public void setRepository( RemoteRepository repository )
     {
         this.repository = repository;
     }

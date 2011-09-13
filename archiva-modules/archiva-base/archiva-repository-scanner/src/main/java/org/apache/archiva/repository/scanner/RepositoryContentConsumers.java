@@ -19,6 +19,9 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
@@ -26,16 +29,15 @@ import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,20 +50,24 @@ import java.util.Map;
  *
  * @version $Id$
  */
+@Service("repositoryContentConsumers")
 public class RepositoryContentConsumers
     implements ApplicationContextAware
 {
+
+    @Inject
     private ApplicationContext applicationContext;
 
-    private ArchivaConfiguration archivaConfiguration;
+    private ArchivaAdministration archivaAdministration;
 
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
 
-    public RepositoryContentConsumers( ArchivaConfiguration archivaConfiguration )
+    @Inject
+    public RepositoryContentConsumers( ArchivaAdministration archivaAdministration )
     {
-        this.archivaConfiguration = archivaConfiguration;
+        this.archivaAdministration = archivaAdministration;
     }
 
     public void setApplicationContext( ApplicationContext applicationContext )
@@ -84,9 +90,9 @@ public class RepositoryContentConsumers
      * @return the list of consumer ids that have been selected by the configuration.
      */
     public List<String> getSelectedKnownConsumerIds()
+        throws RepositoryAdminException
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-        return scanning.getKnownContentConsumers();
+        return archivaAdministration.getKnownContentConsumers();
     }
 
     /**
@@ -103,9 +109,9 @@ public class RepositoryContentConsumers
      * @return the list of consumer ids that have been selected by the configuration.
      */
     public List<String> getSelectedInvalidConsumerIds()
+        throws RepositoryAdminException
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-        return scanning.getInvalidContentConsumers();
+        return archivaAdministration.getInvalidContentConsumers();
     }
 
     /**
@@ -115,6 +121,7 @@ public class RepositoryContentConsumers
      * @return the map of String ids to {@link KnownRepositoryContentConsumer} objects.
      */
     public Map<String, KnownRepositoryContentConsumer> getSelectedKnownConsumersMap()
+        throws RepositoryAdminException
     {
         Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<String, KnownRepositoryContentConsumer>();
 
@@ -133,6 +140,7 @@ public class RepositoryContentConsumers
      * @return the map of String ids to {@link InvalidRepositoryContentConsumer} objects.
      */
     public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
+        throws RepositoryAdminException
     {
         Map<String, InvalidRepositoryContentConsumer> consumerMap =
             new HashMap<String, InvalidRepositoryContentConsumer>();
@@ -153,6 +161,7 @@ public class RepositoryContentConsumers
      *         by the active configuration.
      */
     public synchronized List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
+        throws RepositoryAdminException
     {
         if ( selectedKnownConsumers == null )
         {
@@ -180,6 +189,7 @@ public class RepositoryContentConsumers
      *         by the active configuration.
      */
     public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
+        throws RepositoryAdminException
     {
         if ( selectedInvalidConsumers == null )
         {
@@ -236,8 +246,8 @@ public class RepositoryContentConsumers
      * @param localFile              the local file to execute the consumers against.
      * @param updateRelatedArtifacts TODO
      */
-    public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile,
-                                  boolean updateRelatedArtifacts )
+    public void executeConsumers( ManagedRepository repository, File localFile, boolean updateRelatedArtifacts )
+        throws RepositoryAdminException
     {
         // Run the repository consumers
         try
@@ -316,8 +326,8 @@ public class RepositoryContentConsumers
         return new Date( System.currentTimeMillis() );
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
     {
-        this.archivaConfiguration = archivaConfiguration;
+        this.archivaAdministration = archivaAdministration;
     }
 }

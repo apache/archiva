@@ -20,7 +20,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.springframework.context.annotation.Scope;
@@ -39,20 +40,19 @@ public class DeleteManagedRepositoryAction
 {
 
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
-    private ManagedRepositoryConfiguration stagingRepository;
+    private ManagedRepository stagingRepository;
 
     private String repoid;
 
-    // FIXME olamy use ManagedRepositoryAdmin rather tha, directly archivaConfiguration
     public void prepare()
+        throws RepositoryAdminException
     {
         if ( StringUtils.isNotBlank( repoid ) )
         {
-            this.repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid );
-            this.stagingRepository =
-                archivaConfiguration.getConfiguration().findManagedRepositoryById( repoid + "-stage" );
+            this.repository = getManagedRepositoryAdmin().getManagedRepository( repoid );
+            this.stagingRepository = getManagedRepositoryAdmin().getManagedRepository( repoid + "-stage" );
         }
     }
 
@@ -79,7 +79,7 @@ public class DeleteManagedRepositoryAction
 
     private String deleteRepository( boolean deleteContents )
     {
-        ManagedRepositoryConfiguration existingRepository = repository;
+        ManagedRepository existingRepository = repository;
         if ( existingRepository == null )
         {
             addActionError( "A repository with that id does not exist" );
@@ -103,12 +103,12 @@ public class DeleteManagedRepositoryAction
         return result;
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
 
-    public void setRepository( ManagedRepositoryConfiguration repository )
+    public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
     }

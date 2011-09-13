@@ -45,9 +45,12 @@ public class ManagedRepository
 
     private boolean stageRepoNeeded;
 
-    private String cronExpression;
+    // default value
+    private String cronExpression = "0 0 * * * ?";
 
     private boolean resetStats;
+
+    private boolean scanned =false;
 
     public ManagedRepository()
     {
@@ -173,6 +176,16 @@ public class ManagedRepository
         this.resetStats = resetStats;
     }
 
+    public boolean isScanned()
+    {
+        return scanned;
+    }
+
+    public void setScanned( boolean scanned )
+    {
+        this.scanned = scanned;
+    }
+
     public int hashCode()
     {
         int result = 17;
@@ -205,14 +218,15 @@ public class ManagedRepository
         sb.append( "ManagedRepository" );
         sb.append( "{id='" ).append( id ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", location='" ).append( location ).append( '\'' );
         sb.append( ", layout='" ).append( layout ).append( '\'' );
+        sb.append( ", location='" ).append( location ).append( '\'' );
         sb.append( ", snapshots=" ).append( snapshots );
         sb.append( ", releases=" ).append( releases );
         sb.append( ", blockRedeployments=" ).append( blockRedeployments );
         sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", resetStats=" ).append( resetStats );
+        sb.append( ", scanned=" ).append( scanned );
         sb.append( '}' );
         return sb.toString();
     }

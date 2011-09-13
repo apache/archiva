@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 * specific language governing permissions and limitations
 * under the License.
 */
-@Service("repositorySessionFactory#test")
+@Service( "repositorySessionFactory#test" )
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {
@@ -30,7 +30,14 @@ public class TestRepositorySessionFactory
 
     public RepositorySession createSession()
     {
-        return new RepositorySession( repository, resolver );
+        return new RepositorySession( new TestMetadataRepository(), resolver )
+        {
+            @Override
+            public void close()
+            {
+                return;
+            }
+        };
     }
 
     public void setRepository( MetadataRepository repository )

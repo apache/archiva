@@ -20,6 +20,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
@@ -76,7 +77,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected static final String RELEASES_TEST_REPO_NAME = "Releases Test Repo One";
 
-    private ManagedRepositoryConfiguration config;
+    private ManagedRepository config;
 
     private ManagedRepositoryContent repo;
 
@@ -117,9 +118,9 @@ public abstract class AbstractRepositoryPurgeTest
         repo = null;
     }
 
-    public ManagedRepositoryConfiguration getRepoConfiguration( String repoId, String repoName )
+    public ManagedRepository getRepoConfiguration( String repoId, String repoName )
     {
-        config = new ManagedRepositoryConfiguration();
+        config = new ManagedRepository();
         config.setId( repoId );
         config.setName( repoName );
         config.setDaysOlder( TEST_DAYS_OLDER );

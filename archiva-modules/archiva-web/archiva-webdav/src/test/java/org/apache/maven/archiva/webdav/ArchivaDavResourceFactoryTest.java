@@ -20,6 +20,11 @@ package org.apache.maven.archiva.webdav;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.group.RepositoryGroup;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
@@ -29,7 +34,6 @@ import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -101,6 +105,13 @@ public class ArchivaDavResourceFactoryTest
     @Inject
     PlexusSisuBridge plexusSisuBridge;
 
+    @Inject
+    DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin;
+
+    @Inject
+    DefaultRepositoryGroupAdmin defaultRepositoryGroupAdmin;
+
+
     @Before
     public void setUp()
         throws Exception
@@ -118,19 +129,36 @@ public class ArchivaDavResourceFactoryTest
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
 
         config = new Configuration();
-        config.addManagedRepository(
-            createManagedRepository( RELEASES_REPO, new File( "target/test-classes/" + RELEASES_REPO ).getPath(),
-                                     "default" ) );
-        config.addManagedRepository(
-            createManagedRepository( INTERNAL_REPO, new File( "target/test-classes/" + INTERNAL_REPO ).getPath(),
-                                     "default" ) );
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( config, 5, 20 );
+        archivaConfiguration.save( config );
+        archivaConfigurationControl.setVoidCallable( 1, 4 );
+        archivaConfigurationControl.replay();
 
-        RepositoryGroupConfiguration repoGroupConfig = new RepositoryGroupConfiguration();
+        defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfiguration );
+        defaultManagedRepositoryAdmin.getRepositoryCommonValidator().setArchivaConfiguration( archivaConfiguration );
+        if ( defaultManagedRepositoryAdmin.getManagedRepository( RELEASES_REPO ) == null )
+        {
+            defaultManagedRepositoryAdmin.addManagedRepository(
+                createManagedRepository( RELEASES_REPO, new File( "target/test-classes/" + RELEASES_REPO ).getPath(),
+                                         "default" ), false, null );
+        }
+        if ( defaultManagedRepositoryAdmin.getManagedRepository( INTERNAL_REPO ) == null )
+        {
+            defaultManagedRepositoryAdmin.addManagedRepository(
+                createManagedRepository( INTERNAL_REPO, new File( "target/test-classes/" + INTERNAL_REPO ).getPath(),
+                                         "default" ), false, null );
+        }
+        RepositoryGroup repoGroupConfig = new RepositoryGroup();
         repoGroupConfig.setId( LOCAL_REPO_GROUP );
         repoGroupConfig.addRepository( RELEASES_REPO );
         repoGroupConfig.addRepository( INTERNAL_REPO );
 
-        config.addRepositoryGroup( repoGroupConfig );
+        defaultRepositoryGroupAdmin.setArchivaConfiguration( archivaConfiguration );
+        if ( defaultManagedRepositoryAdmin.getManagedRepository( LOCAL_REPO_GROUP ) == null )
+        {
+            defaultRepositoryGroupAdmin.addRepositoryGroup( repoGroupConfig, null );
+        }
 
         repoContentFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repoFactory = (RepositoryContentFactory) repoContentFactoryControl.getMock();
@@ -146,9 +174,9 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setConnectors( new OverridingRepositoryProxyConnectors() );
     }
 
-    private ManagedRepositoryConfiguration createManagedRepository( String id, String location, String layout )
+    private ManagedRepository createManagedRepository( String id, String location, String layout )
     {
-        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        ManagedRepository repoConfig = new ManagedRepository();
         repoConfig.setId( id );
         repoConfig.setName( id );
         repoConfig.setLocation( location );
@@ -158,9 +186,10 @@ public class ArchivaDavResourceFactoryTest
     }
 
     private ManagedRepositoryContent createManagedRepositoryContent( String repoId )
+        throws RepositoryAdminException
     {
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
-        repoContent.setRepository( config.findManagedRepositoryById( repoId ) );
+        repoContent.setRepository( defaultManagedRepositoryAdmin.getManagedRepository( repoId ) );
 
         return repoContent;
     }
@@ -182,13 +211,15 @@ public class ArchivaDavResourceFactoryTest
                                                                     new ArchivaDavLocatorFactory() );
 
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
+        ManagedRepositoryContent releasesRepo = createManagedRepositoryContent( RELEASES_REPO );
 
         try
         {
+            archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( RELEASES_REPO ),
-                                                       createManagedRepositoryContent( RELEASES_REPO ) );
+                                                       releasesRepo );
             requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
             requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
             repoRequestControl.expectAndReturn(
@@ -247,14 +278,17 @@ public class ArchivaDavResourceFactoryTest
 
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
+        ManagedRepositoryContent releasesRepo = createManagedRepositoryContent( RELEASES_REPO );
+
         try
         {
+            archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
                                                        internalRepo );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( RELEASES_REPO ),
-                                                       createManagedRepositoryContent( RELEASES_REPO ) );
+                                                       releasesRepo );
             requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
             requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
             repoRequestControl.expectAndReturn(
@@ -299,9 +333,9 @@ public class ArchivaDavResourceFactoryTest
             + "/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar", LOCAL_REPO_GROUP,
                                                                     new ArchivaDavLocatorFactory() );
 
-        config.addManagedRepository(
+        defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LOCAL_MIRROR_REPO, new File( "target/test-classes/local-mirror" ).getPath(),
-                                     "default" ) );
+                                     "default" ), false, null );
 
         List<RepositoryGroupConfiguration> repoGroups = new ArrayList<RepositoryGroupConfiguration>();
         RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
@@ -318,6 +352,7 @@ public class ArchivaDavResourceFactoryTest
 
         try
         {
+            archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             requestControl.expectAndReturn( request.getMethod(), "GET", 4 );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
@@ -384,6 +419,7 @@ public class ArchivaDavResourceFactoryTest
 
         try
         {
+            archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
                                                        internalRepo );
@@ -438,6 +474,7 @@ public class ArchivaDavResourceFactoryTest
 
         try
         {
+            archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
                                                        internalRepo );
@@ -467,9 +504,9 @@ public class ArchivaDavResourceFactoryTest
     public void testRequestMetadataRepoIsLegacy()
         throws Exception
     {
-        config.addManagedRepository(
+        defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LEGACY_REPO, new File( "target/test-classes/" + LEGACY_REPO ).getPath(),
-                                     "legacy" ) );
+                                     "legacy" ), false, null );
         DavResourceLocator locator =
             new ArchivaDavResourceLocator( "", "/repository/" + LEGACY_REPO + "/eclipse/maven-metadata.xml",
                                            LEGACY_REPO, new ArchivaDavLocatorFactory() );
@@ -482,6 +519,7 @@ public class ArchivaDavResourceFactoryTest
 
         try
         {
+            archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( LEGACY_REPO ),
                                                        legacyRepo );

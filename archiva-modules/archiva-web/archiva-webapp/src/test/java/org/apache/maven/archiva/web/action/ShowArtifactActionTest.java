@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Action;
+import net.sf.beanlib.provider.replicator.BeanReplicator;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;
@@ -58,7 +60,7 @@ public class ShowArtifactActionTest
     private static final String TEST_SNAPSHOT_VERSION = "1.0-SNAPSHOT";
 
     private static final String TEST_TS_SNAPSHOT_VERSION = "1.0-20091120.111111-1";
-    
+
     private static final String TEST_NAMESPACE = "namespace";
 
     private static final String OTHER_TEST_REPO = "first-repo";
@@ -73,6 +75,44 @@ public class ShowArtifactActionTest
     private static final long TEST_SIZE = 12345L;
 
     private static final String TEST_TYPE = "jar";
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+        action = (ShowArtifactAction) getActionProxy( "/showArtifact.action" ).getAction();
+
+        metadataResolver = new TestMetadataResolver();
+        MetadataRepository repo = mock( MetadataRepository.class );
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
+        when( repositorySession.getRepository() ).thenReturn( repo );
+        TestRepositorySessionFactory repositorySessionFactory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
+        repositorySessionFactory.setRepositorySession( repositorySession );
+
+        RepositoryContentFactory factory = mock( RepositoryContentFactory.class );
+
+        action.setRepositoryFactory( factory );
+
+        ManagedRepository config = new ManagedRepository();
+        config.setId( TEST_REPO );
+        config.setLocation( new File( "target/test-repo" ).getAbsolutePath() );
+
+        ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
+        content.setRepository( config );
+        when( factory.getManagedRepositoryContent( TEST_REPO ) ).thenReturn( content );
+
+        ArchivaConfiguration archivaConfig = mock( ArchivaConfiguration.class );
+
+        Configuration configuration = new Configuration();
+        configuration.addManagedRepository(
+            new BeanReplicator().replicateBean( config, ManagedRepositoryConfiguration.class ) );
+        when( archivaConfig.getConfiguration() ).thenReturn( configuration );
+
+        when( factory.getArchivaConfiguration() ).thenReturn( archivaConfig );
+
+    }
 
     public void testInstantiation()
     {
@@ -293,49 +333,49 @@ public class ShowArtifactActionTest
         assertNull( action.getMailingLists() );
         assertTrue( action.getArtifacts().isEmpty() );
     }
-    
+
     public void testMetadataHasRepositoryFacetProblem()
     {
         String errMsg = "Error in resolving artifact's parent POM file: Sample Parent POM not found";
-        ProjectVersionMetadata metaData = createProjectModel(TEST_SNAPSHOT_VERSION);
-        metaData.addFacet( createRepositoryProblemFacet( TEST_REPO, errMsg, 
-                                                         TEST_GROUP_ID, TEST_SNAPSHOT_VERSION, TEST_NAMESPACE ) );
-        
-        
+        ProjectVersionMetadata metaData = createProjectModel( TEST_SNAPSHOT_VERSION );
+        metaData.addFacet(
+            createRepositoryProblemFacet( TEST_REPO, errMsg, TEST_GROUP_ID, TEST_SNAPSHOT_VERSION, TEST_NAMESPACE ) );
+
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, metaData );
-        
+
         metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
-                                  TEST_SNAPSHOT_ARTIFACTS );
+                                       TEST_SNAPSHOT_ARTIFACTS );
 
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
         action.setVersion( TEST_SNAPSHOT_VERSION );
 
         String result = action.artifact();
-        
+
         assertEquals( Action.SUCCESS, result );
 
         assertTrue( action.hasActionErrors() );
         assertFalse( action.hasActionMessages() );
         assertEquals( "Artifact metadata is incomplete: " + errMsg, action.getActionErrors().toArray()[0].toString() );
     }
-    
+
     public void testMetadataIncomplete()
     {
-        ProjectVersionMetadata metaData = createProjectModel(TEST_SNAPSHOT_VERSION);
+        ProjectVersionMetadata metaData = createProjectModel( TEST_SNAPSHOT_VERSION );
         metaData.setIncomplete( true );
-        
+
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, metaData );
-        
+
         metadataResolver.setArtifacts( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_SNAPSHOT_VERSION,
-                                  TEST_SNAPSHOT_ARTIFACTS );
+                                       TEST_SNAPSHOT_ARTIFACTS );
 
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
-        action.setVersion( TEST_SNAPSHOT_VERSION );;
+        action.setVersion( TEST_SNAPSHOT_VERSION );
+        ;
 
         String result = action.artifact();
-        
+
         assertEquals( Action.SUCCESS, result );
 
         assertTrue( action.hasActionErrors() );
@@ -679,8 +719,9 @@ public class ShowArtifactActionTest
         assertTrue( action.getActionErrors().isEmpty() );
         assertTrue( action.getActionMessages().isEmpty() );
     }
-    
-    private RepositoryProblemFacet createRepositoryProblemFacet( String repoId, String errMsg, String projectId, String projectVersion, String namespace )
+
+    private RepositoryProblemFacet createRepositoryProblemFacet( String repoId, String errMsg, String projectId,
+                                                                 String projectVersion, String namespace )
     {
         RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
         repoProblemFacet.setRepositoryId( repoId );
@@ -691,42 +732,5 @@ public class ShowArtifactActionTest
         repoProblemFacet.setVersion( projectVersion );
         repoProblemFacet.setNamespace( namespace );
         return repoProblemFacet;
-    }
-
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-        action = (ShowArtifactAction) getActionProxy( "/showArtifact.action" ).getAction();
-
-        metadataResolver = new TestMetadataResolver();
-        MetadataRepository repo = mock( MetadataRepository.class );
-        RepositorySession repositorySession = mock( RepositorySession.class );
-        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
-        when( repositorySession.getRepository() ).thenReturn( repo );
-        TestRepositorySessionFactory repositorySessionFactory =
-            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
-        repositorySessionFactory.setRepositorySession( repositorySession );
-
-        RepositoryContentFactory factory = mock( RepositoryContentFactory.class );
-
-        action.setRepositoryFactory( factory );
-
-        ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
-        config.setId( TEST_REPO );
-        config.setLocation( new File( "target/test-repo" ).getAbsolutePath() );
-
-        ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( config );
-        when( factory.getManagedRepositoryContent( TEST_REPO ) ).thenReturn( content );
-
-        ArchivaConfiguration archivaConfig = mock( ArchivaConfiguration.class );
-
-        Configuration configuration = new Configuration();
-        configuration.addManagedRepository( config );
-        when( archivaConfig.getConfiguration() ).thenReturn( configuration );
-
-        when( factory.getArchivaConfiguration() ).thenReturn( archivaConfig );
-
     }
 }

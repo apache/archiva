@@ -20,6 +20,7 @@ package org.apache.archiva.reports.consumers;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -57,7 +58,7 @@ public class DuplicateArtifactsConsumerTest
     @Named( value = "knownRepositoryContentConsumer#duplicate-artifacts" )
     private DuplicateArtifactsConsumer consumer;
 
-    private ManagedRepositoryConfiguration config;
+    private ManagedRepository config;
 
     private MetadataRepository metadataRepository;
 
@@ -92,7 +93,7 @@ public class DuplicateArtifactsConsumerTest
 
         assertNotNull( consumer );
 
-        config = new ManagedRepositoryConfiguration();
+        config = new ManagedRepository();
         config.setId( TEST_REPO );
         config.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
 

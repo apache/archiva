@@ -20,9 +20,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
-import org.apache.archiva.admin.repository.proxyconnector.ProxyConnector;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -37,8 +37,8 @@ import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.List;

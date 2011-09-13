@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -60,7 +60,7 @@ public interface RepositoryContentConsumer
      * @param whenGathered the start of the repository scan
      * @throws ConsumerException if there was a problem with using the provided repository with the consumer.
      */
-    void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
+    void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException;
 
     /**
@@ -73,9 +73,9 @@ public interface RepositoryContentConsumer
      * @param whenGathered        the start of the repository scan
      * @param executeOnEntireRepo flags whether the consumer will be executed on an entire repository or just on a specific resource
      * @throws ConsumerException if there was a problem with using the provided repository with the consumer.
-     * @see RepositoryContentConsumer#beginScan(org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration, java.util.Date)
+     * @see RepositoryContentConsumer#beginScan(ManagedRepository, java.util.Date)
      */
-    void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException;
 
     /**

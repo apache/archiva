@@ -20,6 +20,7 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -104,7 +105,7 @@ public class ArchivaIndexingTaskExecutor
         {
             ArtifactIndexingTask indexingTask = (ArtifactIndexingTask) task;
 
-            ManagedRepositoryConfiguration repository = indexingTask.getRepository();
+            ManagedRepository repository = indexingTask.getRepository();
             IndexingContext context = indexingTask.getContext();
 
             if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() )
@@ -231,7 +232,7 @@ public class ArchivaIndexingTaskExecutor
         }
     }
 
-    private void finishIndexingTask( ArtifactIndexingTask indexingTask, ManagedRepositoryConfiguration repository,
+    private void finishIndexingTask( ArtifactIndexingTask indexingTask, ManagedRepository repository,
                                      IndexingContext context )
         throws TaskExecutionException
     {

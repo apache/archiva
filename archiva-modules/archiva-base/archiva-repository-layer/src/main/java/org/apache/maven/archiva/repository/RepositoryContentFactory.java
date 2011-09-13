@@ -19,10 +19,13 @@ package org.apache.maven.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.remote.RemoteRepository;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.springframework.context.ApplicationContext;
@@ -49,6 +52,12 @@ public class RepositoryContentFactory
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    @Inject
     private ApplicationContext applicationContext;
 
     private final Map<String, ManagedRepositoryContent> managedContentMap;
@@ -73,51 +82,65 @@ public class RepositoryContentFactory
     public ManagedRepositoryContent getManagedRepositoryContent( String repoId )
         throws RepositoryNotFoundException, RepositoryException
     {
-        ManagedRepositoryContent repo = managedContentMap.get( repoId );
-
-        if ( repo != null )
+        try
         {
+            ManagedRepositoryContent repo = managedContentMap.get( repoId );
+
+            if ( repo != null )
+            {
+                return repo;
+            }
+
+            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repoId );
+            if ( repoConfig == null )
+            {
+                throw new RepositoryNotFoundException(
+                    "Unable to find managed repository configuration for id:" + repoId );
+            }
+
+            repo = applicationContext.getBean( "managedRepositoryContent#" + repoConfig.getLayout(),
+                                               ManagedRepositoryContent.class );
+            repo.setRepository( repoConfig );
+            managedContentMap.put( repoId, repo );
+
             return repo;
         }
-
-        ManagedRepositoryConfiguration repoConfig =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
-        if ( repoConfig == null )
+        catch ( RepositoryAdminException e )
         {
-            throw new RepositoryNotFoundException( "Unable to find managed repository configuration for id:" + repoId );
+            throw new RepositoryException( e.getMessage(), e );
         }
-
-        repo = applicationContext.getBean( "managedRepositoryContent#" + repoConfig.getLayout(),
-                                           ManagedRepositoryContent.class );
-        repo.setRepository( repoConfig );
-        managedContentMap.put( repoId, repo );
-
-        return repo;
     }
 
     public RemoteRepositoryContent getRemoteRepositoryContent( String repoId )
         throws RepositoryNotFoundException, RepositoryException
     {
-        RemoteRepositoryContent repo = remoteContentMap.get( repoId );
-
-        if ( repo != null )
+        try
         {
+            RemoteRepositoryContent repo = remoteContentMap.get( repoId );
+
+            if ( repo != null )
+            {
+                return repo;
+            }
+
+            RemoteRepository repoConfig = remoteRepositoryAdmin.getRemoteRepository( repoId );
+            if ( repoConfig == null )
+            {
+                throw new RepositoryNotFoundException(
+                    "Unable to find remote repository configuration for id:" + repoId );
+            }
+
+            repo = applicationContext.getBean( "remoteRepositoryContent#" + repoConfig.getLayout(),
+                                               RemoteRepositoryContent.class );
+            repo.setRepository( repoConfig );
+            remoteContentMap.put( repoId, repo );
+
             return repo;
         }
-
-        RemoteRepositoryConfiguration repoConfig =
-            archivaConfiguration.getConfiguration().findRemoteRepositoryById( repoId );
-        if ( repoConfig == null )
+        catch ( RepositoryAdminException e )
         {
-            throw new RepositoryNotFoundException( "Unable to find remote repository configuration for id:" + repoId );
+            throw new RepositoryException( e.getMessage(), e );
         }
-
-        repo = applicationContext.getBean( "remoteRepositoryContent#" + repoConfig.getLayout(),
-                                           RemoteRepositoryContent.class );
-        repo.setRepository( repoConfig );
-        remoteContentMap.put( repoId, repo );
-
-        return repo;
     }
 
 

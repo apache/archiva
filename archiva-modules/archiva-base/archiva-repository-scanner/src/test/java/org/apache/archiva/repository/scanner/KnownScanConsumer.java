@@ -19,15 +19,15 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
-import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 
 /**
  * ScanConsumer 
@@ -70,13 +70,13 @@ public class KnownScanConsumer
         return "Scan Consumer (for testing)";
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
+    public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         /* do nothing */
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );

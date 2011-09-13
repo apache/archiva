@@ -19,7 +19,7 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
@@ -41,7 +41,7 @@ public class ArtifactIndexingTask
         FINISH
     }
 
-    private final ManagedRepositoryConfiguration repository;
+    private final ManagedRepository repository;
 
     private final File resourceFile;
 
@@ -56,7 +56,7 @@ public class ArtifactIndexingTask
      */
     private boolean onlyUpdate = false;
 
-    public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
+    public ArtifactIndexingTask( ManagedRepository repository, File resourceFile, Action action,
                                  IndexingContext context )
     {
         this.repository = repository;
@@ -65,14 +65,14 @@ public class ArtifactIndexingTask
         this.context = context;
     }
 
-    public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
+    public ArtifactIndexingTask( ManagedRepository repository, File resourceFile, Action action,
                                  IndexingContext context, boolean executeOnEntireRepo )
     {
         this( repository, resourceFile, action, context );
         this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
-    public ArtifactIndexingTask( ManagedRepositoryConfiguration repository, File resourceFile, Action action,
+    public ArtifactIndexingTask( ManagedRepository repository, File resourceFile, Action action,
                                  IndexingContext context, boolean executeOnEntireRepo, boolean onlyUpdate )
     {
         this( repository, resourceFile, action, context, executeOnEntireRepo );
@@ -104,7 +104,7 @@ public class ArtifactIndexingTask
         return action;
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
@@ -190,17 +190,17 @@ public class ArtifactIndexingTask
      * @throws IOException
      * @throws UnsupportedExistingLuceneIndexException
      */
-    public static IndexingContext createContext( ManagedRepositoryConfiguration repository, NexusIndexer indexer,
+    public static IndexingContext createContext( ManagedRepository repository, NexusIndexer indexer,
                                                  List<? extends IndexCreator> indexCreators )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
-        String indexDir = repository.getIndexDir();
+        String indexDir = repository.getIndexDirectory();
         File managedRepository = new File( repository.getLocation() );
 
         File indexDirectory = null;
         if ( indexDir != null && !"".equals( indexDir ) )
         {
-            indexDirectory = new File( repository.getIndexDir() );
+            indexDirectory = new File( repository.getIndexDirectory() );
         }
         else
         {

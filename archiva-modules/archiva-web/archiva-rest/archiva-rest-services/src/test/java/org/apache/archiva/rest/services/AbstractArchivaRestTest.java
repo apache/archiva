@@ -28,6 +28,7 @@ import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
+import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.maven.archiva.common.utils.FileUtil;
@@ -52,15 +53,36 @@ public abstract class AbstractArchivaRestTest
 
     protected RepositoriesService getRepositoriesService()
     {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          RepositoriesService.class );
+        return getRepositoriesService( null );
+    }
+
+    protected RepositoriesService getRepositoriesService( String authzHeader )
+    {
+        RepositoriesService service =
+            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                       RepositoriesService.class );
+
+        if ( authzHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authzHeader );
+        }
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        return service;
 
     }
 
-    protected ManagedRepositoriesService getManagedRepositoriesService()
+    protected ManagedRepositoriesService getManagedRepositoriesService( String authzHeader )
     {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          ManagedRepositoriesService.class );
+        ManagedRepositoriesService service =
+            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+                                       ManagedRepositoriesService.class );
+
+        if ( authzHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authzHeader );
+        }
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        return service;
 
     }
 
@@ -115,6 +137,20 @@ public abstract class AbstractArchivaRestTest
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         return service;
+    }
+
+    protected SearchService getSearchService( String authzHeader )
+    {
+        SearchService service =
+            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/", SearchService.class );
+
+        if ( authzHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authzHeader );
+        }
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        return service;
+
     }
 
     protected ManagedRepository getTestManagedRepository()

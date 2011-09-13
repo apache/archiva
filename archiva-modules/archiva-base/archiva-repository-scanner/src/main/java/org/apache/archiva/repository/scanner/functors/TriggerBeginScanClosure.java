@@ -19,14 +19,14 @@ package org.apache.archiva.repository.scanner.functors;
  * under the License.
  */
 
-import java.util.Date;
-
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.collections.Closure;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 /**
  * TriggerBeginScanClosure 
@@ -38,24 +38,24 @@ public class TriggerBeginScanClosure
 {
     private Logger log = LoggerFactory.getLogger( TriggerBeginScanClosure.class );
     
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
     
     private Date whenGathered;
 
     private boolean executeOnEntireRepo = true;
 
-    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository )
+    public TriggerBeginScanClosure( ManagedRepository repository )
     {
         this.repository = repository;
     }
     
-    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository, Date whenGathered )
+    public TriggerBeginScanClosure( ManagedRepository repository, Date whenGathered )
     {
         this( repository );
         this.whenGathered = whenGathered;
     }
 
-    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public TriggerBeginScanClosure( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
     {
         this( repository, whenGathered );
         this.executeOnEntireRepo = executeOnEntireRepo;

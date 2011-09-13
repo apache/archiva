@@ -20,6 +20,7 @@ package org.apache.maven.archiva.webdav;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -72,7 +73,7 @@ public class DavResourceTest
 
     private LockManager lockManager;
 
-    private ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
+    private ManagedRepository repository = new ManagedRepository();
     
     @Override
     @Before

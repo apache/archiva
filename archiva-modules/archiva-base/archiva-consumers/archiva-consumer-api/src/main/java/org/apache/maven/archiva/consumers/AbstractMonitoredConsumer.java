@@ -19,12 +19,12 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.FileTypeUtils;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.maven.archiva.configuration.FileTypes;
 
 /**
  * AbstractMonitoredConsumer 
@@ -101,7 +101,7 @@ public abstract class AbstractMonitoredConsumer
 
     protected List<String> getDefaultArtifactExclusions()
     {
-        return FileTypes.DEFAULT_EXCLUSIONS;
+        return FileTypeUtils.DEFAULT_EXCLUSIONS;
     }
     
     

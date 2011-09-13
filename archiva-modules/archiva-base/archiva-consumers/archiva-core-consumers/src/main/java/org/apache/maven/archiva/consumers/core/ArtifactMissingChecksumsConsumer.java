@@ -19,12 +19,12 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -96,13 +96,13 @@ public class ArtifactMissingChecksumsConsumer
         return false;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered )
+    public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
         this.repositoryDir = new File( repo.getLocation() );
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repo, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repo, whenGathered );

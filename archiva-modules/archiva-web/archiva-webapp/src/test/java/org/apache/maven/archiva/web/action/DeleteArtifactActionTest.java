@@ -19,6 +19,8 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import net.sf.beanlib.provider.replicator.BeanReplicator;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -131,7 +133,9 @@ public class DeleteArtifactActionTest
         Configuration config = createConfiguration();
 
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
-        repoContent.setRepository( config.findManagedRepositoryById( REPOSITORY_ID ) );
+        repoContent.setRepository(
+            new BeanReplicator().replicateBean( config.findManagedRepositoryById( REPOSITORY_ID ),
+                                                ManagedRepository.class ) );
 
         configurationControl.expectAndReturn( configuration.getConfiguration(), config );
         repositoryFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( REPOSITORY_ID ),

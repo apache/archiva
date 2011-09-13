@@ -29,13 +29,14 @@ import java.util.List;
 
 /**
  * SortRepositoriesAction
- *
+ * FIXME remove access to archivaconfiguration
  */
 @Controller( "sortRepositoriesAction" )
 @Scope( "prototype" )
 public class SortRepositoriesAction
     extends AbstractRepositoriesAdminAction
 {
+
     private String repoGroupId;
 
     private String targetRepo;

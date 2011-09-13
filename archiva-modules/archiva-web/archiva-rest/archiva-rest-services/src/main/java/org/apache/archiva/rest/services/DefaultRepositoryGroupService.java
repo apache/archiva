@@ -18,8 +18,8 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.group.RepositoryGroupAdmin;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.rest.api.model.RepositoryGroup;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
@@ -48,7 +48,7 @@ public class DefaultRepositoryGroupService
         try
         {
             List<RepositoryGroup> repositoriesGroups = new ArrayList<RepositoryGroup>();
-            for ( org.apache.archiva.admin.repository.group.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
+            for ( org.apache.archiva.admin.model.group.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
             {
                 repositoriesGroups.add(
                     new RepositoryGroup( repoGroup.getId(), new ArrayList<String>( repoGroup.getRepositories() ) ) );
@@ -80,7 +80,7 @@ public class DefaultRepositoryGroupService
         try
         {
             return repositoryGroupAdmin.addRepositoryGroup(
-                new org.apache.archiva.admin.repository.group.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                new org.apache.archiva.admin.model.group.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
                     repoGroup.getRepositories() ) ), getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
@@ -95,7 +95,7 @@ public class DefaultRepositoryGroupService
         try
         {
             return repositoryGroupAdmin.updateRepositoryGroup(
-                new org.apache.archiva.admin.repository.group.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                new org.apache.archiva.admin.model.group.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
                     repoGroup.getRepositories() ) ), getAuditInformation() );
         }
         catch ( RepositoryAdminException e )

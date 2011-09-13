@@ -20,16 +20,18 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.group.RepositoryGroup;
+import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+
 /**
  * DeleteRepositoryGroupAction
- *
  */
 @Controller( "deleteRepositoryGroupAction" )
 @Scope( "prototype" )
@@ -37,15 +39,20 @@ public class DeleteRepositoryGroupAction
     extends AbstractRepositoriesAdminAction
     implements Preparable
 {
-    private RepositoryGroupConfiguration repositoryGroup;
+    private RepositoryGroup repositoryGroup;
+
+    @Inject
+    private RepositoryGroupAdmin repositoryGroupAdmin;
 
     private String repoGroupId;
 
     public void prepare()
+        throws RepositoryAdminException
     {
+
         if ( StringUtils.isNotBlank( repoGroupId ) )
         {
-            this.repositoryGroup = archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroupId );
+            this.repositoryGroup = repositoryGroupAdmin.getRepositoryGroup( repoGroupId );
         }
     }
 
@@ -62,26 +69,32 @@ public class DeleteRepositoryGroupAction
 
     public String delete()
     {
-        Configuration config = archivaConfiguration.getConfiguration();
 
-        RepositoryGroupConfiguration group = config.findRepositoryGroupById( repoGroupId );
-        if ( group == null )
+        try
         {
-            addActionError( "A repository group with that id does not exist." );
+            RepositoryGroup group = repositoryGroupAdmin.getRepositoryGroup( repoGroupId );
+            if ( group == null )
+            {
+                addActionError( "A repository group with that id does not exist." );
+                return ERROR;
+            }
+
+            repositoryGroupAdmin.deleteRepositoryGroup( repoGroupId, getAuditInformation() );
+            return SUCCESS;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( "error occured " + e.getMessage() );
             return ERROR;
         }
-
-        config.removeRepositoryGroup( group );
-        triggerAuditEvent( AuditEvent.DELETE_REPO_GROUP + " " + repoGroupId );
-        return saveConfiguration( config );
     }
 
-    public RepositoryGroupConfiguration getRepositoryGroup()
+    public RepositoryGroup getRepositoryGroup()
     {
         return repositoryGroup;
     }
 
-    public void setRepositoryGroup( RepositoryGroupConfiguration repositoryGroup )
+    public void setRepositoryGroup( RepositoryGroup repositoryGroup )
     {
         this.repositoryGroup = repositoryGroup;
     }

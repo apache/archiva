@@ -19,13 +19,14 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -36,7 +37,6 @@ import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -75,11 +75,14 @@ public class RepositoryPurgeConsumer
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
     /**
      *
      */
     @Inject
-    @Named(value = "repositoryContentFactory#default")
+    @Named( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryContentFactory;
 
     /**
@@ -92,7 +95,7 @@ public class RepositoryPurgeConsumer
      *
      */
     @Inject
-    @Named(value = "fileTypes")
+    @Named( value = "fileTypes" )
     private FileTypes filetypes;
 
     private List<String> includes = new ArrayList<String>();
@@ -111,7 +114,6 @@ public class RepositoryPurgeConsumer
 
     /**
      * TODO: this could be multiple implementations and needs to be configured.
-     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -143,7 +145,7 @@ public class RepositoryPurgeConsumer
         return this.includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered )
+    public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         ManagedRepositoryContent repositoryContent;
@@ -174,13 +176,13 @@ public class RepositoryPurgeConsumer
                                                    listeners );
         }
 
-        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, configuration,
+        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, managedRepositoryAdmin,
                                                                repositoryContentFactory, repositorySession, listeners );
 
         deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );

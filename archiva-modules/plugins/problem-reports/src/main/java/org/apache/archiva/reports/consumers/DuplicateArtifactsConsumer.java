@@ -19,6 +19,7 @@ package org.apache.archiva.reports.consumers;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -32,7 +33,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -138,7 +138,7 @@ public class DuplicateArtifactsConsumer
         return Collections.emptyList();
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered )
+    public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
         repoId = repo.getId();
@@ -146,7 +146,7 @@ public class DuplicateArtifactsConsumer
         repositorySession = repositorySessionFactory.createSession();
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repo, Date whenGathered, boolean executeOnEntireRepo )
+    public void beginScan( ManagedRepository repo, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repo, whenGathered );

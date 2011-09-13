@@ -20,14 +20,18 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
+import net.sf.beanlib.provider.replicator.BeanReplicator;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -35,7 +39,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.apache.maven.archiva.web.action.AuditEventArgumentsMatcher;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -128,7 +131,7 @@ public class DeleteManagedRepositoryActionTest
     }
 
     public void testSecureActionBundle()
-        throws SecureActionException
+        throws SecureActionException, RepositoryAdminException
     {
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
@@ -173,7 +176,7 @@ public class DeleteManagedRepositoryActionTest
     public void testDeleteRepositoryConfirmation()
         throws Exception
     {
-        ManagedRepositoryConfiguration originalRepository = createRepository();
+        ManagedRepository originalRepository = createRepository();
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
@@ -189,7 +192,7 @@ public class DeleteManagedRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -305,13 +308,13 @@ public class DeleteManagedRepositoryActionTest
     {
         repositoryStatisticsManagerControl.replay();
 
-        ManagedRepositoryConfiguration originalRepository = createRepository();
+        ManagedRepository originalRepository = createRepository();
         Configuration configuration = prepDeletionTest( originalRepository, 3 );
 
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
 
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
 
@@ -321,9 +324,8 @@ public class DeleteManagedRepositoryActionTest
     }
 
 
-    private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository,
-                                            int expectCountGetConfig )
-        throws RegistryException, IndeterminateConfigurationException
+    private Configuration prepDeletionTest( ManagedRepository originalRepository, int expectCountGetConfig )
+        throws RegistryException, IndeterminateConfigurationException, RepositoryAdminException
     {
         location.mkdirs();
 
@@ -347,7 +349,7 @@ public class DeleteManagedRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        ManagedRepositoryConfiguration repository = action.getRepository();
+        ManagedRepository repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -355,16 +357,15 @@ public class DeleteManagedRepositoryActionTest
         return configuration;
     }
 
-    private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
-                                         ManagedRepositoryConfiguration actualRepository )
+    private void assertRepositoryEquals( ManagedRepository expectedRepository, ManagedRepository actualRepository )
     {
         assertEquals( expectedRepository.getDaysOlder(), actualRepository.getDaysOlder() );
         assertEquals( expectedRepository.getId(), actualRepository.getId() );
-        assertEquals( expectedRepository.getIndexDir(), actualRepository.getIndexDir() );
+        assertEquals( expectedRepository.getIndexDirectory(), actualRepository.getIndexDirectory() );
         assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
         assertEquals( expectedRepository.getLocation(), actualRepository.getLocation() );
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
-        assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
+        assertEquals( expectedRepository.getCronExpression(), actualRepository.getCronExpression() );
         assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
         assertEquals( expectedRepository.isDeleteReleasedSnapshots(), actualRepository.isDeleteReleasedSnapshots() );
         assertEquals( expectedRepository.isScanned(), actualRepository.isScanned() );
@@ -372,21 +373,22 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
     }
 
-    private Configuration createConfigurationForEditing( ManagedRepositoryConfiguration repositoryConfiguration )
+    private Configuration createConfigurationForEditing( ManagedRepository repositoryConfiguration )
     {
         Configuration configuration = new Configuration();
-        configuration.addManagedRepository( repositoryConfiguration );
+        configuration.addManagedRepository(
+            new BeanReplicator().replicateBean( repositoryConfiguration, ManagedRepositoryConfiguration.class ) );
         return configuration;
     }
 
-    private ManagedRepositoryConfiguration createRepository()
+    private ManagedRepository createRepository()
     {
-        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        ManagedRepository r = new ManagedRepository();
         r.setId( REPO_ID );
         r.setName( "repo name" );
         r.setLocation( location.getAbsolutePath() );
         r.setLayout( "default" );
-        r.setRefreshCronExpression( "* 0/5 * * * ?" );
+        r.setCronExpression( "* 0/5 * * * ?" );
         r.setDaysOlder( 0 );
         r.setRetentionCount( 0 );
         r.setReleases( true );

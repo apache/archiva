@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
@@ -57,7 +58,7 @@ public class ManagedDefaultRepositoryContent
     @Named(value = "fileTypes" )
     private FileTypes filetypes;
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
     public ManagedDefaultRepositoryContent()
     {
@@ -148,7 +149,7 @@ public class ManagedDefaultRepositoryContent
         return repository.getLocation();
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
@@ -316,7 +317,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
-    public void setRepository( ManagedRepositoryConfiguration repository )
+    public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
     }

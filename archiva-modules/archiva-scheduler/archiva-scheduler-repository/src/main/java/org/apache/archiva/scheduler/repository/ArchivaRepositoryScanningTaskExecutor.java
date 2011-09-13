@@ -19,6 +19,9 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -30,8 +33,6 @@ import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
@@ -39,12 +40,10 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Date;
 
 /**
@@ -52,7 +51,7 @@ import java.util.Date;
  *
  * @version $Id$
  */
-@Service("taskExecutor#repository-scanning")
+@Service( "taskExecutor#repository-scanning" )
 public class ArchivaRepositoryScanningTaskExecutor
     implements TaskExecutor, Initializable
 {
@@ -62,13 +61,10 @@ public class ArchivaRepositoryScanningTaskExecutor
      *
      */
     @Inject
-    @Named(value="archivaConfiguration#default")
-    private ArchivaConfiguration archivaConfiguration;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     /**
      * The repository scanner component.
-     *
-     *
      */
     @Inject
     private RepositoryScanner repoScanner;
@@ -89,7 +85,6 @@ public class ArchivaRepositoryScanningTaskExecutor
 
     /**
      * TODO: may be different implementations
-     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -105,118 +100,115 @@ public class ArchivaRepositoryScanningTaskExecutor
     public void executeTask( Task task )
         throws TaskExecutionException
     {
-
-        // TODO: replace this whole class with the prescribed content scanning service/action
-        // - scan repository for artifacts that do not have corresponding metadata or have been updated and
-        // send events for each
-        // - scan metadata for artifacts that have been removed and send events for each
-        // - scan metadata for missing plugin data
-        // - store information so that it can restart upon failure (publish event on the server recovery
-        // queue, remove it on successful completion)
-
-        this.task = task;
-
-        RepositoryTask repoTask = (RepositoryTask) task;
-
-        String repoId = repoTask.getRepositoryId();
-        if ( StringUtils.isBlank( repoId ) )
+        try
         {
-            throw new TaskExecutionException( "Unable to execute RepositoryTask with blank repository Id." );
-        }
+            // TODO: replace this whole class with the prescribed content scanning service/action
+            // - scan repository for artifacts that do not have corresponding metadata or have been updated and
+            // send events for each
+            // - scan metadata for artifacts that have been removed and send events for each
+            // - scan metadata for missing plugin data
+            // - store information so that it can restart upon failure (publish event on the server recovery
+            // queue, remove it on successful completion)
 
-        ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById(
-            repoId );
+            this.task = task;
 
-        // execute consumers on resource file if set
-        if ( repoTask.getResourceFile() != null )
-        {
-            log.debug( "Executing task from queue with job name: {}", repoTask );
-            consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
-        }
-        else
-        {
-            log.info( "Executing task from queue with job name: {}", repoTask );
+            RepositoryTask repoTask = (RepositoryTask) task;
 
-            // otherwise, execute consumers on whole repository
-            if ( arepo == null )
+            String repoId = repoTask.getRepositoryId();
+            if ( StringUtils.isBlank( repoId ) )
             {
-                throw new TaskExecutionException(
-                    "Unable to execute RepositoryTask with invalid repository id: " + repoId );
+                throw new TaskExecutionException( "Unable to execute RepositoryTask with blank repository Id." );
             }
 
-            long sinceWhen = RepositoryScanner.FRESH_SCAN;
-            long previousFileCount = 0;
+            ManagedRepository arepo = managedRepositoryAdmin.getManagedRepository( repoId );
 
-            RepositorySession repositorySession = repositorySessionFactory.createSession();
-            MetadataRepository metadataRepository = repositorySession.getRepository();
-            try
+            // execute consumers on resource file if set
+            if ( repoTask.getResourceFile() != null )
             {
-                if ( !repoTask.isScanAll() )
+                log.debug( "Executing task from queue with job name: {}", repoTask );
+                consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
+            }
+            else
+            {
+                log.info( "Executing task from queue with job name: {}", repoTask );
+
+                // otherwise, execute consumers on whole repository
+                if ( arepo == null )
                 {
-                    RepositoryStatistics previousStats = repositoryStatisticsManager.getLastStatistics(
-                        metadataRepository, repoId );
-                    if ( previousStats != null )
-                    {
-                        sinceWhen = previousStats.getScanStartTime().getTime();
-                        previousFileCount = previousStats.getTotalFileCount();
-                    }
+                    throw new TaskExecutionException(
+                        "Unable to execute RepositoryTask with invalid repository id: " + repoId );
                 }
 
-                RepositoryScanStatistics stats;
+                long sinceWhen = RepositoryScanner.FRESH_SCAN;
+                long previousFileCount = 0;
+
+                RepositorySession repositorySession = repositorySessionFactory.createSession();
+                MetadataRepository metadataRepository = repositorySession.getRepository();
                 try
                 {
-                    stats = repoScanner.scan( arepo, sinceWhen );
+                    if ( !repoTask.isScanAll() )
+                    {
+                        RepositoryStatistics previousStats =
+                            repositoryStatisticsManager.getLastStatistics( metadataRepository, repoId );
+                        if ( previousStats != null )
+                        {
+                            sinceWhen = previousStats.getScanStartTime().getTime();
+                            previousFileCount = previousStats.getTotalFileCount();
+                        }
+                    }
+
+                    RepositoryScanStatistics stats;
+                    try
+                    {
+                        stats = repoScanner.scan( arepo, sinceWhen );
+                    }
+                    catch ( RepositoryScannerException e )
+                    {
+                        throw new TaskExecutionException( "Repository error when executing repository job.", e );
+                    }
+
+                    log.info( "Finished first scan: {}", stats.toDump( arepo ) );
+
+                    // further statistics will be populated by the following method
+                    Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
+
+                    log.info( "Gathering repository statistics" );
+
+                    repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, repoId,
+                                                                        stats.getWhenGathered(), endTime,
+                                                                        stats.getTotalFileCount(),
+                                                                        stats.getTotalFileCount() - previousFileCount );
+                    repositorySession.save();
                 }
-                catch ( RepositoryScannerException e )
+                catch ( MetadataRepositoryException e )
                 {
-                    throw new TaskExecutionException( "Repository error when executing repository job.", e );
+                    throw new TaskExecutionException( "Unable to store updated statistics: " + e.getMessage(), e );
                 }
-
-                log.info( "Finished first scan: " + stats.toDump( arepo ) );
-
-                // further statistics will be populated by the following method
-                Date endTime = new Date( stats.getWhenGathered().getTime() + stats.getDuration() );
-
-                log.info( "Gathering repository statistics" );
-
-                repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, repoId, stats.getWhenGathered(),
-                                                                    endTime, stats.getTotalFileCount(),
-                                                                    stats.getTotalFileCount() - previousFileCount );
-                repositorySession.save();
-            }
-            catch ( MetadataRepositoryException e )
-            {
-                throw new TaskExecutionException( "Unable to store updated statistics: " + e.getMessage(), e );
-            }
-            finally
-            {
-                repositorySession.close();
-            }
+                finally
+                {
+                    repositorySession.close();
+                }
 
 //                log.info( "Scanning for removed repository content" );
 
 //                metadataRepository.findAllProjects();
-            // FIXME: do something
+                // FIXME: do something
 
-            log.info( "Finished repository task: {}", repoTask );
+                log.info( "Finished repository task: {}", repoTask );
 
-            this.task = null;
+                this.task = null;
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new TaskExecutionException( e.getMessage(), e );
         }
     }
 
     public Task getCurrentTaskInExecution()
     {
         return task;
-    }
-
-    public ArchivaConfiguration getArchivaConfiguration()
-    {
-        return archivaConfiguration;
-    }
-
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
     }
 
     public RepositoryScanner getRepoScanner()
@@ -257,5 +249,15 @@ public class ArchivaRepositoryScanningTaskExecutor
     public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
         this.repositoryStatisticsManager = repositoryStatisticsManager;
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }

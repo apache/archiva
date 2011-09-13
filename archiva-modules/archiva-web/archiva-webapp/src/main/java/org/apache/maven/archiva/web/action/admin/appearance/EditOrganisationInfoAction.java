@@ -20,8 +20,8 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  */
 
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.admin.OrganisationInformation;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.OrganisationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.rbac.Resource;

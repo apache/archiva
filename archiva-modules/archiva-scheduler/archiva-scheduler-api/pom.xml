@@ -29,6 +29,10 @@
   <name>Archiva Scheduler :: API</name>
   <dependencies>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.redback.components</groupId>
       <artifactId>spring-taskqueue</artifactId>
     </dependency>

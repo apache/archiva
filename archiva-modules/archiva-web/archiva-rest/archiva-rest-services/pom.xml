@@ -39,7 +39,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin</artifactId>
+      <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -53,6 +53,10 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-repository</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-indexer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
@@ -212,6 +216,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -234,6 +244,7 @@
           <systemPropertyVariables>
             <plexus.home>${project.build.outputDirectory}</plexus.home>
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
+            <targetDir>${basedir}/target/</targetDir>
           </systemPropertyVariables>
         </configuration>
       </plugin>

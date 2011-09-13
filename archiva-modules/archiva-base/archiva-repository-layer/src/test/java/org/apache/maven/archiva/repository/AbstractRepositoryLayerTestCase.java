@@ -19,6 +19,8 @@ package org.apache.maven.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.junit.Rule;
@@ -46,18 +48,18 @@ public abstract class AbstractRepositoryLayerTestCase
     @Inject
     protected ApplicationContext applicationContext;
 
-    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    protected ManagedRepository createRepository( String id, String name, File location )
     {
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location.getAbsolutePath() );
         return repo;
     }
 
-    protected RemoteRepositoryConfiguration createRemoteRepository( String id, String name, String url )
+    protected RemoteRepository createRemoteRepository( String id, String name, String url )
     {
-        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+        RemoteRepository repo = new RemoteRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setUrl( url );
@@ -68,7 +70,7 @@ public abstract class AbstractRepositoryLayerTestCase
                                                                        String layout )
         throws Exception
     {
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location.getAbsolutePath() );
@@ -84,7 +86,7 @@ public abstract class AbstractRepositoryLayerTestCase
     protected RemoteRepositoryContent createRemoteRepositoryContent( String id, String name, String url, String layout )
         throws Exception
     {
-        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+        RemoteRepository repo = new RemoteRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setUrl( url );

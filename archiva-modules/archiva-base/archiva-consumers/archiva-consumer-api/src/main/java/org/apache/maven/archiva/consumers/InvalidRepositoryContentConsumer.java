@@ -27,5 +27,5 @@ package org.apache.maven.archiva.consumers;
 public interface InvalidRepositoryContentConsumer
     extends RepositoryContentConsumer
 {
-
+    // no op
 }

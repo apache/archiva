@@ -20,9 +20,9 @@ package org.apache.maven.archiva.web.action.admin.legacy;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
-import org.apache.archiva.admin.repository.admin.ArchivaAdministration;
-import org.apache.archiva.admin.repository.admin.LegacyArtifactPath;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.admin.LegacyArtifactPath;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;

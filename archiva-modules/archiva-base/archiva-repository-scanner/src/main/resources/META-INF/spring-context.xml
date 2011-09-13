@@ -31,9 +31,4 @@
   <context:component-scan base-package="org.apache.archiva.repository.scanner"/>
   <alias name="repositoryScanner#default" alias="repositoryScanner"/>
 
-  <bean id="repositoryContentConsumers" class="org.apache.archiva.repository.scanner.RepositoryContentConsumers" scope="prototype">
-    <constructor-arg>
-      <ref bean="archivaConfiguration"/>
-    </constructor-arg>
-  </bean>
 </beans>

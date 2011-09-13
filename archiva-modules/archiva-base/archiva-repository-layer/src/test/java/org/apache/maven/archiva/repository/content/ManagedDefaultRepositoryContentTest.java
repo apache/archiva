@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileType;
@@ -67,7 +68,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         File repoDir = new File( "src/test/repositories/default-repository" );
 
-        ManagedRepositoryConfiguration repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+        ManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
 
 
         FileType fileType =

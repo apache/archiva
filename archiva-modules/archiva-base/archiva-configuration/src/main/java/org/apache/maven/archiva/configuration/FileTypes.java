@@ -22,6 +22,7 @@ package org.apache.maven.archiva.configuration;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
+import org.apache.maven.archiva.common.FileTypeUtils;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.codehaus.plexus.registry.Registry;
@@ -77,10 +78,9 @@ public class FileTypes
      * Default exclusions from artifact consumers that are using the file types. Note that this is simplistic in the
      * case of the support files (based on extension) as it is elsewhere - it may be better to match these to actual
      * artifacts and exclude later during scanning.
+     * @deprecated
      */
-    public static final List<String> DEFAULT_EXCLUSIONS =
-        Arrays.asList( "**/maven-metadata.xml", "**/maven-metadata-*.xml", "**/*.sha1", "**/*.asc", "**/*.md5",
-                       "**/*.pgp", "**/.index/**", "**/.indexer/**" );
+    public static final List<String> DEFAULT_EXCLUSIONS = FileTypeUtils.DEFAULT_EXCLUSIONS;
 
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {

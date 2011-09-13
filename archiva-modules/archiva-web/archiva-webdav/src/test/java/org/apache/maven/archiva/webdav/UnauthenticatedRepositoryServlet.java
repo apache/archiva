@@ -19,7 +19,7 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryAdminException;
 
 import javax.servlet.ServletConfig;
 

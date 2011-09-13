@@ -19,19 +19,19 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.util.List;
-
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+
+import java.util.List;
 
 public class StubRepositoryContentConsumers
     extends RepositoryContentConsumers
 {
-    public StubRepositoryContentConsumers(ArchivaConfiguration configuration)
+    public StubRepositoryContentConsumers( ArchivaAdministration archivaAdministration )
     {
-        super(configuration);
+        super( archivaAdministration );
     }
 
     @Override

@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.RemoteRepositoryContent;
@@ -44,7 +45,7 @@ public class RemoteLegacyRepositoryContentTest
     public void setUp()
         throws Exception
     {
-        RemoteRepositoryConfiguration repository =
+        RemoteRepository repository =
             createRemoteRepository( "testRemoteLegacyRepo", "Unit Test Remote Legacy Repo",
                                     "http://repo1.maven.org/maven/" );
         repository.setLayout( "legacy" );

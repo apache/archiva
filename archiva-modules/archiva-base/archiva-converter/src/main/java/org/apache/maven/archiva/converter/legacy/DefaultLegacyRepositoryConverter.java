@@ -19,6 +19,7 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
@@ -89,7 +90,7 @@ public class DefaultLegacyRepositoryConverter
         {
             String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
-            ManagedRepositoryConfiguration legacyRepository = new ManagedRepositoryConfiguration();
+            ManagedRepository legacyRepository = new ManagedRepository();
             legacyRepository.setId( "legacy" );
             legacyRepository.setName( "Legacy Repository" );
             legacyRepository.setLocation( legacyRepositoryDirectory.getAbsolutePath() );

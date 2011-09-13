@@ -20,9 +20,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
-import org.apache.archiva.admin.repository.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
-import org.apache.archiva.admin.repository.remote.RemoteRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;

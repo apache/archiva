@@ -20,10 +20,10 @@ package org.apache.archiva.repository.scanner;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.remote.RemoteRepository;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.easymock.MockControl;
@@ -67,18 +67,18 @@ public class RepositoryContentConsumersTest
     @Inject
     ApplicationContext applicationContext;
 
-    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    protected ManagedRepository createRepository( String id, String name, File location )
     {
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location.getAbsolutePath() );
         return repo;
     }
 
-    protected RemoteRepositoryConfiguration createRemoteRepository( String id, String name, String url )
+    protected RemoteRepository createRemoteRepository( String id, String name, String url )
     {
-        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+        RemoteRepository repo = new RemoteRepository();
         repo.setId( id );
         repo.setName( name );
         repo.setUrl( url );
@@ -89,10 +89,13 @@ public class RepositoryContentConsumersTest
         throws Exception
     {
 
+
         ArchivaConfiguration configuration =
             applicationContext.getBean( "archivaConfiguration#test-conf", ArchivaConfiguration.class );
 
-        RepositoryContentConsumers consumerUtilStub = new RepositoryContentConsumersStub( configuration );
+        ArchivaAdministrationStub administrationStub = new ArchivaAdministrationStub( configuration );
+
+        RepositoryContentConsumers consumerUtilStub = new RepositoryContentConsumersStub( administrationStub );
 
         RepositoryContentConsumers consumerUtil =
             (RepositoryContentConsumers) applicationContext.getBean( "repositoryContentConsumers#test",
@@ -103,7 +106,7 @@ public class RepositoryContentConsumersTest
         consumerUtilStub.setApplicationContext( context );
         consumerUtilStub.setSelectedInvalidConsumers( consumerUtil.getSelectedInvalidConsumers() );
         consumerUtilStub.setSelectedKnownConsumers( consumerUtil.getSelectedKnownConsumers() );
-        consumerUtilStub.setArchivaConfiguration( configuration );
+        consumerUtilStub.setArchivaAdministration( administrationStub );
 
         assertNotNull( "RepositoryContentConsumers should not be null.", consumerUtilStub );
 
@@ -264,7 +267,7 @@ public class RepositoryContentConsumersTest
 
         consumers.setSelectedInvalidConsumers( Collections.singletonList( selectedInvalidConsumer ) );
 
-        ManagedRepositoryConfiguration repo = createRepository( "id", "name", new File( "target/test-repo" ) );
+        ManagedRepository repo = createRepository( "id", "name", new File( "target/test-repo" ) );
         File testFile = new File( "target/test-repo/path/to/test-file.txt" );
 
         Date startTime = new Date( System.currentTimeMillis() );

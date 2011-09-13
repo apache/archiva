@@ -60,8 +60,8 @@ public class RepositoriesServiceTest
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
-        ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
-        WebClient.client( managedRepositoriesService ).header( "Authorization", authorizationHeader );
+        ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService( authorizationHeader );
+
         WebClient.getConfig( managedRepositoriesService ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
         String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();

@@ -19,9 +19,11 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
@@ -45,12 +47,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
-import java.io.IOException;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -60,7 +62,7 @@ import static org.junit.Assert.*;
  * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml"} )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class HttpProxyTransferTest
 {
     private static final String PROXY_ID = "proxy";
@@ -108,19 +110,28 @@ public class HttpProxyTransferTest
         // Make the destination dir.
         destRepoDir.mkdirs();
 
-        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        ManagedRepository repo = new ManagedRepository();
         repo.setId( MANAGED_ID );
         repo.setName( "Default Managed Repository" );
         repo.setLocation( repoPath );
         repo.setLayout( "default" );
 
-        ManagedRepositoryContent repoContent = applicationContext.getBean( "managedRepositoryContent#default",
-                                                                           ManagedRepositoryContent.class );
+        ManagedRepositoryContent repoContent =
+            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
 
         repoContent.setRepository( repo );
         managedDefaultRepository = repoContent;
 
-        config.getConfiguration().addManagedRepository( repo );
+        ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
+            ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( config );
+
+        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
+        if ( managedRepositoryAdmin.getManagedRepository( repo.getId() ) == null )
+        {
+            managedRepositoryAdmin.addManagedRepository( repo, false, null );
+        }
+
+        //config.getConfiguration().addManagedRepository( repo );
 
         Handler handler = new AbstractHandler()
         {

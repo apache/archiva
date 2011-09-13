@@ -18,7 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.audit.AuditListener;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;

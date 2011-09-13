@@ -21,13 +21,13 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.archiva.admin.AuditInformation;
+import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.security.ArchivaXworkUser;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.codehaus.plexus.redback.users.User;

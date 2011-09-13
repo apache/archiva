@@ -1,9 +1,9 @@
 package org.apache.maven.archiva.consumers.core;
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ import java.util.Calendar;
 public class ArtifactMissingChecksumsConsumerTest
     extends AbstractArtifactConsumerTest
 {
-    private ManagedRepositoryConfiguration repoConfig;
+    private ManagedRepository repoConfig;
 
     @Before
     public void setUp()
@@ -41,7 +41,7 @@ public class ArtifactMissingChecksumsConsumerTest
     {
         super.setUp();
 
-        repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig = new ManagedRepository();
         repoConfig.setId( "test-repo" );
         repoConfig.setName( "Test Repository" );
         repoConfig.setLayout( "default" );

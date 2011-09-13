@@ -117,7 +117,12 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-repository-admin</artifactId>
+        <artifactId>archiva-repository-admin-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-repository-admin-default</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -748,6 +753,11 @@
       </dependency>
 
       <!-- redback -->
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-users-api</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.codehaus.redback</groupId>
@@ -842,6 +852,17 @@
       <dependency>
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-common-integrations</artifactId>
+        <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-rbac-cached</artifactId>
         <version>${redback.version}</version>
         <exclusions>
           <exclusion>

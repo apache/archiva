@@ -200,11 +200,23 @@ public class SearchResultHit
     @Override
     public String toString()
     {
-        return "SearchResultHit{" + "context='" + context + '\'' + ", url='" + url + '\'' + ", groupId='" + groupId
-            + '\'' + ", artifactId='" + artifactId + '\'' + ", version='" + version + '\'' + ", repositoryId='"
-            + repositoryId + '\'' + ", versions=" + versions + ", bundleVersion='" + bundleVersion + '\''
-            + ", bundleSymbolicName='" + bundleSymbolicName + '\'' + ", bundleExportPackage='" + bundleExportPackage
-            + '\'' + ", bundleExportService='" + bundleExportService + '\'' + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "SearchResultHit" );
+        sb.append( "{context='" ).append( context ).append( '\'' );
+        sb.append( ", url='" ).append( url ).append( '\'' );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
+        sb.append( ", versions=" ).append( versions );
+        sb.append( ", bundleVersion='" ).append( bundleVersion ).append( '\'' );
+        sb.append( ", bundleSymbolicName='" ).append( bundleSymbolicName ).append( '\'' );
+        sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
+        sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
+
+
 
 }

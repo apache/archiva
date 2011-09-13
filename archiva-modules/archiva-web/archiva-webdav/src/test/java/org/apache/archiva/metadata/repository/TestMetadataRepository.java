@@ -36,67 +36,66 @@ public class TestMetadataRepository
 {
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> getRootNamespaces( String repoId )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> getNamespaces( String repoId, String namespace )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void updateProject( String repoId, ProjectMetadata project )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void updateProjectVersion( String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void updateNamespace( String repoId, String namespace )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public List<String> getMetadataFacets( String repodId, String facetId )
@@ -106,78 +105,78 @@ public class TestMetadataRepository
 
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void removeMetadataFacet( String repoId, String facetId, String name )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> getRepositories()
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void removeRepository( String repoId )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void save()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void close()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void revert()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public boolean canObtainAccess( Class<?> aClass )
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     public Object obtainAccess( Class<?> aClass )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public List<ArtifactMetadata> getArtifacts( String repositoryId )

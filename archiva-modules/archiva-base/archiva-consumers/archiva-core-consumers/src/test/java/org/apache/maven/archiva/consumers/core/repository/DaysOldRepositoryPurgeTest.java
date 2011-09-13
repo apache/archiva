@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -52,7 +53,7 @@ public class DaysOldRepositoryPurgeTest
     public void testByLastModified()
         throws Exception
     {
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
                                                 repoConfiguration.getRetentionCount(), repositorySession,
                                                 Collections.singletonList( listener ) );
@@ -114,7 +115,7 @@ public class DaysOldRepositoryPurgeTest
     public void testOrderOfDeletion()
         throws Exception
     {
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
                                                 repoConfiguration.getRetentionCount(), repositorySession, listeners );
@@ -165,7 +166,7 @@ public class DaysOldRepositoryPurgeTest
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
-        ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
                                                 repoConfiguration.getRetentionCount(), repositorySession, listeners );

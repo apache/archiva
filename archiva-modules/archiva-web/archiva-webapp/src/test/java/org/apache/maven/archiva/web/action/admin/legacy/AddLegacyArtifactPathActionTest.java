@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.action.admin.legacy;
 
 import com.opensymphony.xwork2.validator.ActionValidatorManager;
 import junit.framework.TestCase;
-import org.apache.archiva.admin.repository.admin.LegacyArtifactPath;
+import org.apache.archiva.admin.model.admin.LegacyArtifactPath;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.maven.archiva.web.action.admin.repositories.DefaultActionValidatorManagerFactory;
 

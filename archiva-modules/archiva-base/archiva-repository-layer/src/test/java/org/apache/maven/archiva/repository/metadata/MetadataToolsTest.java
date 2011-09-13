@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
@@ -355,7 +356,7 @@ public class MetadataToolsTest
         reference.setArtifactId( artifactId );
         reference.setVersion( version );
 
-        ManagedRepositoryConfiguration repo =
+        ManagedRepository repo =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRootDir );
         ManagedRepositoryContent repoContent =
             applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
@@ -583,7 +584,7 @@ public class MetadataToolsTest
 
         repoRoot.mkdirs();
 
-        ManagedRepositoryConfiguration repoConfig =
+        ManagedRepository repoConfig =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRoot );
 
         ManagedRepositoryContent repoContent =

@@ -19,16 +19,16 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import java.util.Date;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import java.util.Date;
 
 public class RepositoryContentConsumersStub
     extends RepositoryContentConsumers
 {
-    public RepositoryContentConsumersStub(ArchivaConfiguration archivaConfiguration)
+    public RepositoryContentConsumersStub( ArchivaAdministration archivaAdministration )
     {
-        super(archivaConfiguration);
+        super( archivaAdministration );
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RepositoryContentConsumersStub
     {
         Date startTimeForTest = new Date( System.currentTimeMillis() );
         startTimeForTest.setTime( 12345678 );
-        
+
         return startTimeForTest;
     }
 }

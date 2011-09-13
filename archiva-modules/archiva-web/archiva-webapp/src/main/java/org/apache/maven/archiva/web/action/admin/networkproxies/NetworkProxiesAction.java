@@ -20,8 +20,8 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.admin.repository.networkproxy.NetworkProxy;
-import org.apache.archiva.admin.repository.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxy;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;

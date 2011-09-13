@@ -37,7 +37,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin</artifactId>
+      <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.atlassian.xmlrpc</groupId>
