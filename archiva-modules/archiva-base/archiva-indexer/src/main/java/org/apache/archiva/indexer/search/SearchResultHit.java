@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SearchResultHit 
+ * SearchResultHit
  *
  * @version $Id: SearchResultHit.java 740552 2009-02-04 01:09:17Z oching $
  */
@@ -40,81 +40,93 @@ public class SearchResultHit
 
     //  Advanced hit, reference to artifactId.
     private String artifactId;
-    
+
     private String repositoryId = "";
 
     private List<String> versions = new ArrayList<String>();
-    
+
+    private String packaging;
+
     /**
      * Plugin goal prefix (only if packaging is "maven-plugin")
      */
-    public String prefix;
+    private String prefix;
 
     /**
      * Plugin goals (only if packaging is "maven-plugin")
      */
-    public List<String> goals; 
-    
+    private List<String> goals;
+
     /**
      * contains osgi metadata Bundle-Version if available
+     *
      * @since 1.4
      */
-    public String bundleVersion;
+    private String bundleVersion;
 
     /**
      * contains osgi metadata Bundle-SymbolicName if available
+     *
      * @since 1.4
      */
-    public String bundleSymbolicName;
+    private String bundleSymbolicName;
 
     /**
      * contains osgi metadata Export-Package if available
+     *
      * @since 1.4
      */
-    public String bundleExportPackage;
+    private String bundleExportPackage;
 
     /**
      * contains osgi metadata Export-Service if available
+     *
      * @since 1.4
      */
-    public String bundleExportService;
+    private String bundleExportService;
 
     /**
      * contains osgi metadata Bundle-Description if available
+     *
      * @since 1.4
      */
-    public String bundleDescription;
+    private String bundleDescription;
 
     /**
      * contains osgi metadata Bundle-Name if available
+     *
      * @since 1.4
      */
-    public String bundleName;
+    private String bundleName;
 
     /**
      * contains osgi metadata Bundle-License if available
+     *
      * @since 1.4
      */
-    public String bundleLicense;
+    private String bundleLicense;
 
     /**
      * contains osgi metadata Bundle-DocURL if available
+     *
      * @since 1.4
      */
-    public String bundleDocUrl;
+    private String bundleDocUrl;
 
     /**
      * contains osgi metadata Import-Package if available
+     *
      * @since 1.4
      */
-    public String bundleImportPackage;
+    private String bundleImportPackage;
 
     /**
      * contains osgi metadata Require-Bundle if available
+     *
      * @since 1.4
      */
-    public String bundleRequireBundle;    
-    
+    private String bundleRequireBundle;
+
 
     public String getContext()
     {
@@ -166,7 +178,7 @@ public class SearchResultHit
         return versions;
     }
 
-    public void setVersions(List<String> versions)
+    public void setVersions( List<String> versions )
     {
         this.versions = versions;
     }
@@ -180,7 +192,7 @@ public class SearchResultHit
     {
         this.repositoryId = repositoryId;
     }
-    
+
     public void addVersion( String version )
     {
         versions.add( version );
@@ -306,6 +318,21 @@ public class SearchResultHit
         this.bundleRequireBundle = bundleRequireBundle;
     }
 
+    public String getPackaging()
+    {
+        return packaging;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        this.packaging = packaging;
+    }
+
+    public String getType()
+    {
+        return getPackaging();
+    }
+
     @Override
     public String toString()
     {
@@ -317,6 +344,7 @@ public class SearchResultHit
         sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
         sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
         sb.append( ", versions=" ).append( versions );
+        sb.append( ", packaging='" ).append( packaging ).append( '\'' );
         sb.append( ", prefix='" ).append( prefix ).append( '\'' );
         sb.append( ", goals=" ).append( goals );
         sb.append( ", bundleVersion='" ).append( bundleVersion ).append( '\'' );
@@ -332,7 +360,6 @@ public class SearchResultHit
         sb.append( '}' );
         return sb.toString();
     }
-
 
 
 }

@@ -391,6 +391,7 @@ public class NexusRepositorySearch
                 hit.setContext( artifactInfo.context );
                 hit.setGoals( artifactInfo.goals );
                 hit.setPrefix( artifactInfo.prefix );
+                hit.setPackaging( artifactInfo.packaging );
                 // sure ??
                 hit.setUrl( artifactInfo.remoteUrl );
             }
