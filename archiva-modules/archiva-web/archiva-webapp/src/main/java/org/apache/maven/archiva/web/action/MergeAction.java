@@ -21,6 +21,9 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -31,18 +34,17 @@ import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  *
@@ -60,13 +62,13 @@ public class MergeAction
     private Maven2RepositoryMerger repositoryMerger;
 
     @Inject
-    protected ArchivaConfiguration archivaConfiguration;
+    protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepository repository;
 
     private String repoid;
 
@@ -82,17 +84,23 @@ public class MergeAction
 
     public String getConflicts()
     {
-        sourceRepoId = repoid + "-stage";
-        Configuration config = archivaConfiguration.getConfiguration();
-        ManagedRepositoryConfiguration targetRepoConfig = config.findManagedRepositoryById( sourceRepoId );
-
-        if ( targetRepoConfig != null )
+        try
         {
-            return hasConflicts;
+            sourceRepoId = repoid + "-stage";
+            ManagedRepository targetRepoConfig = managedRepositoryAdmin.getManagedRepository( sourceRepoId );
 
+            if ( targetRepoConfig != null )
+            {
+                return hasConflicts;
+            }
+            else
+            {
+                return ERROR;
+            }
         }
-        else
+        catch ( RepositoryAdminException e )
         {
+            addActionError( "RepositoryAdminException " + e.getMessage() );
             return ERROR;
         }
     }
@@ -205,12 +213,12 @@ public class MergeAction
         return SUCCESS;
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
 
-    public void setRepository( ManagedRepositoryConfiguration repository )
+    public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
     }
@@ -230,8 +238,7 @@ public class MergeAction
             repositorySession.close();
         }
 
-        Configuration config = archivaConfiguration.getConfiguration();
-        this.repository = config.findManagedRepositoryById( repoid );
+        this.repository = managedRepositoryAdmin.getManagedRepository( repoid );
         setConflictSourceArtifactsToBeDisplayed( conflictSourceArtifacts );
     }
 
@@ -331,5 +338,15 @@ public class MergeAction
                     "Unable to queue your request to have repository [" + repoid + "] be indexed: " + e.getMessage() );
             }
         }
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }
