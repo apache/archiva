@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.converter.mock;
+package org.apache.archiva.converter.mock;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -30,7 +30,8 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-public class MockArchivaAdministration implements ArchivaAdministration
+public class MockArchivaAdministration
+    implements ArchivaAdministration
 {
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
