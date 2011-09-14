@@ -21,6 +21,8 @@ package org.apache.maven.archiva.web.action.reports;
 
 import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -28,8 +30,8 @@ import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactor
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.commons.io.IOUtils;
 import org.apache.archiva.security.UserRepositoriesStub;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
 import org.junit.After;
@@ -39,7 +41,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,13 +74,12 @@ public class GenerateReportActionTest
 
     private static final String PROBLEM = "problem";
 
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
-
-        //action = (GenerateReportAction) lookup( Action.class, "generateReport" );
 
         UserRepositoriesStub stub = applicationContext.getBean( "userRepositories", UserRepositoriesStub.class );
         stub.setRepoIds( Lists.<String>newArrayList( "internal", "snapshots" ) );
@@ -104,21 +107,50 @@ public class GenerateReportActionTest
     {
         UserRepositoriesStub stub = applicationContext.getBean( "userRepositories", UserRepositoriesStub.class );
         stub.setRepoIds( Lists.<String>newArrayList( "test-repo" ) );
+
         super.tearDown();
 
     }
 
     private void prepareAction( List<String> selectedRepositories, List<String> availableRepositories )
+        throws Exception
     {
+        MockControl managedRepositoryControl = MockControl.createControl( ManagedRepositoryAdmin.class );
+        ManagedRepositoryAdmin managedRepositoryAdmin = (ManagedRepositoryAdmin) managedRepositoryControl.getMock();
+
+        Map<String, ManagedRepository> map = new HashMap<String, ManagedRepository>( availableRepositories.size() );
+        for ( String repoId : availableRepositories )
+        {
+            map.put( repoId, new ManagedRepository() );
+        }
+
+        managedRepositoryControl.expectAndReturn( managedRepositoryAdmin.getManagedRepositoriesAsMap(), map, 1, 10 );
+
+        managedRepositoryControl.replay();
+        action.setManagedRepositoryAdmin( managedRepositoryAdmin );
+
+
         action.setSelectedRepositories( selectedRepositories );
         action.prepare();
 
-        assertEquals( Arrays.asList( GenerateReportAction.ALL_REPOSITORIES, INTERNAL, SNAPSHOTS ),
-                      action.getRepositoryIds() );
+        List<String> repos = Arrays.asList( GenerateReportAction.ALL_REPOSITORIES, INTERNAL, SNAPSHOTS );
+
+        Collections.sort( repos );
+
+        Collections.sort( action.getRepositoryIds() );
+
+        assertEquals( repos, action.getRepositoryIds() );
+        Collections.sort( action.getAvailableRepositories() );
+
+        availableRepositories = new ArrayList<String>( availableRepositories );
+        Collections.sort( availableRepositories );
+
+
         assertEquals( availableRepositories, action.getAvailableRepositories() );
     }
 
     public void testGenerateStatisticsInvalidRowCount()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -131,6 +163,7 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsInvalidEndDate()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -144,6 +177,7 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsMalformedEndDate()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.singletonList( INTERNAL ), Collections.singletonList( SNAPSHOTS ) );
@@ -158,6 +192,7 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsInvalidEndDateMultiRepo()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
@@ -171,6 +206,7 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsMalformedEndDateMultiRepo()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
@@ -185,6 +221,7 @@ public class GenerateReportActionTest
     }
 
     public void testGenerateStatisticsNoRepos()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );
@@ -329,6 +366,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsMalformedEndDateMultiRepo()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
@@ -343,6 +381,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsMalformedEndDateSingleRepo()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS ), Arrays.asList( INTERNAL ) );
@@ -357,6 +396,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsInvalidEndDateMultiRepo()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS, INTERNAL ), Collections.<String>emptyList() );
@@ -370,6 +410,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsInvalidEndDateSingleRepo()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Arrays.asList( SNAPSHOTS ), Arrays.asList( INTERNAL ) );
@@ -399,6 +440,7 @@ public class GenerateReportActionTest
     }
 
     public void testDownloadStatisticsNoRepos()
+        throws Exception
     {
         repositoryStatisticsManagerControl.replay();
         prepareAction( Collections.<String>emptyList(), Arrays.asList( SNAPSHOTS, INTERNAL ) );

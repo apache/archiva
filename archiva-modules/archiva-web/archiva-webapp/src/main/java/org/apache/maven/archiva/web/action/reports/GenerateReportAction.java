@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action.reports;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -30,7 +32,6 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.web.action.AbstractRepositoryBasedAction;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
@@ -78,7 +79,7 @@ public class GenerateReportAction
     private Logger log = LoggerFactory.getLogger( GenerateReportAction.class );
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
@@ -99,7 +100,7 @@ public class GenerateReportAction
 
     private int numPages;
 
-    private Collection<String> repositoryIds;
+    private List<String> repositoryIds;
 
     private Map<String, List<RepositoryProblemFacet>> repositoriesMap =
         new TreeMap<String, List<RepositoryProblemFacet>>();
@@ -114,6 +115,7 @@ public class GenerateReportAction
 
     @SuppressWarnings( "unchecked" )
     public void prepare()
+        throws RepositoryAdminException
     {
         repositoryIds = new ArrayList<String>();
         repositoryIds.add( ALL_REPOSITORIES ); // comes first to be first in the list
@@ -122,7 +124,7 @@ public class GenerateReportAction
         availableRepositories = new ArrayList<String>();
 
         // remove selected repositories in the option for the statistics report
-        availableRepositories.addAll( archivaConfiguration.getConfiguration().getManagedRepositoriesAsMap().keySet() );
+        availableRepositories.addAll( managedRepositoryAdmin.getManagedRepositoriesAsMap().keySet() );
         for ( String repo : selectedRepositories )
         {
             if ( availableRepositories.contains( repo ) )
@@ -630,7 +632,7 @@ public class GenerateReportAction
         return bundle;
     }
 
-    public Collection<String> getRepositoryIds()
+    public List<String> getRepositoryIds()
     {
         return repositoryIds;
     }
@@ -758,5 +760,15 @@ public class GenerateReportAction
     public void setRepositoryStatisticsManager( RepositoryStatisticsManager repositoryStatisticsManager )
     {
         this.repositoryStatisticsManager = repositoryStatisticsManager;
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }
