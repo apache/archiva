@@ -21,9 +21,10 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxy;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;
 import org.apache.maven.archiva.policies.Policy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
@@ -32,6 +33,8 @@ import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +99,7 @@ public abstract class AbstractProxyConnectorFormAction
     protected ProxyConnector connector;
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private NetworkProxyAdmin networkProxyAdmin;
 
     @PostConstruct
     public void initialize()
@@ -395,13 +398,31 @@ public abstract class AbstractProxyConnectorFormAction
     }
 
     protected List<String> createNetworkProxyOptions()
+        throws RepositoryAdminException
     {
         List<String> options = new ArrayList<String>();
 
         options.add( DIRECT_CONNECTION );
-        options.addAll( archivaConfiguration.getConfiguration().getNetworkProxiesAsMap().keySet() );
+        options.addAll( getNetworkProxiesKeys() );
 
         return options;
+    }
+
+    private Collection<String> getNetworkProxiesKeys()
+        throws RepositoryAdminException
+    {
+        List<NetworkProxy> networkProxies = networkProxyAdmin.getNetworkProxies();
+        if ( networkProxies == null || networkProxies.isEmpty() )
+        {
+            return Collections.emptyList();
+        }
+        List<String> keys = new ArrayList<String>( networkProxies.size() );
+        for ( NetworkProxy networkProxy : networkProxies )
+        {
+            keys.add( networkProxy.getId() );
+        }
+        return keys;
+
     }
 
     protected Map<String, Policy> createPolicyMap()
@@ -485,14 +506,13 @@ public abstract class AbstractProxyConnectorFormAction
         }
     }
 
-    // FIXME remove
-    public ArchivaConfiguration getArchivaConfiguration()
+    public NetworkProxyAdmin getNetworkProxyAdmin()
     {
-        return archivaConfiguration;
+        return networkProxyAdmin;
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    public void setNetworkProxyAdmin( NetworkProxyAdmin networkProxyAdmin )
     {
-        this.archivaConfiguration = archivaConfiguration;
+        this.networkProxyAdmin = networkProxyAdmin;
     }
 }

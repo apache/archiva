@@ -68,16 +68,12 @@ public class EditProxyConnectorActionTest
     {
         super.setUp();
 
-        //action = (EditProxyConnectorAction) lookup( Action.class.getName(), "editProxyConnectorAction" );
         action = (EditProxyConnectorAction) getActionProxy( "/admin/editProxyConnector.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
 
-        /* Configuration will be requested at least 3 times. */
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( new Configuration(), 3 );
+
 
         ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
             archivaConfiguration );
@@ -98,13 +94,22 @@ public class EditProxyConnectorActionTest
     {
         Configuration config = createInitialConfiguration();
 
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( config, requestConfigCount );
+        archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config,
+                                                     requestConfigCount , 20);
+        //archivaConfiguration.getConfiguration();
+        //archivaConfigurationControl.setReturnValue( config, requestConfigCount );
 
         for ( int i = 0; i <= saveRequestCount; i++ )
         {
             archivaConfiguration.save( config );
         }
+
+        ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
     }
 
     public void testAddBlackListPattern()
@@ -408,6 +413,9 @@ public class EditProxyConnectorActionTest
     public void testSecureActionBundle()
         throws Exception
     {
+        /* Configuration will be requested at least 3 times. */
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( new Configuration(), 3 );
         archivaConfigurationControl.replay();
 
         action.prepare();

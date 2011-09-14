@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * AddProxyConnectorActionTest 
+ * AddProxyConnectorActionTest
  *
  * @version $Id$
  */
@@ -68,7 +68,6 @@ public class AddProxyConnectorActionTest
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
-        action.setArchivaConfiguration( archivaConfiguration );
         ( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration(
             archivaConfiguration );
         ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
@@ -140,7 +139,7 @@ public class AddProxyConnectorActionTest
         assertEquals( 1, connector.getProperties().size() );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public void testAddProxyConnectorCommit()
         throws Exception
     {
@@ -411,7 +410,7 @@ public class AddProxyConnectorActionTest
         archivaConfiguration.save( config );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void populateProxyConnector( ProxyConnector connector )
     {
         connector.setProxyId( AbstractProxyConnectorFormAction.DIRECT_CONNECTION );
