@@ -20,6 +20,9 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -31,9 +34,6 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -56,13 +56,14 @@ public class SearchAction
     extends AbstractRepositoryBasedAction
     implements Preparable
 {
+
+    @Inject
+    protected ManagedRepositoryAdmin managedRepositoryAdmin;
+
     /**
      * Query string.
      */
     private String q;
-
-    // FIXME olamy WTF here??
-    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * The Search Results.
@@ -448,22 +449,13 @@ public class SearchAction
         this.completeQueryString = completeQueryString;
     }
 
-    public ArchivaConfiguration getArchivaConfiguration()
+    public Map<String, ManagedRepository> getManagedRepositories() throws RepositoryAdminException
     {
-        return archivaConfiguration;
+        return managedRepositoryAdmin.getManagedRepositoriesAsMap();
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
-    }
-
-    public Map<String, ManagedRepositoryConfiguration> getManagedRepositories()
-    {
-        return getArchivaConfiguration().getConfiguration().getManagedRepositoriesAsMap();
-    }
-
-    public void setManagedRepositories( Map<String, ManagedRepositoryConfiguration> managedRepositories )
+    // wtf : does nothing ??
+    public void setManagedRepositories( Map<String, ManagedRepository> managedRepositories )
     {
     }
 
@@ -581,5 +573,15 @@ public class SearchAction
     public void setInfoMessage( String infoMessage )
     {
         this.infoMessage = infoMessage;
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 }

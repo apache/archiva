@@ -20,6 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
@@ -30,8 +32,8 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.security.UserRepositories;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.easymock.MockControl;
 
 import java.util.ArrayList;
@@ -55,6 +57,10 @@ public class SearchActionTest
     private UserRepositories userRepos;
 
     private MockControl searchControl;
+
+    private MockControl repoAdminControl;
+
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private RepositorySearch search;
 
@@ -90,7 +96,12 @@ public class SearchActionTest
         searchControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
         search = (RepositorySearch) searchControl.getMock();
 
-        action.setArchivaConfiguration( archivaConfig );
+        repoAdminControl = MockControl.createControl( ManagedRepositoryAdmin.class );
+        managedRepositoryAdmin = (ManagedRepositoryAdmin) repoAdminControl.getMock();
+
+        //( (DefaultManagedRepositoryAdmin) action.getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfig );
+
+        action.setManagedRepositoryAdmin( managedRepositoryAdmin );
         action.setUserRepositories( userRepos );
         action.setNexusSearch( search );
     }

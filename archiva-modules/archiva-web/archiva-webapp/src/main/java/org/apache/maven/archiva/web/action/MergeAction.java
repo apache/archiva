@@ -54,7 +54,6 @@ import java.util.List;
 public class MergeAction
     extends AbstractActionSupport
     implements Validateable, Preparable, Auditable
-
 {
 
     @Inject
