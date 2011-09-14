@@ -21,20 +21,25 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.SnapshotVersion;
@@ -46,10 +51,6 @@ import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.archiva.security.AccessDeniedException;
-import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.security.PrincipalNotFoundException;
-import org.apache.archiva.security.UserRepositories;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -135,10 +136,13 @@ public class UploadAction
     private List<String> managedRepoIdList;
 
     @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
     private UserRepositories userRepositories;
 
     @Inject
-    private ArchivaConfiguration configuration;
+    private ArchivaAdministration archivaAdministration;
 
     @Inject
     private RepositoryContentFactory repositoryFactory;
@@ -288,8 +292,7 @@ public class UploadAction
     {
         try
         {
-            Configuration config = configuration.getConfiguration();
-            ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repositoryId );
+            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifactId );
@@ -342,7 +345,7 @@ public class UploadAction
             }
 
             boolean fixChecksums =
-                !( config.getRepositoryScanning().getKnownContentConsumers().contains( "create-missing-checksums" ) );
+                !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
             try
             {
@@ -409,7 +412,7 @@ public class UploadAction
             }
 
             // explicitly update only if metadata-updater consumer is not enabled!
-            if ( !config.getRepositoryScanning().getKnownContentConsumers().contains( "metadata-updater" ) )
+            if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
             {
                 updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
                                        fixChecksums );
@@ -437,6 +440,11 @@ public class UploadAction
         catch ( RepositoryException rep )
         {
             addActionError( "Repository exception: " + rep.getMessage() );
+            return ERROR;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            addActionError( "RepositoryAdmin exception: " + e.getMessage() );
             return ERROR;
         }
     }
@@ -683,8 +691,23 @@ public class UploadAction
         this.repositoryFactory = repositoryFactory;
     }
 
-    public void setConfiguration( ArchivaConfiguration configuration )
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {
-        this.configuration = configuration;
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    public ArchivaAdministration getArchivaAdministration()
+    {
+        return archivaAdministration;
+    }
+
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
+    {
+        this.archivaAdministration = archivaAdministration;
     }
 }

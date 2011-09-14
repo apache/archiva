@@ -21,7 +21,9 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Action;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
@@ -30,10 +32,6 @@ import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.FileUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -63,17 +61,22 @@ public class UploadActionTest
 {
     private UploadAction uploadAction;
 
-    private ArchivaConfiguration archivaConfig;
-
-    private MockControl archivaConfigControl;
-
     private RepositoryContentFactory repoFactory;
 
     private MockControl repoFactoryControl;
 
+    private MockControl managedRepoAdminControl;
+
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    private MockControl archivaAdminControl;
+
+    private ArchivaAdministration archivaAdministration;
+
     private static final String REPOSITORY_ID = "test-repo";
 
-    private Configuration config;
+
+    private ManagedRepository managedRepository;
 
     public void setUp()
         throws Exception
@@ -83,15 +86,20 @@ public class UploadActionTest
         MockControl schedulerControl = MockControl.createControl( ArchivaTaskScheduler.class );
         ArchivaTaskScheduler scheduler = (ArchivaTaskScheduler) schedulerControl.getMock();
 
-        archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
-        archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
-
         repoFactoryControl = MockClassControl.createControl( RepositoryContentFactory.class );
         repoFactory = (RepositoryContentFactory) repoFactoryControl.getMock();
 
+        managedRepoAdminControl = MockControl.createControl( ManagedRepositoryAdmin.class );
+        managedRepositoryAdmin = (ManagedRepositoryAdmin) managedRepoAdminControl.getMock();
+
+        archivaAdminControl = MockControl.createControl( ArchivaAdministration.class );
+        archivaAdministration = (ArchivaAdministration) archivaAdminControl.getMock();
+
         uploadAction = new UploadAction();
         uploadAction.setScheduler( scheduler );
-        uploadAction.setConfiguration( archivaConfig );
+        uploadAction.setManagedRepositoryAdmin( managedRepositoryAdmin );
+        uploadAction.setArchivaAdministration( archivaAdministration );
+
         uploadAction.setRepositoryFactory( repoFactory );
 
         File testRepo = new File( FileUtil.getBasedir(), "target/test-classes/test-repo" );
@@ -99,24 +107,19 @@ public class UploadActionTest
 
         assertTrue( testRepo.exists() );
 
-        config = new Configuration();
-        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
-        repoConfig.setId( REPOSITORY_ID );
-        repoConfig.setLayout( "default" );
-        repoConfig.setLocation( testRepo.getPath() );
-        repoConfig.setName( REPOSITORY_ID );
-        repoConfig.setBlockRedeployments( true );
-        config.addManagedRepository( repoConfig );
+        managedRepository = new ManagedRepository();
+        managedRepository.setId( REPOSITORY_ID );
+        managedRepository.setLayout( "default" );
+        managedRepository.setLocation( testRepo.getPath() );
+        managedRepository.setName( REPOSITORY_ID );
+        managedRepository.setBlockRedeployments( true );
 
-        RepositoryScanningConfiguration repoScanning = new RepositoryScanningConfiguration();
-        repoScanning.setKnownContentConsumers( new ArrayList<String>() );
-        config.setRepositoryScanning( repoScanning );
     }
 
     public void tearDown()
         throws Exception
     {
-        File testRepo = new File( config.findManagedRepositoryById( REPOSITORY_ID ).getLocation() );
+        File testRepo = new File( this.managedRepository.getLocation() );
         FileUtils.deleteDirectory( testRepo );
 
         assertFalse( testRepo.exists() );
@@ -292,12 +295,18 @@ public class UploadActionTest
                              false );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( getManagedRepository( config.findManagedRepositoryById( REPOSITORY_ID ) ) );
+        content.setRepository( getManagedRepository() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
         repoFactoryControl.replay();
 
         MockControl control = mockAuditLogs(
@@ -307,11 +316,10 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
         verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
@@ -328,12 +336,19 @@ public class UploadActionTest
                              false );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( getManagedRepository( config.findManagedRepositoryById( REPOSITORY_ID ) ) );
+        content.setRepository( getManagedRepository() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         MockControl control = mockAuditLogs(
@@ -343,11 +358,10 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertTrue( new File( repoLocation,
                               "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0-tests.jar" ).exists() );
         assertTrue( new File( repoLocation,
@@ -381,12 +395,19 @@ public class UploadActionTest
                              null, true );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( getManagedRepository( config.findManagedRepositoryById( REPOSITORY_ID ) ) );
+        content.setRepository( getManagedRepository() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         MockControl control = mockAuditLogs(
@@ -396,11 +417,10 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
         verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
@@ -416,12 +436,19 @@ public class UploadActionTest
                              null, false );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( getManagedRepository( config.findManagedRepositoryById( REPOSITORY_ID ) ) );
+        content.setRepository( getManagedRepository() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         MockControl control =
@@ -430,11 +457,10 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertTrue(
             new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar" ).exists() );
         assertTrue(
@@ -492,20 +518,26 @@ public class UploadActionTest
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, false );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndThrow( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ),
                                            new RepositoryNotFoundException() );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         String returnString = uploadAction.doUpload();
         assertEquals( Action.ERROR, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertFalse(
             new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0/artifact-upload-1.0.jar" ).exists() );
 
@@ -524,12 +556,19 @@ public class UploadActionTest
                              null, true );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( getManagedRepository( config.findManagedRepositoryById( REPOSITORY_ID ) ) );
+        content.setRepository( getManagedRepository() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2, 5 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         SimpleDateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
@@ -542,11 +581,10 @@ public class UploadActionTest
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         String[] artifactsList = new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" ).list();
         Arrays.sort( artifactsList );
 
@@ -584,7 +622,6 @@ public class UploadActionTest
         String buildnumber = StringUtils.substringAfterLast( timestampPath, "-" );
         assertEquals( "Incorrect build number in filename.", "1", buildnumber );
 
-        archivaConfigControl.reset();
         repoFactoryControl.reset();
         control.reset();
 
@@ -596,10 +633,8 @@ public class UploadActionTest
                                                              "target/test-classes/upload-artifact-test/artifact-to-be-uploaded.jar" ),
                              null, true );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
         repoFactoryControl.replay();
 
         fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
@@ -613,7 +648,6 @@ public class UploadActionTest
         returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
@@ -654,26 +688,31 @@ public class UploadActionTest
                              null, true );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( REPOSITORY_ID );
+        ManagedRepository repoConfig = getManagedRepository();
         repoConfig.setBlockRedeployments( false );
-        content.setRepository( getManagedRepository( repoConfig ) );
+        content.setRepository( repoConfig );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 repoConfig, 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2, 5 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         String returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
 
-        archivaConfigControl.reset();
         repoFactoryControl.reset();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
         verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
@@ -685,10 +724,8 @@ public class UploadActionTest
                                                     "target/test-classes/upload-artifact-test/artifact-to-be-reuploaded.jar" ),
                              null, true );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
         repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content );
 
-        archivaConfigControl.replay();
         repoFactoryControl.replay();
 
         // TODO: track modifications?
@@ -700,11 +737,10 @@ public class UploadActionTest
         returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        repoLocation = getManagedRepository().getLocation();
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
         verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
@@ -720,12 +756,19 @@ public class UploadActionTest
                              null, true );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        content.setRepository( getManagedRepository( config.findManagedRepositoryById( REPOSITORY_ID ) ) );
+        content.setRepository( getManagedRepository() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
-        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 2 );
+        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 1, 8 );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 getManagedRepository(), 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2, 5 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         String returnString = uploadAction.doUpload();
@@ -740,11 +783,10 @@ public class UploadActionTest
         returnString = uploadAction.doUpload();
         assertEquals( Action.ERROR, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
         verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
@@ -760,14 +802,21 @@ public class UploadActionTest
                              null, true );
 
         ManagedRepositoryContent content = new ManagedDefaultRepositoryContent();
-        ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( REPOSITORY_ID );
+        ManagedRepository repoConfig = getManagedRepository();
         repoConfig.setBlockRedeployments( false );
-        content.setRepository( getManagedRepository( repoConfig ) );
+        content.setRepository( repoConfig );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 2 );
-        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 2 );
+        repoFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( REPOSITORY_ID ), content, 1, 8 );
 
-        archivaConfigControl.replay();
+        managedRepoAdminControl.expectAndReturn( managedRepositoryAdmin.getManagedRepository( REPOSITORY_ID ),
+                                                 repoConfig, 1, 8 );
+
+        archivaAdminControl.expectAndReturn( archivaAdministration.getKnownContentConsumers(), new ArrayList<String>(),
+                                             2, 5 );
+
+        managedRepoAdminControl.replay();
+        archivaAdminControl.replay();
+
         repoFactoryControl.replay();
 
         String returnString = uploadAction.doUpload();
@@ -786,11 +835,10 @@ public class UploadActionTest
         returnString = uploadAction.doUpload();
         assertEquals( Action.SUCCESS, returnString );
 
-        archivaConfigControl.verify();
         repoFactoryControl.verify();
         control.verify();
 
-        String repoLocation = config.findManagedRepositoryById( REPOSITORY_ID ).getLocation();
+        String repoLocation = getManagedRepository().getLocation();
         assertAllArtifactsIncludingSupportArtifactsArePresent( repoLocation, "artifact-upload-1.0", "1.0" );
 
         verifyArtifactChecksums( repoLocation, "artifact-upload-1.0", "1.0" );
@@ -798,8 +846,9 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
-    ManagedRepository getManagedRepository( ManagedRepositoryConfiguration conf )
+    ManagedRepository getManagedRepository()
     {
-        return new BeanReplicator().replicateBean( conf, ManagedRepository.class );
+        return new BeanReplicator().replicateBean( this.managedRepository, ManagedRepository.class );
     }
+
 }
