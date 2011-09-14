@@ -46,7 +46,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -122,6 +121,12 @@ public abstract class AbstractNexusRepositorySearch
             nexusIndexer.removeIndexingContext( indexingContext, true );
         }
 
+        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_1 ) );
+        assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_1 ).exists() );
+
+        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 ) );
+        assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 ).exists() );
+
         super.tearDown();
     }
 
@@ -172,38 +177,40 @@ public abstract class AbstractNexusRepositorySearch
 
         assertFalse( lockFile.exists() );
 
-        File repo = new File( FileUtil.getBasedir(), "/target/repos/" + repository );
-        File indexDirectory = new File( FileUtil.getBasedir(), "/target/repos/" + repository + "/.indexer" );
+        File repo = new File( FileUtil.getBasedir(), "src/test/" + repository );
+        assertTrue( repo.exists() );
+        File indexDirectory =
+            new File( FileUtil.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+        indexDirectory.deleteOnExit();
+        FileUtils.deleteDirectory( indexDirectory );
 
         context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
                                                    repo.toURI().toURL().toExternalForm(),
                                                    indexDirectory.toURI().toURL().toString(),
                                                    search.getAllIndexCreators() );
 
-        List<ArtifactContext> artifactContexts = new ArrayList<ArtifactContext>( filesToBeIndexed.size() );
+        // minimize datas in memory
+        context.getIndexWriter().setMaxBufferedDocs( -1 );
+        context.getIndexWriter().setRAMBufferSizeMB( 1 );
         for ( File artifactFile : filesToBeIndexed )
         {
+            assertTrue( "file not exists " + artifactFile.getPath(), artifactFile.exists() );
             ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-            artifactContexts.add( ac );
+            nexusIndexer.addArtifactToIndex( ac, context );
+            context.updateTimestamp( true );
         }
 
-        if ( filesToBeIndexed != null && !filesToBeIndexed.isEmpty() )
-        {
-            nexusIndexer.addArtifactsToIndex( artifactContexts, context );
-
-            while ( context.isReceivingUpdates() )
-            {
-                Thread.sleep( 10 );
-            }
-        }
         if ( scan )
         {
             nexusIndexer.scan( context, new ArtifactScanListener(), false );
         }
-
+        // force flushing
+        context.getIndexWriter().commit();
+        context.getIndexWriter().close( true );
+        // wait for io flush ....
+        //Thread.sleep( 2000 );
         context.setSearchable( true );
 
-        assertTrue( new File( FileUtil.getBasedir(), "/target/repos/" + repository + "/.indexer" ).exists() );
     }
 
     static class ArtifactScanListener

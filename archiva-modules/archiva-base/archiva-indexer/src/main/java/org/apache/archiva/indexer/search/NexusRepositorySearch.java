@@ -189,8 +189,9 @@ public class NexusRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( searchFields.getClassifier() ) ),
-                   Occur.MUST );
+            q.add(
+                indexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( searchFields.getClassifier() ) ),
+                Occur.MUST );
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
@@ -204,6 +205,7 @@ public class NexusRepositorySearch
     private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds )
         throws RepositorySearchException
     {
+
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
@@ -343,9 +345,11 @@ public class NexusRepositorySearch
             {
                 log.warn( "IO error occured while accessing index of repository '" + repo + "' : " + e.getMessage() );
                 continue;
-            } catch ( RepositoryAdminException e )
+            }
+            catch ( RepositoryAdminException e )
             {
-                  log.warn( "RepositoryAdminException occured while accessing index of repository '" + repo + "' : " + e.getMessage() );
+                log.warn( "RepositoryAdminException occured while accessing index of repository '" + repo + "' : "
+                              + e.getMessage() );
                 continue;
             }
         }
@@ -366,7 +370,8 @@ public class NexusRepositorySearch
 
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
-            String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId );
+            String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId, artifactInfo.classifier,
+                                             artifactInfo.packaging );
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
 
             SearchResultHit hit = hitsMap.get( id );
@@ -450,7 +455,8 @@ public class NexusRepositorySearch
                 SearchResultHit hit = results.getHits().get( ( offset + i ) );
                 if ( hit != null )
                 {
-                    String id = SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId() );
+                    String id = SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId(), hit.getClassifier(),
+                                                     hit.getPackaging() );
                     paginated.addHit( id, hit );
                 }
                 else

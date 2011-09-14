@@ -100,19 +100,6 @@
     </dependency>
   </dependencies>
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <configuration>
-          <check>
-            <!-- TODO: increase coverage -->
-            <totalLineRate>80</totalLineRate>
-            <totalBranchRate>80</totalBranchRate>
-          </check>
-        </configuration>
-      </plugin>
-    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -120,7 +107,7 @@
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes>
-              <exclude>src/test/resources/nexus-search-test-repo*/**</exclude>
+              <exclude>src/test/nexus-search-test-repo*/**</exclude>
             </excludes>
           </configuration>
         </plugin>

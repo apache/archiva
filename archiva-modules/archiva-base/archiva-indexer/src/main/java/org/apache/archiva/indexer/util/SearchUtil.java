@@ -19,13 +19,18 @@ package org.apache.archiva.indexer.util;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * SearchUtil - utility class for search.
  */
 public class SearchUtil
 {
-    public static String getHitId( String groupId, String artifactId )
+    public static String getHitId( String groupId, String artifactId, String classifier, String packaging )
     {
-        return groupId + ":" + artifactId;
+        return ( StringUtils.isBlank( groupId ) ? "" : StringUtils.trim( groupId ) ) + ":"
+            + ( StringUtils.isBlank( artifactId ) ? "" : StringUtils.trim( artifactId ) ) + ":"
+            + ( StringUtils.isBlank( classifier ) ? "" : StringUtils.trim( classifier ) ) + ":" + ( StringUtils.isBlank(
+            packaging ) ? "" : StringUtils.trim( packaging ) );
     }
 }

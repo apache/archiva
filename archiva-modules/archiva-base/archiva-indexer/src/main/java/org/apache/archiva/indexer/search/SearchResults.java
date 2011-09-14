@@ -26,7 +26,7 @@ import java.util.Map;
 
 
 /**
- * SearchResults 
+ * SearchResults
  *
  * @version $Id: SearchResults.java 742859 2009-02-10 05:35:05Z jdumay $
  */
@@ -47,20 +47,31 @@ public class SearchResults
 
     // for new RepositorySearch
     public void addHit( String id, SearchResultHit hit )
-    {   
+    {
         hits.put( id, hit );
     }
 
     /**
      * Get the list of {@link SearchResultHit} objects.
-     * 
+     *
      * @return the list of {@link SearchResultHit} objects.
      */
     public List<SearchResultHit> getHits()
     {
         return new ArrayList<SearchResultHit>( hits.values() );
     }
-    
+
+    /**
+     * see SearchUtil on how to generate the key
+     *
+     * @param key
+     * @return
+     */
+    public SearchResultHit getSearchResultHit( String key )
+    {
+        return hits.get( key );
+    }
+
     public Map<String, SearchResultHit> getHitsMap()
     {
         return hits;
@@ -92,8 +103,8 @@ public class SearchResults
     }
 
     /**
-     * @since 1.4
      * @return
+     * @since 1.4
      */
     public int getReturnedHitsCount()
     {
@@ -101,8 +112,8 @@ public class SearchResults
     }
 
     /**
-     * @since 1.4
      * @param returnedHitsCount
+     * @since 1.4
      */
     public void setReturnedHitsCount( int returnedHitsCount )
     {

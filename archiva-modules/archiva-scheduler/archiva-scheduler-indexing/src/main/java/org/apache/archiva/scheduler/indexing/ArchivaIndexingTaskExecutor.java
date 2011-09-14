@@ -197,8 +197,6 @@ public class ArchivaIndexingTaskExecutor
                                 nexusIndexer.addArtifactToIndex( ac, context );
                             }
 
-                            //nexusIndexer.scan( context, true );
-
                             context.updateTimestamp();
 
                             // close the context if not a repo scan request
