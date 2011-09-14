@@ -26,12 +26,12 @@
            http://www.springframework.org/schema/context 
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-  <bean name="artifactConverter#force-repository-converter" class="org.apache.maven.archiva.converter.artifact.LegacyToDefaultConverter">
+  <bean name="artifactConverter#force-repository-converter" class="org.apache.archiva.converter.artifact.LegacyToDefaultConverter">
     <property name="force" value="true"/>
     <property name="dryrun" value="false"/>
   </bean>
 
-  <bean name="artifactConverter#dryrun-repository-converter" class="org.apache.maven.archiva.converter.artifact.LegacyToDefaultConverter">
+  <bean name="artifactConverter#dryrun-repository-converter" class="org.apache.archiva.converter.artifact.LegacyToDefaultConverter">
     <property name="force" value="false"/>
     <property name="dryrun" value="true"/>
   </bean>
