@@ -22,9 +22,11 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
+import org.apache.archiva.rest.api.model.SearchRequest;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -58,6 +60,13 @@ public interface SearchService
                                         @QueryParam( "artifactId" ) String artifactId )
         throws ArchivaRestServiceException;
 
+    @Path( "searchArtifacts" )
+    @POST
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> searchArtifacts( SearchRequest searchRequest )
+        throws ArchivaRestServiceException;
+
     @Path( "getDependencies" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
@@ -67,11 +76,12 @@ public interface SearchService
                                       @QueryParam( "version" ) String version )
         throws ArchivaRestServiceException;
 
+
     @Path( "getArtifactByChecksum" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<Artifact> getArtifactByChecksum( @QueryParam( "checksum" ) String checksum )
-    throws ArchivaRestServiceException;
+        throws ArchivaRestServiceException;
 
 }

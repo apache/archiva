@@ -27,6 +27,7 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
+import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.security.AccessDeniedException;
@@ -108,8 +109,28 @@ public class DefaultSearchService
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage() );
         }
+    }
 
+    public List<Artifact> searchArtifacts( SearchRequest searchRequest )
+        throws ArchivaRestServiceException
+    {
+        if ( searchRequest == null )
+        {
+            return Collections.emptyList();
+        }
+        SearchFields searchField = new BeanReplicator().replicateBean( searchRequest, SearchFields.class );
+        SearchResultLimits limits = new SearchResultLimits( 0 );
 
+        try
+        {
+            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );
+            return getArtifacts( searchResults );
+        }
+        catch ( RepositorySearchException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
     }
 
     public List<Dependency> getDependencies( String groupId, String artifactId, String version )

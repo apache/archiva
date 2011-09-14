@@ -123,6 +123,8 @@ public class Artifact
      */
     private String bundleRequireBundle;
 
+    private String classifier;
+
 
     public Artifact()
     {
@@ -309,6 +311,16 @@ public class Artifact
         this.bundleRequireBundle = bundleRequireBundle;
     }
 
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
     @Override
     public String toString()
     {
@@ -332,6 +344,7 @@ public class Artifact
         sb.append( ", bundleDocUrl='" ).append( bundleDocUrl ).append( '\'' );
         sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
         sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
+        sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

@@ -83,6 +83,8 @@ public class SearchFields
      */
     private String bundleExportService;
 
+    private String classifier;
+
     public SearchFields()
     {
         // no op
@@ -200,13 +202,33 @@ public class SearchFields
         this.bundleExportService = bundleExportService;
     }
 
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
     @Override
     public String toString()
     {
-        return "SearchFields{" + "groupId='" + groupId + '\'' + ", artifactId='" + artifactId + '\'' + ", version='"
-            + version + '\'' + ", packaging='" + packaging + '\'' + ", className='" + className + '\''
-            + ", repositories=" + repositories + ", bundleVersion='" + bundleVersion + '\'' + ", bundleSymbolicName='"
-            + bundleSymbolicName + '\'' + ", bundleExportPackage='" + bundleExportPackage + '\''
-            + ", bundleExportService='" + bundleExportService + '\'' + '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "SearchFields" );
+        sb.append( "{groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( ", packaging='" ).append( packaging ).append( '\'' );
+        sb.append( ", className='" ).append( className ).append( '\'' );
+        sb.append( ", repositories=" ).append( repositories );
+        sb.append( ", bundleVersion='" ).append( bundleVersion ).append( '\'' );
+        sb.append( ", bundleSymbolicName='" ).append( bundleSymbolicName ).append( '\'' );
+        sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
+        sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

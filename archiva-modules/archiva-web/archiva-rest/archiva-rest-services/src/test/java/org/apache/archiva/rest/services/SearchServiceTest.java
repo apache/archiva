@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.commons.io.FileUtils;
@@ -78,6 +79,36 @@ public class SearchServiceTest
         SearchService searchService = getSearchService( authorizationHeader );
 
         List<Artifact> artifacts = searchService.getArtifactVersions( "commons-logging", "commons-logging" );
+
+        assertNotNull( artifacts );
+        assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );
+        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
+
+        deleteTestRepo( testRepoId, targetRepo );
+    }
+
+    @Test
+    public void searchWithSearchRequestGroupIdAndArtifactId()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        File targetRepo = createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        SearchRequest searchRequest = new SearchRequest(  );
+        searchRequest.setGroupId( "commons-logging" );
+        searchRequest.setArtifactId( "commons-logging" );
+        searchRequest.setClassifier( "sources" );
+
+        List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
         assertNotNull( artifacts );
         assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );

@@ -127,6 +127,7 @@ public class SearchResultHit
      */
     private String bundleRequireBundle;
 
+    private String classifier;
 
     public String getContext()
     {
@@ -333,6 +334,16 @@ public class SearchResultHit
         return getPackaging();
     }
 
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
     @Override
     public String toString()
     {
@@ -357,6 +368,7 @@ public class SearchResultHit
         sb.append( ", bundleDocUrl='" ).append( bundleDocUrl ).append( '\'' );
         sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
         sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
+        sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

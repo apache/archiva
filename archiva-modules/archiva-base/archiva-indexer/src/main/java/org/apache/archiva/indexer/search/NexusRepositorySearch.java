@@ -187,6 +187,12 @@ public class NexusRepositorySearch
                    Occur.MUST );
         }
 
+        if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
+        {
+            q.add( indexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( searchFields.getClassifier() ) ),
+                   Occur.MUST );
+        }
+
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
         {
             throw new RepositorySearchException( "No search fields set." );
