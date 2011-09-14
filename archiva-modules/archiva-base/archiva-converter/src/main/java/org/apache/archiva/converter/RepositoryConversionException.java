@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.converter;
+package org.apache.archiva.converter;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.converter.legacy;
+package org.apache.archiva.converter.legacy;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +19,7 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.apache.archiva.converter.RepositoryConversionException;
 
 import java.io.File;
 import java.util.List;
