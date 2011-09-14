@@ -290,7 +290,7 @@ public class NexusRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        // wait lucene flush.....
+        // wait lucene flush.....SearchServiceImplTest
         Thread.sleep( 2000 );
 
         SearchResults results = search.search( "user", selectedRepos, "archiva-search", null, null );
