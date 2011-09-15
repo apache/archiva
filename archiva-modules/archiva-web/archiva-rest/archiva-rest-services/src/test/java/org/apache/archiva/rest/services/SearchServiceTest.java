@@ -151,6 +151,36 @@ public class SearchServiceTest
         deleteTestRepo( testRepoId, targetRepo );
     }
 
+    @Test
+    public void searchWithSearchRequestBundleSymbolicNameTwoVersion()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        File targetRepo = createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setBundleSymbolicName( "org.apache.karaf.features.core" );
+
+        List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
+
+        assertNotNull( artifacts );
+        assertTrue(
+            " not 2 results for Bundle Symbolic Name org.apache.karaf.features.core but " + artifacts.size() + ":"
+                + artifacts, artifacts.size() == 2 );
+        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
+
+        deleteTestRepo( testRepoId, targetRepo );
+    }
+
     private File createAndIndexRepo( String testRepoId )
         throws Exception
     {
