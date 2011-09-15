@@ -30,6 +30,8 @@ import org.apache.archiva.rest.api.model.Dependency;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.archiva.rest.services.searchfilter.ArtifactFiler;
+import org.apache.archiva.rest.services.searchfilter.NoClassifierArtifactFiler;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
@@ -78,7 +80,8 @@ public class DefaultSearchService
             SearchResults searchResults =
                 repositorySearch.search( getPrincipal(), getObservableRepos(), queryString, limits,
                                          Collections.<String>emptyList() );
-            return getArtifacts( searchResults );
+            return getArtifacts( searchResults, new ArrayList<ArtifactFiler>( NoClassifierArtifactFiler.LIST ) );
+
         }
         catch ( RepositorySearchException e )
         {
@@ -87,7 +90,7 @@ public class DefaultSearchService
         }
     }
 
-    public List<Artifact> getArtifactVersions( String groupId, String artifactId )
+    public List<Artifact> getArtifactVersions( String groupId, String artifactId, String packaging )
         throws ArchivaRestServiceException
     {
         if ( StringUtils.isBlank( groupId ) || StringUtils.isBlank( artifactId ) )
@@ -97,12 +100,12 @@ public class DefaultSearchService
         SearchFields searchField = new SearchFields();
         searchField.setGroupId( groupId );
         searchField.setArtifactId( artifactId );
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
 
         try
         {
-            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );
-            return getArtifacts( searchResults );
+            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, null );
+            return getArtifacts( searchResults, Collections.<ArtifactFiler>emptyList() );
         }
         catch ( RepositorySearchException e )
         {
@@ -124,7 +127,7 @@ public class DefaultSearchService
         try
         {
             SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );
-            return getArtifacts( searchResults );
+            return getArtifacts( searchResults, Collections.<ArtifactFiler>emptyList() );
         }
         catch ( RepositorySearchException e )
         {
@@ -179,7 +182,7 @@ public class DefaultSearchService
                 : redbackRequestInformation.getUser().getUsername() );
     }
 
-    protected List<Artifact> getArtifacts( SearchResults searchResults )
+    protected List<Artifact> getArtifacts( SearchResults searchResults, List<ArtifactFiler> artifactFilers )
     {
         if ( searchResults == null || searchResults.isEmpty() )
         {
@@ -223,11 +226,34 @@ public class DefaultSearchService
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
-                        artifacts.add( versionned );
+                        if ( applyFiltering( versionned, artifactFilers, artifacts ) )
+                        {
+                            artifacts.add( versionned );
+                        }
                     }
                 }
             }
         }
         return artifacts;
+    }
+
+    protected boolean applyFiltering( Artifact artifact, List<ArtifactFiler> artifactFilers, List<Artifact> artifacts )
+    {
+        if ( artifact == null )
+        {
+            return false;
+        }
+        if ( artifactFilers == null || artifactFilers.isEmpty() )
+        {
+            return true;
+        }
+        for ( ArtifactFiler filter : artifactFilers )
+        {
+            if ( !filter.addArtifactInResult( artifact, artifacts ) )
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -125,6 +125,8 @@ public class Artifact
 
     private String classifier;
 
+    private String packaging;
+
 
     public Artifact()
     {
@@ -321,6 +323,18 @@ public class Artifact
         this.classifier = classifier;
     }
 
+
+    public String getPackaging()
+    {
+        return packaging;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        this.packaging = packaging;
+    }
+
+
     @Override
     public String toString()
     {
@@ -345,6 +359,7 @@ public class Artifact
         sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
         sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", packaging='" ).append( packaging ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

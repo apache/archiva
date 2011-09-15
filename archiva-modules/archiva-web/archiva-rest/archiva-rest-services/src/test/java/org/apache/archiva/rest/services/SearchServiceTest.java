@@ -27,6 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,7 +57,8 @@ public class SearchServiceTest
         List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
 
         assertNotNull( artifacts );
-        assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );
+        assertTrue( " not 6 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
+                    artifacts.size() == 6 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
         deleteTestRepo( testRepoId, targetRepo );
@@ -78,17 +80,18 @@ public class SearchServiceTest
 
         SearchService searchService = getSearchService( authorizationHeader );
 
-        List<Artifact> artifacts = searchService.getArtifactVersions( "commons-logging", "commons-logging" );
+        List<Artifact> artifacts = searchService.getArtifactVersions( "commons-logging", "commons-logging", "jar" );
 
         assertNotNull( artifacts );
-        assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );
+        assertTrue( " not 3 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
+                    artifacts.size() == 13 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
         deleteTestRepo( testRepoId, targetRepo );
     }
 
     @Test
-    public void searchWithSearchRequestGroupIdAndArtifactId()
+    public void searchWithSearchRequestGroupIdAndArtifactIdAndClassifier()
         throws Exception
     {
 
@@ -103,7 +106,7 @@ public class SearchServiceTest
 
         SearchService searchService = getSearchService( authorizationHeader );
 
-        SearchRequest searchRequest = new SearchRequest(  );
+        SearchRequest searchRequest = new SearchRequest();
         searchRequest.setGroupId( "commons-logging" );
         searchRequest.setArtifactId( "commons-logging" );
         searchRequest.setClassifier( "sources" );
@@ -111,7 +114,8 @@ public class SearchServiceTest
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
         assertNotNull( artifacts );
-        assertTrue( " empty results for commons-logging search", artifacts.size() == 6 );
+        assertTrue( " not 2 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
+                    artifacts.size() == 2 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
         deleteTestRepo( testRepoId, targetRepo );
@@ -120,6 +124,10 @@ public class SearchServiceTest
     private File createAndIndexRepo( String testRepoId )
         throws Exception
     {
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, true );
+        }
         File targetRepo = new File( System.getProperty( "targetDir", "./target" ), "test-repo" );
         cleanupFiles( targetRepo );
 
@@ -132,10 +140,10 @@ public class SearchServiceTest
         managedRepository.setName( "test repo" );
 
         managedRepository.setLocation( targetRepo.getPath() );
+        managedRepository.setIndexDirectory( targetRepo.getPath() + "/index-" + Long.toString( new Date().getTime() ) );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
-
 
         getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
 
@@ -153,7 +161,7 @@ public class SearchServiceTest
 
     }
 
-    private void cleanupFiles(File targetRepo)
+    private void cleanupFiles( File targetRepo )
         throws Exception
     {
 

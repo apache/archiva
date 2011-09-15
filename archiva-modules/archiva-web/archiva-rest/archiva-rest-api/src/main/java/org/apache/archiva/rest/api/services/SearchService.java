@@ -57,7 +57,8 @@ public interface SearchService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
-                                        @QueryParam( "artifactId" ) String artifactId )
+                                        @QueryParam( "artifactId" ) String artifactId,
+                                        @QueryParam( "packaging" ) String packaging )
         throws ArchivaRestServiceException;
 
     @Path( "searchArtifacts" )

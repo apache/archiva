@@ -406,6 +406,7 @@ public class NexusRepositorySearch
                 hit.setGoals( artifactInfo.goals );
                 hit.setPrefix( artifactInfo.prefix );
                 hit.setPackaging( artifactInfo.packaging );
+                hit.setClassifier( artifactInfo.classifier );
                 // sure ??
                 hit.setUrl( artifactInfo.remoteUrl );
             }
