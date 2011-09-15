@@ -18,9 +18,9 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.FileType;
-import org.apache.archiva.rest.api.model.LegacyArtifactPath;
-import org.apache.archiva.rest.api.model.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.FileType;
+import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
