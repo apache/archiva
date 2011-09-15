@@ -50,7 +50,21 @@ public class ManagedRepository
 
     private boolean resetStats;
 
-    private boolean scanned =false;
+    private boolean scanned = false;
+
+    /**
+     * default model value
+     */
+    private int daysOlder = 100;
+
+    /**
+     * default model value
+     */
+    private int retentionCount = 2;
+
+    private boolean deleteReleasedSnapshots;
+
+    private String indexDirectory;
 
     public ManagedRepository()
     {
@@ -186,6 +200,46 @@ public class ManagedRepository
         this.scanned = scanned;
     }
 
+    public String getIndexDirectory()
+    {
+        return indexDirectory;
+    }
+
+    public void setIndexDirectory( String indexDirectory )
+    {
+        this.indexDirectory = indexDirectory;
+    }
+
+    public int getDaysOlder()
+    {
+        return daysOlder;
+    }
+
+    public void setDaysOlder( int daysOlder )
+    {
+        this.daysOlder = daysOlder;
+    }
+
+    public int getRetentionCount()
+    {
+        return retentionCount;
+    }
+
+    public void setRetentionCount( int retentionCount )
+    {
+        this.retentionCount = retentionCount;
+    }
+
+    public boolean isDeleteReleasedSnapshots()
+    {
+        return deleteReleasedSnapshots;
+    }
+
+    public void setDeleteReleasedSnapshots( boolean deleteReleasedSnapshots )
+    {
+        this.deleteReleasedSnapshots = deleteReleasedSnapshots;
+    }
+
     public int hashCode()
     {
         int result = 17;
@@ -227,6 +281,7 @@ public class ManagedRepository
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", resetStats=" ).append( resetStats );
         sb.append( ", scanned=" ).append( scanned );
+        sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

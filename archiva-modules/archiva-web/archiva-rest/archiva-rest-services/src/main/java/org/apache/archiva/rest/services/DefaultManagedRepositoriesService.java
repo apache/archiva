@@ -119,6 +119,10 @@ public class DefaultManagedRepositoriesService
         repo.setName( managedRepository.getName() );
         repo.setReleases( managedRepository.isReleases() );
         repo.setSnapshots( managedRepository.isSnapshots() );
+        repo.setIndexDirectory( managedRepository.getIndexDirectory() );
+        repo.setDaysOlder( managedRepository.getDaysOlder() );
+        repo.setDeleteReleasedSnapshots( managedRepository.isDeleteReleasedSnapshots() );
+        repo.setRetentionCount( managedRepository.getRetentionCount() );
         try
         {
             return managedRepositoryAdmin.addManagedRepository( repo, managedRepository.isStageRepoNeeded(),

@@ -215,6 +215,7 @@ public class DefaultManagedRepositoryAdmin
         repository.setDaysOlder( daysOlder );
         repository.setRetentionCount( retentionCount );
         repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
+        repository.setIndexDir( indexDir );
 
         try
         {
