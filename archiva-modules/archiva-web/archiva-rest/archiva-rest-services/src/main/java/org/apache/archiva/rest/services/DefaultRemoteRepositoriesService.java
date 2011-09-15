@@ -19,8 +19,8 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
-import org.apache.archiva.rest.api.model.RemoteRepository;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang.StringUtils;
@@ -109,6 +109,6 @@ public class DefaultRemoteRepositoriesService
                                                                            remoteRepository.getLayout(),
                                                                            remoteRepository.getUserName(),
                                                                            remoteRepository.getPassword(),
-                                                                           remoteRepository.getTimeOut() );
+                                                                           remoteRepository.getTimeout() );
     }
 }

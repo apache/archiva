@@ -28,7 +28,7 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4
  */
-@XmlRootElement( name = "remoteRepository" )
+@XmlRootElement( name = "repositoryGroup" )
 public class RemoteRepository
     extends AbstractRepository
     implements Serializable
@@ -54,13 +54,13 @@ public class RemoteRepository
     }
 
     public RemoteRepository( String id, String name, String url, String layout, String userName, String password,
-                             int timeOut )
+                             int timeout )
     {
         super( id, name, layout );
         this.url = url;
         this.userName = userName;
         this.password = password;
-        this.timeout = timeOut;
+        this.timeout = timeout;
     }
 
     public String getUrl()

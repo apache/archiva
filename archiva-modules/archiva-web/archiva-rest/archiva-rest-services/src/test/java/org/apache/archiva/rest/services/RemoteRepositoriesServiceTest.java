@@ -19,7 +19,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.RemoteRepository;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -84,7 +84,7 @@ public class RemoteRepositoriesServiceTest
         assertEquals( getRemoteRepository().getLayout(), service.getRemoteRepository( "id-new" ).getLayout() );
         assertEquals( getRemoteRepository().getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
         assertEquals( getRemoteRepository().getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
-        assertEquals( getRemoteRepository().getTimeOut(), service.getRemoteRepository( "id-new" ).getTimeOut() );
+        assertEquals( getRemoteRepository().getTimeout(), service.getRemoteRepository( "id-new" ).getTimeout() );
 
         assertEquals( initialSize + 1, service.getRemoteRepositories().size() );
 
@@ -115,7 +115,7 @@ public class RemoteRepositoriesServiceTest
         assertEquals( getRemoteRepository().getLayout(), service.getRemoteRepository( "id-new" ).getLayout() );
         assertEquals( getRemoteRepository().getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
         assertEquals( getRemoteRepository().getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
-        assertEquals( getRemoteRepository().getTimeOut(), service.getRemoteRepository( "id-new" ).getTimeOut() );
+        assertEquals( getRemoteRepository().getTimeout(), service.getRemoteRepository( "id-new" ).getTimeout() );
 
         assertEquals( initialSize + 1, service.getRemoteRepositories().size() );
 
@@ -132,7 +132,7 @@ public class RemoteRepositoriesServiceTest
         assertEquals( repo.getLayout(), service.getRemoteRepository( "id-new" ).getLayout() );
         assertEquals( repo.getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
         assertEquals( repo.getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
-        assertEquals( repo.getTimeOut(), service.getRemoteRepository( "id-new" ).getTimeOut() );
+        assertEquals( repo.getTimeout(), service.getRemoteRepository( "id-new" ).getTimeout() );
 
         service.deleteRemoteRepository( "id-new" );
 
