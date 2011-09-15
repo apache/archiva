@@ -20,8 +20,8 @@ package org.apache.archiva.rest.services;
 
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.rest.api.model.ProxyConnector;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.springframework.stereotype.Service;
