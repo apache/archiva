@@ -24,9 +24,9 @@ import org.apache.archiva.admin.model.managed.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.DefaultArtifactContextProducer;
@@ -58,7 +58,6 @@ import java.util.List;
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
  * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
  * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
- *
  */
 @Service( "taskExecutor#indexing" )
 public class ArchivaIndexingTaskExecutor
@@ -239,9 +238,11 @@ public class ArchivaIndexingTaskExecutor
 
             context.optimize();
 
-
             File managedRepository = new File( repository.getLocation() );
-            final File indexLocation = new File( managedRepository, ".index" );
+            String indexDirectory = repository.getIndexDirectory();
+            final File indexLocation = StringUtils.isBlank( indexDirectory )
+                ? new File( managedRepository, ".indexer" )
+                : new File( indexDirectory );
             IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
             indexPacker.packIndex( request );
 

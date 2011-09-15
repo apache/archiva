@@ -23,7 +23,6 @@ import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -146,7 +145,6 @@ public class SearchServiceTest
         assertTrue(
             " not 1 results for Bundle Symbolic Name org.apache.karaf.features.command but " + artifacts.size() + ":"
                 + artifacts, artifacts.size() == 1 );
-        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
         deleteTestRepo( testRepoId, targetRepo );
     }
@@ -176,7 +174,34 @@ public class SearchServiceTest
         assertTrue(
             " not 2 results for Bundle Symbolic Name org.apache.karaf.features.core but " + artifacts.size() + ":"
                 + artifacts, artifacts.size() == 2 );
-        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
+
+        deleteTestRepo( testRepoId, targetRepo );
+    }
+
+    @Test
+    public void searchWithSearchRequestExportPackageOneVersion()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        File targetRepo = createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setBundleExportPackage( "org.apache.karaf.features.command.completers" );
+
+        List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
+
+        assertNotNull( artifacts );
+        assertTrue( " not 1 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
+                        + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
         deleteTestRepo( testRepoId, targetRepo );
     }
@@ -188,19 +213,14 @@ public class SearchServiceTest
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, true );
         }
-        File targetRepo = new File( System.getProperty( "targetDir", "./target" ), "test-repo" );
-        cleanupFiles( targetRepo );
-
-        File sourceRepo = new File( "src/test/repo-with-osgi" );
-
-        FileUtils.copyDirectory( sourceRepo, targetRepo );
+        File targetRepo = new File( "src/test/repo-with-osgi" );
 
         ManagedRepository managedRepository = new ManagedRepository();
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 
         managedRepository.setLocation( targetRepo.getPath() );
-        managedRepository.setIndexDirectory( targetRepo.getPath() + "/index-" + Long.toString( new Date().getTime() ) );
+        managedRepository.setIndexDirectory( "target/.index-" + Long.toString( new Date().getTime() ) );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
@@ -215,38 +235,11 @@ public class SearchServiceTest
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, true );
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, false );
         }
-        cleanupFiles( targetRepo );
 
     }
 
-    private void cleanupFiles( File targetRepo )
-        throws Exception
-    {
-
-        File indexerDir = new File( targetRepo, ".indexer" );
-
-        if ( targetRepo.exists() )
-        {
-            FileUtils.deleteDirectory( targetRepo );
-        }
-
-        if ( indexerDir.exists() )
-        {
-            FileUtils.deleteDirectory( indexerDir );
-        }
-
-        File lockFile = new File( indexerDir, "write.lock" );
-        if ( lockFile.exists() )
-        {
-            FileUtils.forceDelete( lockFile );
-        }
-
-        assertFalse( targetRepo.exists() );
-        assertFalse( indexerDir.exists() );
-        assertFalse( lockFile.exists() );
-    }
 
 }
 

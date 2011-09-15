@@ -253,7 +253,7 @@ public class ArchivaIndexingTaskExecutorTest
                Occur.SHOULD );
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
-        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
+        assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
 
         flatSearchRequest = new FlatSearchRequest( q, getIndexingContext() );
 
@@ -286,11 +286,10 @@ public class ArchivaIndexingTaskExecutorTest
         indexingExecutor.executeTask( task );
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
-        assertTrue( new File( repositoryConfig.getLocation(), ".index" ).exists() );
 
         // unpack .zip index
-        File destDir = new File( repositoryConfig.getLocation(), ".index/tmp" );
-        unzipIndex( new File( repositoryConfig.getLocation(), ".index" ).getPath(), destDir.getPath() );
+        File destDir = new File( repositoryConfig.getLocation(), ".indexer/tmp" );
+        unzipIndex( new File( repositoryConfig.getLocation(), ".indexer" ).getPath(), destDir.getPath() );
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
