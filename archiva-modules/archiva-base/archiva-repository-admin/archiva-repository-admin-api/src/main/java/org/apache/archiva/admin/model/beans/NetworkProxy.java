@@ -18,12 +18,14 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
+@XmlRootElement( name = "networkProxy" )
 public class NetworkProxy
     implements Serializable
 {

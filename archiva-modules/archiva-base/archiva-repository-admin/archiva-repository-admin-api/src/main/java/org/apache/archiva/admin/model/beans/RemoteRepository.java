@@ -21,12 +21,14 @@ package org.apache.archiva.admin.model.beans;
 
 import org.apache.archiva.admin.model.AbstractRepository;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
+@XmlRootElement( name = "remoteRepository" )
 public class RemoteRepository
     extends AbstractRepository
     implements Serializable

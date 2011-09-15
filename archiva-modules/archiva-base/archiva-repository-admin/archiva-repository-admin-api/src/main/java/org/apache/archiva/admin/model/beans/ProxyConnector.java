@@ -20,12 +20,14 @@ package org.apache.archiva.admin.model.beans;
 
 import org.apache.archiva.admin.model.AbstractRepositoryConnector;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
+@XmlRootElement( name = "proxyConnector" )
 public class ProxyConnector
     extends AbstractRepositoryConnector
     implements Serializable

@@ -18,6 +18,7 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4
  */
+@XmlRootElement( name = "fileType" )
 public class FileType
     implements Serializable
 {
