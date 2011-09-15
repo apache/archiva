@@ -47,6 +47,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,7 +111,10 @@ public class NexusRepositorySearch
             q.add( iQuery, Occur.MUST );
         }
 
-        return search( limits, q, indexingContextIds );
+        // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
+        // FIXME  cannot find a way currently to setup this in constructQuery !!!
+        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST );
+
     }
 
     /**
@@ -199,10 +203,11 @@ public class NexusRepositorySearch
             throw new RepositorySearchException( "No search fields set." );
         }
 
-        return search( limits, q, indexingContextIds );
+        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList() );
     }
 
-    private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds )
+    private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
+                                  List<? extends ArtifactInfoFiler> filters )
         throws RepositorySearchException
     {
 
@@ -219,7 +224,7 @@ public class NexusRepositorySearch
                 return results;
             }
 
-            return convertToSearchResults( response, limits );
+            return convertToSearchResults( response, limits, filters );
         }
         catch ( IOException e )
         {
@@ -275,6 +280,10 @@ public class NexusRepositorySearch
         q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD );
+
+        //Query query =
+        //    new WildcardQuery( new Term( MAVEN.CLASSNAMES.getFieldName(), "*" ) );
+        //q.add( query, Occur.MUST_NOT );
         // olamy IMHO we could set this option as at least one must match
         //q.setMinimumNumberShouldMatch( 1 );
     }
@@ -363,7 +372,8 @@ public class NexusRepositorySearch
     }
 
 
-    private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits )
+    private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
+                                                  List<? extends ArtifactInfoFiler> artifactInfoFilers )
     {
         SearchResults results = new SearchResults();
         Set<ArtifactInfo> artifactInfos = response.getResults();
@@ -373,6 +383,11 @@ public class NexusRepositorySearch
             String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId, artifactInfo.classifier,
                                              artifactInfo.packaging );
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
+
+            if ( !applyArtifactInfoFilters( artifactInfo, artifactInfoFilers, hitsMap ) )
+            {
+                continue;
+            }
 
             SearchResultHit hit = hitsMap.get( id );
             if ( hit != null )
@@ -426,6 +441,25 @@ public class NexusRepositorySearch
         {
             return paginate( results );
         }
+    }
+
+    private boolean applyArtifactInfoFilters( ArtifactInfo artifactInfo,
+                                              List<? extends ArtifactInfoFiler> artifactInfoFilers,
+                                              Map<String, SearchResultHit> currentResult )
+    {
+        if ( artifactInfoFilers == null || artifactInfoFilers.isEmpty() )
+        {
+            return true;
+        }
+
+        for ( ArtifactInfoFiler filter : artifactInfoFilers )
+        {
+            if ( !filter.addArtifactInResult( artifactInfo, currentResult ) )
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private SearchResults paginate( SearchResults results )

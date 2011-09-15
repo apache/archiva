@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.services.searchfilter;
+package org.apache.archiva.indexer.search;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,15 +18,15 @@ package org.apache.archiva.rest.services.searchfilter;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.maven.index.ArtifactInfo;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-public interface ArtifactFiler
+public interface ArtifactInfoFiler
 {
-    boolean addArtifactInResult( Artifact artifact, List<Artifact> currentResult );
+    boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult );
 }

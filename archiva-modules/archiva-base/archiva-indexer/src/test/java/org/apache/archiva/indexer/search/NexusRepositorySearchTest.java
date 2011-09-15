@@ -132,6 +132,49 @@ public class NexusRepositorySearchTest
     }
 
     @Test
+    public void testQuickSearchNotWithClassifier()
+        throws Exception
+    {
+        createSimpleIndex( true );
+
+        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+
+        // search artifactId
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", selectedRepos, "archiva-search", null, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+
+        SearchResultHit hit =
+            results.getSearchResultHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-search", null, "jar" ) );
+        assertNotNull( "hit null in result " + results.getHits(), hit );
+        assertEquals( "org.apache.archiva", hit.getGroupId() );
+        assertEquals( "archiva-search", hit.getArtifactId() );
+        assertEquals( "1.0", hit.getVersions().get( 0 ) );
+
+        archivaConfigControl.reset();
+
+        // search groupId
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        archivaConfigControl.replay();
+
+        results = search.search( "user", selectedRepos, "archiva-search", null, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( "total hints not 3 hits " + results.getHits(), 3, results.getTotalHits() );
+
+        //TODO: search for class & package names
+    }
+
+    @Test
     public void testQuickSearchMultipleArtifactsSameVersion()
         throws Exception
     {

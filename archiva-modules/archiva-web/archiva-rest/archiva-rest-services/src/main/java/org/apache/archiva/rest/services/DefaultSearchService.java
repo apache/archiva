@@ -30,8 +30,6 @@ import org.apache.archiva.rest.api.model.Dependency;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.apache.archiva.rest.services.searchfilter.ArtifactFiler;
-import org.apache.archiva.rest.services.searchfilter.NoClassifierArtifactFiler;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
@@ -80,7 +78,7 @@ public class DefaultSearchService
             SearchResults searchResults =
                 repositorySearch.search( getPrincipal(), getObservableRepos(), queryString, limits,
                                          Collections.<String>emptyList() );
-            return getArtifacts( searchResults, new ArrayList<ArtifactFiler>( NoClassifierArtifactFiler.LIST ) );
+            return getArtifacts( searchResults);
 
         }
         catch ( RepositorySearchException e )
@@ -105,7 +103,7 @@ public class DefaultSearchService
         try
         {
             SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, null );
-            return getArtifacts( searchResults, Collections.<ArtifactFiler>emptyList() );
+            return getArtifacts( searchResults );
         }
         catch ( RepositorySearchException e )
         {
@@ -127,7 +125,7 @@ public class DefaultSearchService
         try
         {
             SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );
-            return getArtifacts( searchResults, Collections.<ArtifactFiler>emptyList() );
+            return getArtifacts( searchResults );
         }
         catch ( RepositorySearchException e )
         {
@@ -182,7 +180,7 @@ public class DefaultSearchService
                 : redbackRequestInformation.getUser().getUsername() );
     }
 
-    protected List<Artifact> getArtifacts( SearchResults searchResults, List<ArtifactFiler> artifactFilers )
+    protected List<Artifact> getArtifacts( SearchResults searchResults )
     {
         if ( searchResults == null || searchResults.isEmpty() )
         {
@@ -226,34 +224,13 @@ public class DefaultSearchService
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
-                        if ( applyFiltering( versionned, artifactFilers, artifacts ) )
-                        {
+
                             artifacts.add( versionned );
-                        }
+
                     }
                 }
             }
         }
         return artifacts;
-    }
-
-    protected boolean applyFiltering( Artifact artifact, List<ArtifactFiler> artifactFilers, List<Artifact> artifacts )
-    {
-        if ( artifact == null )
-        {
-            return false;
-        }
-        if ( artifactFilers == null || artifactFilers.isEmpty() )
-        {
-            return true;
-        }
-        for ( ArtifactFiler filter : artifactFilers )
-        {
-            if ( !filter.addArtifactInResult( artifact, artifacts ) )
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }

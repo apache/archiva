@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.services.searchfilter;
+package org.apache.archiva.indexer.search;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,25 +18,25 @@ package org.apache.archiva.rest.services.searchfilter;
  * under the License.
  */
 
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
-import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.index.ArtifactInfo;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
  */
-public class NoClassifierArtifactFiler
-    implements ArtifactFiler
+public class NoClassifierArtifactInfoFiler
+    implements ArtifactInfoFiler
 {
-    public static final NoClassifierArtifactFiler INSTANCE = new NoClassifierArtifactFiler();
+    public static final NoClassifierArtifactInfoFiler INSTANCE = new NoClassifierArtifactInfoFiler();
 
-    public static final List<? extends ArtifactFiler> LIST = Arrays.asList( INSTANCE );
+    public static final List<? extends ArtifactInfoFiler> LIST = Arrays.asList( INSTANCE );
 
-    public boolean addArtifactInResult( Artifact artifact, List<Artifact> currentResult )
+    public boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult )
     {
-        return StringUtils.isBlank( artifact.getClassifier() );
+        return StringUtils.isBlank( artifact.classifier );
     }
 }
