@@ -29,6 +29,10 @@
   <name>Archiva Base :: Repository Admin Api</name>
   <dependencies>
     <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
