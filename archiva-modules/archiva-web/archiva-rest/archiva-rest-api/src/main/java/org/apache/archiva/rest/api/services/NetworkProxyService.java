@@ -18,7 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.NetworkProxy;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 

@@ -18,7 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.NetworkProxy;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.junit.Test;
 
 /**
