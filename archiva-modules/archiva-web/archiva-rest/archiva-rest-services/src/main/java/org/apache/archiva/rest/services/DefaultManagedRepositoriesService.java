@@ -19,9 +19,9 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.rest.api.model.ManagedRepository;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.commons.lang.StringUtils;
@@ -64,7 +64,11 @@ public class DefaultManagedRepositoriesService
                 ManagedRepository repo =
                     new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                            repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                           repoConfig.isBlockRedeployments(), false, repoConfig.getCronExpression() );
+                                           repoConfig.isBlockRedeployments(), repoConfig.getCronExpression(),
+                                           repoConfig.getIndexDirectory(), repoConfig.isScanned(),
+                                           repoConfig.getDaysOlder(), repoConfig.getRetentionCount(),
+                                           repoConfig.isDeleteReleasedSnapshots(), repoConfig.isStageRepoNeeded() );
+
                 managedRepos.add( repo );
             }
 

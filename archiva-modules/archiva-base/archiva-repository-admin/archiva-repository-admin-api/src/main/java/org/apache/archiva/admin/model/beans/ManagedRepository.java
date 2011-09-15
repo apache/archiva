@@ -21,12 +21,14 @@ package org.apache.archiva.admin.model.beans;
 
 import org.apache.archiva.admin.model.AbstractRepository;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
+@XmlRootElement( name = "managedRepository" )
 public class ManagedRepository
     extends AbstractRepository
     implements Serializable
@@ -67,6 +69,10 @@ public class ManagedRepository
 
     private boolean deleteReleasedSnapshots;
 
+    private boolean stageRepoNeeded;
+
+    private boolean resetStats;
+
     public ManagedRepository()
     {
         // no op
@@ -74,9 +80,10 @@ public class ManagedRepository
 
     public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
-                              boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots )
+                              boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots,
+                              boolean stageRepoNeeded )
     {
-        super(id, name, layout);
+        super( id, name, layout );
 
         this.location = location;
         this.snapshots = snapshots;
@@ -88,6 +95,8 @@ public class ManagedRepository
         this.daysOlder = daysOlder;
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
+        this.stageRepoNeeded = stageRepoNeeded;
+        this.resetStats = resetStats;
     }
 
     public String getLocation()
@@ -206,6 +215,25 @@ public class ManagedRepository
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
     }
 
+    public boolean isStageRepoNeeded()
+    {
+        return stageRepoNeeded;
+    }
+
+    public void setStageRepoNeeded( boolean stageRepoNeeded )
+    {
+        this.stageRepoNeeded = stageRepoNeeded;
+    }
+
+    public boolean isResetStats()
+    {
+        return resetStats;
+    }
+
+    public void setResetStats( boolean resetStats )
+    {
+        this.resetStats = resetStats;
+    }
 
     @Override
     public String toString()
@@ -223,8 +251,9 @@ public class ManagedRepository
         sb.append( ", daysOlder=" ).append( daysOlder );
         sb.append( ", retentionCount=" ).append( retentionCount );
         sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );
+        sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
+        sb.append( ", resetStats=" ).append( resetStats );
         sb.append( '}' );
-        sb.append( super.toString() );
         return sb.toString();
     }
 

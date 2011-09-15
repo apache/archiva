@@ -35,6 +35,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-api</artifactId>
+
+    </dependency>
+
+    <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-authorization-api</artifactId>
       <exclusions>

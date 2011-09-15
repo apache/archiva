@@ -19,7 +19,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
@@ -78,7 +78,8 @@ public class RepositoriesServiceTest
     protected ManagedRepository getTestManagedRepository()
     {
         String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
-        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, false, "2 * * * * ?" );
+        return new ManagedRepository( "TEST", "test", location, "default", true, true, true, "2 * * * * ?", null, false,
+                                      80, 80, true, false );
     }
 
 }

@@ -367,10 +367,10 @@ public class AdministrationServiceImpl
 
         org.apache.archiva.admin.model.beans.ManagedRepository repository =
             new org.apache.archiva.admin.model.beans.ManagedRepository( repoId, name, location, layout,
-                                                                          snapshotsIncluded, releasesIncluded,
-                                                                          blockRedeployments, cronExpression, null,
-                                                                          false, daysOlder, retentionCount,
-                                                                          deleteReleasedSnapshots );
+                                                                        snapshotsIncluded, releasesIncluded,
+                                                                        blockRedeployments, cronExpression, null, false,
+                                                                        daysOlder, retentionCount,
+                                                                        deleteReleasedSnapshots, false );
         return managedRepositoryAdmin.addManagedRepository( repository, stageRepoNeeded, getAuditInformation() );
 
     }

@@ -113,7 +113,7 @@ public class DefaultManagedRepositoryAdmin
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
                                        repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
-                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots() );
+                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), false );
 
             managedRepos.add( repo );
         }

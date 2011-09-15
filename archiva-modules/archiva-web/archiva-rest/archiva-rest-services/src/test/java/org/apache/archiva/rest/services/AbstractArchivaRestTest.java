@@ -19,7 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 
-import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
@@ -165,6 +165,8 @@ public abstract class AbstractArchivaRestTest
     protected ManagedRepository getTestManagedRepository()
     {
         String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
-        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, false, "2 * * * * ?" );
+        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
+                                      false, 2, 3, true, false );
+
     }
 }

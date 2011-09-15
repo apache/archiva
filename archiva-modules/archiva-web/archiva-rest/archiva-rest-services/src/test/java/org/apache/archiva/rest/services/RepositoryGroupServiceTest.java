@@ -18,7 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.model.RepositoryGroup;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
