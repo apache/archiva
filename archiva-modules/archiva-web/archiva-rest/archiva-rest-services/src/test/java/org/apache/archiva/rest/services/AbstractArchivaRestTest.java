@@ -51,15 +51,21 @@ public abstract class AbstractArchivaRestTest
         return "classpath*:META-INF/spring-context.xml,classpath:META-INF/spring-context-test.xml";
     }
 
+    protected String getRestServicesPath()
+    {
+        return "restServices";
+    }
+
     protected RepositoriesService getRepositoriesService()
     {
         return getRepositoriesService( null );
     }
 
+
     protected RepositoriesService getRepositoriesService( String authzHeader )
     {
         RepositoriesService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        RepositoriesService.class );
 
         if ( authzHeader != null )
@@ -74,7 +80,7 @@ public abstract class AbstractArchivaRestTest
     protected ManagedRepositoriesService getManagedRepositoriesService( String authzHeader )
     {
         ManagedRepositoriesService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        ManagedRepositoriesService.class );
 
         if ( authzHeader != null )
@@ -88,28 +94,30 @@ public abstract class AbstractArchivaRestTest
 
     protected PingService getPingService()
     {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          PingService.class );
+        return JAXRSClientFactory.create(
+            "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/", PingService.class );
     }
 
     protected RemoteRepositoriesService getRemoteRepositoriesService()
     {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          RemoteRepositoriesService.class );
+        return JAXRSClientFactory.create(
+            "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            RemoteRepositoriesService.class );
 
 
     }
 
     protected RepositoryGroupService getRepositoryGroupService()
     {
-        return JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
-                                          RepositoryGroupService.class );
+        return JAXRSClientFactory.create(
+            "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            RepositoryGroupService.class );
     }
 
     protected ProxyConnectorService getProxyConnectorService()
     {
         ProxyConnectorService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        ProxyConnectorService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
@@ -120,7 +128,7 @@ public abstract class AbstractArchivaRestTest
     protected NetworkProxyService getNetworkProxyService()
     {
         NetworkProxyService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        NetworkProxyService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
@@ -131,7 +139,7 @@ public abstract class AbstractArchivaRestTest
     protected ArchivaAdministrationService getArchivaAdministrationService()
     {
         ArchivaAdministrationService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/",
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        ArchivaAdministrationService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
@@ -142,7 +150,8 @@ public abstract class AbstractArchivaRestTest
     protected SearchService getSearchService( String authzHeader )
     {
         SearchService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/services/archivaServices/", SearchService.class );
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+                                       SearchService.class );
 
         if ( authzHeader != null )
         {
