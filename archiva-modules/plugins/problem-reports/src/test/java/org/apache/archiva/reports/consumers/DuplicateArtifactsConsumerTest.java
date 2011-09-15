@@ -20,7 +20,7 @@ package org.apache.archiva.reports.consumers;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -28,7 +28,6 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.junit.Before;
 import org.junit.Test;

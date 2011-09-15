@@ -23,9 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 /**
  * RepositoryScanStatistics - extension to the RepositoryContentStatistics model.

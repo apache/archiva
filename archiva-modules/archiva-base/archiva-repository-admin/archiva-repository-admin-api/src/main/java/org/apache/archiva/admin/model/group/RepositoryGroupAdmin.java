@@ -20,6 +20,7 @@ package org.apache.archiva.admin.model.group;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.RepositoryGroup;
 
 import java.util.List;
 import java.util.Map;

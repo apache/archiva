@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;

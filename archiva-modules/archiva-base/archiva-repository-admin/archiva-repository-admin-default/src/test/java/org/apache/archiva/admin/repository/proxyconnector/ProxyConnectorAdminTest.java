@@ -18,8 +18,8 @@ package org.apache.archiva.admin.repository.proxyconnector;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
-import org.apache.archiva.admin.model.remote.RemoteRepository;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;

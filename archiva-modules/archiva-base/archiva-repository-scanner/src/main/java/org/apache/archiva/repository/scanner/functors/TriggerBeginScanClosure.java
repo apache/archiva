@@ -19,7 +19,7 @@ package org.apache.archiva.repository.scanner.functors;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.Closure;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;

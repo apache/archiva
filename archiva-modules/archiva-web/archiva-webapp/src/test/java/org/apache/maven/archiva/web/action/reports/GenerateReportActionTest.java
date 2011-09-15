@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.action.reports;
 
 import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Action;
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;

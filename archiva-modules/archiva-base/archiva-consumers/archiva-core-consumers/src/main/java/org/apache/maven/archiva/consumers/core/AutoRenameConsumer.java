@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;

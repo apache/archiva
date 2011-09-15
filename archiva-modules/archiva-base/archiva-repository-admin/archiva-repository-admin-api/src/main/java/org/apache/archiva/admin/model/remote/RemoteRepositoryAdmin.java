@@ -21,6 +21,7 @@ package org.apache.archiva.admin.model.remote;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 
 import java.util.List;
 import java.util.Map;

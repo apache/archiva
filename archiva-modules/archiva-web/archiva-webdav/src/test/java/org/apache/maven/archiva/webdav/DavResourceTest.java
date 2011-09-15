@@ -20,7 +20,7 @@ package org.apache.maven.archiva.webdav;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -36,7 +36,6 @@ import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.junit.After;
 import org.junit.Before;

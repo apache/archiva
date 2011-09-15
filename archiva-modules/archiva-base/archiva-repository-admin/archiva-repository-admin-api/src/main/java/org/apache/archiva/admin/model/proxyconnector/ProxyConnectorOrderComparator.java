@@ -18,6 +18,8 @@ package org.apache.archiva.admin.model.proxyconnector;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ProxyConnector;
+
 import java.util.Comparator;
 
 /**

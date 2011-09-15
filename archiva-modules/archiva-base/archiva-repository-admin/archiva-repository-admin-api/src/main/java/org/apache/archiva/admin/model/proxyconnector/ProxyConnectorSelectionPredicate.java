@@ -18,6 +18,7 @@ package org.apache.archiva.admin.model.proxyconnector;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 

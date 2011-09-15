@@ -18,7 +18,7 @@ package org.apache.archiva.admin.repository.managed;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.security.common.ArchivaRoleConstants;

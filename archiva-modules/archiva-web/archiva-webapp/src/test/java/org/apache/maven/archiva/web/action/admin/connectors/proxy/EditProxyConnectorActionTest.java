@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
-import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;

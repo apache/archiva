@@ -20,8 +20,8 @@ package org.apache.archiva.repository.scanner;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.managed.ManagedRepository;
-import org.apache.archiva.admin.model.remote.RemoteRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;

@@ -48,7 +48,7 @@ public class DefaultRepositoryGroupService
         try
         {
             List<RepositoryGroup> repositoriesGroups = new ArrayList<RepositoryGroup>();
-            for ( org.apache.archiva.admin.model.group.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
+            for ( org.apache.archiva.admin.model.beans.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
             {
                 repositoriesGroups.add(
                     new RepositoryGroup( repoGroup.getId(), new ArrayList<String>( repoGroup.getRepositories() ) ) );
@@ -80,7 +80,7 @@ public class DefaultRepositoryGroupService
         try
         {
             return repositoryGroupAdmin.addRepositoryGroup(
-                new org.apache.archiva.admin.model.group.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
                     repoGroup.getRepositories() ) ), getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
@@ -95,7 +95,7 @@ public class DefaultRepositoryGroupService
         try
         {
             return repositoryGroupAdmin.updateRepositoryGroup(
-                new org.apache.archiva.admin.model.group.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
                     repoGroup.getRepositories() ) ), getAuditInformation() );
         }
         catch ( RepositoryAdminException e )

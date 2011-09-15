@@ -19,7 +19,7 @@ package org.apache.archiva.web.tags;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;

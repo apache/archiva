@@ -20,6 +20,7 @@ package org.apache.archiva.admin.model.networkproxy;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
 
 import java.util.List;
 

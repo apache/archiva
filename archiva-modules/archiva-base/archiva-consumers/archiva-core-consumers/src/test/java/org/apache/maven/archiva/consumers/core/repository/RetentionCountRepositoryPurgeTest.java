@@ -19,9 +19,8 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.repository.events.RepositoryListener;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

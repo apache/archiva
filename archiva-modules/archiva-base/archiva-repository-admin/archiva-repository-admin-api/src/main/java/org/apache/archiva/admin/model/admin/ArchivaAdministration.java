@@ -20,6 +20,9 @@ package org.apache.archiva.admin.model.admin;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.FileType;
+import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.OrganisationInformation;
 
 import java.util.List;
 

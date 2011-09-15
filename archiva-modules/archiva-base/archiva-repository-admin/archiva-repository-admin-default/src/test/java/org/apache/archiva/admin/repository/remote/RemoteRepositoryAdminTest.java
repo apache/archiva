@@ -18,7 +18,7 @@ package org.apache.archiva.admin.repository.remote;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.remote.RemoteRepository;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;

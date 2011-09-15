@@ -21,7 +21,7 @@ package org.apache.maven.archiva.cli;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.converter.RepositoryConversionException;

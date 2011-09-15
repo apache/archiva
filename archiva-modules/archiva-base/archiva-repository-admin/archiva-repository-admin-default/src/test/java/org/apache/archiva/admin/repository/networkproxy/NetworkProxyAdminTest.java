@@ -18,7 +18,7 @@ package org.apache.archiva.admin.repository.networkproxy;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.networkproxy.NetworkProxy;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;

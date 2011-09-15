@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.admin.FileType;
+import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.repository.admin.FiletypeToMapClosure;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;

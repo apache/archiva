@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Action;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.MailingList;

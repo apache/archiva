@@ -21,9 +21,9 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.networkproxy.NetworkProxy;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
-import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.policies.DownloadErrorPolicy;
 import org.apache.maven.archiva.policies.Policy;

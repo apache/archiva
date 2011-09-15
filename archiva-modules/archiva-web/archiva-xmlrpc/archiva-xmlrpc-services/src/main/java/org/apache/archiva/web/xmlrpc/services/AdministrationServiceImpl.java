@@ -22,9 +22,9 @@ package org.apache.archiva.web.xmlrpc.services;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
@@ -212,7 +212,7 @@ public class AdministrationServiceImpl
     {
         // TODO: remove duplication with web
 
-        org.apache.archiva.admin.model.managed.ManagedRepository repoConfig =
+        org.apache.archiva.admin.model.beans.ManagedRepository repoConfig =
             managedRepositoryAdmin.getManagedRepository( repoId );
 
         if ( repoConfig == null )
@@ -329,7 +329,7 @@ public class AdministrationServiceImpl
     {
         List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>();
 
-        for ( org.apache.archiva.admin.model.managed.ManagedRepository repoConfig : managedRepositoryAdmin.getManagedRepositories() )
+        for ( org.apache.archiva.admin.model.beans.ManagedRepository repoConfig : managedRepositoryAdmin.getManagedRepositories() )
         {
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
@@ -348,7 +348,7 @@ public class AdministrationServiceImpl
     {
         List<RemoteRepository> remoteRepos = new ArrayList<RemoteRepository>();
 
-        for ( org.apache.archiva.admin.model.remote.RemoteRepository repoConfig : remoteRepositoryAdmin.getRemoteRepositories() )
+        for ( org.apache.archiva.admin.model.beans.RemoteRepository repoConfig : remoteRepositoryAdmin.getRemoteRepositories() )
         {
             RemoteRepository repo = new RemoteRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl(),
                                                           repoConfig.getLayout() );
@@ -365,8 +365,8 @@ public class AdministrationServiceImpl
         throws Exception
     {
 
-        org.apache.archiva.admin.model.managed.ManagedRepository repository =
-            new org.apache.archiva.admin.model.managed.ManagedRepository( repoId, name, location, layout,
+        org.apache.archiva.admin.model.beans.ManagedRepository repository =
+            new org.apache.archiva.admin.model.beans.ManagedRepository( repoId, name, location, layout,
                                                                           snapshotsIncluded, releasesIncluded,
                                                                           blockRedeployments, cronExpression, null,
                                                                           false, daysOlder, retentionCount,
@@ -379,7 +379,7 @@ public class AdministrationServiceImpl
         throws Exception
     {
 
-        org.apache.archiva.admin.model.managed.ManagedRepository repository =
+        org.apache.archiva.admin.model.beans.ManagedRepository repository =
             managedRepositoryAdmin.getManagedRepository( repoId );
 
         if ( repository == null )
@@ -437,7 +437,7 @@ public class AdministrationServiceImpl
         throws Exception
     {
 
-        org.apache.archiva.admin.model.managed.ManagedRepository repository =
+        org.apache.archiva.admin.model.beans.ManagedRepository repository =
             managedRepositoryAdmin.getManagedRepository( repoId );
 
         if ( repository == null )
@@ -479,7 +479,7 @@ public class AdministrationServiceImpl
     public ManagedRepository getManagedRepository( String repoId )
         throws Exception
     {
-        org.apache.archiva.admin.model.managed.ManagedRepository managedRepository =
+        org.apache.archiva.admin.model.beans.ManagedRepository managedRepository =
             managedRepositoryAdmin.getManagedRepository( repoId );
         if ( managedRepository == null )
         {
@@ -496,8 +496,8 @@ public class AdministrationServiceImpl
         throws Exception
     {
         String stagingId = repoId + STAGE;
-        org.apache.archiva.admin.model.managed.ManagedRepository repoConfig;
-        org.apache.archiva.admin.model.managed.ManagedRepository stagingConfig;
+        org.apache.archiva.admin.model.beans.ManagedRepository repoConfig;
+        org.apache.archiva.admin.model.beans.ManagedRepository stagingConfig;
 
         repoConfig = managedRepositoryAdmin.getManagedRepository( repoId );
 
@@ -618,7 +618,7 @@ public class AdministrationServiceImpl
     }
 
     // todo: setting userid of audit event
-    private AuditEvent createAuditEvent( org.apache.archiva.admin.model.managed.ManagedRepository repoConfig )
+    private AuditEvent createAuditEvent( org.apache.archiva.admin.model.beans.ManagedRepository repoConfig )
     {
 
         AuditEvent event = new AuditEvent();

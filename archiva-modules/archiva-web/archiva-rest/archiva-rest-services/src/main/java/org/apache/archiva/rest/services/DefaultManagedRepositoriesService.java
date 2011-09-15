@@ -53,12 +53,12 @@ public class DefaultManagedRepositoriesService
     {
         try
         {
-            List<org.apache.archiva.admin.model.managed.ManagedRepository> repos =
+            List<org.apache.archiva.admin.model.beans.ManagedRepository> repos =
                 managedRepositoryAdmin.getManagedRepositories();
 
             List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( repos.size() );
 
-            for ( org.apache.archiva.admin.model.managed.ManagedRepository repoConfig : repos )
+            for ( org.apache.archiva.admin.model.beans.ManagedRepository repoConfig : repos )
             {
                 // TODO staging repo too
                 ManagedRepository repo =
@@ -109,8 +109,8 @@ public class DefaultManagedRepositoriesService
     public Boolean addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
-        org.apache.archiva.admin.model.managed.ManagedRepository repo =
-            new org.apache.archiva.admin.model.managed.ManagedRepository();
+        org.apache.archiva.admin.model.beans.ManagedRepository repo =
+            new org.apache.archiva.admin.model.beans.ManagedRepository();
         repo.setLocation( managedRepository.getLocation() );
         repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
         repo.setCronExpression( managedRepository.getCronExpression() );
@@ -138,8 +138,8 @@ public class DefaultManagedRepositoriesService
     public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
-        org.apache.archiva.admin.model.managed.ManagedRepository repo =
-            new org.apache.archiva.admin.model.managed.ManagedRepository();
+        org.apache.archiva.admin.model.beans.ManagedRepository repo =
+            new org.apache.archiva.admin.model.beans.ManagedRepository();
         repo.setLocation( managedRepository.getLocation() );
         repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
         repo.setCronExpression( managedRepository.getCronExpression() );

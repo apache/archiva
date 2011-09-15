@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 
 import java.util.Date;
 import java.util.List;

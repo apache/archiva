@@ -411,7 +411,7 @@ public class AdministrationServiceImplTest
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
-                                                                       org.apache.archiva.admin.model.managed.ManagedRepository.class ) );
+                                                                       org.apache.archiva.admin.model.beans.ManagedRepository.class ) );
 
         repoFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( "internal" ), repoContent );
 
@@ -464,7 +464,7 @@ public class AdministrationServiceImplTest
 
         ManagedLegacyRepositoryContent repoContent = new ManagedLegacyRepositoryContent();
         repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
-                                                                       org.apache.archiva.admin.model.managed.ManagedRepository.class ) );
+                                                                       org.apache.archiva.admin.model.beans.ManagedRepository.class ) );
         repoContent.setFileTypes( fileTypes );
         repoContent.setLegacyPathParser( parser );
 
@@ -525,7 +525,7 @@ public class AdministrationServiceImplTest
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
-                                                                       org.apache.archiva.admin.model.managed.ManagedRepository.class ) );
+                                                                       org.apache.archiva.admin.model.beans.ManagedRepository.class ) );
 
         repoFactoryControl.expectAndReturn( repositoryFactory.getManagedRepositoryContent( "internal" ), repoContent );
 

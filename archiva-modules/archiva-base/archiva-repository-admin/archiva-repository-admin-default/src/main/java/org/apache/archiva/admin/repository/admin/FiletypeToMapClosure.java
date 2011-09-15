@@ -19,7 +19,7 @@ package org.apache.archiva.admin.repository.admin;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.admin.FileType;
+import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.commons.collections.Closure;
 
 import java.util.HashMap;

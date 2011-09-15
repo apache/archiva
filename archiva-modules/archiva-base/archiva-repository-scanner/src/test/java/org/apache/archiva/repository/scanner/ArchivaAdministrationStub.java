@@ -21,9 +21,9 @@ package org.apache.archiva.repository.scanner;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.admin.FileType;
-import org.apache.archiva.admin.model.admin.LegacyArtifactPath;
-import org.apache.archiva.admin.model.admin.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.FileType;
+import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.springframework.stereotype.Service;
 

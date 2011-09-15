@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.model.remote;
+package org.apache.archiva.admin.model.beans;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

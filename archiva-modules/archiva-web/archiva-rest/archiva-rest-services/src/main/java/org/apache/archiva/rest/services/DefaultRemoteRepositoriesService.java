@@ -49,7 +49,7 @@ public class DefaultRemoteRepositoriesService
         try
         {
             List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-            for ( org.apache.archiva.admin.model.remote.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+            for ( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
             {
                 RemoteRepository repo = new RemoteRepository( remoteRepository.getId(), remoteRepository.getName(),
                                                               remoteRepository.getUrl(), remoteRepository.getLayout(),
@@ -100,10 +100,10 @@ public class DefaultRemoteRepositoriesService
                                                              getAuditInformation() );
     }
 
-    private org.apache.archiva.admin.model.remote.RemoteRepository getModelRemoteRepository(
+    private org.apache.archiva.admin.model.beans.RemoteRepository getModelRemoteRepository(
         RemoteRepository remoteRepository )
     {
-        return new org.apache.archiva.admin.model.remote.RemoteRepository( remoteRepository.getId(),
+        return new org.apache.archiva.admin.model.beans.RemoteRepository( remoteRepository.getId(),
                                                                            remoteRepository.getName(),
                                                                            remoteRepository.getUrl(),
                                                                            remoteRepository.getLayout(),
