@@ -74,7 +74,7 @@
   <!-- Web Services : Administration Service -->
   <bean name="administrationService" lazy-init="true" scope="singleton"
         class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
-    <constructor-arg ref="archivaConfiguration"/>
+    <constructor-arg ref="archivaAdministration#default"/>
     <constructor-arg ref="repositoryContentConsumers"/>
     <constructor-arg ref="repositoryContentFactory#default"/>
     <constructor-arg ref="repositorySessionFactory"/>
@@ -87,6 +87,8 @@
     <constructor-arg ref="auditListener#logging"/>
     <constructor-arg ref="managedRepositoryAdmin#default"/>
     <constructor-arg ref="remoteRepositoryAdmin#default"/>
+    <constructor-arg ref="proxyConnectorAdmin#default"/>
+    <constructor-arg ref="repositoryGroupAdmin#default"/>
   </bean>
 
   <!-- Redback Web Services -->
