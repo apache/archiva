@@ -18,7 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.RepositoryGroup;
+import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
