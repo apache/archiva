@@ -102,6 +102,11 @@
       <artifactId>archiva-repository-admin-default</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>

@@ -22,7 +22,10 @@ package org.apache.archiva.web.xmlrpc.services;
 import junit.framework.TestCase;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.repository.RepositoryCommonValidator;
+import org.apache.archiva.admin.repository.admin.DefaultArchivaAdministration;
+import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
@@ -65,7 +68,6 @@ import org.easymock.classextension.MockClassControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -162,7 +164,11 @@ public class AdministrationServiceImplTest
 
     private DefaultRemoteRepositoryAdmin remoteRepositoryAdmin;
 
-    private ApplicationContext applicationContext;
+    private DefaultArchivaAdministration archivaAdministration;
+
+    private DefaultProxyConnectorAdmin proxyConnectorAdmin;
+
+    private DefaultRepositoryGroupAdmin repositoryGroupAdmin;
 
     @Before
     public void setUp()
@@ -243,11 +249,23 @@ public class AdministrationServiceImplTest
 
         remoteRepositoryAdmin.setRepositoryCommonValidator( repositoryCommonValidator );
 
-        service = new AdministrationServiceImpl( archivaConfig, repoConsumersUtil, repositoryFactory,
+        archivaAdministration = new DefaultArchivaAdministration();
+        archivaAdministration.setArchivaConfiguration( archivaConfig );
+        archivaAdministration.setRegistry( registry );
+
+        proxyConnectorAdmin = new DefaultProxyConnectorAdmin();
+        proxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
+        proxyConnectorAdmin.setRegistry( registry );
+
+        repositoryGroupAdmin = new DefaultRepositoryGroupAdmin();
+        repositoryGroupAdmin.setArchivaConfiguration( archivaConfig );
+        repositoryGroupAdmin.setRegistry( registry );
+
+        service = new AdministrationServiceImpl( archivaAdministration, repoConsumersUtil, repositoryFactory,
                                                  repositorySessionFactory, repositoryTaskScheduler,
                                                  Collections.singletonList( listener ), repositoryStatisticsManager,
                                                  repositoryMerger, auditListener, managedRepositoryAdmin,
-                                                 remoteRepositoryAdmin );
+                                                 remoteRepositoryAdmin, proxyConnectorAdmin, repositoryGroupAdmin );
     }
 
     /* Tests for repository consumers */
@@ -288,11 +306,7 @@ public class AdministrationServiceImplTest
         recordRepoConsumers();
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
-
-        config.setRepositoryScanning( repoScanning );
-        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        configControl.setVoidCallable();
+        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning, 1, 5 );
 
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
@@ -331,11 +345,7 @@ public class AdministrationServiceImplTest
         recordRepoConsumers();
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning );
-
-        config.setRepositoryScanning( repoScanning );
-        configControl.setMatcher( MockControl.ALWAYS_MATCHER );
-        configControl.setVoidCallable();
+        configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning, 1, 4 );
 
         archivaConfig.save( config );
         archivaConfigControl.setVoidCallable();
@@ -397,7 +407,7 @@ public class AdministrationServiceImplTest
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
@@ -450,7 +460,7 @@ public class AdministrationServiceImplTest
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "legacy", "legacy-repo" );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
 
         ManagedLegacyRepositoryContent repoContent = new ManagedLegacyRepositoryContent();
         repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
@@ -511,7 +521,7 @@ public class AdministrationServiceImplTest
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
         repoContent.setRepository( new BeanReplicator().replicateBean( managedRepo,
@@ -560,7 +570,7 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "non-existing-repo" ), null );
+        configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList() );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -585,8 +595,8 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
-                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList(
+            createManagedRepo( "internal", "default", "Internal Repository", true, false ) ), 1, 5 );
 
         RepositoryTask task = new RepositoryTask();
 
@@ -621,8 +631,9 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ),
-                                       createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
+
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList(
+            createManagedRepo( "internal", "default", "Internal Repository", true, false ) ), 1, 5 );
 
         repositoryTaskSchedulerControl.expectAndReturn(
             repositoryTaskScheduler.isProcessingRepositoryTask( "internal" ), true );
@@ -651,7 +662,7 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), null );
+        configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList(), 1, 5 );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -729,7 +740,7 @@ public class AdministrationServiceImplTest
     public void testDeleteInvalidRepositoryContent()
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "invalid" ), null );
+        configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList(), 1, 5 );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -754,8 +765,8 @@ public class AdministrationServiceImplTest
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
         assertTrue( new File( managedRepo.getLocation(), "org" ).exists() );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "internal" ), managedRepo );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 3 );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
         metadataRepository.removeRepository( "internal" );
 
         archivaConfigControl.replay();
@@ -779,7 +790,7 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "invalid" ), null );
+        configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList(), 1, 2 );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -801,10 +812,11 @@ public class AdministrationServiceImplTest
     public void testMergeWithNoStagingRepository()
         throws Exception
     {
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "repo" ),
-                                       createManagedRepo( "repo", "default", "repo", true, false ) );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "repo-stage" ), null );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+
+        configControl.expectAndReturn( config.getManagedRepositories(),
+                                       Arrays.asList( createManagedRepo( "repo", "default", "repo", true, false ) ), 1,
+                                       4 );
 
         archivaConfigControl.replay();
         configControl.replay();
@@ -841,9 +853,8 @@ public class AdministrationServiceImplTest
         RepositoryTask task = new RepositoryTask();
         task.setScanAll( true );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "merge" ), merge );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "merge-stage" ), staging );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( merge, staging ), 1, 5 );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
         repositoryMergerControl.expectAndDefaultReturn(
@@ -910,9 +921,8 @@ public class AdministrationServiceImplTest
         repo.setLocation( "target/test-repository/one" );
         ManagedRepositoryConfiguration staging = createStagingRepo( repo );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "repo" ), repo );
-        configControl.expectAndReturn( config.findManagedRepositoryById( "repo-stage" ), staging );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( repo, staging ), 1, 5 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
         repositoryMergerControl.expectAndDefaultReturn(

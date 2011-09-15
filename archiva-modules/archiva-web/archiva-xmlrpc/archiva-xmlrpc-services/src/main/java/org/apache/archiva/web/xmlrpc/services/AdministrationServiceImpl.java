@@ -21,7 +21,11 @@ package org.apache.archiva.web.xmlrpc.services;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnector;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
@@ -42,12 +46,6 @@ import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -56,7 +54,6 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.codehaus.plexus.registry.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +74,6 @@ public class AdministrationServiceImpl
     implements AdministrationService
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
-
-    private ArchivaConfiguration archivaConfiguration;
 
     private RepositoryContentConsumers repoConsumersUtil;
 
@@ -102,13 +97,20 @@ public class AdministrationServiceImpl
 
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    private ArchivaAdministration archivaAdministration;
+
+    private ProxyConnectorAdmin proxyConnectorAdmin;
+
+    private RepositoryGroupAdmin repositoryGroupAdmin;
+
     private static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
 
     private static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
 
     private static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
-    public AdministrationServiceImpl( ArchivaConfiguration archivaConfig, RepositoryContentConsumers repoConsumersUtil,
+    public AdministrationServiceImpl( ArchivaAdministration archivaAdministration,
+                                      RepositoryContentConsumers repoConsumersUtil,
                                       RepositoryContentFactory repoFactory,
                                       RepositorySessionFactory repositorySessionFactory,
                                       RepositoryArchivaTaskScheduler repositoryTaskScheduler,
@@ -116,9 +118,10 @@ public class AdministrationServiceImpl
                                       RepositoryStatisticsManager repositoryStatisticsManager,
                                       RepositoryMerger repositoryMerger, AuditListener auditListener,
                                       ManagedRepositoryAdmin managedRepositoryAdmin,
-                                      RemoteRepositoryAdmin remoteRepositoryAdmin )
+                                      RemoteRepositoryAdmin remoteRepositoryAdmin,
+                                      ProxyConnectorAdmin proxyConnectorAdmin,
+                                      RepositoryGroupAdmin repositoryGroupAdmin )
     {
-        this.archivaConfiguration = archivaConfig;
         this.repoConsumersUtil = repoConsumersUtil;
         this.repoFactory = repoFactory;
         this.repositoryTaskScheduler = repositoryTaskScheduler;
@@ -129,6 +132,9 @@ public class AdministrationServiceImpl
         this.auditListener = auditListener;
         this.managedRepositoryAdmin = managedRepositoryAdmin;
         this.remoteRepositoryAdmin = remoteRepositoryAdmin;
+        this.archivaAdministration = archivaAdministration;
+        this.proxyConnectorAdmin = proxyConnectorAdmin;
+        this.repositoryGroupAdmin = repositoryGroupAdmin;
     }
 
     /**
@@ -171,20 +177,29 @@ public class AdministrationServiceImpl
             throw new Exception( "Invalid repository consumer." );
         }
 
-        Configuration config = archivaConfiguration.getConfiguration();
-        RepositoryScanningConfiguration repoScanningConfig = config.getRepositoryScanning();
-
         if ( isKnownContentConsumer )
         {
-            repoScanningConfig.addKnownContentConsumer( consumerId );
+            if ( enable )
+            {
+                archivaAdministration.addKnownContentConsumer( consumerId, getAuditInformation() );
+            }
+            else
+            {
+                archivaAdministration.removeKnownContentConsumer( consumerId, getAuditInformation() );
+            }
+
         }
         else
         {
-            repoScanningConfig.addInvalidContentConsumer( consumerId );
+            if ( enable )
+            {
+                archivaAdministration.addInvalidContentConsumer( consumerId, getAuditInformation() );
+            }
+            else
+            {
+                archivaAdministration.removeInvalidContentConsumer( consumerId, getAuditInformation() );
+            }
         }
-
-        config.setRepositoryScanning( repoScanningConfig );
-        saveConfiguration( config );
 
         return true;
     }
@@ -197,8 +212,8 @@ public class AdministrationServiceImpl
     {
         // TODO: remove duplication with web
 
-        Configuration config = archivaConfiguration.getConfiguration();
-        ManagedRepositoryConfiguration repoConfig = config.findManagedRepositoryById( repoId );
+        org.apache.archiva.admin.model.managed.ManagedRepository repoConfig =
+            managedRepositoryAdmin.getManagedRepository( repoId );
 
         if ( repoConfig == null )
         {
@@ -266,8 +281,7 @@ public class AdministrationServiceImpl
     public Boolean executeRepositoryScanner( String repoId )
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        if ( config.findManagedRepositoryById( repoId ) == null )
+        if ( managedRepositoryAdmin.getManagedRepository( repoId ) == null )
         {
             throw new Exception( "Repository does not exist." );
         }
@@ -344,23 +358,6 @@ public class AdministrationServiceImpl
         return remoteRepos;
     }
 
-    private void saveConfiguration( Configuration config )
-        throws Exception
-    {
-        try
-        {
-            archivaConfiguration.save( config );
-        }
-        catch ( RegistryException e )
-        {
-            throw new Exception( "Error occurred in the registry." );
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            throw new Exception( "Error occurred while saving the configuration." );
-        }
-    }
-
     public Boolean addManagedRepository( String repoId, String layout, String name, String location,
                                          boolean blockRedeployments, boolean releasesIncluded,
                                          boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression,
@@ -370,10 +367,10 @@ public class AdministrationServiceImpl
 
         org.apache.archiva.admin.model.managed.ManagedRepository repository =
             new org.apache.archiva.admin.model.managed.ManagedRepository( repoId, name, location, layout,
-                                                                               snapshotsIncluded, releasesIncluded,
-                                                                               blockRedeployments, cronExpression, null,
-                                                                               false, daysOlder, retentionCount,
-                                                                               deleteReleasedSnapshots );
+                                                                          snapshotsIncluded, releasesIncluded,
+                                                                          blockRedeployments, cronExpression, null,
+                                                                          false, daysOlder, retentionCount,
+                                                                          deleteReleasedSnapshots );
         return managedRepositoryAdmin.addManagedRepository( repository, stageRepoNeeded, getAuditInformation() );
 
     }
@@ -381,9 +378,9 @@ public class AdministrationServiceImpl
     public Boolean deleteManagedRepository( String repoId )
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
 
-        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repoId );
+        org.apache.archiva.admin.model.managed.ManagedRepository repository =
+            managedRepositoryAdmin.getManagedRepository( repoId );
 
         if ( repository == null )
         {
@@ -402,16 +399,7 @@ public class AdministrationServiceImpl
         {
             repositorySession.close();
         }
-        config.removeManagedRepository( repository );
-
-        try
-        {
-            saveConfiguration( config );
-        }
-        catch ( Exception e )
-        {
-            throw new Exception( "Error saving configuration for delete action" + e.getMessage() );
-        }
+        managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation(), false );
 
         File dir = new File( repository.getLocation() );
         if ( !FileUtils.deleteQuietly( dir ) )
@@ -419,16 +407,16 @@ public class AdministrationServiceImpl
             throw new IOException( "Cannot delete repository " + dir );
         }
 
-        List<ProxyConnectorConfiguration> proxyConnectors = config.getProxyConnectors();
-        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectors();
+        for ( ProxyConnector proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
             {
-                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
+                proxyConnectorAdmin.deleteProxyConnector( proxyConnector, getAuditInformation() );
             }
         }
 
-        Map<String, List<String>> repoToGroupMap = archivaConfiguration.getConfiguration().getRepositoryToGroupMap();
+        Map<String, List<String>> repoToGroupMap = repositoryGroupAdmin.getRepositoryToGroupMap();
         if ( repoToGroupMap != null )
         {
             if ( repoToGroupMap.containsKey( repository.getId() ) )
@@ -436,8 +424,8 @@ public class AdministrationServiceImpl
                 List<String> repoGroups = repoToGroupMap.get( repository.getId() );
                 for ( String repoGroup : repoGroups )
                 {
-                    archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroup ).removeRepository(
-                        repository.getId() );
+                    repositoryGroupAdmin.deleteRepositoryFromGroup( repoGroup, repository.getId(),
+                                                                    getAuditInformation() );
                 }
             }
         }
@@ -448,9 +436,9 @@ public class AdministrationServiceImpl
     public Boolean deleteManagedRepositoryContent( String repoId )
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
 
-        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repoId );
+        org.apache.archiva.admin.model.managed.ManagedRepository repository =
+            managedRepositoryAdmin.getManagedRepository( repoId );
 
         if ( repository == null )
         {
@@ -491,8 +479,8 @@ public class AdministrationServiceImpl
     public ManagedRepository getManagedRepository( String repoId )
         throws Exception
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        ManagedRepositoryConfiguration managedRepository = config.findManagedRepositoryById( repoId );
+        org.apache.archiva.admin.model.managed.ManagedRepository managedRepository =
+            managedRepositoryAdmin.getManagedRepository( repoId );
         if ( managedRepository == null )
         {
             throw new Exception( "A repository with that id does not exist" );
@@ -508,11 +496,10 @@ public class AdministrationServiceImpl
         throws Exception
     {
         String stagingId = repoId + STAGE;
-        ManagedRepositoryConfiguration repoConfig;
-        ManagedRepositoryConfiguration stagingConfig;
+        org.apache.archiva.admin.model.managed.ManagedRepository repoConfig;
+        org.apache.archiva.admin.model.managed.ManagedRepository stagingConfig;
 
-        Configuration config = archivaConfiguration.getConfiguration();
-        repoConfig = config.findManagedRepositoryById( repoId );
+        repoConfig = managedRepositoryAdmin.getManagedRepository( repoId );
 
         log.debug( "Retrieved repository configuration for repo '" + repoId + "'" );
 
@@ -522,7 +509,7 @@ public class AdministrationServiceImpl
             MetadataRepository metadataRepository = repositorySession.getRepository();
             if ( repoConfig != null )
             {
-                stagingConfig = config.findManagedRepositoryById( stagingId );
+                stagingConfig = managedRepositoryAdmin.getManagedRepository( stagingId );
 
                 if ( stagingConfig != null )
                 {
@@ -631,7 +618,7 @@ public class AdministrationServiceImpl
     }
 
     // todo: setting userid of audit event
-    private AuditEvent createAuditEvent( ManagedRepositoryConfiguration repoConfig )
+    private AuditEvent createAuditEvent( org.apache.archiva.admin.model.managed.ManagedRepository repoConfig )
     {
 
         AuditEvent event = new AuditEvent();
@@ -664,26 +651,6 @@ public class AdministrationServiceImpl
         repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
 
-    private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )
-    {
-        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
-        stagingRepository.setId( repository.getId() + "-stage" );
-        stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + "-stage" );
-        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setDaysOlder( repository.getDaysOlder() );
-        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
-        stagingRepository.setIndexDir( repository.getIndexDir() );
-        String path = repository.getLocation();
-        int lastIndex = path.lastIndexOf( '/' );
-        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
-        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
-        stagingRepository.setReleases( repository.isReleases() );
-        stagingRepository.setRetentionCount( repository.getRetentionCount() );
-        stagingRepository.setScanned( repository.isScanned() );
-        stagingRepository.setSnapshots( repository.isSnapshots() );
-        return stagingRepository;
-    }
 
     // FIXME find a way to get user id and adress
     private AuditInformation getAuditInformation()
