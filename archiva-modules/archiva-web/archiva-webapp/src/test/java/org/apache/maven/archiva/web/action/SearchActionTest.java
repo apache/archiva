@@ -21,7 +21,6 @@ package org.apache.maven.archiva.web.action;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
@@ -133,7 +132,7 @@ public class SearchActionTest
         SearchResults results = new SearchResults();
         results.setLimits( limits );
         results.setTotalHits( 1 );
-        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration", null, "jar" ), hit );
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
 
@@ -182,7 +181,7 @@ public class SearchActionTest
         SearchResults results = new SearchResults();
         results.setLimits( limits );
         results.setTotalHits( 1 );
-        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration", null, "jar" ), hit );
 
         userReposControl.expectAndReturn( userRepos.getObservableRepositoryIds( "user" ), selectedRepos );
 
@@ -284,7 +283,7 @@ public class SearchActionTest
         SearchResults results = new SearchResults();
         results.setLimits( limits );
         results.setTotalHits( 1 );
-        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration", null, "jar" ), hit );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( "internal" );
@@ -331,7 +330,7 @@ public class SearchActionTest
         SearchResults results = new SearchResults();
         results.setLimits( limits );
         results.setTotalHits( 1 );
-        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration" ), hit );
+        results.addHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-configuration", null, "jar" ), hit );
 
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( "internal" );
