@@ -77,9 +77,12 @@ public class SearchServiceTest
 
         File targetRepo = createAndIndexRepo( testRepoId );
 
+        // START SNIPPET: searchservice-artifact-versions
         SearchService searchService = getSearchService( authorizationHeader );
 
         List<Artifact> artifacts = searchService.getArtifactVersions( "commons-logging", "commons-logging", "jar" );
+
+        // END SNIPPET: searchservice-artifact-versions
 
         assertNotNull( artifacts );
         assertTrue( " not 3 results for commons-logging search but " + artifacts.size() + ":" + artifacts,

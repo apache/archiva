@@ -42,8 +42,11 @@ import java.io.File;
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
+
+    // START SNIPPET: authz-header
     public String guestAuthzHeader =
         "Basic " + org.apache.cxf.common.util.Base64Utility.encode( ( "guest" + ":" ).getBytes() );
+    // END SNIPPET: authz-header
 
     @Override
     protected String getSpringConfigLocation()
@@ -149,6 +152,7 @@ public abstract class AbstractArchivaRestTest
 
     protected SearchService getSearchService( String authzHeader )
     {
+        // START SNIPPET: cxf-searchservice-creation
         SearchService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        SearchService.class );
@@ -159,6 +163,7 @@ public abstract class AbstractArchivaRestTest
         }
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         return service;
+        // END SNIPPET: cxf-searchservice-creation
 
     }
 
