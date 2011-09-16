@@ -195,7 +195,7 @@
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
           <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.redback"/>
-          <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.redback"/>
+          <properties fileName="org/apache/archiva/security.properties" config-at="org.codehaus.plexus.redback"/>
         </configuration>
         ]]>
       </value>
