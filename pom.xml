@@ -444,7 +444,7 @@
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/archiva/parent</url>
+    <url>http://svn.apache.org/viewvc/archiva/parent/</url>
   </scm>
 
   <issueManagement>
