@@ -46,7 +46,7 @@
     </property>
   </bean>
 
-  <bean name="repositoryContentFactory#cleanup-released-snapshots" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+  <bean name="repositoryContentFactory#cleanup-released-snapshots" class="org.apache.archiva.repository.RepositoryContentFactory">
     <property name="archivaConfiguration" ref="archivaConfiguration#cleanup-released-snapshots"/>
   </bean>
 

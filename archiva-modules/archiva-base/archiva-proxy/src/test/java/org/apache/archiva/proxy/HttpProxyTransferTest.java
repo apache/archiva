@@ -34,7 +34,7 @@ import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
 import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

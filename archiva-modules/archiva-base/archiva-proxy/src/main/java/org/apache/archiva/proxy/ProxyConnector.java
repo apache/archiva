@@ -19,9 +19,9 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RemoteRepositoryContent;
-import org.apache.maven.archiva.repository.connector.RepositoryConnector;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.connector.RepositoryConnector;
 
 import java.util.Iterator;
 import java.util.List;

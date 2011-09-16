@@ -28,9 +28,9 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.repository"/>
+  <context:component-scan base-package="org.apache.archiva.repository"/>
 
-  <bean name="pathParser#legacy" class="org.apache.maven.archiva.repository.content.LegacyPathParser">
+  <bean name="pathParser#legacy" class="org.apache.archiva.repository.content.LegacyPathParser">
     <constructor-arg>
       <ref bean="archivaConfiguration#default"/>
     </constructor-arg>

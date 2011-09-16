@@ -21,7 +21,7 @@ package org.apache.archiva.proxy;
 
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 
 import java.io.File;
 import java.util.List;

@@ -45,7 +45,7 @@
     </property>
   </bean>
 
-  <bean name="repositoryContentFactory#mocked" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+  <bean name="repositoryContentFactory#mocked" class="org.apache.archiva.repository.RepositoryContentFactory">
     <property name="archivaConfiguration" ref="archivaConfiguration#mock"/>
   </bean>
 
@@ -56,11 +56,11 @@
     <property name="metadataTools" ref="metadataTools#mocked"/>
   </bean>
 
-  <bean name="metadataTools#default" class="org.apache.maven.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#default" class="org.apache.archiva.repository.metadata.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>
 
-  <bean name="metadataTools#mocked" class="org.apache.maven.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#mocked" class="org.apache.archiva.repository.metadata.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>
 

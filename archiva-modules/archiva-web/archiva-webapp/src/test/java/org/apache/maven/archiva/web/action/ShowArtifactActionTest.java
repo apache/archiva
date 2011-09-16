@@ -37,9 +37,9 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
 
 import java.io.File;
 import java.util.Arrays;

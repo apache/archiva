@@ -49,11 +49,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.ContentNotFoundException;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -31,10 +31,10 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.springframework.stereotype.Service;
 
 import java.io.File;

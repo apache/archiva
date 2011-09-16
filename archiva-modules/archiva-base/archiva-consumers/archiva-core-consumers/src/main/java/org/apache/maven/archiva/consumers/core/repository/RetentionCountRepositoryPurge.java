@@ -25,9 +25,9 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.ContentNotFoundException;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.layout.LayoutException;
 
 import java.io.File;
 import java.util.ArrayList;

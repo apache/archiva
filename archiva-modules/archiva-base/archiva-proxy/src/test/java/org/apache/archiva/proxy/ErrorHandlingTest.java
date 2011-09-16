@@ -26,7 +26,7 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.authorization.AuthorizationException;

@@ -24,10 +24,10 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

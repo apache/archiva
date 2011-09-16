@@ -26,7 +26,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.easymock.MockControl;
 import org.junit.After;
 import org.junit.Before;

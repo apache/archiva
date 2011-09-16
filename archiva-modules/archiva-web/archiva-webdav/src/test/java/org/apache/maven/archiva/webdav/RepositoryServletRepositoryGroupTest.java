@@ -29,7 +29,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -46,7 +46,7 @@
     <property name="managedRepositoryAdmin" ref="managedRepoAdmin#test"/>
   </bean>
 
-  <bean name="repositoryContentFactory#default" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+  <bean name="repositoryContentFactory#default" class="org.apache.archiva.repository.RepositoryContentFactory">
     <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>
   </bean>
 

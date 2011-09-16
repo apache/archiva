@@ -34,12 +34,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.SnapshotVersion;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
-import org.apache.maven.archiva.repository.metadata.MetadataTools;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 

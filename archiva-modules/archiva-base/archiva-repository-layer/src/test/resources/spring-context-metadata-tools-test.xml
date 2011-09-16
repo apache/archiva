@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
 
-  <bean name="metadataTools#test" class="org.apache.maven.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#test" class="org.apache.archiva.repository.metadata.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>
 </beans>

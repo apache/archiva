@@ -24,8 +24,8 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
 import org.junit.Before;

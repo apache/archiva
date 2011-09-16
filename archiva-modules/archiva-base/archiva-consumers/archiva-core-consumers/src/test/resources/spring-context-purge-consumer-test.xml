@@ -45,7 +45,7 @@
   <alias name="archivaConfiguration#retention-count" alias="archivaConfiguration"/>
   <alias name="archivaConfiguration#retention-count" alias="archivaConfiguration#default"/>
 
-  <bean name="repositoryContentFactory#retention-count" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+  <bean name="repositoryContentFactory#retention-count" class="org.apache.archiva.repository.RepositoryContentFactory">
     <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
   </bean>
 
@@ -79,7 +79,7 @@
     <property name="registry" ref="registry#days-old"/>
   </bean>
 
-  <bean name="repositoryContentFactory#days-old" class="org.apache.maven.archiva.repository.RepositoryContentFactory">
+  <bean name="repositoryContentFactory#days-old" class="org.apache.archiva.repository.RepositoryContentFactory">
     <property name="archivaConfiguration" ref="archivaConfiguration#days-old"/>
   </bean>
 
