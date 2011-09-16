@@ -27,7 +27,7 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
     </layout>
   </appender>
-  <logger name="org.apache.maven.archiva.web.action.SearchAction">
+  <logger name="org.apache.archiva.web.action.SearchAction">
     <level value="debug"/>
   </logger>
   <logger name="org.apache.archiva.indexer.search.NexusRepositorySearch">
