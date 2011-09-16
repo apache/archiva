@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.content;
+package org.apache.archiva.repository.content;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,7 +24,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
-import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
+import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.junit.Test;
 
 import java.util.Collections;

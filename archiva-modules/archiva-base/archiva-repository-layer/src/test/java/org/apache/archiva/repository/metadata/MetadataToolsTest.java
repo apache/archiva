@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.metadata;
+package org.apache.archiva.repository.metadata;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,11 +30,11 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.archiva.repository.MockConfiguration;
-import org.apache.maven.archiva.repository.RemoteRepositoryContent;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.MockConfiguration;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Test;

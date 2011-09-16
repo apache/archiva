@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository;
+package org.apache.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,8 @@ package org.apache.maven.archiva.repository;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;

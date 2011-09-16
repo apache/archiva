@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.content;
+package org.apache.archiva.repository.content;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
