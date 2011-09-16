@@ -25,7 +25,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.springframework.context.annotation.Scope;

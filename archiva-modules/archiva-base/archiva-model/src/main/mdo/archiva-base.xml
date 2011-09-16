@@ -30,7 +30,7 @@
   <defaults>
     <default>
       <key>package</key>
-      <value>org.apache.maven.archiva.model</value>
+      <value>org.apache.archiva.model</value>
     </default>
   </defaults>
 

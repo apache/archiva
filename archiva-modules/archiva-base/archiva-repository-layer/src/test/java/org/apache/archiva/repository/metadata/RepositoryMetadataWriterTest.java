@@ -21,7 +21,7 @@ package org.apache.maven.archiva.repository.metadata;
 
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

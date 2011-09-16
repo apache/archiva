@@ -20,8 +20,8 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ArchivaArtifact;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.layout.LayoutException;
 
 import javax.inject.Inject;

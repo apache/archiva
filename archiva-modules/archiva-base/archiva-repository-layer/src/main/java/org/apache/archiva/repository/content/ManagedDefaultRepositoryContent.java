@@ -24,10 +24,10 @@ import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMapp
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.archiva.model.ArchivaArtifact;
+import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ProjectReference;
+import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;

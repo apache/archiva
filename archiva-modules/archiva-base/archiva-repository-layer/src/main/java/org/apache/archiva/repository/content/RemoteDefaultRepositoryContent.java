@@ -20,8 +20,8 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.RepositoryURL;
+import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.springframework.context.annotation.Scope;

@@ -23,7 +23,7 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
-import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

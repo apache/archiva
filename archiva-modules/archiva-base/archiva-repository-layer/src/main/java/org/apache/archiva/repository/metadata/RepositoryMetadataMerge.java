@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.model.ArchivaModelCloner;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.model.Plugin;
-import org.apache.maven.archiva.model.SnapshotVersion;
+import org.apache.archiva.model.ArchivaModelCloner;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.Plugin;
+import org.apache.archiva.model.SnapshotVersion;
 
 /**
  * RepositoryMetadataMerge 

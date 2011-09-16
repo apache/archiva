@@ -21,9 +21,9 @@ package org.apache.maven.archiva.repository.content;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ProjectReference;
+import org.apache.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.junit.Before;

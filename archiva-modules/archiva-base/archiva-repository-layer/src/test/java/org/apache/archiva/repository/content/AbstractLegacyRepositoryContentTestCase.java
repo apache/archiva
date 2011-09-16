@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.junit.Test;

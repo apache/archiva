@@ -55,7 +55,7 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.ManagedLegacyRepositoryContent;

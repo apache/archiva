@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.model;
+package org.apache.archiva.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

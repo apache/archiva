@@ -30,7 +30,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
