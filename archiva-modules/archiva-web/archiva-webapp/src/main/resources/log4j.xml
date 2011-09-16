@@ -105,11 +105,11 @@
 -->
 
   <!-- WebDav objects -->
-  <logger name="org.apache.maven.archiva.webdav.ArchivaDavResource">
+  <logger name="org.apache.archiva.webdav.ArchivaDavResource">
     <level value="info"/>
   </logger>
   
-  <logger name="org.apache.maven.archiva.webdav.ArchivaDavResourceFactory">
+  <logger name="org.apache.archiva.webdav.ArchivaDavResourceFactory">
     <level value="info"/>
   </logger>
 

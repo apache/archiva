@@ -28,6 +28,6 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.webdav"/>
+  <context:component-scan base-package="org.apache.archiva.webdav"/>
 
 </beans>

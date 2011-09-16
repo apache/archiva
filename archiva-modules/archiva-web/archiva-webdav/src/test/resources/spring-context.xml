@@ -30,7 +30,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.webdav,org.apache.archiva.metadata.repository"/>
+  <context:component-scan base-package="org.apache.archiva.webdav,org.apache.archiva.metadata.repository"/>
 
   <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
@@ -44,7 +44,7 @@
     </property>
   </bean>
 
-  <bean name="servletAuthenticator" class="org.apache.maven.archiva.webdav.MockServletAuthenticator"/>
+  <bean name="servletAuthenticator" class="org.apache.archiva.webdav.MockServletAuthenticator"/>
 
   <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#default"/>
@@ -69,7 +69,7 @@
 
   <alias name="archivaDavResourceFactory#unauthenticated" alias="davResourceFactory#archiva"/>
   <!--
-  <bean name="davResourceFactory#archiva" class="org.apache.maven.archiva.webdav.UnauthenticatedDavResourceFactory">
+  <bean name="davResourceFactory#archiva" class="org.apache.archiva.webdav.UnauthenticatedDavResourceFactory">
     <property name="servletAuth" ref="servletAuthenticator"/>
   </bean>
   -->

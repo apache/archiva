@@ -96,8 +96,8 @@
 	<servlet>
 		<servlet-name>RepositoryServlet</servlet-name>
 		<servlet-class>
-			org.apache.maven.archiva.webdav.RepositoryServlet
-		</servlet-class>
+      org.apache.archiva.webdav.RepositoryServlet
+    </servlet-class>
 		<!-- Loading this on startup so as to take advantage of configuration listeners -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
