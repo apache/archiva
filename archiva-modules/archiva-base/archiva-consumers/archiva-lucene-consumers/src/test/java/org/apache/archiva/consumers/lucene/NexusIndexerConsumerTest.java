@@ -28,7 +28,7 @@ import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.junit.After;
 import org.junit.Before;

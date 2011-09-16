@@ -23,9 +23,9 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.springframework.stereotype.Service;
 

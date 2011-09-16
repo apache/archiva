@@ -31,10 +31,10 @@ import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

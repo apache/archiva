@@ -21,7 +21,7 @@ package org.apache.archiva.repository.scanner.functors;
 
 import org.apache.commons.collections.Closure;
 import org.apache.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

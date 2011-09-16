@@ -28,9 +28,9 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.consumers.core"/>
+  <context:component-scan base-package="org.apache.archiva.consumers.core"/>
 
-  <bean id="artifactMissingChecksumsConsumer" class="org.apache.maven.archiva.consumers.core.ArtifactMissingChecksumsConsumer" scope="prototype">
+  <bean id="artifactMissingChecksumsConsumer" class="org.apache.archiva.consumers.core.ArtifactMissingChecksumsConsumer" scope="prototype">
    <constructor-arg>
      <value>create-missing-checksums</value>
    </constructor-arg>

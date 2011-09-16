@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.action.admin.scanning;
  */
 
 import org.apache.commons.collections.Closure;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 
 import java.util.ArrayList;
 import java.util.List;

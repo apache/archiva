@@ -20,8 +20,8 @@ package org.apache.archiva.repository.scanner;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 
 import java.util.List;
 import java.util.Set;

@@ -28,7 +28,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.ConsumerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

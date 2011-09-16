@@ -21,8 +21,8 @@ package org.apache.maven.archiva.webdav;
 
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 
 import java.util.List;
 

@@ -19,7 +19,7 @@ package org.apache.archiva.cli;
  * under the License.
  */
 
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 

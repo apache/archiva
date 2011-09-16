@@ -32,7 +32,7 @@
 
   <!-- for testing repo purge using retention count -->
 
-  <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count" class="org.apache.maven.archiva.consumers.core.repository.RepositoryPurgeConsumer">
+  <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count" class="org.apache.archiva.consumers.core.repository.RepositoryPurgeConsumer">
     <property name="configuration" ref="archivaConfiguration#retention-count"/>
     <property name="repositoryContentFactory" ref="repositoryContentFactory#retention-count"/>
     <property name="filetypes" ref="filetypes#retention-count"/>
@@ -69,7 +69,7 @@
   <alias name="filetypes#retention-count" alias="filetypes"/>
 
   <!-- for testing repo purge by # of days old and delete cleanupSnapshots -->
-  <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-days-old" class="org.apache.maven.archiva.consumers.core.repository.RepositoryPurgeConsumer">
+  <bean name="knownRepositoryContentConsumer#repo-purge-consumer-by-days-old" class="org.apache.archiva.consumers.core.repository.RepositoryPurgeConsumer">
     <property name="configuration" ref="archivaConfiguration#days-old"/>
     <property name="repositoryContentFactory" ref="repositoryContentFactory#days-old"/>
     <property name="filetypes" ref="filetypes#days-old"/>

@@ -20,9 +20,9 @@ package org.apache.archiva.cli;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
-import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 
 import java.util.Date;
 

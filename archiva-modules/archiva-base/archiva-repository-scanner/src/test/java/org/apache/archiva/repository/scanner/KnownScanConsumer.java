@@ -20,9 +20,9 @@ package org.apache.archiva.repository.scanner;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
-import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
