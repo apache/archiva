@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies.urlcache;
+package org.apache.archiva.policies;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,29 +19,23 @@ package org.apache.maven.archiva.policies.urlcache;
  * under the License.
  */
 
+import org.apache.archiva.common.ArchivaException;
 
 /**
- * Cache for requested URLs that cannot be fetched. 
+ * PolicyViolationException 
  *
  * @version $Id$
  */
-public interface UrlFailureCache
+public class PolicyViolationException
+    extends ArchivaException
 {
-    /**
-     * Store a URL in the cache as failed.
-     * 
-     * @param url the url to store. 
-     */
-    void cacheFailure( String url );
-    
-    /**
-     * Test if a specified URL has failed before.
-     * 
-     * NOTE: If the provided URL has failed, then making this call 
-     * should refresh the expiration time on that URL entry.
-     * 
-     * @param url the URL to test.
-     * @return true if it has failed before, false if not.
-     */
-    boolean hasFailedBefore( String url );
+    public PolicyViolationException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
+    public PolicyViolationException( String message )
+    {
+        super( message );
+    }
 }

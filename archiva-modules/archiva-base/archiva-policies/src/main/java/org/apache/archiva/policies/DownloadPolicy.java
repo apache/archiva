@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.archiva.policies;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,44 +19,27 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-
-import org.springframework.stereotype.Service;
+import java.io.File;
+import java.util.Properties;
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * DownloadPolicy 
  *
  * @version $Id$
  */
-@Service("preDownloadPolicy#releases")
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public interface DownloadPolicy
+    extends Policy
 {
+
     /**
-     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
+     * Apply the download policy.
+     * 
+     * @param policySetting the policy setting.
+     * @param request the list of request properties that the policy might use.
+     * @param localFile
+     * 
+     * @throws PolicyViolationException if the policy has been violated.
      */
-    public String getDefaultOption()
-    {
-        return AbstractUpdatePolicy.HOURLY;
-    }
-
-    protected boolean isSnapshotPolicy()
-    {
-        return false;
-    }
-    
-    protected String getUpdateMode()
-    {
-        return "releases";
-    }
-
-    public String getId()
-    {
-        return "releases";
-    }
-
-    public String getName()
-    {
-        return "Releases";
-    }
+    public void applyPolicy( String policySetting, Properties request, File localFile )
+        throws PolicyViolationException, PolicyConfigurationException;
 }

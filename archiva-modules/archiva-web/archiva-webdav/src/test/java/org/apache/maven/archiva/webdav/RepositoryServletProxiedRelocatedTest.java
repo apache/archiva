@@ -24,7 +24,7 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
-import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.apache.archiva.policies.ReleasesPolicy;
 import org.junit.Test;
 
 /**

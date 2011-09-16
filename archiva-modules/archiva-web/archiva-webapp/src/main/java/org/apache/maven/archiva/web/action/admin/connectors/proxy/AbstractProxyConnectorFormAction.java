@@ -25,10 +25,10 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.policies.DownloadErrorPolicy;
-import org.apache.maven.archiva.policies.Policy;
-import org.apache.maven.archiva.policies.PostDownloadPolicy;
-import org.apache.maven.archiva.policies.PreDownloadPolicy;
+import org.apache.archiva.policies.DownloadErrorPolicy;
+import org.apache.archiva.policies.Policy;
+import org.apache.archiva.policies.PostDownloadPolicy;
+import org.apache.archiva.policies.PreDownloadPolicy;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;

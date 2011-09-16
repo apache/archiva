@@ -28,10 +28,10 @@
 
   <context:property-placeholder system-properties-mode="FALLBACK"/>
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.policies"/>
+  <context:component-scan base-package="org.apache.archiva.policies"/>
 
   <bean id="urlFailureCache"
-        class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache" lazy-init="true">
+        class="org.apache.archiva.policies.urlcache.DefaultUrlFailureCache" lazy-init="true">
     <!-- collaborators and configuration for this bean go here -->
     <constructor-arg ref="url-failures-cache"
                      type="org.codehaus.plexus.cache.Cache"/>

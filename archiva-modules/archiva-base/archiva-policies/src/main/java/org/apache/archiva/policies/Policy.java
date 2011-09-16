@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.archiva.policies;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva.policies;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,25 +19,37 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.archiva.common.ArchivaException;
+import java.util.List;
 
-/**
- * PolicyConfigurationException is thrown when a policy cannot be executed due to a 
- * configuration issue. 
- *
- * @version $Id$
- */
-public class PolicyConfigurationException
-    extends ArchivaException
+public interface Policy
 {
+    /**
+     * Get the list of options for this policy.
+     *
+     * @return the list of options for this policy.
+     */
+    List<String> getOptions();
 
-    public PolicyConfigurationException( String message, Throwable cause )
-    {
-        super( message, cause );
-    }
+    /**
+     * Get the default option for this policy.
+     *
+     * @return the default policy for this policy.
+     */
+    String getDefaultOption();
 
-    public PolicyConfigurationException( String message )
-    {
-        super( message );
-    }
+    /**
+     * Get the id for this policy.
+     *
+     * @return the id for this policy.
+     */
+    String getId();
+
+    /**
+     * Get the display name for this policy.
+     *
+     * @todo i18n
+     *
+     * @return the name for this policy
+     */
+    String getName();
 }

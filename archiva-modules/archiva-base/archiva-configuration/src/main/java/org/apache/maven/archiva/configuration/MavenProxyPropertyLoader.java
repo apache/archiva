@@ -20,8 +20,8 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.policies.ReleasesPolicy;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.ReleasesPolicy;
+import org.apache.archiva.policies.SnapshotsPolicy;
 
 import java.io.IOException;
 import java.io.InputStream;

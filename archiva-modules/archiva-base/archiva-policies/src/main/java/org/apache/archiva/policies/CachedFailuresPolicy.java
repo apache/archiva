@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.archiva.policies;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

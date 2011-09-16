@@ -25,7 +25,7 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.SnapshotsPolicy;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

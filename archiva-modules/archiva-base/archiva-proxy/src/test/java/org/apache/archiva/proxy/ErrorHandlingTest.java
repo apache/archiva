@@ -19,13 +19,13 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.policies.CachedFailuresPolicy;
-import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.PropagateErrorsDownloadPolicy;
-import org.apache.maven.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
-import org.apache.maven.archiva.policies.ProxyDownloadException;
-import org.apache.maven.archiva.policies.ReleasesPolicy;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.CachedFailuresPolicy;
+import org.apache.archiva.policies.ChecksumPolicy;
+import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
+import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
+import org.apache.archiva.policies.ProxyDownloadException;
+import org.apache.archiva.policies.ReleasesPolicy;
+import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;

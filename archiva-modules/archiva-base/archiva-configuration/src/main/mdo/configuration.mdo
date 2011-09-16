@@ -851,42 +851,42 @@
 
     /**
      * The policy key {@link #getPolicies()} for error handling.
-     * See {@link org.apache.maven.archiva.policies.DownloadErrorPolicy}
+     * See {@link org.apache.archiva.policies.DownloadErrorPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_PROPAGATE_ERRORS = "propagate-errors";
 
     /**
      * The policy key {@link #getPolicies()} for error handling when an artifact is present.
-     * See {@link org.apache.maven.archiva.policies.DownloadErrorPolicy}
+     * See {@link org.apache.archiva.policies.DownloadErrorPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_PROPAGATE_ERRORS_ON_UPDATE = "propagate-errors-on-update";
 
     /**
      * The policy key {@link #getPolicies()} for snapshot handling.
-     * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy}
+     * See {@link org.apache.archiva.policies.SnapshotsPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_SNAPSHOTS = "snapshots";
 
     /**
      * The policy key {@link #getPolicies()} for releases handling.
-     * See {@link org.apache.maven.archiva.policies.ReleasesPolicy}
+     * See {@link org.apache.archiva.policies.ReleasesPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_RELEASES = "releases";
 
     /**
      * The policy key {@link #getPolicies()} for checksum handling.
-     * See {@link org.apache.maven.archiva.policies.ChecksumPolicy}
+     * See {@link org.apache.archiva.policies.ChecksumPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_CHECKSUM = "checksum";
 
     /**
      * The policy key {@link #getPolicies()} for cache-failures handling.
-     * See {@link org.apache.maven.archiva.policies.CachedFailuresPolicy}
+     * See {@link org.apache.archiva.policies.CachedFailuresPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_CACHE_FAILURES = "cache-failures";

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.archiva.policies;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +19,44 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+
+import org.springframework.stereotype.Service;
+
 /**
- * Policy to apply after the download has completed, but before the
- * resource is made available to the calling client. 
+ * {@link PreDownloadPolicy} to apply for snapshot versions. 
  *
  * @version $Id$
  */
-public interface PostDownloadPolicy
-    extends DownloadPolicy
+@Service("preDownloadPolicy#snapshots")
+public class SnapshotsPolicy
+    extends AbstractUpdatePolicy
+    implements PreDownloadPolicy
 {
+    /**
+     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
+     */
+    public String getDefaultOption()
+    {
+        return AbstractUpdatePolicy.HOURLY;
+    }
+
+    protected boolean isSnapshotPolicy()
+    {
+        return true;
+    }
+    
+    protected String getUpdateMode()
+    {
+        return "snapshots";
+    }
+
+    public String getId()
+    {
+        return "snapshots";
+    }
+
+    public String getName()
+    {
+        return "Snapshots";
+    }
 }

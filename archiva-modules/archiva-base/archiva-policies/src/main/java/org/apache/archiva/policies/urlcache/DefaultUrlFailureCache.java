@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies.urlcache;
+package org.apache.archiva.policies.urlcache;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

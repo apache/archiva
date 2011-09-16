@@ -21,11 +21,11 @@ package org.apache.archiva.proxy;
 
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.policies.CachedFailuresPolicy;
-import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.ReleasesPolicy;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.policies.CachedFailuresPolicy;
+import org.apache.archiva.policies.ChecksumPolicy;
+import org.apache.archiva.policies.ReleasesPolicy;
+import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.archiva.policies;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,23 +19,44 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.archiva.common.ArchivaException;
+
+import org.springframework.stereotype.Service;
 
 /**
- * PolicyViolationException 
+ * {@link PreDownloadPolicy} to apply for released versions.
  *
  * @version $Id$
  */
-public class PolicyViolationException
-    extends ArchivaException
+@Service("preDownloadPolicy#releases")
+public class ReleasesPolicy
+    extends AbstractUpdatePolicy
+    implements PreDownloadPolicy
 {
-    public PolicyViolationException( String message, Throwable cause )
+    /**
+     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
+     */
+    public String getDefaultOption()
     {
-        super( message, cause );
+        return AbstractUpdatePolicy.HOURLY;
     }
 
-    public PolicyViolationException( String message )
+    protected boolean isSnapshotPolicy()
     {
-        super( message );
+        return false;
+    }
+    
+    protected String getUpdateMode()
+    {
+        return "releases";
+    }
+
+    public String getId()
+    {
+        return "releases";
+    }
+
+    public String getName()
+    {
+        return "Releases";
     }
 }
