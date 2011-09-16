@@ -58,7 +58,7 @@
           <descriptor>src/main/assembly/archiva-cli-assembly.xml</descriptor>
           <archive>
             <manifest>
-              <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
+              <mainClass>org.apache.archiva.cli.ArchivaCli</mainClass>
             </manifest>
           </archive>
         </configuration>

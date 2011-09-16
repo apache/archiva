@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.cli;
+package org.apache.archiva.cli;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -127,7 +127,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
+              <mainClass>org.apache.archiva.cli.ArchivaCli</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -137,7 +137,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <configuration>
           <executable>java</executable>
-          <mainClass>org.apache.maven.archiva.cli.ArchivaCli</mainClass>
+          <mainClass>org.apache.archiva.cli.ArchivaCli</mainClass>
           <arguments>
           </arguments>
         </configuration>
