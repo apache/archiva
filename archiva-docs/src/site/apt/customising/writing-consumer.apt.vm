@@ -55,12 +55,12 @@ where,
 
  [[4]] Package your project by executing 'mvn clean package'
 
- [[5]] Let's say you are using the apache-archiva-1.0-bin.tar.gz to run Archiva. Unpack
+ [[5]] Let's say you are using the apache-archiva-${project.version}-bin.tar.gz to run Archiva. Unpack
    the binaries then go to bin/linux-x86-32/ (assuming you are running on Linux), then execute
    './run.sh console'. Then stop or shutdown Archiva after it started. (This is necessary to unpack
    the war file.)
 
- [[6]] Copy the jar file you created in step 4 in apache-archiva-1.0/apps/archiva/webapp/lib/
+ [[6]] Copy the jar file you created in step 4 in apache-archiva-${project.version}/apps/archiva/webapp/lib/
 
  [[7]] Add the necessary configurations in archiva.xml (in this case, add 'discover-new-artifact' as a
    <knownContentConsumer>)
