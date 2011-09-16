@@ -57,7 +57,7 @@ public class SearchServiceTest
         List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
         // return all artifacts with groupId OR artifactId OR version OR packaging OR className
         // NOTE : only artifacts with classifier empty are returned
-        // START SNIPPET: quick-search
+        // END SNIPPET: quick-search
 
         assertNotNull( artifacts );
         assertTrue( " not 6 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
