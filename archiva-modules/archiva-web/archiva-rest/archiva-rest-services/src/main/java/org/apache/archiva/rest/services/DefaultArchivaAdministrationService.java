@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
@@ -50,13 +49,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>();
-            for ( org.apache.archiva.admin.model.beans.LegacyArtifactPath legacyArtifactPath : archivaAdministration.getLegacyArtifactPaths() )
-            {
-                legacyArtifactPaths.add(
-                    new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
-            }
-            return legacyArtifactPaths;
+            return archivaAdministration.getLegacyArtifactPaths();
         }
         catch ( RepositoryAdminException e )
         {
@@ -69,9 +62,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            archivaAdministration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
-                                                                                             org.apache.archiva.admin.model.beans.LegacyArtifactPath.class ),
-                                                         getAuditInformation() );
+            archivaAdministration.addLegacyArtifactPath( legacyArtifactPath, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -127,12 +118,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            org.apache.archiva.admin.model.beans.FileType fileType = archivaAdministration.getFileType( fileTypeId );
-            if ( fileType == null )
-            {
-                return null;
-            }
-            return new BeanReplicator().replicateBean( fileType, FileType.class );
+            return archivaAdministration.getFileType( fileTypeId );
         }
         catch ( RepositoryAdminException e )
         {
@@ -145,9 +131,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            archivaAdministration.addFileType(
-                new BeanReplicator().replicateBean( fileType, org.apache.archiva.admin.model.beans.FileType.class ),
-                getAuditInformation() );
+            archivaAdministration.addFileType( fileType, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -256,17 +240,12 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            List<org.apache.archiva.admin.model.beans.FileType> modelfileTypes = archivaAdministration.getFileTypes();
+            List<FileType> modelfileTypes = archivaAdministration.getFileTypes();
             if ( modelfileTypes == null || modelfileTypes.isEmpty() )
             {
                 return Collections.emptyList();
             }
-            List<FileType> fileTypes = new ArrayList<FileType>( modelfileTypes.size() );
-            for ( org.apache.archiva.admin.model.beans.FileType fileType : modelfileTypes )
-            {
-                fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );
-            }
-            return fileTypes;
+            return modelfileTypes;
         }
         catch ( RepositoryAdminException e )
         {
@@ -305,12 +284,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            org.apache.archiva.admin.model.beans.OrganisationInformation organisationInformation =
-                archivaAdministration.getOrganisationInformation();
-
-            return organisationInformation == null
-                ? null
-                : new BeanReplicator().replicateBean( organisationInformation, OrganisationInformation.class );
+            return archivaAdministration.getOrganisationInformation();
         }
         catch ( RepositoryAdminException e )
         {
@@ -329,9 +303,7 @@ public class DefaultArchivaAdministrationService
             }
             else
             {
-                archivaAdministration.setOrganisationInformation(
-                    new BeanReplicator().replicateBean( organisationInformation,
-                                                        org.apache.archiva.admin.model.beans.OrganisationInformation.class ) );
+                archivaAdministration.setOrganisationInformation( organisationInformation );
             }
         }
         catch ( RepositoryAdminException e )

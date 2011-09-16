@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,17 +48,8 @@ public class DefaultRemoteRepositoriesService
     {
         try
         {
-            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-            for ( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
-            {
-                RemoteRepository repo = new RemoteRepository( remoteRepository.getId(), remoteRepository.getName(),
-                                                              remoteRepository.getUrl(), remoteRepository.getLayout(),
-                                                              remoteRepository.getUserName(),
-                                                              remoteRepository.getPassword(),
-                                                              remoteRepository.getTimeout() );
-                remoteRepositories.add( repo );
-            }
-            return remoteRepositories;
+            List<RemoteRepository> remoteRepositories = remoteRepositoryAdmin.getRemoteRepositories();
+            return remoteRepositories == null ? Collections.<RemoteRepository>emptyList() : remoteRepositories;
         }
         catch ( RepositoryAdminException e )
         {
@@ -89,26 +80,14 @@ public class DefaultRemoteRepositoriesService
     public Boolean addRemoteRepository( RemoteRepository remoteRepository )
         throws Exception
     {
-        return remoteRepositoryAdmin.addRemoteRepository( getModelRemoteRepository( remoteRepository ),
-                                                          getAuditInformation() );
+        return remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getAuditInformation() );
     }
 
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository )
         throws Exception
     {
-        return remoteRepositoryAdmin.updateRemoteRepository( getModelRemoteRepository( remoteRepository ),
-                                                             getAuditInformation() );
+        return remoteRepositoryAdmin.updateRemoteRepository( remoteRepository, getAuditInformation() );
     }
 
-    private org.apache.archiva.admin.model.beans.RemoteRepository getModelRemoteRepository(
-        RemoteRepository remoteRepository )
-    {
-        return new org.apache.archiva.admin.model.beans.RemoteRepository( remoteRepository.getId(),
-                                                                           remoteRepository.getName(),
-                                                                           remoteRepository.getUrl(),
-                                                                           remoteRepository.getLayout(),
-                                                                           remoteRepository.getUserName(),
-                                                                           remoteRepository.getPassword(),
-                                                                           remoteRepository.getTimeout() );
-    }
+
 }

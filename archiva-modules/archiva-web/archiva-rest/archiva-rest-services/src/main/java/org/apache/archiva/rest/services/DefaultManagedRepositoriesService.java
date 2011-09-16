@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,24 +55,7 @@ public class DefaultManagedRepositoriesService
         {
             List<org.apache.archiva.admin.model.beans.ManagedRepository> repos =
                 managedRepositoryAdmin.getManagedRepositories();
-
-            List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( repos.size() );
-
-            for ( org.apache.archiva.admin.model.beans.ManagedRepository repoConfig : repos )
-            {
-                // TODO staging repo too
-                ManagedRepository repo =
-                    new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
-                                           repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                           repoConfig.isBlockRedeployments(), repoConfig.getCronExpression(),
-                                           repoConfig.getIndexDirectory(), repoConfig.isScanned(),
-                                           repoConfig.getDaysOlder(), repoConfig.getRetentionCount(),
-                                           repoConfig.isDeleteReleasedSnapshots(), repoConfig.isStageRepoNeeded() );
-
-                managedRepos.add( repo );
-            }
-
-            return managedRepos;
+            return repos == null ? Collections.<ManagedRepository>emptyList() : repos;
         }
         catch ( RepositoryAdminException e )
         {
@@ -113,23 +96,11 @@ public class DefaultManagedRepositoriesService
     public Boolean addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
-        org.apache.archiva.admin.model.beans.ManagedRepository repo =
-            new org.apache.archiva.admin.model.beans.ManagedRepository();
-        repo.setLocation( managedRepository.getLocation() );
-        repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
-        repo.setCronExpression( managedRepository.getCronExpression() );
-        repo.setId( managedRepository.getId() );
-        repo.setLayout( managedRepository.getLayout() );
-        repo.setName( managedRepository.getName() );
-        repo.setReleases( managedRepository.isReleases() );
-        repo.setSnapshots( managedRepository.isSnapshots() );
-        repo.setIndexDirectory( managedRepository.getIndexDirectory() );
-        repo.setDaysOlder( managedRepository.getDaysOlder() );
-        repo.setDeleteReleasedSnapshots( managedRepository.isDeleteReleasedSnapshots() );
-        repo.setRetentionCount( managedRepository.getRetentionCount() );
+
         try
         {
-            return managedRepositoryAdmin.addManagedRepository( repo, managedRepository.isStageRepoNeeded(),
+            return managedRepositoryAdmin.addManagedRepository( managedRepository,
+                                                                managedRepository.isStageRepoNeeded(),
                                                                 getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
@@ -142,19 +113,11 @@ public class DefaultManagedRepositoriesService
     public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
-        org.apache.archiva.admin.model.beans.ManagedRepository repo =
-            new org.apache.archiva.admin.model.beans.ManagedRepository();
-        repo.setLocation( managedRepository.getLocation() );
-        repo.setBlockRedeployments( managedRepository.isBlockRedeployments() );
-        repo.setCronExpression( managedRepository.getCronExpression() );
-        repo.setId( managedRepository.getId() );
-        repo.setLayout( managedRepository.getLayout() );
-        repo.setName( managedRepository.getName() );
-        repo.setReleases( managedRepository.isReleases() );
-        repo.setSnapshots( managedRepository.isSnapshots() );
+
         try
         {
-            return managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.isStageRepoNeeded(),
+            return managedRepositoryAdmin.updateManagedRepository( managedRepository,
+                                                                   managedRepository.isStageRepoNeeded(),
                                                                    getAuditInformation(),
                                                                    managedRepository.isResetStats() );
         }

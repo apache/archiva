@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
@@ -27,7 +26,7 @@ import org.apache.archiva.rest.api.services.NetworkProxyService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,12 +45,8 @@ public class DefaultNetworkProxyService
     {
         try
         {
-            List<NetworkProxy> networkProxies = new ArrayList<NetworkProxy>();
-            for ( org.apache.archiva.admin.model.beans.NetworkProxy networkProxy : networkProxyAdmin.getNetworkProxies() )
-            {
-                networkProxies.add( new BeanReplicator().replicateBean( networkProxy, NetworkProxy.class ) );
-            }
-            return networkProxies;
+            List<NetworkProxy> networkProxies = networkProxyAdmin.getNetworkProxies();
+            return networkProxies == null ? Collections.<NetworkProxy>emptyList() : networkProxies;
         }
         catch ( RepositoryAdminException e )
         {
@@ -64,9 +59,7 @@ public class DefaultNetworkProxyService
     {
         try
         {
-            org.apache.archiva.admin.model.beans.NetworkProxy networkProxy =
-                networkProxyAdmin.getNetworkProxy( networkProxyId );
-            return networkProxy == null ? null : new BeanReplicator().replicateBean( networkProxy, NetworkProxy.class );
+            return networkProxyAdmin.getNetworkProxy( networkProxyId );
         }
         catch ( RepositoryAdminException e )
         {
@@ -83,9 +76,7 @@ public class DefaultNetworkProxyService
             {
                 return;
             }
-            getNetworkProxyAdmin().addNetworkProxy( new BeanReplicator().replicateBean( networkProxy,
-                                                                                        org.apache.archiva.admin.model.beans.NetworkProxy.class ),
-                                                    getAuditInformation() );
+            getNetworkProxyAdmin().addNetworkProxy( networkProxy, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -102,9 +93,7 @@ public class DefaultNetworkProxyService
         }
         try
         {
-            getNetworkProxyAdmin().updateNetworkProxy( new BeanReplicator().replicateBean( networkProxy,
-                                                                                           org.apache.archiva.admin.model.beans.NetworkProxy.class ),
-                                                       getAuditInformation() );
+            getNetworkProxyAdmin().updateNetworkProxy( networkProxy, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {

@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
@@ -27,7 +26,7 @@ import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,12 +45,8 @@ public class DefaultProxyConnectorService
     {
         try
         {
-            List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>();
-            for ( org.apache.archiva.admin.model.beans.ProxyConnector proxyConnector : proxyConnectorAdmin.getProxyConnectors() )
-            {
-                proxyConnectors.add( new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class ) );
-            }
-            return proxyConnectors;
+            List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectors();
+            return proxyConnectors == null ? Collections.<ProxyConnector>emptyList() : proxyConnectors;
         }
         catch ( RepositoryAdminException e )
         {
@@ -64,11 +59,7 @@ public class DefaultProxyConnectorService
     {
         try
         {
-            org.apache.archiva.admin.model.beans.ProxyConnector proxyConnector =
-                proxyConnectorAdmin.getProxyConnector( sourceRepoId, targetRepoId );
-            return proxyConnector == null
-                ? null
-                : new BeanReplicator().replicateBean( proxyConnector, ProxyConnector.class );
+            return proxyConnectorAdmin.getProxyConnector( sourceRepoId, targetRepoId );
         }
         catch ( RepositoryAdminException e )
         {
@@ -85,9 +76,7 @@ public class DefaultProxyConnectorService
         }
         try
         {
-            return proxyConnectorAdmin.addProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
-                                                                                              org.apache.archiva.admin.model.beans.ProxyConnector.class ),
-                                                          getAuditInformation() );
+            return proxyConnectorAdmin.addProxyConnector( proxyConnector, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -104,9 +93,7 @@ public class DefaultProxyConnectorService
         }
         try
         {
-            return proxyConnectorAdmin.deleteProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
-                                                                                                 org.apache.archiva.admin.model.beans.ProxyConnector.class ),
-                                                             getAuditInformation() );
+            return proxyConnectorAdmin.deleteProxyConnector( proxyConnector, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -123,9 +110,7 @@ public class DefaultProxyConnectorService
         }
         try
         {
-            return proxyConnectorAdmin.updateProxyConnector( new BeanReplicator().replicateBean( proxyConnector,
-                                                                                                 org.apache.archiva.admin.model.beans.ProxyConnector.class ),
-                                                             getAuditInformation() );
+            return proxyConnectorAdmin.updateProxyConnector( proxyConnector, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
