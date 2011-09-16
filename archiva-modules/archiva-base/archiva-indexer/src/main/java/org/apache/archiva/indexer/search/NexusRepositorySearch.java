@@ -186,8 +186,21 @@ public class NexusRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
         {
-            q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
+            q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
                                            new StringSearchExpression( searchFields.getBundleExportService() ) ),
+                   Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
+                                           new StringSearchExpression( searchFields.getBundleImportPackage() ) ),
+                   Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.NAME, new StringSearchExpression( searchFields.getBundleName() ) ),
                    Occur.MUST );
         }
 

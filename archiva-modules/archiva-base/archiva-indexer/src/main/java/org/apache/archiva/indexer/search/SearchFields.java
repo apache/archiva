@@ -77,6 +77,20 @@ public class SearchFields
     private String bundleExportPackage;
 
     /**
+     * contains osgi metadata import package if available
+     *
+     * @since 1.4
+     */
+    private String bundleImportPackage;
+
+    /**
+     * contains osgi metadata name if available
+     *
+     * @since 1.4
+     */
+    private String bundleName;
+
+    /**
      * contains osgi metadata Export-Service if available
      *
      * @since 1.4
@@ -212,6 +226,26 @@ public class SearchFields
         this.classifier = classifier;
     }
 
+    public String getBundleImportPackage()
+    {
+        return bundleImportPackage;
+    }
+
+    public void setBundleImportPackage( String bundleImportPackage )
+    {
+        this.bundleImportPackage = bundleImportPackage;
+    }
+
+    public String getBundleName()
+    {
+        return bundleName;
+    }
+
+    public void setBundleImportName( String bundleName )
+    {
+        this.bundleName = bundleName;
+    }
+
     @Override
     public String toString()
     {
@@ -226,6 +260,8 @@ public class SearchFields
         sb.append( ", bundleVersion='" ).append( bundleVersion ).append( '\'' );
         sb.append( ", bundleSymbolicName='" ).append( bundleSymbolicName ).append( '\'' );
         sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
+        sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
+        sb.append( ", bundleName='" ).append( bundleName ).append( '\'' );
         sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( '}' );

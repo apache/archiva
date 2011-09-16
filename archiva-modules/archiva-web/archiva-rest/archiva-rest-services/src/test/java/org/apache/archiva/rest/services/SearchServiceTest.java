@@ -53,7 +53,10 @@ public class SearchServiceTest
 
         SearchService searchService = getSearchService( authorizationHeader );
 
+        // START SNIPPET: quick-search
         List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
+        // return all artifacts with groupId OR artifactId
+        // START SNIPPET: quick-search
 
         assertNotNull( artifacts );
         assertTrue( " not 6 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
