@@ -22,7 +22,7 @@ package org.apache.maven.archiva.repository.content;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;

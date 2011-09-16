@@ -31,7 +31,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataI
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;

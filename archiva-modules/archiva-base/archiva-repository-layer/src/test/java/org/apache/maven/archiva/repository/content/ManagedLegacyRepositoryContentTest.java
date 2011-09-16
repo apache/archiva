@@ -20,7 +20,7 @@ package org.apache.maven.archiva.repository.content;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;

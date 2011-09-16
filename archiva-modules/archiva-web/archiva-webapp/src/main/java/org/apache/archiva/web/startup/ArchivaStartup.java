@@ -22,7 +22,7 @@ package org.apache.archiva.web.startup;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
-import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.archiva.common.ArchivaException;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.taskqueue.Task;

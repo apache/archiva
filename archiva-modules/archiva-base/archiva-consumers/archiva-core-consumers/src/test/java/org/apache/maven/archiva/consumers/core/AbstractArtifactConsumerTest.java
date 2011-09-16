@@ -20,7 +20,7 @@ package org.apache.maven.archiva.consumers.core;
  */
 
 import junit.framework.TestCase;
-import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.configuration.FileTypes;

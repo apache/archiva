@@ -31,7 +31,7 @@ import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
 import java.io.File;

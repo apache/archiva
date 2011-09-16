@@ -22,7 +22,7 @@ package org.apache.maven.archiva.configuration;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.components.springutils.ComponentContainer;
 import org.custommonkey.xmlunit.XMLAssert;

@@ -20,7 +20,7 @@ package org.apache.archiva.indexer.search;
  */
 
 import org.apache.archiva.indexer.util.SearchUtil;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

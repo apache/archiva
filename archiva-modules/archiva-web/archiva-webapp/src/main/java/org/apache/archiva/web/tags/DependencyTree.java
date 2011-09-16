@@ -22,7 +22,7 @@ package org.apache.archiva.web.tags;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.archiva.common.ArchivaException;
 import org.apache.maven.archiva.model.Keys;
 import org.apache.archiva.security.ArchivaXworkUser;
 import org.apache.archiva.security.UserRepositories;

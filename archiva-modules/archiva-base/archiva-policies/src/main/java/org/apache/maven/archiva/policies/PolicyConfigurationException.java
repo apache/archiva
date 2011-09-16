@@ -19,7 +19,7 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.archiva.common.ArchivaException;
 
 /**
  * PolicyConfigurationException is thrown when a policy cannot be executed due to a 

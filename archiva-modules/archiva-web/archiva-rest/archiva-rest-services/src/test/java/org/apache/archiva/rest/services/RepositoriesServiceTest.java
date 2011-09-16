@@ -24,7 +24,7 @@ import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 import org.junit.Test;
 
 import java.io.File;

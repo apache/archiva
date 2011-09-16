@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.archiva.common.ArchivaException;
 
 /**
  * LayoutException 

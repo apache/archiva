@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.archiva.common.ArchivaException;
 
 /**
  * ConsumerException - details about the failure of a consumer.

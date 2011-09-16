@@ -31,7 +31,7 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;

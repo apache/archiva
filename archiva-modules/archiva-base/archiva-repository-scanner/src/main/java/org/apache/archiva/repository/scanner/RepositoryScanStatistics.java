@@ -176,7 +176,7 @@ public class RepositoryScanStatistics
         }
 
         buf.append( "\n  Duration          : " );
-        buf.append( org.apache.maven.archiva.common.utils.DateUtil.getDuration( this.getDuration() ) );
+        buf.append( org.apache.archiva.common.utils.DateUtil.getDuration( this.getDuration() ) );
         buf.append( "\n  When Gathered     : " );
         if ( this.getWhenGathered() == null )
         {
@@ -197,7 +197,7 @@ public class RepositoryScanStatistics
         }
 
         buf.append( "\n  Avg Time Per File : " );
-        buf.append( org.apache.maven.archiva.common.utils.DateUtil.getDuration( averageMsPerFile ) );
+        buf.append( org.apache.archiva.common.utils.DateUtil.getDuration( averageMsPerFile ) );
         buf.append( "\n______________________________________________________________" );
 
         return buf.toString();

@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.SelectorUtils;
 

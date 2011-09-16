@@ -22,7 +22,7 @@ package org.apache.archiva.checksum;
 import java.io.File;
 
 import junit.framework.TestCase;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 
 /**
  * AbstractChecksumTestCase

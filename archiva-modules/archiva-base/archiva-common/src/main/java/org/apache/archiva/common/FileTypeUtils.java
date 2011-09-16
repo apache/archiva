@@ -1,5 +1,4 @@
-package org.apache.maven.archiva.common.utils;
-
+package org.apache.archiva.common;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,18 +18,22 @@ package org.apache.maven.archiva.common.utils;
  * under the License.
  */
 
-import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
-public class FileUtil
+/**
+ * @author Olivier Lamy
+ * @since 1.4
+ */
+public class FileTypeUtils
 {
-    public static String getBasedir()
-    {
-        String basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
 
-        return basedir;
-    }
+    /**
+     * Default exclusions from artifact consumers that are using the file types. Note that this is simplistic in the
+     * case of the support files (based on extension) as it is elsewhere - it may be better to match these to actual
+     * artifacts and exclude later during scanning.
+     */
+    public static final List<String> DEFAULT_EXCLUSIONS =
+        Arrays.asList( "**/maven-metadata.xml", "**/maven-metadata-*.xml", "**/*.sha1", "**/*.asc", "**/*.md5",
+                       "**/*.pgp", "**/.index/**", "**/.indexer/**" );
 }

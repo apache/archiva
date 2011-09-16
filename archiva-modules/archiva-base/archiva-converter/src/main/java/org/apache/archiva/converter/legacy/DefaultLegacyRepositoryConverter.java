@@ -25,7 +25,7 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
-import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.artifact.repository.ArtifactRepository;

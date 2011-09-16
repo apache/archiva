@@ -20,7 +20,7 @@ package org.apache.maven.archiva.policies;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;

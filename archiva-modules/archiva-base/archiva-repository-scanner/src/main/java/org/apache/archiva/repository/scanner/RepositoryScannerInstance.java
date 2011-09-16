@@ -27,7 +27,7 @@ import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.ConsumerWantsFilePredicate;

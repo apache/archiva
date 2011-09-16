@@ -21,14 +21,12 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.springframework.context.ApplicationContext;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

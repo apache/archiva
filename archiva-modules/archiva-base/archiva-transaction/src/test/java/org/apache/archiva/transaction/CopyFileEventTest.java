@@ -20,7 +20,7 @@ package org.apache.archiva.transaction;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtil;
 
 import java.io.File;
 import java.io.IOException;

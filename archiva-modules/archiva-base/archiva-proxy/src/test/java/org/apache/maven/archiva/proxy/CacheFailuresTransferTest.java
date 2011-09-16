@@ -19,7 +19,7 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;

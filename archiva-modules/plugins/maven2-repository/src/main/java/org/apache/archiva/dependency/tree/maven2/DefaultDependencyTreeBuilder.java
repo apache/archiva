@@ -29,7 +29,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.RepositoryModelResolver;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.Slf4JPlexusLogger;
+import org.apache.archiva.common.utils.Slf4JPlexusLogger;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;

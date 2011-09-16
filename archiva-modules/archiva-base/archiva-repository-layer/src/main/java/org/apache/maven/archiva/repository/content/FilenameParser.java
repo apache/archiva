@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.archiva.common.utils.VersionUtil;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

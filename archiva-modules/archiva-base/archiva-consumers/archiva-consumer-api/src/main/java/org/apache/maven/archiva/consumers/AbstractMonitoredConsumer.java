@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.FileTypeUtils;
+import org.apache.archiva.common.FileTypeUtils;
 
 import java.util.HashSet;
 import java.util.Iterator;
