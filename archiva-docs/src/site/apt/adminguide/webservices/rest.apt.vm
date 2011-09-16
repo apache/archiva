@@ -1,10 +1,9 @@
  ------
- Using Archiva Web Services
+ Using REST Services
  ------
- Maria Odea Ching
  Olivier Lamy
  ------
- 19 Mar 2009
+ 16 Sep 2011
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -27,8 +26,18 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
-Using Archiva Web Services
+Using REST Services
 
-  Web services is a new feature for 1.2. Archiva exposes two types of services: administrative and search. More details : {{{./webservices/xml-rpc.html} Archiva Xml Rpc Services}}
+  Starting version 1.4, you can use some REST Services to manage your Apache Archiva instance and Search artifacts.
+  All samples here will use Apache CXF REST client API. By the way you can use some others REST client frameworks.
 
-  Starting version 1.4, you can now use REST services : More details : {{{./webservices/rest.html} Archiva REST Services}}
+* Search Service
+
+   Authentication headers for connect to your Archiva instance :
+
+   %{snippet|id=authz-header|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+
+
+   Get a Search Service Client :
+
+   %{snippet|id=cxf-searchservice-creation|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}

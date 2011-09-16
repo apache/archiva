@@ -80,7 +80,10 @@
         <item name="Security Logs"           href="/adminguide/security-logs.html" />
       </item>
       <item name="Reports"                   href="/adminguide/reports.html" />
-      <item name="Web Services"              href="/adminguide/web-services.html" />
+      <item name="Web Services"              href="/adminguide/web-services.html">
+        <item name="Xml Rpc"                 href="/adminguide/webservices/xml-rpc.html"/>
+        <item name="REST"                    href="/adminguide/webservices/rest.html"/>
+      </item>
     </menu>
 
     <menu name="Customising Archiva">
