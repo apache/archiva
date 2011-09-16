@@ -55,7 +55,8 @@ public class SearchServiceTest
 
         // START SNIPPET: quick-search
         List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
-        // return all artifacts with groupId OR artifactId
+        // return all artifacts with groupId OR artifactId OR version OR packaging OR className
+        // NOTE : only artifacts with classifier empty are returned
         // START SNIPPET: quick-search
 
         assertNotNull( artifacts );
@@ -111,12 +112,14 @@ public class SearchServiceTest
 
         SearchService searchService = getSearchService( authorizationHeader );
 
+        // START SNIPPET: searchservice-with-classifier
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setGroupId( "commons-logging" );
         searchRequest.setArtifactId( "commons-logging" );
         searchRequest.setClassifier( "sources" );
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
+        // END SNIPPET: searchservice-with-classifier
 
         assertNotNull( artifacts );
         assertTrue( " not 2 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
@@ -142,8 +145,10 @@ public class SearchServiceTest
 
         SearchService searchService = getSearchService( authorizationHeader );
 
+        // START SNIPPET: searchservice-with-osgi
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setBundleSymbolicName( "org.apache.karaf.features.command" );
+        // END SNIPPET: searchservice-with-osgi
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 

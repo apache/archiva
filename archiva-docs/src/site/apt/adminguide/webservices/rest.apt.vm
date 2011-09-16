@@ -30,6 +30,7 @@ Using REST Services
 
   Starting version 1.4, you can use some REST Services to manage your Apache Archiva instance and Search artifacts.
   All samples here will use Apache CXF REST client API. By the way you can use some others REST client frameworks.
+  NOTE: a wadl is available in your Archiva instance : http(s)://ip:port/..//restServices/application.wadl
 
 * Search Service
 
@@ -41,3 +42,24 @@ Using REST Services
    Get a Search Service Client :
 
 %{snippet|id=cxf-searchservice-creation|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+
+   Quick Search
+
+%{snippet|id=quick-search|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+
+   Search Artifacts Version : to search all availables version with a groupId and artifactId and packaging (if empty jar is used)
+
+%{snippet|id=searchservice-artifact-versions|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+
+  Search Service with a classifier :
+
+%{snippet|id=searchservice-with-classifier|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+
+  Search Service with a classifier :
+
+%{snippet|id=searchservice-with-classifier|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+
+  To know all the possible options, you can refer to the javadoc of SearchRequest class.
+
+
+
