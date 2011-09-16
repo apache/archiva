@@ -25,13 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  */
-public class BrowserRedirectException extends DavException
+public class BrowserRedirectException
+    extends DavException
 {
     final String location;
 
-    public BrowserRedirectException(String location)
+    public BrowserRedirectException( String location )
     {
-        super(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        super( HttpServletResponse.SC_MOVED_PERMANENTLY );
         this.location = location;
     }
 

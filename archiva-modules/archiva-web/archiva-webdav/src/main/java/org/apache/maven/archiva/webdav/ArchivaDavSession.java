@@ -19,35 +19,37 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.util.HashSet;
 import org.apache.jackrabbit.webdav.DavSession;
 
-public class ArchivaDavSession implements DavSession
+import java.util.HashSet;
+
+public class ArchivaDavSession
+    implements DavSession
 {
     private final HashSet<String> lockTokens = new HashSet<String>();
 
-    public void addLockToken(String token) 
+    public void addLockToken( String token )
     {
-        lockTokens.add(token);
+        lockTokens.add( token );
     }
 
-    public String[] getLockTokens() 
+    public String[] getLockTokens()
     {
-        return (String[]) lockTokens.toArray(new String[lockTokens.size()]);
+        return (String[]) lockTokens.toArray( new String[lockTokens.size()] );
     }
 
-    public void removeLockToken(String token) 
+    public void removeLockToken( String token )
     {
-        lockTokens.remove(token);
+        lockTokens.remove( token );
     }
 
-    public void removeReference(Object reference) 
+    public void removeReference( Object reference )
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException( "Not supported yet." );
     }
 
-    public void addReference(Object reference) 
+    public void addReference( Object reference )
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException( "Not supported yet." );
     }
 }

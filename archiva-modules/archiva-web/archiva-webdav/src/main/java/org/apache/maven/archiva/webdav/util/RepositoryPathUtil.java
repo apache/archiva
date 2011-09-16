@@ -19,42 +19,42 @@ package org.apache.maven.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  */
 public class RepositoryPathUtil
 {
-    public static String getLogicalResource(final String href)
+    public static String getLogicalResource( final String href )
     {
         String logicalResource = null;
         String requestPathInfo = StringUtils.defaultString( href );
 
         //remove prefix ie /repository/blah becomes /blah
-        requestPathInfo = removePrefix(requestPathInfo);
+        requestPathInfo = removePrefix( requestPathInfo );
 
         // Remove prefixing slash as the repository id doesn't contain it;
         if ( requestPathInfo.startsWith( "/" ) )
         {
             requestPathInfo = requestPathInfo.substring( 1 );
-        }        
+        }
 
         int slash = requestPathInfo.indexOf( '/' );
         if ( slash > 0 )
-        {   
+        {
             logicalResource = requestPathInfo.substring( slash );
-         
-            if (logicalResource.endsWith( "/.." ) )
+
+            if ( logicalResource.endsWith( "/.." ) )
             {
                 logicalResource += "/";
             }
-            
+
             if ( logicalResource != null && logicalResource.startsWith( "//" ) )
             {
                 logicalResource = logicalResource.substring( 1 );
             }
-            
+
             if ( logicalResource == null )
             {
                 logicalResource = "/";
@@ -67,12 +67,12 @@ public class RepositoryPathUtil
         return logicalResource;
     }
 
-    public static String getRepositoryName(final String href)
+    public static String getRepositoryName( final String href )
     {
         String requestPathInfo = StringUtils.defaultString( href );
 
         //remove prefix ie /repository/blah becomes /blah
-        requestPathInfo = removePrefix(requestPathInfo);
+        requestPathInfo = removePrefix( requestPathInfo );
 
         // Remove prefixing slash as the repository id doesn't contain it;
         if ( requestPathInfo.startsWith( "/" ) )
@@ -90,21 +90,21 @@ public class RepositoryPathUtil
         return requestPathInfo;
     }
 
-    private static String removePrefix(final String href)
+    private static String removePrefix( final String href )
     {
-        String[] parts = StringUtils.split(href, '/');
-        parts = (String[]) ArrayUtils.subarray(parts, 1, parts.length);
-        if (parts == null || parts.length == 0)
+        String[] parts = StringUtils.split( href, '/' );
+        parts = (String[]) ArrayUtils.subarray( parts, 1, parts.length );
+        if ( parts == null || parts.length == 0 )
         {
             return "/";
         }
-        
-        String joinedString = StringUtils.join(parts, '/');        
-        if( href.endsWith( "/" ) )
+
+        String joinedString = StringUtils.join( parts, '/' );
+        if ( href.endsWith( "/" ) )
         {
             joinedString = joinedString + "/";
         }
-        
+
         return joinedString;
     }
 }

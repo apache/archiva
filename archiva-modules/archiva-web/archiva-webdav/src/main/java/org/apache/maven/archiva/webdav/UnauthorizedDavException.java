@@ -25,13 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  */
-public class UnauthorizedDavException extends DavException
+public class UnauthorizedDavException
+    extends DavException
 {
     final private String repositoryName;
 
-    public UnauthorizedDavException(String repositoryName, String message)
+    public UnauthorizedDavException( String repositoryName, String message )
     {
-        super(HttpServletResponse.SC_UNAUTHORIZED, message);
+        super( HttpServletResponse.SC_UNAUTHORIZED, message );
         this.repositoryName = repositoryName;
     }
 

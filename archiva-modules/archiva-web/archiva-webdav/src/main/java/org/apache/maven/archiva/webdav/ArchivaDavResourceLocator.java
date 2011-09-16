@@ -19,9 +19,9 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import org.apache.jackrabbit.webdav.DavResourceLocator;
-import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.util.Text;
+import org.apache.jackrabbit.webdav.DavLocatorFactory;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
 
 /**
  */
@@ -37,7 +37,7 @@ public class ArchivaDavResourceLocator
     private final String repositoryId;
 
     private final DavLocatorFactory davLocatorFactory;
-    
+
     // retains the trailing '/' at the end of the path, which is used to determine if it is a
     //      virtual repo browse request
     private final String origResourcePath;
@@ -48,10 +48,10 @@ public class ArchivaDavResourceLocator
         this.prefix = prefix;
         this.repositoryId = repositoryId;
         this.davLocatorFactory = davLocatorFactory;
-        
+
         String path = resourcePath;
-        
-        if (!resourcePath.startsWith("/"))
+
+        if ( !resourcePath.startsWith( "/" ) )
         {
             path = "/" + resourcePath;
         }
@@ -66,15 +66,15 @@ public class ArchivaDavResourceLocator
         }
 
         href = hrefPrefix + escapedPath;
-        
+
         this.origResourcePath = path;
-        
+
         //Remove trailing slashes otherwise Text.getRelativeParent fails
         if ( resourcePath.endsWith( "/" ) && resourcePath.length() > 1 )
         {
             path = resourcePath.substring( 0, resourcePath.length() - 1 );
         }
-        
+
         this.resourcePath = path;
     }
 
@@ -116,7 +116,7 @@ public class ArchivaDavResourceLocator
     public String getHref( boolean isCollection )
     {
         // avoid doubled trailing '/' for the root item
-        String suffix = ( isCollection && !isRootLocation() && !href.endsWith("/") ) ? "/" : "";
+        String suffix = ( isCollection && !isRootLocation() && !href.endsWith( "/" ) ) ? "/" : "";
         return href + suffix;
     }
 
@@ -137,7 +137,7 @@ public class ArchivaDavResourceLocator
 
     /**
      * Computes the hash code from the href, which is built using the final fields prefix and resourcePath.
-     * 
+     *
      * @return the hash code
      */
     public int hashCode()
@@ -148,7 +148,7 @@ public class ArchivaDavResourceLocator
     /**
      * Equality of path is achieved if the specified object is a <code>DavResourceLocator</code> object with the same
      * hash code.
-     * 
+     *
      * @param obj the object to compare to
      * @return <code>true</code> if the 2 objects are equal; <code>false</code> otherwise
      */

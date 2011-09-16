@@ -39,25 +39,24 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- * MimeTypes 
+ * MimeTypes
  *
  * @version $Id: MimeTypes.java 7010 2007-10-25 23:35:02Z joakime $
- *
  */
-@Service("mimeTpes")
+@Service( "mimeTpes" )
 public class MimeTypes
 {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
 
     private String resource = "org/apache/maven/archiva/webdav/util/mime.types";
-    
+
     private Map<String, String> mimeMap = new HashMap<String, String>();
 
     private Logger log = LoggerFactory.getLogger( MimeTypes.class );
-    
+
     /**
      * Get the Mime Type for the provided filename.
-     * 
+     *
      * @param filename the filename to obtain the mime type for.
      * @return a mime type String, or null if filename is null, has no extension, or no mime type is associated with it.
      */
@@ -74,8 +73,7 @@ public class MimeTypes
             }
         }
 
-
-        if (value == null)
+        if ( value == null )
         {
             value = DEFAULT_MIME_TYPE;
         }

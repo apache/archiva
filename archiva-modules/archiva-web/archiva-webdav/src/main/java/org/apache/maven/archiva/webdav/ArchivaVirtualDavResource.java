@@ -19,12 +19,6 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -52,9 +46,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * DavResource for virtual repositories
- * 
  */
 public class ArchivaVirtualDavResource
     implements DavResource
@@ -69,12 +68,12 @@ public class ArchivaVirtualDavResource
 
     private DavPropertySet properties;
 
-    private boolean propsInitialized = false;  
+    private boolean propsInitialized = false;
 
     private static final String METHODS = "OPTIONS, GET, HEAD, POST, TRACE, PROPFIND, PROPPATCH, MKCOL";
-    
+
     private final List<File> localResources;
-    
+
     public ArchivaVirtualDavResource( List<File> localResources, String logicalResource, MimeTypes mimeTypes,
                                       ArchivaDavResourceLocator locator, DavResourceFactory factory )
     {
@@ -88,7 +87,7 @@ public class ArchivaVirtualDavResource
     public void spool( OutputContext outputContext )
         throws IOException
     {
-        if (outputContext.hasStream())
+        if ( outputContext.hasStream() )
         {
             Collections.sort( localResources );
             List<File> localResourceFiles = new ArrayList<File>();
@@ -108,31 +107,31 @@ public class ArchivaVirtualDavResource
 
     public void addLockManager( LockManager arg0 )
     {
-        
+
     }
 
     public void addMember( DavResource arg0, InputContext arg1 )
         throws DavException
     {
-        
+
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public MultiStatusResponse alterProperties( List arg0 )
         throws DavException
-    {       
+    {
         return null;
     }
 
     public MultiStatusResponse alterProperties( DavPropertySet arg0, DavPropertyNameSet arg1 )
         throws DavException
-    {        
+    {
         return null;
     }
 
     public void copy( DavResource arg0, boolean arg1 )
         throws DavException
-    {        
+    {
 
     }
 
@@ -143,12 +142,12 @@ public class ArchivaVirtualDavResource
     }
 
     public ActiveLock getLock( Type arg0, Scope arg1 )
-    {       
+    {
         return null;
     }
 
     public ActiveLock[] getLocks()
-    {        
+    {
         return null;
     }
 
@@ -156,7 +155,7 @@ public class ArchivaVirtualDavResource
     {
         return null;
     }
-    
+
     public String getSupportedMethods()
     {
         return METHODS;
@@ -168,7 +167,7 @@ public class ArchivaVirtualDavResource
     }
 
     public boolean hasLock( Type arg0, Scope arg1 )
-    {       
+    {
         return false;
     }
 
@@ -178,7 +177,7 @@ public class ArchivaVirtualDavResource
     }
 
     public boolean isLockable( Type arg0, Scope arg1 )
-    {        
+    {
         return false;
     }
 
@@ -191,31 +190,31 @@ public class ArchivaVirtualDavResource
     public void move( DavResource arg0 )
         throws DavException
     {
-     
+
     }
 
     public ActiveLock refreshLock( LockInfo arg0, String arg1 )
         throws DavException
-    {        
+    {
         return null;
     }
 
     public void removeMember( DavResource arg0 )
         throws DavException
     {
-        
+
     }
 
     public void unlock( String arg0 )
         throws DavException
     {
-        
+
     }
 
     public String getComplianceClass()
     {
         return COMPLIANCE_CLASS;
-    }   
+    }
 
     public DavResourceLocator getLocator()
     {
@@ -231,7 +230,7 @@ public class ArchivaVirtualDavResource
     {
         return locator.getHref( isCollection() );
     }
-    
+
     public DavResourceFactory getFactory()
     {
         return factory;
@@ -240,12 +239,12 @@ public class ArchivaVirtualDavResource
     public String getDisplayName()
     {
         String resPath = getResourcePath();
-        
+
         return ( resPath != null ) ? Text.getName( resPath ) : resPath;
     }
-    
+
     public DavSession getSession()
-    {        
+    {
         return null;
     }
 
@@ -277,7 +276,7 @@ public class ArchivaVirtualDavResource
     }
 
     public DavResource getCollection()
-    {   
+    {
         DavResource parent = null;
         if ( getResourcePath() != null && !getResourcePath().equals( "/" ) )
         {
@@ -286,7 +285,8 @@ public class ArchivaVirtualDavResource
             {
                 parentPath = "/";
             }
-            DavResourceLocator parentloc = locator.getFactory().createResourceLocator( locator.getPrefix(), parentPath );
+            DavResourceLocator parentloc =
+                locator.getFactory().createResourceLocator( locator.getPrefix(), parentPath );
             try
             {
                 // go back to ArchivaDavResourceFactory!
@@ -299,7 +299,7 @@ public class ArchivaVirtualDavResource
         }
         return parent;
     }
-    
+
     /**
      * Fill the set of properties
      */
@@ -328,7 +328,7 @@ public class ArchivaVirtualDavResource
             // Windows XP support
             properties.add( new DefaultDavProperty( DavPropertyName.ISCOLLECTION, "0" ) );
         }
-       
+
         // Need to get the ISO8601 date for properties
         DateTime dt = new DateTime( 0 );
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();

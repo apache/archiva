@@ -19,8 +19,8 @@ package org.apache.maven.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.security.ArchivaRoleConstants;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.Locale;
 
 /**
  * WebdavMethodUtil
- * 
+ *
  * @version $Id: WebdavMethodUtil.java 5412 2007-01-13 01:18:47Z joakime $
  */
 public class WebdavMethodUtil

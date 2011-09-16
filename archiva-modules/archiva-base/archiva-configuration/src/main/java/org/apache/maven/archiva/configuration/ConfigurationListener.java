@@ -20,7 +20,7 @@ package org.apache.maven.archiva.configuration;
  */
 
 /**
- * ConfigurationListener 
+ * ConfigurationListener
  *
  * @version $Id$
  */
@@ -29,5 +29,5 @@ public interface ConfigurationListener
     /**
      * Generic event point to notify components that something has happend in the configuration.
      */
-    public void configurationEvent(ConfigurationEvent event);
+    public void configurationEvent( ConfigurationEvent event );
 }

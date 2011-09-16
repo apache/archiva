@@ -59,13 +59,13 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  */
@@ -265,8 +265,8 @@ public class ArchivaDavResource
             {
                 parentPath = "/";
             }
-            DavResourceLocator parentloc = locator.getFactory().createResourceLocator( locator.getPrefix(),
-                                                                                       parentPath );
+            DavResourceLocator parentloc =
+                locator.getFactory().createResourceLocator( locator.getPrefix(), parentPath );
             try
             {
                 parent = factory.createResource( parentloc, session );
@@ -308,8 +308,7 @@ public class ArchivaDavResource
             // length of -1 is given for a chunked request or unknown length, in which case we accept what was uploaded
             if ( expectedContentLength >= 0 && expectedContentLength != actualContentLength )
             {
-                String msg =
-                    "Content Header length was " + expectedContentLength + " but was " + actualContentLength;
+                String msg = "Content Header length was " + expectedContentLength + " but was " + actualContentLength;
                 log.debug( "Upload failed: {}", msg );
 
                 FileUtils.deleteQuietly( localFile );
@@ -319,8 +318,8 @@ public class ArchivaDavResource
             queueRepositoryTask( localFile );
 
             log.debug(
-                "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created " ) + "(current user '" +
-                    this.principal + "')" );
+                "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created " ) + "(current user '"
+                    + this.principal + "')" );
 
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
@@ -334,8 +333,8 @@ public class ArchivaDavResource
         }
         else
         {
-            String msg = "Could not write member " + resource.getResourcePath() + " at " + getResourcePath() +
-                " as this is not a DAV collection";
+            String msg = "Could not write member " + resource.getResourcePath() + " at " + getResourcePath()
+                + " as this is not a DAV collection";
             log.debug( msg );
             throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
         }
@@ -353,8 +352,8 @@ public class ArchivaDavResource
                     if ( !item.startsWith( HIDDEN_PATH_PREFIX ) )
                     {
                         String path = locator.getResourcePath() + '/' + item;
-                        DavResourceLocator resourceLocator = locator.getFactory().createResourceLocator(
-                            locator.getPrefix(), path );
+                        DavResourceLocator resourceLocator =
+                            locator.getFactory().createResourceLocator( locator.getPrefix(), path );
                         DavResource resource = factory.createResource( resourceLocator, session );
 
                         if ( resource != null )
@@ -400,8 +399,8 @@ public class ArchivaDavResource
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
-                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName() +
-                    "' removed (current user '" + this.principal + "')" );
+                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName()
+                               + "' removed (current user '" + this.principal + "')" );
             }
             catch ( IOException e )
             {
@@ -453,8 +452,8 @@ public class ArchivaDavResource
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
 
-            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '" +
-                destination + "' (current user '" + this.principal + "')" );
+            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '"
+                           + destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -490,8 +489,8 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
-            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '" +
-                destination + "' (current user '" + this.principal + "')" );
+            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '"
+                           + destination + "' (current user '" + this.principal + "')" );
         }
         catch ( IOException e )
         {
@@ -522,7 +521,7 @@ public class ArchivaDavResource
     public ActiveLock[] getLocks()
     {
         ActiveLock writeLock = getLock( Type.WRITE, Scope.EXCLUSIVE );
-        return ( writeLock != null ) ? new ActiveLock[]{writeLock} : new ActiveLock[0];
+        return ( writeLock != null ) ? new ActiveLock[]{ writeLock } : new ActiveLock[0];
     }
 
     public ActiveLock lock( LockInfo lockInfo )
@@ -680,9 +679,8 @@ public class ArchivaDavResource
         }
         catch ( TaskQueueException e )
         {
-            log.error(
-                "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName() +
-                    "']." );
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
+                           + "']." );
         }
     }
 }

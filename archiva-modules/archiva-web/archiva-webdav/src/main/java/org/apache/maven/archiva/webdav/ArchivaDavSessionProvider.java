@@ -19,11 +19,11 @@ package org.apache.maven.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.maven.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -42,7 +42,7 @@ public class ArchivaDavSessionProvider
     private ServletAuthenticator servletAuth;
 
     private HttpAuthenticator httpAuth;
-    
+
     public ArchivaDavSessionProvider( ServletAuthenticator servletAuth, HttpAuthenticator httpAuth )
     {
         this.servletAuth = servletAuth;
@@ -51,20 +51,20 @@ public class ArchivaDavSessionProvider
 
     public boolean attachSession( WebdavRequest request )
         throws DavException
-    {    
+    {
         final String repositoryId = RepositoryPathUtil.getRepositoryName( removeContextPath( request ) );
-        
+
         try
         {
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
-            
+
             //Create a dav session
-            request.setDavSession(new ArchivaDavSession());
-            
+            request.setDavSession( new ArchivaDavSession() );
+
             return servletAuth.isAuthenticated( request, result );
         }
         catch ( AuthenticationException e )
-        {   
+        {
             // safety check for MRM-911            
             String guest = UserManager.GUEST_USERNAME;
             try
@@ -80,26 +80,26 @@ public class ArchivaDavSessionProvider
             catch ( UnauthorizedException ae )
             {
                 throw new UnauthorizedDavException( repositoryId,
-                    "You are not authenticated and authorized to access any repository." );
+                                                    "You are not authenticated and authorized to access any repository." );
             }
-            
-            throw new UnauthorizedDavException( repositoryId, "You are not authenticated." );            
+
+            throw new UnauthorizedDavException( repositoryId, "You are not authenticated." );
         }
         catch ( MustChangePasswordException e )
-        {         
+        {
             throw new UnauthorizedDavException( repositoryId, "You must change your password." );
         }
         catch ( AccountLockedException e )
-        {         
+        {
             throw new UnauthorizedDavException( repositoryId, "User account is locked." );
-        }        
+        }
     }
 
     public void releaseSession( WebdavRequest request )
     {
-        request.setDavSession(null);
+        request.setDavSession( null );
     }
-    
+
     private String removeContextPath( final DavServletRequest request )
     {
         String path = request.getRequestURI();
@@ -109,5 +109,5 @@ public class ArchivaDavSessionProvider
             path = path.substring( ctx.length() );
         }
         return path;
-    }    
+    }
 }
