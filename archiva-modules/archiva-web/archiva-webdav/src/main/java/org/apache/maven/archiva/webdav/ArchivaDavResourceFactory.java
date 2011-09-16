@@ -44,7 +44,7 @@ import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.ProxyDownloadException;
-import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
+import org.apache.archiva.proxy.RepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;

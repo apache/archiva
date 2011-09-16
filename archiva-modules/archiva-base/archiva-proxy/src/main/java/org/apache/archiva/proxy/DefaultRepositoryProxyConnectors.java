@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.proxy;
+package org.apache.archiva.proxy;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -63,7 +63,6 @@ import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

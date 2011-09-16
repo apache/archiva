@@ -35,7 +35,7 @@ import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.maven.archiva.proxy.DefaultRepositoryProxyConnectors;
+import org.apache.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.content.LegacyPathParser;

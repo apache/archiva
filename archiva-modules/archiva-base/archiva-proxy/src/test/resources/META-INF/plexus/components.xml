@@ -22,7 +22,7 @@
     <component>
       <role>org.apache.maven.wagon.Wagon</role>
       <role-hint>test</role-hint>
-      <implementation>org.apache.maven.archiva.proxy.WagonDelegate</implementation>
+      <implementation>org.apache.archiva.proxy.WagonDelegate</implementation>
     </component>
   </components>
 </component-set>
