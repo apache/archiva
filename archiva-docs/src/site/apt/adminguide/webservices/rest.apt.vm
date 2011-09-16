@@ -3,7 +3,7 @@
  ------
  Olivier Lamy
  ------
- 16 Sep 2011
+ 2011-09-16
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -35,9 +35,9 @@ Using REST Services
 
    Authentication headers for connect to your Archiva instance :
 
-   %{snippet|id=authz-header|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+   {snippet|id=authz-header|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
 
 
    Get a Search Service Client :
 
-   %{snippet|id=cxf-searchservice-creation|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+   {snippet|id=cxf-searchservice-creation|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
