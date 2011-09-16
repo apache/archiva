@@ -21,7 +21,7 @@ package org.apache.archiva.web.interceptor;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.struts2.ServletActionContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

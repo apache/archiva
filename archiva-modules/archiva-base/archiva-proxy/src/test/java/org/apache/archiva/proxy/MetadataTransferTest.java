@@ -21,7 +21,7 @@ package org.apache.archiva.proxy;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.model.ProjectReference;

@@ -19,9 +19,9 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationListener;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;

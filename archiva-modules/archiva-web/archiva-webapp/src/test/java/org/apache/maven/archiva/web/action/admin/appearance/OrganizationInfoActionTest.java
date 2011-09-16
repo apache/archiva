@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.OrganisationInformation;
+import org.apache.archiva.configuration.OrganisationInformation;
 
 /**
  */

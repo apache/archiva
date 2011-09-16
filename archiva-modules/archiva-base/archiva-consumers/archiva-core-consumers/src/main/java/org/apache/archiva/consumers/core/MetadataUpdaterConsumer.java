@@ -20,9 +20,9 @@ package org.apache.archiva.consumers.core;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ConfigurationNames;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;

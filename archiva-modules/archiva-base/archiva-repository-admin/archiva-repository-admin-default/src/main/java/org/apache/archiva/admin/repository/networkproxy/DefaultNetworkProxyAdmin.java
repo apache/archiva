@@ -26,8 +26,8 @@ import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

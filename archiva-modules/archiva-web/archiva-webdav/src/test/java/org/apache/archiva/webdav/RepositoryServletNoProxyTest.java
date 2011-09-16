@@ -23,7 +23,7 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 

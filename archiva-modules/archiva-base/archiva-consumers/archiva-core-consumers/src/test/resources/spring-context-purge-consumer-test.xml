@@ -38,7 +38,7 @@
     <property name="filetypes" ref="filetypes#retention-count"/>
   </bean>
 
-  <bean name="archivaConfiguration#retention-count" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#retention-count" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#retention-count"/>
   </bean>
 
@@ -62,7 +62,7 @@
     </property>
   </bean>
 
-  <bean name="filetypes#retention-count" class="org.apache.maven.archiva.configuration.FileTypes">
+  <bean name="filetypes#retention-count" class="org.apache.archiva.configuration.FileTypes">
     <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
   </bean>
 
@@ -75,7 +75,7 @@
     <property name="filetypes" ref="filetypes#days-old"/>
   </bean>
 
-  <bean name="archivaConfiguration#days-old" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#days-old" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#days-old"/>
   </bean>
 
@@ -96,7 +96,7 @@
     </property>
   </bean>
 
-  <bean name="filetypes#days-old" class="org.apache.maven.archiva.configuration.FileTypes">
+  <bean name="filetypes#days-old" class="org.apache.archiva.configuration.FileTypes">
     <property name="archivaConfiguration" ref="archivaConfiguration#days-old"/>
   </bean>
 

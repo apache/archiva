@@ -28,7 +28,7 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.junit.Test;
 

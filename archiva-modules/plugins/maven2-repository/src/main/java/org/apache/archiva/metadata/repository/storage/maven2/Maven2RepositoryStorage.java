@@ -32,11 +32,11 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataN
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.xml.XMLException;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;

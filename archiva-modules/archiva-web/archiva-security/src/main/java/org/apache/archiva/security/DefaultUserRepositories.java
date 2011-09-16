@@ -20,8 +20,8 @@ package org.apache.archiva.security;
  */
 
 import com.google.common.collect.Lists;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.role.RoleManager;

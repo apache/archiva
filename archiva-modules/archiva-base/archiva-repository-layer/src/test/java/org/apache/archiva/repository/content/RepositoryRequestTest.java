@@ -21,7 +21,7 @@ package org.apache.archiva.repository.content;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.FileUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.ManagedRepositoryContent;

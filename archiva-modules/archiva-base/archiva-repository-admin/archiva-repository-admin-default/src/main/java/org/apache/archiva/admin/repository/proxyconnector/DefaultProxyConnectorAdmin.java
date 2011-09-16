@@ -30,9 +30,9 @@ import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

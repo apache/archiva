@@ -27,7 +27,7 @@
   <defaults>
     <default>
       <key>package</key>
-      <value>org.apache.maven.archiva.configuration</value>
+      <value>org.apache.archiva.configuration</value>
     </default>
   </defaults>
   <classes>
@@ -288,7 +288,7 @@
 
                 connectors.add( proxyConfig );
                 java.util.Collections.sort( connectors,
-                    org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
+                    org.apache.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
             }
         }
 

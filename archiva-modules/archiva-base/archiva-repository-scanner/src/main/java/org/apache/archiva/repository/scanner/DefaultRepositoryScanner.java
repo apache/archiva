@@ -22,7 +22,7 @@ package org.apache.archiva.repository.scanner;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;

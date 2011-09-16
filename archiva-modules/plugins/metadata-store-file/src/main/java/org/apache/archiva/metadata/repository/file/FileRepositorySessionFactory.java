@@ -25,7 +25,7 @@ import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 

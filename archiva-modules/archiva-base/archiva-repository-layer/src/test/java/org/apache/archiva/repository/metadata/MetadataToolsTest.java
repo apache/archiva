@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.policies.CachedFailuresPolicy;

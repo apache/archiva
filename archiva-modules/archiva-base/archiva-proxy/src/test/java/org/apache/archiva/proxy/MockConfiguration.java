@@ -19,12 +19,12 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationListener;
-import org.apache.maven.archiva.configuration.FileType;
-import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;

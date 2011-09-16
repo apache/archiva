@@ -23,19 +23,13 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
 /**
  * Abstract AdminRepositories Action base.

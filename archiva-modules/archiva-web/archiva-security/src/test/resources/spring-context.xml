@@ -78,7 +78,7 @@
 
   <alias name="servletAuthenticator" alias="servletAuthenticator#test"/>
 
-  <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#default"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#test"/>
   </bean>
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>

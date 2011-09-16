@@ -52,7 +52,7 @@
 
   <alias name="repositoryStatisticsManager#test" alias="repositoryStatisticsManager#default"/>
 
-  <bean name="archivaConfiguration#test-repository-scanning" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#test-repository-scanning" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#test-configured"/>
   </bean>
 

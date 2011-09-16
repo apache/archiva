@@ -22,9 +22,9 @@ package org.apache.archiva.metadata.repository.file;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.junit.Before;
 
 import java.io.File;

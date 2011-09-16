@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
-import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;

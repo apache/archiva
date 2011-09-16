@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 
 /**
  * ArchivaVersion 

@@ -1,9 +1,5 @@
 package org.apache.archiva.configuration;
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationListener;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.springframework.stereotype.Service;

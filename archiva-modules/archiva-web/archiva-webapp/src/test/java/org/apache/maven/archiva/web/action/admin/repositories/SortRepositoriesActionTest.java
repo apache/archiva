@@ -20,9 +20,9 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork2.Action;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.struts2.StrutsSpringTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;

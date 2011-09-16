@@ -24,7 +24,7 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;

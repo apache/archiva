@@ -28,7 +28,7 @@ import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class DefaultArchivaAdministration
         throws RepositoryAdminException
     {
         List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>();
-        for ( org.apache.maven.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
+        for ( org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
         {
             legacyArtifactPaths.add(
                 new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
@@ -62,7 +62,7 @@ public class DefaultArchivaAdministration
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         configuration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
-                                                                                 org.apache.maven.archiva.configuration.LegacyArtifactPath.class ) );
+                                                                                 org.apache.archiva.configuration.LegacyArtifactPath.class ) );
 
         saveConfiguration( configuration );
         triggerAuditEvent( "", "", AuditEvent.ADD_LEGACY_PATH, auditInformation );
@@ -72,8 +72,8 @@ public class DefaultArchivaAdministration
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        org.apache.maven.archiva.configuration.LegacyArtifactPath legacyArtifactPath =
-            new org.apache.maven.archiva.configuration.LegacyArtifactPath();
+        org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath =
+            new org.apache.archiva.configuration.LegacyArtifactPath();
 
         legacyArtifactPath.setPath( path );
         configuration.removeLegacyArtifactPath( legacyArtifactPath );
@@ -88,7 +88,7 @@ public class DefaultArchivaAdministration
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        org.apache.maven.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
+        org.apache.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
         if ( fileType == null )
         {
             return;
@@ -104,7 +104,7 @@ public class DefaultArchivaAdministration
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        org.apache.maven.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
+        org.apache.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
         if ( fileType == null )
         {
             return;
@@ -118,7 +118,7 @@ public class DefaultArchivaAdministration
     public FileType getFileType( String fileTypeId )
         throws RepositoryAdminException
     {
-        org.apache.maven.archiva.configuration.FileType fileType =
+        org.apache.archiva.configuration.FileType fileType =
             getFileTypeById( fileTypeId, getArchivaConfiguration().getConfiguration() );
         if ( fileType == null )
         {
@@ -138,7 +138,7 @@ public class DefaultArchivaAdministration
         }
 
         configuration.getRepositoryScanning().addFileType(
-            new BeanReplicator().replicateBean( fileType, org.apache.maven.archiva.configuration.FileType.class ) );
+            new BeanReplicator().replicateBean( fileType, org.apache.archiva.configuration.FileType.class ) );
         saveConfiguration( configuration );
     }
 
@@ -146,8 +146,8 @@ public class DefaultArchivaAdministration
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        org.apache.maven.archiva.configuration.FileType fileType =
-            new org.apache.maven.archiva.configuration.FileType();
+        org.apache.archiva.configuration.FileType fileType =
+            new org.apache.archiva.configuration.FileType();
         fileType.setId( fileTypeId );
         configuration.getRepositoryScanning().removeFileType( fileType );
         saveConfiguration( configuration );
@@ -228,14 +228,14 @@ public class DefaultArchivaAdministration
     public List<FileType> getFileTypes()
         throws RepositoryAdminException
     {
-        List<org.apache.maven.archiva.configuration.FileType> configFileTypes =
+        List<org.apache.archiva.configuration.FileType> configFileTypes =
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getFileTypes();
         if ( configFileTypes == null || configFileTypes.isEmpty() )
         {
             return Collections.emptyList();
         }
         List<FileType> fileTypes = new ArrayList<FileType>();
-        for ( org.apache.maven.archiva.configuration.FileType fileType : configFileTypes )
+        for ( org.apache.archiva.configuration.FileType fileType : configFileTypes )
         {
             fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );
         }
@@ -259,7 +259,7 @@ public class DefaultArchivaAdministration
     public OrganisationInformation getOrganisationInformation()
         throws RepositoryAdminException
     {
-        org.apache.maven.archiva.configuration.OrganisationInformation organisationInformation =
+        org.apache.archiva.configuration.OrganisationInformation organisationInformation =
             getArchivaConfiguration().getConfiguration().getOrganisationInfo();
         if ( organisationInformation == null )
         {
@@ -274,9 +274,9 @@ public class DefaultArchivaAdministration
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         if ( organisationInformation != null )
         {
-            org.apache.maven.archiva.configuration.OrganisationInformation organisationInformationModel =
+            org.apache.archiva.configuration.OrganisationInformation organisationInformationModel =
                 new BeanReplicator().replicateBean( organisationInformation,
-                                                    org.apache.maven.archiva.configuration.OrganisationInformation.class );
+                                                    org.apache.archiva.configuration.OrganisationInformation.class );
             configuration.setOrganisationInfo( organisationInformationModel );
         }
         else
@@ -290,9 +290,9 @@ public class DefaultArchivaAdministration
     //
     //-------------------------
 
-    private org.apache.maven.archiva.configuration.FileType getFileTypeById( String id, Configuration configuration )
+    private org.apache.archiva.configuration.FileType getFileTypeById( String id, Configuration configuration )
     {
-        for ( org.apache.maven.archiva.configuration.FileType fileType : configuration.getRepositoryScanning().getFileTypes() )
+        for ( org.apache.archiva.configuration.FileType fileType : configuration.getRepositoryScanning().getFileTypes() )
         {
             if ( StringUtils.equals( id, fileType.getId() ) )
             {

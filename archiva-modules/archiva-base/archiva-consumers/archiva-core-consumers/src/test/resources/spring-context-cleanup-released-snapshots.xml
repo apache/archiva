@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-  <bean name="archivaConfiguration#cleanup-released-snapshots" class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#cleanup-released-snapshots" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#cleanup-released-snapshots"/>
   </bean>
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration"/>

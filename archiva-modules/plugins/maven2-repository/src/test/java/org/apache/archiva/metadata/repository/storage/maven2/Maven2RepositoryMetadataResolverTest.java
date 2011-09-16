@@ -33,11 +33,11 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataN
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.FileUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.wagon.Wagon;
 import org.junit.Before;
 import org.junit.Test;

@@ -46,7 +46,7 @@
 
   <bean name="servletAuthenticator" class="org.apache.archiva.webdav.MockServletAuthenticator"/>
 
-  <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#default"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#default"/>
   </bean>
 

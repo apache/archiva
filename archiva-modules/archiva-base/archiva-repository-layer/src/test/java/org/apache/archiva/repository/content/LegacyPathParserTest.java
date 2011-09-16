@@ -20,8 +20,8 @@ package org.apache.archiva.repository.content;
  */
 
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.LegacyArtifactPath;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.LegacyArtifactPath;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.layout.LayoutException;

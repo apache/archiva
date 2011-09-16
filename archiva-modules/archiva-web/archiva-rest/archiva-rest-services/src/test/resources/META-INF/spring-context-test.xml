@@ -36,7 +36,7 @@
   </bean>
 
   <!-- wire up more basic configuration so it doesn't overwrite any config files -->
-  <bean name="archivaConfiguration#default"  class="org.apache.maven.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#default"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#default"/>
   </bean>
 

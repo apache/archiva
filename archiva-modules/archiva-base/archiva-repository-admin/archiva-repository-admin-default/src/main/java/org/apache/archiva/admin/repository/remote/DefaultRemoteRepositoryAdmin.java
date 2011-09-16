@@ -25,9 +25,9 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

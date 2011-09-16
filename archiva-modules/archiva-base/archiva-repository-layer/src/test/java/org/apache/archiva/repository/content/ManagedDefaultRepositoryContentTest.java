@@ -21,9 +21,9 @@ package org.apache.archiva.repository.content;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.FileType;
-import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;

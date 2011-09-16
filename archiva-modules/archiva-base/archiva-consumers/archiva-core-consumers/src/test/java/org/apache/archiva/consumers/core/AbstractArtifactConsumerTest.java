@@ -21,9 +21,9 @@ package org.apache.archiva.consumers.core;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.FileType;
-import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.junit.Before;

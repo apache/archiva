@@ -1,9 +1,9 @@
 package org.apache.maven.archiva.web.action.admin.scanning;
 
 import org.apache.archiva.admin.repository.admin.DefaultArchivaAdministration;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
 

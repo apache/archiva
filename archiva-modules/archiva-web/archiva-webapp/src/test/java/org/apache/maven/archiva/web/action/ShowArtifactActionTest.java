@@ -34,9 +34,9 @@ import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactor
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;

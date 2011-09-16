@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.configuration"/>
+  <context:component-scan base-package="org.apache.archiva.configuration"/>
   <!-- olamy could be removed as only here temporary for plexus-spring -->
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
 

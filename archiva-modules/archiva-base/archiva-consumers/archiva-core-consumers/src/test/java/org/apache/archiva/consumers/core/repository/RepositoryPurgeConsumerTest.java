@@ -25,9 +25,9 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.FileType;
-import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.custommonkey.xmlunit.XMLAssert;

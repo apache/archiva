@@ -19,12 +19,6 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Abstract ManagedRepositories Action.
  * <p/>

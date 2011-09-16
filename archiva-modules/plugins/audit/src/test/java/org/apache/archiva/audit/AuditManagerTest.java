@@ -21,7 +21,7 @@ package org.apache.archiva.audit;
 
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.easymock.MockControl;
 
 import java.text.DecimalFormat;

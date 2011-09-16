@@ -20,8 +20,8 @@ package org.apache.maven.archiva.web.action.admin.appearance;
  */
 
 import org.apache.archiva.admin.repository.admin.DefaultArchivaAdministration;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
 import org.apache.maven.archiva.web.action.AbstractWebworkTestCase;
 import org.easymock.MockControl;
 

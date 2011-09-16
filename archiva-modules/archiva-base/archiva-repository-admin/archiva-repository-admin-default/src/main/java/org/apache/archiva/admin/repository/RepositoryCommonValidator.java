@@ -22,8 +22,8 @@ import org.apache.archiva.admin.model.AbstractRepository;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
 import org.codehaus.plexus.registry.Registry;
 import org.springframework.stereotype.Service;
 

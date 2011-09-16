@@ -21,10 +21,9 @@ package org.apache.archiva.converter;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
