@@ -72,6 +72,6 @@ public abstract class AbstractArtifactManagementTest
         setFieldValue( "artifactId", artifactId );
         setFieldValue( "version", version );
         selectValue( "repositoryId", repositoryId );
-        clickButtonWithValue( "Submit" );
+        clickButtonWithValue( "Submit", false );
     }
 }

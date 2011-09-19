@@ -27,13 +27,13 @@ public class ArtifactManagementTest
     extends AbstractArtifactManagementTest
 {
 
-    @Test( alwaysRun = true )
+    @Test( alwaysRun = true, dependsOnGroups = "about")
     public void testAddArtifactNullValues()
     {
         goToAddArtifactPage();
-        clickButtonWithValue( "Submit" );
-        assertTextPresent( "Please add a file to upload." );
-        assertTextPresent( "Invalid version." );
+        clickButtonWithValue( "Submit", false );
+        //assertTextPresent( "Please add a file to upload." );
+        assertTextPresent( "You must enter a version." );
         assertTextPresent( "You must enter a groupId." );
         assertTextPresent( "You must enter an artifactId." );
         assertTextPresent( "You must enter a version" );
