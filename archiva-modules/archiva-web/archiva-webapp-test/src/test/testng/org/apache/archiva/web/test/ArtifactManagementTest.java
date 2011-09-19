@@ -51,7 +51,6 @@ public class ArtifactManagementTest
     @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoArtifactId()
     {
-
         addArtifact( getGroupId(), " ", getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId(), false );
         assertTextPresent( "You must enter an artifactId." );
     }
@@ -164,15 +163,14 @@ public class ArtifactManagementTest
     @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactNoVersion()
     {
-        deleteArtifact( "delete", "delete", " ", "internal" );
-        assertTextPresent( "Invalid version." );
+        deleteArtifact( "delete", "delete", " ", "internal", true );
         assertTextPresent( "You must enter a version." );
     }
 
     @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactInvalidVersion()
     {
-        deleteArtifact( "delete", "delete", "asdf", "internal" );
+        deleteArtifact( "delete", "delete", "asdf", "internal", true );
         assertTextPresent( "Invalid version." );
     }
 

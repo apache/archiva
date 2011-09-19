@@ -67,6 +67,11 @@ public abstract class AbstractArtifactManagementTest
 
     public void deleteArtifact( String groupId, String artifactId, String version, String repositoryId )
     {
+        deleteArtifact( groupId, artifactId, version, repositoryId, false );
+    }
+
+    public void deleteArtifact( String groupId, String artifactId, String version, String repositoryId, boolean wait )
+    {
         goToDeleteArtifactPage();
         setFieldValue( "groupId", groupId );
         setFieldValue( "artifactId", artifactId );

@@ -236,6 +236,7 @@ public abstract class AbstractSeleniumTest
 
     public void waitPage()
     {
+        // TODO define a smaller maxWaitTimeJsInMs for wait javascript response for browser side validation
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
     }
 
