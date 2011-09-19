@@ -27,7 +27,7 @@ public class ArtifactManagementTest
     extends AbstractArtifactManagementTest
 {
 
-    @Test( alwaysRun = true, dependsOnGroups = "about")
+    @Test( alwaysRun = true, dependsOnGroups = "about" )
     public void testAddArtifactNullValues()
     {
         goToAddArtifactPage();
@@ -43,7 +43,8 @@ public class ArtifactManagementTest
     @Test( dependsOnMethods = { "testAddArtifactNullValues" }, alwaysRun = true )
     public void testAddArtifactNoGroupId()
     {
-        addArtifact( " ", getArtifactId(), getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        addArtifact( " ", getArtifactId(), getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId(),
+                     false );
         assertTextPresent( "You must enter a groupId." );
     }
 
@@ -51,35 +52,38 @@ public class ArtifactManagementTest
     public void testAddArtifactNoArtifactId()
     {
 
-        addArtifact( getGroupId(), " ", getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        addArtifact( getGroupId(), " ", getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId(), false );
         assertTextPresent( "You must enter an artifactId." );
     }
 
     @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoVersion()
     {
-        addArtifact( getGroupId(), getArtifactId(), " ", getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        addArtifact( getGroupId(), getArtifactId(), " ", getPackaging(), getArtifactFilePath(), getRepositoryId(),
+                     false );
         assertTextPresent( "You must enter a version." );
     }
 
     @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactInvalidVersion()
     {
-        addArtifact( getGroupId(), getArtifactId(), "asdf", getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        addArtifact( getGroupId(), getArtifactId(), "asdf", getPackaging(), getArtifactFilePath(), getRepositoryId(),
+                     true );
         assertTextPresent( "Invalid version." );
     }
 
     @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoPackaging()
     {
-        addArtifact( getGroupId(), getArtifactId(), getVersion(), " ", getArtifactFilePath(), getRepositoryId() );
+        addArtifact( getGroupId(), getArtifactId(), getVersion(), " ", getArtifactFilePath(), getRepositoryId(),
+                     false );
         assertTextPresent( "You must enter a packaging." );
     }
 
     @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoFilePath()
     {
-        addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), " ", getRepositoryId() );
+        addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), " ", getRepositoryId(), false );
         assertTextPresent( "Please add a file to upload." );
     }
 
@@ -89,7 +93,8 @@ public class ArtifactManagementTest
         String groupId = getProperty( "VALIDARTIFACT_GROUPID" );
         String artifactId = getProperty( "VALIDARTIFACT_ARTIFACTID" );
 
-        addArtifact( groupId, artifactId, getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+        addArtifact( groupId, artifactId, getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId(),
+                     true );
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
                                + "' was successfully deployed to repository 'internal'" );
     }
@@ -101,7 +106,7 @@ public class ArtifactManagementTest
         String artifactId = getProperty( "ARTIFACTID_DOTNETARTIFACT" );
         String packaging = getProperty( "PACKAGING_DOTNETARTIFACT" );
 
-        addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(), getRepositoryId() );
+        addArtifact( groupId, artifactId, getVersion(), packaging, getArtifactFilePath(), getRepositoryId(), false );
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + getVersion()
                                + "' was successfully deployed to repository 'internal'" );
         getSelenium().open( baseUrl + "/browse/" + groupId + "/" + artifactId + "/" + getVersion() );
@@ -121,7 +126,7 @@ public class ArtifactManagementTest
     public void testAddArtifactBlockRedeployments()
     {
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getArtifactFilePath(),
-                     getRepositoryId() );
+                     getRepositoryId(), false );
         assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
     }
 
@@ -135,7 +140,7 @@ public class ArtifactManagementTest
         String packaging = getProperty( "PACKAGING1" );
         String repositoryId = getProperty( "REPOSITORYID1" );
         // TODO: do this differently as it only works in Firefox's chrome mode
-        addArtifact( groupId, artifactId, version, packaging, getArtifactFilePath(), repositoryId );
+        addArtifact( groupId, artifactId, version, packaging, getArtifactFilePath(), repositoryId, false );
         assertTextPresent( "Artifact 'delete:delete:1.0' was successfully deployed to repository 'internal'" );
 
         deleteArtifact( "delete", "delete", "1.0", "internal" );
@@ -176,12 +181,14 @@ public class ArtifactManagementTest
     public void testDeleteArtifactInvalidValues()
     {
         deleteArtifact( "<> \\/~+[ ]'\"", "<> \\/~+[ ]'\"", "<>", "internal" );
-        assertTextPresent( "Invalid version." );
         assertTextPresent(
             "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent(
             "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+        // as it's a validation on server side it's not available here but tested in testDeleteArtifactInvalidVersion
+        //assertTextPresent( "Invalid version." );
     }
+
 
     @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactInvalidGroupId()

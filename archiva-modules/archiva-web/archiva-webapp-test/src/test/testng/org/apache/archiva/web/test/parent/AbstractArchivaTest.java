@@ -524,13 +524,13 @@ public abstract class AbstractArchivaTest
     }
 
     public void addArtifact( String groupId, String artifactId, String version, String packaging,
-                             String artifactFilePath, String repositoryId )
+                             String artifactFilePath, String repositoryId, boolean wait )
     {
-        addArtifact( groupId, artifactId, version, packaging, true, artifactFilePath, repositoryId );
+        addArtifact( groupId, artifactId, version, packaging, true, artifactFilePath, repositoryId, wait );
     }
 
     public void addArtifact( String groupId, String artifactId, String version, String packaging, boolean generatePom,
-                             String artifactFilePath, String repositoryId )
+                             String artifactFilePath, String repositoryId, boolean wait )
     {
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
         goToAddArtifactPage();
@@ -566,7 +566,7 @@ public abstract class AbstractArchivaTest
         selectValue( "upload_repositoryId", repositoryId );
 
         //clickButtonWithValue( "Submit" );
-        clickButtonWithLocator( "uploadSubmit" );
+        clickButtonWithLocator( "uploadSubmit", wait );
     }
 
     public void goToRepositoriesPage()

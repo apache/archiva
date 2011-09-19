@@ -81,8 +81,9 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
-            + getProperty( "ARTIFACT_PACKAGING" ) );
+        assertTextPresent(
+            getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "." + getProperty(
+                "ARTIFACT_PACKAGING" ) );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -103,8 +104,9 @@ public class AuditLogsReportTest
         assertTextPresent( "If you specify an artifact ID, you must specify a group ID" );
         assertTextNotPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextNotPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
-            + getProperty( "ARTIFACT_PACKAGING" ) );
+        assertTextNotPresent(
+            getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "." + getProperty(
+                "ARTIFACT_PACKAGING" ) );
         assertTextNotPresent( "Uploaded File" );
     }
 
@@ -121,14 +123,16 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
-            + getProperty( "ARTIFACT_PACKAGING" ) );
+        assertTextPresent(
+            getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "." + getProperty(
+                "ARTIFACT_PACKAGING" ) );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, groups = "requiresUpload" )
+    @Test( dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" },
+           groups = "requiresUpload" )
     public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
     {
         String groupId = getProperty( "SNAPSHOT_GROUPID" );
@@ -137,9 +141,10 @@ public class AuditLogsReportTest
         String repo = getProperty( "SNAPSHOT_REPOSITORYID" );
         String packaging = getProperty( "SNAPSHOT_PACKAGING" );
 
-        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo );
-        assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + version
-            + "' was successfully deployed to repository '" + repo + "'" );
+        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo, true );
+        assertTextPresent(
+            "Artifact '" + groupId + ":" + artifactId + ":" + version + "' was successfully deployed to repository '"
+                + repo + "'" );
 
         clickLinkWithText( "Logout" );
 
@@ -154,8 +159,8 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "."
-            + packaging );
+        assertTextPresent(
+            getProperty( "VALIDARTIFACT_ARTIFACTID" ) + "-" + getProperty( "ARTIFACT_VERSION" ) + "." + packaging );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
@@ -176,7 +181,8 @@ public class AuditLogsReportTest
         String repositoryId = getProperty( "REPOSITORYID" );
         String expectedArtifact = getProperty( "AUDITLOG_EXPECTED_ARTIFACT" );
 
-        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repositoryId );
+        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repositoryId,
+                     true );
 
         goToAuditLogReports();
 

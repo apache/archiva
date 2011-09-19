@@ -19,11 +19,11 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.archiva.web.test.parent.AbstractBrowseTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.File;
 
 @Test( groups = { "browse" }, dependsOnMethods = { "testAddArtifactNullValues" } )
 public class BrowseTest
@@ -35,7 +35,7 @@ public class BrowseTest
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
-        
+
         assertTextPresent( "Info" );
         assertTextPresent( "Dependencies" );
         assertTextPresent( "Dependency Tree" );
@@ -80,9 +80,10 @@ public class BrowseTest
             "src/test/resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
         // TODO: do this differently as uploading doesn't work on browsers other than *chrome (below as well)
         // upload a snapshot artifact to repository 'releases'
-        addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", path, releasesRepo );
-        assertTextPresent( "Artifact 'archiva:archiva-webapp:1.0-SNAPSHOT' was successfully deployed to repository '"
-            + releasesRepo + "'" );
+        addArtifact( "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar", path, releasesRepo, true );
+        assertTextPresent(
+            "Artifact 'archiva:archiva-webapp:1.0-SNAPSHOT' was successfully deployed to repository '" + releasesRepo
+                + "'" );
 
         goToBrowsePage();
         assertBrowsePage();
@@ -91,9 +92,10 @@ public class BrowseTest
         assertArtifactInfoPage( "1.0-SNAPSHOT/", releasesRepo, "archiva", "archiva-webapp", "1.0-SNAPSHOT", "jar" );
 
         // upload a snapshot artifact to repository 'snapshots'
-        addArtifact( "continuum", "continuum-core", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
-        assertTextPresent( "Artifact 'continuum:continuum-core:1.0-SNAPSHOT' was successfully deployed to repository '"
-            + snapshotsRepo + "'" );
+        addArtifact( "continuum", "continuum-core", "1.0-SNAPSHOT", "jar", path, snapshotsRepo, true );
+        assertTextPresent(
+            "Artifact 'continuum:continuum-core:1.0-SNAPSHOT' was successfully deployed to repository '" + snapshotsRepo
+                + "'" );
 
         goToBrowsePage();
         assertBrowsePage();
@@ -112,26 +114,29 @@ public class BrowseTest
             "src/test/resources/snapshots/org/apache/maven/archiva/web/test/foo-bar/1.0-SNAPSHOT/foo-bar-1.0-SNAPSHOT.jar";
         // TODO: do this differently as uploading doesn't work on browsers other than *chrome (below as well)
         // upload a snapshot artifact to repository 'releases'
-        addArtifact( "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
-        assertTextPresent( "Artifact 'archiva:archiva-multiple-artifacts:1.0-SNAPSHOT' was successfully deployed to repository '"
-            + snapshotsRepo + "'" );
+        addArtifact( "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar", path, snapshotsRepo, true );
+        assertTextPresent(
+            "Artifact 'archiva:archiva-multiple-artifacts:1.0-SNAPSHOT' was successfully deployed to repository '"
+                + snapshotsRepo + "'" );
 
         goToBrowsePage();
         assertBrowsePage();
         assertGroupsPage( "archiva/" );
         assertArtifactsPage( "archiva-multiple-artifacts/" );
-        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar" );
+        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT",
+                                "jar" );
 
-
-        addArtifact( "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar", path, snapshotsRepo );
-        assertTextPresent( "Artifact 'archiva:archiva-multiple-artifacts:1.0-SNAPSHOT' was successfully deployed to repository '"
-            + snapshotsRepo + "'" );
+        addArtifact( "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar", path, snapshotsRepo, true );
+        assertTextPresent(
+            "Artifact 'archiva:archiva-multiple-artifacts:1.0-SNAPSHOT' was successfully deployed to repository '"
+                + snapshotsRepo + "'" );
 
         goToBrowsePage();
         assertBrowsePage();
         assertGroupsPage( "archiva/" );
         assertArtifactsPage( "archiva-multiple-artifacts/" );
-        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT", "jar" );
+        assertArtifactInfoPage( "1.0-SNAPSHOT/", snapshotsRepo, "archiva", "archiva-multiple-artifacts", "1.0-SNAPSHOT",
+                                "jar" );
 
         String firstSnapshotVersion = getText( "//div[@id='download']/div[@id='accordion']/p[2]/a/" );
         Assert.assertTrue( firstSnapshotVersion.endsWith( "-1" ) );
@@ -139,7 +144,7 @@ public class BrowseTest
         String secondSnapshotVersion = getText( "//div[@id='download']/div[@id='accordion']/p[1]/a/" );
         Assert.assertTrue( secondSnapshotVersion.endsWith( "-2" ) );
     }
-    
+
     public void testAddMetadataPropertyEmpty()
     {
         goToBrowsePage();
@@ -163,20 +168,20 @@ public class BrowseTest
     {
         addMetadataProperty();
     }
-    
+
     @Test( dependsOnMethods = { "testAddMetadataProperty" } )
     public void testDeleteMetadataProperty()
     {
         deleteMetadataProperty();
     }
-    
-    @Test( dependsOnMethods = { "testDeleteMetadataProperty" })
+
+    @Test( dependsOnMethods = { "testDeleteMetadataProperty" } )
     public void testMetadataAccessWithRepositoryObserverRole()
-    {   
+    {
         addMetadataProperty();
-        
+
         logout();
-        
+
         goToBrowsePage();
         clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
         clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
@@ -184,17 +189,17 @@ public class BrowseTest
         clickLinkWithText( "Metadata" );
 
         waitPage();
-        
+
         assertTextNotPresent( "No metadata content." );
         assertButtonWithValueNotPresent( "Add" );
         assertTextNotPresent( "Add Property" );
         assertImgWithAltNotPresent( "Delete" );
-        
+
         login( getAdminUsername(), getAdminPassword() );
-        
+
         deleteMetadataProperty();
-    }    
-    
+    }
+
     private void addMetadataProperty()
     {
         goToBrowsePage();
@@ -217,7 +222,7 @@ public class BrowseTest
         assertTextNotPresent( "No metadata content." );
         assertTextPresent( "foo=bar" );
     }
-    
+
     private void deleteMetadataProperty()
     {
         goToBrowsePage();
@@ -238,7 +243,7 @@ public class BrowseTest
         assertTextPresent( "Property successfully deleted." );
         assertImgWithAltNotPresent( "Delete" );
         assertTextPresent( "No metadata content." );
-    }    
+    }
 
     private void assertArtifactInfoPage( String version, String artifactInfoRepositoryId, String artifactInfoGroupId,
                                          String artifactInfoArtifactId, String artifactInfoVersion,

@@ -41,7 +41,7 @@ public class MergingRepositoriesTest
     public void testAddArtifactToStagingRepository()
     {
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getValidArtifactFilePath(),
-                     "merging-repo-stage" );
+                     "merging-repo-stage", true );
         assertTextPresent( "Artifact '" + getGroupId() + ":" + getArtifactId() + ":" + getVersion() +
             "' was successfully deployed to repository 'merging-repo-stage'" );
     }
@@ -93,7 +93,7 @@ public class MergingRepositoriesTest
     {
         editManagedRepository();
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getValidArtifactFilePath(),
-                     "merging-repo-stage" );
+                     "merging-repo-stage", true );
         assertTextPresent(
             "Overwriting released artifacts in repository '" + "merging-repo-stage" + "' is not allowed." );
     }
