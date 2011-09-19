@@ -587,7 +587,7 @@ public abstract class AbstractArchivaTest
     }
 
     public void addManagedRepository( String identifier, String name, String directory, String indexDirectory,
-                                      String type, String cron, String daysOlder, String retentionCount )
+                                      String type, String cron, String daysOlder, String retentionCount, boolean wait)
     {
         // goToRepositoriesPage();
         // clickLinkWithText( "Add" );
@@ -600,7 +600,7 @@ public abstract class AbstractArchivaTest
         setFieldValue( "repository.daysOlder", daysOlder );
         setFieldValue( "repository.retentionCount", retentionCount );
         // TODO
-        clickButtonWithValue( "Add Repository" );
+        clickButtonWithValue( "Add Repository", wait );
     }
 
     // artifact management

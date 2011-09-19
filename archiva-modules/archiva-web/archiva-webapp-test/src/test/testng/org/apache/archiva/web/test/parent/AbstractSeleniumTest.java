@@ -237,7 +237,18 @@ public abstract class AbstractSeleniumTest
     public void waitPage()
     {
         // TODO define a smaller maxWaitTimeJsInMs for wait javascript response for browser side validation
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        // http://jira.openqa.org/browse/SRC-302
+        getSelenium().waitForCondition( "selenium.isElementPresent('document.body');", maxWaitTimeInMs );
+        /*
+        try
+        {
+            Thread.sleep( 1000 );
+        }
+        catch ( InterruptedException e )
+        {
+            throw new RuntimeException( "issue on Thread.sleep : " + e.getMessage(), e );
+        }*/
     }
 
     public String getFieldValue( String fieldName )

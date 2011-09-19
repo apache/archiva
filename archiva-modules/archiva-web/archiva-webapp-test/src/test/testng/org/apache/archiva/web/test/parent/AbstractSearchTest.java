@@ -29,7 +29,8 @@ public abstract class AbstractSearchTest
         if (!isElementPresent( "quickSearchBox" ) )
         {
             getSelenium().open( "/index.action");
-            getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+            //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+            waitPage();
             assertElementPresent( "quickSearchSubmit" );
         }
     }
