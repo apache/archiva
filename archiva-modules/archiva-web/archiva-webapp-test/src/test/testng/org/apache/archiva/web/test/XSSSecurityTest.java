@@ -160,7 +160,7 @@ public class XSSSecurityTest
         getSelenium().open( "/archiva/admin/addRepository.action" );
         addManagedRepository( "test\"><script>alert('xss')</script>", "test\"><script>alert('xss')</script>",
                               "test\"><script>alert('xss')</script>", "test\"><script>alert('xss')</script>",
-                              "Maven 2.x Repository", "", "-1", "101" );
+                              "Maven 2.x Repository", "", "-1", "101", true );
         // xss inputs are blocked by validation.
         assertTextPresent(
             "Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
@@ -185,7 +185,7 @@ public class XSSSecurityTest
         assertTextPresent(
             "Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
         assertTextPresent( "You must enter a URL" );
-        assertXpathCount( "//span[@class='errorMessage' and text()='You must enter a URL']", 2 );
+        assertXpathCount( "//span[@class='errorMessage'/text()='You must enter a URL']", 2 );
     }
 
     public void testEditAppearanceImmunityToCrossSiteScriptingRendering()

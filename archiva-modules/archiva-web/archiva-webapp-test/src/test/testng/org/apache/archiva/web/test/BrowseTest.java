@@ -71,7 +71,7 @@ public class BrowseTest
         clickLinkWithText( "Add" );
         addManagedRepository( getProperty( "RELEASES_REPOSITORY" ), "Releases Repository",
                               new File( getBasedir(), "target/repository/releases" ).getPath(), "",
-                              "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+                              "Maven 2.x Repository", "0 0 * * * ?", "", "", true );
         assertTextPresent( "Releases Repository" );
 
         String snapshotsRepo = getProperty( "SNAPSHOTS_REPOSITORY" );

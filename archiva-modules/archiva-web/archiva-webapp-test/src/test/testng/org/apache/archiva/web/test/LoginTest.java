@@ -46,7 +46,8 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "loginForm_username", "badUsername" );
         getSelenium().click( "loginSubmit" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        waitPage();
         assertElementPresent( "//ul[@class=\'errorMessage\']" );
         //assertTextPresent( "You have entered an incorrect username and/or password" );
     }
@@ -58,7 +59,8 @@ public class LoginTest
         setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
         setFieldValue( "loginForm_password", "badPassword" );
         getSelenium().click( "loginSubmit" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        waitPage();
         //assertTextPresent( "You have entered an incorrect username and/or password" );
         //<ul class="errorMessage"><li><span>
         assertElementPresent( "//ul[@class=\'errorMessage\']" );
@@ -70,7 +72,8 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "loginForm_password", "password" );
         getSelenium().click( "loginSubmit" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        waitPage();
         //assertTextPresent( "User Name is required" );
         assertElementPresent( "//tr[@errorFor=\'loginForm_username\']");
     }
@@ -81,7 +84,8 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
         getSelenium().click( "loginSubmit" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        waitPage();
         //assertTextPresent( "You have entered an incorrect username and/or password" );
         assertElementPresent( "//ul[@class=\'errorMessage\']" );
     }
@@ -93,7 +97,8 @@ public class LoginTest
         setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
         setFieldValue( "loginForm_password", getProperty( "ADMIN_PASSWORD" ) );
         getSelenium().click( "loginSubmit" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        waitPage();
         //assertTextPresent( "Logout" );
         assertElementPresent( "logoutLink" );
         //assertTextPresent( "Edit Details" );

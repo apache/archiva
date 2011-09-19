@@ -40,7 +40,7 @@
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
     <seleniumPluginVersion>2.0</seleniumPluginVersion>
-    <selenium-server.version>2.5.0</selenium-server.version>
+    <selenium-server.version>2.6.0</selenium-server.version>
   </properties>
 
   <dependencies>
