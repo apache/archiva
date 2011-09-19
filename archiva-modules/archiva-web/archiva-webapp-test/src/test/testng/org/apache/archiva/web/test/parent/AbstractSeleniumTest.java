@@ -237,9 +237,14 @@ public abstract class AbstractSeleniumTest
     public void waitPage()
     {
         // TODO define a smaller maxWaitTimeJsInMs for wait javascript response for browser side validation
-        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         // http://jira.openqa.org/browse/SRC-302
-        getSelenium().waitForCondition( "selenium.isElementPresent('document.body');", maxWaitTimeInMs );
+        // those hack looks to break some tests :-(
+        // getSelenium().waitForCondition( "selenium.isElementPresent('document.body');", maxWaitTimeInMs );
+        //getSelenium().waitForCondition( "selenium.isElementPresent('footer');", maxWaitTimeInMs );
+        //getSelenium().waitForCondition( "selenium.browserbot.getCurrentWindow().document.getElementById('footer')",
+        //                                maxWaitTimeInMs );
+        // so the only hack is to not use a too small wait time
         /*
         try
         {
