@@ -480,12 +480,12 @@ public abstract class AbstractArchivaTest
         assertLinkPresent( "Change your appearance" );
     }
 
-    public void addEditAppearance( String name, String url, String logoUrl )
+    public void addEditAppearance( String name, String url, String logoUrl, boolean wait)
     {
         setFieldValue( "organisationName", name );
         setFieldValue( "organisationUrl", url );
         setFieldValue( "organisationLogo", logoUrl );
-        clickButtonWithValue( "Save" );
+        clickButtonWithValue( "Save", wait );
     }
 
     public void goToHomePage()

@@ -30,55 +30,67 @@ public class AppearanceTest
     {
         goToAppearancePage();
         clickLinkWithText( "Edit" );
-        addEditAppearance( "", "", "" );
+        addEditAppearance( "", "", "", false );
         assertTextPresent( "You must enter a name" );
     }
 
-    @Test( dependsOnMethods = { "testAddAppearanceEmptyValues" })
-	public void testAddAppearanceInvalidValues()
-	{
-		addEditAppearance( "<>~+[ ]'\"" , "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"" , "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"" );
-		assertTextPresent( "Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+    @Test( dependsOnMethods = { "testAddAppearanceEmptyValues" } )
+    public void testAddAppearanceInvalidValues()
+    {
+        addEditAppearance( "<>~+[ ]'\"", "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"",
+                           "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"", false );
+        assertTextPresent(
+            "Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
         assertTextPresent( "You must enter a URL" );
-        assertXpathCount("//span[@class='errorMessage' and text()='You must enter a URL']", 2);
+        //assertXpathCount( "//tr errorfor='saveAppearance_organisationUrl'", 1 );
+        assertXpathCount( "//span[@class='errorMessage/text()='You must enter a URL']", 1 );
+        assertTextPresent( "You must enter a URL for your logo" );
+        assertXpathCount( "//span[@class='errorMessage/text()='You must enter a URL for your logo']", 1 );
+
     }
 
-    @Test( dependsOnMethods = { "testAddAppearanceInvalidValues" })
-	public void testAddAppearanceInvalidOrganisationName()
-	{
-		addEditAppearance( "<>~+[ ]'\"" , "http://www.apache.org/" , "http://www.apache.org/images/asf_logo_wide.gifs" );
-        assertTextPresent( "Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
-	}
-
-    @Test( dependsOnMethods = { "testAddAppearanceInvalidOrganisationName" })
-	public void testAddAppearanceInvalidOrganisationUrl()
-	{
-		addEditAppearance( "The Apache Software Foundation" , "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"" , "http://www.apache.org/images/asf_logo_wide.gifs" );
-		assertTextPresent( "You must enter a URL" );
-        assertXpathCount("//span[@class='errorMessage' and text()='You must enter a URL']", 1);
+    @Test( dependsOnMethods = { "testAddAppearanceInvalidValues" } )
+    public void testAddAppearanceInvalidOrganisationName()
+    {
+        addEditAppearance( "<>~+[ ]'\"", "http://www.apache.org/", "http://www.apache.org/images/asf_logo_wide.gifs",
+                           false );
+        assertTextPresent(
+            "Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
     }
 
-    @Test( dependsOnMethods = { "testAddAppearanceInvalidOrganisationUrl" })
-	public void testAddAppearanceInvalidOrganisationLogo()
-	{
-		addEditAppearance( "The Apache Software Foundation" , "http://www.apache.org/" , "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"" );
-		assertTextPresent( "You must enter a URL" );
-        assertXpathCount("//span[@class='errorMessage' and text()='You must enter a URL']", 1);
+    @Test( dependsOnMethods = { "testAddAppearanceInvalidOrganisationName" } )
+    public void testAddAppearanceInvalidOrganisationUrl()
+    {
+        addEditAppearance( "The Apache Software Foundation", "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"",
+                           "http://www.apache.org/images/asf_logo_wide.gifs", false );
+        assertTextPresent( "You must enter a URL" );
+        assertXpathCount( "//span[@class='errorMessage/text()='You must enter a URL']", 1 );
     }
 
-	@Test( dependsOnMethods = { "testAddAppearanceInvalidOrganisationLogo" })
-	public void testAddAppearanceValidValues()
-	{
-		addEditAppearance( "The Apache Software Foundation" , "http://www.apache.org/" , "http://www.apache.org/images/asf_logo_wide.gifs" );
-		assertTextPresent( "The Apache Software Foundation" );
-	}
-	
-	@Test( dependsOnMethods = { "testAddAppearanceValidValues" })
-	public void testEditAppearance()
-	{
-		clickLinkWithText( "Edit" );
-		addEditAppearance( "Apache Software Foundation" , "http://www.apache.org/" , "http://www.apache.org/images/asf_logo_wide.gifs" );
-		assertTextPresent( "Apache Software Foundation" );
+    @Test( dependsOnMethods = { "testAddAppearanceInvalidOrganisationUrl" } )
+    public void testAddAppearanceInvalidOrganisationLogo()
+    {
+        addEditAppearance( "The Apache Software Foundation", "http://www.apache.org/",
+                           "/home/user/abcXYZ0129._/\\~:?!&=-<> ~+[ ]'\"", false );
+        assertTextPresent( "You must enter a URL" );
+        assertXpathCount( "//span[@class='errorMessage'/text()='You must enter a URL']", 1 );
+    }
+
+    @Test( dependsOnMethods = { "testAddAppearanceInvalidOrganisationLogo" } )
+    public void testAddAppearanceValidValues()
+    {
+        addEditAppearance( "The Apache Software Foundation", "http://www.apache.org/",
+                           "http://www.apache.org/images/asf_logo_wide.gifs", true );
+        assertTextPresent( "The Apache Software Foundation" );
+    }
+
+    @Test( dependsOnMethods = { "testAddAppearanceValidValues" } )
+    public void testEditAppearance()
+    {
+        clickLinkWithText( "Edit" );
+        addEditAppearance( "Apache Software Foundation", "http://www.apache.org/",
+                           "http://www.apache.org/images/asf_logo_wide.gifs", true );
+        assertTextPresent( "Apache Software Foundation" );
     }
 
 }

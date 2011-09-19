@@ -431,7 +431,8 @@ public abstract class AbstractSeleniumTest
 
     public void assertXpathCount( String locator, int expectedCount )
     {
-        Assert.assertEquals( getSelenium().getXpathCount( locator ).intValue(), expectedCount );
+        int count = getSelenium().getXpathCount( locator ).intValue();
+        Assert.assertEquals( count, expectedCount );
     }
 
     public void assertElementValue( String locator, String expectedValue )
