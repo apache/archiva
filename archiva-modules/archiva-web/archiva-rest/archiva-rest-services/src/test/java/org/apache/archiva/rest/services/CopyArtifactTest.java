@@ -87,13 +87,16 @@ public class CopyArtifactTest
     {
         initSourceTargetRepo();
 
+        // START SNIPPET: copy-artifact
         ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest();
         artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
         artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
         artifactTransferRequest.setVersion( "2.2.2" );
         artifactTransferRequest.setSourceRepositoryId( SOURCE_REPO_ID );
         artifactTransferRequest.setTargetRepositoryId( TARGET_REPO_ID );
-        assertTrue( getRepositoriesService( authorizationHeader ).copyArtifact( artifactTransferRequest ) );
+        Boolean res = getRepositoriesService( authorizationHeader ).copyArtifact( artifactTransferRequest );
+        // END SNIPPET: copy-artifact
+        assertTrue( res );
 
         ArtifactReference artifactReference = new ArtifactReference();
         artifactReference.setArtifactId( artifactTransferRequest.getArtifactId() );
