@@ -42,6 +42,7 @@ public class CopyArtifactTest
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
+
     private void initSourceTargetRepo()
         throws Exception
     {
@@ -53,13 +54,17 @@ public class CopyArtifactTest
         assertFalse( targetRepo.exists() );
         targetRepo.mkdirs();
 
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+        }
         ManagedRepository managedRepository = getTestManagedRepository();
         managedRepository.setId( TARGET_REPO_ID );
         managedRepository.setLocation( targetRepo.getCanonicalPath() );
         managedRepository.setCronExpression( "* * * * * ?" );
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
-
 
         File originRepo = new File( "target/test-origin-repo" );
         if ( originRepo.exists() )
@@ -68,6 +73,12 @@ public class CopyArtifactTest
         }
         assertFalse( originRepo.exists() );
         FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), originRepo );
+
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+        }
 
         managedRepository = getTestManagedRepository();
         managedRepository.setId( SOURCE_REPO_ID );
@@ -78,6 +89,22 @@ public class CopyArtifactTest
 
         getArchivaAdministrationService().addKnownContentConsumer( "create-missing-checksums" );
         getArchivaAdministrationService().addKnownContentConsumer( "metadata-updater" );
+
+    }
+
+    public void clean()  throws Exception
+    {
+
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+        }
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+        }
 
     }
 
@@ -116,7 +143,7 @@ public class CopyArtifactTest
                              "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.pom" );
 
         assertTrue( "not exists " + pom.getPath(), pom.exists() );
-
+        clean();
     }
 
     //@Test
@@ -124,5 +151,6 @@ public class CopyArtifactTest
         throws Exception
     {
         initSourceTargetRepo();
+        clean();
     }
 }
