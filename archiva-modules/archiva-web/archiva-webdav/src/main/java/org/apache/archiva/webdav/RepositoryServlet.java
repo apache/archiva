@@ -76,7 +76,7 @@ public class RepositoryServlet
 
     private final Object reloadLock = new Object();
 
-    public void init( javax.servlet.ServletConfig servletConfig )
+    public void init( ServletConfig servletConfig )
         throws ServletException
     {
         super.init( servletConfig );

@@ -24,19 +24,6 @@ import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
-import org.apache.archiva.security.ServletAuthenticator;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.jackrabbit.webdav.DavException;
-import org.apache.jackrabbit.webdav.DavResource;
-import org.apache.jackrabbit.webdav.DavResourceFactory;
-import org.apache.jackrabbit.webdav.DavResourceLocator;
-import org.apache.jackrabbit.webdav.DavServletRequest;
-import org.apache.jackrabbit.webdav.DavServletResponse;
-import org.apache.jackrabbit.webdav.DavSession;
-import org.apache.jackrabbit.webdav.lock.LockManager;
-import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -57,9 +44,22 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataMerge;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletRequest;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSession;
+import org.apache.jackrabbit.webdav.lock.LockManager;
+import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
@@ -510,9 +510,12 @@ public class ArchivaDavResourceFactory
                             String event = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE )
                                 + PROXIED_SUFFIX;
 
-                            log.debug( "Proxied artifact '" + resourceFile.getName() + "' in repository '"
-                                           + managedRepository.getId() + "' (current user '" + activePrincipal + "')" );
-
+                            if ( log.isDebugEnabled() )
+                            {
+                                log.debug( "Proxied artifact '" + resourceFile.getName() + "' in repository '"
+                                               + managedRepository.getId() + "' (current user '" + activePrincipal
+                                               + "')" );
+                            }
                             triggerAuditEvent( request.getRemoteAddr(), archivaLocator.getRepositoryId(),
                                                logicalResource.getPath(), event, activePrincipal );
                         }
@@ -649,10 +652,11 @@ public class ArchivaDavResourceFactory
                 File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
 
                 resource.setPath( managedRepository.toPath( artifact ) );
-
-                log.debug( "Proxied artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
-                               + artifact.getVersion() + "'" );
-
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Proxied artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
+                                   + artifact.getVersion() + "'" );
+                }
                 return ( proxiedFile != null );
             }
         }
@@ -958,9 +962,12 @@ public class ArchivaDavResourceFactory
                         catch ( DavException e )
                         {
                             // TODO: review exception handling
-                            log.debug(
-                                "Skipping repository '" + managedRepository + "' for user '" + activePrincipal + "': "
-                                    + e.getMessage() );
+                            if ( log.isDebugEnabled() )
+                            {
+                                log.debug(
+                                    "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
+                                        + "': " + e.getMessage() );
+                            }
                         }
                     }
                     else
@@ -979,9 +986,12 @@ public class ArchivaDavResourceFactory
                         catch ( UnauthorizedException e )
                         {
                             // TODO: review exception handling
-                            log.debug(
-                                "Skipping repository '" + managedRepository + "' for user '" + activePrincipal + "': "
-                                    + e.getMessage() );
+                            if ( log.isDebugEnabled() )
+                            {
+                                log.debug(
+                                    "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
+                                        + "': " + e.getMessage() );
+                            }
                         }
                     }
                 }

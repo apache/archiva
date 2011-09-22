@@ -25,6 +25,8 @@ import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.webdav.util.IndexWriter;
+import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.util.Text;
@@ -50,8 +52,6 @@ import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
-import org.apache.archiva.webdav.util.IndexWriter;
-import org.apache.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -316,11 +316,12 @@ public class ArchivaDavResource
             }
 
             queueRepositoryTask( localFile );
-
-            log.debug(
-                "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created " ) + "(current user '"
-                    + this.principal + "')" );
-
+            if ( log.isDebugEnabled() )
+            {
+                log.debug(
+                    "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created " ) + "(current user '"
+                        + this.principal + "')" );
+            }
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
         else if ( !inputContext.hasStream() && isCollection() ) // New directory
@@ -399,8 +400,11 @@ public class ArchivaDavResource
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
-                log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName()
-                               + "' removed (current user '" + this.principal + "')" );
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName()
+                                   + "' removed (current user '" + this.principal + "')" );
+                }
             }
             catch ( IOException e )
             {
@@ -451,9 +455,11 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
-
-            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '"
-                           + destination + "' (current user '" + this.principal + "')" );
+            if ( log.isDebugEnabled() )
+            {
+                log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '"
+                               + destination + "' (current user '" + this.principal + "')" );
+            }
         }
         catch ( IOException e )
         {
@@ -489,8 +495,12 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
-            log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '"
-                           + destination + "' (current user '" + this.principal + "')" );
+            if ( log.isDebugEnabled() )
+            {
+                log.debug(
+                    ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '"
+                        + destination + "' (current user '" + this.principal + "')" );
+            }
         }
         catch ( IOException e )
         {
