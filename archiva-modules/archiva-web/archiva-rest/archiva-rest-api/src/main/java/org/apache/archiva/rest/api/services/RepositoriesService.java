@@ -19,10 +19,13 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -66,6 +69,18 @@ public interface RepositoriesService
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean scanRepositoryNow( @QueryParam( "repositoryId" ) String repositoryId,
                                @QueryParam( "fullScan" ) boolean fullScan )
+        throws ArchivaRestServiceException;
+
+    @Path( "copyArtifact" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true )
+    /**
+     * permission are checked in impl
+     * will copy an artifact from the source repository to the target repository
+     */
+    Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
         throws ArchivaRestServiceException;
 
 }
