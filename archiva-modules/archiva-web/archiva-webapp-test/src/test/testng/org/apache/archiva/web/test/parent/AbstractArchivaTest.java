@@ -204,10 +204,12 @@ public abstract class AbstractArchivaTest
 
     public void assertUserRolesPage()
     {
-        assertPage( "Apache Archiva \\ [Admin] User Edit" );
-        assertTextPresent( "[Admin] User Roles" );
-        assertTextPresent( "Username" );
-        assertTextPresent( "Full Name" );
+        //assertPage( "Apache Archiva \\ [Admin] User Edit" );
+        //[Admin] Rôles de l'utilisateur
+
+        assertTextPresent( "[Admin] User Roles", "[Admin] R\u00F4les de l'utilisateur" );
+        assertTextPresent( "Username", "Nom d'utilisateur" );
+        assertTextPresent( "Full Name", "Nom complet" );
         String userRoles =
             "Guest,Registered User,System Administrator,User Administrator,Global Repository Observer,Global Repository Manager,Repository Observer,Repository Manager,internal";
         String[] arrayRole = userRoles.split( "," );
@@ -219,11 +221,10 @@ public abstract class AbstractArchivaTest
 
     public void assertDeleteUserPage( String username )
     {
-        assertPage( "Apache Archiva \\ [Admin] User Delete" ); // TODO
-        assertTextPresent( "[Admin] User Delete" );
+        assertTextPresent( "[Admin] User Delete", "[Admin] Suppression de l'utilisateur", "L'utilisateur suivant va \u00EAtre supprim\u00E9:" );
         assertTextPresent( "The following user will be deleted:" );
-        assertTextPresent( "Username: " + username );
-        assertButtonWithValuePresent( "Delete User" );
+        assertTextPresent( "Username: " + username , "Nom d'utilisateur:" + username);
+        assertButtonWithIdPresent( "userDeleteSubmit" );
     }
 
     public void createUser( String userName, String fullName, String email, String password, boolean valid )
@@ -236,7 +237,8 @@ public abstract class AbstractArchivaTest
     {
         // login( getAdminUsername() , getAdminPassword() );
         getSelenium().open( "/archiva/security/userlist.action" );
-        clickButtonWithValue( "Create New User" );
+        clickButtonWithLocator( "userCreateButton", true );
+        //clickButtonWithValue( "Create New User" );
         assertCreateUserPage();
         setFieldValue( "user.username", userName );
         setFieldValue( "user.fullName", fullName );
@@ -246,7 +248,9 @@ public abstract class AbstractArchivaTest
         submit();
 
         assertUserRolesPage();
-        clickButtonWithValue( "Submit" );
+
+        //clickButtonWithValue( "Submit" );
+        clickButtonWithName( "submitRolesButton", true );
 
         if ( valid )
         {
@@ -382,19 +386,21 @@ public abstract class AbstractArchivaTest
 
     public void assertCreateUserPage()
     {
-        assertPage( "Apache Archiva \\ [Admin] User Create" );
-        assertTextPresent( "[Admin] User Create" );
-        assertTextPresent( "Username*:" );
+        //assertPage( "Apache Archiva \\ [Admin] User Create" );
+        //assertTextPresent( "[Admin] User Create" );
+        assertTextPresent( "Username*:", "Nom d'utilisateur*:" );
         assertElementPresent( "user.username" );
-        assertTextPresent( "Full Name*:" );
+        assertTextPresent( "Full Name*:", "Nom complet*:" );
         assertElementPresent( "user.fullName" );
-        assertTextPresent( "Email Address*:" );
+        assertTextPresent( "Email Address*:", "Adresse email*:" );
         assertElementPresent( "user.email" );
-        assertTextPresent( "Password*:" );
+        assertTextPresent( "Password*:", "Mot de passe*:" );
         assertElementPresent( "user.password" );
-        assertTextPresent( "Confirm Password*:" );
+        assertTextPresent( "Confirm Password*:", "Confirmer le mot de passe*" );
         assertElementPresent( "user.confirmPassword" );
-        assertButtonWithValuePresent( "Create User" );
+        //assertButtonWithValuePresent( "Create User" );
+        //assertButtonWithIdPresent( "userCreateSubmit" );
+        assertElementNotPresent( "userCreateSubmit" );
     }
 
     public void assertLeftNavMenuWithRole( String role )

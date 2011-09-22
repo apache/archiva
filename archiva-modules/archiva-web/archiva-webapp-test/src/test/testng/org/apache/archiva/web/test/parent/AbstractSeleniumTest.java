@@ -170,6 +170,23 @@ public abstract class AbstractSeleniumTest
         Assert.assertTrue( getSelenium().isTextPresent( text ), "'" + text + "' isn't present." );
     }
 
+    /**
+     * one of text args must be in the page so use en and fr text (olamy use en locale :-) )
+     *
+     * @param texts
+     */
+    public void assertTextPresent( String... texts )
+    {
+        boolean present = false;
+        StringBuilder sb = new StringBuilder();
+        for ( String text : texts )
+        {
+            present = present || getSelenium().isTextPresent( text );
+            sb.append( " " + text + " " );
+        }
+        Assert.assertTrue( present, "'one of the following test " + sb.toString() + "' isn't present." );
+    }
+
     public void assertTextNotPresent( String text )
     {
         Assert.assertFalse( getSelenium().isTextPresent( text ), "'" + text + "' is present." );
@@ -317,6 +334,11 @@ public abstract class AbstractSeleniumTest
     public boolean isButtonWithIdPresent( String text )
     {
         return isElementPresent( "//button[@id='" + text + "']" ) || isElementPresent( "//input[@id='" + text + "']" );
+    }
+
+    public void clickButtonWithName( String text, boolean wait )
+    {
+        clickLinkWithXPath( "//input[@name='" + text + "']", wait );
     }
 
     public void clickButtonWithValue( String text )

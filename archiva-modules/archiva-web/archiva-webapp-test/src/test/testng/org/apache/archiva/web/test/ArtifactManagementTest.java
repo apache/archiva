@@ -82,7 +82,7 @@ public class ArtifactManagementTest
     @Test( dependsOnMethods = { "testAddArtifactNoGroupId" }, alwaysRun = true )
     public void testAddArtifactNoFilePath()
     {
-        addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), " ", getRepositoryId(), false );
+        addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), " ", getRepositoryId(), true );
         assertTextPresent( "Please add a file to upload." );
     }
 
