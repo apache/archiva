@@ -59,6 +59,14 @@ Using REST Services
 
 %{snippet|id=searchservice-with-classifier|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
 
+  Copy Artifact from a repository to an other one :
+
+  For some reasons you want to use a test repository before moving your artifacts to a repository used by final users.
+  To achieve this, you can use a service which can copy an artifact from a repository to an other one
+
+%{snippet|id=copy-artifact-with-classifier|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/CopyArtifactTest.java}
+
+
   To know all the possible options, you can refer to the javadoc of SearchRequest class.
 
 
