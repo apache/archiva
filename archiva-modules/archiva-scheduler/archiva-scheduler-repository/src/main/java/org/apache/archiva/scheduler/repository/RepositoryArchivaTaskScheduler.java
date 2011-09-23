@@ -250,7 +250,7 @@ public class RepositoryArchivaTaskScheduler
     {
         synchronized ( repositoryScanningQueue )
         {
-            if ( isProcessingRepositoryTask( task ) )
+            if ( !isProcessingRepositoryTask( task ) )
             {
                 log.info( "cannot unqueue Repository task '{}' not already queued.", task );
                 return false;
