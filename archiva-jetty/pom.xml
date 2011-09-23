@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
@@ -95,7 +96,7 @@
   </dependencies>
   <build>
     <plugins>
-       <plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
         <version>1.0</version>
@@ -217,9 +218,9 @@
             <configuration>
               <tasks>
                 <copy todir="target/generated-resources/appassembler/jsw/archiva/conf">
-                  <fileset dir="src/main/conf" />
+                  <fileset dir="src/main/conf"/>
                 </copy>
-                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs" />
+                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs"/>
               </tasks>
             </configuration>
             <goals>
