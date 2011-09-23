@@ -125,7 +125,7 @@ public class DefaultRepositoriesService
     {
         if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
         {
-            log.info( "scanning of repository with id {} already scheduled" );
+            log.info( "scanning of repository with id {} already scheduled", repositoryId );
             return Boolean.FALSE;
         }
         RepositoryTask task = new RepositoryTask();
@@ -148,7 +148,7 @@ public class DefaultRepositoriesService
         return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
     }
 
-    public Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId )
+    public Boolean removeScanningTaskFromQueue( String repositoryId )
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
@@ -201,7 +201,7 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "copyArtifact call: userName not found" );
         }
 
-        if ( StringUtils.isBlank( artifactTransferRequest.getSourceRepositoryId() ) )
+        if ( StringUtils.isBlank( artifactTransferRequest.getRepositoryId() ) )
         {
             throw new ArchivaRestServiceException( "copyArtifact call: sourceRepositoryId cannot be null" );
         }
@@ -214,7 +214,7 @@ public class DefaultRepositoriesService
         ManagedRepository source = null;
         try
         {
-            source = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getSourceRepositoryId() );
+            source = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getRepositoryId() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -224,7 +224,7 @@ public class DefaultRepositoriesService
         if ( source == null )
         {
             throw new ArchivaRestServiceException(
-                "cannot find repository with id " + artifactTransferRequest.getSourceRepositoryId() );
+                "cannot find repository with id " + artifactTransferRequest.getRepositoryId() );
         }
 
         ManagedRepository target = null;
@@ -282,11 +282,11 @@ public class DefaultRepositoriesService
         {
             boolean authz =
                 securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
-                                             artifactTransferRequest.getSourceRepositoryId() );
+                                             artifactTransferRequest.getRepositoryId() );
             if ( !authz )
             {
                 throw new ArchivaRestServiceException(
-                    "not authorized to access repo:" + artifactTransferRequest.getSourceRepositoryId() );
+                    "not authorized to access repo:" + artifactTransferRequest.getRepositoryId() );
             }
         }
         catch ( AuthorizationException e )
@@ -327,7 +327,7 @@ public class DefaultRepositoriesService
         {
 
             ManagedRepositoryContent sourceRepository =
-                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getSourceRepositoryId() );
+                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
 
             String artifactSourcePath = sourceRepository.toPath( artifactReference );
 

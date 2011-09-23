@@ -20,11 +20,11 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.archiva.common.utils.FileUtil;
 import org.junit.Test;
 
 import java.io.File;
@@ -65,6 +65,13 @@ public class RepositoriesServiceTest
         WebClient.getConfig( managedRepositoriesService ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
         String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();
+
+        // take care if already in scan queue by startup phase
+        if ( service.alreadyScanning( repoId ) )
+        {
+            service.removeScanningTaskFromQueue( repoId );
+            assertFalse( service.alreadyScanning( repoId ) );
+        }
 
         assertTrue( service.scanRepository( repoId, true ) );
 
