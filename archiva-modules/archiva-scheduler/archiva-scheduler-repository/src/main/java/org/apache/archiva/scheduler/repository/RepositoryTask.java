@@ -1,8 +1,8 @@
 package org.apache.archiva.scheduler.repository;
 
-import java.io.File;
-
 import org.codehaus.plexus.taskqueue.Task;
+
+import java.io.File;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,59 +24,22 @@ import org.codehaus.plexus.taskqueue.Task;
  */
 
 /**
- * DataRefreshTask - task for discovering changes in the repository 
- * and updating all associated data. 
+ * DataRefreshTask - task for discovering changes in the repository
+ * and updating all associated data.
  *
  * @version $Id: DataRefreshTask.java 525176 2007-04-03 15:21:33Z joakime $
  */
 public class RepositoryTask
     implements Task
 {
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
-        result = prime * result + ( ( resourceFile == null ) ? 0 : resourceFile.hashCode() );
-        return result;
-    }
-
-    @Override
-    public boolean equals( Object obj )
-    {
-        if ( this == obj )
-            return true;
-        if ( obj == null )
-            return false;
-        if ( getClass() != obj.getClass() )
-            return false;
-        RepositoryTask other = (RepositoryTask) obj;
-        if ( repositoryId == null )
-        {
-            if ( other.repositoryId != null )
-                return false;
-        }
-        else if ( !repositoryId.equals( other.repositoryId ) )
-            return false;
-        if ( resourceFile == null )
-        {
-            if ( other.resourceFile != null )
-                return false;
-        }
-        else if ( !resourceFile.equals( other.resourceFile ) )
-            return false;
-        return true;
-    }
-
     private String repositoryId;
-    
+
     private File resourceFile;
-    
+
     private boolean updateRelatedArtifacts;
-    
+
     private boolean scanAll;
-    
+
     public boolean isScanAll()
     {
         return scanAll;
@@ -127,5 +90,56 @@ public class RepositoryTask
     {
         return "RepositoryTask [repositoryId=" + repositoryId + ", resourceFile=" + resourceFile + ", scanAll="
             + scanAll + ", updateRelatedArtifacts=" + updateRelatedArtifacts + "]";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
+        result = prime * result + ( ( resourceFile == null ) ? 0 : resourceFile.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+        {
+            return true;
+        }
+        if ( obj == null )
+        {
+            return false;
+        }
+        if ( getClass() != obj.getClass() )
+        {
+            return false;
+        }
+        RepositoryTask other = (RepositoryTask) obj;
+        if ( repositoryId == null )
+        {
+            if ( other.repositoryId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !repositoryId.equals( other.repositoryId ) )
+        {
+            return false;
+        }
+        if ( resourceFile == null )
+        {
+            if ( other.resourceFile != null )
+            {
+                return false;
+            }
+        }
+        else if ( !resourceFile.equals( other.resourceFile ) )
+        {
+            return false;
+        }
+        return true;
     }
 }
