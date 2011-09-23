@@ -60,7 +60,7 @@ public class TestConfiguration
 
     public void addChangeListener( RegistryListener listener )
     {
-        throw new UnsupportedOperationException();
+        //noop
     }
 
     public void reload()
