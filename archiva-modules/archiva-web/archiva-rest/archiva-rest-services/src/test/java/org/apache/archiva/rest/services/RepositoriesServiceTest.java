@@ -66,19 +66,14 @@ public class RepositoriesServiceTest
 
         String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();
 
-        // take care if already in scan queue by startup phase
-        if ( service.alreadyScanning( repoId ) )
+        int timeout = 20000;
+        while ( timeout > 0 && service.alreadyScanning( repoId ) )
         {
-            service.removeScanningTaskFromQueue( repoId );
-            assertFalse( service.alreadyScanning( repoId ) );
+            Thread.sleep( 500 );
+            timeout -= 500;
         }
 
         assertTrue( service.scanRepository( repoId, true ) );
-
-        log.info( "scanRepo call ok " );
-
-        assertTrue( service.alreadyScanning( repoId ) );
-
     }
 
 

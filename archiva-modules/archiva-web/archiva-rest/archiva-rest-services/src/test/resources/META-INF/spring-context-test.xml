@@ -56,4 +56,10 @@
       </value>
     </property>
   </bean>
+
+  <bean name="taskQueueExecutor#repository-scanning" class="org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor" lazy-init="false">
+    <property name="name" value="repository-scanning"/>
+    <property name="executor" ref="taskExecutor#repository-scanning"/>
+    <property name="queue" ref="taskQueue#repository-scanning"/>
+  </bean>
 </beans>
