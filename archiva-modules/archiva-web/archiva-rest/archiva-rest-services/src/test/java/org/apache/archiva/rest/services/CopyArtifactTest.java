@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
+import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -111,13 +112,18 @@ public class CopyArtifactTest
         initSourceTargetRepo();
 
         // START SNIPPET: copy-artifact
+        // configure the artifact you want to copy
+        // if package ommited default will be jar
         ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest();
         artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
         artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
         artifactTransferRequest.setVersion( "2.2.2" );
         artifactTransferRequest.setRepositoryId( SOURCE_REPO_ID );
         artifactTransferRequest.setTargetRepositoryId( TARGET_REPO_ID );
-        Boolean res = getRepositoriesService( authorizationHeader ).copyArtifact( artifactTransferRequest );
+        // retrieve the service
+        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+        // copy the artifact
+        Boolean res = repositoriesService.copyArtifact( artifactTransferRequest );
         // END SNIPPET: copy-artifact
         assertTrue( res );
 
