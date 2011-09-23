@@ -29,19 +29,7 @@ public class ArtifactTransferRequest
     extends Artifact
     implements Serializable
 {
-    private String sourceRepositoryId;
-
     private String targetRepositoryId;
-
-    public String getSourceRepositoryId()
-    {
-        return sourceRepositoryId;
-    }
-
-    public void setSourceRepositoryId( String sourceRepositoryId )
-    {
-        this.sourceRepositoryId = sourceRepositoryId;
-    }
 
     public String getTargetRepositoryId()
     {

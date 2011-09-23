@@ -39,10 +39,6 @@ public class CopyArtifactTest
 
     static final String SOURCE_REPO_ID = "test-origin-repo";
 
-    @Inject
-    private RepositoryContentFactory repositoryFactory;
-
-
     private void initSourceTargetRepo()
         throws Exception
     {
@@ -119,19 +115,12 @@ public class CopyArtifactTest
         artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
         artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
         artifactTransferRequest.setVersion( "2.2.2" );
-        artifactTransferRequest.setSourceRepositoryId( SOURCE_REPO_ID );
+        artifactTransferRequest.setRepositoryId( SOURCE_REPO_ID );
         artifactTransferRequest.setTargetRepositoryId( TARGET_REPO_ID );
         Boolean res = getRepositoriesService( authorizationHeader ).copyArtifact( artifactTransferRequest );
         // END SNIPPET: copy-artifact
         assertTrue( res );
 
-        ArtifactReference artifactReference = new ArtifactReference();
-        artifactReference.setArtifactId( artifactTransferRequest.getArtifactId() );
-        artifactReference.setGroupId( artifactTransferRequest.getGroupId() );
-        artifactReference.setVersion( artifactTransferRequest.getVersion() );
-        artifactReference.setClassifier( artifactTransferRequest.getClassifier() );
-        String packaging = StringUtils.trim( artifactTransferRequest.getPackaging() );
-        artifactReference.setType( StringUtils.isEmpty( packaging ) ? "jar" : packaging );
 
         String targetRepoPath =
             getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ).getLocation();
@@ -143,6 +132,7 @@ public class CopyArtifactTest
                              "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.pom" );
 
         assertTrue( "not exists " + pom.getPath(), pom.exists() );
+        // TODO find a way to force metadata generation and test it !!
         clean();
     }
 
