@@ -19,8 +19,8 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.indexer.util.SearchUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -284,7 +284,7 @@ public class NexusRepositorySearchTest
 
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
-        assertEquals( "total hits not 7 for page1 " + results, 7, results.getTotalHits() );
+        assertEquals( "total hits not 8 for page1 " + results, 8, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page1 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
 
@@ -305,7 +305,7 @@ public class NexusRepositorySearchTest
         assertNotNull( results );
 
         assertEquals( "hits not 1", 1, results.getHits().size() );
-        assertEquals( "total hits not 7 for page 2 " + results, 7, results.getTotalHits() );
+        assertEquals( "total hits not 8 for page 2 " + results, 8, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page2 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
     }
@@ -777,5 +777,30 @@ public class NexusRepositorySearchTest
 
         assertNotNull( results );
         assertEquals( 0, results.getTotalHits() );
+    }
+
+    @Test
+    public void testAdvancedSearchClassNameInWar()
+        throws Exception
+    {
+        createIndexContainingMoreArtifacts( true );
+
+        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+
+        SearchFields searchFields = new SearchFields();
+        searchFields.setClassName( "SomeClass" );
+        searchFields.setRepositories( selectedRepos );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", searchFields, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 1, results.getHits().size() );
+        assertEquals( "test-webapp", results.getHits().get( 0 ).getArtifactId() );
     }
 }
