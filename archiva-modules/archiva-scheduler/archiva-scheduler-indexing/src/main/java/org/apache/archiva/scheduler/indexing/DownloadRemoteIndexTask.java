@@ -39,6 +39,8 @@ import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
+import org.apache.maven.wagon.shared.http.HttpConfiguration;
+import org.apache.maven.wagon.shared.http.HttpMethodConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +49,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -120,6 +123,8 @@ public class DownloadRemoteIndexTask
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
 
             final Wagon wagon = wagonFactory.getWagon( new URL( this.remoteRepository.getUrl() ).getProtocol() );
+            setupWagonReadTimeout( wagon );
+
             // TODO transferListener
             wagon.addTransferListener( new DownloadListener() );
             ProxyInfo proxyInfo = null;
@@ -241,6 +246,22 @@ public class DownloadRemoteIndexTask
         catch ( IOException e )
         {
             log.warn( "skip error delete " + f + ": " + e.getMessage() );
+        }
+    }
+
+    private void setupWagonReadTimeout( Wagon wagon )
+    {
+        try
+        {
+            HttpConfiguration httpConfiguration = new HttpConfiguration().setAll(
+                new HttpMethodConfiguration().setReadTimeout( remoteRepository.getRemoteDownloadTimeout() ) );
+            Method setHttpConfigurationMethod =
+                wagon.getClass().getMethod( "setHttpConfiguration", HttpConfiguration.class );
+            setHttpConfigurationMethod.invoke( wagon, httpConfiguration );
+        }
+        catch ( Exception e )
+        {
+            log.debug( "unable to set download remote time out for index {}", e.getMessage(), e );
         }
     }
 
