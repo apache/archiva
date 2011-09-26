@@ -34,6 +34,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.archiva.common.utils.FileUtil;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 
 /**
@@ -151,6 +152,9 @@ public abstract class AbstractArchivaRestTest
         ArchivaAdministrationService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
                                        ArchivaAdministrationService.class );
+
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
