@@ -193,6 +193,7 @@ public class DownloadRemoteIndexTask
             };
 
             IndexUpdateRequest request = new IndexUpdateRequest( indexingContext, resourceFetcher );
+            request.setForceFullUpdate( this.fullDownload );
 
             this.indexUpdater.fetchAndUpdateIndex( request );
 
