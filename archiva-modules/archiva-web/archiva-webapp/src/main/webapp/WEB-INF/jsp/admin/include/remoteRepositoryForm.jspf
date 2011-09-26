@@ -25,12 +25,14 @@
 <s:textfield name="repository.userName" label="Username" size="25" required="false"/>
 <s:password name="repository.password" label="Password" size="25" required="false"/>
 <s:textfield name="repository.timeout" label="Timeout in seconds" size="3" required="false"/>
+<s:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
+          name="repository.layout" label="Type"/>
+
 <s:checkbox name="repository.downloadRemoteIndex" label="Activate download remote index" />
 <s:textfield name="repository.remoteIndexUrl" label="Remote index url, can be relative to url" size="60" required="false"/>
 <s:textfield name="repository.cronExpression" label="Cron expression" size="10" required="false"/>
 <s:textfield name="repository.indexDirectory" label="Directory index storage" size="60" required="false"/>
-<s:select list="networkProxies" name="repository.remoteDownloadNetworkProxyId" emptyOption="true" required="false" listKey="id" listValue="id"/>
+<s:select list="networkProxies" name="repository.remoteDownloadNetworkProxyId" emptyOption="true"
+required="false" listKey="id" listValue="id" label="Network Proxy to Use for download Remote Index"/>
 
 
-<s:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
-           name="repository.layout" label="Type"/>
