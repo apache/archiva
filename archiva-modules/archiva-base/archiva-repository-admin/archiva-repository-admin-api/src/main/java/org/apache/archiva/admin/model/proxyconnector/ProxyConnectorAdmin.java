@@ -47,15 +47,19 @@ public interface ProxyConnectorAdmin
 
     /**
      * <b>only for enabled/disable or changing bean values except target/source</b>
+     *
      * @param proxyConnector
      * @param auditInformation
      * @return
      * @throws RepositoryAdminException
      */
     Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
-            throws RepositoryAdminException;
+        throws RepositoryAdminException;
 
-
+    /**
+     * @return key/value : managed repo Id / list to proxy connector ordered
+     * @throws RepositoryAdminException
+     */
     Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException;
 

@@ -34,6 +34,7 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
@@ -140,6 +142,22 @@ public class DefaultDownloadRemoteIndexScheduler
         }
 
 
+    }
+
+    @PreDestroy
+    private void shutdown()
+        throws RepositoryAdminException, IOException
+    {
+        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+        {
+            String contextKey = "remote-" + remoteRepository.getId();
+            IndexingContext context = nexusIndexer.getIndexingContexts().get( contextKey );
+            if ( context == null )
+            {
+                continue;
+            }
+            nexusIndexer.removeIndexingContext( context, false );
+        }
     }
 
     public void configurationEvent( ConfigurationEvent event )

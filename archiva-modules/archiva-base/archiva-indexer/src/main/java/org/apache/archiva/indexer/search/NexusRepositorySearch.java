@@ -21,7 +21,9 @@ package org.apache.archiva.indexer.search;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -48,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,17 +68,19 @@ public class NexusRepositorySearch
 
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    private ProxyConnectorAdmin proxyConnectorAdmin;
+
     private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
     public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ManagedRepositoryAdmin managedRepositoryAdmin,
-                                  MavenIndexerUtils mavenIndexerUtils )
+                                  MavenIndexerUtils mavenIndexerUtils, ProxyConnectorAdmin proxyConnectorAdmin )
         throws PlexusSisuBridgeException
     {
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.managedRepositoryAdmin = managedRepositoryAdmin;
         this.mavenIndexerUtils = mavenIndexerUtils;
-
+        this.proxyConnectorAdmin = proxyConnectorAdmin;
     }
 
     /**
@@ -308,7 +313,7 @@ public class NexusRepositorySearch
      */
     private List<String> addIndexingContexts( List<String> selectedRepos )
     {
-        List<String> indexingContextIds = new ArrayList<String>();
+        Set<String> indexingContextIds = new HashSet<String>();
         for ( String repo : selectedRepos )
         {
             try
@@ -336,6 +341,7 @@ public class NexusRepositorySearch
                         // set searchable flag
                         context.setSearchable( repoConfig.isScanned() );
                         indexingContextIds.add( context.getId() );
+                        indexingContextIds.addAll( getRemoteIndexingContextIds( repo ) );
                         continue;
                     }
 
@@ -345,6 +351,7 @@ public class NexusRepositorySearch
                     context.setSearchable( repoConfig.isScanned() );
                     if ( context.isSearchable() )
                     {
+                        indexingContextIds.addAll( getRemoteIndexingContextIds( repo ) );
                         indexingContextIds.add( context.getId() );
                     }
                     else
@@ -375,7 +382,34 @@ public class NexusRepositorySearch
                 continue;
             }
         }
-        return indexingContextIds;
+
+        return new ArrayList<String>( indexingContextIds );
+    }
+
+
+    private Set<String> getRemoteIndexingContextIds( String managedRepoId )
+        throws RepositoryAdminException
+    {
+        Set<String> ids = new HashSet<String>();
+
+        List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
+
+        if ( proxyConnectors == null || proxyConnectors.isEmpty() )
+        {
+            return ids;
+        }
+
+        for ( ProxyConnector proxyConnector : proxyConnectors )
+        {
+            String remoteId = "remote-" + proxyConnector.getTargetRepoId();
+            IndexingContext context = indexer.getIndexingContexts().get( remoteId );
+            if ( context != null && context.isSearchable() )
+            {
+                ids.add( remoteId );
+            }
+        }
+
+        return ids;
     }
 
 
