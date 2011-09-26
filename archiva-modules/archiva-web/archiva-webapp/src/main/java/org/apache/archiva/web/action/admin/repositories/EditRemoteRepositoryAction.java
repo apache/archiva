@@ -63,6 +63,7 @@ public class EditRemoteRepositoryAction
         {
             this.repository = getRemoteRepositoryAdmin().getRemoteRepository( repoid );
         }
+        setNetworkProxies( getNetworkProxyAdmin().getNetworkProxies() );
     }
 
     public String input()

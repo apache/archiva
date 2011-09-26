@@ -135,6 +135,7 @@ public abstract class AbstractRepositoryAdminTest
         remoteRepository.setUserName( "foo-name" );
         remoteRepository.setPassword( "toto" );
         remoteRepository.setId( id );
+        remoteRepository.setRemoteDownloadNetworkProxyId( "foo" );
         return remoteRepository;
     }
 }

@@ -50,6 +50,8 @@ public class RemoteRepository
      */
     private String remoteIndexUrl = ".index";
 
+    private String remoteDownloadNetworkProxyId;
+
 
     public RemoteRepository()
     {
@@ -132,6 +134,15 @@ public class RemoteRepository
         this.remoteIndexUrl = remoteIndexUrl;
     }
 
+    public String getRemoteDownloadNetworkProxyId()
+    {
+        return remoteDownloadNetworkProxyId;
+    }
+
+    public void setRemoteDownloadNetworkProxyId( String remoteDownloadNetworkProxyId )
+    {
+        this.remoteDownloadNetworkProxyId = remoteDownloadNetworkProxyId;
+    }
 
     @Override
     public String toString()
@@ -145,6 +156,7 @@ public class RemoteRepository
         sb.append( ", timeout=" ).append( timeout );
         sb.append( ", downloadRemoteIndex=" ).append( downloadRemoteIndex );
         sb.append( ", remoteIndexUrl='" ).append( remoteIndexUrl ).append( '\'' );
+        sb.append( ", remoteDownloadNetworkProxyId='" ).append( remoteDownloadNetworkProxyId ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

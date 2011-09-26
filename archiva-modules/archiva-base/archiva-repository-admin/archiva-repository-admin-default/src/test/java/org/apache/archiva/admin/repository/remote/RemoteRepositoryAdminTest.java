@@ -114,10 +114,12 @@ public class RemoteRepositoryAdminTest
         assertEquals( getRemoteRepository().getUserName(), repo.getUserName() );
         assertEquals( getRemoteRepository().getName(), repo.getName() );
         assertEquals( getRemoteRepository().getTimeout(), repo.getTimeout() );
+        assertEquals( getRemoteRepository().getRemoteDownloadNetworkProxyId(), repo.getRemoteDownloadNetworkProxyId() );
 
         repo.setUserName( "foo-name-changed" );
         repo.setPassword( "titi" );
         repo.setUrl( "http://foo.com/maven-really-rocks" );
+        repo.setRemoteDownloadNetworkProxyId( "toto" );
 
         remoteRepositoryAdmin.updateRemoteRepository( repo, getFakeAuditInformation() );
 
@@ -126,6 +128,7 @@ public class RemoteRepositoryAdminTest
         assertEquals( "foo-name-changed", repo.getUserName() );
         assertEquals( "titi", repo.getPassword() );
         assertEquals( "http://foo.com/maven-really-rocks", repo.getUrl() );
+        assertEquals( "toto", repo.getRemoteDownloadNetworkProxyId() );
 
         remoteRepositoryAdmin.deleteRemoteRepository( "foo", getFakeAuditInformation() );
 
@@ -148,7 +151,6 @@ public class RemoteRepositoryAdminTest
         assertEquals( "root", mockAuditListener.getAuditEvents().get( 2 ).getUserId() );
 
     }
-
 
 
 }

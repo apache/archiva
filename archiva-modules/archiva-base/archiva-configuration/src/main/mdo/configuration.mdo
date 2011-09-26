@@ -510,6 +510,14 @@
             Remote Index Url : if not starting with http will be relative to the remote repository url.
           </description>
         </field>
+        <field>
+          <name>remoteDownloadNetworkProxyId</name>
+          <version>1.4.0+</version>
+          <type>String</type>
+          <description>
+            Id of the networkProxy to use when downloading remote index.
+          </description>
+        </field>
       </fields>
     </class>
     <class>

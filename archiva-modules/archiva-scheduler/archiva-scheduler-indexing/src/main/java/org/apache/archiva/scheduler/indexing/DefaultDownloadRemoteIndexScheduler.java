@@ -20,7 +20,6 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
@@ -160,28 +159,15 @@ public class DefaultDownloadRemoteIndexScheduler
                 log.warn( "ignore scheduleDownloadRemote for repo with id {} as not exists", repositoryId );
                 return;
             }
-            String networkProxyId = null;
-            for ( ProxyConnector proxyConnector : proxyConnectorAdmin.getProxyConnectors() )
-            {
-                if ( StringUtils.equals( proxyConnector.getTargetRepoId(), repositoryId ) )
-                {
-                    networkProxyId = proxyConnector.getProxyId();
-                    break;
-                }
-            }
-
-            // FIXME add a field networkProxy at the remoteRepositories level : only use for remote index download
-
             NetworkProxy networkProxy = null;
-            if ( networkProxyId != null )
+            if ( remoteRepository.getRemoteDownloadNetworkProxyId() != null )
             {
-                for ( NetworkProxy np : networkProxyAdmin.getNetworkProxies() )
+                networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId() );
+                if ( networkProxy == null )
                 {
-                    if ( StringUtils.equals( np.getId(), networkProxyId ) )
-                    {
-                        networkProxy = np;
-                        break;
-                    }
+                    log.warn(
+                        "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
+                        remoteRepository.getRemoteDownloadNetworkProxyId() );
                 }
             }
 

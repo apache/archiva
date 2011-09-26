@@ -43,8 +43,10 @@ public class AddRemoteRepositoryAction
     private RemoteRepository repository;
 
     public void prepare()
+        throws RepositoryAdminException
     {
         this.repository = new RemoteRepository();
+        setNetworkProxies( getNetworkProxyAdmin().getNetworkProxies() );
     }
 
     public String input()

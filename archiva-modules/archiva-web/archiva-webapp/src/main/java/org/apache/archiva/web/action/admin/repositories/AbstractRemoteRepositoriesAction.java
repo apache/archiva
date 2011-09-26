@@ -1,8 +1,12 @@
 package org.apache.archiva.web.action.admin.repositories;
 
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 
 import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,6 +38,11 @@ public class AbstractRemoteRepositoriesAction
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Inject
+    private NetworkProxyAdmin networkProxyAdmin;
+
+    private List<NetworkProxy> networkProxies;
+
     public RemoteRepositoryAdmin getRemoteRepositoryAdmin()
     {
         return remoteRepositoryAdmin;
@@ -42,5 +51,25 @@ public class AbstractRemoteRepositoriesAction
     public void setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
     {
         this.remoteRepositoryAdmin = remoteRepositoryAdmin;
+    }
+
+    public NetworkProxyAdmin getNetworkProxyAdmin()
+    {
+        return networkProxyAdmin;
+    }
+
+    public void setNetworkProxyAdmin( NetworkProxyAdmin networkProxyAdmin )
+    {
+        this.networkProxyAdmin = networkProxyAdmin;
+    }
+
+    public List<NetworkProxy> getNetworkProxies()
+    {
+        return networkProxies == null ? Collections.<NetworkProxy>emptyList() : networkProxies;
+    }
+
+    public void setNetworkProxies( List<NetworkProxy> networkProxies )
+    {
+        this.networkProxies = networkProxies;
     }
 }

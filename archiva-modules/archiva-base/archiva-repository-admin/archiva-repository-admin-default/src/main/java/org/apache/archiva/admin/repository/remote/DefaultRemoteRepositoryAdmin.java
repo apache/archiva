@@ -61,6 +61,8 @@ public class DefaultRemoteRepositoryAdmin
             remoteRepository.setRemoteIndexUrl( repositoryConfiguration.getRemoteIndexUrl() );
             remoteRepository.setCronExpression( repositoryConfiguration.getRefreshCronExpression() );
             remoteRepository.setIndexDirectory( repositoryConfiguration.getIndexDir() );
+            remoteRepository.setRemoteDownloadNetworkProxyId(
+                repositoryConfiguration.getRemoteDownloadNetworkProxyId() );
             remoteRepositories.add( remoteRepository );
         }
         return remoteRepositories;
@@ -195,6 +197,8 @@ public class DefaultRemoteRepositoryAdmin
         remoteRepositoryConfiguration.setRemoteIndexUrl( remoteRepository.getRemoteIndexUrl() );
         remoteRepositoryConfiguration.setRefreshCronExpression( remoteRepository.getCronExpression() );
         remoteRepositoryConfiguration.setIndexDir( remoteRepository.getIndexDirectory() );
+        remoteRepositoryConfiguration.setRemoteDownloadNetworkProxyId(
+            remoteRepository.getRemoteDownloadNetworkProxyId() );
         return remoteRepositoryConfiguration;
     }
 

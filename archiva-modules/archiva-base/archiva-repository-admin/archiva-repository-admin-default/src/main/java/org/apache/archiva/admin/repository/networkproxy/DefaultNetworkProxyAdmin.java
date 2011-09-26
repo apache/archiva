@@ -25,11 +25,13 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import org.springframework.stereotype.Service;
 
+import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,6 +125,14 @@ public class DefaultNetworkProxyAdmin
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         NetworkProxyConfiguration networkProxyConfiguration = getNetworkProxyConfiguration( networkProxy );
         configuration.removeNetworkProxy( networkProxyConfiguration );
+
+        for ( RemoteRepositoryConfiguration rrc : configuration.getRemoteRepositories())
+        {
+            if (StringUtils.equals( rrc.getRemoteDownloadNetworkProxyId(), networkProxyId ))
+            {
+                rrc.setRemoteDownloadNetworkProxyId( null );
+            }
+        }
 
         triggerAuditEvent( networkProxy.getId(), null, AuditEvent.DELETE_NETWORK_PROXY, auditInformation );
 

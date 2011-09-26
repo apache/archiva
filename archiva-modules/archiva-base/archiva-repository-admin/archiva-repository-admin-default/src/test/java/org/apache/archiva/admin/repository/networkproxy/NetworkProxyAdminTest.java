@@ -19,6 +19,7 @@ package org.apache.archiva.admin.repository.networkproxy;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
@@ -126,6 +127,39 @@ public class NetworkProxyAdminTest
         assertEquals( AuditEvent.DELETE_NETWORK_PROXY, mockAuditListener.getAuditEvents().get( 2 ).getAction() );
 
         mockAuditListener.clearEvents();
+    }
+
+    /**
+     * ensure we cleanup remote repos linked to a network proxy
+     */
+    @Test
+    public void addAndDeleteWithRemoteRepoLinked()
+        throws Exception
+    {
+        mockAuditListener.clearEvents();
+        int initialSize = networkProxyAdmin.getNetworkProxies().size();
+        NetworkProxy networkProxy = getNetworkProxyTest( "foo" );
+
+        networkProxyAdmin.addNetworkProxy( networkProxy, getFakeAuditInformation() );
+
+        assertEquals( initialSize + 1, networkProxyAdmin.getNetworkProxies().size() );
+
+        networkProxy = networkProxyAdmin.getNetworkProxy( "foo" );
+
+        assertNotNull( networkProxy );
+
+        RemoteRepository remoteRepository = getRemoteRepository();
+        remoteRepository.setRemoteDownloadNetworkProxyId( networkProxy.getId() );
+
+        remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getFakeAuditInformation() );
+
+        networkProxyAdmin.deleteNetworkProxy( "foo", getFakeAuditInformation() );
+
+        remoteRepository = remoteRepositoryAdmin.getRemoteRepository( getRemoteRepository().getId() );
+
+        assertNull( remoteRepository.getRemoteDownloadNetworkProxyId() );
+
+        remoteRepositoryAdmin.deleteRemoteRepository( getRemoteRepository().getId(), getFakeAuditInformation() );
     }
 
 
