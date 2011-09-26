@@ -254,7 +254,7 @@ public class DownloadRemoteIndexTask
         try
         {
             HttpConfiguration httpConfiguration = new HttpConfiguration().setAll(
-                new HttpMethodConfiguration().setReadTimeout( remoteRepository.getRemoteDownloadTimeout() ) );
+                new HttpMethodConfiguration().setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 ) );
             Method setHttpConfigurationMethod =
                 wagon.getClass().getMethod( "setHttpConfiguration", HttpConfiguration.class );
             setHttpConfigurationMethod.invoke( wagon, httpConfiguration );
