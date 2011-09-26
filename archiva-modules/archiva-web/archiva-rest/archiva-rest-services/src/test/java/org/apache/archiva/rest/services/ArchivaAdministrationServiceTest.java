@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
@@ -102,5 +103,29 @@ public class ArchivaAdministrationServiceTest
         assertEquals( "http://foo.com/bar.png", organisationInformation.getLogoLocation() );
         assertEquals( "foo org", organisationInformation.getName() );
         assertEquals( "http://foo.com", organisationInformation.getUrl() );
+    }
+
+    @Test
+    public void uiConfigurationReadUpdate()
+        throws Exception
+    {
+        UiConfiguration ui = getArchivaAdministrationService().getUiConfiguration();
+        assertNotNull( ui );
+        // assert default values
+        assertFalse( ui.isDisableEasterEggs() );
+        assertTrue( ui.isAppletFindEnabled() );
+        assertTrue( ui.isShowFindArtifacts() );
+
+        ui.setAppletFindEnabled( false );
+        ui.setShowFindArtifacts( false );
+        ui.setDisableEasterEggs( true );
+
+        getArchivaAdministrationService().setUiConfiguration( ui );
+
+        ui = getArchivaAdministrationService().getUiConfiguration();
+
+        assertTrue( ui.isDisableEasterEggs() );
+        assertFalse( ui.isAppletFindEnabled() );
+        assertFalse( ui.isShowFindArtifacts() );
     }
 }

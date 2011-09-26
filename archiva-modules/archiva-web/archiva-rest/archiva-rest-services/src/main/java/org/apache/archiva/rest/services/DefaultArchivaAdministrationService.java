@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.springframework.stereotype.Service;
@@ -297,14 +298,34 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            if ( organisationInformation == null )
-            {
-                archivaAdministration.setOrganisationInformation( null );
-            }
-            else
-            {
-                archivaAdministration.setOrganisationInformation( organisationInformation );
-            }
+            archivaAdministration.setOrganisationInformation( organisationInformation );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+
+    public UiConfiguration getUiConfiguration()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            return archivaAdministration.getUiConfiguration();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public void setUiConfiguration( UiConfiguration uiConfiguration )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            archivaAdministration.updateUiConfiguration( uiConfiguration );
         }
         catch ( RepositoryAdminException e )
         {
