@@ -518,6 +518,15 @@
             Id of the networkProxy to use when downloading remote index.
           </description>
         </field>
+        <field>
+          <name>remoteDownloadTimeout</name>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <description>
+            Timeout in seconds for download remote index. Default is more long than artifact download.
+          </description>
+          <defaultValue>300</defaultValue>
+        </field>
       </fields>
     </class>
     <class>

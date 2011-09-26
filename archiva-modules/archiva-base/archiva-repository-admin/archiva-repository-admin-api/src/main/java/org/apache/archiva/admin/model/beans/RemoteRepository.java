@@ -57,6 +57,8 @@ public class RemoteRepository
      */
     private String cronExpression = "0 0 08 ? * SUN";
 
+    private int remoteDownloadTimeout = 300;
+
 
     public RemoteRepository()
     {
@@ -159,6 +161,16 @@ public class RemoteRepository
         this.cronExpression = cronExpression;
     }
 
+    public int getRemoteDownloadTimeout()
+    {
+        return remoteDownloadTimeout;
+    }
+
+    public void setRemoteDownloadTimeout( int remoteDownloadTimeout )
+    {
+        this.remoteDownloadTimeout = remoteDownloadTimeout;
+    }
+
     @Override
     public String toString()
     {
@@ -173,6 +185,7 @@ public class RemoteRepository
         sb.append( ", remoteIndexUrl='" ).append( remoteIndexUrl ).append( '\'' );
         sb.append( ", remoteDownloadNetworkProxyId='" ).append( remoteDownloadNetworkProxyId ).append( '\'' );
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
+        sb.append( ", remoteDownloadTimeout=" ).append( remoteDownloadTimeout );
         sb.append( '}' );
         return sb.toString();
     }

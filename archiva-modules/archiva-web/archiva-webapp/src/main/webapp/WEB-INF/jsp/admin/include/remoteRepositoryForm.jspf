@@ -32,6 +32,7 @@
 <s:textfield name="repository.remoteIndexUrl" label="Remote index url, can be relative to url" size="60" required="false"/>
 <s:textfield name="repository.cronExpression" label="Cron expression" size="10" required="false"/>
 <s:textfield name="repository.indexDirectory" label="Directory index storage" size="60" required="false"/>
+<s:textfield name="repository.remoteDownloadTimeout" label="Download Remote Index Timeout in seconds" size="10" required="false"/>
 <s:select list="networkProxies" name="repository.remoteDownloadNetworkProxyId" emptyOption="true"
 required="false" listKey="id" listValue="id" label="Network Proxy to Use for download Remote Index"/>
 
