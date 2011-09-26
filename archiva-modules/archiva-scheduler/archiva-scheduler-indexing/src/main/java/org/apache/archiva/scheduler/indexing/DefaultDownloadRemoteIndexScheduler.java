@@ -145,7 +145,7 @@ public class DefaultDownloadRemoteIndexScheduler
     }
 
     @PreDestroy
-    private void shutdown()
+    public void shutdown()
         throws RepositoryAdminException, IOException
     {
         for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )

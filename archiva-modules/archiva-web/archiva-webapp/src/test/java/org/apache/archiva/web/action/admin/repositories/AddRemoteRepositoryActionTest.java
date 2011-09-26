@@ -62,7 +62,7 @@ public class AddRemoteRepositoryActionTest
     }
 
     public void testSecureActionBundle()
-        throws SecureActionException
+        throws Exception
     {
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( new Configuration() );
