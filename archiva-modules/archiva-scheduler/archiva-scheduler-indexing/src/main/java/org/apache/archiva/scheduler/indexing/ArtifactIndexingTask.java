@@ -194,6 +194,16 @@ public class ArtifactIndexingTask
                                                  List<? extends IndexCreator> indexCreators )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
+        IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
+
+        if ( context != null )
+        {
+            LoggerFactory.getLogger( ArtifactIndexingTask.class ).warn(
+                "skip adding repository with id {} as already exists", repository.getId() );
+            return context;
+        }
+
+
         String indexDir = repository.getIndexDirectory();
         File managedRepository = new File( repository.getLocation() );
 
@@ -207,14 +217,6 @@ public class ArtifactIndexingTask
             indexDirectory = new File( managedRepository, ".indexer" );
         }
 
-        IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
-
-        if ( context != null )
-        {
-            LoggerFactory.getLogger( ArtifactIndexingTask.class ).warn(
-                "skip adding repository with id {} as already exists", repository.getId() );
-            return context;
-        }
 
         context = indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
                                               managedRepository.toURI().toURL().toExternalForm(),
