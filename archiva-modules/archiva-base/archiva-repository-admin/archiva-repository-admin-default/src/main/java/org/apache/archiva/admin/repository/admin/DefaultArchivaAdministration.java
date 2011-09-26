@@ -25,10 +25,13 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.UserInterfaceOptions;
+import org.apache.archiva.configuration.WebappConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -146,8 +149,7 @@ public class DefaultArchivaAdministration
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        org.apache.archiva.configuration.FileType fileType =
-            new org.apache.archiva.configuration.FileType();
+        org.apache.archiva.configuration.FileType fileType = new org.apache.archiva.configuration.FileType();
         fileType.setId( fileTypeId );
         configuration.getRepositoryScanning().removeFileType( fileType );
         saveConfiguration( configuration );
@@ -286,7 +288,42 @@ public class DefaultArchivaAdministration
         saveConfiguration( configuration );
     }
 
-    //-------------------------
+    public UiConfiguration getUiConfiguration()
+        throws RepositoryAdminException
+    {
+        WebappConfiguration webappConfiguration = getArchivaConfiguration().getConfiguration().getWebapp();
+        if ( webappConfiguration == null )
+        {
+            return null;
+        }
+        UserInterfaceOptions userInterfaceOptions = webappConfiguration.getUi();
+        if ( userInterfaceOptions == null )
+        {
+            return null;
+        }
+        return new BeanReplicator().replicateBean( userInterfaceOptions, UiConfiguration.class );
+    }
+
+    public void updateUiConfiguration( UiConfiguration uiConfiguration )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        if ( uiConfiguration != null )
+        {
+
+            UserInterfaceOptions userInterfaceOptions =
+                new BeanReplicator().replicateBean( uiConfiguration, UserInterfaceOptions.class );
+            configuration.getWebapp().setUi( userInterfaceOptions );
+        }
+        else
+        {
+            configuration.getWebapp().setUi( null );
+        }
+        saveConfiguration( configuration );
+
+    }
+
+//-------------------------
     //
     //-------------------------
 

@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 
 import java.util.List;
 
@@ -88,6 +89,12 @@ public interface ArchivaAdministration
         throws RepositoryAdminException;
 
     void setOrganisationInformation( OrganisationInformation organisationInformation )
+        throws RepositoryAdminException;
+
+    UiConfiguration getUiConfiguration()
+        throws RepositoryAdminException;
+
+    void updateUiConfiguration( UiConfiguration uiConfiguration )
         throws RepositoryAdminException;
 
 }

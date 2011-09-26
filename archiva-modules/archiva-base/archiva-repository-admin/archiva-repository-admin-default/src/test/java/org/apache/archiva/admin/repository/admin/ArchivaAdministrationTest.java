@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
 import org.junit.Test;
@@ -170,17 +171,20 @@ public class ArchivaAdministrationTest
 
     }
 
-
+    @Test
     public void organisationInfoUpdate()
         throws Exception
     {
         OrganisationInformation organisationInformation = archivaAdministration.getOrganisationInformation();
-        assertNull( organisationInformation );
+        assertNotNull( organisationInformation );
+        assertNull( organisationInformation.getLogoLocation() );
+        assertNull( organisationInformation.getName() );
+        assertNull( organisationInformation.getUrl() );
 
         organisationInformation = new OrganisationInformation();
         organisationInformation.setLogoLocation( "http://foo.com/bar.png" );
         organisationInformation.setName( "foo org" );
-        organisationInformation.setUrl( "http:/foo.com" );
+        organisationInformation.setUrl( "http://foo.com" );
 
         archivaAdministration.setOrganisationInformation( organisationInformation );
 
@@ -190,5 +194,29 @@ public class ArchivaAdministrationTest
         assertEquals( "foo org", organisationInformation.getName() );
         assertEquals( "http://foo.com", organisationInformation.getUrl() );
 
+    }
+
+    @Test
+    public void uiConfiguration()
+        throws Exception
+    {
+        UiConfiguration ui = archivaAdministration.getUiConfiguration();
+        assertNotNull( ui );
+        // assert default values
+        assertFalse( ui.isDisableEasterEggs() );
+        assertTrue( ui.isAppletFindEnabled() );
+        assertTrue( ui.isShowFindArtifacts() );
+
+        ui.setAppletFindEnabled( false );
+        ui.setShowFindArtifacts( false );
+        ui.setDisableEasterEggs( true );
+
+        archivaAdministration.updateUiConfiguration( ui );
+
+        ui = archivaAdministration.getUiConfiguration();
+
+        assertTrue( ui.isDisableEasterEggs() );
+        assertFalse( ui.isAppletFindEnabled() );
+        assertFalse( ui.isShowFindArtifacts() );
     }
 }
