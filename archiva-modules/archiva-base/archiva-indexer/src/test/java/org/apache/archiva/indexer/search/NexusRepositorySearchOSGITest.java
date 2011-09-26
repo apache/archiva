@@ -43,7 +43,7 @@ public class NexusRepositorySearchOSGITest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 

@@ -71,8 +71,17 @@
       <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -88,6 +97,17 @@
             </excludes>
           </configuration>
         </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <plexus.home>${project.build.outputDirectory}</plexus.home>
+            <appserver.base>${basedir}/target/appserver-base</appserver.base>
+            <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       </plugins>
     </pluginManagement>
   </build>

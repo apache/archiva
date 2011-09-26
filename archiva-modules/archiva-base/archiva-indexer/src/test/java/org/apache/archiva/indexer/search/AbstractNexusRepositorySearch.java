@@ -21,14 +21,15 @@ package org.apache.archiva.indexer.search;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.ArtifactScanningListener;
@@ -100,7 +101,11 @@ public abstract class AbstractNexusRepositorySearch
         DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin = new DefaultManagedRepositoryAdmin();
         defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfig );
 
-        search = new NexusRepositorySearch( plexusSisuBridge, defaultManagedRepositoryAdmin, mavenIndexerUtils );
+        DefaultProxyConnectorAdmin defaultProxyConnectorAdmin = new DefaultProxyConnectorAdmin();
+        defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
+
+        search = new NexusRepositorySearch( plexusSisuBridge, defaultManagedRepositoryAdmin, mavenIndexerUtils,
+                                            defaultProxyConnectorAdmin );
 
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
 

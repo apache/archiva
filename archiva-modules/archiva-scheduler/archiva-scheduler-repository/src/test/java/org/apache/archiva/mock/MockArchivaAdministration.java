@@ -41,67 +41,67 @@ public class MockArchivaAdministration
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void removeFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public List<FileType> getFileTypes()
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public FileType getFileType( String fileTypeId )
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void addFileType( FileType fileType, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void removeFileType( String fileTypeId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void addKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void setKnownContentConsumers( List<String> knownContentConsumers, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public List<String> getKnownContentConsumers()
@@ -114,19 +114,19 @@ public class MockArchivaAdministration
     public void removeKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void addInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public void setInvalidContentConsumers( List<String> invalidContentConsumers, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public List<String> getInvalidContentConsumers()
@@ -139,19 +139,19 @@ public class MockArchivaAdministration
     public void removeInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public OrganisationInformation getOrganisationInformation()
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public ArchivaConfiguration getArchivaConfiguration()
@@ -167,12 +167,12 @@ public class MockArchivaAdministration
     public UiConfiguration getUiConfiguration()
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void updateUiConfiguration( UiConfiguration uiConfiguration )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 }

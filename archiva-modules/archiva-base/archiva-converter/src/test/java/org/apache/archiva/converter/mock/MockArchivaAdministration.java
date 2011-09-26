@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 
 import java.util.List;
 
@@ -142,6 +143,19 @@ public class MockArchivaAdministration
     }
 
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
+        throws RepositoryAdminException
+    {
+
+
+    }
+
+    public UiConfiguration getUiConfiguration()
+        throws RepositoryAdminException
+    {
+        return null;
+    }
+
+    public void updateUiConfiguration( UiConfiguration uiConfiguration )
         throws RepositoryAdminException
     {
 

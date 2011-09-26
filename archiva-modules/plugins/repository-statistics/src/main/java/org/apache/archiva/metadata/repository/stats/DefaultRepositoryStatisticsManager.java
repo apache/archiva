@@ -63,6 +63,10 @@ public class DefaultRepositoryStatisticsManager
     {
         // TODO: consider a more efficient implementation that directly gets the last one from the content repository
         List<String> scans = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+        if (scans == null)
+        {
+            return null;
+        }
         Collections.sort( scans );
         if ( !scans.isEmpty() )
         {
