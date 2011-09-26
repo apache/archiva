@@ -31,7 +31,7 @@ import javax.inject.Inject;
 /**
  *
  */
-@Service("uuditListener#metadata")
+@Service("auditListener#metadata")
 public class MetadataAuditListener
     implements AuditListener
 {
