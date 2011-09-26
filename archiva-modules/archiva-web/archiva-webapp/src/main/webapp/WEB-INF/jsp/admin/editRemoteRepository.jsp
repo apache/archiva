@@ -40,6 +40,12 @@
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
     <s:submit value="Update Repository"/>
   </s:form>
+  <s:form method="post" action="editRemoteRepository!downloadRemoteIndex" namespace="/admin" validate="false">
+    <s:hidden name="repoid"/>
+    <s:checkbox name="now" label="Now" />
+    <s:checkbox name="fullDownload" label="Full download"/>
+    <s:submit value="download Remote Index"/>
+  </s:form>
 
   <script type="text/javascript">
     document.getElementById("editRemoteRepository_repository_name").focus();

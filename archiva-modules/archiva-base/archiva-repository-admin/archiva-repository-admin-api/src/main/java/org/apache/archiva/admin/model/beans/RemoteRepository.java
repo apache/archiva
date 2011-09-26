@@ -19,8 +19,6 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.AbstractRepository;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -41,6 +39,17 @@ public class RemoteRepository
     private String password;
 
     private int timeout = 60;
+
+    /**
+     * Activate download of remote index if remoteIndexUrl is set too.
+     */
+    private boolean downloadRemoteIndex = false;
+
+    /**
+     * Remote Index Url : if not starting with http will be relative to the remote repository url.
+     */
+    private String remoteIndexUrl = ".index";
+
 
     public RemoteRepository()
     {
@@ -103,17 +112,40 @@ public class RemoteRepository
         this.timeout = timeout;
     }
 
+    public boolean isDownloadRemoteIndex()
+    {
+        return downloadRemoteIndex;
+    }
+
+    public void setDownloadRemoteIndex( boolean downloadRemoteIndex )
+    {
+        this.downloadRemoteIndex = downloadRemoteIndex;
+    }
+
+    public String getRemoteIndexUrl()
+    {
+        return remoteIndexUrl;
+    }
+
+    public void setRemoteIndexUrl( String remoteIndexUrl )
+    {
+        this.remoteIndexUrl = remoteIndexUrl;
+    }
+
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
+        sb.append( super.toString() );
         sb.append( "RemoteRepository" );
         sb.append( "{url='" ).append( url ).append( '\'' );
         sb.append( ", userName='" ).append( userName ).append( '\'' );
         sb.append( ", password='" ).append( password ).append( '\'' );
         sb.append( ", timeout=" ).append( timeout );
+        sb.append( ", downloadRemoteIndex=" ).append( downloadRemoteIndex );
+        sb.append( ", remoteIndexUrl='" ).append( remoteIndexUrl ).append( '\'' );
         sb.append( '}' );
-        sb.append( super.toString() );
         return sb.toString();
     }
 

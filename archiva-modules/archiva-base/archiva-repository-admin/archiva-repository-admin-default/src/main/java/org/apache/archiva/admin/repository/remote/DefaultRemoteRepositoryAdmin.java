@@ -24,10 +24,10 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,11 +52,16 @@ public class DefaultRemoteRepositoryAdmin
         List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
         for ( RemoteRepositoryConfiguration repositoryConfiguration : getArchivaConfiguration().getConfiguration().getRemoteRepositories() )
         {
-            remoteRepositories.add(
+            RemoteRepository remoteRepository =
                 new RemoteRepository( repositoryConfiguration.getId(), repositoryConfiguration.getName(),
                                       repositoryConfiguration.getUrl(), repositoryConfiguration.getLayout(),
                                       repositoryConfiguration.getUsername(), repositoryConfiguration.getPassword(),
-                                      repositoryConfiguration.getTimeout() ) );
+                                      repositoryConfiguration.getTimeout() );
+            remoteRepository.setDownloadRemoteIndex( repositoryConfiguration.isDownloadRemoteIndex() );
+            remoteRepository.setRemoteIndexUrl( repositoryConfiguration.getRemoteIndexUrl() );
+            remoteRepository.setCronExpression( repositoryConfiguration.getRefreshCronExpression() );
+            remoteRepository.setIndexDirectory( repositoryConfiguration.getIndexDir() );
+            remoteRepositories.add( remoteRepository );
         }
         return remoteRepositories;
     }
@@ -186,6 +191,10 @@ public class DefaultRemoteRepositoryAdmin
         remoteRepositoryConfiguration.setUsername( remoteRepository.getUserName() );
         remoteRepositoryConfiguration.setLayout( remoteRepository.getLayout() );
         remoteRepositoryConfiguration.setName( remoteRepository.getName() );
+        remoteRepositoryConfiguration.setDownloadRemoteIndex( remoteRepository.isDownloadRemoteIndex() );
+        remoteRepositoryConfiguration.setRemoteIndexUrl( remoteRepository.getRemoteIndexUrl() );
+        remoteRepositoryConfiguration.setRefreshCronExpression( remoteRepository.getCronExpression() );
+        remoteRepositoryConfiguration.setIndexDir( remoteRepository.getIndexDirectory() );
         return remoteRepositoryConfiguration;
     }
 

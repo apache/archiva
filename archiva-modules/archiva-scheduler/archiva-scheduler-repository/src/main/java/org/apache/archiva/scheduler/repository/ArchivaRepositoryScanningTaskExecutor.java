@@ -53,7 +53,7 @@ import java.util.Date;
  */
 @Service( "taskExecutor#repository-scanning" )
 public class ArchivaRepositoryScanningTaskExecutor
-    implements TaskExecutor, Initializable
+    implements TaskExecutor
 {
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
 

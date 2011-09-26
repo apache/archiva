@@ -18,7 +18,7 @@ package org.apache.archiva.admin.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.AbstractRepository;
+import org.apache.archiva.admin.model.beans.AbstractRepository;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;

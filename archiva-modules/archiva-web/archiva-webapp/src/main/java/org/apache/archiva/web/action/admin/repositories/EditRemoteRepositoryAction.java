@@ -22,9 +22,13 @@ package org.apache.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+
+import javax.inject.Inject;
 
 /**
  * EditRemoteRepositoryAction
@@ -46,6 +50,11 @@ public class EditRemoteRepositoryAction
      * The repository id to edit.
      */
     private String repoid;
+
+    private boolean now, fullDownload;
+
+    @Inject
+    private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     public void prepare()
         throws RepositoryAdminException
@@ -83,6 +92,20 @@ public class EditRemoteRepositoryAction
         return result;
     }
 
+    public String downloadRemoteIndex()
+    {
+        try
+        {
+            downloadRemoteIndexScheduler.scheduleDownloadRemote( repoid, now, fullDownload );
+        }
+        catch ( DownloadRemoteIndexException e )
+        {
+            addActionError( "DownloadRemoteIndexException: " + e.getMessage() );
+            return INPUT;
+        }
+        return SUCCESS;
+    }
+
     public RemoteRepository getRepository()
     {
         return repository;
@@ -101,5 +124,25 @@ public class EditRemoteRepositoryAction
     public void setRepoid( String repoid )
     {
         this.repoid = repoid;
+    }
+
+    public boolean isNow()
+    {
+        return now;
+    }
+
+    public void setNow( boolean now )
+    {
+        this.now = now;
+    }
+
+    public boolean isFullDownload()
+    {
+        return fullDownload;
+    }
+
+    public void setFullDownload( boolean fullDownload )
+    {
+        this.fullDownload = fullDownload;
     }
 }

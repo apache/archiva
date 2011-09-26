@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.model;
+package org.apache.archiva.admin.model.beans;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -33,6 +33,13 @@ public class AbstractRepository
     private String name;
 
     private String layout = "default";
+
+    /**
+     * default model value
+     */
+    private String cronExpression = "0 0 * * * ?";
+
+    private String indexDirectory;
 
     public AbstractRepository()
     {
@@ -76,6 +83,25 @@ public class AbstractRepository
         this.layout = layout;
     }
 
+    public String getCronExpression()
+    {
+        return cronExpression;
+    }
+
+    public void setCronExpression( String cronExpression )
+    {
+        this.cronExpression = cronExpression;
+    }
+
+    public String getIndexDirectory()
+    {
+        return indexDirectory;
+    }
+
+    public void setIndexDirectory( String indexDirectory )
+    {
+        this.indexDirectory = indexDirectory;
+    }
 
     public int hashCode()
     {
@@ -110,6 +136,8 @@ public class AbstractRepository
         sb.append( "{id='" ).append( id ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", layout='" ).append( layout ).append( '\'' );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
+        sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

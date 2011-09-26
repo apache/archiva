@@ -252,6 +252,7 @@
           <systemPropertyVariables>
             <plexus.home>${project.build.outputDirectory}</plexus.home>
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
+            <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
           </systemPropertyVariables>
         </configuration>
       </plugin>

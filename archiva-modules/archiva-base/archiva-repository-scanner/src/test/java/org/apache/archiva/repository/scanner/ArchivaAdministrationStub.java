@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.springframework.stereotype.Service;
 
@@ -162,5 +163,17 @@ public class ArchivaAdministrationStub
         throws RepositoryAdminException
     {
 
+    }
+
+    public UiConfiguration getUiConfiguration()
+        throws RepositoryAdminException
+    {
+        return null;
+    }
+
+    public void updateUiConfiguration( UiConfiguration uiConfiguration )
+        throws RepositoryAdminException
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

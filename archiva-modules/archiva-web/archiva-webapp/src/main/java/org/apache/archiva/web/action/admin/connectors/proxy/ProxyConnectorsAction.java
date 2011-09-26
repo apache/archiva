@@ -20,7 +20,7 @@ package org.apache.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.archiva.admin.model.AbstractRepository;
+import org.apache.archiva.admin.model.beans.AbstractRepository;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.springframework.context.annotation.Scope;

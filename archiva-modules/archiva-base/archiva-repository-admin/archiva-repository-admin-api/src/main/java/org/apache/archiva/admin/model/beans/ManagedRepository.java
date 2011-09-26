@@ -19,8 +19,6 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.AbstractRepository;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -42,11 +40,6 @@ public class ManagedRepository
 
     private boolean blockRedeployments = false;
 
-    /**
-     * default model value
-     */
-    private String cronExpression = "0 0 * * * ?";
-
 
     /**
      * not need when creating the repo : only available when reading
@@ -55,7 +48,6 @@ public class ManagedRepository
 
     private boolean scanned = false;
 
-    private String indexDirectory;
 
     /**
      * default model value
@@ -89,8 +81,8 @@ public class ManagedRepository
         this.snapshots = snapshots;
         this.releases = releases;
         this.blockRedeployments = blockRedeployments;
-        this.cronExpression = cronExpression;
-        this.indexDirectory = indexDir;
+        this.setCronExpression( cronExpression );
+        this.setIndexDirectory( indexDir );
         this.scanned = scanned;
         this.daysOlder = daysOlder;
         this.retentionCount = retentionCount;
@@ -144,15 +136,6 @@ public class ManagedRepository
         this.blockRedeployments = blockRedeployments;
     }
 
-    public String getCronExpression()
-    {
-        return cronExpression;
-    }
-
-    public void setCronExpression( String cronExpression )
-    {
-        this.cronExpression = cronExpression;
-    }
 
     public ManagedRepository getStagingRepository()
     {
@@ -175,15 +158,7 @@ public class ManagedRepository
         this.scanned = scanned;
     }
 
-    public String getIndexDirectory()
-    {
-        return indexDirectory;
-    }
 
-    public void setIndexDirectory( String indexDirectory )
-    {
-        this.indexDirectory = indexDirectory;
-    }
 
     public int getDaysOlder()
     {
@@ -239,15 +214,14 @@ public class ManagedRepository
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
+        sb.append( super.toString() );
         sb.append( "ManagedRepository" );
         sb.append( "{location='" ).append( location ).append( '\'' );
         sb.append( ", snapshots=" ).append( snapshots );
         sb.append( ", releases=" ).append( releases );
         sb.append( ", blockRedeployments=" ).append( blockRedeployments );
-        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", stagingRepository=" ).append( stagingRepository );
         sb.append( ", scanned=" ).append( scanned );
-        sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
         sb.append( ", daysOlder=" ).append( daysOlder );
         sb.append( ", retentionCount=" ).append( retentionCount );
         sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );

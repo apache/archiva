@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.repository.utils;
+package org.apache.archiva.scheduler.indexing;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,34 +18,12 @@ package org.apache.archiva.admin.repository.utils;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.AbstractRepository;
-
-import java.util.Comparator;
-
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-public class RepositoryComparator
-    implements Comparator<AbstractRepository>
+public interface DownloadRemoteIndexScheduler
 {
-    public int compare( AbstractRepository o1, AbstractRepository o2 )
-    {
-        if ( o1 == null && o2 == null )
-        {
-            return 0;
-        }
-
-        if ( o1 == null )
-        {
-            return -1;
-        }
-
-        if ( o2 == null )
-        {
-            return 1;
-        }
-
-        return o1.getId().compareToIgnoreCase( o2.getId() );
-    }
+    void scheduleDownloadRemote( String repositoryId, boolean now, boolean fullDownload )
+        throws DownloadRemoteIndexException;
 }

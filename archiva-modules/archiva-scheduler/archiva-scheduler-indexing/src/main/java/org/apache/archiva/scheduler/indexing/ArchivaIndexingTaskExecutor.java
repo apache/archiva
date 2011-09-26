@@ -255,24 +255,6 @@ public class ArchivaIndexingTaskExecutor
             throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
                                               e );
         }
-        finally
-        {
-            /*
-            olamy don't close it anymore as it nullify IndexSearcher
-            if ( context != null )
-            {
-                try
-                {
-                    context.close( false );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Error occurred while closing context: " + e.getMessage() );
-                    throw new TaskExecutionException( "Error occurred while closing context: " + e.getMessage() );
-                }
-            }
-            */
-        }
     }
 
     public void setIndexPacker( IndexPacker indexPacker )
