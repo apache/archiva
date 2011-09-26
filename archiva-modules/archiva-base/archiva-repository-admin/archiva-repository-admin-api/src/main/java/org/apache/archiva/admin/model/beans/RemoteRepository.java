@@ -52,6 +52,11 @@ public class RemoteRepository
 
     private String remoteDownloadNetworkProxyId;
 
+    /**
+     * default model value daily : every sunday at 8H00
+     */
+    private String cronExpression = "0 0 08 ? * SUN";
+
 
     public RemoteRepository()
     {
@@ -144,6 +149,16 @@ public class RemoteRepository
         this.remoteDownloadNetworkProxyId = remoteDownloadNetworkProxyId;
     }
 
+    public String getCronExpression()
+    {
+        return cronExpression;
+    }
+
+    public void setCronExpression( String cronExpression )
+    {
+        this.cronExpression = cronExpression;
+    }
+
     @Override
     public String toString()
     {
@@ -157,6 +172,7 @@ public class RemoteRepository
         sb.append( ", downloadRemoteIndex=" ).append( downloadRemoteIndex );
         sb.append( ", remoteIndexUrl='" ).append( remoteIndexUrl ).append( '\'' );
         sb.append( ", remoteDownloadNetworkProxyId='" ).append( remoteDownloadNetworkProxyId ).append( '\'' );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

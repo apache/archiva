@@ -40,6 +40,11 @@ public class ManagedRepository
 
     private boolean blockRedeployments = false;
 
+    /**
+     * default model value hourly
+     */
+    private String cronExpression = "0 0 * * * ?";
+
 
     /**
      * not need when creating the repo : only available when reading
@@ -89,6 +94,16 @@ public class ManagedRepository
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
         this.stageRepoNeeded = stageRepoNeeded;
         this.resetStats = resetStats;
+    }
+
+    public String getCronExpression()
+    {
+        return cronExpression;
+    }
+
+    public void setCronExpression( String cronExpression )
+    {
+        this.cronExpression = cronExpression;
     }
 
     public String getLocation()
@@ -159,7 +174,6 @@ public class ManagedRepository
     }
 
 
-
     public int getDaysOlder()
     {
         return daysOlder;
@@ -220,6 +234,7 @@ public class ManagedRepository
         sb.append( ", snapshots=" ).append( snapshots );
         sb.append( ", releases=" ).append( releases );
         sb.append( ", blockRedeployments=" ).append( blockRedeployments );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", stagingRepository=" ).append( stagingRepository );
         sb.append( ", scanned=" ).append( scanned );
         sb.append( ", daysOlder=" ).append( daysOlder );

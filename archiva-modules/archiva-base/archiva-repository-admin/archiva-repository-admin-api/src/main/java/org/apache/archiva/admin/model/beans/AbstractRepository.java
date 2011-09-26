@@ -34,10 +34,7 @@ public class AbstractRepository
 
     private String layout = "default";
 
-    /**
-     * default model value
-     */
-    private String cronExpression = "0 0 * * * ?";
+
 
     private String indexDirectory;
 
@@ -83,15 +80,7 @@ public class AbstractRepository
         this.layout = layout;
     }
 
-    public String getCronExpression()
-    {
-        return cronExpression;
-    }
 
-    public void setCronExpression( String cronExpression )
-    {
-        this.cronExpression = cronExpression;
-    }
 
     public String getIndexDirectory()
     {
@@ -136,7 +125,6 @@ public class AbstractRepository
         sb.append( "{id='" ).append( id ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", layout='" ).append( layout ).append( '\'' );
-        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
