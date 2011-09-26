@@ -22,7 +22,6 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
-import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -148,38 +147,6 @@ public class DownloadRemoteIndexTask
                 indexDirectory.mkdirs();
             }
 
-            /*
-            File[] indexFiles = indexDirectory.listFiles( new FileFilter()
-            {
-                public boolean accept( File file )
-                {
-                    return !file.isDirectory();
-                }
-            } );
-
-            List<String> indexFileNames = new ArrayList<String>( indexFiles == null ? 0 : indexFiles.length );
-
-            for ( File f : indexFiles == null ? new File[0] : indexFiles )
-            {
-                indexFileNames.add( f.getName() );
-            }
-            */
-
-            //List<String> files = wagon.getFileList( "" );
-
-            // take care about time stamp : no need to rebuild index
-            // TODO incremental honor fullDownload true !!
-            // FIXME dont fail all if one file fail ?
-            /*
-            for ( String file : files )
-            {
-                if ( !indexFileNames.contains( file ) && StringUtils.endsWith( file, ".gz" ) )
-                {
-                    downloadFile( wagon, file, tempIndexDirectory );
-                    File compressIndexUpdate = new File( tempIndexDirectory, file );
-                    mergeCompressIndex( indexingContext, compressIndexUpdate, wagon );
-                }
-            }*/
             ResourceFetcher resourceFetcher = new ResourceFetcher()
             {
                 public void connect( String id, String url )
@@ -258,7 +225,7 @@ public class DownloadRemoteIndexTask
         }
         finally
         {
-            //deleteDirectoryQuiet( tempIndexDirectory );
+            deleteDirectoryQuiet( tempIndexDirectory );
             this.runningRemoteDownloadIds.remove( this.remoteRepository.getId() );
         }
         log.info( "end download remote index for remote repository " + this.remoteRepository.getId() );
@@ -273,60 +240,6 @@ public class DownloadRemoteIndexTask
         catch ( IOException e )
         {
             log.warn( "skip error delete " + f + ": " + e.getMessage() );
-        }
-    }
-
-    protected void mergeCompressIndex( IndexingContext context, final File compressedIndexUpdate, final Wagon wagon )
-        throws IOException, CompressorException
-    {
-
-        /*
-
-        final File tmpUncompressDirectory = new File( compressedIndexUpdate.getParent(),
-                                                      StringUtils.substringBeforeLast( compressedIndexUpdate.getName(),
-                                                                                       "." ) );
-        tmpUncompressDirectory.deleteOnExit();
-        final FileOutputStream fos =
-            new FileOutputStream( new File( tmpUncompressDirectory, compressedIndexUpdate.getName() ) );
-        try
-        {
-            if ( tmpUncompressDirectory.exists() )
-            {
-                tmpUncompressDirectory.delete();
-            }
-            tmpUncompressDirectory.mkdirs();
-
-            // gunzip  the file to a directory and merge
-
-            // gunzip
-            final InputStream in = new FileInputStream( compressedIndexUpdate );
-            CompressorInputStream cis =
-                new CompressorStreamFactory().createCompressorInputStream( CompressorStreamFactory.GZIP, in );
-            IOUtils.copy( cis, fos );
-            in.close();
-            fos.flush();
-            fos.close();
-            // merge
-
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fos );
-            //deleteDirectoryQuiet( tmpUncompressDirectory );
-            //FileUtils.deleteQuietly( tmpUncompressDirectory );
-        }
-        */
-    }
-
-    protected void downloadFile( Wagon wagon, String file, File tempIndexDirectory )
-    {
-        try
-        {
-            wagon.get( file, new File( tempIndexDirectory, file ) );
-        }
-        catch ( Exception e )
-        {
-            log.warn( "skip fail to download " + file + ": " + e.getMessage() );
         }
     }
 
