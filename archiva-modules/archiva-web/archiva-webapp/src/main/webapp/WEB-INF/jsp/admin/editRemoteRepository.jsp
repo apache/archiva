@@ -19,12 +19,14 @@
 
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 
 <html>
 <head>
   <title>Admin: Edit Remote Repository</title>
   <s:head/>
+  <script type="text/javascript" src="<c:url value='/js/jquery-1.6.1.min.js'/>"></script>
 </head>
 
 <body>
@@ -42,28 +44,32 @@
     <s:submit value="Update Repository"/>
   </s:form>
   <redback:ifAuthorized permission="archiva-run-indexer">
-    <s:form method="post" action="editRemoteRepository!downloadRemoteIndex" namespace="/admin" validate="false"
-            onsubmit="javascript:downloadRemote();">
-      <s:hidden name="repoid"/>
-      <s:checkbox name="now" label="Now" />
-      <s:checkbox name="fullDownload" label="Full download"/>
-      <s:submit value="download Remote Index" onclick="javascript:downloadRemote();"/>
-    </s:form>
+    <form id="downloadRemoteForm" name="downloadRemoteForm">
+      <input type="hidden" value="${repoid}" id="repoid"/>
+      Now: <input type="checkbox" name="now"/><br/>
+      Full download: <input type="checkbox" name="fullDownload" /><br/>
+      <input type="button" onclick="downloadRemote();" value="Download Remote Index" />
+
+    </form>
   </redback:ifAuthorized>
 
-  <script type="text/javascript">
-    document.getElementById("editRemoteRepository_repository_name").focus();
-    function downloadRemote() {
-        $.ajax({
-          url: "test.html",
-          success: function(){
-            alert("ok");
-          }
-        });
-    }
-  </script>
 
 </div>
 
+<script type="text/javascript">
+  function downloadRemote() {
+
+    $.ajax({
+             url: "${pageContext.request.contextPath}/restServices/archivaServices/repositoriesService/scheduleDownloadRemoteIndex",
+             data: "repositoryId="+document.getElementById("downloadRemoteForm").repoid.value+"&now="+document.getElementById("downloadRemoteForm").now.value+"&fullDownload="+document.getElementById("downloadRemoteForm").fullDownload.value ,
+             error: function(){
+               alert('error');
+             }
+           });
+    return false;
+  }
+  document.getElementById("editRemoteRepository_repository_name").focus();
+
+</script>
 </body>
 </html>
