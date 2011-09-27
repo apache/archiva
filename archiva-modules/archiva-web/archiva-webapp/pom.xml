@@ -490,6 +490,7 @@
           <runOrder>alphabetical</runOrder>
           <systemPropertyVariables>
             <plexus.home>${project.build.outputDirectory}</plexus.home>
+            <appserver.base>${project.build.outputDirectory}</appserver.base>
           </systemPropertyVariables>
         </configuration>
       </plugin>
