@@ -83,4 +83,13 @@ public interface RepositoriesService
     Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
         throws ArchivaRestServiceException;
 
+    @Path( "scheduleDownloadRemoteIndex" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    Boolean scheduleDownloadRemoteIndex( @QueryParam( "repositoryId" ) String repositoryId,
+                                         @QueryParam( "now" ) boolean now,
+                                         @QueryParam( "fullDownload" ) boolean fullDownload )
+        throws ArchivaRestServiceException;
+
 }

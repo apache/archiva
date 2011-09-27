@@ -44,6 +44,8 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArchivaIndexingTaskExecutor;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -67,7 +69,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.PathParam;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -118,6 +119,9 @@ public class DefaultRepositoriesService
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
+
+    @Inject
+    private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -189,6 +193,21 @@ public class DefaultRepositoriesService
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage() );
         }
+    }
+
+    public Boolean scheduleDownloadRemoteIndex( String repositoryId, boolean now, boolean fullDownload )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            downloadRemoteIndexScheduler.scheduleDownloadRemote( repositoryId, now, fullDownload );
+        }
+        catch ( DownloadRemoteIndexException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+        return Boolean.TRUE;
     }
 
     public Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
