@@ -178,7 +178,7 @@ public class DefaultDownloadRemoteIndexScheduler
                 return;
             }
             NetworkProxy networkProxy = null;
-            if ( remoteRepository.getRemoteDownloadNetworkProxyId() != null )
+            if ( StringUtils.isNotBlank( remoteRepository.getRemoteDownloadNetworkProxyId() ) )
             {
                 networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId() );
                 if ( networkProxy == null )
