@@ -3,7 +3,7 @@
  ------
  Maria Odea Ching
  ------
- 2011-11-13
+ 2011-09-27
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -109,7 +109,25 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
   
   * <password> - the password (if authentication is needed) to be used to access the repository.
   
-  * <type> - the layout (maven 2 or maven 1) of the remote repository.  
+  * <type> - the layout (maven 2 or maven 1) of the remote repository.
+
+  * <Activate download remote index> - to activate downloading remote index to add available remote artifacts in search queries.
+
+  * <Remote index url, can be relative to url> - path of the remote index directory.
+
+  * <Cron expression> - cron expression for downloading remote index (default weekly on sunday)
+
+  * <Directory index storage> - path to store index directory, default will be ${appserver.base}/data/remotes/${repositoryId}/.index
+
+  * <Download Remote Index Timeout in seconds> - read time out for downloading remote index files (default 300)
+
+  * <Network Proxy to Use for download Remote Index> - proxy to use for downloading remote index files.
+
+
+
+[../images/remote-repositories.png] Remote Repositories
+
+  You can also trigger an immediate download of remote index files.
   
 * Scanning a Repository
  
