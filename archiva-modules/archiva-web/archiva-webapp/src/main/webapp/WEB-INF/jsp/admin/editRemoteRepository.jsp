@@ -19,6 +19,7 @@
 
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 
 <html>
 <head>
@@ -40,12 +41,14 @@
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
     <s:submit value="Update Repository"/>
   </s:form>
-  <s:form method="post" action="editRemoteRepository!downloadRemoteIndex" namespace="/admin" validate="false">
-    <s:hidden name="repoid"/>
-    <s:checkbox name="now" label="Now" />
-    <s:checkbox name="fullDownload" label="Full download"/>
-    <s:submit value="download Remote Index"/>
-  </s:form>
+  <redback:ifAuthorized permission="archiva-run-indexer">
+    <s:form method="post" action="editRemoteRepository!downloadRemoteIndex" namespace="/admin" validate="false">
+      <s:hidden name="repoid"/>
+      <s:checkbox name="now" label="Now" />
+      <s:checkbox name="fullDownload" label="Full download"/>
+      <s:submit value="download Remote Index"/>
+    </s:form>
+  </redback:ifAuthorized>
 
   <script type="text/javascript">
     document.getElementById("editRemoteRepository_repository_name").focus();
