@@ -184,11 +184,11 @@ public class DownloadRemoteIndexTask
                     }
                     catch ( AuthorizationException e )
                     {
-                        throw new IOException( e.getMessage(), e );
+                        throw new IOException( e.getMessage() );
                     }
                     catch ( TransferFailedException e )
                     {
-                        throw new IOException( e.getMessage(), e );
+                        throw new IOException( e.getMessage() );
                     }
                     catch ( ResourceDoesNotExistException e )
                     {
