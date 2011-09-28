@@ -251,13 +251,17 @@ public class DefaultSearchService
         {
             return null;
         }
-        if (StringUtils.isEmpty( artifact.getUrl() ))
+        if ( StringUtils.isEmpty( artifact.getUrl() ) )
         {
             return null;
         }
         StringBuilder sb = new StringBuilder( getBaseUrl( httpContext.getHttpServletRequest() ) );
 
-        sb.append( "/repository/" );
+        sb.append( "/repository" );
+        if ( !StringUtils.startsWith( artifact.getUrl(), "/" ) )
+        {
+            sb.append( '/' );
+        }
         sb.append( artifact.getUrl() );
         return sb.toString();
     }
