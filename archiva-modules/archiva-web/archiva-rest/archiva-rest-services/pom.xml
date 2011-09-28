@@ -30,6 +30,7 @@
 
   <properties>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
+    <archiva.baseRestUrl></archiva.baseRestUrl>
   </properties>
 
   <dependencies>
@@ -253,6 +254,7 @@
             <plexus.home>${project.build.outputDirectory}</plexus.home>
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
             <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
+            <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
           </systemPropertyVariables>
         </configuration>
       </plugin>

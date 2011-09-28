@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
@@ -29,9 +30,9 @@ import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.archiva.common.utils.FileUtil;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 
 import javax.ws.rs.core.MediaType;
@@ -52,7 +53,6 @@ public abstract class AbstractArchivaRestTest
     // with an other login/password
     //public String authzHeader =
     //    "Basic " + org.apache.cxf.common.util.Base64Utility.encode( ( "login" + ":password" ).getBytes() );
-
 
     // END SNIPPET: authz-header
 
@@ -76,7 +76,7 @@ public abstract class AbstractArchivaRestTest
     protected RepositoriesService getRepositoriesService( String authzHeader )
     {
         RepositoriesService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        RepositoriesService.class );
 
         if ( authzHeader != null )
@@ -91,7 +91,7 @@ public abstract class AbstractArchivaRestTest
     protected ManagedRepositoriesService getManagedRepositoriesService( String authzHeader )
     {
         ManagedRepositoriesService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        ManagedRepositoriesService.class );
 
         if ( authzHeader != null )
@@ -105,30 +105,28 @@ public abstract class AbstractArchivaRestTest
 
     protected PingService getPingService()
     {
-        return JAXRSClientFactory.create(
-            "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/", PingService.class );
+        return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                          PingService.class );
     }
 
     protected RemoteRepositoriesService getRemoteRepositoriesService()
     {
-        return JAXRSClientFactory.create(
-            "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
-            RemoteRepositoriesService.class );
+        return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                          RemoteRepositoriesService.class );
 
 
     }
 
     protected RepositoryGroupService getRepositoryGroupService()
     {
-        return JAXRSClientFactory.create(
-            "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
-            RepositoryGroupService.class );
+        return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                          RepositoryGroupService.class );
     }
 
     protected ProxyConnectorService getProxyConnectorService()
     {
         ProxyConnectorService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        ProxyConnectorService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
@@ -139,7 +137,7 @@ public abstract class AbstractArchivaRestTest
     protected NetworkProxyService getNetworkProxyService()
     {
         NetworkProxyService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        NetworkProxyService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
@@ -150,7 +148,7 @@ public abstract class AbstractArchivaRestTest
     protected ArchivaAdministrationService getArchivaAdministrationService()
     {
         ArchivaAdministrationService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        ArchivaAdministrationService.class );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
@@ -165,7 +163,7 @@ public abstract class AbstractArchivaRestTest
     {
         // START SNIPPET: cxf-searchservice-creation
         SearchService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/archivaServices/",
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        SearchService.class );
 
         if ( authzHeader != null )
@@ -184,5 +182,11 @@ public abstract class AbstractArchivaRestTest
         return new ManagedRepository( "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
                                       false, 2, 3, true, false );
 
+    }
+
+    protected String getBaseUrl()
+    {
+        String baseUrlSysProps = System.getProperty( "archiva.baseRestUrl" );
+        return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + port : baseUrlSysProps;
     }
 }
