@@ -468,12 +468,13 @@ public class NexusRepositorySearch
 
     /**
      * calculate baseUrl without the context and base Archiva Url
+     *
      * @param artifactInfo
      * @return
      */
     protected String getBaseUrl( ArtifactInfo artifactInfo )
     {
-        StringBuilder sb = new StringBuilder( );
+        StringBuilder sb = new StringBuilder();
 
         sb.append( '/' ).append( StringUtils.replaceChars( artifactInfo.groupId, '.', '/' ) );
         sb.append( '/' ).append( artifactInfo.artifactId );
@@ -484,7 +485,15 @@ public class NexusRepositorySearch
         {
             sb.append( '-' ).append( artifactInfo.classifier );
         }
-        sb.append( '.' ).append( artifactInfo.packaging );
+        // maven-plugin packaging is a jar
+        if ( StringUtils.equals( "maven-plugin", artifactInfo.packaging ) )
+        {
+            sb.append( "jar" );
+        }
+        else
+        {
+            sb.append( '.' ).append( artifactInfo.packaging );
+        }
 
         return sb.toString();
     }
