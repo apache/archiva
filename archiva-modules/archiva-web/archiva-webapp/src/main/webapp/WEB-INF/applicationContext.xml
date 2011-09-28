@@ -320,16 +320,12 @@
     this component manages the connection to the ldap server
      -->
 
-    <!-- component>
-      <role>org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory</role>
-      <role-hint>configurable</role-hint>
-      <implementation>org.codehaus.plexus.redback.common.ldap.connection.ConfigurableLdapConnectionFactory</implementation>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.configuration.UserConfiguration</role>
-        </requirement>
-      </requirements>
-    </component-->
+    <!--
+    <bean name="ldapConnectionFactory" class="org.codehaus.plexus.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
+      <property name="userConf" ref="userConfiguration"/>
+    </bean>
+    -->
+
     
     <!-- 
     
@@ -354,24 +350,19 @@
      * user-object-class - the objectClass used in the ldap server for indentifying users, most commonly inetOrgPerson.
      -->
     
-    <!-- component>
-      <role>org.codehaus.plexus.redback.common.ldap.UserMapper</role>
-      <role-hint>ldap</role-hint>
-      <implementation>org.codehaus.plexus.redback.common.ldap.LdapUserMapper</implementation>
-      <configuration>
-        <email-attribute>email</email-attribute>
-        <full-name-attribute>givenName</full-name-attribute>
-        <password-attribute>userPassword</password-attribute>
-        <user-id-attribute>cn</user-id-attribute>
-        <user-base-dn>o=com</user-base-dn>
-        <user-object-class>inetOrgPerson</user-object-class>
-      </configuration>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.configuration.UserConfiguration</role>
-        </requirement>
-      </requirements>
-    </component-->
+    <!--
+    <bean name="ldapUserMapper" class="org.codehaus.plexus.redback.common.ldap.LdapUserMapper">
+      <property name="emailAttribute" value="email"/>
+      <property name="fullNameAttribute" value="givenName"/>
+      <property name="passwordAttribute" value="userPassword"/>
+      <property name="userIdAttribute" value="cn"/>
+      <property name="userBaseDn" value="o=com"/>
+      <property name="userObjectClass" value="inetOrgPerson"/>
+      <property name="userConf" ref="userConfiguration"/>
+    </bean>     
+    -->
+  
+
     
     <!--
      
@@ -380,24 +371,14 @@
     user.manager.impl=cached
     -->
      
-    <!-- component>
-      <role>org.codehaus.plexus.redback.users.UserManager</role>
-      <role-hint>cached</role-hint>
-      <implementation>org.codehaus.plexus.redback.users.cached.CachedUserManager</implementation>
-      <description>CachedUserManager</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.users.UserManager</role>
-          <role-hint>ldap</role-hint>
-          <field-name>userImpl</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
-          <role-hint>users</role-hint>
-          <field-name>usersCache</field-name>
-        </requirement>
-      </requirements>
-    </component-->
+    <!--
+    <bean name="userManager#cached" class="org.codehaus.plexus.redback.users.cached.CachedUserManager">
+      <property name="userImpl" ref="userMapper#ldap"/>
+      <property name="usersCache" ref="cache#users"/>
+    </bean>     
+    -->
+  
+
     
     <!-- 
     
@@ -410,42 +391,26 @@
     
     in the security.properties
     -->
-    
-    <!-- component>
-      <role>org.codehaus.plexus.redback.policy.UserSecurityPolicy</role>
-      <role-hint>default</role-hint>
-      <implementation>org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy</implementation>
-      <description>User Security Policy.</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.configuration.UserConfiguration</role>
-          <field-name>config</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.policy.PasswordEncoder</role>
-          <role-hint>sha1</role-hint>
-          <field-name>passwordEncoder</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.policy.UserValidationSettings</role>
-          <field-name>userValidationSettings</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.policy.CookieSettings</role>
-          <role-hint>rememberMe</role-hint>
-          <field-name>rememberMeCookieSettings</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.policy.CookieSettings</role>
-          <role-hint>signon</role-hint>
-          <field-name>signonCookieSettings</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.policy.PasswordRule</role>
-          <field-name>rules</field-name>
-        </requirement>
-      </requirements>
-    </component-->
+    <!--
+    <bean name="userSecurityPolicy" class="org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy">
+      <property name="config" ref="userConfiguration"/>
+      <property name="passwordEncoder" ref="passwordEncoder#sha1"/>
+      <property name="userValidationSettings" ref="userValidationSettings"/>
+      <property name="rememberMeCookieSettings" ref="cookieSettings#rememberMe"/>
+      <property name="signonCookieSettings" ref="cookieSettings#signon"/>
+      <property name="rules">
+        add the rules you want to applied
+        <list>
+          <ref bean="passwordRule#alpha-count"/>
+          <ref bean="passwordRule#alpha-numeric"/>
+          <ref bean="passwordRule#character-length"/>
+          <ref bean="passwordRule#must-have"/>
+          <ref bean="passwordRule#no-whitespaces"/>
+          <ref bean="passwordRule#numerical-count"/>
+        </list>
+      </property>
+    </bean>
+    -->
     <!-- END SNIPPET: ldap -->
 
 </beans>
