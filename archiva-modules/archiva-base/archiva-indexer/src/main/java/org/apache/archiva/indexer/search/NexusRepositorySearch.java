@@ -248,27 +248,7 @@ public class NexusRepositorySearch
         {
             throw new RepositorySearchException( e );
         }
-        /*
-        olamy : don't understand why this ?? it remove content from index ??
-        comment until someone explain WTF ?? :-))
-        finally
-        {
-            Map<String, IndexingContext> indexingContexts = indexer.getIndexingContexts();
 
-            for ( Map.Entry<String, IndexingContext> entry : indexingContexts.entrySet() )
-            {
-                try
-                {
-                    indexer.removeIndexingContext( entry.getValue(), false );
-                    log.debug( "Indexing context '{}' removed from search.", entry.getKey() );
-                }
-                catch ( IOException e )
-                {
-                    log.warn( "IOException occurred while removing indexing content '" + entry.getKey() + "'." );
-                    continue;
-                }
-            }
-        }*/
     }
 
     private List<IndexingContext> getIndexingContexts( List<String> ids )
@@ -466,7 +446,7 @@ public class NexusRepositorySearch
                 hit.setPrefix( artifactInfo.prefix );
                 hit.setPackaging( artifactInfo.packaging );
                 hit.setClassifier( artifactInfo.classifier );
-                hit.setUrl( artifactInfo.remoteUrl );
+                hit.setUrl( getBaseUrl( artifactInfo ) );
             }
 
             results.addHit( id, hit );
@@ -484,6 +464,29 @@ public class NexusRepositorySearch
         {
             return paginate( results );
         }
+    }
+
+    /**
+     * calculate baseUrl without the context and base Archiva Url
+     * @param artifactInfo
+     * @return
+     */
+    protected String getBaseUrl( ArtifactInfo artifactInfo )
+    {
+        StringBuilder sb = new StringBuilder( );
+
+        sb.append( '/' ).append( StringUtils.replaceChars( artifactInfo.groupId, '.', '/' ) );
+        sb.append( '/' ).append( artifactInfo.artifactId );
+        sb.append( '/' ).append( artifactInfo.version );
+        sb.append( '/' ).append( artifactInfo.artifactId );
+        sb.append( '-' ).append( artifactInfo.version );
+        if ( StringUtils.isNotBlank( artifactInfo.classifier ) )
+        {
+            sb.append( '-' ).append( artifactInfo.classifier );
+        }
+        sb.append( '.' ).append( artifactInfo.packaging );
+
+        return sb.toString();
     }
 
     private boolean applyArtifactInfoFilters( ArtifactInfo artifactInfo,

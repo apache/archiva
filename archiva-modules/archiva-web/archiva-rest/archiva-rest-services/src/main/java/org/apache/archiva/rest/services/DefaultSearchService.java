@@ -251,30 +251,14 @@ public class DefaultSearchService
         {
             return null;
         }
+        if (StringUtils.isEmpty( artifact.getUrl() ))
+        {
+            return null;
+        }
         StringBuilder sb = new StringBuilder( getBaseUrl( httpContext.getHttpServletRequest() ) );
 
-        sb.append( "/repository" );
-
-        if ( StringUtils.startsWith( artifact.getContext(), "remote-" ) )
-        {
-            // if context is 'remote-*' we have to set a repo which the current user can use
-        }
-        else
-        {
-            sb.append( '/' ).append( artifact.getContext() );
-        }
-
-        sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
-        sb.append( '/' ).append( artifact.getArtifactId() );
-        sb.append( '/' ).append( artifact.getVersion() );
-        sb.append( '/' ).append( artifact.getArtifactId() );
-        if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
-        {
-            sb.append( '-' ).append( artifact.getClassifier() );
-        }
-        sb.append( '-' ).append( artifact.getVersion() );
-        sb.append( '.' ).append( artifact.getPackaging() );
-
+        sb.append( "/repository/" );
+        sb.append( artifact.getUrl() );
         return sb.toString();
     }
 

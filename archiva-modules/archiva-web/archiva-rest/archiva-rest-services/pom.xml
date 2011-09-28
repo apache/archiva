@@ -31,6 +31,7 @@
   <properties>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
     <archiva.baseRestUrl></archiva.baseRestUrl>
+    <rest.admin.pwd></rest.admin.pwd>
   </properties>
 
   <dependencies>
@@ -255,6 +256,7 @@
             <appserver.base>${basedir}/target/appserver-base</appserver.base>
             <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
             <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
+            <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
           </systemPropertyVariables>
         </configuration>
       </plugin>
