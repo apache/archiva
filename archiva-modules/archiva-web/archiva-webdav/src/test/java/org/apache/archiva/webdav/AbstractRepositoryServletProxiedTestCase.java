@@ -91,8 +91,6 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
     protected RemoteRepoInfo remoteSnapshots;
 
-    protected RemoteRepoInfo remotePrivateSnapshots;
-
     @Before
     public void setUp()
         throws Exception

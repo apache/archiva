@@ -48,9 +48,31 @@ public class BrowseActionTest
 
     private static final String OTHER_TEST_REPO = "other-repo";
 
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+        setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
+        action = (BrowseAction) getActionProxy( "/browse.action" ).getAction();
+        metadataResolver = new TestMetadataResolver();
+        RepositorySession repositorySession = mock( RepositorySession.class );
+        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
+        TestRepositorySessionFactory factory =
+            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
+        factory.setRepositorySession( repositorySession );
+    }
+
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        applicationContext.getBean( DefaultDownloadRemoteIndexScheduler.class ).shutdown();
+        setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
+    }
+
     public void testInstantiation()
     {
-        assertFalse( action == (BrowseAction) getActionProxy( "/browse.action" ).getAction() );
+        assertFalse( action == getActionProxy( "/browse.action" ).getAction() );
     }
 
     public void testBrowse()
@@ -389,26 +411,5 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-        setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
-        //action = (BrowseAction) lookup( Action.class, ACTION_HINT );
-        action = (BrowseAction) getActionProxy( "/browse.action" ).getAction();
-        metadataResolver = new TestMetadataResolver();
-        RepositorySession repositorySession = mock( RepositorySession.class );
-        when( repositorySession.getResolver() ).thenReturn( metadataResolver );
-        TestRepositorySessionFactory factory =
-            applicationContext.getBean( "repositorySessionFactory#test", TestRepositorySessionFactory.class );
-        factory.setRepositorySession( repositorySession );
-    }
 
-    protected void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-        applicationContext.getBean( DefaultDownloadRemoteIndexScheduler.class ).shutdown();
-        setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
-    }
 }
