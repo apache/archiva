@@ -30,6 +30,8 @@ import org.apache.archiva.rest.api.model.Dependency;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.archiva.rest.services.interceptors.HttpContext;
+import org.apache.archiva.rest.services.interceptors.HttpContextThreadLocal;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +81,7 @@ public class DefaultSearchService
             SearchResults searchResults =
                 repositorySearch.search( getPrincipal(), getObservableRepos(), queryString, limits,
                                          Collections.<String>emptyList() );
-            return getArtifacts( searchResults);
+            return getArtifacts( searchResults );
 
         }
         catch ( RepositorySearchException e )
@@ -182,6 +185,8 @@ public class DefaultSearchService
 
     protected List<Artifact> getArtifacts( SearchResults searchResults )
     {
+
+        HttpContext httpContext = HttpContextThreadLocal.get();
         if ( searchResults == null || searchResults.isEmpty() )
         {
             return Collections.emptyList();
@@ -221,16 +226,61 @@ public class DefaultSearchService
                     // FIXME archiva url ??
 
                     Artifact versionned = new BeanReplicator().replicateBean( hit, Artifact.class );
+
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
+                        versionned.setUrl( getArtifactUrl( httpContext, versionned ) );
 
-                            artifacts.add( versionned );
+                        artifacts.add( versionned );
 
                     }
                 }
             }
         }
         return artifacts;
+    }
+
+    private String getArtifactUrl( HttpContext httpContext, Artifact artifact )
+    {
+        if ( httpContext == null )
+        {
+            return null;
+        }
+        if ( httpContext.getHttpServletRequest() == null )
+        {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder( getBaseUrl( httpContext.getHttpServletRequest() ) );
+
+        sb.append( "/repository" );
+
+        if ( StringUtils.startsWith( artifact.getContext(), "remote-" ) )
+        {
+            // if context is 'remote-*' we have to set a repo which the current user can use
+        }
+        else
+        {
+            sb.append( '/' ).append( artifact.getContext() );
+        }
+
+        sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
+        sb.append( '/' ).append( artifact.getArtifactId() );
+        sb.append( '/' ).append( artifact.getVersion() );
+        sb.append( '/' ).append( artifact.getArtifactId() );
+        if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
+        {
+            sb.append( '-' ).append( artifact.getClassifier() );
+        }
+        sb.append( '-' ).append( artifact.getVersion() );
+        sb.append( '.' ).append( artifact.getPackaging() );
+
+        return sb.toString();
+    }
+
+    protected String getBaseUrl( HttpServletRequest req )
+    {
+        return req.getScheme() + "://" + req.getServerName()
+            + ( req.getServerPort() == 80 ? "" : ":" + req.getServerPort() ) + req.getContextPath();
     }
 }

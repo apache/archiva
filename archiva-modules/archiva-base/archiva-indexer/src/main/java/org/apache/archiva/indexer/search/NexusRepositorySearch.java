@@ -450,8 +450,6 @@ public class NexusRepositorySearch
                 hit.setArtifactId( artifactInfo.artifactId );
                 hit.setGroupId( artifactInfo.groupId );
                 hit.setRepositoryId( artifactInfo.repository );
-                // FIXME archiva url ??
-                hit.setUrl( artifactInfo.repository + "/" + artifactInfo.fname );
                 hit.addVersion( artifactInfo.version );
                 hit.setBundleExportPackage( artifactInfo.bundleExportPackage );
                 hit.setBundleExportService( artifactInfo.bundleExportService );
@@ -459,7 +457,6 @@ public class NexusRepositorySearch
                 hit.setBundleVersion( artifactInfo.bundleVersion );
                 hit.setBundleDescription( artifactInfo.bundleDescription );
                 hit.setBundleDocUrl( artifactInfo.bundleDocUrl );
-
                 hit.setBundleRequireBundle( artifactInfo.bundleRequireBundle );
                 hit.setBundleImportPackage( artifactInfo.bundleImportPackage );
                 hit.setBundleLicense( artifactInfo.bundleLicense );
@@ -469,7 +466,6 @@ public class NexusRepositorySearch
                 hit.setPrefix( artifactInfo.prefix );
                 hit.setPackaging( artifactInfo.packaging );
                 hit.setClassifier( artifactInfo.classifier );
-                // sure ??
                 hit.setUrl( artifactInfo.remoteUrl );
             }
 

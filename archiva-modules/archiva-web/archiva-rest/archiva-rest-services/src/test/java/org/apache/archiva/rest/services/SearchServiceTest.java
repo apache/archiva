@@ -214,6 +214,7 @@ public class SearchServiceTest
         assertTrue( " not 1 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
+        log.info( "artifcat url " + artifacts.get( 0 ).getUrl() );
         deleteTestRepo( testRepoId, targetRepo );
     }
 
