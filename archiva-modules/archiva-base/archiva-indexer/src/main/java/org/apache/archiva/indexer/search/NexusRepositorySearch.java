@@ -118,7 +118,7 @@ public class NexusRepositorySearch
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST );
+        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST, principal, selectedRepos );
 
     }
 
@@ -221,11 +221,13 @@ public class NexusRepositorySearch
             throw new RepositorySearchException( "No search fields set." );
         }
 
-        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList() );
+        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList(), principal,
+                       searchFields.getRepositories() );
     }
 
     private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
-                                  List<? extends ArtifactInfoFiler> filters )
+                                  List<? extends ArtifactInfoFiler> filters, String principal,
+                                  List<String> selectedRepos )
         throws RepositorySearchException
     {
 
@@ -242,11 +244,15 @@ public class NexusRepositorySearch
                 return results;
             }
 
-            return convertToSearchResults( response, limits, filters );
+            return convertToSearchResults( response, limits, filters, principal, selectedRepos );
         }
         catch ( IOException e )
         {
-            throw new RepositorySearchException( e );
+            throw new RepositorySearchException( e.getMessage(), e );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new RepositorySearchException( e.getMessage(), e );
         }
 
     }
@@ -400,7 +406,9 @@ public class NexusRepositorySearch
 
 
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
-                                                  List<? extends ArtifactInfoFiler> artifactInfoFilers )
+                                                  List<? extends ArtifactInfoFiler> artifactInfoFilers,
+                                                  String principal, List<String> selectedRepos )
+        throws RepositoryAdminException
     {
         SearchResults results = new SearchResults();
         Set<ArtifactInfo> artifactInfos = response.getResults();
@@ -446,7 +454,7 @@ public class NexusRepositorySearch
                 hit.setPrefix( artifactInfo.prefix );
                 hit.setPackaging( artifactInfo.packaging );
                 hit.setClassifier( artifactInfo.classifier );
-                hit.setUrl( getBaseUrl( artifactInfo ) );
+                hit.setUrl( getBaseUrl( artifactInfo, selectedRepos ) );
             }
 
             results.addHit( id, hit );
@@ -472,9 +480,25 @@ public class NexusRepositorySearch
      * @param artifactInfo
      * @return
      */
-    protected String getBaseUrl( ArtifactInfo artifactInfo )
+    protected String getBaseUrl( ArtifactInfo artifactInfo, List<String> selectedRepos )
+        throws RepositoryAdminException
     {
         StringBuilder sb = new StringBuilder();
+        if ( StringUtils.startsWith( artifactInfo.context, "remote-" ) )
+        {
+            // it's a remote index result we search a managed which proxying this remote and on which
+            // current user has read karma
+            String managedRepoId =
+                getManagedRepoId( StringUtils.substringAfter( artifactInfo.context, "remote-" ), selectedRepos );
+            if ( managedRepoId != null )
+            {
+                sb.append( '/' ).append( managedRepoId );
+            }
+        }
+        else
+        {
+            sb.append( '/' ).append( artifactInfo.context );
+        }
 
         sb.append( '/' ).append( StringUtils.replaceChars( artifactInfo.groupId, '.', '/' ) );
         sb.append( '/' ).append( artifactInfo.artifactId );
@@ -496,6 +520,55 @@ public class NexusRepositorySearch
         }
 
         return sb.toString();
+    }
+
+    /**
+     * return a managed repo for a remote result
+     *
+     * @param remoteRepo
+     * @param selectedRepos
+     * @return
+     * @throws RepositoryAdminException
+     */
+    private String getManagedRepoId( String remoteRepo, List<String> selectedRepos )
+        throws RepositoryAdminException
+    {
+        Map<String, List<ProxyConnector>> proxyConnectorMap = proxyConnectorAdmin.getProxyConnectorAsMap();
+        if ( proxyConnectorMap == null || proxyConnectorMap.isEmpty() )
+        {
+            return null;
+        }
+        if ( selectedRepos != null && !selectedRepos.isEmpty() )
+        {
+            for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorMap.entrySet() )
+            {
+                if ( selectedRepos.contains( entry.getKey() ) )
+                {
+                    for ( ProxyConnector proxyConnector : entry.getValue() )
+                    {
+                        if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepoId() ) )
+                        {
+                            return proxyConnector.getSourceRepoId();
+                        }
+                    }
+                }
+            }
+        }
+
+        // we don't find in search selected repos so return the first one
+        for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorMap.entrySet() )
+        {
+
+            for ( ProxyConnector proxyConnector : entry.getValue() )
+            {
+                if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepoId() ) )
+                {
+                    return proxyConnector.getSourceRepoId();
+                }
+            }
+
+        }
+        return null;
     }
 
     private boolean applyArtifactInfoFilters( ArtifactInfo artifactInfo,
