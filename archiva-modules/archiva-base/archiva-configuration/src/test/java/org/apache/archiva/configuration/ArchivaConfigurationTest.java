@@ -20,9 +20,9 @@ package org.apache.archiva.configuration;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.common.utils.FileUtil;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.redback.components.springutils.ComponentContainer;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -41,7 +41,7 @@ import java.util.Map;
  * Test the configuration store.
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaConfigurationTest
     extends TestCase
 {
@@ -62,12 +62,12 @@ public class ArchivaConfigurationTest
         return "org/apache/maven/archiva/configuration/spring-context.xml";
     }
 
-    protected <T> T lookup(Class<T> clazz, String hint)
+    protected <T> T lookup( Class<T> clazz, String hint )
     {
         return componentContainer.getComponent( clazz, hint );
     }
 
-    protected <T> T lookup(Class<T> clazz)
+    protected <T> T lookup( Class<T> clazz )
     {
         return componentContainer.getComponent( clazz );
     }
@@ -132,14 +132,14 @@ public class ArchivaConfigurationTest
         existingTestDefaultArchivaConfigFile =
             StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", FileUtil.getBasedir() );
 
-        File generatedTestDefaultArchivaConfigFile =
-            new File( FileUtil.getBasedir(), "target/test-classes/org/apache/archiva/configuration/default-archiva.xml" );
+        File generatedTestDefaultArchivaConfigFile = new File( FileUtil.getBasedir(),
+                                                               "target/test-classes/org/apache/archiva/configuration/default-archiva.xml" );
 
         FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile,
                                      null );
 
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class,
-                                                                                   "test-defaults-default-repo-location-exists" );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration );
@@ -152,17 +152,26 @@ public class ArchivaConfigurationTest
         assertFalse( generatedTestDefaultArchivaConfigFile.exists() );
     }
 
-    /**
-     * Ensures that the provided configuration matches the details present in the archiva-default.xml file.
-     */
     private void assertConfiguration( Configuration configuration )
         throws Exception
     {
-        FileTypes filetypes = (FileTypes) lookup( FileTypes.class );
+        assertConfiguration( configuration, 2 );
+    }
 
-        assertEquals( "check repositories", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check repositories", 2, configuration.getRemoteRepositories().size() );
-        assertEquals( "check proxy connectors", 2, configuration.getProxyConnectors().size() );
+    /**
+     * Ensures that the provided configuration matches the details present in the archiva-default.xml file.
+     */
+    private void assertConfiguration( Configuration configuration, int managedExpected )
+        throws Exception
+    {
+        FileTypes filetypes = lookup( FileTypes.class );
+
+        assertEquals( "check managed repositories: " + configuration.getManagedRepositories(), managedExpected,
+                      configuration.getManagedRepositories().size() );
+        assertEquals( "check remote repositories: " + configuration.getRemoteRepositories(), 2,
+                      configuration.getRemoteRepositories().size() );
+        assertEquals( "check proxy connectors:" + configuration.getProxyConnectors(), 2,
+                      configuration.getProxyConnectors().size() );
 
         RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
         assertNotNull( "check repository scanning", repoScanning );
@@ -277,8 +286,7 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
 
         // read it back
-        archivaConfiguration =
-            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
+        archivaConfiguration = (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
 
         archivaConfiguration.reload();
         configuration = archivaConfiguration.getConfiguration();
@@ -412,7 +420,6 @@ public class ArchivaConfigurationTest
 
         assertTrue( "Check file exists", baseFile.exists() );
         assertFalse( "Check file not created", userFile.exists() );
-
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -582,16 +589,15 @@ public class ArchivaConfigurationTest
     public void testConfigurationUpgradeFrom09()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-upgrade-09" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-upgrade-09" );
 
         // we just use the defaults when upgrading from 0.9 at this point.
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        // test-upgrade-09 contains a managed with id: local so it's 3 managed
+        assertConfiguration( configuration, 3 );
         assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
 
-        ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
                       repository.getLocation() );
@@ -614,8 +620,7 @@ public class ArchivaConfigurationTest
         FileUtils.copyFile( getTestFile( "src/test/conf/autodetect-v1.xml" ), userFile );
 
         // Load the original (unconverted) archiva.xml
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
 
         archivaConfiguration.reload();
 
@@ -623,8 +628,7 @@ public class ArchivaConfigurationTest
         assertConfiguration( configuration );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
-        ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
                       repository.getLocation() );
@@ -645,8 +649,7 @@ public class ArchivaConfigurationTest
         //release( archivaConfiguration );
 
         // Reload.
-        archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
+        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
         configuration = archivaConfiguration.getConfiguration();
 
         // Test that only 1 set of repositories exist.
@@ -714,8 +717,7 @@ public class ArchivaConfigurationTest
         userFile.getParentFile().mkdirs();
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
-        final ArchivaConfiguration archivaConfiguration =
-            lookup( ArchivaConfiguration.class, "test-cron-expressions" );
+        final ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-cron-expressions" );
 
         archivaConfiguration.reload();
 
@@ -725,7 +727,6 @@ public class ArchivaConfigurationTest
             (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
         assertEquals( "check cron expression", "0 0,30 * * * ?", repository.getRefreshCronExpression().trim() );
-
 
         // add a test listener to confirm it doesn't see the escaped format. We don't need to test the number of calls,
         // etc. as it's done in other tests

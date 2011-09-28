@@ -19,11 +19,6 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.archiva.configuration.io.registry.ConfigurationRegistryWriter;
@@ -33,6 +28,11 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PostDownloadPolicy;
 import org.apache.archiva.policies.PreDownloadPolicy;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
 import org.codehaus.plexus.evaluator.EvaluatorException;
 import org.codehaus.plexus.evaluator.ExpressionEvaluator;
@@ -197,14 +197,25 @@ public class DefaultArchivaConfiguration
                 V1RepositoryConfiguration r = i.next();
                 r.setScanned( r.isIndexed() );
 
-                if ( r.getUrl().startsWith( "file://" ) )
+                if ( StringUtils.startsWith( r.getUrl(), "file://" ) )
                 {
                     r.setLocation( r.getUrl().substring( 7 ) );
                     config.addManagedRepository( r );
                 }
-                else if ( r.getUrl().startsWith( "file:" ) )
+                else if ( StringUtils.startsWith( r.getUrl(), "file:" ) )
                 {
                     r.setLocation( r.getUrl().substring( 5 ) );
+                    config.addManagedRepository( r );
+                }
+                else if ( StringUtils.isEmpty( r.getUrl() ) )
+                {
+                    // in case of empty url we can consider it as a managed one
+                    // check if location is null
+                    //file://${appserver.base}/repositories/${id}
+                    if ( StringUtils.isEmpty( r.getLocation() ) )
+                    {
+                        r.setLocation( "file://${appserver.base}/repositories/" + r.getId() );
+                    }
                     config.addManagedRepository( r );
                 }
                 else

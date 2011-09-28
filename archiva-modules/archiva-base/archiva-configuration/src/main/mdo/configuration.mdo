@@ -528,6 +528,19 @@
           <defaultValue>300</defaultValue>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+            <code><![CDATA[
+            public String toString()
+            {
+                return "RemoteRepositoryConfiguration id:'" + getId() + "',name:'" + getName() +"'";
+            }
+
+
+       ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     <class>
       <name>ManagedRepositoryConfiguration</name>

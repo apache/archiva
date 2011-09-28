@@ -488,7 +488,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.6</version>
+        <version>1.7</version>
         <exclusions>
           <exclusion>
             <groupId>commons-beanutils</groupId>
