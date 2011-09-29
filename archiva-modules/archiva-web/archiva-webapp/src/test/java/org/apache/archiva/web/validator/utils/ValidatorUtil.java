@@ -52,8 +52,9 @@ public class ValidatorUtil
                     // check the contents of error messages per field error
                     for ( int i = 0; i < expectedEntry.getValue().size(); i++ )
                     {
-                        Assert.assertEquals( expectedEntry.getValue().get( i ),
-                                             actualFieldErrors.get( expectedEntry.getKey() ).get( i ) );
+                        String expected = expectedEntry.getValue().get( i );
+                        String actual = actualFieldErrors.get( expectedEntry.getKey() ).get( i );
+                        Assert.assertEquals( expected, actual );
                     }
                 }
                 else
