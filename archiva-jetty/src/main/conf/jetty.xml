@@ -163,9 +163,9 @@
         <New class="org.mortbay.jetty.deployer.WebAppDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="webAppDir"><SystemProperty name="jetty.home" default="."/>/apps</Set>
-	  <Set name="parentLoaderPriority">false</Set>
-	  <Set name="extract">true</Set>
-	  <Set name="allowDuplicates">false</Set>
+	        <Set name="parentLoaderPriority">false</Set>
+	        <Set name="extract">true</Set>
+	        <Set name="allowDuplicates">false</Set>
         </New>
       </Arg>
     </Call>
