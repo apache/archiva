@@ -66,5 +66,5 @@ security.policy.password.rule.nowhitespace.enabled=true
  
  <<Note:>> If installed standalone, Archiva's list of configuration files is <itself> configurable, and
  can be found in:
- <<<apps/archiva/WEB-INF/classes/META-INF/plexus/application.xml>>>
+ <<<apps/archiva/WEB-INF/applicationContext.xml>>>
 

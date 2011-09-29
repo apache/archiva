@@ -2,8 +2,9 @@
  Understanding Repository Configuration of Apache Archiva
  ------
  Maria Odea Ching
+ Olivier Lamy
  ------
- 2011-09-27
+ 2011-09-29
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -213,13 +214,3 @@ Artifacts in the repository:
    
   It should be noted that this feature is entirely separate from the repository purge by number of days older and by
   retention count.
-
-* Scanning a Database
-
-  Another scanning process also occurs in Archiva, the database scanning. Same as with repository scanning,
-  it can also be executed on schedule or explicitly. This can be configured in the 'Database' page, via the 'Database -
-  Unprocessed Artifacts Scanning' section.
-
-  It is essential that the database scan occur after the repo scan as this is where the pom information of the artifacts in
-  the database will be processed by the consumers and in turn, added to the database (as ArchivaProjectModel objects). For
-  more details about the different database consumers, please see the {{{./consumers.html} Consumers}} page.

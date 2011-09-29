@@ -2,8 +2,9 @@
  Understanding Consumers in Apache Archiva
  ------
  Maria Odea Ching
+ Olivier Lamy
  ------
- 2007-11-21
+ 2011-09-29
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -52,41 +53,4 @@ Understanding Consumers in Apache Archiva
   * <update-db-artifact> - Adds the artifact (in the form of ArchivaArtifact) to the database.
   
   * <validate-checksums> - Validates the checksum files of the artifact.  
-  
-* Database Consumers
-
-  The database consumers, on the other hand, consume or process artifacts during database scanning. The database consumers are split up
-  into two types: the unprocessed artifacts consumers and the artifact cleanup consumers.
-  
-  [[1]] Unprocessed Artifacts Consumers
-  
-  These are consumers for those artifacts already in the index that haven't been processed yet, meaning the details about the artifact 
-  are not yet processed and stored in the database. There are 6 unprocessed artifact consumers which can be configured in the
-  Database page:
-     
-  * <validate-repository-metadata> - Verifies repository metadata files against database.     
-     
-  * <index-archive-toc> - Indexes the archiva table of contents for full text search.     
- 
-  * <index-artifact> - Indexes the artifact for the 'Find Artifact' functionality.     
- 
-  * <update-db-project> - Gets the details of the artifact from the pom and saves it into the database (as a project model)     
- 
-  * <index-public-methods> - Indexes the java public methods for full text search. This has been removed since 1.2. Public
-  methods are indexed by the <<<index-content>>> consumer.
- 
-  * <update-db-bytecode-stats> - Updates database with java bytecode stats.     
-  
-  []
-  []
-  [[2]] Artifact Cleanup Consumers 
-  
-  These are the consumers for cleaning up the database. There are 3 which can be configured in the Database page, and these are:
-     
-  * <not-present-remove-db-artifact> - Removes the artifact from the database if the artifact no longer exists in the file system.     
-     
-  * <not-present-remove-indexed> - Removes the artifact from the index if the artifact no longer exists in the file system.     
-     
-  * <not-present-remove-db-project> - Removes the project model of the artifact from the database if the artifact itself no longer exists in the file system.
-  
   

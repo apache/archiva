@@ -1,6 +1,10 @@
  ------
  Installing Standalone Distribution of Apache Archiva
  ------
+ Olivier Lamy
+ ------
+ 2011-09-29
+ ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
 ~~ or more contributor license agreements.  See the NOTICE file                    
@@ -117,31 +121,6 @@ Installing Standalone Distribution of Apache Archiva
 
 +------+
   ...
-  <!-- Archiva Database -->
-
-  <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/archiva</Arg>
-    <Arg>
-      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
-        <Set name="serverName">localhost</Set>
-        <Set name="databaseName">archiva</Set>
-        <Set name="user">archiva</Set>
-        <Set name="password">sa</Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/archivaShutdown</Arg>
-    <Arg>
-      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
-        <Set name="serverName">localhost</Set>
-        <Set name="databaseName">archiva</Set>
-        <Set name="user">archiva</Set>
-        <Set name="password">sa</Set>
-      </New>
-    </Arg>
-  </New>
 
   <!-- Users / Security Database -->
 

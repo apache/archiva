@@ -1,8 +1,9 @@
  ------
  Apache Archiva Databases
  ------
+ Olivier Lamy
  ------
- 2011-09-16
+ 2011-09-29
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -41,8 +42,6 @@ Apache Archiva Databases
 
   Archiva uses JNDI data sources to locate the databases to use:
 
-    * <<<jdbc/archiva>>> - the repository database
-
     * <<<jdbc/users>>> - the user store
 
   Configuring an external database for either or both of these sources depends is configured in <<<jetty.xml>>> if you are using the
@@ -57,27 +56,6 @@ Apache Archiva Databases
 
 +------+
 ...
-<New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
-  <Arg>jdbc/archiva</Arg>
-  <Arg>
-    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-      <Set name="DatabaseName">/path/to/database/directory/archiva</Set>
-      <Set name="user">sa</Set>
-      <Set name="createDatabase">create</Set>
-    </New>
-  </Arg>
-</New>
-
-<New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-  <Arg>jdbc/archivaShutdown</Arg>
-  <Arg>
-    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-      <Set name="DatabaseName">/path/to/database/directory/archiva</Set>
-      <Set name="user">sa</Set>
-      <Set name="shutdownDatabase">shutdown</Set>
-    </New>
-  </Arg>
-</New>
 
 <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
   <Arg>jdbc/users</Arg>
