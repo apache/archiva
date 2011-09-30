@@ -26,7 +26,7 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.reports.RepositoryProblemFacet;

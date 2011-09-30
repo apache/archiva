@@ -33,7 +33,7 @@ import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
-import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
+import org.apache.archiva.webtest.memory.TestMetadataResolver;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectParent;
 import org.apache.archiva.security.UserRepositoriesStub;

@@ -27,7 +27,7 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.struts2.StrutsSpringTestCase;

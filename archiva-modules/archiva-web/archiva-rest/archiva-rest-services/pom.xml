@@ -30,7 +30,7 @@
 
   <properties>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
-    <archiva.baseRestUrl></archiva.baseRestUrl>
+    <archiva.base.admUrl></archiva.baseRestUrl>
     <rest.admin.pwd></rest.admin.pwd>
   </properties>
 

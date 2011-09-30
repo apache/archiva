@@ -30,7 +30,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository.memory"/>
+  <context:component-scan base-package="org.apache.archiva.webtest.memory"/>
 
   <bean name="archivaConfiguration#test" class="org.apache.archiva.configuration.TestConfiguration" />
   <alias name="archivaConfiguration#test" alias="archivaConfiguration#default" />

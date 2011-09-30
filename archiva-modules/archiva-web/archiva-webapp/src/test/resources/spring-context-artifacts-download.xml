@@ -29,18 +29,26 @@
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
-  <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.webtest.memory"/>
 
-  <alias name="repositorySessionFactory#test" alias="repositorySessionFactory"/>
+  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
 
-  <bean name="userRepositories#test" class="org.apache.archiva.security.UserRepositoriesStub"/>
+          <xml fileName="${appserver.base}/conf/archiva-test-download-artifacts.xml" config-optional="true"
+               config-name="org.apache.maven.archiva.base"
+               config-at="org.apache.maven.archiva"/>
 
-  <alias name="userRepositories#test" alias="userRepositories"/>
+          <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.redback"/>
+          <properties fileName="org/apache/archiva/security.properties" config-at="org.codehaus.plexus.redback"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
 
-
-  <bean name="securitySystem#test" class="org.apache.archiva.web.rss.SecuritySystemStub"/>
-
-  <alias name="securitySystem#test" alias="securitySystem"/>
 
 </beans>

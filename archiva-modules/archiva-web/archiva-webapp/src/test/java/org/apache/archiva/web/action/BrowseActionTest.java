@@ -23,10 +23,9 @@ import com.google.common.collect.Lists;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.memory.TestMetadataResolver;
-import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
+import org.apache.archiva.webtest.memory.TestMetadataResolver;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.scheduler.indexing.DefaultDownloadRemoteIndexScheduler;
-import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.Arrays;
 import java.util.Collections;

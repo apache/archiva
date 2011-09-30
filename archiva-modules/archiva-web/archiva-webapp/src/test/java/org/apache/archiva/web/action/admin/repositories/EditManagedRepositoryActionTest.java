@@ -27,7 +27,7 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;

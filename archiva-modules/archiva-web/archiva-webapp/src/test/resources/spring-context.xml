@@ -30,7 +30,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository.memory"/>
+  <context:component-scan base-package="org.apache.archiva.webtest.memory"/>
 
   <alias name="repositorySessionFactory#test" alias="repositorySessionFactory"/>
 
@@ -38,6 +38,6 @@
 
   <alias name="userRepositories#test" alias="userRepositories"/>
 
-  <bean name="metadataResolver#test" class="org.apache.archiva.metadata.repository.memory.TestMetadataResolver"/>
+  <bean name="metadataResolver#test" class="org.apache.archiva.webtest.memory.TestMetadataResolver"/>
   <alias name="metadataResolver#test" alias="metadataResolver#default"/>
 </beans>

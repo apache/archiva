@@ -30,7 +30,7 @@ import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.easymock.MockControl;

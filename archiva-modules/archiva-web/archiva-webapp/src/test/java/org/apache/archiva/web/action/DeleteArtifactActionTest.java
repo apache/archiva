@@ -25,7 +25,7 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.memory.TestRepositorySessionFactory;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;

@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.memory;
+package org.apache.archiva.webtest.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
