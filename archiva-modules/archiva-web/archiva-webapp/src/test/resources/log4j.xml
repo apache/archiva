@@ -49,7 +49,7 @@
     <level value="debug"/>
   </logger>
   -->
-  <logger name="org.apache.http.wire.header">
+  <logger name="org.apache.http.headers">
     <level value="debug"/>
   </logger>
 
