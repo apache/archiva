@@ -24,6 +24,7 @@ import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.webdav.RepositoryServlet;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -60,6 +61,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -230,10 +234,23 @@ public class DownloadArtifactsTest
         IOUtil.copy( is, fw );
         // assert jar contains org/junit/runners/JUnit4.class
         ZipFile zipFile = new ZipFile( file );
+        List<String> entries = getZipEntriesNames( zipFile );
         ZipEntry zipEntry = zipFile.getEntry( "org/junit/runners/JUnit4.class" );
-        assertNotNull( zipEntry );
+        assertNotNull( "cannot find zipEntry org/junit/runners/JUnit4.class, entries: " + entries + ", content is: "
+                           + FileUtils.readFileToString( file ), zipEntry );
         zipFile.close();
         file.deleteOnExit();
+    }
+
+    private List<String> getZipEntriesNames( ZipFile zipFile )
+    {
+        List<String> entriesNames = new ArrayList<String>();
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while ( entries.hasMoreElements() )
+        {
+            entriesNames.add( entries.nextElement().getName() );
+        }
+        return entriesNames;
     }
 
     public static class RedirectServlet
