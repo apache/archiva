@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
@@ -326,6 +327,32 @@ public class DefaultArchivaAdministrationService
         try
         {
             archivaAdministration.updateUiConfiguration( uiConfiguration );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public NetworkConfiguration getNetworkConfiguration()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            return archivaAdministration.getNetworkConfiguration();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            archivaAdministration.setNetworkConfiguration( networkConfiguration );
         }
         catch ( RepositoryAdminException e )
         {

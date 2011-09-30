@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -189,6 +190,21 @@ public interface ArchivaAdministrationService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void setUiConfiguration( UiConfiguration uiConfiguration )
+        throws ArchivaRestServiceException;
+
+
+    @Path( "getNetworkConfiguration" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    NetworkConfiguration getNetworkConfiguration()
+        throws ArchivaRestServiceException;
+
+    @Path( "setNetworkConfiguration" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws ArchivaRestServiceException;
 }
 
