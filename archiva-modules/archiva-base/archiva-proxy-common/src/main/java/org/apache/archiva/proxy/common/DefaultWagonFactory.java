@@ -38,6 +38,8 @@ public class DefaultWagonFactory
 
     private PlexusSisuBridge plexusSisuBridge;
 
+    private DebugTransferListener debugTransferListener = new DebugTransferListener();
+
     @Inject
     public DefaultWagonFactory( PlexusSisuBridge plexusSisuBridge )
     {
@@ -52,7 +54,9 @@ public class DefaultWagonFactory
             // with sisu inject bridge hint is file or http
             // so remove wagon#
             protocol = StringUtils.remove( protocol, "wagon#" );
-            return plexusSisuBridge.lookup( Wagon.class, protocol );
+            Wagon wagon = plexusSisuBridge.lookup( Wagon.class, protocol );
+            wagon.addTransferListener( debugTransferListener );
+            return wagon;
         }
         catch ( PlexusSisuBridgeException e )
         {
