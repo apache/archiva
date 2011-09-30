@@ -30,6 +30,8 @@ import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.apache.maven.wagon.providers.http.HttpWagon;
+import org.apache.maven.wagon.repository.Repository;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.api.services.RoleManagementService;
@@ -221,18 +223,26 @@ public class DownloadArtifactsTest
 
         getUserService( authorizationHeader ).removeFromCache( "guest" );
 
+
+        /*
         URL url = new URL( "http://localhost:" + port + "/repository/internal/junit/junit/4.9/junit-4.9.jar" );
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         //urlConnection.setRequestProperty( "Authorization", authorizationHeader );
         InputStream is = urlConnection.getInputStream();
+        */
         File file = new File( "target/junit-4.9.jar" );
         if ( file.exists() )
         {
             file.delete();
         }
 
-        FileWriter fw = new FileWriter( file );
-        IOUtil.copy( is, fw );
+        HttpWagon httpWagon = new HttpWagon();
+        httpWagon.connect( new Repository( "foo", "http://localhost:" + port ) );
+
+        httpWagon.get( "/repository/internal/junit/junit/4.9/junit-4.9.jar", file );
+
+        //FileWriter fw = new FileWriter( file );
+        //IOUtil.copy( is, fw );
         // assert jar contains org/junit/runners/JUnit4.class
         ZipFile zipFile = new ZipFile( file );
         List<String> entries = getZipEntriesNames( zipFile );
