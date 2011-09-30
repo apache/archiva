@@ -34,12 +34,6 @@
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </remoteRepository>
-    <remoteRepository>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Repository for Maven 2</name>
-      <url>http://download.java.net/maven/2/</url>
-      <layout>default</layout>
-    </remoteRepository>
   </remoteRepositories>
 
   <proxyConnectors>
@@ -55,22 +49,6 @@
       </policies>
       <whiteListPatterns>
         <whiteListPattern>**/*</whiteListPattern>
-      </whiteListPatterns>
-    </proxyConnector>
-    <proxyConnector>
-      <sourceRepoId>internal</sourceRepoId>
-      <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
-      <proxyId/>
-      <policies>
-        <snapshots>disabled</snapshots>
-        <releases>once</releases>
-        <checksum>fix</checksum>
-        <cache-failures>cached</cache-failures>
-      </policies>
-      <whiteListPatterns>
-        <whiteListPattern>javax/**</whiteListPattern>
-        <whiteListPattern>org/jvnet/**</whiteListPattern>
-        <whiteListPattern>com/sun/**</whiteListPattern>
       </whiteListPatterns>
     </proxyConnector>
   </proxyConnectors>

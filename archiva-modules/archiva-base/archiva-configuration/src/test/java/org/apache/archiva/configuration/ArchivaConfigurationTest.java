@@ -76,15 +76,13 @@ public class ArchivaConfigurationTest
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        assertConfiguration( configuration, 2, 2, 2 );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
-        ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
                       repository.getLocation() );
@@ -102,7 +100,7 @@ public class ArchivaConfigurationTest
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        assertConfiguration( configuration, 2, 1, 1 );
         assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
 
         ManagedRepositoryConfiguration repository =
@@ -139,10 +137,10 @@ public class ArchivaConfigurationTest
                                      null );
 
         ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );
+            lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        assertConfiguration( configuration, 2, 1, 1 );
 
         ManagedRepositoryConfiguration repository =
             (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
@@ -155,22 +153,23 @@ public class ArchivaConfigurationTest
     private void assertConfiguration( Configuration configuration )
         throws Exception
     {
-        assertConfiguration( configuration, 2 );
+        assertConfiguration( configuration, 2, 2, 1 );
     }
 
     /**
      * Ensures that the provided configuration matches the details present in the archiva-default.xml file.
      */
-    private void assertConfiguration( Configuration configuration, int managedExpected )
+    private void assertConfiguration( Configuration configuration, int managedExpected, int remoteExpected,
+                                      int proxyConnectorExpected )
         throws Exception
     {
         FileTypes filetypes = lookup( FileTypes.class );
 
         assertEquals( "check managed repositories: " + configuration.getManagedRepositories(), managedExpected,
                       configuration.getManagedRepositories().size() );
-        assertEquals( "check remote repositories: " + configuration.getRemoteRepositories(), 2,
+        assertEquals( "check remote repositories: " + configuration.getRemoteRepositories(), remoteExpected,
                       configuration.getRemoteRepositories().size() );
-        assertEquals( "check proxy connectors:" + configuration.getProxyConnectors(), 2,
+        assertEquals( "check proxy connectors:" + configuration.getProxyConnectors(), proxyConnectorExpected,
                       configuration.getProxyConnectors().size() );
 
         RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
@@ -196,8 +195,7 @@ public class ArchivaConfigurationTest
     public void testGetConfigurationFromRegistryWithTwoConfigurationResources()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration-both" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration-both" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
@@ -594,7 +592,7 @@ public class ArchivaConfigurationTest
         // we just use the defaults when upgrading from 0.9 at this point.
         Configuration configuration = archivaConfiguration.getConfiguration();
         // test-upgrade-09 contains a managed with id: local so it's 3 managed
-        assertConfiguration( configuration, 3 );
+        assertConfiguration( configuration, 3, 1, 1 );
         assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
 
         ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
@@ -625,7 +623,7 @@ public class ArchivaConfigurationTest
         archivaConfiguration.reload();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        assertConfiguration( configuration, 2, 2, 2 );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
         ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
@@ -668,11 +666,10 @@ public class ArchivaConfigurationTest
     public void testArchivaV1()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-archiva-v1" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-archiva-v1" );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        assertConfiguration( configuration, 2, 2, 2 );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
         assertEquals( "check managed repositories", 2, configuration.getManagedRepositories().size() );
@@ -843,17 +840,15 @@ public class ArchivaConfigurationTest
     public void testGetConfigurationFixEmptyRemoteRepoUsernamePassword()
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
         archivaConfiguration.reload();
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration );
+        assertConfiguration( configuration, 2, 2, 2 );
         assertEquals( "check remote repositories", 2, configuration.getRemoteRepositories().size() );
 
         RemoteRepositoryConfiguration repository =
-            (RemoteRepositoryConfiguration) configuration.getRemoteRepositoriesAsMap().get(
-                "maven2-repository.dev.java.net" );
+            configuration.getRemoteRepositoriesAsMap().get( "maven2-repository.dev.java.net" );
 
         assertEquals( "remote repository.url", "https://maven2-repository.dev.java.net/nonav/repository",
                       repository.getUrl() );

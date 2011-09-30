@@ -38,7 +38,7 @@ public class ProxyConnectorAdminTest
         throws Exception
     {
         mockAuditListener.clearEvents();
-        assertEquals( "not proxyConnectors 2 " + proxyConnectorAdmin.getProxyConnectors(), 2,
+        assertEquals( "not proxyConnectors 1 " + proxyConnectorAdmin.getProxyConnectors(), 1,
                       proxyConnectorAdmin.getProxyConnectors().size() );
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
         ProxyConnector proxyConnector = new ProxyConnector();
@@ -47,13 +47,13 @@ public class ProxyConnectorAdminTest
         proxyConnectorAdmin.addProxyConnector( proxyConnector, getFakeAuditInformation() );
 
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
-        assertEquals( 3, proxyConnectorAdmin.getProxyConnectors().size() );
+        assertEquals( 2, proxyConnectorAdmin.getProxyConnectors().size() );
 
         assertNotNull( proxyConnectorAdmin.getProxyConnector( "snapshots", "central" ) );
 
         proxyConnectorAdmin.deleteProxyConnector( proxyConnector, getFakeAuditInformation() );
 
-        assertEquals( 2, proxyConnectorAdmin.getProxyConnectors().size() );
+        assertEquals( 1, proxyConnectorAdmin.getProxyConnectors().size() );
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
 
         assertEquals( 2, mockAuditListener.getAuditEvents().size() );
@@ -79,7 +79,7 @@ public class ProxyConnectorAdminTest
 
         remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getFakeAuditInformation() );
 
-        assertEquals( "not proxyConnectors 2 " + proxyConnectorAdmin.getProxyConnectors(), 2,
+        assertEquals( "not proxyConnectors 1 " + proxyConnectorAdmin.getProxyConnectors(), 1,
                       proxyConnectorAdmin.getProxyConnectors().size() );
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
         ProxyConnector proxyConnector = new ProxyConnector();
@@ -89,7 +89,7 @@ public class ProxyConnectorAdminTest
         proxyConnectorAdmin.addProxyConnector( proxyConnector, getFakeAuditInformation() );
 
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
-        assertEquals( 3, proxyConnectorAdmin.getProxyConnectors().size() );
+        assertEquals( 2, proxyConnectorAdmin.getProxyConnectors().size() );
 
         assertNotNull( proxyConnectorAdmin.getProxyConnector( "snapshots", "central" ) );
         assertEquals( Arrays.asList( "foo", "bar" ),
@@ -108,7 +108,7 @@ public class ProxyConnectorAdminTest
 
         assertNull( proxyConnectorAdmin.getProxyConnector( "snapshots", "central" ) );
 
-        assertEquals( 2, proxyConnectorAdmin.getProxyConnectors().size() );
+        assertEquals( 1, proxyConnectorAdmin.getProxyConnectors().size() );
         assertFalse( proxyConnectorAdmin.getProxyConnectors().isEmpty() );
 
         assertEquals( 5, mockAuditListener.getAuditEvents().size() );
