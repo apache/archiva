@@ -19,10 +19,10 @@ package org.apache.archiva.web.startup;
  * under the License.
  */
 
+import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
-import org.apache.archiva.common.ArchivaException;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.taskqueue.Task;
@@ -35,6 +35,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.lang.reflect.Field;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -67,6 +68,8 @@ public class ArchivaStartup
         repositoryTaskScheduler =
             wac.getBean( "archivaTaskScheduler#repository", RepositoryArchivaTaskScheduler.class );
 
+        Properties archivaRuntimeProperties = wac.getBean( "archivaRuntimeProperties", Properties.class );
+
         tqeRepoScanning = wac.getBean( "taskQueueExecutor#repository-scanning", ThreadedTaskQueueExecutor.class );
 
         tqeIndexing = wac.getBean( "taskQueueExecutor#indexing", ThreadedTaskQueueExecutor.class );
@@ -85,7 +88,7 @@ public class ArchivaStartup
         {
             securitySync.startup();
             repositoryTaskScheduler.startup();
-            Banner.display();
+            Banner.display( (String) archivaRuntimeProperties.get( "archiva.version" ) );
         }
         catch ( ArchivaException e )
         {
@@ -147,12 +150,13 @@ public class ArchivaStartup
         }
 
         // closing correctly indexer to close correctly lock and file
-        for( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
+        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
         {
             try
             {
                 indexingContext.close( false );
-            } catch ( Exception e )
+            }
+            catch ( Exception e )
             {
                 contextEvent.getServletContext().log( "skip error closing indexingContext " + e.getMessage() );
             }

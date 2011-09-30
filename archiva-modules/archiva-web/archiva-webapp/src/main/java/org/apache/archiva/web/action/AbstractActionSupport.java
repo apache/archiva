@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * LogEnabled and SessionAware ActionSupport
@@ -68,6 +69,10 @@ public abstract class AbstractActionSupport
     protected ApplicationContext applicationContext;
 
     private String principal;
+
+    @Inject
+    @Named(value = "archivaRuntimeProperties")
+    private Properties archivaRuntimeProperties;
 
     @PostConstruct
     public void initialize()
@@ -183,6 +188,11 @@ public abstract class AbstractActionSupport
         AuditInformation auditInformation = new AuditInformation( new SimpleUser( getPrincipal() ), getRemoteAddr() );
 
         return auditInformation;
+    }
+
+    public String getArchivaVersion()
+    {
+        return (String) archivaRuntimeProperties.get( "archiva.version" );
     }
 
     /**

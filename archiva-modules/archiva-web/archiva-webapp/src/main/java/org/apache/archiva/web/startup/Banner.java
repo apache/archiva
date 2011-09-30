@@ -221,9 +221,9 @@ public class Banner
         return injectVersion( decode( encodedBanner ), version );
     }
 
-    public static void display()
+    public static void display( String version )
     {
-        String banner = getBanner( ArchivaVersion.determineVersion() );
+        String banner = getBanner( version );
     	LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + eol + banner );
     }
 }

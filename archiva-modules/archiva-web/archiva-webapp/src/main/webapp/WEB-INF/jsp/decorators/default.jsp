@@ -26,7 +26,6 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ page import="java.util.Calendar" %>
-<%@ page import="org.apache.archiva.web.startup.ArchivaVersion" %>
 
 <html>
 <head>
@@ -196,7 +195,7 @@
 
 <div id="footer">
   <div class="xleft">
-    <a target="_blank" href="http://archiva.apache.org/">Apache Ar<c:if test="${is19Sep}">rr</c:if>chiva <%= ArchivaVersion.getVersion()%></a>
+    <a target="_blank" href="http://archiva.apache.org/">Apache Ar<c:if test="${is19Sep}">rr</c:if>chiva&nbsp;-&nbsp;<s:property value="archivaVersion"/></a>
   </div>
   <div class="xright">
     Copyright &#169; <%= copyrightRange%> <a target="_blank" href="http://www.apache.org/">The Apache Software Foundation</a>
