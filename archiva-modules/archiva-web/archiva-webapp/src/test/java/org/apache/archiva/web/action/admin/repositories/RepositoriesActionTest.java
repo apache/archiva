@@ -133,7 +133,7 @@ public class RepositoriesActionTest
             assertNotNull( action.getRepositoryStatistics() );
 
             assertEquals( 2, action.getManagedRepositories().size() );
-            assertEquals( 2, action.getRemoteRepositories().size() );
+            assertEquals( 1, action.getRemoteRepositories().size() );
             assertEquals( 2, action.getRepositoryStatistics().size() );
 
             control.verify();
