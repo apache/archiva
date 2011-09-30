@@ -62,6 +62,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -244,13 +245,21 @@ public class DownloadArtifactsTest
 
     private List<String> getZipEntriesNames( ZipFile zipFile )
     {
-        List<String> entriesNames = new ArrayList<String>();
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while ( entries.hasMoreElements() )
+        try
         {
-            entriesNames.add( entries.nextElement().getName() );
+            List<String> entriesNames = new ArrayList<String>();
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while ( entries.hasMoreElements() )
+            {
+                entriesNames.add( entries.nextElement().getName() );
+            }
+            return entriesNames;
         }
-        return entriesNames;
+        catch ( Throwable e )
+        {
+            log.info( "fail to get zipEntries " + e.getMessage(), e );
+        }
+        return Collections.emptyList();
     }
 
     public static class RedirectServlet
