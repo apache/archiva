@@ -135,6 +135,10 @@
   <h2>Current Time</h2>
 
   <p><%= new Date() %></p>
+
+  <h2>Version Information</h2>
+
+  Build number: <s:property value="archivaBuildNumber"/> - Build Timestamp: <s:property value="archivaBuildTimestampDateStr"/>
   
   </div>
 

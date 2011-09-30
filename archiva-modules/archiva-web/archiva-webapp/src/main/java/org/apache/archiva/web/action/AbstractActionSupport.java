@@ -28,6 +28,7 @@ import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.security.ArchivaXworkUser;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.codehaus.plexus.redback.users.User;
@@ -39,6 +40,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,7 +73,7 @@ public abstract class AbstractActionSupport
     private String principal;
 
     @Inject
-    @Named(value = "archivaRuntimeProperties")
+    @Named( value = "archivaRuntimeProperties" )
     private Properties archivaRuntimeProperties;
 
     @PostConstruct
@@ -195,8 +197,26 @@ public abstract class AbstractActionSupport
         return (String) archivaRuntimeProperties.get( "archiva.version" );
     }
 
+    public String getArchivaBuildNumber()
+    {
+        return (String) archivaRuntimeProperties.get( "archiva.buildNumber" );
+    }
+
+    public String getArchivaBuildTimestamp()
+    {
+        return (String) archivaRuntimeProperties.get( "archiva.timestamp" );
+    }
+
+    public String getArchivaBuildTimestampDateStr()
+    {
+        SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", getLocale() );
+        return sfd.format(
+            new Date( NumberUtils.createLong( (String) archivaRuntimeProperties.get( "archiva.timestamp" ) ) ) );
+    }
+
     /**
      * dummy information for audit events
+     *
      * @since 1.4
      */
     private static class SimpleUser
