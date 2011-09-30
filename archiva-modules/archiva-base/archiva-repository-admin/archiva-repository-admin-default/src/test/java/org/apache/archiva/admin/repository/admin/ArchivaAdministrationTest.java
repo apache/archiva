@@ -27,9 +27,11 @@ import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
@@ -231,5 +233,6 @@ public class ArchivaAdministrationTest
         assertTrue( networkConfiguration.isUsePooling() );
         assertEquals( 30, networkConfiguration.getMaxTotal() );
         assertEquals( 30, networkConfiguration.getMaxTotalPerHost() );
+
     }
 }

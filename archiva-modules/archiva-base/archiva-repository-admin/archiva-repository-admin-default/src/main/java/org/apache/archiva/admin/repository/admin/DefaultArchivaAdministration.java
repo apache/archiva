@@ -37,6 +37,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +50,17 @@ public class DefaultArchivaAdministration
     extends AbstractRepositoryAdmin
     implements ArchivaAdministration
 {
+
+    @PostConstruct
+    public void initialize()
+        throws RepositoryAdminException
+    {
+        // setup wagon on start with initial values
+        NetworkConfiguration networkConfiguration = getNetworkConfiguration();
+        setupWagon( networkConfiguration );
+    }
+
+
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
@@ -345,6 +357,20 @@ public class DefaultArchivaAdministration
         if ( networkConfiguration == null )
         {
             configuration.setNetworkConfiguration( null );
+        }
+        else
+        {
+            configuration.setNetworkConfiguration( new BeanReplicator().replicateBean( networkConfiguration,
+                                                                                       org.apache.archiva.configuration.NetworkConfiguration.class ) );
+        }
+        setupWagon( networkConfiguration );
+        saveConfiguration( configuration );
+    }
+
+    protected void setupWagon( NetworkConfiguration networkConfiguration )
+    {
+        if ( networkConfiguration == null )
+        {
             // back to default values
             HttpWagon.setUseClientManagerPooled( true );
             ThreadSafeClientConnManager threadSafeClientConnManager = new ThreadSafeClientConnManager();
@@ -360,10 +386,7 @@ public class DefaultArchivaAdministration
             threadSafeClientConnManager.setDefaultMaxPerRoute( networkConfiguration.getMaxTotalPerHost() );
             threadSafeClientConnManager.setMaxTotal( networkConfiguration.getMaxTotal() );
             HttpWagon.setConnectionManagerPooled( threadSafeClientConnManager );
-            configuration.setNetworkConfiguration( new BeanReplicator().replicateBean( networkConfiguration,
-                                                                                       org.apache.archiva.configuration.NetworkConfiguration.class ) );
         }
-        saveConfiguration( configuration );
     }
 
     //-------------------------
