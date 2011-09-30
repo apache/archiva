@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -174,6 +175,19 @@ public class ArchivaAdministrationStub
     public void updateUiConfiguration( UiConfiguration uiConfiguration )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+    }
+
+
+    public NetworkConfiguration getNetworkConfiguration()
+        throws RepositoryAdminException
+    {
+        return null;
+    }
+
+    public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
+        throws RepositoryAdminException
+    {
+
     }
 }

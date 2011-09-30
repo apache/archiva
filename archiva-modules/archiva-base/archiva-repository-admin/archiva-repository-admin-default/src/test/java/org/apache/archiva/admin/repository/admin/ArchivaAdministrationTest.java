@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
@@ -218,5 +219,17 @@ public class ArchivaAdministrationTest
         assertTrue( ui.isDisableEasterEggs() );
         assertFalse( ui.isAppletFindEnabled() );
         assertFalse( ui.isShowFindArtifacts() );
+    }
+
+    @Test
+    public void networkConfiguration()
+        throws Exception
+    {
+        NetworkConfiguration networkConfiguration = archivaAdministration.getNetworkConfiguration();
+        assertNotNull( networkConfiguration );
+
+        assertTrue( networkConfiguration.isUsePooling() );
+        assertEquals( 30, networkConfiguration.getMaxTotal() );
+        assertEquals( 30, networkConfiguration.getMaxTotalPerHost() );
     }
 }

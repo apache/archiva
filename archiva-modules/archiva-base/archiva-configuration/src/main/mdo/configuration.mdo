@@ -157,7 +157,18 @@
           <description>
             The organisation info.
           </description>
-        </field>  
+        </field>
+        <field>
+          <name>networkConfiguration</name>
+          <version>1.4.0+</version>
+          <association>
+            <type>NetworkConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The NetworkConfiguration .
+          </description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -1273,6 +1284,37 @@
           <version>1.3.0+</version>
           <type>boolean</type>
           <defaultValue>false</defaultValue>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>NetworkConfiguration</name>
+      <version>1.4.0+</version>
+      <description>
+        The network configuration for external http request to repositories.
+      </description>
+      <fields>
+        <field>
+          <name>maxTotal</name>
+          <description>maximum total external http connections.</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>30</defaultValue>
+        </field>
+        <field>
+          <name>maxTotalPerHost</name>
+          <description>maximum total external http connections per host</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>30</defaultValue>
+        </field>
+        <field>
+          <name>usePooling</name>
+          <description>use or not http connection pooling default true</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
         </field>
       </fields>
     </class>

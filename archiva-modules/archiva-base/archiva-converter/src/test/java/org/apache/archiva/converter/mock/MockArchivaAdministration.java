@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 
@@ -156,6 +157,18 @@ public class MockArchivaAdministration
     }
 
     public void updateUiConfiguration( UiConfiguration uiConfiguration )
+        throws RepositoryAdminException
+    {
+
+    }
+
+    public NetworkConfiguration getNetworkConfiguration()
+        throws RepositoryAdminException
+    {
+        return null;
+    }
+
+    public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws RepositoryAdminException
     {
 

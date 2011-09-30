@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
@@ -32,6 +33,8 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.UserInterfaceOptions;
 import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -56,7 +59,6 @@ public class DefaultArchivaAdministration
                 new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
         }
         return legacyArtifactPaths;
-
     }
 
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
@@ -323,7 +325,48 @@ public class DefaultArchivaAdministration
 
     }
 
-//-------------------------
+    public NetworkConfiguration getNetworkConfiguration()
+        throws RepositoryAdminException
+    {
+        org.apache.archiva.configuration.NetworkConfiguration networkConfiguration =
+            getArchivaConfiguration().getConfiguration().getNetworkConfiguration();
+
+        if ( networkConfiguration == null )
+        {
+            return null;
+        }
+        return new BeanReplicator().replicateBean( networkConfiguration, NetworkConfiguration.class );
+    }
+
+    public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
+        throws RepositoryAdminException
+    {
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        if ( networkConfiguration == null )
+        {
+            configuration.setNetworkConfiguration( null );
+            // back to default values
+            HttpWagon.setUseClientManagerPooled( true );
+            ThreadSafeClientConnManager threadSafeClientConnManager = new ThreadSafeClientConnManager();
+            threadSafeClientConnManager.setDefaultMaxPerRoute( 30 );
+            threadSafeClientConnManager.setMaxTotal( 30 );
+            HttpWagon.setConnectionManagerPooled( threadSafeClientConnManager );
+
+        }
+        else
+        {
+            HttpWagon.setUseClientManagerPooled( networkConfiguration.isUsePooling() );
+            ThreadSafeClientConnManager threadSafeClientConnManager = new ThreadSafeClientConnManager();
+            threadSafeClientConnManager.setDefaultMaxPerRoute( networkConfiguration.getMaxTotalPerHost() );
+            threadSafeClientConnManager.setMaxTotal( networkConfiguration.getMaxTotal() );
+            HttpWagon.setConnectionManagerPooled( threadSafeClientConnManager );
+            configuration.setNetworkConfiguration( new BeanReplicator().replicateBean( networkConfiguration,
+                                                                                       org.apache.archiva.configuration.NetworkConfiguration.class ) );
+        }
+        saveConfiguration( configuration );
+    }
+
+    //-------------------------
     //
     //-------------------------
 

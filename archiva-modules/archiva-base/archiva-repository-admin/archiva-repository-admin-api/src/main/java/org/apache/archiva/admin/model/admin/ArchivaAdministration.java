@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
+import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 
@@ -95,6 +96,12 @@ public interface ArchivaAdministration
         throws RepositoryAdminException;
 
     void updateUiConfiguration( UiConfiguration uiConfiguration )
+        throws RepositoryAdminException;
+
+    NetworkConfiguration getNetworkConfiguration()
+        throws RepositoryAdminException;
+
+    void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws RepositoryAdminException;
 
 }
