@@ -28,7 +28,7 @@ import com.meterware.servletunit.ServletUnitClient;
 import junit.framework.TestCase;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
-import sun.misc.BASE64Encoder;
+
 
 import java.io.File;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +45,23 @@ public class RssFeedServletTest
     {
         sr = new ServletRunner( new File( "src/test/webapp/WEB-INF/feedServletTest-web.xml" ) );
         client = sr.newClient();
+    }
+
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        if ( client != null )
+        {
+            client.clearContents();
+        }
+
+        if ( sr != null )
+        {
+            sr.shutDown();
+        }
+
+        super.tearDown();
     }
 
     public void testRetrieveServlet()
@@ -64,9 +81,9 @@ public class RssFeedServletTest
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/test-repo" );
 
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64 encoder = new Base64(0, new byte[0]);
         String userPass = "user1:password1";
-        String encodedUserPass = encoder.encode( userPass.getBytes() );
+        String encodedUserPass = encoder.encodeToString( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
 
         WebResponse response = client.getResponse( request );
@@ -84,9 +101,9 @@ public class RssFeedServletTest
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/org/apache/archiva/artifact-two" );
 
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64 encoder = new Base64(0, new byte[0]);
         String userPass = "user1:password1";
-        String encodedUserPass = encoder.encode( userPass.getBytes() );
+        String encodedUserPass = encoder.encodeToString( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
 
         WebResponse response = client.getResponse( request );
@@ -149,9 +166,9 @@ public class RssFeedServletTest
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
 
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64 encoder = new Base64(0, new byte[0]);
         String userPass = "user1:password1";
-        String encodedUserPass = encoder.encode( userPass.getBytes() );
+        String encodedUserPass = encoder.encodeToString( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
 
         try
@@ -166,21 +183,6 @@ public class RssFeedServletTest
         }
     }
 
-    @Override
-    protected void tearDown()
-        throws Exception
-    {
-        if ( client != null )
-        {
-            client.clearContents();
-        }
 
-        if ( sr != null )
-        {
-            sr.shutDown();
-        }
-
-        super.tearDown();
-    }
 
 }
