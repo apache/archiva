@@ -155,6 +155,25 @@
     <level value="error"/>
   </logger>
 
+  <!-- debug wagon transfer -->
+  <!--
+  <logger name="org.apache.archiva.proxy.common">
+    <level value="debug"/>
+  </logger>
+  -->
+  <!-- apache httpclient debug content transfer verbose -->
+  <!--
+  <logger name="org.apache.http.wire">
+    <level value="debug"/>
+  </logger>
+  -->
+  <!-- apache httpclient log headers -->
+  <!--
+  <logger name="org.apache.http.headers">
+    <level value="debug"/>
+  </logger>
+  -->
+
   <root>
     <priority value ="info" />
     <appender-ref ref="rolling" />
