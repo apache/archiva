@@ -542,6 +542,7 @@
             <appserver.base>${project.build.outputDirectory}</appserver.base>
             <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
             <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
+            <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
           </systemPropertyVariables>
         </configuration>
       </plugin>
