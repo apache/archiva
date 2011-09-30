@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.maven.archiva.web,org.apache.archiva.web"/>
+  <context:component-scan base-package="org.apache.archiva.web"/>
 
 
 </beans>
