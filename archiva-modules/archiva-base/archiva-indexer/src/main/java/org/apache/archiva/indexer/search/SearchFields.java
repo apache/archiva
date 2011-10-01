@@ -241,7 +241,7 @@ public class SearchFields
         return bundleName;
     }
 
-    public void setBundleImportName( String bundleName )
+    public void setBundleName( String bundleName )
     {
         this.bundleName = bundleName;
     }
