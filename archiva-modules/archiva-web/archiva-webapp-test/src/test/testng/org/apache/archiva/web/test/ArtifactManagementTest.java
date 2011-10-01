@@ -98,7 +98,7 @@ public class ArtifactManagementTest
                                + "' was successfully deployed to repository 'internal'" );
     }
 
-    @Test( groups = "requiresUpload", enabled = false )
+    @Test( groups = "requiresUpload" )
     public void testDotNetTypes()
     {
         String groupId = getProperty( "GROUPID_DOTNETARTIFACT" );
@@ -115,7 +115,6 @@ public class ArtifactManagementTest
         String basePath =
             "/archiva/repository/internal/" + groupId + "/" + artifactId + "/" + getVersion() + "/" + artifactId + "-"
                 + getVersion();
-        // FIXME: currently broken - is dotnet-library
         assertLinkPresent( ".NET Library" );
         assertElementPresent( "//a[@href='" + basePath + ".dll']" );
         assertElementPresent( "//a[@href='" + basePath + ".pom']" );

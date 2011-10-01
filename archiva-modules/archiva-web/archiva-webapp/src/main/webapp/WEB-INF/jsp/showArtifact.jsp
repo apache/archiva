@@ -187,7 +187,7 @@
                   <c:url var="imageUrl" value="/images/download-type-other.png"/>
                   <c:set var="packageName">JavaDoc Archive</c:set>
                 </c:when>
-                <c:when test="${a.type == 'library'}">
+                <c:when test="${a.type == 'library' || a.type == 'dotnet-library'}">
                   <c:url var="imageUrl" value="/images/download-type-other.png"/>
                   <c:set var="packageName">.NET Library</c:set>
                 </c:when>
