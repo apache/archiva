@@ -1685,6 +1685,19 @@
           </snapshots>
         </repository>
       </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>apache.snapshots</id>
+          <name>Apache Snapshots</name>
+          <url>https://repository.apache.org/content/groups/snapshots-group/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
     <!--
     jrebel tests doesn't work very well : too investigate
@@ -1710,5 +1723,26 @@
       </build>
     </profile>
     -->
+    <profile>
+      <!-- olamy profile to test tomcat plugin dev -->
+      <id>tdev</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat6-maven-plugin</artifactId>
+              <version>2.0-SNAPSHOT</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat6-maven-plugin</artifactId>
+           </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

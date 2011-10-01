@@ -962,5 +962,42 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <!-- olamy profile to test tomcat plugin dev -->
+      <id>tdev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat6-maven-plugin</artifactId>
+            <version>2.0-SNAPSHOT</version>
+            <configuration>
+              <port>9091</port>
+              <path>/archiva</path>
+              <contextFile>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</contextFile>
+              <systemProperties>
+                <plexus.home>${basedir}/appserver-base</plexus.home>
+                <appserver.base>${basedir}/appserver-base</appserver.base>
+                <appserver.home>${project.build.directory}/appserver-home</appserver.home>
+                <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
+                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
+              </systemProperties>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>10.1.3.1</version>
+              </dependency>
+              <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.4</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

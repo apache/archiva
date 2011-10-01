@@ -86,7 +86,7 @@ public class SearchAction
 
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
 
-    private List<String> managedRepositoryList = new ArrayList<String>();
+    private List<String> managedRepositoryList = new ArrayList<String>( );
 
     private String groupId;
 
@@ -95,6 +95,48 @@ public class SearchAction
     private String version;
 
     private String className;
+
+    /**
+     * contains osgi metadata Bundle-Version if available
+     *
+     * @since 1.4
+     */
+    private String bundleVersion;
+
+    /**
+     * contains osgi metadata Bundle-SymbolicName if available
+     *
+     * @since 1.4
+     */
+    private String bundleSymbolicName;
+
+    /**
+     * contains osgi metadata Export-Package if available
+     *
+     * @since 1.4
+     */
+    private String bundleExportPackage;
+
+    /**
+     * contains osgi metadata import package if available
+     *
+     * @since 1.4
+     */
+    private String bundleImportPackage;
+
+    /**
+     * contains osgi metadata name if available
+     *
+     * @since 1.4
+     */
+    private String bundleName;
+
+    /**
+     * contains osgi metadata Export-Service if available
+     *
+     * @since 1.4
+     */
+    private String bundleExportService;
 
     private int rowCount = 30;
 
@@ -113,7 +155,7 @@ public class SearchAction
 
     private String infoMessage;
 
-    public boolean isFromResultsPage()
+    public boolean isFromResultsPage( )
     {
         return fromResultsPage;
     }
@@ -123,7 +165,7 @@ public class SearchAction
         this.fromResultsPage = fromResultsPage;
     }
 
-    public boolean isFromFilterSearch()
+    public boolean isFromFilterSearch( )
     {
         return fromFilterSearch;
     }
@@ -133,27 +175,33 @@ public class SearchAction
         this.fromFilterSearch = fromFilterSearch;
     }
 
-    public void prepare()
+    public void prepare( )
     {
-        managedRepositoryList = getObservableRepos();
+        managedRepositoryList = getObservableRepos( );
 
-        if ( managedRepositoryList.size() > 0 )
+        if ( managedRepositoryList.size( ) > 0 )
         {
             managedRepositoryList.add( "all" );
         }
 
-        searchFields = new LinkedHashMap<String, String>();
+        searchFields = new LinkedHashMap<String, String>( );
         searchFields.put( "groupId", "Group ID" );
         searchFields.put( "artifactId", "Artifact ID" );
         searchFields.put( "version", "Version" );
         searchFields.put( "className", "Class/Package Name" );
         searchFields.put( "rowCount", "Row Count" );
+        searchFields.put( "bundleVersion", "OSGI Bundle Version" );
+        searchFields.put( "bundleSymbolicName", "OSGI Bundle-SymbolicName" );
+        searchFields.put( "bundleExportPackage", "OSGI Export-Package" );
+        searchFields.put( "bundleImportPackage", "OSGI import package" );
+        searchFields.put( "bundleName", "OSGI name" );
+        searchFields.put( "bundleExportService", "OSGI Export-Service" );
 
-        super.clearErrorsAndMessages();
-        clearSearchFields();
+        super.clearErrorsAndMessages( );
+        clearSearchFields( );
     }
 
-    private void clearSearchFields()
+    private void clearSearchFields( )
     {
         repositoryId = "";
         artifactId = "";
@@ -165,11 +213,13 @@ public class SearchAction
     }
 
     // advanced search MRM-90 -- filtered search
-    public String filteredSearch()
+    public String filteredSearch( )
         throws MalformedURLException
     {
-        if ( ( groupId == null || "".equals( groupId ) ) && ( artifactId == null || "".equals( artifactId ) )
-            && ( className == null || "".equals( className ) ) && ( version == null || "".equals( version ) ) )
+        if ( StringUtils.isBlank( groupId ) && StringUtils.isBlank( artifactId ) && StringUtils.isBlank( className )
+            && StringUtils.isBlank( version ) && StringUtils.isBlank( bundleExportPackage ) && StringUtils.isBlank(
+            bundleExportService ) && StringUtils.isBlank( bundleImportPackage ) && StringUtils.isBlank( bundleName )
+            && StringUtils.isBlank( bundleSymbolicName ) && StringUtils.isBlank( bundleVersion ) )
         {
             addActionError( "Advanced Search - At least one search criteria must be provided." );
             return INPUT;
@@ -184,12 +234,12 @@ public class SearchAction
 
         SearchResultLimits limits = new SearchResultLimits( currentPage );
         limits.setPageSize( rowCount );
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<String>( );
 
         if ( repositoryId == null || StringUtils.isBlank( repositoryId ) || "all".equals(
             StringUtils.stripToEmpty( repositoryId ) ) )
         {
-            selectedRepos = getObservableRepos();
+            selectedRepos = getObservableRepos( );
         }
         else
         {
@@ -203,33 +253,63 @@ public class SearchAction
 
         SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
 
+        if ( StringUtils.isNotBlank( this.bundleExportPackage ) )
+        {
+            searchFields.setBundleExportPackage( this.bundleExportPackage );
+        }
+
+        if ( StringUtils.isNotBlank( this.bundleExportService ) )
+        {
+            searchFields.setBundleExportService( this.bundleExportService );
+        }
+
+        if ( StringUtils.isNotBlank( this.bundleImportPackage ) )
+        {
+            searchFields.setBundleImportPackage( this.bundleImportPackage );
+        }
+
+        if ( StringUtils.isNotBlank( this.bundleSymbolicName ) )
+        {
+            searchFields.setBundleSymbolicName( this.bundleSymbolicName );
+        }
+
+        if ( StringUtils.isNotBlank( this.bundleName ) )
+        {
+            searchFields.setBundleName( this.bundleName );
+        }
+
+        if ( StringUtils.isNotBlank( this.bundleVersion ) )
+        {
+            searchFields.setBundleVersion( this.bundleVersion );
+        }
+
         log.debug( "filteredSearch with searchFields {}", searchFields );
 
         // TODO: add packaging in the list of fields for advanced search (UI)?
         try
         {
-            results = getNexusSearch().search( getPrincipal(), searchFields, limits );
+            results = getNexusSearch( ).search( getPrincipal( ), searchFields, limits );
         }
         catch ( RepositorySearchException e )
         {
-            addActionError( e.getMessage() );
+            addActionError( e.getMessage( ) );
             return ERROR;
         }
 
-        if ( results.isEmpty() )
+        if ( results.isEmpty( ) )
         {
             addActionError( "No results found" );
             return INPUT;
         }
 
-        totalPages = results.getTotalHits() / limits.getPageSize();
+        totalPages = results.getTotalHits( ) / limits.getPageSize( );
 
-        if ( ( results.getTotalHits() % limits.getPageSize() ) != 0 )
+        if ( ( results.getTotalHits( ) % limits.getPageSize( ) ) != 0 )
         {
             totalPages = totalPages + 1;
         }
 
-        for ( SearchResultHit hit : results.getHits() )
+        for ( SearchResultHit hit : results.getHits( ) )
         {
             // fix version ?
             //hit.setVersion( VersionUtil.getBaseVersion( version ) );
@@ -240,7 +320,7 @@ public class SearchAction
     }
 
     @SuppressWarnings( "unchecked" )
-    public String quickSearch()
+    public String quickSearch( )
         throws MalformedURLException
     {
         /* TODO: give action message if indexing is in progress.
@@ -249,13 +329,13 @@ public class SearchAction
          * present in the full text search.
          */
 
-        assert q != null && q.length() != 0;
+        assert q != null && q.length( ) != 0;
 
         fromFilterSearch = false;
 
         SearchResultLimits limits = new SearchResultLimits( currentPage );
 
-        List<String> selectedRepos = getObservableRepos();
+        List<String> selectedRepos = getObservableRepos( );
         if ( CollectionUtils.isEmpty( selectedRepos ) )
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
@@ -268,29 +348,29 @@ public class SearchAction
             if ( searchResultsOnly && !completeQueryString.equals( "" ) )
             {
                 results =
-                    getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString() );
+                    getNexusSearch( ).search( getPrincipal( ), selectedRepos, q, limits, parseCompleteQueryString( ) );
             }
             else
             {
                 completeQueryString = "";
-                results = getNexusSearch().search( getPrincipal(), selectedRepos, q, limits, null );
+                results = getNexusSearch( ).search( getPrincipal( ), selectedRepos, q, limits, null );
             }
         }
         catch ( RepositorySearchException e )
         {
-            addActionError( e.getMessage() );
+            addActionError( e.getMessage( ) );
             return ERROR;
         }
 
-        if ( results.isEmpty() )
+        if ( results.isEmpty( ) )
         {
             addActionError( "No results found" );
             return INPUT;
         }
 
-        totalPages = results.getTotalHits() / limits.getPageSize();
+        totalPages = results.getTotalHits( ) / limits.getPageSize( );
 
-        if ( ( results.getTotalHits() % limits.getPageSize() ) != 0 )
+        if ( ( results.getTotalHits( ) % limits.getPageSize( ) ) != 0 )
         {
             totalPages = totalPages + 1;
         }
@@ -303,7 +383,7 @@ public class SearchAction
         return SUCCESS;
     }
 
-    public String findArtifact()
+    public String findArtifact( )
         throws Exception
     {
         // TODO: give action message if indexing is in progress
@@ -314,28 +394,28 @@ public class SearchAction
             return INPUT;
         }
 
-        databaseResults = new ArrayList<ArtifactMetadata>();
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        databaseResults = new ArrayList<ArtifactMetadata>( );
+        RepositorySession repositorySession = repositorySessionFactory.createSession( );
         try
         {
-            MetadataRepository metadataRepository = repositorySession.getRepository();
-            for ( String repoId : getObservableRepos() )
+            MetadataRepository metadataRepository = repositorySession.getRepository( );
+            for ( String repoId : getObservableRepos( ) )
             {
                 databaseResults.addAll( metadataRepository.getArtifactsByChecksum( repoId, q ) );
             }
         }
         finally
         {
-            repositorySession.close();
+            repositorySession.close( );
         }
 
-        if ( databaseResults.isEmpty() )
+        if ( databaseResults.isEmpty( ) )
         {
             addActionError( "No results found" );
             return INPUT;
         }
 
-        if ( databaseResults.size() == 1 )
+        if ( databaseResults.size( ) == 1 )
         {
             // 1 hit? return it's information directly!
             return ARTIFACT;
@@ -344,7 +424,7 @@ public class SearchAction
         return RESULTS;
     }
 
-    public String doInput()
+    public String doInput( )
     {
         return INPUT;
     }
@@ -366,9 +446,9 @@ public class SearchAction
         }
     }
 
-    private List<String> parseCompleteQueryString()
+    private List<String> parseCompleteQueryString( )
     {
-        List<String> parsedCompleteQueryString = new ArrayList<String>();
+        List<String> parsedCompleteQueryString = new ArrayList<String>( );
         String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
         CollectionUtils.addAll( parsedCompleteQueryString, parsed );
 
@@ -389,7 +469,7 @@ public class SearchAction
         return false;
     }
 
-    public String getQ()
+    public String getQ( )
     {
         return q;
     }
@@ -399,12 +479,12 @@ public class SearchAction
         this.q = q;
     }
 
-    public SearchResults getResults()
+    public SearchResults getResults( )
     {
         return results;
     }
 
-    public List<ArtifactMetadata> getDatabaseResults()
+    public List<ArtifactMetadata> getDatabaseResults( )
     {
         return databaseResults;
     }
@@ -414,12 +494,12 @@ public class SearchAction
         this.currentPage = page;
     }
 
-    public int getCurrentPage()
+    public int getCurrentPage( )
     {
         return currentPage;
     }
 
-    public int getTotalPages()
+    public int getTotalPages( )
     {
         return totalPages;
     }
@@ -429,7 +509,7 @@ public class SearchAction
         this.totalPages = totalPages;
     }
 
-    public boolean isSearchResultsOnly()
+    public boolean isSearchResultsOnly( )
     {
         return searchResultsOnly;
     }
@@ -439,7 +519,7 @@ public class SearchAction
         this.searchResultsOnly = searchResultsOnly;
     }
 
-    public String getCompleteQueryString()
+    public String getCompleteQueryString( )
     {
         return completeQueryString;
     }
@@ -449,9 +529,10 @@ public class SearchAction
         this.completeQueryString = completeQueryString;
     }
 
-    public Map<String, ManagedRepository> getManagedRepositories() throws RepositoryAdminException
+    public Map<String, ManagedRepository> getManagedRepositories( )
+        throws RepositoryAdminException
     {
-        return managedRepositoryAdmin.getManagedRepositoriesAsMap();
+        return managedRepositoryAdmin.getManagedRepositoriesAsMap( );
     }
 
     // wtf : does nothing ??
@@ -459,7 +540,7 @@ public class SearchAction
     {
     }
 
-    public String getGroupId()
+    public String getGroupId( )
     {
         return groupId;
     }
@@ -469,7 +550,7 @@ public class SearchAction
         this.groupId = groupId;
     }
 
-    public String getArtifactId()
+    public String getArtifactId( )
     {
         return artifactId;
     }
@@ -479,7 +560,7 @@ public class SearchAction
         this.artifactId = artifactId;
     }
 
-    public String getVersion()
+    public String getVersion( )
     {
         return version;
     }
@@ -489,7 +570,7 @@ public class SearchAction
         this.version = version;
     }
 
-    public int getRowCount()
+    public int getRowCount( )
     {
         return rowCount;
     }
@@ -499,7 +580,7 @@ public class SearchAction
         this.rowCount = rowCount;
     }
 
-    public boolean isFilterSearch()
+    public boolean isFilterSearch( )
     {
         return filterSearch;
     }
@@ -509,7 +590,7 @@ public class SearchAction
         this.filterSearch = filterSearch;
     }
 
-    public String getRepositoryId()
+    public String getRepositoryId( )
     {
         return repositoryId;
     }
@@ -519,7 +600,7 @@ public class SearchAction
         this.repositoryId = repositoryId;
     }
 
-    public List<String> getManagedRepositoryList()
+    public List<String> getManagedRepositoryList( )
     {
         return managedRepositoryList;
     }
@@ -529,7 +610,7 @@ public class SearchAction
         this.managedRepositoryList = managedRepositoryList;
     }
 
-    public String getClassName()
+    public String getClassName( )
     {
         return className;
     }
@@ -539,12 +620,12 @@ public class SearchAction
         this.className = className;
     }
 
-    public RepositorySearch getNexusSearch()
+    public RepositorySearch getNexusSearch( )
     {
         if ( nexusSearch == null )
         {
-            WebApplicationContext wac =
-                WebApplicationContextUtils.getRequiredWebApplicationContext( ServletActionContext.getServletContext() );
+            WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
+                ServletActionContext.getServletContext( ) );
             nexusSearch = wac.getBean( "nexusSearch", RepositorySearch.class );
         }
         return nexusSearch;
@@ -555,7 +636,7 @@ public class SearchAction
         this.nexusSearch = nexusSearch;
     }
 
-    public Map<String, String> getSearchFields()
+    public Map<String, String> getSearchFields( )
     {
         return searchFields;
     }
@@ -565,7 +646,7 @@ public class SearchAction
         this.searchFields = searchFields;
     }
 
-    public String getInfoMessage()
+    public String getInfoMessage( )
     {
         return infoMessage;
     }
@@ -575,7 +656,7 @@ public class SearchAction
         this.infoMessage = infoMessage;
     }
 
-    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin( )
     {
         return managedRepositoryAdmin;
     }
@@ -583,5 +664,65 @@ public class SearchAction
     public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    public String getBundleVersion( )
+    {
+        return bundleVersion;
+    }
+
+    public void setBundleVersion( String bundleVersion )
+    {
+        this.bundleVersion = bundleVersion;
+    }
+
+    public String getBundleSymbolicName( )
+    {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName( String bundleSymbolicName )
+    {
+        this.bundleSymbolicName = bundleSymbolicName;
+    }
+
+    public String getBundleExportPackage( )
+    {
+        return bundleExportPackage;
+    }
+
+    public void setBundleExportPackage( String bundleExportPackage )
+    {
+        this.bundleExportPackage = bundleExportPackage;
+    }
+
+    public String getBundleImportPackage( )
+    {
+        return bundleImportPackage;
+    }
+
+    public void setBundleImportPackage( String bundleImportPackage )
+    {
+        this.bundleImportPackage = bundleImportPackage;
+    }
+
+    public String getBundleName( )
+    {
+        return bundleName;
+    }
+
+    public void setBundleName( String bundleName )
+    {
+        this.bundleName = bundleName;
+    }
+
+    public String getBundleExportService( )
+    {
+        return bundleExportService;
+    }
+
+    public void setBundleExportService( String bundleExportService )
+    {
+        this.bundleExportService = bundleExportService;
     }
 }
