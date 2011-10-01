@@ -27,7 +27,6 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-@Test( groups = { "about" }, alwaysRun = true )
 public class ArchivaAdminTest
     extends AbstractArchivaTest
 {
@@ -57,7 +56,6 @@ public class ArchivaAdminTest
         super.open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
 
         getSelenium().open( baseUrl );
-        String title = getSelenium().getTitle();
         // if not admin user created create one
         if ( isElementPresent( "adminCreateForm" ) )
         {
@@ -78,4 +76,10 @@ public class ArchivaAdminTest
         // take care about repositories : internal
     }
 
+    @Test( groups = { "about" }, alwaysRun = true )
+    public void testHome()
+    {
+        getSelenium().open( baseUrl );
+        assertPage( "Apache Archiva \\ Quick Search" );
+    }
 }

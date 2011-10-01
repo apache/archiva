@@ -169,7 +169,7 @@ public class BrowseTest
         addMetadataProperty();
     }
 
-    @Test( dependsOnMethods = { "testAddMetadataProperty" } )
+    @Test( dependsOnMethods = { "testAddMetadataProperty", "testWithCorrectUsernamePassword" } )
     public void testDeleteMetadataProperty()
     {
         deleteMetadataProperty();

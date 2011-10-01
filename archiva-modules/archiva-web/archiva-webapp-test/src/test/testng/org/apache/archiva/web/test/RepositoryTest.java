@@ -291,9 +291,10 @@ public class RepositoryTest
         assertTextPresent( "You must enter a repository name." );
     }
 
-    @Test( dependsOnMethods = { "testAddRemoteRepoNullName" } )
+    @Test
     public void testAddRemoteRepoNullURL()
     {
+        getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
         addRemoteRepository( "remoterepo", "Remote Repository Sample", "", "", "", "", "Maven 2.x Repository", false );
         assertTextPresent( "You must enter a url." );
     }

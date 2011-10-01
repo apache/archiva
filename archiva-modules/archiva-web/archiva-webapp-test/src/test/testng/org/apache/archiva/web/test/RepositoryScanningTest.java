@@ -34,9 +34,10 @@ public class RepositoryScanningTest
         assertTextPresent( "Unable to process blank pattern." );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactFileType_NullValue" } )
+    @Test
     public void testAddArtifactFileType()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_0", "**/*.dll" );
         clickAddIcon( "newpattern_0" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[1]/table.13.0" ), "**/*.dll" );
@@ -55,6 +56,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddArtifactFileType" } )
     public void testDeleteArtifactFileType()
     {
+        goToRepositoryScanningPage();
         String path = "//div[@id='contentArea']/div/div/table/tbody/tr[14]/td/code";
         assertElementPresent( path );
         Assert.assertEquals( getSelenium().getText( path ), "**/*.dll" );
@@ -65,6 +67,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testDeleteArtifactFileType" } )
     public void testAddAutoRemove_NullValue()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_1", "" );
         clickAddIcon( "newpattern_1" );
         assertTextPresent( "Unable to process blank pattern." );
@@ -83,6 +86,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddAutoRemove_NullValue" } )
     public void testAddAutoRemove()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_1", "**/*.test" );
         clickAddIcon( "newpattern_1" );
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[2]/table.3.0" ), "**/*.test" );
@@ -91,6 +95,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddAutoRemove" } )
     public void testDeleteAutoRemove()
     {
+        goToRepositoryScanningPage();
         String path = "//div[@id='contentArea']/div/div[2]/table/tbody/tr[4]/td/code";
         assertElementPresent( path );
         Assert.assertEquals( getSelenium().getText( path ), "**/*.test" );
@@ -101,6 +106,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testDeleteAutoRemove" } )
     public void testAddIgnoredArtifacts_NullValue()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_2", "" );
         clickAddIcon( "newpattern_2" );
         Assert.assertEquals( getErrorMessageText(),
@@ -129,6 +135,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddIgnoredArtifacts" } )
     public void testDeleteIgnoredArtifacts()
     {
+        goToRepositoryScanningPage();
         String pattern = "**/*.log";
         String path = "//div[@id='contentArea']/div/div[3]/table/tbody/tr[7]/td/code";
         assertElementPresent( path );
@@ -141,6 +148,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testDeleteIgnoredArtifacts" } )
     public void testAddIndexableContent_NullValue()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_3", "" );
         clickAddIcon( "newpattern_3" );
         Assert.assertEquals( getErrorMessageText(),
@@ -169,6 +177,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddIndexableContent" } )
     public void testDeleteIndexableContent()
     {
+        goToRepositoryScanningPage();
         String pattern = "**/*.html";
         String path = "//div[@id='contentArea']/div/div[4]/table/tbody/tr[10]/td/code";
         assertElementPresent( path );
@@ -180,6 +189,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testDeleteIndexableContent" } )
     public void testUpdateConsumers()
     {
+        goToRepositoryScanningPage();
         checkField( "enabledKnownContentConsumers" );
         checkField( "//input[@name='enabledKnownContentConsumers' and @value='auto-rename']" );
         clickButtonWithValue( "Update Consumers" );
@@ -189,6 +199,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testUpdateConsumers" } )
     public void testUpdateConsumers_UnsetAll()
     {
+        goToRepositoryScanningPage();
         getSelenium().uncheck( "enabledKnownContentConsumers" );
         getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='auto-rename']" );
         getSelenium().uncheck( "//input[@name='enabledKnownContentConsumers' and @value='create-missing-checksums']" );

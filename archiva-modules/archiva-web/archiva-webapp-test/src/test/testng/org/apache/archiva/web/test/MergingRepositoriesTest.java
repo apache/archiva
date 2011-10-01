@@ -89,6 +89,7 @@ public class MergingRepositoriesTest
     }
 
     // change the configuaration first and try to upload existing artifact to the repository
+    @Test(dependsOnMethods = {"testAddArtifactToStagingRepository"})
     public void testConfigurationChangesOfStagingRepository()
     {
         editManagedRepository();

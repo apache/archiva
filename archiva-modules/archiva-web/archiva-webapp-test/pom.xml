@@ -36,7 +36,7 @@
     <cargo.wait>false</cargo.wait>
     <cargo.timeout>600000</cargo.timeout>
     <cargo.install.dir>${project.build.directory}/cargo/installs</cargo.install.dir>
-    <maxWaitTimeInMs>30000</maxWaitTimeInMs>
+    <maxWaitTimeInMs>10000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
     <seleniumPluginVersion>2.0</seleniumPluginVersion>
@@ -49,9 +49,8 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>5.9</version>
+      <version>6.2.1</version>
       <scope>test</scope>
-      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
