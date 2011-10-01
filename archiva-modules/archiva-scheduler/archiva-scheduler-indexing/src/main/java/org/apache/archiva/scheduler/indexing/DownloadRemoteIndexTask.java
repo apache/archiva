@@ -116,6 +116,8 @@ public class DownloadRemoteIndexTask
 
         // create a temp directory to download files
         final File tempIndexDirectory = new File( indexingContext.getIndexDirectoryFile( ).getParent( ), ".tmpIndex" );
+        File indexCacheDirectory = new File( indexingContext.getIndexDirectoryFile( ).getParent( ), ".indexCache" );
+        indexCacheDirectory.mkdirs();
         try
         {
             if ( tempIndexDirectory.exists( ) )
@@ -123,6 +125,7 @@ public class DownloadRemoteIndexTask
                 FileUtils.deleteDirectory( tempIndexDirectory );
             }
             tempIndexDirectory.mkdirs( );
+            tempIndexDirectory.deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl( );
 
             final Wagon wagon = wagonFactory.getWagon( new URL( this.remoteRepository.getUrl( ) ).getProtocol( ) );
@@ -174,14 +177,13 @@ public class DownloadRemoteIndexTask
                 {
                     try
                     {
-                        log.debug( "resourceFetcher#retrieve, name:{}", name );
-                        //TODO check those files are deleted !!
+                        log.info( "index update retrieve file, name:{}", name );
                         File file = new File( tempIndexDirectory, name );
                         if ( file.exists( ) )
                         {
                             file.delete( );
                         }
-                        //file.deleteOnExit();
+                        file.deleteOnExit();
                         wagon.get( name, file );
                         return new FileInputStream( file );
                     }
@@ -202,6 +204,7 @@ public class DownloadRemoteIndexTask
 
             IndexUpdateRequest request = new IndexUpdateRequest( indexingContext, resourceFetcher );
             request.setForceFullUpdate( this.fullDownload );
+            request.setLocalIndexCacheDir( indexCacheDirectory );
 
             this.indexUpdater.fetchAndUpdateIndex( request );
             stopWatch.stop( );
