@@ -31,16 +31,18 @@
 
   <properties>
     <container.test.port>9696</container.test.port>
-    <tomcat5x.version>5.5.33</tomcat5x.version>
-    <tomcat6x.version>6.0.32</tomcat6x.version>
+    <tomcat5x.version>5.5.34</tomcat5x.version>
+    <tomcat6x.version>6.0.33</tomcat6x.version>
     <cargo.wait>false</cargo.wait>
     <cargo.timeout>600000</cargo.timeout>
-    <cargo.install.dir>cargo-installs</cargo.install.dir>
+    <cargo.install.dir>${project.build.directory}/cargo-installs</cargo.install.dir>
     <maxWaitTimeInMs>60000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
     <seleniumPluginVersion>2.0</seleniumPluginVersion>
     <selenium-server.version>2.6.0</selenium-server.version>
+    <apache.mirror.url>http://archive.apache.org/dist</apache.mirror.url>
+    <apache.archive.url>http://archive.apache.org/dist</apache.archive.url>
   </properties>
 
   <dependencies>
@@ -171,7 +173,6 @@
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes>
-              <exclude>${cargo.install.dir}/**</exclude>
               <exclude>src/test/resources/appserver-base/**</exclude>
               <exclude>src/test/resources/repository/**</exclude>
               <exclude>src/test/resources/local-repo/**</exclude>
@@ -410,7 +411,7 @@
                 <containerId>${container.name}</containerId>
                 <zipUrlInstaller>
                   <url>${container.url}</url>
-                  <installDir>${project.basedir}/${cargo.install.dir}/${container.name}</installDir>
+                  <downloadDir>${user.home}/.cargo</downloadDir>
                 </zipUrlInstaller>
                 <log>${project.build.directory}/logs/${container.name}.log</log>
                 <output>${project.build.directory}/logs/${container.name}.out</output>
@@ -488,7 +489,7 @@
         <container.name>tomcat5x</container.name>
         <tomcat.version>${tomcat5x.version}</tomcat.version>
         <container.url>
-          http://archive.apache.org/dist/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip
+          ${apache.mirror.url}/tomcat/tomcat-5/v${tomcat5x.version}/bin/apache-tomcat-${tomcat5x.version}.zip
         </container.url>
       </properties>
     </profile>
@@ -503,7 +504,7 @@
         <container.name>tomcat6x</container.name>
         <tomcat.version>${tomcat6x.version}</tomcat.version>
         <container.url>
-          http://archive.apache.org/dist/tomcat/tomcat-6/v${tomcat6x.version}/bin/apache-tomcat-${tomcat6x.version}.zip
+          ${apache.mirror.url}/tomcat/tomcat-6/v${tomcat6x.version}/bin/apache-tomcat-${tomcat6x.version}.zip
         </container.url>
       </properties>
     </profile>
@@ -530,7 +531,6 @@
       <properties>
         <selenium.browser>*googlechrome</selenium.browser>
         <excluded.groups>requiresUpload</excluded.groups>
-        <excluded.groups/>
       </properties>
     </profile>
     <profile>
@@ -571,24 +571,6 @@
         <selenium.browser>*custom ${browserPath}</selenium.browser>
         <excluded.groups>requiresUpload</excluded.groups>
       </properties>
-    </profile>
-    <profile>
-      <id>clean-cargo</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-clean-plugin</artifactId>
-            <configuration>
-              <filesets>
-                <fileset>
-                  <directory>${cargo.install.dir}</directory>
-                </fileset>
-              </filesets>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>headless</id>
