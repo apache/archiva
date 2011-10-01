@@ -27,18 +27,17 @@ import org.testng.Assert;
 public class VirtualRepositoryTest
     extends AbstractRepositoryTest
 {
-    // FIXME: says repositoryGroup id cannot be empty
-    @Test( enabled = false )
+    @Test
     public void testAddRepositoryGroupNullValue()
     {
-        addRepositoryGroup( " " );
+        addRepositoryGroup( " ", false );
         assertTextPresent( "Identifier field is required." );
     }
 
     @Test( dependsOnMethods = { "testWithCorrectUsernamePassword" } )
     public void testAddRepositoryGroupValidValue()
     {
-        addRepositoryGroup( "testing" );
+        addRepositoryGroup( "testing", true );
         Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[1]/p[1]" ), "testing" );
     }
 

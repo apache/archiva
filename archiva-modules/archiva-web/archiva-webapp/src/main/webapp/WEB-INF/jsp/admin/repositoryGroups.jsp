@@ -47,11 +47,10 @@
 
 <div align="right">
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <s:form action="addRepositoryGroup" namespace="/admin">
-      <span class="label">Identifier<span style="color:red">*</span>:</span> 
-      <s:textfield size="10" label="Identifier" theme="simple" name="repositoryGroup.id"/>
+    <s:form name="addRepositoryGroup" action="addRepositoryGroup" namespace="/admin" validate="true">
+      <s:textfield size="10" label="Identifier" name="repositoryGroup.id"/>
       <s:token/>
-      <s:submit value="Add Group" theme="simple" cssClass="button"/>
+      <s:submit value="Add Group" cssClass="button"/>
     </s:form>
   </redback:ifAnyAuthorized>
 </div>

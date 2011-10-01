@@ -73,11 +73,11 @@ public abstract class AbstractRepositoryTest
         assertButtonWithValuePresent( "Cancel" );
     }
 
-    public void addRepositoryGroup( String repoGroupName )
+    public void addRepositoryGroup( String repoGroupName, boolean wait )
     {
         goToRepositoryGroupsPage();
         setFieldValue( "repositoryGroup.id", repoGroupName );
-        clickButtonWithValue( "Add Group" );
+        clickButtonWithValue( "Add Group", wait );
     }
 
     public void addRepositoryToRepositoryGroup( String repositoryGroupName, String repositoryName )

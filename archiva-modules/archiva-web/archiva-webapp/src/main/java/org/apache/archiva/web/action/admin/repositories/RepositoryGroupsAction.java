@@ -65,8 +65,6 @@ public class RepositoryGroupsAction
      */
     private String baseUrl;
 
-    private static final Pattern REPO_GROUP_ID_PATTERN = Pattern.compile( "[A-Za-z0-9\\._\\-]+" );
-
     public void setServletRequest( HttpServletRequest request )
     {
         this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
