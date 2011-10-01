@@ -65,6 +65,7 @@
          alert('error');
        }
      });
+    alert("download remote index scheduled");
     return false;
   }
   document.getElementById("editRemoteRepository_repository_name").focus();
