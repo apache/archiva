@@ -58,14 +58,13 @@
 
 <script type="text/javascript">
   function downloadRemote() {
-
     $.ajax({
-             url: "${pageContext.request.contextPath}/restServices/archivaServices/repositoriesService/scheduleDownloadRemoteIndex",
-             data: "repositoryId="+document.getElementById("downloadRemoteForm").repoid.value+"&now="+document.getElementById("downloadRemoteForm").now.value+"&fullDownload="+document.getElementById("downloadRemoteForm").fullDownload.value ,
-             error: function(){
-               alert('error');
-             }
-           });
+       url: "${pageContext.request.contextPath}/restServices/archivaServices/repositoriesService/scheduleDownloadRemoteIndex",
+       data: "repositoryId="+document.getElementById("downloadRemoteForm").repoid.value+"&now="+document.getElementById("downloadRemoteForm").now.checked+"&fullDownload="+document.getElementById("downloadRemoteForm").fullDownload.checked ,
+       error: function(){
+         alert('error');
+       }
+     });
     return false;
   }
   document.getElementById("editRemoteRepository_repository_name").focus();
