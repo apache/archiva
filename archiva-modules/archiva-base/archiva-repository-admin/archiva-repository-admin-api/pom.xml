@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-repository-admin</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4-M1-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-repository-admin-api</artifactId>
   <name>Archiva Base :: Repository Admin Api</name>
