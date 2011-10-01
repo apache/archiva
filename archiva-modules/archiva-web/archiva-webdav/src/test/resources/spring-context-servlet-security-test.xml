@@ -60,7 +60,7 @@
           <system/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-forceCreate="true"
                config-optional="true"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>

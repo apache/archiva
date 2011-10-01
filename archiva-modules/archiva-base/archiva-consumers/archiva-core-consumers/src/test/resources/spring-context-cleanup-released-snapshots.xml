@@ -39,7 +39,7 @@
         <![CDATA[
         <configuration>
           <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
-               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -58,7 +58,7 @@
           <system/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-forceCreate="true"
                config-optional="true"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>

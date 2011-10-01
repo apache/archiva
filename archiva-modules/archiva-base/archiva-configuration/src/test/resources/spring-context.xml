@@ -48,7 +48,7 @@
         <![CDATA[
         <configuration>
             <xml fileName="${basedir}/src/test/conf/archiva-0.9.xml"
-                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -66,7 +66,7 @@
         <configuration>
             <system/>
             <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
-                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -85,8 +85,8 @@
         <configuration>
             <system/>
             <xml fileName="${basedir}/target/test-autodetect-v1/archiva-user.xml" config-optional="true"
-                 config-name="org.apache.maven.archiva.user"
-                 config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva.user"
+                 config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -104,7 +104,7 @@
         <configuration>
             <system/>
             <xml fileName="${basedir}/src/test/conf/archiva-v1.xml"
-                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -121,7 +121,7 @@
         <![CDATA[
         <configuration>
             <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
-                 config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -138,9 +138,9 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/target/test/test-file-user.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="false"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>
@@ -157,9 +157,9 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/target/test/test-file-user.xml" config-optional="true" config-forceCreate="false"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>
@@ -176,9 +176,9 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/target/test/test-file-user.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="false"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>
@@ -196,9 +196,9 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/src/test/conf/conf-user.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
           <xml fileName="${basedir}/src/test/conf/conf-base.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>
@@ -216,7 +216,7 @@
         <![CDATA[
         <configuration>
             <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
-                 config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -235,7 +235,7 @@
         <![CDATA[
         <configuration>
             <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
-                 config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
         </configuration>
         ]]>
       </value>
@@ -253,7 +253,7 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>
@@ -273,9 +273,9 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
           <xml fileName="${basedir}/target/*intentionally:invalid*/conf/archiva.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>
@@ -294,9 +294,9 @@
         <![CDATA[
       <configuration>
           <xml fileName="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
           <xml fileName="${basedir}/target/test-appserver-base/conf/archiva.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
       </value>

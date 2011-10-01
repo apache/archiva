@@ -80,7 +80,7 @@
           <instrumentation>
             <!-- exclude generated -->
             <excludes>
-              <exclude>org/apache/maven/archiva/reporting/model/**</exclude>
+              <exclude>org/apache/archiva/reporting/model/**</exclude>
             </excludes>
           </instrumentation>
         </configuration>

@@ -54,14 +54,6 @@ public class ArchivaConfigurationTest
         return new File( FileUtil.getBasedir(), path );
     }
 
-    /**
-     * @TODO to remove
-     */
-    protected String getSpringConfigLocation()
-    {
-        return "org/apache/maven/archiva/configuration/spring-context.xml";
-    }
-
     protected <T> T lookup( Class<T> clazz, String hint )
     {
         return componentContainer.getComponent( clazz, hint );
@@ -221,10 +213,9 @@ public class ArchivaConfigurationTest
         throws Exception
     {
 
-        System.setProperty( "org.apache.maven.archiva.webapp.ui.appletFindEnabled", "false" );
+        System.setProperty( "org.apache.archiva.webapp.ui.appletFindEnabled", "false" );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-configuration" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
         archivaConfiguration.reload();
 
@@ -236,7 +227,7 @@ public class ArchivaConfigurationTest
         }
         finally
         {
-            System.getProperties().remove( "org.apache.maven.archiva.webapp.ui.appletFindEnabled" );
+            System.getProperties().remove( "org.apache.archiva.webapp.ui.appletFindEnabled" );
         }
     }
 

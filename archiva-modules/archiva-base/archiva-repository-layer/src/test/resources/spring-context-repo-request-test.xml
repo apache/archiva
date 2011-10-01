@@ -41,7 +41,7 @@
           <configuration>
             <system/>
             <xml fileName="${basedir}/src/test/resources/scanner-archiva.xml"
-                 config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+                 config-name="org.apache.archiva" config-at="org.apache.archiva"/>
           </configuration>
       ]]>
       </value>

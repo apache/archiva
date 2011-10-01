@@ -44,9 +44,9 @@ import javax.servlet.jsp.tagext.TryCatchFinally;
  * It was easier to do it this way, vs accessing the dependency graph via a JSP.
  * 
  * <pre>
- *   <archiva:dependency-tree groupId="org.apache.maven.archiva" 
+ *   <archiva:dependency-tree groupId="org.apache.archiva"
  *                            artifactId="archiva-common" 
- *                            version="1.0"
+ *                            version="1.3.5"
  *                            nodevar="node">
  *     <b>${node.groupId}</b>:<b>${node.artifactId}</b>:<b>${node.version}</b> (${node.scope})
  *   </archiva:dependency-tree>

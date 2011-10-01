@@ -60,11 +60,6 @@ public class ArchivaServletAuthenticatorTest
         setupRepository( "corporate" );
     }
 
-    protected String getPlexusConfigLocation()
-    {
-        return "org/apache/maven/archiva/security/ArchivaServletAuthenticatorTest.xml";
-    }
-
     protected void assignRepositoryManagerRole( String principal, String repoId )
         throws Exception
     {

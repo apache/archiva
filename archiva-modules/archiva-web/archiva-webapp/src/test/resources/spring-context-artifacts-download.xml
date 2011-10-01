@@ -18,6 +18,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -38,8 +39,8 @@
           <system/>
 
           <xml fileName="${appserver.base}/conf/archiva-test-download-artifacts.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.base"
-               config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base"
+               config-at="org.apache.archiva"/>
 
           <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.redback"/>

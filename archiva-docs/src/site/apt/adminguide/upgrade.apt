@@ -21,54 +21,51 @@
 
 Upgrading Archiva
 
-   Upgrading Archiva is straightforward if the directions for separating the base from the installation above are followed. Simply retain the <<<data/repositories>>> and <<<data/databases/users>>> directories,
-   and the configuration files (in the conf directory, or the other locations specified above) and use a new extracted installation of Archiva.
+   Upgrading Archiva is straightforward, particularly if the directions for separating the base from the installation
+   are followed. You need to retain the following directories:
 
-   Note that the <<<users>>> database must always be retained as it contains the permissions and user information across versions. However,
-   in order to take advantage of the improvements in search in Archiva 1.1 (and higher versions), s.a. search by java class/package/method, the archiva database must
-   be re-created. So you need to delete the <<<data/databases/archiva>>> directory, delete the <<<.index>>> directories of your respective repositories, and execute the repository and database scanners after
-   starting Archiva.
+     * <<<conf>>> - the configuration files can be reused across different versions. Note that when the standalone
+       version is used, <<<wrapper.conf>>> and <<<jetty.xml>>> may need to be replaced after upgrade and changes
+       reapplied. See specific notes in the version details below.
 
-   The repository data is portable across versions, and multiple versions can be configured to look at the same repositories (though not run simultaneously).
+     * <<<data>>> - all Archiva data. More specifically:
 
-* Upgrading Archiva from 1.1.x to 1.2.x
+       * <<<data/repositories>>> is portable across versions (both forwards and backwards).
 
-   Because of the changes in the search implementation starting in 1.2, a few additional steps need to be performed when upgrading Archiva from 1.1.x to
-   1.2.x. Since the format of the index has changed in 1.2.x, the old index directory (which is located at <<</path/to/repo/.index>>> by default) needs to
-   be removed. And in order for the artifacts in the repository to be indexed again, the last modified date of the artifacts need to be updated.
-   To do this, you can force Archiva to scan all the artifacts by ticking the <<<Process All Artifacts>>> checkbox then clicking the <<<Scan Repository Now>>> 
-   button in the Repositories page. Take note though that this feature is only available starting with version 1.3. Otherwise, you must execute
-   <<find [REPOSITORY_DIRECTORY_NAME] | xargs touch>> at the base directory where the repository resides and then force execute the repository scanning so
-   that the new index will be generated.
+       * <<<data/databases/users>>> must always be retained as it contains the permissions and user information across
+         versions, even if LDAP is being used for authentication.
 
-   In 1.2.2, the length of the specified fields in the database tables below were changed to 1020:
-   
-   * ARCHIVA_PROJECT - URL
+       * <<<data/databases/archiva>>> exists for Archiva 1.3.x and below. This can be retained through upgrades, but
+         can also be regenerated at any time. This no longer exists in Archiva 1.4+.
 
-   * ARCHIVA_MAILING_LISTS - MAIN_ARCHIVE_URL
+       []
 
-   * ARCHIVA_ORGANIZATION - URL, FAV_ICON_URL
+     []
 
-   * ARCHIVA_LICENSES - URL
+   The following describes instructions specific to upgrading between different versions.
 
-   * ARCHIVA_ISSUE_MANAGEMENT - ISSUE_MANAGEMENT_URL
+* Upgrading Archiva to 1.4+
 
-   * ARCHIVA_CIMANAGEMENT - CI_URL
+** Metadata Repository
 
-   * ARCHIVA_INDIVIDUAL - URL, ORGANIZATION_URL
+~~TODO: metadata repository description
 
-   * ARCHIVA_DEPENDENCY - URL
+** Java Package Changes and Library Changes
 
-   * ARCHIVA_SCM - SCM_URL, DEVELOPER_CONNECTION, URL
+  All Java packages have changed from <<<org.apache.maven.archiva>>> to <<<org.apache.archiva>>> and have undergone
+  significant changes. If you have written custom consumers, are using the XML-RPC client, or interfacing with other
+  Java libraries the code will need to be adjusted.
 
-   * ARCHIVA_PROJECT_REPOSITORIES - URL
- 
-   []
+** Configuration References
 
-   If upgrading from a version lower than 1.2.2, you might also need to alter the lengths of the above fields as there is no upgrade task currently available for this.
-   
+  If you had used the undocumented ability to modify <<<application.xml>>> to alter the configuration search path, note
+  that in Archiva 1.4+ you must use the <<<org.apache.archiva>>> configuration search path instead of
+  <<<org.apache.maven.archiva>>>.
+
+* Upgrading Archiva to 1.2.2
+
    Since Archiva 1.2.2, the Jetty version has been upgraded to 6.1.19.
    If upgrading to Archiva 1.2.2 (or higher versions), there is a need to update the library contents listed in
-   <<<$ARCHIVA_BASE/conf/wrapper.conf>>> with the ones included in the new distribution especially if the
-   <<<$ARCHIVA_BASE>>> directory is separate from the installation.
+   <<<ARCHIVA_BASE/conf/wrapper.conf>>> with the ones included in the new distribution if the <<<ARCHIVA_BASE>>>
+   directory is separate from the installation.
    

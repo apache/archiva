@@ -149,7 +149,7 @@ public class DefaultArchivaConfiguration
      */
     private boolean isConfigurationDefaulted = false;
 
-    private static final String KEY = "org.apache.maven.archiva";
+    private static final String KEY = "org.apache.archiva";
 
     public Configuration getConfiguration()
     {
@@ -547,11 +547,11 @@ public class DefaultArchivaConfiguration
 
         // olamy hackish I know :-)
         contents = "<configuration><xml fileName=\"" + fileLocation
-            + "\" config-forceCreate=\"true\" config-name=\"org.apache.maven.archiva.user\"/>" + "</configuration>";
+            + "\" config-forceCreate=\"true\" config-name=\"org.apache.archiva.user\"/>" + "</configuration>";
 
         ( (CommonsConfigurationRegistry) registry ).setProperties( contents );
 
-        ( (CommonsConfigurationRegistry) registry ).initialize();
+        registry.initialize();
 
         for ( RegistryListener regListener : registryListeners )
         {

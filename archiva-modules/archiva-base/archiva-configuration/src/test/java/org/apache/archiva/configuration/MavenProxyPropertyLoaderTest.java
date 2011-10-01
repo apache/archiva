@@ -39,13 +39,6 @@ public class MavenProxyPropertyLoaderTest
 {
     private MavenProxyPropertyLoader loader;
 
-
-    // TODO to remove
-    protected String getSpringConfigLocation()
-    {
-        return "org/apache/maven/archiva/configuration/spring-context.xml";
-    }
-
     @Test
     public void testLoadValidMavenProxyConfiguration()
         throws IOException, InvalidConfigurationException

@@ -170,8 +170,8 @@
           <system/>
           <jndi prefix="java:comp/env" config-optional="true"/>
           <xml fileName="${user.home}/.m2/archiva.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.user"
-               config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.user"
+               config-at="org.apache.archiva"/>
           <xml fileName="${user.home}/.m2/shared.xml" config-optional="true"
                config-name="org.apache.maven.shared.app.user" config-at="org.apache.maven.shared.app"
                config-forceCreate="true"/>
@@ -180,15 +180,15 @@
           <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
                       config-at="org.codehaus.plexus.redback"/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
-               config-name="org.apache.maven.archiva.base"
-               config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.archiva.base"
+               config-at="org.apache.archiva"/>
           <xml fileName="${appserver.base}/conf/shared.xml" config-optional="true"
                config-name="org.apache.maven.shared.app.base" config-at="org.apache.maven.shared.app"/>
           <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
           <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.redback"/>
           <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
-               config-at="org.apache.maven.archiva"/>
+               config-at="org.apache.archiva"/>
           <xml fileName="${appserver.home}/conf/shared.xml" config-optional="true"
                config-at="org.apache.maven.shared.app"/>
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
