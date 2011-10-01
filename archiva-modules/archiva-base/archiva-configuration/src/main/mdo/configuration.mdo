@@ -576,7 +576,7 @@
         </field>
         <field>
           <name>blockRedeployments</name>
-          <version>1.0.0+</version>
+          <version>1.3.0+</version>
           <type>boolean</type>
           <description>True if re-deployment of artifacts already in the repository will be blocked.</description>
           <defaultValue>false</defaultValue>
