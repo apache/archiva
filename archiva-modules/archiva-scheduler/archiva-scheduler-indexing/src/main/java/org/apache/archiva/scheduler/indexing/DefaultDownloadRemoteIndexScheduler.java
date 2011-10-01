@@ -62,7 +62,7 @@ public class DefaultDownloadRemoteIndexScheduler
     implements ConfigurationListener, DownloadRemoteIndexScheduler
 {
 
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private Logger log = LoggerFactory.getLogger( getClass( ) );
 
     @Inject
     @Named( value = "taskScheduler#indexDownloadRemote" )
@@ -94,10 +94,10 @@ public class DefaultDownloadRemoteIndexScheduler
     private IndexUpdater indexUpdater;
 
     // store ids about currently running remote download : updated in DownloadRemoteIndexTask
-    private List<String> runningRemoteDownloadIds = new CopyOnWriteArrayList<String>();
+    private List<String> runningRemoteDownloadIds = new CopyOnWriteArrayList<String>( );
 
     @PostConstruct
-    public void startup()
+    public void startup( )
         throws ArchivaException, RepositoryAdminException, PlexusSisuBridgeException, IOException,
         UnsupportedExistingLuceneIndexException, DownloadRemoteIndexException
     {
@@ -111,33 +111,33 @@ public class DefaultDownloadRemoteIndexScheduler
 
         indexUpdater = plexusSisuBridge.lookup( IndexUpdater.class );
 
-        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories( ) )
         {
-            String contextKey = "remote-" + remoteRepository.getId();
-            if ( nexusIndexer.getIndexingContexts().get( contextKey ) != null )
+            String contextKey = "remote-" + remoteRepository.getId( );
+            if ( nexusIndexer.getIndexingContexts( ).get( contextKey ) != null )
             {
                 continue;
             }
             // create path
-            File repoDir = new File( appServerBase, "data/remotes/" + remoteRepository.getId() );
-            if ( !repoDir.exists() )
+            File repoDir = new File( appServerBase, "data/remotes/" + remoteRepository.getId( ) );
+            if ( !repoDir.exists( ) )
             {
-                repoDir.mkdirs();
+                repoDir.mkdirs( );
             }
             File indexDirectory = new File( repoDir, ".index" );
-            if ( !indexDirectory.exists() )
+            if ( !indexDirectory.exists( ) )
             {
-                indexDirectory.mkdirs();
+                indexDirectory.mkdirs( );
             }
-            nexusIndexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
-                                             remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
-                                             mavenIndexerUtils.getAllIndexCreators() );
+            nexusIndexer.addIndexingContext( contextKey, remoteRepository.getId( ), repoDir, indexDirectory,
+                                             remoteRepository.getUrl( ), calculateIndexRemoteUrl( remoteRepository ),
+                                             mavenIndexerUtils.getAllIndexCreators( ) );
             // TODO record jobs from configuration
-            if ( remoteRepository.isDownloadRemoteIndex() && StringUtils.isNotEmpty(
-                remoteRepository.getCronExpression() ) )
+            if ( remoteRepository.isDownloadRemoteIndex( ) && StringUtils.isNotEmpty(
+                remoteRepository.getCronExpression( ) ) )
             {
-                boolean fullDownload = indexDirectory.list().length == 0;
-                scheduleDownloadRemote( remoteRepository.getId(), false, fullDownload );
+                boolean fullDownload = indexDirectory.list( ).length == 0;
+                scheduleDownloadRemote( remoteRepository.getId( ), false, fullDownload );
             }
         }
 
@@ -145,13 +145,13 @@ public class DefaultDownloadRemoteIndexScheduler
     }
 
     @PreDestroy
-    public void shutdown()
+    public void shutdown( )
         throws RepositoryAdminException, IOException
     {
-        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories( ) )
         {
-            String contextKey = "remote-" + remoteRepository.getId();
-            IndexingContext context = nexusIndexer.getIndexingContexts().get( contextKey );
+            String contextKey = "remote-" + remoteRepository.getId( );
+            IndexingContext context = nexusIndexer.getIndexingContexts( ).get( contextKey );
             if ( context == null )
             {
                 continue;
@@ -178,66 +178,65 @@ public class DefaultDownloadRemoteIndexScheduler
                 return;
             }
             NetworkProxy networkProxy = null;
-            if ( StringUtils.isNotBlank( remoteRepository.getRemoteDownloadNetworkProxyId() ) )
+            if ( StringUtils.isNotBlank( remoteRepository.getRemoteDownloadNetworkProxyId( ) ) )
             {
-                networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId() );
+                networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId( ) );
                 if ( networkProxy == null )
                 {
                     log.warn(
                         "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
-                        remoteRepository.getRemoteDownloadNetworkProxyId() );
+                        remoteRepository.getRemoteDownloadNetworkProxyId( ) );
                 }
             }
 
-            //archivaConfiguration.getConfiguration().getProxyConnectorAsMap().get( "" ).get( 0 ).
-            //archivaConfiguration.getConfiguration().getNetworkProxiesAsMap()
-
             DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest =
-                new DownloadRemoteIndexTaskRequest().setRemoteRepository( remoteRepository ).setNetworkProxy(
+                new DownloadRemoteIndexTaskRequest( ).setRemoteRepository( remoteRepository ).setNetworkProxy(
                     networkProxy ).setFullDownload( fullDownload ).setWagonFactory( wagonFactory ).setNexusIndexer(
                     nexusIndexer ).setIndexUpdater( indexUpdater );
 
             if ( now )
             {
+                log.info( "schedule download remote index for repository {}", remoteRepository.getId( ) );
                 // do it in async
                 taskScheduler.schedule(
                     new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
-                    new Date() );
+                    new Date( ) );
             }
             else
             {
-
+                log.info( "schedule download remote index for repository {} with cron expression {}",
+                          remoteRepository.getId( ), remoteRepository.getCronExpression( ) );
                 taskScheduler.schedule(
                     new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
-                    new CronTrigger( remoteRepository.getCronExpression() ) );
+                    new CronTrigger( remoteRepository.getCronExpression( ) ) );
             }
 
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( e.getMessage(), e );
-            throw new DownloadRemoteIndexException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new DownloadRemoteIndexException( e.getMessage( ), e );
         }
     }
 
     protected String calculateIndexRemoteUrl( RemoteRepository remoteRepository )
     {
-        if ( StringUtils.startsWith( remoteRepository.getRemoteIndexUrl(), "http" ) )
+        if ( StringUtils.startsWith( remoteRepository.getRemoteIndexUrl( ), "http" ) )
         {
-            String baseUrl = remoteRepository.getRemoteIndexUrl();
+            String baseUrl = remoteRepository.getRemoteIndexUrl( );
             return baseUrl.endsWith( "/" ) ? StringUtils.substringBeforeLast( baseUrl, "/" ) : baseUrl;
         }
-        String baseUrl = StringUtils.endsWith( remoteRepository.getUrl(), "/" ) ? StringUtils.substringBeforeLast(
-            remoteRepository.getUrl(), "/" ) : remoteRepository.getUrl();
+        String baseUrl = StringUtils.endsWith( remoteRepository.getUrl( ), "/" ) ? StringUtils.substringBeforeLast(
+            remoteRepository.getUrl( ), "/" ) : remoteRepository.getUrl( );
 
-        baseUrl = StringUtils.isEmpty( remoteRepository.getRemoteIndexUrl() )
+        baseUrl = StringUtils.isEmpty( remoteRepository.getRemoteIndexUrl( ) )
             ? baseUrl + "/.index"
-            : baseUrl + "/" + remoteRepository.getRemoteIndexUrl();
+            : baseUrl + "/" + remoteRepository.getRemoteIndexUrl( );
         return baseUrl;
 
     }
 
-    public TaskScheduler getTaskScheduler()
+    public TaskScheduler getTaskScheduler( )
     {
         return taskScheduler;
     }

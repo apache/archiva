@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
@@ -62,7 +63,7 @@ import java.util.List;
 public class DownloadRemoteIndexTask
     implements Runnable
 {
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private Logger log = LoggerFactory.getLogger( getClass( ) );
 
     private RemoteRepository remoteRepository;
 
@@ -81,78 +82,80 @@ public class DownloadRemoteIndexTask
     public DownloadRemoteIndexTask( DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest,
                                     List<String> runningRemoteDownloadIds )
     {
-        this.remoteRepository = downloadRemoteIndexTaskRequest.getRemoteRepository();
-        this.nexusIndexer = downloadRemoteIndexTaskRequest.getNexusIndexer();
-        this.wagonFactory = downloadRemoteIndexTaskRequest.getWagonFactory();
-        this.networkProxy = downloadRemoteIndexTaskRequest.getNetworkProxy();
-        this.fullDownload = downloadRemoteIndexTaskRequest.isFullDownload();
+        this.remoteRepository = downloadRemoteIndexTaskRequest.getRemoteRepository( );
+        this.nexusIndexer = downloadRemoteIndexTaskRequest.getNexusIndexer( );
+        this.wagonFactory = downloadRemoteIndexTaskRequest.getWagonFactory( );
+        this.networkProxy = downloadRemoteIndexTaskRequest.getNetworkProxy( );
+        this.fullDownload = downloadRemoteIndexTaskRequest.isFullDownload( );
         this.runningRemoteDownloadIds = runningRemoteDownloadIds;
-        this.indexUpdater = downloadRemoteIndexTaskRequest.getIndexUpdater();
+        this.indexUpdater = downloadRemoteIndexTaskRequest.getIndexUpdater( );
     }
 
-    public void run()
+    public void run( )
     {
 
         // so short lock : not sure we need it
         synchronized ( this.runningRemoteDownloadIds )
         {
-            if ( this.runningRemoteDownloadIds.contains( this.remoteRepository.getId() ) )
+            if ( this.runningRemoteDownloadIds.contains( this.remoteRepository.getId( ) ) )
             {
                 // skip it as it's running
                 log.info( "skip download index remote for repo {} it's already running",
-                          this.remoteRepository.getId() );
+                          this.remoteRepository.getId( ) );
                 return;
             }
-            log.info( "start download remote index for remote repository " + this.remoteRepository.getId() );
-            this.runningRemoteDownloadIds.add( this.remoteRepository.getId() );
+            this.runningRemoteDownloadIds.add( this.remoteRepository.getId( ) );
         }
+        StopWatch stopWatch = new StopWatch( );
+        stopWatch.start( );
+        log.info( "start download remote index for remote repository " + this.remoteRepository.getId( ) );
         IndexingContext indexingContext =
-            nexusIndexer.getIndexingContexts().get( "remote-" + remoteRepository.getId() );
+            nexusIndexer.getIndexingContexts( ).get( "remote-" + remoteRepository.getId( ) );
 
         // TODO check if null ? normally not as created by DefaultDownloadRemoteIndexScheduler#startup
 
         // create a temp directory to download files
-        final File tempIndexDirectory = new File( indexingContext.getIndexDirectoryFile().getParent(), ".tmpIndex" );
+        final File tempIndexDirectory = new File( indexingContext.getIndexDirectoryFile( ).getParent( ), ".tmpIndex" );
         try
         {
-            if ( tempIndexDirectory.exists() )
+            if ( tempIndexDirectory.exists( ) )
             {
                 FileUtils.deleteDirectory( tempIndexDirectory );
             }
-            tempIndexDirectory.mkdirs();
-            String baseIndexUrl = indexingContext.getIndexUpdateUrl();
+            tempIndexDirectory.mkdirs( );
+            String baseIndexUrl = indexingContext.getIndexUpdateUrl( );
 
-            final Wagon wagon = wagonFactory.getWagon( new URL( this.remoteRepository.getUrl() ).getProtocol() );
+            final Wagon wagon = wagonFactory.getWagon( new URL( this.remoteRepository.getUrl( ) ).getProtocol( ) );
             setupWagonReadTimeout( wagon );
 
             // TODO transferListener
-            wagon.addTransferListener( new DownloadListener() );
+            wagon.addTransferListener( new DownloadListener( ) );
             ProxyInfo proxyInfo = null;
             if ( this.networkProxy != null )
             {
-                proxyInfo = new ProxyInfo();
-                proxyInfo.setHost( this.networkProxy.getHost() );
-                proxyInfo.setPort( this.networkProxy.getPort() );
-                proxyInfo.setUserName( this.networkProxy.getUsername() );
-                proxyInfo.setPassword( this.networkProxy.getPassword() );
+                proxyInfo = new ProxyInfo( );
+                proxyInfo.setHost( this.networkProxy.getHost( ) );
+                proxyInfo.setPort( this.networkProxy.getPort( ) );
+                proxyInfo.setUserName( this.networkProxy.getUsername( ) );
+                proxyInfo.setPassword( this.networkProxy.getPassword( ) );
             }
             AuthenticationInfo authenticationInfo = null;
-            if ( this.remoteRepository.getUserName() != null )
+            if ( this.remoteRepository.getUserName( ) != null )
             {
-                authenticationInfo = new AuthenticationInfo();
-                authenticationInfo.setUserName( this.remoteRepository.getUserName() );
-                authenticationInfo.setPassword( this.remoteRepository.getPassword() );
+                authenticationInfo = new AuthenticationInfo( );
+                authenticationInfo.setUserName( this.remoteRepository.getUserName( ) );
+                authenticationInfo.setPassword( this.remoteRepository.getPassword( ) );
             }
-            wagon.connect( new Repository( this.remoteRepository.getId(), baseIndexUrl ), authenticationInfo,
+            wagon.connect( new Repository( this.remoteRepository.getId( ), baseIndexUrl ), authenticationInfo,
                            proxyInfo );
 
-            File indexDirectory = indexingContext.getIndexDirectoryFile();
-            if ( !indexDirectory.exists() )
+            File indexDirectory = indexingContext.getIndexDirectoryFile( );
+            if ( !indexDirectory.exists( ) )
             {
-                indexDirectory.mkdirs();
+                indexDirectory.mkdirs( );
             }
 
-            ResourceFetcher resourceFetcher = new ResourceFetcher()
+            ResourceFetcher resourceFetcher = new ResourceFetcher( )
             {
                 public void connect( String id, String url )
                     throws IOException
@@ -160,7 +163,7 @@ public class DownloadRemoteIndexTask
                     //no op
                 }
 
-                public void disconnect()
+                public void disconnect( )
                     throws IOException
                 {
                     // no op
@@ -174,9 +177,9 @@ public class DownloadRemoteIndexTask
                         log.debug( "resourceFetcher#retrieve, name:{}", name );
                         //TODO check those files are deleted !!
                         File file = new File( tempIndexDirectory, name );
-                        if ( file.exists() )
+                        if ( file.exists( ) )
                         {
-                            file.delete();
+                            file.delete( );
                         }
                         //file.deleteOnExit();
                         wagon.get( name, file );
@@ -184,15 +187,15 @@ public class DownloadRemoteIndexTask
                     }
                     catch ( AuthorizationException e )
                     {
-                        throw new IOException( e.getMessage() );
+                        throw new IOException( e.getMessage( ) );
                     }
                     catch ( TransferFailedException e )
                     {
-                        throw new IOException( e.getMessage() );
+                        throw new IOException( e.getMessage( ) );
                     }
                     catch ( ResourceDoesNotExistException e )
                     {
-                        throw new FileNotFoundException( e.getMessage() );
+                        throw new FileNotFoundException( e.getMessage( ) );
                     }
                 }
             };
@@ -201,40 +204,41 @@ public class DownloadRemoteIndexTask
             request.setForceFullUpdate( this.fullDownload );
 
             this.indexUpdater.fetchAndUpdateIndex( request );
-
-
+            stopWatch.stop( );
+            log.info( "time to download remote repository index for repository {}: {} s",
+                      this.remoteRepository.getId( ), ( stopWatch.getTime( ) / 1000 ) );
         }
         catch ( MalformedURLException e )
         {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new RuntimeException( e.getMessage( ), e );
         }
         catch ( WagonFactoryException e )
         {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new RuntimeException( e.getMessage( ), e );
         }
         catch ( ConnectionException e )
         {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new RuntimeException( e.getMessage( ), e );
         }
         catch ( AuthenticationException e )
         {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new RuntimeException( e.getMessage( ), e );
         }
         catch ( IOException e )
         {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new RuntimeException( e.getMessage( ), e );
         }
         finally
         {
             deleteDirectoryQuiet( tempIndexDirectory );
-            this.runningRemoteDownloadIds.remove( this.remoteRepository.getId() );
+            this.runningRemoteDownloadIds.remove( this.remoteRepository.getId( ) );
         }
-        log.info( "end download remote index for remote repository " + this.remoteRepository.getId() );
+        log.info( "end download remote index for remote repository " + this.remoteRepository.getId( ) );
     }
 
     private void deleteDirectoryQuiet( File f )
@@ -245,7 +249,7 @@ public class DownloadRemoteIndexTask
         }
         catch ( IOException e )
         {
-            log.warn( "skip error delete " + f + ": " + e.getMessage() );
+            log.warn( "skip error delete " + f + ": " + e.getMessage( ) );
         }
     }
 
@@ -253,15 +257,15 @@ public class DownloadRemoteIndexTask
     {
         try
         {
-            HttpConfiguration httpConfiguration = new HttpConfiguration().setAll(
-                new HttpMethodConfiguration().setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 ) );
+            HttpConfiguration httpConfiguration = new HttpConfiguration( ).setAll(
+                new HttpMethodConfiguration( ).setReadTimeout( remoteRepository.getRemoteDownloadTimeout( ) * 1000 ) );
             Method setHttpConfigurationMethod =
-                wagon.getClass().getMethod( "setHttpConfiguration", HttpConfiguration.class );
+                wagon.getClass( ).getMethod( "setHttpConfiguration", HttpConfiguration.class );
             setHttpConfigurationMethod.invoke( wagon, httpConfiguration );
         }
         catch ( Exception e )
         {
-            log.debug( "unable to set download remote time out for index {}", e.getMessage(), e );
+            log.debug( "unable to set download remote time out for index {}", e.getMessage( ), e );
         }
     }
 
@@ -269,7 +273,7 @@ public class DownloadRemoteIndexTask
     public static class DownloadListener
         implements TransferListener
     {
-        private Logger log = LoggerFactory.getLogger( getClass() );
+        private Logger log = LoggerFactory.getLogger( getClass( ) );
 
         String reourceName;
 
@@ -277,36 +281,36 @@ public class DownloadRemoteIndexTask
 
         public void transferInitiated( TransferEvent transferEvent )
         {
-            reourceName = transferEvent.getResource().getName();
+            reourceName = transferEvent.getResource( ).getName( );
             log.debug( "initiate transfer of {}", reourceName );
         }
 
         public void transferStarted( TransferEvent transferEvent )
         {
-            reourceName = transferEvent.getResource().getName();
-            startTime = System.currentTimeMillis();
-            log.info( "start transfer of {}", transferEvent.getResource().getName() );
+            reourceName = transferEvent.getResource( ).getName( );
+            startTime = System.currentTimeMillis( );
+            log.info( "start transfer of {}", transferEvent.getResource( ).getName( ) );
         }
 
         public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
         {
             log.debug( "transfer of {} : {}/{}",
-                       Arrays.asList( transferEvent.getResource().getName(), buffer.length, length ).toArray() );
+                       Arrays.asList( transferEvent.getResource( ).getName( ), buffer.length, length ).toArray( ) );
         }
 
         public void transferCompleted( TransferEvent transferEvent )
         {
-            reourceName = transferEvent.getResource().getName();
-            long endTime = System.currentTimeMillis();
-            log.info( "end of transfer file {}: {}s", transferEvent.getResource().getName(),
+            reourceName = transferEvent.getResource( ).getName( );
+            long endTime = System.currentTimeMillis( );
+            log.info( "end of transfer file {}: {}s", transferEvent.getResource( ).getName( ),
                       ( endTime - startTime ) / 1000 );
         }
 
         public void transferError( TransferEvent transferEvent )
         {
-            log.info( "error of transfer file {}: {}", Arrays.asList( transferEvent.getResource().getName(),
-                                                                      transferEvent.getException().getMessage() ).toArray(
-                new Object[2] ), transferEvent.getException() );
+            log.info( "error of transfer file {}: {}", Arrays.asList( transferEvent.getResource( ).getName( ),
+                                                                      transferEvent.getException( ).getMessage( ) ).toArray(
+                new Object[2] ), transferEvent.getException( ) );
         }
 
         public void debug( String message )
