@@ -35,8 +35,8 @@
     <tomcat6x.version>6.0.33</tomcat6x.version>
     <cargo.wait>false</cargo.wait>
     <cargo.timeout>600000</cargo.timeout>
-    <cargo.install.dir>${project.build.directory}/cargo-installs</cargo.install.dir>
-    <maxWaitTimeInMs>60000</maxWaitTimeInMs>
+    <cargo.install.dir>${project.build.directory}/cargo/installs</cargo.install.dir>
+    <maxWaitTimeInMs>30000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
     <seleniumPluginVersion>2.0</seleniumPluginVersion>
@@ -352,14 +352,14 @@
                       <fileset dir="src/test/${container.name}"/>
                     </copy>
                     <copy
-                        todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/common/lib">
+                        todir="${cargo.install.dir}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/common/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
                         <include name="**/*.jar"/>
                       </fileset>
                     </copy>
                     <!-- for tomcat 6 -->
                     <copy
-                        todir="${cargo.install.dir}/${container.name}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/lib">
+                        todir="${cargo.install.dir}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/lib">
                       <fileset dir="${project.build.directory}/providedDependencies">
                         <include name="**/*.jar"/>
                       </fileset>
