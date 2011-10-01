@@ -23,6 +23,7 @@ import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -225,7 +226,13 @@ public class SearchServiceTest
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, true );
         }
-        File targetRepo = new File( "src/test/repo-with-osgi" );
+        File targetRepo = new File( "target/test-origin-repo" );
+        if ( targetRepo.exists() )
+        {
+            FileUtils.deleteDirectory( targetRepo );
+        }
+        assertFalse( targetRepo.exists() );
+        FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), targetRepo );
 
         ManagedRepository managedRepository = new ManagedRepository();
         managedRepository.setId( testRepoId );
