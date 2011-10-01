@@ -46,6 +46,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddArtifactFileType" }, enabled = false )
     public void testAddArtifactFileType_ExistingValue()
     {
+        goToRepositoryScanningPage();
         // FIXME: broken
         setFieldValue( "newpattern_0", "**/*.zip" );
         clickAddIcon( "newpattern_0" );
@@ -76,6 +77,7 @@ public class RepositoryScanningTest
     @Test( dependsOnMethods = { "testAddAutoRemove_NullValue" }, enabled = false )
     public void testAddAutoRemove_ExistingValue()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_1", "**/*-" );
         clickAddIcon( "newpattern_1" );
         // FIXME: broken
@@ -116,6 +118,7 @@ public class RepositoryScanningTest
     @Test(enabled = false)
     public void testAddIgnoredArtifacts_ExistingValue()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_2", "**/*.sh" );
         clickAddIcon( "newpattern_2" );
         // FIXME: broken
@@ -158,6 +161,7 @@ public class RepositoryScanningTest
     @Test( enabled = false )
     public void testAddIndexableContent_ExistingValue()
     {
+        goToRepositoryScanningPage();
         setFieldValue( "newpattern_3", "**/*.xml" );
         clickAddIcon( "newpattern_3" );
         // FIXME: broken
