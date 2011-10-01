@@ -135,7 +135,6 @@ public abstract class AbstractRepositoryTest
         assertTextPresent( "Archiva Managed Internal Repository" );
         assertTextPresent( "Proxy Connector" );
         assertTextPresent( "Central Repository" );
-        assertTextPresent( "Java.net Repository for Maven 2" );
     }
 
     public void assertAddProxyConnectorPage()
@@ -209,7 +208,7 @@ public abstract class AbstractRepositoryTest
         for ( String arrayremote : arrayRemote )
             assertTextPresent( arrayremote );
         String remoteElements =
-            "addRemoteRepository_repository_id,addRemoteRepository_repository_name,addRemoteRepository_repository_url,addRemoteRepository_repository_username,addRemoteRepository_repository_password,addRemoteRepository_repository_timeout,addRemoteRepository_repository_layout";
+            "addRemoteRepository_repository_id,addRemoteRepository_repository_name,addRemoteRepository_repository_url,addRemoteRepository_repository_userName,addRemoteRepository_repository_password,addRemoteRepository_repository_timeout,addRemoteRepository_repository_layout";
         String[] arrayRemoteElements = remoteElements.split( "," );
         for ( String arrayremotelement : arrayRemoteElements )
             assertElementPresent( arrayremotelement );
@@ -226,18 +225,17 @@ public abstract class AbstractRepositoryTest
     }
 
     public void addRemoteRepository( String identifier, String name, String url, String username, String password,
-                                     String timeout, String type )
+                                     String timeout, String type, boolean wait )
     {
-        // goToRepositoriesPage();
         assertAddRemoteRepository();
         setFieldValue( "addRemoteRepository_repository_id", identifier );
         setFieldValue( "addRemoteRepository_repository_name", name );
         setFieldValue( "addRemoteRepository_repository_url", url );
-        setFieldValue( "addRemoteRepository_repository_username", username );
+        setFieldValue( "addRemoteRepository_repository_userName", username );
         setFieldValue( "addRemoteRepository_repository_password", password );
         setFieldValue( "addRemoteRepository_repository_timeout", timeout );
         selectValue( "addRemoteRepository_repository_layout", type );
-        clickButtonWithValue( "Add Repository" );
+        clickButtonWithValue( "Add Repository", wait );
     }
 
     public void deleteRemoteRepository()
@@ -300,7 +298,7 @@ public abstract class AbstractRepositoryTest
     // ///////////////////////////////////////////
     public void goToRepositoryScanningPage()
     {
-        clickLinkWithText( "Repository Scanning" );
+        getSelenium().open( "/archiva/admin/repositoryScanning.action" );
         assertRepositoryScanningPage();
     }
 

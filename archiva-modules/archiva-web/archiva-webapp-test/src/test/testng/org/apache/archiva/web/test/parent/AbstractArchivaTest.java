@@ -31,6 +31,11 @@ public abstract class AbstractArchivaTest
 
     protected String fullname;
 
+    protected static String getErrorMessageText()
+    {
+        return getSelenium().getText( "//ul[@class='errorMessage']/li/span" );
+    }
+
     public String getUserEmail()
     {
         String email = getProperty( "USERROLE_EMAIL" );
@@ -399,8 +404,8 @@ public abstract class AbstractArchivaTest
         assertTextPresent( "Confirm Password*:", "Confirmer le mot de passe*" );
         assertElementPresent( "user.confirmPassword" );
         //assertButtonWithValuePresent( "Create User" );
-        //assertButtonWithIdPresent( "userCreateSubmit" );
-        assertElementNotPresent( "userCreateSubmit" );
+        assertButtonWithIdPresent( "userCreateSubmit" );
+//        assertElementNotPresent( "userCreateSubmit" );
     }
 
     public void assertLeftNavMenuWithRole( String role )
@@ -685,7 +690,7 @@ public abstract class AbstractArchivaTest
     }
 
     public void addLegacyArtifactPath( String path, String groupId, String artifactId, String version,
-                                       String classifier, String type )
+                                       String classifier, String type, boolean wait )
     {
         assertAddLegacyArtifactPathPage();
         setFieldValue( "legacyArtifactPath.path", path );
@@ -694,7 +699,7 @@ public abstract class AbstractArchivaTest
         setFieldValue( "version", version );
         setFieldValue( "classifier", classifier );
         setFieldValue( "type", type );
-        clickButtonWithValue( "Add Legacy Artifact Path" );
+        clickButtonWithValue( "Add Legacy Artifact Path", wait );
     }
 
     public void assertAddLegacyArtifactPathPage()

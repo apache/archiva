@@ -37,7 +37,7 @@ public class MergingRepositoriesTest
     }
 
     // here we upload an artifact to the staging repository
-    @Test(dependsOnMethods = {"testAddStagingRepository"})
+    @Test(dependsOnMethods = {"testAddStagingRepository"}, groups = "requiresUpload" )
     public void testAddArtifactToStagingRepository()
     {
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getValidArtifactFilePath(),

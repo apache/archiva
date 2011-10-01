@@ -30,7 +30,7 @@ public class LegacySupportTest
     {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-        addLegacyArtifactPath( "", "", "", "", "", "" );
+        addLegacyArtifactPath( "", "", "", "", "", "", false );
         assertTextPresent( "You must enter a legacy path." );
         assertTextPresent( "You must enter a groupId." );
         assertTextPresent( "You must enter an artifactId." );
@@ -38,45 +38,52 @@ public class LegacySupportTest
         assertTextPresent( "You must enter a type." );
     }
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullValues" } )
     public void testAddLegacyArtifact_NullLegacyPath()
     {
-        addLegacyArtifactPath( "", "test", "test", "1.0-SNAPSHOT", "testing", "jar" );
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+        addLegacyArtifactPath( "", "test", "test", "1.0-SNAPSHOT", "testing", "jar", false );
         assertTextPresent( "You must enter a legacy path." );
     }
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullLegacyPath" } )
     public void testAddLegacyArtifact_NullGroupId()
     {
-        addLegacyArtifactPath( "test", "", "test", "1.0-SNAPSHOT", "testing", "jar" );
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+        addLegacyArtifactPath( "test", "", "test", "1.0-SNAPSHOT", "testing", "jar", false );
         assertTextPresent( "You must enter a groupId." );
     }
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullGroupId" } )
     public void testAddLegacyArtifact_NullArtifactId()
     {
-        addLegacyArtifactPath( "test", "test", "", "1.0-SNAPSHOT", "testing", "jar" );
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+        addLegacyArtifactPath( "test", "test", "", "1.0-SNAPSHOT", "testing", "jar", false );
         assertTextPresent( "You must enter an artifactId." );
     }
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullArtifactId" } )
     public void testAddLegacyArtifact_NullVersion()
     {
-        addLegacyArtifactPath( "test", "test", "test", "", "testing", "jar" );
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+        addLegacyArtifactPath( "test", "test", "test", "", "testing", "jar", false );
         assertTextPresent( "You must enter a version." );
     }
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullVersion" } )
     public void testAddLegacyArtifact_NullType()
     {
-        addLegacyArtifactPath( "test", "test", "test", "1.0-SNAPSHOT", "testing", "" );
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+        addLegacyArtifactPath( "test", "test", "test", "1.0-SNAPSHOT", "testing", "", false );
         assertTextPresent( "You must enter a type." );
     }
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_NullType" })
 	public void testAddLegacyArtifact_InvalidValues()
 	{
-		addLegacyArtifactPath( "<> ~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "<> ~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"",
+                               false );
 		assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
@@ -85,45 +92,51 @@ public class LegacySupportTest
         assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 	}
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_InvalidValues" })
 	public void testAddLegacyArtifact_InvalidLegacyPath()
 	{
-		addLegacyArtifactPath( "<> ~+[ ]'\"" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "jar");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "<> ~+[ ]'\"" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "jar", false );
 		assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
 	}
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_InvalidLegacyPath" })
 	public void testAddLegacyArtifact_InvalidGroupId()
 	{
-		addLegacyArtifactPath( "test" , "<> \\/~+[ ]'\"" , "test" , "1.0-SNAPSHOT" , "testing" , "jar");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "test" , "<> \\/~+[ ]'\"" , "test" , "1.0-SNAPSHOT" , "testing" , "jar", false );
 		assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 	}
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_InvalidGroupId" })
 	public void testAddLegacyArtifact_InvalidArtifactId()
 	{
-		addLegacyArtifactPath( "test" , "test" , "<> \\/~+[ ]'\"" , "1.0-SNAPSHOT" , "testing" , "jar");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "test" , "test" , "<> \\/~+[ ]'\"" , "1.0-SNAPSHOT" , "testing" , "jar", false );
 		assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 	}
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_InvalidArtifactId" })
 	public void testAddLegacyArtifact_InvalidVersion()
 	{
-		addLegacyArtifactPath( "test" , "test" , "test" , "<> \\/~+[ ]'\"" , "testing" , "jar");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "test" , "test" , "test" , "<> \\/~+[ ]'\"" , "testing" , "jar", false );
 		assertTextPresent( "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 	}
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_InvalidVersion" })
 	public void testAddLegacyArtifact_InvalidType()
 	{
-		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "<> \\/~+[ ]'\"");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "<> \\/~+[ ]'\"", false );
 		assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 	}
 
-    @Test( dependsOnMethods = { "testAddLegacyArtifact_InvalidType" })
 	public void testAddLegacyArtifact_InvalidClassifier()
 	{
-		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "<> \\/~+[ ]'\"" , "jar");
+        goToLegacySupportPage();
+        clickLinkWithText( "Add" );
+		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "<> \\/~+[ ]'\"" , "jar", false );
 		assertTextPresent( "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 	}
 }

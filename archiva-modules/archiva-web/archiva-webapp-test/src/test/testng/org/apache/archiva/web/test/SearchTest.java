@@ -32,15 +32,14 @@ public class SearchTest
         throws Exception
     {
         searchForArtifact( getProperty( "SEARCH_BAD_ARTIFACT" ) );
-        //assertTextPresent( "No results found" );
-        assertElementPresent( "//span[@class=\'errorMessage\']" );
+        assertTextPresent( "No results found" );
     }
 
     // TODO: make search tests more robust especially when comparing/asserting number of hits
     @Test( alwaysRun = true )
     public void testSearchExistingArtifact()
     {
-        searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
+        searchForArtifact( "artifactId:" + getProperty( "ARTIFACT_ARTIFACTID" ) );
         //assertTextPresent( "Results" );
         assertElementPresent( "resultsBox" );
         assertTextPresent( "1 to 1 of 1" );
@@ -51,7 +50,7 @@ public class SearchTest
     public void testViewSearchedArtifact()
     {
         searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
-        clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) );
+        clickLinkWithLocator( "//span[@class=\"artifact-title\"]/a[text()='" + getProperty( "ARTIFACT_ARTIFACTID" ) + "']" );
         assertPage( "Apache Archiva \\ Browse Repository" );
         assertTextPresent( getProperty( "ARTIFACT_ARTIFACTID" ) );
         clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/" );
@@ -80,7 +79,9 @@ public class SearchTest
 
         // search for existing artifact using multiple keywords
         searchForArtifact( multiKeywords );
-        assertTextPresent( "No results found" );
+        assertTextPresent( "Results" );
+        assertTextPresent( "Hits: 1 to 1 of 1" );
+        assertLinkPresent( existingArtifactId );
     }
 
     @Test( alwaysRun = true )

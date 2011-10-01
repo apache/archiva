@@ -163,7 +163,7 @@ public class ArtifactManagementTest
     @Test( alwaysRun = true, dependsOnMethods = { "testAddArtifactNullValues" } )
     public void testDeleteArtifactNoVersion()
     {
-        deleteArtifact( "delete", "delete", " ", "internal", true );
+        deleteArtifact( "delete", "delete", " ", "internal", false );
         assertTextPresent( "You must enter a version." );
     }
 
