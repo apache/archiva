@@ -1555,7 +1555,7 @@
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
-              <java.io.tmpdir>${project.build.directory}/temp</java.io.tmpdir>
+              <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             </systemPropertyVariables>
           </configuration>
         </plugin>
