@@ -126,7 +126,6 @@
       <artifactId>wagon-http</artifactId>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -136,14 +135,12 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <plexus.home>${project.build.outputDirectory}</plexus.home>
-            <appserver.base>${basedir}/target/appserver-base</appserver.base>
-            <java.io.tmpdir>${project.build.outputDirectory}</java.io.tmpdir>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
           </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
-
-
   </build>
 </project>
