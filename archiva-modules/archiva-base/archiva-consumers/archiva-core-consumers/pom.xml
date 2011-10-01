@@ -107,18 +107,18 @@
   <build>
     <pluginManagement>
       <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
-            <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <systemPropertyVariables>
+              <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+              <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+              <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+              <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
