@@ -31,41 +31,60 @@ import java.util.Map;
 public class NPandayArtifactMappingProvider
     implements ArtifactMappingProvider
 {
-    private final Map<String, String> classifierAndExtensionToTypeMap;
+    private final Map<String, String> extensionToTypeMap;
 
     private final Map<String, String> typeToExtensionMap;
 
     public NPandayArtifactMappingProvider()
     {
-        classifierAndExtensionToTypeMap = new HashMap<String, String>();
+        extensionToTypeMap = new HashMap<String, String>();
 
         // TODO: this could be one of many - we need to look up the artifact metadata from the POM instead
         //       should do this anyway so that plugins don't compete for providing an extension
-        classifierAndExtensionToTypeMap.put( "dll", "library" );
+        extensionToTypeMap.put( "dll", "dotnet-library" );
 
-        classifierAndExtensionToTypeMap.put( "netmodule", "module" );
-        classifierAndExtensionToTypeMap.put( "exe", "winexe" );
-        classifierAndExtensionToTypeMap.put( "tests:jar", "test-jar" );
+        extensionToTypeMap.put( "netmodule", "dotnet-module" );
+        extensionToTypeMap.put( "exe", "dotnet-executable" );
 
         typeToExtensionMap = new HashMap<String, String>();
-        typeToExtensionMap.put( "library", "dll" );
+        typeToExtensionMap.put( "dotnet-library", "dll" );
+        typeToExtensionMap.put( "dotnet-library-config", "dll.config" );
+        typeToExtensionMap.put( "dotnet-executable", "exe" );
+        typeToExtensionMap.put( "dotnet-executable-config", "exe.config" );
+        typeToExtensionMap.put( "dotnet-module", "netmodule" );
+        typeToExtensionMap.put( "dotnet-maven-plugin", "dll" );
         typeToExtensionMap.put( "asp", "dll" );
-        typeToExtensionMap.put( "gac", "dll" );
-        typeToExtensionMap.put( "gac_generic", "dll" );
-        typeToExtensionMap.put( "gac_msil", "dll" );
-        typeToExtensionMap.put( "gac_32", "dll" );
-        typeToExtensionMap.put( "netplugin", "dll" );
         typeToExtensionMap.put( "visual-studio-addin", "dll" );
+        typeToExtensionMap.put( "sharp-develop-addin", "dll" );
+        typeToExtensionMap.put( "nar", "nar" );
+        typeToExtensionMap.put( "dotnet-symbols", "pdb" );
+        typeToExtensionMap.put( "ole-type-library", "tlb" );
+        typeToExtensionMap.put( "dotnet-vsdocs", "xml" );
+        typeToExtensionMap.put( "dotnet-archive", "zip" );
+        typeToExtensionMap.put( "dotnet-gac", "dll" );
+        typeToExtensionMap.put( "gac", "dll" );
+        typeToExtensionMap.put( "gac_msil", "dll" );
+        typeToExtensionMap.put( "gac_msil4", "dll" );
+        typeToExtensionMap.put( "gac_32", "dll" );
+        typeToExtensionMap.put( "gac_32_4", "dll" );
+        typeToExtensionMap.put( "gac_64", "dll" );
+        typeToExtensionMap.put( "gac_64_4", "dll" );
+        typeToExtensionMap.put( "com_reference", "dll" );
+
+        // Legacy types
+        typeToExtensionMap.put( "library", "dll" );
+        typeToExtensionMap.put( "gac_generic", "dll" );
+        typeToExtensionMap.put( "netplugin", "dll" );
         typeToExtensionMap.put( "module", "netmodule" );
         typeToExtensionMap.put( "exe.config", "exe.config" );
         typeToExtensionMap.put( "winexe", "exe" );
-        typeToExtensionMap.put( "nar", "nar" );
+        typeToExtensionMap.put( "exe", "exe" );
     }
 
     public String mapClassifierAndExtensionToType( String classifier, String ext )
     {
         // we don't need classifier
-        return classifierAndExtensionToTypeMap.get( ext );
+        return extensionToTypeMap.get( ext );
     }
 
     public String mapTypeToExtension( String type )
