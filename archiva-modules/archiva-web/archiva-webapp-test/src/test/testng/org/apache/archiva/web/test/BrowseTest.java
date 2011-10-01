@@ -50,7 +50,7 @@ public class BrowseTest
         assertBrowsePage();
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactValidValues" } )
+    @Test( dependsOnMethods = { "testAddArtifactValidValues" }, groups = { "requiresUpload" } )
     public void testClickArtifactFromBrowse()
     {
         goToBrowsePage();
