@@ -214,7 +214,6 @@
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
           </systemPropertyVariables>
         </configuration>
-
       </plugin>
     </plugins>
   </build>

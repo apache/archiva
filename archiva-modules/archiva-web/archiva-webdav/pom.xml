@@ -189,7 +189,7 @@
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes>
-              <exclude>src/main/resources/org/apache/maven/archiva/webdav/util/mime.types</exclude>
+              <exclude>src/main/resources/org/apache/archiva/webdav/util/mime.types</exclude>
               <exclude>src/test/resources/archiva-mime-types.txt</exclude>
               <exclude>src/test/resources/artifact.jar.sha1</exclude>
               <exclude>src/test/resources/maven-metadata.xml</exclude>
