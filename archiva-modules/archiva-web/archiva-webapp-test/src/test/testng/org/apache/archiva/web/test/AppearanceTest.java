@@ -78,24 +78,22 @@ public class AppearanceTest
         assertTextPresent( "You must enter a URL for your logo." );
     }
 
-    @Test(enabled = false)
+    @Test
     public void testAddAppearanceValidValues()
     {
         goToAppearancePage();
         clickLinkWithText( "Edit" );
-        // FIXME: not allowed this URL for the logo?!
         addEditAppearance( "The Apache Software Foundation", "http://www.apache.org/",
                            "http://www.apache.org/images/asf_logo_wide.gifs", true );
         assertTextPresent( "The Apache Software Foundation" );
     }
 
-    @Test( dependsOnMethods = { "testAddAppearanceValidValues" }, enabled = false)
+    @Test( dependsOnMethods = { "testAddAppearanceValidValues" } )
     public void testEditAppearance()
     {
         goToAppearancePage();
 
         clickLinkWithText( "Edit" );
-        // FIXME: not allowed this URL for the logo?!
         addEditAppearance( "Apache Software Foundation", "http://www.apache.org/",
                            "http://www.apache.org/images/asf_logo_wide.gifs", true );
         assertTextPresent( "Apache Software Foundation" );
