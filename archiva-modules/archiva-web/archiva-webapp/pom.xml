@@ -731,7 +731,6 @@
               <exclude>src/main/webapp/js/md5.js</exclude>
               <exclude>src/main/webapp/css/no-theme/**</exclude>
               <exclude>src/main/webapp/css/redback/**</exclude>
-              <exclude>src/main/webapp/template/**</exclude>
               <exclude>src/main/webapp/WEB-INF/jsp/redback/**</exclude>
               <exclude>src/main/resources/archiva-mime-types.txt</exclude>
               <exclude>src/test/resources/test-repo/**</exclude>
