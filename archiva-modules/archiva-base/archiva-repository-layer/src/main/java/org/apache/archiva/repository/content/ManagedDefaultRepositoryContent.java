@@ -78,7 +78,7 @@ public class ManagedDefaultRepositoryContent
         }
         else
         {
-            throw new ContentNotFoundException( "Unable to delete non-existing project directory." );
+            throw new ContentNotFoundException( "Unable to delete non-existing project directory: " + projectDir );
         }
     }
 
