@@ -114,6 +114,22 @@ public class ArchivaAdministrationTest
         mockAuditListener.clearEvents();
     }
 
+    @Test(expected = RepositoryAdminException.class)
+    public void addFileTypePatternAgain()
+        throws RepositoryAdminException
+    {
+        try
+        {
+            archivaAdministration.addFileTypePattern( "artifacts", "**/*.jar", getFakeAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            // check the message
+            assertEquals( "File type [artifacts] already contains pattern [**/*.jar]", e.getMessage() );
+            throw e;
+        }
+    }
+
     @Test
     public void knownContentConsumersTest()
         throws Exception

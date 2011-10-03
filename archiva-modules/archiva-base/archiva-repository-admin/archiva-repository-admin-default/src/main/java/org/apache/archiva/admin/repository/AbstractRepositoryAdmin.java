@@ -82,11 +82,12 @@ public abstract class AbstractRepositoryAdmin
         }
         catch ( RegistryException e )
         {
-            throw new RepositoryAdminException( "Error occurred in the registry.", e );
+            throw new RepositoryAdminException( "Error occurred in the registry: " + e.getLocalizedMessage(), e );
         }
         catch ( IndeterminateConfigurationException e )
         {
-            throw new RepositoryAdminException( "Error occurred while saving the configuration.", e );
+            throw new RepositoryAdminException(
+                "Error occurred while saving the configuration: " + e.getLocalizedMessage(), e );
         }
     }
 

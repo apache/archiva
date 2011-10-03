@@ -110,6 +110,11 @@ public class DefaultArchivaAdministration
         {
             return;
         }
+
+        if ( fileType.getPatterns().contains( pattern ) )
+        {
+            throw new RepositoryAdminException( "File type [" + fileTypeId + "] already contains pattern [" + pattern + "]" );
+        }
         fileType.addPattern( pattern );
 
         saveConfiguration( configuration );

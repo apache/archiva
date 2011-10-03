@@ -117,7 +117,7 @@ public class RepositoryScanningAction
         }
         catch ( RepositoryAdminException e )
         {
-            addActionError( "error adding file type pattern " + e.getMessage() );
+            addActionError( e.getMessage() );
             return INPUT;
         }
         return SUCCESS;

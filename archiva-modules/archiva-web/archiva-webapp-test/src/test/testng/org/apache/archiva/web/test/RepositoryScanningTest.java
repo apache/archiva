@@ -43,15 +43,13 @@ public class RepositoryScanningTest
         Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[1]/table.13.0" ), "**/*.dll" );
     }
 
-    @Test( dependsOnMethods = { "testAddArtifactFileType" }, enabled = false )
+    @Test( dependsOnMethods = { "testAddArtifactFileType" } )
     public void testAddArtifactFileType_ExistingValue()
     {
         goToRepositoryScanningPage();
-        // FIXME: broken
         setFieldValue( "newpattern_0", "**/*.zip" );
         clickAddIcon( "newpattern_0" );
-        Assert.assertEquals( getErrorMessageText(),
-                             "Not adding pattern \"**/*.zip\" to filetype artifacts as it already exists." );
+        Assert.assertEquals( getErrorMessageText(), "File type [artifacts] already contains pattern [**/*.zip]" );
     }
 
     @Test( dependsOnMethods = { "testAddArtifactFileType" } )
@@ -74,15 +72,13 @@ public class RepositoryScanningTest
         assertTextPresent( "Unable to process blank pattern." );
     }
 
-    @Test( dependsOnMethods = { "testAddAutoRemove_NullValue" }, enabled = false )
+    @Test( dependsOnMethods = { "testAddAutoRemove_NullValue" } )
     public void testAddAutoRemove_ExistingValue()
     {
         goToRepositoryScanningPage();
         setFieldValue( "newpattern_1", "**/*-" );
         clickAddIcon( "newpattern_1" );
-        // FIXME: broken
-        Assert.assertEquals( getErrorMessageText(),
-                             "Not adding pattern \"**/*-\" to filetype auto-remove as it already exists." );
+        Assert.assertEquals( getErrorMessageText(), "File type [auto-remove] already contains pattern [**/*-]" );
     }
 
     @Test( dependsOnMethods = { "testAddAutoRemove_NullValue" } )
@@ -115,15 +111,13 @@ public class RepositoryScanningTest
                              "Unable to process blank pattern." );
     }
 
-    @Test(enabled = false)
+    @Test
     public void testAddIgnoredArtifacts_ExistingValue()
     {
         goToRepositoryScanningPage();
         setFieldValue( "newpattern_2", "**/*.sh" );
         clickAddIcon( "newpattern_2" );
-        // FIXME: broken
-        Assert.assertEquals( getErrorMessageText(),
-                             "Not adding pattern \"**/*.sh\" to filetype ignored as it already exists." );
+        Assert.assertEquals( getErrorMessageText(), "File type [ignored] already contains pattern [**/*.sh]" );
     }
 
     @Test
@@ -158,15 +152,14 @@ public class RepositoryScanningTest
                              "Unable to process blank pattern." );
     }
 
-    @Test( enabled = false )
+    @Test
     public void testAddIndexableContent_ExistingValue()
     {
         goToRepositoryScanningPage();
         setFieldValue( "newpattern_3", "**/*.xml" );
         clickAddIcon( "newpattern_3" );
-        // FIXME: broken
         Assert.assertEquals( getErrorMessageText(),
-                             "Not adding pattern \"**/*.xml\" to filetype indexable-content as it already exists." );
+                             "File type [indexable-content] already contains pattern [**/*.xml]" );
     }
 
     @Test
