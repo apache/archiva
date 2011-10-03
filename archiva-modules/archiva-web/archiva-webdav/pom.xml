@@ -98,6 +98,12 @@
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-struts2-integration</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>stax</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
