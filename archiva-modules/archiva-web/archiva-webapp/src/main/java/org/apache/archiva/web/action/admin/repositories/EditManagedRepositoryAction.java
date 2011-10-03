@@ -135,7 +135,7 @@ public class EditManagedRepositoryAction
 
         if ( !validator.validate( repository.getCronExpression() ) )
         {
-            addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
+            addFieldError( "repository.cronExpression", "Invalid cron expression." );
         }
 
         trimAllRequestParameterValues();

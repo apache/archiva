@@ -38,7 +38,7 @@ public class RepositoryTest
         assertRepositoriesPage();
     }
 
-    @Test( dependsOnMethods = { "testAddManagedRepoValidValues" }, enabled = false )
+    @Test( dependsOnMethods = { "testAddManagedRepoValidValues" } )
     public void testAddManagedRepoInvalidValues()
     {
         getSelenium().open( "/archiva/admin/addRepository.action" );
@@ -55,8 +55,7 @@ public class RepositoryTest
             "Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
         assertTextPresent( "Repository Purge By Retention Count needs to be between 1 and 100." );
         assertTextPresent( "Repository Purge By Days Older Than needs to be larger than 0." );
-        // FIXME: broken
-        assertTextPresent( "Invalid cron expression." );
+        assertTextPresent( "Cron expression is required." );
     }
 
     @Test
@@ -123,7 +122,7 @@ public class RepositoryTest
         assertTextPresent( "Repository Purge By Days Older Than needs to be larger than 0." );
     }
 
-    @Test( enabled = false )
+    @Test
     public void testAddManagedRepoBlankValues()
     {
         getSelenium().open( "/archiva/admin/addRepository.action" );
@@ -132,8 +131,7 @@ public class RepositoryTest
         assertTextPresent( "You must enter a repository identifier." );
         assertTextPresent( "You must enter a repository name." );
         assertTextPresent( "You must enter a directory." );
-        // FIXME: broken
-        assertTextPresent( "Invalid cron expression." );
+        assertTextPresent( "Cron expression is required." );
     }
 
     @Test
@@ -165,15 +163,14 @@ public class RepositoryTest
         assertTextPresent( "You must enter a directory." );
     }
 
-    @Test( enabled = false )
+    @Test
     public void testAddManagedRepoNoCron()
     {
         getSelenium().open( "/archiva/admin/addRepository.action" );
 
         addManagedRepository( "identifier", "name", "/home", "/.index", "Maven 2.x Repository", "", "", "", false );
 
-        // FIXME: broken
-        assertTextPresent( "Invalid cron expression." );
+        assertTextPresent( "Cron expression is required." );
     }
 
     @Test
@@ -186,7 +183,7 @@ public class RepositoryTest
         assertTextPresent( "Managed Repository Sample" );
     }
 
-    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" }, enabled = false )
+    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" } )
     public void testEditManagedRepoInvalidValues()
     {
         editManagedRepository( "<>\\~+[]'\"", "<> ~+[ ]'\"", "<> ~+[ ]'\"", "Maven 2.x Repository", "", "-1", "101" );
@@ -198,8 +195,7 @@ public class RepositoryTest
             "Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
         assertTextPresent( "Repository Purge By Retention Count needs to be between 1 and 100." );
         assertTextPresent( "Repository Purge By Days Older Than needs to be larger than 0." );
-        // FIXME: broken
-        assertTextPresent( "Invalid cron expression." );
+        assertTextPresent( "Cron expression is required." );
     }
 
     @Test( dependsOnMethods = { "testAddManagedRepoForEdit" } )
@@ -226,11 +222,24 @@ public class RepositoryTest
             "Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
     }
 
-    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" }, enabled = false )
-    public void testEditManagedRepoInvalidCron()
+    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" } )
+    public void testEditManagedRepoInvalidCronBadText()
     {
-        editManagedRepository( "name", "/home", "/.index", "Maven 2.x Repository", "", "1", "1" );
-        // FIXME: broken
+        editManagedRepository( "name", "/home", "/.index", "Maven 2.x Repository", "asdf", "1", "1" );
+        assertTextPresent( "Invalid cron expression." );
+    }
+
+    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" } )
+    public void testEditManagedRepoInvalidCronBadValue()
+    {
+        editManagedRepository( "name", "/home", "/.index", "Maven 2.x Repository", "60 0 * * * ?", "1", "1" );
+        assertTextPresent( "Invalid cron expression." );
+    }
+
+    @Test( dependsOnMethods = { "testAddManagedRepoForEdit" } )
+    public void testEditManagedRepoInvalidCronTooManyElements()
+    {
+        editManagedRepository( "name", "/home", "/.index", "Maven 2.x Repository", "* * * * * * * *", "1", "1" );
         assertTextPresent( "Invalid cron expression." );
     }
 

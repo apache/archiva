@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -102,6 +103,13 @@ public class AddManagedRepositoryAction
     @Override
     public void validate()
     {
+        CronExpressionValidator validator = new CronExpressionValidator();
+
+        if ( !validator.validate( repository.getCronExpression() ) )
+        {
+            addFieldError( "repository.cronExpression", "Invalid cron expression." );
+        }
+
         // trim all unecessary trailing/leading white-spaces; always put this statement before the closing braces(after all validation).
         trimAllRequestParameterValues();
     }

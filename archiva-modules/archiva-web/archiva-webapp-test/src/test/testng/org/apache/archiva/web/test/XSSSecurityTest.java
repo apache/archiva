@@ -154,9 +154,10 @@ public class XSSSecurityTest
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }
 
-    @Test( enabled = false )
+    @Test
     public void testAddManagedRepositoryImmunityToInputFieldCrossSiteScripting()
     {
+        // TODO: these are evaluated client side now - we should force it to do server-side to make sure (though this could probably be tested in the webapp tests instead)
         getSelenium().open( "/archiva/admin/addRepository.action" );
         addManagedRepository( "test\"><script>alert('xss')</script>", "test\"><script>alert('xss')</script>",
                               "test\"><script>alert('xss')</script>", "test\"><script>alert('xss')</script>",
@@ -172,7 +173,16 @@ public class XSSSecurityTest
             "Index directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
         assertTextPresent( "Repository Purge By Retention Count needs to be between 1 and 100." );
         assertTextPresent( "Repository Purge By Days Older Than needs to be larger than 0." );
-        // FIXME: broken
+        assertTextPresent( "Cron expression is required." );
+    }
+
+    @Test
+    public void testAddManagedRepositoryImmunityToInputFieldCrossSiteScriptingCron()
+    {
+        // separate test because cron is evaluated server side, not client side
+        getSelenium().open( "/archiva/admin/addRepository.action" );
+        addManagedRepository( "id", "name", "/home", "/.index", "Maven 2.x Repository",
+                              "<test\"><script>alert('xss')</script>", "1", "1", true );
         assertTextPresent( "Invalid cron expression." );
     }
 

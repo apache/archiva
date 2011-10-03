@@ -73,4 +73,9 @@
       <message>Repository Purge By Days Older Than needs to be larger than ${min}.</message>
     </field-validator>
   </field>
+  <field name="repository.cronExpression">
+    <field-validator type="requiredstring">
+      <message>Cron expression is required.</message>
+    </field-validator>
+  </field>
 </validators>
