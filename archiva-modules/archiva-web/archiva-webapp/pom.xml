@@ -470,6 +470,10 @@
           <groupId>velocity</groupId>
           <artifactId>velocity-dep</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>struts</groupId>
+          <artifactId>struts</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
