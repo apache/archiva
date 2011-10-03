@@ -53,6 +53,8 @@
   </scm>
 
   <properties>
+    <!-- Note: when upgrading to 2.3.1+, template/xhtml can be removed from the
+         webapp resources -->
     <struts.version>2.2.3.1</struts.version>
     <maven3x.version>3.0.3</maven3x.version>
     <maven.version>2.0.8</maven.version>
