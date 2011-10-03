@@ -62,7 +62,7 @@
     <slf4j.version>1.6.1</slf4j.version>
     <binder.version>0.11</binder.version>
     <spring.version>3.0.5.RELEASE</spring.version>
-    <jackrabbit.version>2.3-SNAPSHOT</jackrabbit.version>
+    <jackrabbit.version>2.3.0</jackrabbit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>3.0.3</lucene.version>
