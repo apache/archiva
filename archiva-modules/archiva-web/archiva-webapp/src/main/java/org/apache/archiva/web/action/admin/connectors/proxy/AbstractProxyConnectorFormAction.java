@@ -24,11 +24,11 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.policies.DownloadErrorPolicy;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PostDownloadPolicy;
 import org.apache.archiva.policies.PreDownloadPolicy;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -102,9 +102,9 @@ public abstract class AbstractProxyConnectorFormAction
     private NetworkProxyAdmin networkProxyAdmin;
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
-        super.initialize();
+        super.initialize( );
         this.preDownloadPolicyMap = getBeansOfType( PreDownloadPolicy.class );
         this.postDownloadPolicyMap = getBeansOfType( PostDownloadPolicy.class );
         this.downloadErrorPolicyMap = getBeansOfType( DownloadErrorPolicy.class );
@@ -112,12 +112,13 @@ public abstract class AbstractProxyConnectorFormAction
 
     protected List<String> escapePatterns( List<String> patterns )
     {
-        List<String> escapedPatterns = new ArrayList<String>();
+        List<String> escapedPatterns = new ArrayList<String>( );
         if ( patterns != null )
         {
             for ( String pattern : patterns )
             {
-                escapedPatterns.add( StringUtils.replace( pattern, "\\", "\\\\" ) );
+                String escapedPattern =  StringUtils.replace( pattern, "\\", "\\\\" );
+                escapedPatterns.add( escapedPattern );
             }
         }
 
@@ -126,12 +127,13 @@ public abstract class AbstractProxyConnectorFormAction
 
     protected List<String> unescapePatterns( List<String> patterns )
     {
-        List<String> rawPatterns = new ArrayList<String>();
+        List<String> rawPatterns = new ArrayList<String>( );
         if ( patterns != null )
         {
             for ( String pattern : patterns )
             {
-                rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
+                String unescapedPattern = StringUtils.replace( pattern, "\\\\", "\\" );
+                rawPatterns.add( unescapedPattern  );
             }
         }
 
@@ -143,18 +145,18 @@ public abstract class AbstractProxyConnectorFormAction
         return StringUtils.replace( pattern, "\\", "\\\\" );
     }
 
-    public String addBlackListPattern()
+    public String addBlackListPattern( )
     {
-        String pattern = getBlackListPattern();
+        String pattern = getBlackListPattern( );
 
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot add a blank black list pattern." );
         }
 
-        if ( !hasActionErrors() )
+        if ( !hasActionErrors( ) )
         {
-            getConnector().getBlackListPatterns().add( escapePattern( pattern ) );
+            getConnector( ).getBlackListPatterns( ).add( escapePattern( pattern ) );
             setBlackListPattern( null );
         }
 
@@ -162,10 +164,10 @@ public abstract class AbstractProxyConnectorFormAction
     }
 
     @SuppressWarnings( "unchecked" )
-    public String addProperty()
+    public String addProperty( )
     {
-        String key = getPropertyKey();
-        String value = getPropertyValue();
+        String key = getPropertyKey( );
+        String value = getPropertyValue( );
 
         if ( StringUtils.isBlank( key ) )
         {
@@ -177,9 +179,9 @@ public abstract class AbstractProxyConnectorFormAction
             addActionError( "Unable to add property with blank value." );
         }
 
-        if ( !hasActionErrors() )
+        if ( !hasActionErrors( ) )
         {
-            getConnector().getProperties().put( key, value );
+            getConnector( ).getProperties( ).put( key, value );
             setPropertyKey( null );
             setPropertyValue( null );
         }
@@ -187,101 +189,101 @@ public abstract class AbstractProxyConnectorFormAction
         return INPUT;
     }
 
-    public String addWhiteListPattern()
+    public String addWhiteListPattern( )
     {
-        String pattern = getWhiteListPattern();
+        String pattern = getWhiteListPattern( );
 
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot add a blank white list pattern." );
         }
 
-        if ( !hasActionErrors() )
+        if ( !hasActionErrors( ) )
         {
-            getConnector().getWhiteListPatterns().add( escapePattern( pattern ) );
+            getConnector( ).getWhiteListPatterns( ).add( escapePattern( pattern ) );
             setWhiteListPattern( null );
         }
 
         return INPUT;
     }
 
-    public String getBlackListPattern()
+    public String getBlackListPattern( )
     {
         return blackListPattern;
     }
 
-    public ProxyConnector getConnector()
+    public ProxyConnector getConnector( )
     {
         return connector;
     }
 
-    public List<String> getManagedRepoIdList()
+    public List<String> getManagedRepoIdList( )
     {
         return managedRepoIdList;
     }
 
-    public String getPattern()
+    public String getPattern( )
     {
         return pattern;
     }
 
-    public Map<String, Policy> getPolicyMap()
+    public Map<String, Policy> getPolicyMap( )
     {
         return policyMap;
     }
 
-    public String getPropertyKey()
+    public String getPropertyKey( )
     {
         return propertyKey;
     }
 
-    public String getPropertyValue()
+    public String getPropertyValue( )
     {
         return propertyValue;
     }
 
-    public List<String> getProxyIdOptions()
+    public List<String> getProxyIdOptions( )
     {
         return proxyIdOptions;
     }
 
-    public List<String> getRemoteRepoIdList()
+    public List<String> getRemoteRepoIdList( )
     {
         return remoteRepoIdList;
     }
 
-    public String getWhiteListPattern()
+    public String getWhiteListPattern( )
     {
         return whiteListPattern;
     }
 
-    public void prepare()
+    public void prepare( )
         throws RepositoryAdminException
     {
-        proxyIdOptions = createNetworkProxyOptions();
-        managedRepoIdList = createManagedRepoOptions();
-        remoteRepoIdList = createRemoteRepoOptions();
-        policyMap = createPolicyMap();
+        proxyIdOptions = createNetworkProxyOptions( );
+        managedRepoIdList = createManagedRepoOptions( );
+        remoteRepoIdList = createRemoteRepoOptions( );
+        policyMap = createPolicyMap( );
     }
 
-    public String removeBlackListPattern()
+    public String removeBlackListPattern( )
     {
-        String pattern = getPattern();
+        String pattern = getPattern( );
 
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot remove a blank black list pattern." );
         }
 
-        if ( !getConnector().getBlackListPatterns().contains( pattern )
-            && !getConnector().getBlackListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
+        if ( !getConnector( ).getBlackListPatterns( ).contains( pattern )
+            && !getConnector( ).getBlackListPatterns( ).contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant black list pattern [" + pattern + "], no black list pattern removed." );
         }
 
-        if ( !hasActionErrors() )
+        if ( !hasActionErrors( ) )
         {
-            getConnector().getBlackListPatterns().remove( escapePattern( pattern ) );
+            getConnector( ).getBlackListPatterns( ).remove( escapePattern( pattern ) );
         }
 
         setBlackListPattern( null );
@@ -290,23 +292,23 @@ public abstract class AbstractProxyConnectorFormAction
         return INPUT;
     }
 
-    public String removeProperty()
+    public String removeProperty( )
     {
-        String key = getPropertyKey();
+        String key = getPropertyKey( );
 
         if ( StringUtils.isBlank( key ) )
         {
             addActionError( "Unable to remove property with blank key." );
         }
 
-        if ( !getConnector().getProperties().containsKey( key ) )
+        if ( !getConnector( ).getProperties( ).containsKey( key ) )
         {
             addActionError( "Non-existant property key [" + pattern + "], no property was removed." );
         }
 
-        if ( !hasActionErrors() )
+        if ( !hasActionErrors( ) )
         {
-            getConnector().getProperties().remove( key );
+            getConnector( ).getProperties( ).remove( key );
         }
 
         setPropertyKey( null );
@@ -315,24 +317,24 @@ public abstract class AbstractProxyConnectorFormAction
         return INPUT;
     }
 
-    public String removeWhiteListPattern()
+    public String removeWhiteListPattern( )
     {
-        String pattern = getPattern();
+        String pattern = getPattern( );
 
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot remove a blank white list pattern." );
         }
 
-        if ( !getConnector().getWhiteListPatterns().contains( pattern )
-            && !getConnector().getWhiteListPatterns().contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
+        if ( !getConnector( ).getWhiteListPatterns( ).contains( pattern )
+            && !getConnector( ).getWhiteListPatterns( ).contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
         {
             addActionError( "Non-existant white list pattern [" + pattern + "], no white list pattern removed." );
         }
 
-        if ( !hasActionErrors() )
+        if ( !hasActionErrors( ) )
         {
-            getConnector().getWhiteListPatterns().remove( escapePattern( pattern ) );
+            getConnector( ).getWhiteListPatterns( ).remove( escapePattern( pattern ) );
         }
 
         setWhiteListPattern( null );
@@ -391,43 +393,43 @@ public abstract class AbstractProxyConnectorFormAction
         this.whiteListPattern = whiteListPattern;
     }
 
-    protected List<String> createManagedRepoOptions()
+    protected List<String> createManagedRepoOptions( )
         throws RepositoryAdminException
     {
-        return new ArrayList<String>( getManagedRepositoryAdmin().getManagedRepositoriesAsMap().keySet() );
+        return new ArrayList<String>( getManagedRepositoryAdmin( ).getManagedRepositoriesAsMap( ).keySet( ) );
     }
 
-    protected List<String> createNetworkProxyOptions()
+    protected List<String> createNetworkProxyOptions( )
         throws RepositoryAdminException
     {
-        List<String> options = new ArrayList<String>();
+        List<String> options = new ArrayList<String>( );
 
         options.add( DIRECT_CONNECTION );
-        options.addAll( getNetworkProxiesKeys() );
+        options.addAll( getNetworkProxiesKeys( ) );
 
         return options;
     }
 
-    private Collection<String> getNetworkProxiesKeys()
+    private Collection<String> getNetworkProxiesKeys( )
         throws RepositoryAdminException
     {
-        List<NetworkProxy> networkProxies = networkProxyAdmin.getNetworkProxies();
-        if ( networkProxies == null || networkProxies.isEmpty() )
+        List<NetworkProxy> networkProxies = networkProxyAdmin.getNetworkProxies( );
+        if ( networkProxies == null || networkProxies.isEmpty( ) )
         {
-            return Collections.emptyList();
+            return Collections.emptyList( );
         }
-        List<String> keys = new ArrayList<String>( networkProxies.size() );
+        List<String> keys = new ArrayList<String>( networkProxies.size( ) );
         for ( NetworkProxy networkProxy : networkProxies )
         {
-            keys.add( networkProxy.getId() );
+            keys.add( networkProxy.getId( ) );
         }
         return keys;
 
     }
 
-    protected Map<String, Policy> createPolicyMap()
+    protected Map<String, Policy> createPolicyMap( )
     {
-        Map<String, Policy> policyMap = new HashMap<String, Policy>();
+        Map<String, Policy> policyMap = new HashMap<String, Policy>( );
 
         policyMap.putAll( preDownloadPolicyMap );
         policyMap.putAll( postDownloadPolicyMap );
@@ -436,49 +438,49 @@ public abstract class AbstractProxyConnectorFormAction
         return policyMap;
     }
 
-    protected List<String> createRemoteRepoOptions()
+    protected List<String> createRemoteRepoOptions( )
         throws RepositoryAdminException
     {
-        return new ArrayList<String>( getRemoteRepositoryAdmin().getRemoteRepositoriesAsMap().keySet() );
+        return new ArrayList<String>( getRemoteRepositoryAdmin( ).getRemoteRepositoriesAsMap( ).keySet( ) );
     }
 
     @SuppressWarnings( "unchecked" )
-    protected void validateConnector()
+    protected void validateConnector( )
     {
-        if ( connector.getPolicies() == null )
+        if ( connector.getPolicies( ) == null )
         {
             addActionError( "Policies must be set." );
         }
         else
         {
             // Validate / Fix policy settings arriving from browser.
-            for ( Map.Entry<String, Policy> entry : getPolicyMap().entrySet() )
+            for ( Map.Entry<String, Policy> entry : getPolicyMap( ).entrySet( ) )
             {
-                String policyId = entry.getKey();
-                Policy policy = entry.getValue();
-                List<String> options = policy.getOptions();
+                String policyId = entry.getKey( );
+                Policy policy = entry.getValue( );
+                List<String> options = policy.getOptions( );
 
-                if ( !connector.getPolicies().containsKey( policyId ) )
+                if ( !connector.getPolicies( ).containsKey( policyId ) )
                 {
                     addActionError( "Policy [" + policyId + "] must be set (missing id)." );
                     continue;
                 }
 
-                Map<String, String> properties = connector.getProperties();
-                for ( Map.Entry<String, String> entry2 : properties.entrySet() )
+                Map<String, String> properties = connector.getProperties( );
+                for ( Map.Entry<String, String> entry2 : properties.entrySet( ) )
                 {
-                    Object value = entry2.getValue();
-                    if ( value.getClass().isArray() )
+                    Object value = entry2.getValue( );
+                    if ( value.getClass( ).isArray( ) )
                     {
                         String[] arr = (String[]) value;
-                        properties.put( entry2.getKey(), arr[0] );
+                        properties.put( entry2.getKey( ), arr[0] );
                     }
                 }
 
                 // Ugly hack to compensate for ugly browsers.
-                Object o = connector.getPolicies().get( policyId );
+                Object o = connector.getPolicies( ).get( policyId );
                 String value;
-                if ( o.getClass().isArray() )
+                if ( o.getClass( ).isArray( ) )
                 {
                     String arr[] = (String[]) o;
                     value = arr[0];
@@ -488,7 +490,7 @@ public abstract class AbstractProxyConnectorFormAction
                     value = (String) o;
                 }
 
-                connector.getPolicies().put( policyId, value );
+                connector.getPolicies( ).put( policyId, value );
 
                 if ( StringUtils.isBlank( value ) )
                 {
@@ -506,7 +508,7 @@ public abstract class AbstractProxyConnectorFormAction
         }
     }
 
-    public NetworkProxyAdmin getNetworkProxyAdmin()
+    public NetworkProxyAdmin getNetworkProxyAdmin( )
     {
         return networkProxyAdmin;
     }

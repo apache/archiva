@@ -173,20 +173,20 @@
       </c:when>
       <c:otherwise>
         <table>
-          <c:forEach items="${connector.whiteListPatterns}" var="pattern" varStatus="i">
+          <s:iterator value="connector.whiteListPatterns" var="currentPattern" status="i">
             <tr>
               <td>
-                <s:hidden name="connector.whiteListPatterns" value="%{#attr.pattern}"/>
-                <code>"${pattern}"</code>
+                <input type="hidden" name="connector.whiteListPatterns" value="${currentPattern}"/>
+                <code>"${currentPattern}"</code>
               </td>
               <td>
-                <s:a href="#" title="Remove [%{#attr.pattern}] Pattern"
-                      onclick="setAndSubmit('pattern', '%{#attr.pattern}', 'removeWhiteListPattern')"
+                  <a href="#" title="Remove ${currentPattern} Pattern"
+                      onclick="setAndSubmit('pattern', '<s:property value="currentPattern" escapeJavaScript="true"/>', 'removeWhiteListPattern')"
                       theme="simple">
-                  <img src="${iconDeleteUrl}"/></s:a>
+                  <img src="${iconDeleteUrl}"/></a>
               </td>
             </tr>
-          </c:forEach>
+          </s:iterator>
         </table>
       </c:otherwise>
     </c:choose>
