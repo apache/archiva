@@ -578,6 +578,22 @@
       </interceptor-ref>
     </action>
 
+    <!-- .\ NETWORKCONFIGURATION SUPPORT \.__________________________________________ -->
+    <action name="editNetworkConfiguration" class="networkConfigurationAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/networkConfiguration.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/networkConfiguration.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="saveNetworkConfiguration" class="networkConfigurationAction" method="save">
+      <result name="input">/WEB-INF/jsp/admin/networkConfiguration.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/networkConfiguration.jsp</result>
+      <result name="success" type="redirectAction">editNetworkConfiguration</result>
+      <interceptor-ref name="configuredPrepareParamsStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
   </package>
 
   <package name="report" namespace="/report" extends="base">

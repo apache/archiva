@@ -173,6 +173,9 @@
         <li class="none">
           <my:currentWWUrl action="systemStatus" namespace="/admin">System Status</my:currentWWUrl>
         </li>
+        <li class="none">
+          <my:currentWWUrl action="editNetworkConfiguration" namespace="/admin">Network Configuration</my:currentWWUrl>
+        </li>
           <%-- TODO: future options here.
                * Repository Syncing Connectors. (rsync, ftp, scp, etc...)
                * Web Services (enable / disable), role based?
