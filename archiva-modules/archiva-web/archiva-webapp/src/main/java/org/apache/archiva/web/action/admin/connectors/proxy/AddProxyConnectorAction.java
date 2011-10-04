@@ -46,13 +46,6 @@ public class AddProxyConnectorAction
     @Override
     public String input()
     {
-        if ( connector != null )
-        {
-            // MRM-1135
-            connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
-            connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
-        }
-
         return INPUT;
     }
 
@@ -87,10 +80,6 @@ public class AddProxyConnectorAction
         {
             connector.setProxyId( null );
         }
-
-        // MRM-1135
-        connector.setBlackListPatterns( unescapePatterns( connector.getBlackListPatterns() ) );
-        connector.setWhiteListPatterns( unescapePatterns( connector.getWhiteListPatterns() ) );
 
         addProxyConnector( connector );
         return SUCCESS;
