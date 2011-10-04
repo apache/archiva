@@ -65,13 +65,14 @@
         <item name="Using LDAP"              href="/adminguide/ldap.html" />
 -->
       </item>
-      <item name="Runtime Configuration"     href="/adminguide/configuration.html" collapse="true">
-        <item name="Repositories"            href="/adminguide/repositories.html" />
-        <item name="Proxy Connectors"        href="/adminguide/proxy-connectors.html" />
-        <item name="Network Proxies"         href="/adminguide/network-proxies.html" />
-        <item name="Legacy (Maven 1) Support"         href="/adminguide/legacy.html" />        
-        <item name="Consumers"               href="/adminguide/consumers.html" />
-        <item name="Staging Repositories"      href="/adminguide/staging-repositories.html"/>
+      <item name="Runtime Configuration"      href="/adminguide/configuration.html" collapse="true">
+        <item name="Repositories"             href="/adminguide/repositories.html" />
+        <item name="Proxy Connectors"         href="/adminguide/proxy-connectors.html" />
+        <item name="Network Proxies"          href="/adminguide/network-proxies.html" />
+        <item name="Network Configuration"    href="/adminguide/network-configuration.html" />
+        <item name="Legacy (Maven 1) Support" href="/adminguide/legacy.html" />
+        <item name="Consumers"                href="/adminguide/consumers.html" />
+        <item name="Staging Repositories"     href="/adminguide/staging-repositories.html"/>
       </item>
       <item name="Configuration Files"       href="/adminguide/configuration-files.html" />
       <item name="Log Files"                 href="/adminguide/logging.html" collapse="true">
