@@ -62,14 +62,6 @@ public class EditProxyConnectorAction
                     + "]" );
             return ERROR;
         }
-
-        if ( connector != null )
-        {
-            // MRM-1135
-            connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
-            connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
-        }
-
         return INPUT;
     }
 

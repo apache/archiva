@@ -134,19 +134,19 @@
       </c:when>
       <c:otherwise>
         <table>
-          <c:forEach items="${connector.blackListPatterns}" var="pattern" varStatus="i">
+          <s:iterator value="connector.blackListPatterns" var="currentPattern" status="i">
             <tr>
               <td>
-                <s:hidden name="connector.blackListPatterns" value="%{#attr.pattern}"/>
-                <code>"${pattern}"</code>
+                <input type="hidden" name="connector.blackListPatterns" value="<s:property value="currentPattern" escapeHtml="true"/>"/>
+                <code>"${currentPattern}"</code>
               </td>
               <td>
-                <a href="#" title="Remove [${pattern}] Pattern"
-                      onclick="setAndSubmit('pattern', '${pattern}', 'removeBlackListPattern')">
+                <a href="#" title="Remove [${currentPattern}] Pattern"
+                      onclick="setAndSubmit('pattern', '<s:property value="currentPattern" escapeJavaScript="true"/>', 'removeBlackListPattern')">
                   <img src="${iconDeleteUrl}"/></a>
               </td>
             </tr>
-          </c:forEach>
+          </s:iterator>
         </table>
       </c:otherwise>
     </c:choose>
@@ -176,7 +176,7 @@
           <s:iterator value="connector.whiteListPatterns" var="currentPattern" status="i">
             <tr>
               <td>
-                <input type="hidden" name="connector.whiteListPatterns" value="${currentPattern}"/>
+                <input type="hidden" name="connector.whiteListPatterns" value="<s:property value="currentPattern" escapeHtml="true"/>"/>
                 <code>"${currentPattern}"</code>
               </td>
               <td>

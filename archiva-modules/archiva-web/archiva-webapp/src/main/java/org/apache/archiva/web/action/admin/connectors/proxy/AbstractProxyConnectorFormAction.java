@@ -28,6 +28,7 @@ import org.apache.archiva.policies.DownloadErrorPolicy;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PostDownloadPolicy;
 import org.apache.archiva.policies.PreDownloadPolicy;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -110,44 +111,11 @@ public abstract class AbstractProxyConnectorFormAction
         this.downloadErrorPolicyMap = getBeansOfType( DownloadErrorPolicy.class );
     }
 
-    protected List<String> escapePatterns( List<String> patterns )
-    {
-        List<String> escapedPatterns = new ArrayList<String>( );
-        if ( patterns != null )
-        {
-            for ( String pattern : patterns )
-            {
-                String escapedPattern =  StringUtils.replace( pattern, "\\", "\\\\" );
-                escapedPatterns.add( escapedPattern );
-            }
-        }
-
-        return escapedPatterns;
-    }
-
-    protected List<String> unescapePatterns( List<String> patterns )
-    {
-        List<String> rawPatterns = new ArrayList<String>( );
-        if ( patterns != null )
-        {
-            for ( String pattern : patterns )
-            {
-                String unescapedPattern = StringUtils.replace( pattern, "\\\\", "\\" );
-                rawPatterns.add( unescapedPattern  );
-            }
-        }
-
-        return rawPatterns;
-    }
-
-    private String escapePattern( String pattern )
-    {
-        return StringUtils.replace( pattern, "\\", "\\\\" );
-    }
-
     public String addBlackListPattern( )
     {
         String pattern = getBlackListPattern( );
+
+        //pattern = StringEscapeUtils.unescapeJavaScript( pattern );
 
         if ( StringUtils.isBlank( pattern ) )
         {
@@ -156,7 +124,7 @@ public abstract class AbstractProxyConnectorFormAction
 
         if ( !hasActionErrors( ) )
         {
-            getConnector( ).getBlackListPatterns( ).add( escapePattern( pattern ) );
+            getConnector( ).getBlackListPatterns( ).add( pattern );
             setBlackListPattern( null );
         }
 
@@ -192,7 +160,7 @@ public abstract class AbstractProxyConnectorFormAction
     public String addWhiteListPattern( )
     {
         String pattern = getWhiteListPattern( );
-
+        //pattern = StringEscapeUtils.unescapeJavaScript( pattern );
         if ( StringUtils.isBlank( pattern ) )
         {
             addActionError( "Cannot add a blank white list pattern." );
@@ -200,7 +168,7 @@ public abstract class AbstractProxyConnectorFormAction
 
         if ( !hasActionErrors( ) )
         {
-            getConnector( ).getWhiteListPatterns( ).add( escapePattern( pattern ) );
+            getConnector( ).getWhiteListPatterns( ).add( pattern );
             setWhiteListPattern( null );
         }
 
@@ -276,14 +244,14 @@ public abstract class AbstractProxyConnectorFormAction
         }
 
         if ( !getConnector( ).getBlackListPatterns( ).contains( pattern )
-            && !getConnector( ).getBlackListPatterns( ).contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
+            && !getConnector( ).getBlackListPatterns( ).contains( pattern ))
         {
             addActionError( "Non-existant black list pattern [" + pattern + "], no black list pattern removed." );
         }
 
         if ( !hasActionErrors( ) )
         {
-            getConnector( ).getBlackListPatterns( ).remove( escapePattern( pattern ) );
+            getConnector( ).getBlackListPatterns( ).remove( pattern );
         }
 
         setBlackListPattern( null );
@@ -327,14 +295,14 @@ public abstract class AbstractProxyConnectorFormAction
         }
 
         if ( !getConnector( ).getWhiteListPatterns( ).contains( pattern )
-            && !getConnector( ).getWhiteListPatterns( ).contains( StringUtils.replace( pattern, "\\", "\\\\" ) ) )
+            && !getConnector( ).getWhiteListPatterns( ).contains( pattern ))
         {
             addActionError( "Non-existant white list pattern [" + pattern + "], no white list pattern removed." );
         }
 
         if ( !hasActionErrors( ) )
         {
-            getConnector( ).getWhiteListPatterns( ).remove( escapePattern( pattern ) );
+            getConnector( ).getWhiteListPatterns( ).remove( pattern );
         }
 
         setWhiteListPattern( null );
