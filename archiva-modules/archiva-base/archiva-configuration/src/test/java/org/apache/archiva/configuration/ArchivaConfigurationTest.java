@@ -29,6 +29,8 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,12 +48,14 @@ public class ArchivaConfigurationTest
     extends TestCase
 {
 
+    private Logger log = LoggerFactory.getLogger( getClass( ) );
+
     @Inject
     private ComponentContainer componentContainer;
 
     public static File getTestFile( String path )
     {
-        return new File( FileUtil.getBasedir(), path );
+        return new File( FileUtil.getBasedir( ), path );
     }
 
     protected <T> T lookup( Class<T> clazz, String hint )
@@ -65,64 +69,64 @@ public class ArchivaConfigurationTest
     }
 
     @Test
-    public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
+    public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         assertConfiguration( configuration, 2, 2, 2 );
-        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
+        assertEquals( "check network proxies", 1, configuration.getNetworkProxies( ).size( ) );
 
-        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories( ).get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "internal", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertTrue( "check managed repositories", repository.isScanned( ) );
     }
 
     @Test
-    public void testGetConfigurationFromDefaults()
+    public void testGetConfigurationFromDefaults( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults" );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         assertConfiguration( configuration, 2, 1, 1 );
-        assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
+        assertEquals( "check network proxies", 0, configuration.getNetworkProxies( ).size( ) );
 
         ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories( ).get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "internal", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertTrue( "check managed repositories", repository.isScanned( ) );
     }
 
     // test for [MRM-789]
     @Test
-    public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
+    public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting( )
         throws Exception
     {
-        File repo = new File( FileUtil.getBasedir(), "/target/test-classes/existing_snapshots" );
-        repo.mkdirs();
+        File repo = new File( FileUtil.getBasedir( ), "/target/test-classes/existing_snapshots" );
+        repo.mkdirs( );
 
-        repo = new File( FileUtil.getBasedir(), "/target/test-classes/existing_internal" );
-        repo.mkdirs();
+        repo = new File( FileUtil.getBasedir( ), "/target/test-classes/existing_internal" );
+        repo.mkdirs( );
 
         String existingTestDefaultArchivaConfigFile = FileUtils.readFileToString(
             getTestFile( "target/test-classes/org/apache/archiva/configuration/test-default-archiva.xml" ) );
         existingTestDefaultArchivaConfigFile =
-            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", FileUtil.getBasedir() );
+            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", FileUtil.getBasedir( ) );
 
-        File generatedTestDefaultArchivaConfigFile = new File( FileUtil.getBasedir(),
+        File generatedTestDefaultArchivaConfigFile = new File( FileUtil.getBasedir( ),
                                                                "target/test-classes/org/apache/archiva/configuration/default-archiva.xml" );
 
         FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile,
@@ -131,15 +135,15 @@ public class ArchivaConfigurationTest
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         assertConfiguration( configuration, 2, 1, 1 );
 
         ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
-        assertTrue( "check managed repositories", repository.getLocation().endsWith( "data/repositories/internal" ) );
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories( ).get( 0 );
+        assertTrue( "check managed repositories", repository.getLocation( ).endsWith( "data/repositories/internal" ) );
 
-        generatedTestDefaultArchivaConfigFile.delete();
-        assertFalse( generatedTestDefaultArchivaConfigFile.exists() );
+        generatedTestDefaultArchivaConfigFile.delete( );
+        assertFalse( generatedTestDefaultArchivaConfigFile.exists( ) );
     }
 
     private void assertConfiguration( Configuration configuration )
@@ -157,59 +161,59 @@ public class ArchivaConfigurationTest
     {
         FileTypes filetypes = lookup( FileTypes.class );
 
-        assertEquals( "check managed repositories: " + configuration.getManagedRepositories(), managedExpected,
-                      configuration.getManagedRepositories().size() );
-        assertEquals( "check remote repositories: " + configuration.getRemoteRepositories(), remoteExpected,
-                      configuration.getRemoteRepositories().size() );
-        assertEquals( "check proxy connectors:" + configuration.getProxyConnectors(), proxyConnectorExpected,
-                      configuration.getProxyConnectors().size() );
+        assertEquals( "check managed repositories: " + configuration.getManagedRepositories( ), managedExpected,
+                      configuration.getManagedRepositories( ).size( ) );
+        assertEquals( "check remote repositories: " + configuration.getRemoteRepositories( ), remoteExpected,
+                      configuration.getRemoteRepositories( ).size( ) );
+        assertEquals( "check proxy connectors:" + configuration.getProxyConnectors( ), proxyConnectorExpected,
+                      configuration.getProxyConnectors( ).size( ) );
 
-        RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
+        RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning( );
         assertNotNull( "check repository scanning", repoScanning );
-        assertEquals( "check file types", 4, repoScanning.getFileTypes().size() );
-        assertEquals( "check known consumers", 9, repoScanning.getKnownContentConsumers().size() );
-        assertEquals( "check invalid consumers", 1, repoScanning.getInvalidContentConsumers().size() );
+        assertEquals( "check file types", 4, repoScanning.getFileTypes( ).size( ) );
+        assertEquals( "check known consumers", 9, repoScanning.getKnownContentConsumers( ).size( ) );
+        assertEquals( "check invalid consumers", 1, repoScanning.getInvalidContentConsumers( ).size( ) );
 
         List<String> patterns = filetypes.getFileTypePatterns( "artifacts" );
         assertNotNull( "check 'artifacts' file type", patterns );
-        assertEquals( "check 'artifacts' patterns", 13, patterns.size() );
+        assertEquals( "check 'artifacts' patterns", 13, patterns.size( ) );
 
-        WebappConfiguration webapp = configuration.getWebapp();
+        WebappConfiguration webapp = configuration.getWebapp( );
         assertNotNull( "check webapp", webapp );
 
-        UserInterfaceOptions ui = webapp.getUi();
+        UserInterfaceOptions ui = webapp.getUi( );
         assertNotNull( "check webapp ui", ui );
-        assertTrue( "check showFindArtifacts", ui.isShowFindArtifacts() );
-        assertTrue( "check appletFindEnabled", ui.isAppletFindEnabled() );
+        assertTrue( "check showFindArtifacts", ui.isShowFindArtifacts( ) );
+        assertTrue( "check appletFindEnabled", ui.isAppletFindEnabled( ) );
     }
 
     @Test
-    public void testGetConfigurationFromRegistryWithTwoConfigurationResources()
+    public void testGetConfigurationFromRegistryWithTwoConfigurationResources( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration-both" );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
 
         // from base
-        assertEquals( "check repositories", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check repositories", 2, configuration.getRemoteRepositories().size() );
+        assertEquals( "check repositories", 2, configuration.getManagedRepositories( ).size( ) );
+        assertEquals( "check repositories", 2, configuration.getRemoteRepositories( ).size( ) );
         // from user
-        assertEquals( "check proxy connectors", 2, configuration.getProxyConnectors().size() );
+        assertEquals( "check proxy connectors", 2, configuration.getProxyConnectors( ).size( ) );
 
-        WebappConfiguration webapp = configuration.getWebapp();
+        WebappConfiguration webapp = configuration.getWebapp( );
         assertNotNull( "check webapp", webapp );
 
-        UserInterfaceOptions ui = webapp.getUi();
+        UserInterfaceOptions ui = webapp.getUi( );
         assertNotNull( "check webapp ui", ui );
         // from base
-        assertFalse( "check showFindArtifacts", ui.isShowFindArtifacts() );
+        assertFalse( "check showFindArtifacts", ui.isShowFindArtifacts( ) );
         // from user
-        assertFalse( "check appletFindEnabled", ui.isAppletFindEnabled() );
+        assertFalse( "check appletFindEnabled", ui.isAppletFindEnabled( ) );
     }
 
     @Test
-    public void testGetConfigurationSystemOverride()
+    public void testGetConfigurationSystemOverride( )
         throws Exception
     {
 
@@ -217,27 +221,27 @@ public class ArchivaConfigurationTest
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
         try
         {
-            Configuration configuration = archivaConfiguration.getConfiguration();
+            Configuration configuration = archivaConfiguration.getConfiguration( );
 
-            assertFalse( "check boolean", configuration.getWebapp().getUi().isAppletFindEnabled() );
+            assertFalse( "check boolean", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
         }
         finally
         {
-            System.getProperties().remove( "org.apache.archiva.webapp.ui.appletFindEnabled" );
+            System.getProperties( ).remove( "org.apache.archiva.webapp.ui.appletFindEnabled" );
         }
     }
 
     @Test
-    public void testStoreConfiguration()
+    public void testStoreConfiguration( )
         throws Exception
     {
         File file = getTestFile( "target/test/test-file.xml" );
-        file.delete();
-        assertFalse( file.exists() );
+        file.delete( );
+        assertFalse( file.exists( ) );
 
         // TODO: remove with commons-configuration 1.4
         //file.getParentFile().mkdirs();
@@ -246,286 +250,286 @@ public class ArchivaConfigurationTest
         DefaultArchivaConfiguration archivaConfiguration =
             (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration( );
         configuration.setVersion( "1" );
-        configuration.setWebapp( new WebappConfiguration() );
-        configuration.getWebapp().setUi( new UserInterfaceOptions() );
-        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+        configuration.setWebapp( new WebappConfiguration( ) );
+        configuration.getWebapp( ).setUi( new UserInterfaceOptions( ) );
+        configuration.getWebapp( ).getUi( ).setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createConfigurationListenerMockControl();
-        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        MockControl control = createConfigurationListenerMockControl( );
+        ConfigurationListener listener = (ConfigurationListener) control.getMock( );
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
-        control.setVoidCallable();
+        control.setVoidCallable( );
 
-        control.replay();
+        control.replay( );
 
         archivaConfiguration.save( configuration );
 
-        control.verify();
+        control.verify( );
 
-        assertTrue( "Check file exists", file.exists() );
+        assertTrue( "Check file exists", file.exists( ) );
 
         // check it
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
 
         // read it back
         archivaConfiguration = (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
 
-        archivaConfiguration.reload();
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        archivaConfiguration.reload( );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
     }
 
-    private static MockControl createConfigurationListenerMockControl()
+    private static MockControl createConfigurationListenerMockControl( )
     {
         return MockControl.createControl( ConfigurationListener.class );
     }
 
     @Test
-    public void testStoreConfigurationUser()
+    public void testStoreConfigurationUser( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
 
-        Configuration configuration = new Configuration();
-        configuration.setWebapp( new WebappConfiguration() );
-        configuration.getWebapp().setUi( new UserInterfaceOptions() );
-        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+        Configuration configuration = new Configuration( );
+        configuration.setWebapp( new WebappConfiguration( ) );
+        configuration.getWebapp( ).setUi( new UserInterfaceOptions( ) );
+        configuration.getWebapp( ).getUi( ).setAppletFindEnabled( false );
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", userFile.exists() );
-        assertFalse( "Check file not created", baseFile.exists() );
+        assertTrue( "Check file exists", userFile.exists( ) );
+        assertFalse( "Check file not created", baseFile.exists( ) );
 
         // check it
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
     }
 
     @Test
-    public void testStoreConfigurationLoadedFromDefaults()
+    public void testStoreConfigurationLoadedFromDefaults( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-defaults" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = new Configuration();
-        configuration.setWebapp( new WebappConfiguration() );
-        configuration.getWebapp().setUi( new UserInterfaceOptions() );
-        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+        Configuration configuration = new Configuration( );
+        configuration.setWebapp( new WebappConfiguration( ) );
+        configuration.getWebapp( ).setUi( new UserInterfaceOptions( ) );
+        configuration.getWebapp( ).getUi( ).setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createConfigurationListenerMockControl();
-        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        MockControl control = createConfigurationListenerMockControl( );
+        ConfigurationListener listener = (ConfigurationListener) control.getMock( );
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
 
         control.setVoidCallable( 1 );
 
-        control.replay();
+        control.replay( );
 
         archivaConfiguration.save( configuration );
 
-        control.verify();
+        control.verify( );
 
-        assertTrue( "Check file exists", userFile.exists() );
-        assertFalse( "Check file not created", baseFile.exists() );
+        assertTrue( "Check file exists", userFile.exists( ) );
+        assertFalse( "Check file not created", baseFile.exists( ) );
 
         // check it
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
     }
 
     @Test
-    public void testDefaultUserConfigFilename()
+    public void testDefaultUserConfigFilename( )
         throws Exception
     {
         DefaultArchivaConfiguration archivaConfiguration =
             (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "default" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
         assertEquals( System.getProperty( "user.home" ) + "/.m2/archiva.xml",
-                      archivaConfiguration.getUserConfigFilename() );
+                      archivaConfiguration.getUserConfigFilename( ) );
         assertEquals( System.getProperty( "appserver.base", "${appserver.base}" ) + "/conf/archiva.xml",
-                      archivaConfiguration.getAltConfigFilename() );
+                      archivaConfiguration.getAltConfigFilename( ) );
     }
 
     @Test
-    public void testStoreConfigurationFallback()
+    public void testStoreConfigurationFallback( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        baseFile.getParentFile().mkdirs();
+        baseFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( baseFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-fallback" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = new Configuration();
-        configuration.setWebapp( new WebappConfiguration() );
-        configuration.getWebapp().setUi( new UserInterfaceOptions() );
-        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+        Configuration configuration = new Configuration( );
+        configuration.setWebapp( new WebappConfiguration( ) );
+        configuration.getWebapp( ).setUi( new UserInterfaceOptions( ) );
+        configuration.getWebapp( ).getUi( ).setAppletFindEnabled( false );
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", baseFile.exists() );
-        assertFalse( "Check file not created", userFile.exists() );
+        assertTrue( "Check file exists", baseFile.exists( ) );
+        assertFalse( "Check file not created", userFile.exists( ) );
 
         // check it
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
     }
 
     @Test
-    public void testStoreConfigurationFailsWhenReadFromBothLocationsNoLists()
+    public void testStoreConfigurationFailsWhenReadFromBothLocationsNoLists( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        baseFile.getParentFile().mkdirs();
+        baseFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( baseFile, "<configuration/>", null );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        Configuration configuration = archivaConfiguration.getConfiguration( );
+        assertTrue( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
 
-        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+        configuration.getWebapp( ).getUi( ).setAppletFindEnabled( false );
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", baseFile.exists() );
+        assertTrue( "Check file exists", baseFile.exists( ) );
         assertEquals( "Check base file is unchanged", "<configuration/>",
                       FileUtils.readFileToString( baseFile, null ) );
-        assertTrue( "Check file exists", userFile.exists() );
+        assertTrue( "Check file exists", userFile.exists( ) );
         assertFalse( "Check base file is changed",
                      "<configuration/>".equals( FileUtils.readFileToString( userFile, null ) ) );
 
         // check it
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
     }
 
     @Test
-    public void testStoreConfigurationFailsWhenReadFromBothLocationsUserHasLists()
+    public void testStoreConfigurationFailsWhenReadFromBothLocationsUserHasLists( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-user.xml" ), userFile );
 
-        baseFile.getParentFile().mkdirs();
+        baseFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( baseFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        assertTrue( "check value", configuration.getWebapp().getUi().isShowFindArtifacts() );
+        Configuration configuration = archivaConfiguration.getConfiguration( );
+        assertTrue( "check value", configuration.getWebapp( ).getUi( ).isShowFindArtifacts( ) );
 
-        configuration.getWebapp().getUi().setShowFindArtifacts( false );
+        configuration.getWebapp( ).getUi( ).setShowFindArtifacts( false );
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", baseFile.exists() );
+        assertTrue( "Check file exists", baseFile.exists( ) );
         assertEquals( "Check base file is unchanged", "<configuration/>",
                       FileUtils.readFileToString( baseFile, null ) );
-        assertTrue( "Check file exists", userFile.exists() );
+        assertTrue( "Check file exists", userFile.exists( ) );
         assertFalse( "Check base file is changed",
                      "<configuration/>".equals( FileUtils.readFileToString( userFile, null ) ) );
 
         // check it
-        configuration = archivaConfiguration.getConfiguration();
-        assertFalse( "check value", configuration.getWebapp().getUi().isShowFindArtifacts() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertFalse( "check value", configuration.getWebapp( ).getUi( ).isShowFindArtifacts( ) );
     }
 
     @Test
-    public void testStoreConfigurationFailsWhenReadFromBothLocationsAppserverHasLists()
+    public void testStoreConfigurationFailsWhenReadFromBothLocationsAppserverHasLists( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        baseFile.getParentFile().mkdirs();
+        baseFile.getParentFile( ).mkdirs( );
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-base.xml" ), baseFile );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+        Configuration configuration = archivaConfiguration.getConfiguration( );
+        assertTrue( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
 
-        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+        configuration.getWebapp( ).getUi( ).setAppletFindEnabled( false );
 
         try
         {
@@ -535,18 +539,18 @@ public class ArchivaConfigurationTest
         catch ( IndeterminateConfigurationException e )
         {
             // check it was reverted
-            configuration = archivaConfiguration.getConfiguration();
-            assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+            configuration = archivaConfiguration.getConfiguration( );
+            assertTrue( "check value", configuration.getWebapp( ).getUi( ).isAppletFindEnabled( ) );
         }
     }
 
     @Test
-    public void testLoadConfigurationFromInvalidBothLocationsOnDisk()
+    public void testLoadConfigurationFromInvalidBothLocationsOnDisk( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-both" );
-        Configuration config = archivaConfiguration.getConfiguration();
+        Configuration config = archivaConfiguration.getConfiguration( );
 
         try
         {
@@ -560,76 +564,107 @@ public class ArchivaConfigurationTest
     }
 
     @Test
-    public void testLoadConfigurationFromInvalidUserLocationOnDisk()
+    public void testLoadConfigurationFromInvalidUserLocationOnDisk( )
         throws Exception
     {
         File testConfDir = getTestFile( "target/test-appserver-base/conf/" );
-        testConfDir.mkdirs();
+        testConfDir.mkdirs( );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-user" );
-        Configuration config = archivaConfiguration.getConfiguration();
+        Configuration config = archivaConfiguration.getConfiguration( );
         archivaConfiguration.save( config );
         // No Exception == test passes.
         // Expected Path is: Should not have thrown an exception.
     }
 
     @Test
-    public void testConfigurationUpgradeFrom09()
+    public void testConfigurationUpgradeFrom09( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-upgrade-09" );
 
         // we just use the defaults when upgrading from 0.9 at this point.
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         // test-upgrade-09 contains a managed with id: local so it's 3 managed
         assertConfiguration( configuration, 3, 1, 1 );
-        assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
+        assertEquals( "check network proxies", 0, configuration.getNetworkProxies( ).size( ) );
 
-        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories( ).get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "internal", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertTrue( "check managed repositories", repository.isScanned( ) );
     }
 
     @Test
-    public void testAutoDetectV1()
+    public void testConfigurationUpgradeFrom13( )
+        throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-upgrade-1.3" );
+
+        // we just use the defaults when upgrading from 1.3 at this point.
+        Configuration configuration = archivaConfiguration.getConfiguration( );
+        assertConfiguration( configuration, 2, 2, 2 );
+        assertEquals( "check network proxies", 0, configuration.getNetworkProxies( ).size( ) );
+
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories( ).get( 0 );
+
+        assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "internal", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertTrue( "check managed repositories", repository.isScanned( ) );
+
+        log.info( "knowContentConsumers " + configuration.getRepositoryScanning( ).getKnownContentConsumers( ) );
+
+        assertFalse(
+            configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "update-db-artifact" ) );
+        assertFalse( configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains(
+            "update-db-repository-metadata" ) );
+
+        assertTrue(
+            configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "create-archiva-metadata" ) );
+    }
+
+    @Test
+    public void testAutoDetectV1( )
         throws Exception
     {
         // Setup the autodetect-v1.xml file in the target directory (so we can save/load it)
         File userFile = getTestFile( "target/test-autodetect-v1/archiva-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.copyFile( getTestFile( "src/test/conf/autodetect-v1.xml" ), userFile );
 
         // Load the original (unconverted) archiva.xml
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         assertConfiguration( configuration, 2, 2, 2 );
-        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
+        assertEquals( "check network proxies", 1, configuration.getNetworkProxies( ).size( ) );
 
-        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
+        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories( ).get( 0 );
 
         assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "internal", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertTrue( "check managed repositories", repository.isScanned( ) );
 
         // Test that only 1 set of repositories exist.
-        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
-        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
+        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories( ).size( ) );
+        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories( ).size( ) );
+        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories( ).size( ) );
 
         // Save the file.
         archivaConfiguration.save( configuration );
@@ -639,14 +674,14 @@ public class ArchivaConfigurationTest
 
         // Reload.
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
-        configuration = archivaConfiguration.getConfiguration();
+        configuration = archivaConfiguration.getConfiguration( );
 
         // Test that only 1 set of repositories exist.
-        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositoriesAsMap().size() );
-        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
-        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap().size() );
-        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
+        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories( ).size( ) );
+        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositoriesAsMap( ).size( ) );
+        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories( ).size( ) );
+        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap( ).size( ) );
+        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories( ).size( ) );
 
         String actualXML = FileUtils.readFileToString( userFile, null );
         XMLAssert.assertXpathNotExists( "//configuration/repositories/repository", actualXML );
@@ -654,199 +689,199 @@ public class ArchivaConfigurationTest
     }
 
     @Test
-    public void testArchivaV1()
+    public void testArchivaV1( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-archiva-v1" );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         assertConfiguration( configuration, 2, 2, 2 );
-        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
+        assertEquals( "check network proxies", 1, configuration.getNetworkProxies( ).size( ) );
 
-        assertEquals( "check managed repositories", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
+        assertEquals( "check managed repositories", 2, configuration.getManagedRepositories( ).size( ) );
+        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories( ).size( ) );
 
-        Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap();
+        Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap( );
 
         ManagedRepositoryConfiguration repository = map.get( "internal" );
         assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
-        assertFalse( "check managed repositories", repository.isSnapshots() );
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "internal", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertTrue( "check managed repositories", repository.isScanned( ) );
+        assertFalse( "check managed repositories", repository.isSnapshots( ) );
 
         repository = map.get( "snapshots" );
         assertEquals( "check managed repositories", "${appserver.base}/repositories/snapshots",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Snapshot Repository", repository.getName() );
-        assertEquals( "check managed repositories", "snapshots", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertFalse( "check managed repositories", repository.isScanned() );
-        assertTrue( "check managed repositories", repository.isSnapshots() );
+                      repository.getLocation( ) );
+        assertEquals( "check managed repositories", "Archiva Managed Snapshot Repository", repository.getName( ) );
+        assertEquals( "check managed repositories", "snapshots", repository.getId( ) );
+        assertEquals( "check managed repositories", "default", repository.getLayout( ) );
+        assertFalse( "check managed repositories", repository.isScanned( ) );
+        assertTrue( "check managed repositories", repository.isSnapshots( ) );
     }
 
     @Test
-    public void testCronExpressionsWithComma()
+    public void testCronExpressionsWithComma( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        baseFile.getParentFile().mkdirs();
+        baseFile.getParentFile( ).mkdirs( );
         FileUtils.copyFile( getTestFile( "src/test/conf/escape-cron-expressions.xml" ), baseFile );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         final ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-cron-expressions" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
 
         ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories( ).get( 0 );
 
-        assertEquals( "check cron expression", "0 0,30 * * * ?", repository.getRefreshCronExpression().trim() );
+        assertEquals( "check cron expression", "0 0,30 * * * ?", repository.getRefreshCronExpression( ).trim( ) );
 
         // add a test listener to confirm it doesn't see the escaped format. We don't need to test the number of calls,
         // etc. as it's done in other tests
-        archivaConfiguration.addListener( new ConfigurationListener()
+        archivaConfiguration.addListener( new ConfigurationListener( )
         {
             public void configurationEvent( ConfigurationEvent event )
             {
-                assertEquals( ConfigurationEvent.SAVED, event.getType() );
+                assertEquals( ConfigurationEvent.SAVED, event.getType( ) );
 
             }
         } );
 
         archivaConfiguration.save( configuration );
 
-        configuration = archivaConfiguration.getConfiguration();
+        configuration = archivaConfiguration.getConfiguration( );
 
         // test for the escape character '\' showing up on repositories.jsp
         repository.setRefreshCronExpression( "0 0,20 0 * * ?" );
 
         archivaConfiguration.save( configuration );
 
-        repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( "snapshots" );
+        repository = archivaConfiguration.getConfiguration( ).findManagedRepositoryById( "snapshots" );
 
-        assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression() );
+        assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression( ) );
     }
 
     @Test
-    public void testRemoveLastElements()
+    public void testRemoveLastElements( )
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        baseFile.delete( );
+        assertFalse( baseFile.exists( ) );
 
         File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        userFile.delete( );
+        assertFalse( userFile.exists( ) );
 
-        baseFile.getParentFile().mkdirs();
+        baseFile.getParentFile( ).mkdirs( );
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-single-list-elements.xml" ), baseFile );
 
-        userFile.getParentFile().mkdirs();
+        userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-remove-central" );
 
-        archivaConfiguration.reload();
+        archivaConfiguration.reload( );
 
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration( );
 
         RepositoryGroupConfiguration repositoryGroup =
-            (RepositoryGroupConfiguration) configuration.getRepositoryGroups().get( 0 );
+            (RepositoryGroupConfiguration) configuration.getRepositoryGroups( ).get( 0 );
         assertNotNull( repositoryGroup );
         configuration.removeRepositoryGroup( repositoryGroup );
-        assertTrue( configuration.getRepositoryGroups().isEmpty() );
+        assertTrue( configuration.getRepositoryGroups( ).isEmpty( ) );
 
-        RemoteRepositoryConfiguration repository = configuration.getRemoteRepositoriesAsMap().get( "central" );
+        RemoteRepositoryConfiguration repository = configuration.getRemoteRepositoriesAsMap( ).get( "central" );
         assertNotNull( repository );
         configuration.removeRemoteRepository( repository );
-        assertTrue( configuration.getRemoteRepositories().isEmpty() );
+        assertTrue( configuration.getRemoteRepositories( ).isEmpty( ) );
 
         ManagedRepositoryConfiguration managedRepository =
-            configuration.getManagedRepositoriesAsMap().get( "snapshots" );
+            configuration.getManagedRepositoriesAsMap( ).get( "snapshots" );
         assertNotNull( managedRepository );
         configuration.removeManagedRepository( managedRepository );
-        assertTrue( configuration.getManagedRepositories().isEmpty() );
+        assertTrue( configuration.getManagedRepositories( ).isEmpty( ) );
 
         ProxyConnectorConfiguration proxyConnector =
-            (ProxyConnectorConfiguration) configuration.getProxyConnectors().get( 0 );
+            (ProxyConnectorConfiguration) configuration.getProxyConnectors( ).get( 0 );
         assertNotNull( proxyConnector );
         configuration.removeProxyConnector( proxyConnector );
-        assertTrue( configuration.getProxyConnectors().isEmpty() );
+        assertTrue( configuration.getProxyConnectors( ).isEmpty( ) );
 
-        NetworkProxyConfiguration networkProxy = configuration.getNetworkProxiesAsMap().get( "proxy" );
+        NetworkProxyConfiguration networkProxy = configuration.getNetworkProxiesAsMap( ).get( "proxy" );
         assertNotNull( networkProxy );
         configuration.removeNetworkProxy( networkProxy );
-        assertTrue( configuration.getNetworkProxies().isEmpty() );
+        assertTrue( configuration.getNetworkProxies( ).isEmpty( ) );
 
-        LegacyArtifactPath path = (LegacyArtifactPath) configuration.getLegacyArtifactPaths().get( 0 );
+        LegacyArtifactPath path = (LegacyArtifactPath) configuration.getLegacyArtifactPaths( ).get( 0 );
         assertNotNull( path );
         configuration.removeLegacyArtifactPath( path );
-        assertTrue( configuration.getLegacyArtifactPaths().isEmpty() );
+        assertTrue( configuration.getLegacyArtifactPaths( ).isEmpty( ) );
 
-        RepositoryScanningConfiguration scanning = configuration.getRepositoryScanning();
-        String consumer = (String) scanning.getKnownContentConsumers().get( 0 );
+        RepositoryScanningConfiguration scanning = configuration.getRepositoryScanning( );
+        String consumer = (String) scanning.getKnownContentConsumers( ).get( 0 );
         assertNotNull( consumer );
         scanning.removeKnownContentConsumer( consumer );
-        assertTrue( scanning.getKnownContentConsumers().isEmpty() );
-        consumer = (String) scanning.getInvalidContentConsumers().get( 0 );
+        assertTrue( scanning.getKnownContentConsumers( ).isEmpty( ) );
+        consumer = (String) scanning.getInvalidContentConsumers( ).get( 0 );
         assertNotNull( consumer );
         scanning.removeInvalidContentConsumer( consumer );
-        assertTrue( scanning.getInvalidContentConsumers().isEmpty() );
+        assertTrue( scanning.getInvalidContentConsumers( ).isEmpty( ) );
 
         archivaConfiguration.save( configuration );
 
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
-        configuration = archivaConfiguration.getConfiguration();
-        assertNull( configuration.getRemoteRepositoriesAsMap().get( "central" ) );
-        assertTrue( configuration.getRepositoryGroups().isEmpty() );
-        assertNull( configuration.getManagedRepositoriesAsMap().get( "snapshots" ) );
-        assertTrue( configuration.getProxyConnectors().isEmpty() );
-        assertNull( configuration.getNetworkProxiesAsMap().get( "proxy" ) );
-        assertTrue( configuration.getLegacyArtifactPaths().isEmpty() );
-        scanning = configuration.getRepositoryScanning();
-        assertTrue( scanning.getKnownContentConsumers().isEmpty() );
-        assertTrue( scanning.getInvalidContentConsumers().isEmpty() );
+        configuration = archivaConfiguration.getConfiguration( );
+        assertNull( configuration.getRemoteRepositoriesAsMap( ).get( "central" ) );
+        assertTrue( configuration.getRepositoryGroups( ).isEmpty( ) );
+        assertNull( configuration.getManagedRepositoriesAsMap( ).get( "snapshots" ) );
+        assertTrue( configuration.getProxyConnectors( ).isEmpty( ) );
+        assertNull( configuration.getNetworkProxiesAsMap( ).get( "proxy" ) );
+        assertTrue( configuration.getLegacyArtifactPaths( ).isEmpty( ) );
+        scanning = configuration.getRepositoryScanning( );
+        assertTrue( scanning.getKnownContentConsumers( ).isEmpty( ) );
+        assertTrue( scanning.getInvalidContentConsumers( ).isEmpty( ) );
     }
 
     /**
      * [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
      */
     @Test
-    public void testGetConfigurationFixEmptyRemoteRepoUsernamePassword()
+    public void testGetConfigurationFixEmptyRemoteRepoUsernamePassword( )
         throws Exception
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
-        archivaConfiguration.reload();
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        archivaConfiguration.reload( );
+        Configuration configuration = archivaConfiguration.getConfiguration( );
         assertConfiguration( configuration, 2, 2, 2 );
-        assertEquals( "check remote repositories", 2, configuration.getRemoteRepositories().size() );
+        assertEquals( "check remote repositories", 2, configuration.getRemoteRepositories( ).size( ) );
 
         RemoteRepositoryConfiguration repository =
-            configuration.getRemoteRepositoriesAsMap().get( "maven2-repository.dev.java.net" );
+            configuration.getRemoteRepositoriesAsMap( ).get( "maven2-repository.dev.java.net" );
 
         assertEquals( "remote repository.url", "https://maven2-repository.dev.java.net/nonav/repository",
-                      repository.getUrl() );
-        assertEquals( "remote repository.name", "Java.net Repository for Maven 2", repository.getName() );
-        assertEquals( "remote repository.id", "maven2-repository.dev.java.net", repository.getId() );
-        assertEquals( "remote repository.layout", "default", repository.getLayout() );
-        assertNull( "remote repository.username == null", repository.getUsername() );
-        assertNull( "remote repository.password == null", repository.getPassword() );
+                      repository.getUrl( ) );
+        assertEquals( "remote repository.name", "Java.net Repository for Maven 2", repository.getName( ) );
+        assertEquals( "remote repository.id", "maven2-repository.dev.java.net", repository.getId( ) );
+        assertEquals( "remote repository.layout", "default", repository.getLayout( ) );
+        assertNull( "remote repository.username == null", repository.getUsername( ) );
+        assertNull( "remote repository.password == null", repository.getPassword( ) );
     }
 }

@@ -52,6 +52,7 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -136,12 +137,12 @@ public class DefaultArchivaConfiguration
     /**
      * Configuration Listeners we've registered.
      */
-    private Set<ConfigurationListener> listeners = new HashSet<ConfigurationListener>();
+    private Set<ConfigurationListener> listeners = new HashSet<ConfigurationListener>( );
 
     /**
      * Registry Listeners we've registered.
      */
-    private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
+    private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>( );
 
     /**
      * Boolean to help determine if the configuration exists as a result of pulling in
@@ -151,16 +152,16 @@ public class DefaultArchivaConfiguration
 
     private static final String KEY = "org.apache.archiva";
 
-    public Configuration getConfiguration()
+    public Configuration getConfiguration( )
     {
-        return loadConfiguration();
+        return loadConfiguration( );
     }
 
-    private synchronized Configuration loadConfiguration()
+    private synchronized Configuration loadConfiguration( )
     {
         if ( configuration == null )
         {
-            configuration = load();
+            configuration = load( );
             configuration = unescapeExpressions( configuration );
             if ( isConfigurationDefaulted )
             {
@@ -172,113 +173,113 @@ public class DefaultArchivaConfiguration
     }
 
     @SuppressWarnings( "unchecked" )
-    private Configuration load()
+    private Configuration load( )
     {
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
         Registry subset = registry.getSubset( KEY );
         if ( subset.getString( "version" ) == null )
         {
             // a little autodetection of v1, even if version is omitted (this was previously allowed)
-            if ( subset.getSubset( "repositoryScanning" ).isEmpty() )
+            if ( subset.getSubset( "repositoryScanning" ).isEmpty( ) )
             {
                 // only for empty, or v < 1
-                subset = readDefaultConfiguration();
+                subset = readDefaultConfiguration( );
             }
         }
 
-        Configuration config = new ConfigurationRegistryReader().read( subset );
+        Configuration config = new ConfigurationRegistryReader( ).read( subset );
 
-        config.getRepositoryGroups();
-        config.getRepositoryGroupsAsMap();
-        if ( !config.getRepositories().isEmpty() )
+        config.getRepositoryGroups( );
+        config.getRepositoryGroupsAsMap( );
+        if ( !config.getRepositories( ).isEmpty( ) )
         {
-            for ( Iterator<V1RepositoryConfiguration> i = config.getRepositories().iterator(); i.hasNext(); )
+            for ( Iterator<V1RepositoryConfiguration> i = config.getRepositories( ).iterator( ); i.hasNext( ); )
             {
-                V1RepositoryConfiguration r = i.next();
-                r.setScanned( r.isIndexed() );
+                V1RepositoryConfiguration r = i.next( );
+                r.setScanned( r.isIndexed( ) );
 
-                if ( StringUtils.startsWith( r.getUrl(), "file://" ) )
+                if ( StringUtils.startsWith( r.getUrl( ), "file://" ) )
                 {
-                    r.setLocation( r.getUrl().substring( 7 ) );
+                    r.setLocation( r.getUrl( ).substring( 7 ) );
                     config.addManagedRepository( r );
                 }
-                else if ( StringUtils.startsWith( r.getUrl(), "file:" ) )
+                else if ( StringUtils.startsWith( r.getUrl( ), "file:" ) )
                 {
-                    r.setLocation( r.getUrl().substring( 5 ) );
+                    r.setLocation( r.getUrl( ).substring( 5 ) );
                     config.addManagedRepository( r );
                 }
-                else if ( StringUtils.isEmpty( r.getUrl() ) )
+                else if ( StringUtils.isEmpty( r.getUrl( ) ) )
                 {
                     // in case of empty url we can consider it as a managed one
                     // check if location is null
                     //file://${appserver.base}/repositories/${id}
-                    if ( StringUtils.isEmpty( r.getLocation() ) )
+                    if ( StringUtils.isEmpty( r.getLocation( ) ) )
                     {
-                        r.setLocation( "file://${appserver.base}/repositories/" + r.getId() );
+                        r.setLocation( "file://${appserver.base}/repositories/" + r.getId( ) );
                     }
                     config.addManagedRepository( r );
                 }
                 else
                 {
-                    RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
-                    repo.setId( r.getId() );
-                    repo.setLayout( r.getLayout() );
-                    repo.setName( r.getName() );
-                    repo.setUrl( r.getUrl() );
+                    RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration( );
+                    repo.setId( r.getId( ) );
+                    repo.setLayout( r.getLayout( ) );
+                    repo.setName( r.getName( ) );
+                    repo.setUrl( r.getUrl( ) );
                     config.addRemoteRepository( repo );
                 }
             }
 
             // Prevent duplicate repositories from showing up.
-            config.getRepositories().clear();
+            config.getRepositories( ).clear( );
 
             registry.removeSubset( KEY + ".repositories" );
         }
 
-        if ( !CollectionUtils.isEmpty( config.getRemoteRepositories() ) )
+        if ( !CollectionUtils.isEmpty( config.getRemoteRepositories( ) ) )
         {
-            List<RemoteRepositoryConfiguration> remoteRepos = config.getRemoteRepositories();
+            List<RemoteRepositoryConfiguration> remoteRepos = config.getRemoteRepositories( );
             for ( RemoteRepositoryConfiguration repo : remoteRepos )
             {
                 // [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
-                if ( StringUtils.isBlank( repo.getUsername() ) )
+                if ( StringUtils.isBlank( repo.getUsername( ) ) )
                 {
                     repo.setUsername( null );
                 }
 
-                if ( StringUtils.isBlank( repo.getPassword() ) )
+                if ( StringUtils.isBlank( repo.getPassword( ) ) )
                 {
                     repo.setPassword( null );
                 }
             }
         }
 
-        if ( !config.getProxyConnectors().isEmpty() )
+        if ( !config.getProxyConnectors( ).isEmpty( ) )
         {
             // Fix Proxy Connector Settings.
 
-            List<ProxyConnectorConfiguration> proxyConnectorList = new ArrayList<ProxyConnectorConfiguration>();
+            List<ProxyConnectorConfiguration> proxyConnectorList = new ArrayList<ProxyConnectorConfiguration>( );
             // Create a copy of the list to read from (to prevent concurrent modification exceptions)
-            proxyConnectorList.addAll( config.getProxyConnectors() );
+            proxyConnectorList.addAll( config.getProxyConnectors( ) );
             // Remove the old connector list.
-            config.getProxyConnectors().clear();
+            config.getProxyConnectors( ).clear( );
 
             for ( ProxyConnectorConfiguration connector : proxyConnectorList )
             {
                 // Fix policies
                 boolean connectorValid = true;
 
-                Map<String, String> policies = new HashMap<String, String>();
+                Map<String, String> policies = new HashMap<String, String>( );
                 // Make copy of policies
-                policies.putAll( connector.getPolicies() );
+                policies.putAll( connector.getPolicies( ) );
                 // Clear out policies
-                connector.getPolicies().clear();
+                connector.getPolicies( ).clear( );
 
                 // Work thru policies. cleaning them up.
-                for ( Entry<String, String> entry : policies.entrySet() )
+                for ( Entry<String, String> entry : policies.entrySet( ) )
                 {
-                    String policyId = entry.getKey();
-                    String setting = entry.getValue();
+                    String policyId = entry.getKey( );
+                    String setting = entry.getValue( );
 
                     // Upgrade old policy settings.
                     if ( "releases".equals( policyId ) || "snapshots".equals( policyId ) )
@@ -316,9 +317,9 @@ public class DefaultArchivaConfiguration
                     {
                         Policy policy = findPolicy( policyId );
                         // Does option exist?
-                        if ( !policy.getOptions().contains( setting ) )
+                        if ( !policy.getOptions( ).contains( setting ) )
                         {
-                            setting = policy.getDefaultOption();
+                            setting = policy.getDefaultOption( );
                         }
                         connector.addPolicy( policyId, setting );
                     }
@@ -337,12 +338,12 @@ public class DefaultArchivaConfiguration
 
             // Normalize the order fields in the proxy connectors.
             Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap =
-                config.getProxyConnectorAsMap();
+                config.getProxyConnectorAsMap( );
 
-            for ( List<ProxyConnectorConfiguration> connectors : proxyConnectorMap.values() )
+            for ( List<ProxyConnectorConfiguration> connectors : proxyConnectorMap.values( ) )
             {
                 // Sort connectors by order field.
-                Collections.sort( connectors, ProxyConnectorConfigurationOrderComparator.getInstance() );
+                Collections.sort( connectors, ProxyConnectorConfigurationOrderComparator.getInstance( ) );
 
                 // Normalize the order field values.
                 int order = 1;
@@ -404,7 +405,7 @@ public class DefaultArchivaConfiguration
         return ( prePolicies.containsKey( policyId ) || postPolicies.containsKey( policyId ) );
     }
 
-    private Registry readDefaultConfiguration()
+    private Registry readDefaultConfiguration( )
     {
         // if it contains some old configuration, remove it (Archiva 0.9)
         registry.removeSubset( KEY );
@@ -433,23 +434,23 @@ public class DefaultArchivaConfiguration
             section = baseSection;
             if ( section == null )
             {
-                section = createDefaultConfigurationFile();
+                section = createDefaultConfigurationFile( );
             }
         }
         else if ( baseSection != null )
         {
-            Collection<String> keys = baseSection.getKeys();
+            Collection<String> keys = baseSection.getKeys( );
             boolean foundList = false;
-            for ( Iterator<String> i = keys.iterator(); i.hasNext() && !foundList; )
+            for ( Iterator<String> i = keys.iterator( ); i.hasNext( ) && !foundList; )
             {
-                String key = i.next();
+                String key = i.next( );
 
                 // a little aggressive with the repositoryScanning and databaseScanning - should be no need to split
                 // that configuration
-                if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" )
-                    || key.startsWith( "networkProxies" ) || key.startsWith( "repositoryScanning" )
-                    || key.startsWith( "databaseScanning" ) || key.startsWith( "remoteRepositories" )
-                    || key.startsWith( "managedRepositories" ) || key.startsWith( "repositoryGroups" ) )
+                if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" ) || key.startsWith(
+                    "networkProxies" ) || key.startsWith( "repositoryScanning" ) || key.startsWith(
+                    "remoteRepositories" ) || key.startsWith( "managedRepositories" ) || key.startsWith(
+                    "repositoryGroups" ) )
                 {
                     foundList = true;
                 }
@@ -468,45 +469,45 @@ public class DefaultArchivaConfiguration
         escapeCronExpressions( configuration );
 
         // [MRM-661] Due to a bug in the modello registry writer, we need to take these out by hand. They'll be put back by the writer.
-        if ( configuration.getManagedRepositories().isEmpty() && section != null )
+        if ( configuration.getManagedRepositories( ).isEmpty( ) && section != null )
         {
             section.removeSubset( "managedRepositories" );
         }
-        if ( configuration.getRemoteRepositories().isEmpty() && section != null )
+        if ( configuration.getRemoteRepositories( ).isEmpty( ) && section != null )
         {
             section.removeSubset( "remoteRepositories" );
 
         }
-        if ( configuration.getProxyConnectors().isEmpty() && section != null )
+        if ( configuration.getProxyConnectors( ).isEmpty( ) && section != null )
         {
             section.removeSubset( "proxyConnectors" );
         }
-        if ( configuration.getNetworkProxies().isEmpty() && section != null )
+        if ( configuration.getNetworkProxies( ).isEmpty( ) && section != null )
         {
             section.removeSubset( "networkProxies" );
         }
-        if ( configuration.getLegacyArtifactPaths().isEmpty() && section != null )
+        if ( configuration.getLegacyArtifactPaths( ).isEmpty( ) && section != null )
         {
             section.removeSubset( "legacyArtifactPaths" );
         }
-        if ( configuration.getRepositoryGroups().isEmpty() && section != null )
+        if ( configuration.getRepositoryGroups( ).isEmpty( ) && section != null )
         {
             section.removeSubset( "repositoryGroups" );
         }
-        if ( configuration.getRepositoryScanning() != null )
+        if ( configuration.getRepositoryScanning( ) != null )
         {
-            if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() && section != null )
+            if ( configuration.getRepositoryScanning( ).getKnownContentConsumers( ).isEmpty( ) && section != null )
             {
                 section.removeSubset( "repositoryScanning.knownContentConsumers" );
             }
-            if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() && section != null )
+            if ( configuration.getRepositoryScanning( ).getInvalidContentConsumers( ).isEmpty( ) && section != null )
             {
                 section.removeSubset( "repositoryScanning.invalidContentConsumers" );
             }
         }
 
-        new ConfigurationRegistryWriter().write( configuration, section );
-        section.save();
+        new ConfigurationRegistryWriter( ).write( configuration, section );
+        section.save( );
 
         this.configuration = unescapeExpressions( configuration );
 
@@ -515,15 +516,15 @@ public class DefaultArchivaConfiguration
 
     private void escapeCronExpressions( Configuration configuration )
     {
-        for ( ManagedRepositoryConfiguration c : (List<ManagedRepositoryConfiguration>) configuration.getManagedRepositories() )
+        for ( ManagedRepositoryConfiguration c : (List<ManagedRepositoryConfiguration>) configuration.getManagedRepositories( ) )
         {
-            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
+            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression( ) ) );
         }
 
 
     }
 
-    private Registry createDefaultConfigurationFile()
+    private Registry createDefaultConfigurationFile( )
         throws RegistryException
     {
         // TODO: may not be needed under commons-configuration 1.4 - check
@@ -551,7 +552,7 @@ public class DefaultArchivaConfiguration
 
         ( (CommonsConfigurationRegistry) registry ).setProperties( contents );
 
-        registry.initialize();
+        registry.initialize( );
 
         for ( RegistryListener regListener : registryListeners )
         {
@@ -561,7 +562,7 @@ public class DefaultArchivaConfiguration
         triggerEvent( ConfigurationEvent.SAVED );
 
         Registry section = registry.getSection( KEY + ".user" );
-        return section == null ? new CommonsConfigurationRegistry( new BaseConfiguration() ) : section;
+        return section == null ? new CommonsConfigurationRegistry( new BaseConfiguration( ) ) : section;
     }
 
     /**
@@ -581,10 +582,10 @@ public class DefaultArchivaConfiguration
         try
         {
             // Check parent directory (if it is declared)
-            if ( file.getParentFile() != null )
+            if ( file.getParentFile( ) != null )
             {
                 // Check that directory exists
-                if ( ( file.getParentFile().exists() == false ) || ( file.getParentFile().isDirectory() == false ) )
+                if ( ( file.getParentFile( ).exists( ) == false ) || ( file.getParentFile( ).isDirectory( ) == false ) )
                 {
                     // Directory to file must exist for file to be created
                     return false;
@@ -596,7 +597,7 @@ public class DefaultArchivaConfiguration
         }
         catch ( IOException e )
         {
-            log.error( "Unable to create " + filetype + " file: " + e.getMessage(), e );
+            log.error( "Unable to create " + filetype + " file: " + e.getMessage( ), e );
             return false;
         }
     }
@@ -653,7 +654,7 @@ public class DefaultArchivaConfiguration
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
 
         this.postPolicies = componentContainer.buildMapWithRole( PostDownloadPolicy.class );
@@ -661,8 +662,8 @@ public class DefaultArchivaConfiguration
         // Resolve expressions in the userConfigFilename and altConfigFilename
         try
         {
-            ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
-            expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
+            ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator( );
+            expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource( ) );
             String userConfigFileNameSysProps = System.getProperty( "archiva.user.configFileName" );
             if ( StringUtils.isNotBlank( userConfigFileNameSysProps ) )
             {
@@ -673,7 +674,16 @@ public class DefaultArchivaConfiguration
                 userConfigFilename = expressionEvaluator.expand( userConfigFilename );
             }
             altConfigFilename = expressionEvaluator.expand( altConfigFilename );
-            loadConfiguration();
+            loadConfiguration( );
+            handleUpgradeConfiguration( );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            throw new RuntimeException( "failed during upgrade from previous version" + e.getMessage( ), e );
+        }
+        catch ( RegistryException e )
+        {
+            throw new RuntimeException( "failed during upgrade from previous version" + e.getMessage( ), e );
         }
         catch ( EvaluatorException e )
         {
@@ -683,18 +693,60 @@ public class DefaultArchivaConfiguration
         registry.addChangeListener( this );
     }
 
-    public void reload()
+    /**
+     * upgrade from 1.3
+     */
+    private void handleUpgradeConfiguration( )
+        throws RegistryException, IndeterminateConfigurationException
+    {
+
+        // remove database consumers
+        List<String> dbConsumers = Arrays.asList( "update-db-artifact", "update-db-repository-metadata" );
+        List<String> knowContentConsumers = new ArrayList<String>( );
+        for ( String knowContentConsumer : configuration.getRepositoryScanning( ).getKnownContentConsumers( ) )
+        {
+            if ( !dbConsumers.contains( knowContentConsumer ) )
+            {
+                knowContentConsumers.add( knowContentConsumer );
+            }
+        }
+
+        configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
+        save( configuration );
+
+        // ensure create-archiva-metadata is here
+        if ( !configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "create-archiva-metadata" ) )
+        {
+            knowContentConsumers =
+                new ArrayList<String>( configuration.getRepositoryScanning( ).getKnownContentConsumers( ) );
+            knowContentConsumers.add( "create-archiva-metadata" );
+            configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
+            save( configuration );
+        }
+
+        // ensure duplicate-artifacts is here
+        if ( !configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "duplicate-artifacts" ) )
+        {
+            knowContentConsumers =
+                new ArrayList<String>( configuration.getRepositoryScanning( ).getKnownContentConsumers( ) );
+            knowContentConsumers.add( "duplicate-artifacts" );
+            configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
+            save( configuration );
+        }
+    }
+
+    public void reload( )
     {
         this.configuration = null;
         try
         {
-            this.registry.initialize();
+            this.registry.initialize( );
         }
         catch ( RegistryException e )
         {
-            throw new ConfigurationRuntimeException( e.getMessage(), e );
+            throw new ConfigurationRuntimeException( e.getMessage( ), e );
         }
-        this.initialize();
+        this.initialize( );
     }
 
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
@@ -729,11 +781,11 @@ public class DefaultArchivaConfiguration
     private Configuration unescapeExpressions( Configuration config )
     {
         // TODO: for commons-configuration 1.3 only
-        for ( Iterator<ManagedRepositoryConfiguration> i = config.getManagedRepositories().iterator(); i.hasNext(); )
+        for ( Iterator<ManagedRepositoryConfiguration> i = config.getManagedRepositories( ).iterator( ); i.hasNext( ); )
         {
-            ManagedRepositoryConfiguration c = i.next();
-            c.setLocation( removeExpressions( c.getLocation() ) );
-            c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
+            ManagedRepositoryConfiguration c = i.next( );
+            c.setLocation( removeExpressions( c.getLocation( ) ) );
+            c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression( ) ) );
         }
 
         return config;
@@ -743,37 +795,37 @@ public class DefaultArchivaConfiguration
     {
         // additional check for [MRM-789], ensure that the location of the default repositories 
         // are not installed in the server installation        
-        for ( ManagedRepositoryConfiguration repo : (List<ManagedRepositoryConfiguration>) config.getManagedRepositories() )
+        for ( ManagedRepositoryConfiguration repo : (List<ManagedRepositoryConfiguration>) config.getManagedRepositories( ) )
         {
-            String repoPath = repo.getLocation();
+            String repoPath = repo.getLocation( );
             File repoLocation = new File( repoPath );
 
-            if ( repoLocation.exists() && repoLocation.isDirectory() && !repoPath.endsWith(
-                "data/repositories/" + repo.getId() ) )
+            if ( repoLocation.exists( ) && repoLocation.isDirectory( ) && !repoPath.endsWith(
+                "data/repositories/" + repo.getId( ) ) )
             {
-                repo.setLocation( repoPath + "/data/repositories/" + repo.getId() );
+                repo.setLocation( repoPath + "/data/repositories/" + repo.getId( ) );
             }
         }
 
         return config;
     }
 
-    public String getUserConfigFilename()
+    public String getUserConfigFilename( )
     {
         return userConfigFilename;
     }
 
-    public String getAltConfigFilename()
+    public String getAltConfigFilename( )
     {
         return altConfigFilename;
     }
 
-    public boolean isDefaulted()
+    public boolean isDefaulted( )
     {
         return this.isConfigurationDefaulted;
     }
 
-    public Registry getRegistry()
+    public Registry getRegistry( )
     {
         return registry;
     }
