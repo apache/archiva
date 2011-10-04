@@ -629,6 +629,9 @@ public class ArchivaConfigurationTest
 
         assertTrue(
             configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "create-archiva-metadata" ) );
+
+        assertTrue(
+            configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "duplicate-artifacts" ) );
     }
 
     @Test
@@ -794,8 +797,7 @@ public class ArchivaConfigurationTest
         userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-remove-central" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-remove-central" );
 
         archivaConfiguration.reload( );
 
@@ -818,8 +820,7 @@ public class ArchivaConfigurationTest
         configuration.removeManagedRepository( managedRepository );
         assertTrue( configuration.getManagedRepositories( ).isEmpty( ) );
 
-        ProxyConnectorConfiguration proxyConnector =
-            (ProxyConnectorConfiguration) configuration.getProxyConnectors( ).get( 0 );
+        ProxyConnectorConfiguration proxyConnector = configuration.getProxyConnectors( ).get( 0 );
         assertNotNull( proxyConnector );
         configuration.removeProxyConnector( proxyConnector );
         assertTrue( configuration.getProxyConnectors( ).isEmpty( ) );
@@ -829,24 +830,25 @@ public class ArchivaConfigurationTest
         configuration.removeNetworkProxy( networkProxy );
         assertTrue( configuration.getNetworkProxies( ).isEmpty( ) );
 
-        LegacyArtifactPath path = (LegacyArtifactPath) configuration.getLegacyArtifactPaths( ).get( 0 );
+        LegacyArtifactPath path = configuration.getLegacyArtifactPaths( ).get( 0 );
         assertNotNull( path );
         configuration.removeLegacyArtifactPath( path );
         assertTrue( configuration.getLegacyArtifactPaths( ).isEmpty( ) );
 
         RepositoryScanningConfiguration scanning = configuration.getRepositoryScanning( );
-        String consumer = (String) scanning.getKnownContentConsumers( ).get( 0 );
+        String consumer = scanning.getKnownContentConsumers( ).get( 0 );
         assertNotNull( consumer );
         scanning.removeKnownContentConsumer( consumer );
-        assertTrue( scanning.getKnownContentConsumers( ).isEmpty( ) );
-        consumer = (String) scanning.getInvalidContentConsumers( ).get( 0 );
+        // default values
+        assertFalse( scanning.getKnownContentConsumers( ).isEmpty( ) );
+        consumer = scanning.getInvalidContentConsumers( ).get( 0 );
         assertNotNull( consumer );
         scanning.removeInvalidContentConsumer( consumer );
         assertTrue( scanning.getInvalidContentConsumers( ).isEmpty( ) );
 
         archivaConfiguration.save( configuration );
 
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-read-saved" );
+        archivaConfiguration = lookup( ArchivaConfiguration.class, "test-read-saved" );
         configuration = archivaConfiguration.getConfiguration( );
         assertNull( configuration.getRemoteRepositoriesAsMap( ).get( "central" ) );
         assertTrue( configuration.getRepositoryGroups( ).isEmpty( ) );
@@ -855,7 +857,7 @@ public class ArchivaConfigurationTest
         assertNull( configuration.getNetworkProxiesAsMap( ).get( "proxy" ) );
         assertTrue( configuration.getLegacyArtifactPaths( ).isEmpty( ) );
         scanning = configuration.getRepositoryScanning( );
-        assertTrue( scanning.getKnownContentConsumers( ).isEmpty( ) );
+        assertFalse( scanning.getKnownContentConsumers( ).isEmpty( ) );
         assertTrue( scanning.getInvalidContentConsumers( ).isEmpty( ) );
     }
 

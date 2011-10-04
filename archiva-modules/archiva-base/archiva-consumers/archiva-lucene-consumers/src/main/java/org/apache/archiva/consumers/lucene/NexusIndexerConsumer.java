@@ -40,6 +40,8 @@ import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -52,6 +54,8 @@ import java.util.List;
 /**
  * Consumer for indexing the repository to provide search and IDE integration features.
  */
+@Service("knownRepositoryContentConsumer#index-content")
+@Scope("prototype")
 public class NexusIndexerConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener

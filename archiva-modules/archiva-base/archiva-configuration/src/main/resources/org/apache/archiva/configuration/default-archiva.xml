@@ -115,38 +115,21 @@
       </fileType>
     </fileTypes>
     <knownContentConsumers>
-      <knownContentConsumer>update-db-artifact</knownContentConsumer>
       <knownContentConsumer>create-missing-checksums</knownContentConsumer>
-      <knownContentConsumer>update-db-repository-metadata</knownContentConsumer>
       <knownContentConsumer>validate-checksum</knownContentConsumer>
       <knownContentConsumer>validate-signature</knownContentConsumer>
       <knownContentConsumer>index-content</knownContentConsumer>
       <knownContentConsumer>auto-remove</knownContentConsumer>
       <knownContentConsumer>auto-rename</knownContentConsumer>
       <knownContentConsumer>metadata-updater</knownContentConsumer>
+      <knownContentConsumer>create-archiva-metadata</knownContentConsumer>
+      <knownContentConsumer>duplicate-artifacts</knownContentConsumer>
       <!--knownContentConsumer>repository-purge</knownContentConsumer-->
     </knownContentConsumers>
     <invalidContentConsumers>
       <invalidContentConsumer>update-db-bad-content</invalidContentConsumer>
     </invalidContentConsumers>
   </repositoryScanning>
-
-  <databaseScanning>
-    <cronExpression>0 0 * * * ?</cronExpression>
-    <unprocessedConsumers>
-      <unprocessedConsumer>index-artifact</unprocessedConsumer>
-      <unprocessedConsumer>update-db-project</unprocessedConsumer>
-      <unprocessedConsumer>validate-repository-metadata</unprocessedConsumer>
-      <unprocessedConsumer>index-archive-toc</unprocessedConsumer>
-      <unprocessedConsumer>update-db-bytecode-stats</unprocessedConsumer>
-      <unprocessedConsumer>index-public-methods</unprocessedConsumer>
-    </unprocessedConsumers>
-    <cleanupConsumers>
-      <cleanupConsumer>not-present-remove-db-artifact</cleanupConsumer>
-      <cleanupConsumer>not-present-remove-db-project</cleanupConsumer>
-      <cleanupConsumer>not-present-remove-indexed</cleanupConsumer>
-    </cleanupConsumers>
-  </databaseScanning>
 
   <webapp>
     <ui>

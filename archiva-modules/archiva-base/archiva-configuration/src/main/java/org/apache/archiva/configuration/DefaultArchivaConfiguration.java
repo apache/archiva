@@ -29,6 +29,7 @@ import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PostDownloadPolicy;
 import org.apache.archiva.policies.PreDownloadPolicy;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.io.FileUtils;
@@ -528,7 +529,6 @@ public class DefaultArchivaConfiguration
         throws RegistryException
     {
         // TODO: may not be needed under commons-configuration 1.4 - check
-        // UPDATE: Upgrading to commons-configuration 1.4 breaks half the unit tests. 2007-10-11 (joakime)
 
         String contents = "<configuration />";
 
@@ -700,39 +700,46 @@ public class DefaultArchivaConfiguration
         throws RegistryException, IndeterminateConfigurationException
     {
 
-        // remove database consumers
         List<String> dbConsumers = Arrays.asList( "update-db-artifact", "update-db-repository-metadata" );
-        List<String> knowContentConsumers = new ArrayList<String>( );
-        for ( String knowContentConsumer : configuration.getRepositoryScanning( ).getKnownContentConsumers( ) )
-        {
-            if ( !dbConsumers.contains( knowContentConsumer ) )
-            {
-                knowContentConsumers.add( knowContentConsumer );
-            }
-        }
 
-        configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
-        save( configuration );
+        // remove database consumers  if here
+        List<String> intersec =
+            ListUtils.intersection( dbConsumers, configuration.getRepositoryScanning( ).getKnownContentConsumers( ) );
+
+        if ( !intersec.isEmpty( ) )
+        {
+
+            List<String> knowContentConsumers = new ArrayList<String>( );
+            for ( String knowContentConsumer : configuration.getRepositoryScanning( ).getKnownContentConsumers( ) )
+            {
+                if ( !dbConsumers.contains( knowContentConsumer ) )
+                {
+                    knowContentConsumers.add( knowContentConsumer );
+                }
+            }
+
+            configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
+        }
 
         // ensure create-archiva-metadata is here
         if ( !configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "create-archiva-metadata" ) )
         {
-            knowContentConsumers =
+            List<String> knowContentConsumers =
                 new ArrayList<String>( configuration.getRepositoryScanning( ).getKnownContentConsumers( ) );
             knowContentConsumers.add( "create-archiva-metadata" );
             configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
-            save( configuration );
         }
 
         // ensure duplicate-artifacts is here
         if ( !configuration.getRepositoryScanning( ).getKnownContentConsumers( ).contains( "duplicate-artifacts" ) )
         {
-            knowContentConsumers =
+            List<String> knowContentConsumers =
                 new ArrayList<String>( configuration.getRepositoryScanning( ).getKnownContentConsumers( ) );
             knowContentConsumers.add( "duplicate-artifacts" );
             configuration.getRepositoryScanning( ).setKnownContentConsumers( knowContentConsumers );
-            save( configuration );
         }
+        // save ??
+        //save( configuration );
     }
 
     public void reload( )
