@@ -21,7 +21,7 @@ package org.apache.archiva.admin.model;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class RepositoryAdminException
     extends Exception

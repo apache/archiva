@@ -35,7 +35,7 @@ import javax.inject.Named;
  * Check if already exists.
  *
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 @Service
 public class RepositoryCommonValidator

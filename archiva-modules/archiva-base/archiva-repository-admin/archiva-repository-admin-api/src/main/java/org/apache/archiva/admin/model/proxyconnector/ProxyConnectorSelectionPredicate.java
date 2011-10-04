@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class ProxyConnectorSelectionPredicate
     implements Predicate

@@ -26,7 +26,7 @@ import org.apache.maven.index.updater.IndexUpdater;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class DownloadRemoteIndexTaskRequest
 {

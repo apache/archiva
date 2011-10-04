@@ -104,7 +104,7 @@ public class SearchResults
 
     /**
      * @return
-     * @since 1.4
+     * @since 1.4-M1
      */
     public int getReturnedHitsCount()
     {
@@ -113,7 +113,7 @@ public class SearchResults
 
     /**
      * @param returnedHitsCount
-     * @since 1.4
+     * @since 1.4-M1
      */
     public void setReturnedHitsCount( int returnedHitsCount )
     {

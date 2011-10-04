@@ -99,42 +99,42 @@ public class SearchAction
     /**
      * contains osgi metadata Bundle-Version if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleVersion;
 
     /**
      * contains osgi metadata Bundle-SymbolicName if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleSymbolicName;
 
     /**
      * contains osgi metadata Export-Package if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleExportPackage;
 
     /**
      * contains osgi metadata import package if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleImportPackage;
 
     /**
      * contains osgi metadata name if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleName;
 
     /**
      * contains osgi metadata Export-Service if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleExportService;
 

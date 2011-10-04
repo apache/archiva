@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class FileTypeUtils
 {

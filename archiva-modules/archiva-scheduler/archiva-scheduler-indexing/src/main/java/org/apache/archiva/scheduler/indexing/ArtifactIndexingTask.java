@@ -52,7 +52,7 @@ public class ArtifactIndexingTask
     private boolean executeOnEntireRepo = true;
 
     /**
-     * @since 1.4
+     * @since 1.4-M1
      */
     private boolean onlyUpdate = false;
 

@@ -22,7 +22,7 @@ import org.codehaus.redback.rest.services.RedbackRequestInformation;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class HttpContextThreadLocal
 {

@@ -20,7 +20,7 @@ package org.apache.archiva.scheduler.indexing;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class DownloadRemoteIndexException
     extends Exception

@@ -34,7 +34,7 @@ import java.util.List;
  * abstract class with common utilities methods
  *
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public abstract class AbstractRestService
 {

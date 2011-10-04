@@ -24,7 +24,7 @@ import java.util.Comparator;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class RepositoryComparator
     implements Comparator<AbstractRepository>

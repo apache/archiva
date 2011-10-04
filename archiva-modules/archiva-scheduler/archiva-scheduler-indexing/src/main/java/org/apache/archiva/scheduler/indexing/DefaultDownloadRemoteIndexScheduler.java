@@ -55,7 +55,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 @Service( "downloadRemoteIndexScheduler#default" )
 public class DefaultDownloadRemoteIndexScheduler

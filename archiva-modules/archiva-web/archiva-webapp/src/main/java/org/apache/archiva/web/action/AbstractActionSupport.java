@@ -217,7 +217,7 @@ public abstract class AbstractActionSupport
     /**
      * dummy information for audit events
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private static class SimpleUser
         implements User

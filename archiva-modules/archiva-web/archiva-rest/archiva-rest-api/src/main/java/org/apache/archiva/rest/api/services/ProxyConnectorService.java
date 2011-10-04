@@ -35,7 +35,7 @@ import java.util.List;
  * <b>No update method for changing source and target here as id is : sourceRepoId and targetRepoId, use delete then add.</b>
  *
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 @Path( "/proxyConnectorService/" )
 public interface ProxyConnectorService

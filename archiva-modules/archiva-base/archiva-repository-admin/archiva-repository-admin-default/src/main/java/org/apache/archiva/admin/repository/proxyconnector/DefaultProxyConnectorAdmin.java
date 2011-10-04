@@ -45,7 +45,7 @@ import java.util.Map;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 @Service( "proxyConnectorAdmin#default" )
 public class DefaultProxyConnectorAdmin

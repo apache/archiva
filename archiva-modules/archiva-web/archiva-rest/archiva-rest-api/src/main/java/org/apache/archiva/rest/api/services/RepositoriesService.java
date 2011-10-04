@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 @Path( "/repositoriesService/" )
 public interface RepositoriesService

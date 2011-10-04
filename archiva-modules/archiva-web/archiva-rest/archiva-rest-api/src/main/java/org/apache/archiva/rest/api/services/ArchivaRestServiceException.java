@@ -20,7 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class ArchivaRestServiceException
     extends Exception

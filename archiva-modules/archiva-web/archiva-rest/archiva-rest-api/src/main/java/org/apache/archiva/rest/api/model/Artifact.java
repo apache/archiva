@@ -56,70 +56,70 @@ public class Artifact
     /**
      * contains osgi metadata Bundle-Version if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleVersion;
 
     /**
      * contains osgi metadata Bundle-SymbolicName if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleSymbolicName;
 
     /**
      * contains osgi metadata Export-Package if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleExportPackage;
 
     /**
      * contains osgi metadata Export-Service if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleExportService;
 
     /**
      * contains osgi metadata Bundle-Description if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleDescription;
 
     /**
      * contains osgi metadata Bundle-Name if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleName;
 
     /**
      * contains osgi metadata Bundle-License if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleLicense;
 
     /**
      * contains osgi metadata Bundle-DocURL if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleDocUrl;
 
     /**
      * contains osgi metadata Import-Package if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleImportPackage;
 
     /**
      * contains osgi metadata Require-Bundle if available
      *
-     * @since 1.4
+     * @since 1.4-M1
      */
     private String bundleRequireBundle;
 

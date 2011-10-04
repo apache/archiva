@@ -22,7 +22,7 @@ import org.codehaus.plexus.redback.users.User;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.4-M1
  */
 public class AuditInformation
 {
