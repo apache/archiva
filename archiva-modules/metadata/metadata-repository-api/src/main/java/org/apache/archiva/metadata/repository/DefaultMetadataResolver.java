@@ -84,12 +84,6 @@ public class DefaultMetadataResolver
     @Inject
     private List<RepositoryListener> listeners;
 
-    @PostConstruct
-    private void initialize()
-    {
-        // no op
-    }
-
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
                                                          String projectId, String projectVersion )
         throws MetadataResolutionException

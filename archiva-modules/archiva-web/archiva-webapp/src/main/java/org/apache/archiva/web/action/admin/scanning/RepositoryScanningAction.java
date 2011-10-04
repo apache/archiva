@@ -305,12 +305,6 @@ public class RepositoryScanningAction
         return SUCCESS;
     }
 
-    private FileType findFileType( String id )
-        throws RepositoryAdminException
-    {
-        return getArchivaAdministration().getFileType( id );
-    }
-
     private boolean isValidFiletypeCommand()
     {
         if ( StringUtils.isBlank( getFileTypeId() ) )

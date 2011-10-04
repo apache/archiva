@@ -191,13 +191,6 @@ public class ConfigureNetworkProxyAction
         return getNetworkProxyAdmin().getNetworkProxy( id );
     }
 
-    private void removeNetworkProxy( String id )
-        throws RepositoryAdminException
-    {
-        getNetworkProxyAdmin().deleteNetworkProxy( id, getAuditInformation() );
-    }
-
-
     private void trimAllRequestParameterValues()
     {
         if ( StringUtils.isNotEmpty( proxy.getId() ) )
