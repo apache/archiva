@@ -20,8 +20,11 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.junit.Test;
 
 import java.io.File;
@@ -106,36 +109,72 @@ public class CopyArtifactTest
     public void copyToAnEmptyRepo( )
         throws Exception
     {
-        initSourceTargetRepo( );
+        try
+        {
+            initSourceTargetRepo( );
 
-        // START SNIPPET: copy-artifact
-        // configure the artifact you want to copy
-        // if package ommited default will be jar
-        ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest( );
-        artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
-        artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
-        artifactTransferRequest.setVersion( "2.2.2" );
-        artifactTransferRequest.setRepositoryId( SOURCE_REPO_ID );
-        artifactTransferRequest.setTargetRepositoryId( TARGET_REPO_ID );
-        // retrieve the service
-        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
-        // copy the artifact
-        Boolean res = repositoriesService.copyArtifact( artifactTransferRequest );
-        // END SNIPPET: copy-artifact
-        assertTrue( res );
+            // START SNIPPET: copy-artifact
+            // configure the artifact you want to copy
+            // if package ommited default will be jar
+            ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest( );
+            artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
+            artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
+            artifactTransferRequest.setVersion( "2.2.2" );
+            artifactTransferRequest.setRepositoryId( SOURCE_REPO_ID );
+            artifactTransferRequest.setTargetRepositoryId( TARGET_REPO_ID );
+            // retrieve the service
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+            // copy the artifact
+            Boolean res = repositoriesService.copyArtifact( artifactTransferRequest );
+            // END SNIPPET: copy-artifact
+            assertTrue( res );
 
-        String targetRepoPath =
-            getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ).getLocation( );
+            String targetRepoPath = getManagedRepositoriesService( authorizationHeader ).getManagedRepository(
+                TARGET_REPO_ID ).getLocation( );
 
-        File artifact = new File( targetRepoPath,
-                                  "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
-        assertTrue( artifact.exists( ) );
-        File pom = new File( targetRepoPath,
-                             "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.pom" );
+            File artifact = new File( targetRepoPath,
+                                      "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
+            assertTrue( artifact.exists( ) );
+            File pom = new File( targetRepoPath,
+                                 "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.pom" );
 
-        assertTrue( "not exists " + pom.getPath( ), pom.exists( ) );
-        // TODO find a way to force metadata generation and test it !!
-        clean( );
+            assertTrue( "not exists " + pom.getPath( ), pom.exists( ) );
+            // TODO find a way to force metadata generation and test it !!
+        }
+        finally
+        {
+            clean( );
+        }
+    }
+
+    @Test( expected = ServerWebApplicationException.class )
+    public void copyNonExistingArtifact( )
+        throws Throwable
+    {
+        try
+        {
+            initSourceTargetRepo( );
+
+            ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest( );
+            artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
+            artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
+            artifactTransferRequest.setVersion( "3.0.6552" );
+            artifactTransferRequest.setRepositoryId( SOURCE_REPO_ID );
+            artifactTransferRequest.setTargetRepositoryId( TARGET_REPO_ID );
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+            Boolean res = repositoriesService.copyArtifact( artifactTransferRequest );
+        }
+        catch ( ServerWebApplicationException e )
+        {
+            assertTrue( StringUtils.contains( e.getMessage( ), "cannot find artifact" ) );
+            throw e;
+        }
+        finally
+        {
+            clean( );
+        }
+
     }
 
     //@Test
