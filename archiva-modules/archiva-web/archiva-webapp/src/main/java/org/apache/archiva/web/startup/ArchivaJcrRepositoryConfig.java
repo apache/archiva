@@ -44,7 +44,7 @@ public class ArchivaJcrRepositoryConfig
         {
             String resourcePath = "org/apache/archiva/repository.xml";
             LoggerFactory.getLogger( ArchivaJcrRepositoryConfig.class ).info(
-                "now repository.xml file in path {} so use default from resources path {}", file, resourcePath );
+                "no repository.xml file in path {} so use default from resources path {}", file, resourcePath );
             // use bundled repository.xml
             return RepositoryConfig.create(
                 Thread.currentThread( ).getContextClassLoader( ).getResourceAsStream( resourcePath ), home );
