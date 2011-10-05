@@ -38,9 +38,11 @@
   <bean id="jcr-repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown" lazy-init="true">
     <constructor-arg ref="jcr-config"/>
   </bean>
-  <bean id="jcr-config" class="org.apache.archiva.web.startup.ArchivaJcrRepositoryConfig" factory-method="create">
+
+  <bean id="jcr-config" class="org.apache.archiva.metadata.repository.jcr.ArchivaJcrRepositoryConfig" factory-method="create">
     <constructor-arg value="${appserver.base}/conf/repository.xml"/>
     <constructor-arg value="${appserver.base}/jcr"/>
   </bean>
+
 
 </beans>

@@ -1,4 +1,4 @@
-package org.apache.archiva.web.startup;
+package org.apache.archiva.metadata.repository.jcr;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -43,7 +43,7 @@ public class ArchivaJcrRepositoryConfig
         File configurationFile = new File( file );
         if ( !configurationFile.exists( ) )
         {
-            String resourcePath = "org/apache/archiva/repository.xml";
+            String resourcePath = "org/apache/archiva/metadata/repository/jcr/repository.xml";
             LoggerFactory.getLogger( ArchivaJcrRepositoryConfig.class ).info(
                 "no repository.xml file in path {} so use default from resources path {}", file, resourcePath );
             // use bundled repository.xml
