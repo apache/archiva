@@ -30,8 +30,6 @@
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
         init-method="initialize"/>
 
-  <alias name="repositorySessionFactory#file" alias="repositorySessionFactory"/>
-
   <!--
   TODO olamy check user agent used in wagon !!
   <bean name="wagon#http" class="org.apache.maven.wagon.providers.http.LightweightHttpWagon" scope="prototype">
@@ -69,7 +67,7 @@
 
   <alias name="repositoryStatisticsManager#default" alias="repositoryStatisticsManager"/>
   <!-- TODO olamy need to find a more dynamic way if using jcr impl -->
-  <alias name="repositorySessionFactory#file" alias="repositorySessionFactory"/>
+  <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
   <!-- Web Services : Administration Service -->
   <bean name="administrationService" lazy-init="true" scope="singleton"
         class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
