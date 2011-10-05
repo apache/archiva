@@ -103,24 +103,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-jcr</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rbac-cached</artifactId>
       <scope>test</scope>
