@@ -43,19 +43,6 @@
     <url-pattern>/feeds/*</url-pattern>
   </servlet-mapping>
 
-  <servlet>
-    <servlet-name>ShutdownServlet</servlet-name>
-    <servlet-class>org.apache.archiva.web.rss.ShutdowJackrabbitServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>ShutdownServlet</servlet-name>
-    <url-pattern>/shutdown/*</url-pattern>
-  </servlet-mapping>
-
-
-
-
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>

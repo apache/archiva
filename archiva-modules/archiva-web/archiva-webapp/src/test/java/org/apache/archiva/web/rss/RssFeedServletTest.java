@@ -73,7 +73,6 @@ public class RssFeedServletTest
         RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
             "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
-        //client.newInvocation( "http://localhost/shutdown/foo" );
     }
 
     public void testRequestNewArtifactsInRepo()
@@ -95,7 +94,6 @@ public class RssFeedServletTest
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
 
-        //client.newInvocation( "http://localhost/shutdown/foo" );
     }
 
     public void testRequestNewVersionsOfArtifact()
@@ -116,7 +114,6 @@ public class RssFeedServletTest
         assertEquals( RssFeedServlet.MIME_TYPE, response.getHeaderField( "CONTENT-TYPE" ) );
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
-        //client.newInvocation( "http://localhost/shutdown/foo" );
     }
 
     public void XXX_testInvalidRequest()
