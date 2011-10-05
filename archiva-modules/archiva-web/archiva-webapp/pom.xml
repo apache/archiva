@@ -459,8 +459,19 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-file</artifactId>
+      <artifactId>metadata-store-jcr</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.velocity</groupId>
@@ -554,6 +565,7 @@
             <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
             <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
             <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
+            <basedir>${basedir}</basedir>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -904,8 +916,19 @@
         <!-- TODO: Bug in the Tomcat plugin - it doesn't seem to respect runtime dependencies, so we redeclare it as compile -->
         <dependency>
           <groupId>org.apache.archiva</groupId>
-          <artifactId>metadata-store-file</artifactId>
+          <artifactId>metadata-store-jcr</artifactId>
           <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.jackrabbit</groupId>
+          <artifactId>jackrabbit-core</artifactId>
+          <scope>compile</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>commons-logging</groupId>
+              <artifactId>commons-logging</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
       </dependencies>
     </profile>

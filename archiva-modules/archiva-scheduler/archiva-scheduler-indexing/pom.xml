@@ -104,8 +104,20 @@
 
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-file</artifactId>
+      <artifactId>metadata-store-jcr</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -151,6 +163,7 @@
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <basedir>${basedir}</basedir>
           </systemPropertyVariables>
         </configuration>
       </plugin>

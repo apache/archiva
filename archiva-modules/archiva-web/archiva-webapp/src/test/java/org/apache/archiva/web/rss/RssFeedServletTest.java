@@ -28,6 +28,8 @@ import com.meterware.servletunit.ServletUnitClient;
 import junit.framework.TestCase;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.jackrabbit.core.RepositoryImpl;
+import org.apache.jackrabbit.core.util.RepositoryLock;
 
 
 import java.io.File;
@@ -67,9 +69,11 @@ public class RssFeedServletTest
     public void testRetrieveServlet()
         throws Exception
     {
+
         RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
             "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
+        //client.newInvocation( "http://localhost/shutdown/foo" );
     }
 
     public void testRequestNewArtifactsInRepo()
@@ -90,6 +94,8 @@ public class RssFeedServletTest
         assertEquals( RssFeedServlet.MIME_TYPE, response.getHeaderField( "CONTENT-TYPE" ) );
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        //client.newInvocation( "http://localhost/shutdown/foo" );
     }
 
     public void testRequestNewVersionsOfArtifact()
@@ -110,6 +116,7 @@ public class RssFeedServletTest
         assertEquals( RssFeedServlet.MIME_TYPE, response.getHeaderField( "CONTENT-TYPE" ) );
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
+        //client.newInvocation( "http://localhost/shutdown/foo" );
     }
 
     public void XXX_testInvalidRequest()

@@ -43,12 +43,24 @@
     <url-pattern>/feeds/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>ShutdownServlet</servlet-name>
+    <servlet-class>org.apache.archiva.web.rss.ShutdowJackrabbitServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ShutdownServlet</servlet-name>
+    <url-pattern>/shutdown/*</url-pattern>
+  </servlet-mapping>
+
+
+
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      classpath*:/spring-context-rss-servlet.xml
       classpath*:/META-INF/spring-context.xml
+      classpath*:/spring-context-rss-servlet.xml
     </param-value>
   </context-param>
 

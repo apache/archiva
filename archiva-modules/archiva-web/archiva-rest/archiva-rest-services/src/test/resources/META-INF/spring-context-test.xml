@@ -62,4 +62,13 @@
     <property name="executor" ref="taskExecutor#repository-scanning"/>
     <property name="queue" ref="taskQueue#repository-scanning"/>
   </bean>
+
+  <bean id="repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown">
+    <constructor-arg ref="config"/>
+  </bean>
+  <bean id="config" class="org.apache.jackrabbit.core.config.RepositoryConfig" factory-method="create">
+    <constructor-arg value="${basedir}/src/test/repository.xml"/>
+    <constructor-arg value="${appserver.base}/jcr"/>
+  </bean>
+
 </beans>

@@ -51,5 +51,9 @@
     </property>
   </bean>
 
+  <bean id="jcr-config" class="org.apache.jackrabbit.core.config.RepositoryConfig" factory-method="create">
+    <constructor-arg value="${basedir}/appserver-base/conf/repository.xml"/>
+    <constructor-arg value="${appserver.base}/jcr"/>
+  </bean>
 
 </beans>
