@@ -35,8 +35,4 @@
   <bean name="archivaConfiguration#test" class="org.apache.archiva.configuration.TestConfiguration" />
   <alias name="archivaConfiguration#test" alias="archivaConfiguration#default" />
 
-  <bean id="jcr-config" class="org.apache.jackrabbit.core.config.RepositoryConfig" factory-method="create">
-    <constructor-arg value="${basedir}/appserver-base/conf/repository.xml"/>
-    <constructor-arg value="${appserver.base}/jcr"/>
-  </bean>
 </beans>
