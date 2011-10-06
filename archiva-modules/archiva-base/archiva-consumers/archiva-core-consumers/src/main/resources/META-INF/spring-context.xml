@@ -30,19 +30,4 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.consumers.core"/>
 
-  <bean id="artifactMissingChecksumsConsumer" class="org.apache.archiva.consumers.core.ArtifactMissingChecksumsConsumer" scope="prototype">
-   <constructor-arg>
-     <value>create-missing-checksums</value>
-   </constructor-arg>
-   <constructor-arg>
-     <value>Create Missing and/or Fix Invalid Checksums (.sha1, .md5)</value>
-   </constructor-arg>
-   <constructor-arg>
-     <ref bean="archivaConfiguration"/>
-   </constructor-arg>
-   <constructor-arg>
-     <ref bean="fileTypes"/>
-   </constructor-arg>
-  </bean>
-  <alias name="artifactMissingChecksumsConsumer" alias="knownRepositoryContentConsumer#artifact-missing-checksums-consumer"/>
 </beans>
