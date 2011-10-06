@@ -4,7 +4,7 @@
  Maria Odea Ching
  Olivier Lamy
  ------
- 2011-09-29
+ 2011-10-06
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -29,8 +29,8 @@
 
 Understanding Consumers in Apache Archiva
 
- Archiva makes use of the concept of consumers. Consumers are components which consumes or processes an artifact. There are 2 types
- of consumers in Archiva: repository content consumers and database consumers. 
+ Archiva makes use of the concept of consumers. Consumers are components which consumes or processes an artifact. There is on type
+ of consumers in Archiva: repository content consumers.
 
 * Repository Content Consumers
   
@@ -49,8 +49,10 @@ Understanding Consumers in Apache Archiva
   * <metadata-updater> - Updates artifact metadata files depending on the content of the repository.  
   
   * <repository-purge> - Removes old snapshots from the repository either by the number of days old or by the retention count.
-  
-  * <update-db-artifact> - Adds the artifact (in the form of ArchivaArtifact) to the database.
-  
-  * <validate-checksums> - Validates the checksum files of the artifact.  
+
+  * <validate-checksums> - Validates the checksum files of the artifact.
+
+  * <create-archiva-metadata> - Take an artifact off of disk and put it into the metadata repository.
+
+  * <duplicate-artifacts> - Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.
   

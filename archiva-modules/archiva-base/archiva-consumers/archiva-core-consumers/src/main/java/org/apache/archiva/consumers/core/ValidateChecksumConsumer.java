@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @version $Id$
  */
-@Service( "knownRepositoryContentConsumer#validate-checksum" )
+@Service( "knownRepositoryContentConsumer#validate-checksums" )
 @Scope( "prototype" )
 public class ValidateChecksumConsumer
     extends AbstractMonitoredConsumer
