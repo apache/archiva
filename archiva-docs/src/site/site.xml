@@ -57,10 +57,11 @@
         <item name="Installing as a WAR"     href="/adminguide/webapp.html" />
         <item name="Upgrading to a New Version"     href="/adminguide/upgrade.html" />
       </item>
-      <item name="Databases"                 href="/adminguide/databases.html" />
-      <item name="Security"                  href="/adminguide/security.html" collapse="true">
-        <item name="Roles"                   href="/adminguide/roles.html" />
-        <item name="Customising"             href="/adminguide/customising-security.html" />
+      <item name="Databases"                    href="/adminguide/databases.html" />
+      <item name="Repositories Content Storage" href="/adminguide/repositories-content-storage.html"/>
+      <item name="Security"                     href="/adminguide/security.html" collapse="true">
+        <item name="Roles"                      href="/adminguide/roles.html" />
+        <item name="Customising"                href="/adminguide/customising-security.html" />
 <!-- TODO: for a future version
         <item name="Using LDAP"              href="/adminguide/ldap.html" />
 -->

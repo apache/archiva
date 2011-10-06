@@ -45,6 +45,8 @@ System Administrators Guide to Apache Archiva
 
     * {{{./web-services.html} Archiva Web Services}}
 
+    * {{{./repositories-content-storage.html} Repositories Content Storage}}
+
 
     []
 
