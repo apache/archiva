@@ -30,6 +30,8 @@ import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -43,6 +45,8 @@ import java.util.List;
  *
  * @version $Id$
  */
+@Service("knownRepositoryContentConsumer#create-missing-checksums")
+@Scope("prototype")
 public class ArtifactMissingChecksumsConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
