@@ -20,6 +20,7 @@
 <!DOCTYPE Repository PUBLIC "-//The Apache Software Foundation//DTD Jackrabbit 1.6//EN"
     "http://jackrabbit.apache.org/dtd/repository-1.6.dtd">
 
+<!-- START SNIPPET: default-repository -->
 <Repository>
   <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
     <param name="path" value="${rep.home}/repository"/>
@@ -46,3 +47,4 @@
     <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.BundleFsPersistenceManager"/>
   </Versioning>
 </Repository>
+<!-- END SNIPPET: default-repository -->
