@@ -28,7 +28,7 @@ Users Guide
 
     * {{{./searching.html} Searching Archiva repositories}}
 
-    * {{{./find-artifact.html} Identifying an unknown artifact by comparing the repository checksum database}}
+    * {{{./find-artifact.html} Identifying an unknown artifact by comparing the repository checksum}}
 
     * {{{./using-repository.html} Using Archiva as a repository for Maven, Ivy, etc.}}
 

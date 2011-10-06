@@ -72,7 +72,7 @@ http://svn.apache.org/repos/asf/archiva/tags/archiva-1.2/archiva-modules/archiva
   the last \<argument\> is where you set the user's password.
 
   After configuring the pom, you can now run the sample client by executing <<mvn exec:java>> in the command-line. You should be
-  able to see the list of managed and remote repositories, the list of database and repository consumers and more printed on the
+  able to see the list of managed and remote repositories, the list of repository consumers and more printed on the
   command-line.
 
 * Administration Service
@@ -82,12 +82,6 @@ http://svn.apache.org/repos/asf/archiva/tags/archiva-1.2/archiva-modules/archiva
   The Administration Service exposes the following methods:
 
   [[1]] Boolean executeRepositoryScanner( String repoId ) - triggers the repository scanner to scan the specified repository.
-
-  [[2]] Boolean executeDatabaseScanner()  - triggers the database scanner to be executed.
-
-  [[3]] List\<String\> getAllDatabaseConsumers() - retrieves all the Archiva database consumers associated with the database scanning.
-
-  [[4]] Boolean configureDatabaseConsumer( String consumerId, boolean enable ) - enables or disables the specified database consumer.
 
   [[5]] List\<String\> getAllRepositoryConsumers() - retrieves all the Archiva repository consumers associated with the repository scanning.
 

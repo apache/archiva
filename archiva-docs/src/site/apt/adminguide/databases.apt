@@ -23,7 +23,7 @@
 ~~ specific language governing permissions and limitations                         
 ~~ under the License.                                                              
 
-Apache Archiva Databases
+Apache Archiva Database
 
   Archiva uses an external database for one purpose:
 
