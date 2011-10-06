@@ -95,6 +95,12 @@ Using REST Services
 
 +-------------------------
 
+* Security Framework Services:
+
+  You can use Redback Rest Services to control user creation/modification and add/remove roles.
+
+  See {{http://redback.codehaus.org/integration/rest.html}}
+
 
 
 
