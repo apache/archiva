@@ -3,7 +3,7 @@
  ------
  Olivier Lamy
  ------
- 2011-09-29
+ 2011-10-06
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -25,9 +25,7 @@
 
 Apache Archiva Databases
 
-  Archiva uses an external database for two purposes:
-
-    * Storing artifact information
+  Archiva uses an external database for one purpose:
 
     * As a default user store for security
 
