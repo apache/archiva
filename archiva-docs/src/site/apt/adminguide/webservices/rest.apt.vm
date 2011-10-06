@@ -69,5 +69,32 @@ Using REST Services
 
   To know all the possible options, you can refer to the javadoc of SearchRequest class.
 
+  Dependencies to add in order to use those REST Services
+
++-------------------------
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-rest-api</artifactId>
+      <version>${project.version}
+    </dependency>
+
+    if you use CXF:
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-bundle-jaxrs</artifactId>
+      <version>2.4.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-server</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
++-------------------------
+
+
 
 
