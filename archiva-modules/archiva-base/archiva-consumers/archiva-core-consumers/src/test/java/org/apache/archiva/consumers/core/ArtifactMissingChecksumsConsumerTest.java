@@ -47,7 +47,7 @@ public class ArtifactMissingChecksumsConsumerTest
         repoConfig.setLayout( "default" );
         repoConfig.setLocation( new File( "target/test-classes/test-repo/" ).getPath() );
 
-        consumer = applicationContext.getBean( "knownRepositoryContentConsumer#artifact-missing-checksums-consumer",
+        consumer = applicationContext.getBean( "knownRepositoryContentConsumer#create-missing-checksums",
                                                KnownRepositoryContentConsumer.class );
     }
 
