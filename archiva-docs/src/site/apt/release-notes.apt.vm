@@ -19,9 +19,9 @@
 ~~ specific language governing permissions and limitations                         
 ~~ under the License.                                                              
 
-Release Notes for Archiva 1.4
+Release Notes for Archiva ${project.version}
 
-  The Apache Archiva team would like to announce the release of Archiva 1.4.  Archiva is {{{http://archiva.apache.org/download.html}
+  The Apache Archiva team would like to announce the release of Archiva ${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
@@ -32,9 +32,15 @@ Release Notes for Archiva 1.4
 
     * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
 
-* New in Archiva 1.4
+* New in Archiva ${project.version}
 
-~~TODO
+  Some new features has been added in ${project.version}:
+
+  * You can now use REST Services to control Archiva or search Artifacts. (see {{{./adminguide/webservices/rest.html}REST Services}} ).
+
+  * Database Storage for Artifacts Informations has been replaced with a JCR Repository based on Apache Jackrabbit.
+
+  * The search interface provide now the capability to search on OSGI Metadatas (based on the update of the Apache Maven Indexer library).
 
 * Compatibility Changes
 
@@ -58,9 +64,9 @@ Release Notes for Archiva 1.4
 
 * Release Notes
 
-  The Archiva 1.4 feature set can be seen in the {{{./tour/index.html} feature tour}}.
+  The Archiva ${project.version} feature set can be seen in the {{{./tour/index.html} feature tour}}.
 
-* Changes in Archiva 1.4
+* Changes in Archiva ${project.version}
 
   Released: <<???>>
 
