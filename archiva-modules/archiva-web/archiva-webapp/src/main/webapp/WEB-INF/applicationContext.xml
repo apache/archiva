@@ -409,5 +409,14 @@
     </bean>
     -->
     <!-- END SNIPPET: ldap -->
+  <!-- override jcr repository location -->
+  <!-- START SNIPPET: jcr-location -->
+  <!--
+  <bean id="jcr-config" class="org.apache.archiva.metadata.repository.jcr.ArchivaJcrRepositoryConfig" factory-method="create">
+    <constructor-arg value="${appserver.base}/conf/repository.xml"/>
+    <constructor-arg value="${appserver.base}/data/jcr"/>
+  </bean>
+  -->
+  <!-- END SNIPPET: jcr-location -->
 
 </beans>
