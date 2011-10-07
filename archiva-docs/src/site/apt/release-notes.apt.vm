@@ -42,6 +42,8 @@ Release Notes for Archiva ${project.version}
 
   * The search interface provide now the capability to search on OSGI Metadatas (based on the update of the Apache Maven Indexer library).
 
+  * You can now download remote Maven index content from Remote repositories to include remote artifacts which are not present locally in your artifacts search results.
+
 * Compatibility Changes
 
   * If upgrading from versions of Archiva earlier than 1.2.2, the list of libraries
