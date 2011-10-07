@@ -34,9 +34,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.GroupedSearchRequest;
-import org.apache.maven.index.Grouping;
-import org.apache.maven.index.IteratorSearchRequest;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.OSGI;
@@ -65,7 +62,7 @@ import java.util.Set;
 public class NexusRepositorySearch
     implements RepositorySearch
 {
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     private NexusIndexer indexer;
 
@@ -75,12 +72,17 @@ public class NexusRepositorySearch
 
     private MavenIndexerUtils mavenIndexerUtils;
 
+    protected NexusRepositorySearch()
+    {
+        // for test purpose
+    }
+
     @Inject
-    public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ManagedRepositoryAdmin managedRepositoryAdmin,
-                                  MavenIndexerUtils mavenIndexerUtils, ProxyConnectorAdmin proxyConnectorAdmin )
+    public NexusRepositorySearch(PlexusSisuBridge plexusSisuBridge, ManagedRepositoryAdmin managedRepositoryAdmin,
+                                 MavenIndexerUtils mavenIndexerUtils, ProxyConnectorAdmin proxyConnectorAdmin)
         throws PlexusSisuBridgeException
     {
-        this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        this.indexer = plexusSisuBridge.lookup(NexusIndexer.class);
         this.managedRepositoryAdmin = managedRepositoryAdmin;
         this.mavenIndexerUtils = mavenIndexerUtils;
         this.proxyConnectorAdmin = proxyConnectorAdmin;
@@ -89,206 +91,200 @@ public class NexusRepositorySearch
     /**
      * @see RepositorySearch#search(String, List, String, SearchResultLimits, List)
      */
-    public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
-                                 List<String> previousSearchTerms )
+    public SearchResults search(String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
+                                List<String> previousSearchTerms)
         throws RepositorySearchException
     {
-        List<String> indexingContextIds = addIndexingContexts( selectedRepos );
+        List<String> indexingContextIds = addIndexingContexts(selectedRepos);
 
         // since upgrade to nexus 2.0.0, query has changed from g:[QUERIED TERM]* to g:*[QUERIED TERM]*
         //      resulting to more wildcard searches so we need to increase max clause count
-        BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE );
+        BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
         BooleanQuery q = new BooleanQuery();
 
         if ( previousSearchTerms == null || previousSearchTerms.isEmpty() )
         {
-            constructQuery( term, q );
+            constructQuery(term, q);
         }
         else
         {
             for ( String previousTerm : previousSearchTerms )
             {
                 BooleanQuery iQuery = new BooleanQuery();
-                constructQuery( previousTerm, iQuery );
+                constructQuery(previousTerm, iQuery);
 
-                q.add( iQuery, Occur.MUST );
+                q.add(iQuery, Occur.MUST);
             }
 
             BooleanQuery iQuery = new BooleanQuery();
-            constructQuery( term, iQuery );
-            q.add( iQuery, Occur.MUST );
+            constructQuery(term, iQuery);
+            q.add(iQuery, Occur.MUST);
         }
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST, principal, selectedRepos );
+        return search(limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST, principal, selectedRepos);
 
     }
 
     /**
      * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
      */
-    public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
+    public SearchResults search(String principal, SearchFields searchFields, SearchResultLimits limits)
         throws RepositorySearchException
     {
         if ( searchFields.getRepositories() == null )
         {
-            throw new RepositorySearchException( "Repositories cannot be null." );
+            throw new RepositorySearchException("Repositories cannot be null.");
         }
 
-        List<String> indexingContextIds = addIndexingContexts( searchFields.getRepositories() );
+        List<String> indexingContextIds = addIndexingContexts(searchFields.getRepositories());
 
         BooleanQuery q = new BooleanQuery();
-        if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
+        if ( StringUtils.isNotBlank(searchFields.getGroupId()) )
         {
-            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( searchFields.getGroupId() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(MAVEN.GROUP_ID, new StringSearchExpression(searchFields.getGroupId())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
+        if ( StringUtils.isNotBlank(searchFields.getArtifactId()) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( searchFields.getArtifactId() ) ),
-                Occur.MUST );
+            q.add(indexer.constructQuery(MAVEN.ARTIFACT_ID, new StringSearchExpression(searchFields.getArtifactId())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
+        if ( StringUtils.isNotBlank(searchFields.getVersion()) )
         {
-            q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( searchFields.getVersion() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(MAVEN.VERSION, new StringSearchExpression(searchFields.getVersion())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
+        if ( StringUtils.isNotBlank(searchFields.getPackaging()) )
         {
-            q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( searchFields.getPackaging() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(MAVEN.PACKAGING, new StringSearchExpression(searchFields.getPackaging())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
+        if ( StringUtils.isNotBlank(searchFields.getClassName()) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( searchFields.getClassName() ) ),
-                Occur.MUST );
+            q.add(indexer.constructQuery(MAVEN.CLASSNAMES, new StringSearchExpression(searchFields.getClassName())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getBundleSymbolicName() ) )
+        if ( StringUtils.isNotBlank(searchFields.getBundleSymbolicName()) )
         {
-            q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                           new StringSearchExpression( searchFields.getBundleSymbolicName() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(OSGI.SYMBOLIC_NAME,
+                                         new StringSearchExpression(searchFields.getBundleSymbolicName())), Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
+        if ( StringUtils.isNotBlank(searchFields.getBundleVersion()) )
         {
-            q.add(
-                indexer.constructQuery( OSGI.VERSION, new StringSearchExpression( searchFields.getBundleVersion() ) ),
-                Occur.MUST );
+            q.add(indexer.constructQuery(OSGI.VERSION, new StringSearchExpression(searchFields.getBundleVersion())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
+        if ( StringUtils.isNotBlank(searchFields.getBundleExportPackage()) )
         {
-            q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
-                                           new StringSearchExpression( searchFields.getBundleExportPackage() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(OSGI.EXPORT_PACKAGE,
+                                         new StringSearchExpression(searchFields.getBundleExportPackage())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
+        if ( StringUtils.isNotBlank(searchFields.getBundleExportService()) )
         {
-            q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
-                                           new StringSearchExpression( searchFields.getBundleExportService() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(OSGI.EXPORT_SERVICE,
+                                         new StringSearchExpression(searchFields.getBundleExportService())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
+        if ( StringUtils.isNotBlank(searchFields.getBundleImportPackage()) )
         {
-            q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
-                                           new StringSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(OSGI.IMPORT_PACKAGE,
+                                         new StringSearchExpression(searchFields.getBundleImportPackage())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
+        if ( StringUtils.isNotBlank(searchFields.getBundleName()) )
         {
-            q.add( indexer.constructQuery( OSGI.NAME, new StringSearchExpression( searchFields.getBundleName() ) ),
-                   Occur.MUST );
+            q.add(indexer.constructQuery(OSGI.NAME, new StringSearchExpression(searchFields.getBundleName())),
+                  Occur.MUST);
         }
 
-        if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
+        if ( StringUtils.isNotBlank(searchFields.getClassifier()) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( searchFields.getClassifier() ) ),
-                Occur.MUST );
+            q.add(indexer.constructQuery(MAVEN.CLASSIFIER, new StringSearchExpression(searchFields.getClassifier())),
+                  Occur.MUST);
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
         {
-            throw new RepositorySearchException( "No search fields set." );
+            throw new RepositorySearchException("No search fields set.");
         }
 
-        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList(), principal,
-                       searchFields.getRepositories() );
+        return search(limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList(), principal,
+                      searchFields.getRepositories());
     }
 
-    private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
-                                  List<? extends ArtifactInfoFiler> filters, String principal,
-                                  List<String> selectedRepos )
+    private SearchResults search(SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
+                                 List<? extends ArtifactInfoFiler> filters, String principal,
+                                 List<String> selectedRepos)
         throws RepositorySearchException
     {
 
         try
         {
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            request.setContexts( getIndexingContexts( indexingContextIds ) );
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            request.setContexts(getIndexingContexts(indexingContextIds));
 
-            FlatSearchResponse response = indexer.searchFlat( request );
-
+            FlatSearchResponse response = indexer.searchFlat(request);
 
             if ( response == null || response.getTotalHits() == 0 )
             {
                 SearchResults results = new SearchResults();
-                results.setLimits( limits );
+                results.setLimits(limits);
                 return results;
             }
 
-            return convertToSearchResults( response, limits, filters, principal, selectedRepos );
+            return convertToSearchResults(response, limits, filters, principal, selectedRepos);
         }
         catch ( IOException e )
         {
-            throw new RepositorySearchException( e.getMessage(), e );
+            throw new RepositorySearchException(e.getMessage(), e);
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositorySearchException( e.getMessage(), e );
+            throw new RepositorySearchException(e.getMessage(), e);
         }
 
     }
 
-    private List<IndexingContext> getIndexingContexts( List<String> ids )
+    private List<IndexingContext> getIndexingContexts(List<String> ids)
     {
-        List<IndexingContext> contexts = new ArrayList<IndexingContext>( ids.size() );
+        List<IndexingContext> contexts = new ArrayList<IndexingContext>(ids.size());
 
         for ( String id : ids )
         {
-            IndexingContext context = indexer.getIndexingContexts().get( id );
+            IndexingContext context = indexer.getIndexingContexts().get(id);
             if ( context != null )
             {
-                contexts.add( context );
+                contexts.add(context);
             }
             else
             {
-                log.warn( "context with id {} not exists", id );
+                log.warn("context with id {} not exists", id);
             }
         }
 
         return contexts;
     }
 
-    private void constructQuery( String term, BooleanQuery q )
+    private void constructQuery(String term, BooleanQuery q)
     {
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD );
+        q.add(indexer.constructQuery(MAVEN.GROUP_ID, new StringSearchExpression(term)), Occur.SHOULD);
+        q.add(indexer.constructQuery(MAVEN.ARTIFACT_ID, new StringSearchExpression(term)), Occur.SHOULD);
+        q.add(indexer.constructQuery(MAVEN.VERSION, new StringSearchExpression(term)), Occur.SHOULD);
+        q.add(indexer.constructQuery(MAVEN.PACKAGING, new StringSearchExpression(term)), Occur.SHOULD);
+        q.add(indexer.constructQuery(MAVEN.CLASSNAMES, new StringSearchExpression(term)), Occur.SHOULD);
 
         //Query query =
         //    new WildcardQuery( new Term( MAVEN.CLASSNAMES.getFieldName(), "*" ) );
@@ -302,88 +298,88 @@ public class NexusRepositorySearch
      * @param selectedRepos
      * @return indexing contextId used
      */
-    private List<String> addIndexingContexts( List<String> selectedRepos )
+    private List<String> addIndexingContexts(List<String> selectedRepos)
     {
         Set<String> indexingContextIds = new HashSet<String>();
         for ( String repo : selectedRepos )
         {
             try
             {
-                ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repo );
+                ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository(repo);
 
                 if ( repoConfig != null )
                 {
                     String indexDir = repoConfig.getIndexDirectory();
                     File indexDirectory = null;
-                    if ( indexDir != null && !"".equals( indexDir ) )
+                    if ( indexDir != null && !"".equals(indexDir) )
                     {
-                        indexDirectory = new File( repoConfig.getIndexDirectory() );
+                        indexDirectory = new File(repoConfig.getIndexDirectory());
                     }
                     else
                     {
-                        indexDirectory = new File( repoConfig.getLocation(), ".indexer" );
+                        indexDirectory = new File(repoConfig.getLocation(), ".indexer");
                     }
 
-                    IndexingContext context = indexer.getIndexingContexts().get( repoConfig.getId() );
+                    IndexingContext context = indexer.getIndexingContexts().get(repoConfig.getId());
                     if ( context != null )
                     {
                         // alreday here so no need to record it again
-                        log.debug( "index with id {} already exists skip adding it", repoConfig.getId() );
+                        log.debug("index with id {} already exists skip adding it", repoConfig.getId());
                         // set searchable flag
-                        context.setSearchable( repoConfig.isScanned() );
-                        indexingContextIds.add( context.getId() );
-                        indexingContextIds.addAll( getRemoteIndexingContextIds( repo ) );
+                        context.setSearchable(repoConfig.isScanned());
+                        indexingContextIds.add(context.getId());
+                        indexingContextIds.addAll(getRemoteIndexingContextIds(repo));
                         continue;
                     }
 
-                    context = indexer.addIndexingContext( repoConfig.getId(), repoConfig.getId(),
-                                                          new File( repoConfig.getLocation() ), indexDirectory, null,
-                                                          null, getAllIndexCreators() );
-                    context.setSearchable( repoConfig.isScanned() );
+                    context = indexer.addIndexingContext(repoConfig.getId(), repoConfig.getId(),
+                                                         new File(repoConfig.getLocation()), indexDirectory, null, null,
+                                                         getAllIndexCreators());
+                    context.setSearchable(repoConfig.isScanned());
                     if ( context.isSearchable() )
                     {
-                        indexingContextIds.addAll( getRemoteIndexingContextIds( repo ) );
-                        indexingContextIds.add( context.getId() );
+                        indexingContextIds.addAll(getRemoteIndexingContextIds(repo));
+                        indexingContextIds.add(context.getId());
                     }
                     else
                     {
-                        log.warn( "indexingContext with id {} not searchable", repoConfig.getId() );
+                        log.warn("indexingContext with id {} not searchable", repoConfig.getId());
                     }
 
                 }
                 else
                 {
-                    log.warn( "Repository '" + repo + "' not found in configuration." );
+                    log.warn("Repository '" + repo + "' not found in configuration.");
                 }
             }
             catch ( UnsupportedExistingLuceneIndexException e )
             {
-                log.warn( "Error accessing index of repository '" + repo + "' : " + e.getMessage() );
+                log.warn("Error accessing index of repository '" + repo + "' : " + e.getMessage());
                 continue;
             }
             catch ( IOException e )
             {
-                log.warn( "IO error occured while accessing index of repository '" + repo + "' : " + e.getMessage() );
+                log.warn("IO error occured while accessing index of repository '" + repo + "' : " + e.getMessage());
                 continue;
             }
             catch ( RepositoryAdminException e )
             {
-                log.warn( "RepositoryAdminException occured while accessing index of repository '" + repo + "' : "
-                              + e.getMessage() );
+                log.warn("RepositoryAdminException occured while accessing index of repository '" + repo + "' : "
+                             + e.getMessage());
                 continue;
             }
         }
 
-        return new ArrayList<String>( indexingContextIds );
+        return new ArrayList<String>(indexingContextIds);
     }
 
 
-    private Set<String> getRemoteIndexingContextIds( String managedRepoId )
+    private Set<String> getRemoteIndexingContextIds(String managedRepoId)
         throws RepositoryAdminException
     {
         Set<String> ids = new HashSet<String>();
 
-        List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
+        List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get(managedRepoId);
 
         if ( proxyConnectors == null || proxyConnectors.isEmpty() )
         {
@@ -393,10 +389,10 @@ public class NexusRepositorySearch
         for ( ProxyConnector proxyConnector : proxyConnectors )
         {
             String remoteId = "remote-" + proxyConnector.getTargetRepoId();
-            IndexingContext context = indexer.getIndexingContexts().get( remoteId );
+            IndexingContext context = indexer.getIndexingContexts().get(remoteId);
             if ( context != null && context.isSearchable() )
             {
-                ids.add( remoteId );
+                ids.add(remoteId);
             }
         }
 
@@ -410,9 +406,9 @@ public class NexusRepositorySearch
     }
 
 
-    private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
-                                                  List<? extends ArtifactInfoFiler> artifactInfoFilers,
-                                                  String principal, List<String> selectedRepos )
+    private SearchResults convertToSearchResults(FlatSearchResponse response, SearchResultLimits limits,
+                                                 List<? extends ArtifactInfoFiler> artifactInfoFilers, String principal,
+                                                 List<String> selectedRepos)
         throws RepositoryAdminException
     {
         SearchResults results = new SearchResults();
@@ -420,54 +416,54 @@ public class NexusRepositorySearch
 
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
-            String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId, artifactInfo.classifier,
-                                             artifactInfo.packaging );
+            String id = SearchUtil.getHitId(artifactInfo.groupId, artifactInfo.artifactId, artifactInfo.classifier,
+                                            artifactInfo.packaging);
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
 
-            if ( !applyArtifactInfoFilters( artifactInfo, artifactInfoFilers, hitsMap ) )
+            if ( !applyArtifactInfoFilters(artifactInfo, artifactInfoFilers, hitsMap) )
             {
                 continue;
             }
 
-            SearchResultHit hit = hitsMap.get( id );
+            SearchResultHit hit = hitsMap.get(id);
             if ( hit != null )
             {
-                if ( !hit.getVersions().contains( artifactInfo.version ) )
+                if ( !hit.getVersions().contains(artifactInfo.version) )
                 {
-                    hit.addVersion( artifactInfo.version );
+                    hit.addVersion(artifactInfo.version);
                 }
             }
             else
             {
                 hit = new SearchResultHit();
-                hit.setArtifactId( artifactInfo.artifactId );
-                hit.setGroupId( artifactInfo.groupId );
-                hit.setRepositoryId( artifactInfo.repository );
-                hit.addVersion( artifactInfo.version );
-                hit.setBundleExportPackage( artifactInfo.bundleExportPackage );
-                hit.setBundleExportService( artifactInfo.bundleExportService );
-                hit.setBundleSymbolicName( artifactInfo.bundleSymbolicName );
-                hit.setBundleVersion( artifactInfo.bundleVersion );
-                hit.setBundleDescription( artifactInfo.bundleDescription );
-                hit.setBundleDocUrl( artifactInfo.bundleDocUrl );
-                hit.setBundleRequireBundle( artifactInfo.bundleRequireBundle );
-                hit.setBundleImportPackage( artifactInfo.bundleImportPackage );
-                hit.setBundleLicense( artifactInfo.bundleLicense );
-                hit.setBundleName( artifactInfo.bundleName );
-                hit.setContext( artifactInfo.context );
-                hit.setGoals( artifactInfo.goals );
-                hit.setPrefix( artifactInfo.prefix );
-                hit.setPackaging( artifactInfo.packaging );
-                hit.setClassifier( artifactInfo.classifier );
-                hit.setUrl( getBaseUrl( artifactInfo, selectedRepos ) );
+                hit.setArtifactId(artifactInfo.artifactId);
+                hit.setGroupId(artifactInfo.groupId);
+                hit.setRepositoryId(artifactInfo.repository);
+                hit.addVersion(artifactInfo.version);
+                hit.setBundleExportPackage(artifactInfo.bundleExportPackage);
+                hit.setBundleExportService(artifactInfo.bundleExportService);
+                hit.setBundleSymbolicName(artifactInfo.bundleSymbolicName);
+                hit.setBundleVersion(artifactInfo.bundleVersion);
+                hit.setBundleDescription(artifactInfo.bundleDescription);
+                hit.setBundleDocUrl(artifactInfo.bundleDocUrl);
+                hit.setBundleRequireBundle(artifactInfo.bundleRequireBundle);
+                hit.setBundleImportPackage(artifactInfo.bundleImportPackage);
+                hit.setBundleLicense(artifactInfo.bundleLicense);
+                hit.setBundleName(artifactInfo.bundleName);
+                hit.setContext(artifactInfo.context);
+                hit.setGoals(artifactInfo.goals);
+                hit.setPrefix(artifactInfo.prefix);
+                hit.setPackaging(artifactInfo.packaging);
+                hit.setClassifier(artifactInfo.classifier);
+                hit.setUrl(getBaseUrl(artifactInfo, selectedRepos));
             }
 
-            results.addHit( id, hit );
+            results.addHit(id, hit);
         }
 
-        results.setTotalHits( response.getTotalHitsCount() );
-        results.setReturnedHitsCount( response.getReturnedHitsCount() );
-        results.setLimits( limits );
+        results.setTotalHits(response.getTotalHitsCount());
+        results.setReturnedHitsCount(response.getReturnedHitsCount());
+        results.setLimits(limits);
 
         if ( limits == null || limits.getSelectedPage() == SearchResultLimits.ALL_PAGES )
         {
@@ -475,7 +471,7 @@ public class NexusRepositorySearch
         }
         else
         {
-            return paginate( results );
+            return paginate(results);
         }
     }
 
@@ -485,43 +481,43 @@ public class NexusRepositorySearch
      * @param artifactInfo
      * @return
      */
-    protected String getBaseUrl( ArtifactInfo artifactInfo, List<String> selectedRepos )
+    protected String getBaseUrl(ArtifactInfo artifactInfo, List<String> selectedRepos)
         throws RepositoryAdminException
     {
         StringBuilder sb = new StringBuilder();
-        if ( StringUtils.startsWith( artifactInfo.context, "remote-" ) )
+        if ( StringUtils.startsWith(artifactInfo.context, "remote-") )
         {
             // it's a remote index result we search a managed which proxying this remote and on which
             // current user has read karma
             String managedRepoId =
-                getManagedRepoId( StringUtils.substringAfter( artifactInfo.context, "remote-" ), selectedRepos );
+                getManagedRepoId(StringUtils.substringAfter(artifactInfo.context, "remote-"), selectedRepos);
             if ( managedRepoId != null )
             {
-                sb.append( '/' ).append( managedRepoId );
+                sb.append('/').append(managedRepoId);
             }
         }
         else
         {
-            sb.append( '/' ).append( artifactInfo.context );
+            sb.append('/').append(artifactInfo.context);
         }
 
-        sb.append( '/' ).append( StringUtils.replaceChars( artifactInfo.groupId, '.', '/' ) );
-        sb.append( '/' ).append( artifactInfo.artifactId );
-        sb.append( '/' ).append( artifactInfo.version );
-        sb.append( '/' ).append( artifactInfo.artifactId );
-        sb.append( '-' ).append( artifactInfo.version );
-        if ( StringUtils.isNotBlank( artifactInfo.classifier ) )
+        sb.append('/').append(StringUtils.replaceChars(artifactInfo.groupId, '.', '/'));
+        sb.append('/').append(artifactInfo.artifactId);
+        sb.append('/').append(artifactInfo.version);
+        sb.append('/').append(artifactInfo.artifactId);
+        sb.append('-').append(artifactInfo.version);
+        if ( StringUtils.isNotBlank(artifactInfo.classifier) )
         {
-            sb.append( '-' ).append( artifactInfo.classifier );
+            sb.append('-').append(artifactInfo.classifier);
         }
         // maven-plugin packaging is a jar
-        if ( StringUtils.equals( "maven-plugin", artifactInfo.packaging ) )
+        if ( StringUtils.equals("maven-plugin", artifactInfo.packaging) )
         {
-            sb.append( "jar" );
+            sb.append("jar");
         }
         else
         {
-            sb.append( '.' ).append( artifactInfo.packaging );
+            sb.append('.').append(artifactInfo.packaging);
         }
 
         return sb.toString();
@@ -535,7 +531,7 @@ public class NexusRepositorySearch
      * @return
      * @throws RepositoryAdminException
      */
-    private String getManagedRepoId( String remoteRepo, List<String> selectedRepos )
+    private String getManagedRepoId(String remoteRepo, List<String> selectedRepos)
         throws RepositoryAdminException
     {
         Map<String, List<ProxyConnector>> proxyConnectorMap = proxyConnectorAdmin.getProxyConnectorAsMap();
@@ -547,11 +543,11 @@ public class NexusRepositorySearch
         {
             for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorMap.entrySet() )
             {
-                if ( selectedRepos.contains( entry.getKey() ) )
+                if ( selectedRepos.contains(entry.getKey()) )
                 {
                     for ( ProxyConnector proxyConnector : entry.getValue() )
                     {
-                        if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepoId() ) )
+                        if ( StringUtils.equals(remoteRepo, proxyConnector.getTargetRepoId()) )
                         {
                             return proxyConnector.getSourceRepoId();
                         }
@@ -566,7 +562,7 @@ public class NexusRepositorySearch
 
             for ( ProxyConnector proxyConnector : entry.getValue() )
             {
-                if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepoId() ) )
+                if ( StringUtils.equals(remoteRepo, proxyConnector.getTargetRepoId()) )
                 {
                     return proxyConnector.getSourceRepoId();
                 }
@@ -576,9 +572,9 @@ public class NexusRepositorySearch
         return null;
     }
 
-    private boolean applyArtifactInfoFilters( ArtifactInfo artifactInfo,
-                                              List<? extends ArtifactInfoFiler> artifactInfoFilers,
-                                              Map<String, SearchResultHit> currentResult )
+    private boolean applyArtifactInfoFilters(ArtifactInfo artifactInfo,
+                                             List<? extends ArtifactInfoFiler> artifactInfoFilers,
+                                             Map<String, SearchResultHit> currentResult)
     {
         if ( artifactInfoFilers == null || artifactInfoFilers.isEmpty() )
         {
@@ -587,7 +583,7 @@ public class NexusRepositorySearch
 
         for ( ArtifactInfoFiler filter : artifactInfoFilers )
         {
-            if ( !filter.addArtifactInResult( artifactInfo, currentResult ) )
+            if ( !filter.addArtifactInResult(artifactInfo, currentResult) )
             {
                 return false;
             }
@@ -595,7 +591,7 @@ public class NexusRepositorySearch
         return true;
     }
 
-    protected SearchResults paginate( SearchResults results )
+    protected SearchResults paginate(SearchResults results)
     {
         SearchResultLimits limits = results.getLimits();
         SearchResults paginated = new SearchResults();
@@ -620,12 +616,12 @@ public class NexusRepositorySearch
                     break;
                 }
 
-                SearchResultHit hit = results.getHits().get( ( offset + i ) );
+                SearchResultHit hit = results.getHits().get(( offset + i ));
                 if ( hit != null )
                 {
-                    String id = SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId(), hit.getClassifier(),
-                                                     hit.getPackaging() );
-                    paginated.addHit( id, hit );
+                    String id = SearchUtil.getHitId(hit.getGroupId(), hit.getArtifactId(), hit.getClassifier(),
+                                                    hit.getPackaging());
+                    paginated.addHit(id, hit);
                 }
                 else
                 {
@@ -633,9 +629,9 @@ public class NexusRepositorySearch
                 }
             }
         }
-        paginated.setTotalHits( results.getTotalHits() );
-        paginated.setReturnedHitsCount( paginated.getHits().size() );
-        paginated.setLimits( limits );
+        paginated.setTotalHits(results.getTotalHits());
+        paginated.setReturnedHitsCount(paginated.getHits().size());
+        paginated.setLimits(limits);
 
         return paginated;
     }

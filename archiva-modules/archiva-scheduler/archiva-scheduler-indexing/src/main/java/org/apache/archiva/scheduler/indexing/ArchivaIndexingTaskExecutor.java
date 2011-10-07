@@ -88,7 +88,7 @@ public class ArchivaIndexingTaskExecutor
     {
         log.info( "Initialized {}", this.getClass().getName() );
 
-        artifactContextProducer = new DefaultArtifactContextProducer();
+        artifactContextProducer = plexusSisuBridge.lookup( ArtifactContextProducer.class );
 
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
 
