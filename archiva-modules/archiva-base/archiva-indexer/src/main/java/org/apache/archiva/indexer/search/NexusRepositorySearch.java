@@ -34,6 +34,9 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.GroupedSearchRequest;
+import org.apache.maven.index.Grouping;
+import org.apache.maven.index.IteratorSearchRequest;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.OSGI;
@@ -235,7 +238,9 @@ public class NexusRepositorySearch
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
             request.setContexts( getIndexingContexts( indexingContextIds ) );
+
             FlatSearchResponse response = indexer.searchFlat( request );
+
 
             if ( response == null || response.getTotalHits() == 0 )
             {
@@ -590,7 +595,7 @@ public class NexusRepositorySearch
         return true;
     }
 
-    private SearchResults paginate( SearchResults results )
+    protected SearchResults paginate( SearchResults results )
     {
         SearchResultLimits limits = results.getLimits();
         SearchResults paginated = new SearchResults();
