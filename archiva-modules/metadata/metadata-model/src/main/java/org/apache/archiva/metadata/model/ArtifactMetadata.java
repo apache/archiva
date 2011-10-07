@@ -272,6 +272,23 @@ public class ArtifactMetadata
     }
 
     @Override
+    public int hashCode()
+    {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + ( repositoryId != null ? repositoryId.hashCode() : 0 );
+        result = 31 * result + ( namespace != null ? namespace.hashCode() : 0 );
+        result = 31 * result + ( project != null ? project.hashCode() : 0 );
+        result = 31 * result + ( projectVersion != null ? projectVersion.hashCode() : 0 );
+        result = 31 * result + ( version != null ? version.hashCode() : 0 );
+        result = 31 * result + ( fileLastModified != null ? fileLastModified.hashCode() : 0 );
+        result = 31 * result + (int) ( size ^ ( size >>> 32 ) );
+        result = 31 * result + ( md5 != null ? md5.hashCode() : 0 );
+        result = 31 * result + ( sha1 != null ? sha1.hashCode() : 0 );
+        result = 31 * result + ( whenGathered != null ? whenGathered.hashCode() : 0 );
+        return result;
+    }
+
+    @Override
     public String toString()
     {
         return "ArtifactMetadata{" + "id='" + id + '\'' + ", size=" + size + ", version='" + version + '\'' +
