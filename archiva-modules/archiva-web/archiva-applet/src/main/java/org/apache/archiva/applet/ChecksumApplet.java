@@ -119,7 +119,7 @@ public class ChecksumApplet
 
     protected static String byteArrayToHexStr( byte[] data )
     {
-        String output = "";
+        StringBuilder output = new StringBuilder( "" );
 
         for ( int cnt = 0; cnt < data.length; cnt++ )
         {
@@ -136,9 +136,9 @@ public class ChecksumApplet
             }
 
             //Concatenate the two characters to the output string.
-            output = output + tempStr;
+            output.append( tempStr );
         }
 
-        return output.toUpperCase();
+        return output.toString().toUpperCase();
     }
 }

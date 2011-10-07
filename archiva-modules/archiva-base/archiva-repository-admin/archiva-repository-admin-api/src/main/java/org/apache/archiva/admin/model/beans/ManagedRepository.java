@@ -93,7 +93,6 @@ public class ManagedRepository
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
         this.stageRepoNeeded = stageRepoNeeded;
-        this.resetStats = resetStats;
     }
 
     public String getCronExpression()
