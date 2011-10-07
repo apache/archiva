@@ -86,7 +86,7 @@ public class SearchAction
 
     private static final String COMPLETE_QUERY_STRING_SEPARATOR = ";";
 
-    private List<String> managedRepositoryList = new ArrayList<String>( );
+    private List<String> managedRepositoryList = new ArrayList<String>();
 
     private String groupId;
 
@@ -155,53 +155,53 @@ public class SearchAction
 
     private String infoMessage;
 
-    public boolean isFromResultsPage( )
+    public boolean isFromResultsPage()
     {
         return fromResultsPage;
     }
 
-    public void setFromResultsPage( boolean fromResultsPage )
+    public void setFromResultsPage(boolean fromResultsPage)
     {
         this.fromResultsPage = fromResultsPage;
     }
 
-    public boolean isFromFilterSearch( )
+    public boolean isFromFilterSearch()
     {
         return fromFilterSearch;
     }
 
-    public void setFromFilterSearch( boolean fromFilterSearch )
+    public void setFromFilterSearch(boolean fromFilterSearch)
     {
         this.fromFilterSearch = fromFilterSearch;
     }
 
-    public void prepare( )
+    public void prepare()
     {
-        managedRepositoryList = getObservableRepos( );
+        managedRepositoryList = getObservableRepos();
 
-        if ( managedRepositoryList.size( ) > 0 )
+        if ( managedRepositoryList.size() > 0 )
         {
-            managedRepositoryList.add( "all" );
+            managedRepositoryList.add("all");
         }
 
-        searchFields = new LinkedHashMap<String, String>( );
-        searchFields.put( "groupId", "Group ID" );
-        searchFields.put( "artifactId", "Artifact ID" );
-        searchFields.put( "version", "Version" );
-        searchFields.put( "className", "Class/Package Name" );
-        searchFields.put( "rowCount", "Row Count" );
-        searchFields.put( "bundleVersion", "OSGI Bundle Version" );
-        searchFields.put( "bundleSymbolicName", "OSGI Bundle-SymbolicName" );
-        searchFields.put( "bundleExportPackage", "OSGI Export-Package" );
-        searchFields.put( "bundleImportPackage", "OSGI import package" );
-        searchFields.put( "bundleName", "OSGI name" );
-        searchFields.put( "bundleExportService", "OSGI Export-Service" );
+        searchFields = new LinkedHashMap<String, String>();
+        searchFields.put("groupId", "Group ID");
+        searchFields.put("artifactId", "Artifact ID");
+        searchFields.put("version", "Version");
+        searchFields.put("className", "Class/Package Name");
+        searchFields.put("rowCount", "Row Count");
+        searchFields.put("bundleVersion", "OSGI Bundle Version");
+        searchFields.put("bundleSymbolicName", "OSGI Bundle-SymbolicName");
+        searchFields.put("bundleExportPackage", "OSGI Export-Package");
+        searchFields.put("bundleImportPackage", "OSGI import package");
+        searchFields.put("bundleName", "OSGI name");
+        searchFields.put("bundleExportService", "OSGI Export-Service");
 
-        super.clearErrorsAndMessages( );
-        clearSearchFields( );
+        super.clearErrorsAndMessages();
+        clearSearchFields();
     }
 
-    private void clearSearchFields( )
+    private void clearSearchFields()
     {
         repositoryId = "";
         artifactId = "";
@@ -213,103 +213,103 @@ public class SearchAction
     }
 
     // advanced search MRM-90 -- filtered search
-    public String filteredSearch( )
+    public String filteredSearch()
         throws MalformedURLException
     {
-        if ( StringUtils.isBlank( groupId ) && StringUtils.isBlank( artifactId ) && StringUtils.isBlank( className )
-            && StringUtils.isBlank( version ) && StringUtils.isBlank( bundleExportPackage ) && StringUtils.isBlank(
-            bundleExportService ) && StringUtils.isBlank( bundleImportPackage ) && StringUtils.isBlank( bundleName )
-            && StringUtils.isBlank( bundleSymbolicName ) && StringUtils.isBlank( bundleVersion ) )
+        if ( StringUtils.isBlank(groupId) && StringUtils.isBlank(artifactId) && StringUtils.isBlank(className)
+            && StringUtils.isBlank(version) && StringUtils.isBlank(bundleExportPackage) && StringUtils.isBlank(
+            bundleExportService) && StringUtils.isBlank(bundleImportPackage) && StringUtils.isBlank(bundleName)
+            && StringUtils.isBlank(bundleSymbolicName) && StringUtils.isBlank(bundleVersion) )
         {
-            addActionError( "Advanced Search - At least one search criteria must be provided." );
+            addActionError("Advanced Search - At least one search criteria must be provided.");
             return INPUT;
         }
 
         fromFilterSearch = true;
 
-        if ( CollectionUtils.isEmpty( managedRepositoryList ) )
+        if ( CollectionUtils.isEmpty(managedRepositoryList) )
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        SearchResultLimits limits = new SearchResultLimits( currentPage );
-        limits.setPageSize( rowCount );
-        List<String> selectedRepos = new ArrayList<String>( );
+        SearchResultLimits limits = new SearchResultLimits(currentPage);
+        limits.setPageSize(rowCount);
+        List<String> selectedRepos = new ArrayList<String>();
 
-        if ( repositoryId == null || StringUtils.isBlank( repositoryId ) || "all".equals(
-            StringUtils.stripToEmpty( repositoryId ) ) )
+        if ( repositoryId == null || StringUtils.isBlank(repositoryId) || "all".equals(
+            StringUtils.stripToEmpty(repositoryId)) )
         {
-            selectedRepos = getObservableRepos( );
+            selectedRepos = getObservableRepos();
         }
         else
         {
-            selectedRepos.add( repositoryId );
+            selectedRepos.add(repositoryId);
         }
 
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        if ( CollectionUtils.isEmpty(selectedRepos) )
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        SearchFields searchFields = new SearchFields( groupId, artifactId, version, null, className, selectedRepos );
+        SearchFields searchFields = new SearchFields(groupId, artifactId, version, null, className, selectedRepos);
 
-        if ( StringUtils.isNotBlank( this.bundleExportPackage ) )
+        if ( StringUtils.isNotBlank(this.bundleExportPackage) )
         {
-            searchFields.setBundleExportPackage( this.bundleExportPackage );
+            searchFields.setBundleExportPackage(this.bundleExportPackage);
         }
 
-        if ( StringUtils.isNotBlank( this.bundleExportService ) )
+        if ( StringUtils.isNotBlank(this.bundleExportService) )
         {
-            searchFields.setBundleExportService( this.bundleExportService );
+            searchFields.setBundleExportService(this.bundleExportService);
         }
 
-        if ( StringUtils.isNotBlank( this.bundleImportPackage ) )
+        if ( StringUtils.isNotBlank(this.bundleImportPackage) )
         {
-            searchFields.setBundleImportPackage( this.bundleImportPackage );
+            searchFields.setBundleImportPackage(this.bundleImportPackage);
         }
 
-        if ( StringUtils.isNotBlank( this.bundleSymbolicName ) )
+        if ( StringUtils.isNotBlank(this.bundleSymbolicName) )
         {
-            searchFields.setBundleSymbolicName( this.bundleSymbolicName );
+            searchFields.setBundleSymbolicName(this.bundleSymbolicName);
         }
 
-        if ( StringUtils.isNotBlank( this.bundleName ) )
+        if ( StringUtils.isNotBlank(this.bundleName) )
         {
-            searchFields.setBundleName( this.bundleName );
+            searchFields.setBundleName(this.bundleName);
         }
 
-        if ( StringUtils.isNotBlank( this.bundleVersion ) )
+        if ( StringUtils.isNotBlank(this.bundleVersion) )
         {
-            searchFields.setBundleVersion( this.bundleVersion );
+            searchFields.setBundleVersion(this.bundleVersion);
         }
 
-        log.debug( "filteredSearch with searchFields {}", searchFields );
+        log.debug("filteredSearch with searchFields {}", searchFields);
 
         // TODO: add packaging in the list of fields for advanced search (UI)?
         try
         {
-            results = getNexusSearch( ).search( getPrincipal( ), searchFields, limits );
+            results = getNexusSearch().search(getPrincipal(), searchFields, limits);
         }
         catch ( RepositorySearchException e )
         {
-            addActionError( e.getMessage( ) );
+            addActionError(e.getMessage());
             return ERROR;
         }
 
-        if ( results.isEmpty( ) )
+        if ( results.isEmpty() )
         {
-            addActionError( "No results found" );
+            addActionError("No results found");
             return INPUT;
         }
 
-        totalPages = results.getTotalHits( ) / limits.getPageSize( );
+        totalPages = results.getTotalHits() / limits.getPageSize();
 
-        if ( ( results.getTotalHits( ) % limits.getPageSize( ) ) != 0 )
+        if ( ( results.getTotalHits() % limits.getPageSize() ) != 0 )
         {
             totalPages = totalPages + 1;
         }
 
-        for ( SearchResultHit hit : results.getHits( ) )
+        for ( SearchResultHit hit : results.getHits() )
         {
             // fix version ?
             //hit.setVersion( VersionUtil.getBaseVersion( version ) );
@@ -320,7 +320,7 @@ public class SearchAction
     }
 
     @SuppressWarnings( "unchecked" )
-    public String quickSearch( )
+    public String quickSearch()
         throws MalformedURLException
     {
         /* TODO: give action message if indexing is in progress.
@@ -329,93 +329,92 @@ public class SearchAction
          * present in the full text search.
          */
 
-        assert q != null && q.length( ) != 0;
+        assert q != null && q.length() != 0;
 
         fromFilterSearch = false;
 
-        SearchResultLimits limits = new SearchResultLimits( currentPage );
+        SearchResultLimits limits = new SearchResultLimits(currentPage);
 
-        List<String> selectedRepos = getObservableRepos( );
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty(selectedRepos) )
         {
             return GlobalResults.ACCESS_TO_NO_REPOS;
         }
 
-        log.debug( "quickSearch with selectedRepos {} query {}", selectedRepos, q );
+        log.debug("quickSearch with selectedRepos {} query {}", selectedRepos, q);
 
         try
         {
-            if ( searchResultsOnly && !completeQueryString.equals( "" ) )
+            if ( searchResultsOnly && !completeQueryString.equals("") )
             {
-                results =
-                    getNexusSearch( ).search( getPrincipal( ), selectedRepos, q, limits, parseCompleteQueryString( ) );
+                results = getNexusSearch().search(getPrincipal(), selectedRepos, q, limits, parseCompleteQueryString());
             }
             else
             {
                 completeQueryString = "";
-                results = getNexusSearch( ).search( getPrincipal( ), selectedRepos, q, limits, null );
+                results = getNexusSearch().search(getPrincipal(), selectedRepos, q, limits, null);
             }
         }
         catch ( RepositorySearchException e )
         {
-            addActionError( e.getMessage( ) );
+            addActionError(e.getMessage());
             return ERROR;
         }
 
-        if ( results.isEmpty( ) )
+        if ( results.isEmpty() )
         {
-            addActionError( "No results found" );
+            addActionError("No results found");
             return INPUT;
         }
 
-        totalPages = results.getTotalHits( ) / limits.getPageSize( );
+        totalPages = results.getTotalHitsMapSize() / limits.getPageSize();
 
-        if ( ( results.getTotalHits( ) % limits.getPageSize( ) ) != 0 )
+        if ( ( results.getTotalHitsMapSize() % limits.getPageSize() ) != 0 )
         {
             totalPages = totalPages + 1;
         }
 
-        if ( !isEqualToPreviousSearchTerm( q ) )
+        if ( !isEqualToPreviousSearchTerm(q) )
         {
-            buildCompleteQueryString( q );
+            buildCompleteQueryString(q);
         }
 
         return SUCCESS;
     }
 
-    public String findArtifact( )
+    public String findArtifact()
         throws Exception
     {
         // TODO: give action message if indexing is in progress
 
-        if ( StringUtils.isBlank( q ) )
+        if ( StringUtils.isBlank(q) )
         {
-            addActionError( "Unable to search for a blank checksum" );
+            addActionError("Unable to search for a blank checksum");
             return INPUT;
         }
 
-        databaseResults = new ArrayList<ArtifactMetadata>( );
-        RepositorySession repositorySession = repositorySessionFactory.createSession( );
+        databaseResults = new ArrayList<ArtifactMetadata>();
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            MetadataRepository metadataRepository = repositorySession.getRepository( );
-            for ( String repoId : getObservableRepos( ) )
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            for ( String repoId : getObservableRepos() )
             {
-                databaseResults.addAll( metadataRepository.getArtifactsByChecksum( repoId, q ) );
+                databaseResults.addAll(metadataRepository.getArtifactsByChecksum(repoId, q));
             }
         }
         finally
         {
-            repositorySession.close( );
+            repositorySession.close();
         }
 
-        if ( databaseResults.isEmpty( ) )
+        if ( databaseResults.isEmpty() )
         {
-            addActionError( "No results found" );
+            addActionError("No results found");
             return INPUT;
         }
 
-        if ( databaseResults.size( ) == 1 )
+        if ( databaseResults.size() == 1 )
         {
             // 1 hit? return it's information directly!
             return ARTIFACT;
@@ -424,19 +423,19 @@ public class SearchAction
         return RESULTS;
     }
 
-    public String doInput( )
+    public String doInput()
     {
         return INPUT;
     }
 
-    private void buildCompleteQueryString( String searchTerm )
+    private void buildCompleteQueryString(String searchTerm)
     {
-        if ( searchTerm.indexOf( COMPLETE_QUERY_STRING_SEPARATOR ) != -1 )
+        if ( searchTerm.indexOf(COMPLETE_QUERY_STRING_SEPARATOR) != -1 )
         {
-            searchTerm = StringUtils.remove( searchTerm, COMPLETE_QUERY_STRING_SEPARATOR );
+            searchTerm = StringUtils.remove(searchTerm, COMPLETE_QUERY_STRING_SEPARATOR);
         }
 
-        if ( completeQueryString == null || "".equals( completeQueryString ) )
+        if ( completeQueryString == null || "".equals(completeQueryString) )
         {
             completeQueryString = searchTerm;
         }
@@ -446,21 +445,21 @@ public class SearchAction
         }
     }
 
-    private List<String> parseCompleteQueryString( )
+    private List<String> parseCompleteQueryString()
     {
-        List<String> parsedCompleteQueryString = new ArrayList<String>( );
-        String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
-        CollectionUtils.addAll( parsedCompleteQueryString, parsed );
+        List<String> parsedCompleteQueryString = new ArrayList<String>();
+        String[] parsed = StringUtils.split(completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR);
+        CollectionUtils.addAll(parsedCompleteQueryString, parsed);
 
         return parsedCompleteQueryString;
     }
 
-    private boolean isEqualToPreviousSearchTerm( String searchTerm )
+    private boolean isEqualToPreviousSearchTerm(String searchTerm)
     {
-        if ( !"".equals( completeQueryString ) )
+        if ( !"".equals(completeQueryString) )
         {
-            String[] parsed = StringUtils.split( completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR );
-            if ( StringUtils.equalsIgnoreCase( searchTerm, parsed[parsed.length - 1] ) )
+            String[] parsed = StringUtils.split(completeQueryString, COMPLETE_QUERY_STRING_SEPARATOR);
+            if ( StringUtils.equalsIgnoreCase(searchTerm, parsed[parsed.length - 1]) )
             {
                 return true;
             }
@@ -469,259 +468,259 @@ public class SearchAction
         return false;
     }
 
-    public String getQ( )
+    public String getQ()
     {
         return q;
     }
 
-    public void setQ( String q )
+    public void setQ(String q)
     {
         this.q = q;
     }
 
-    public SearchResults getResults( )
+    public SearchResults getResults()
     {
         return results;
     }
 
-    public List<ArtifactMetadata> getDatabaseResults( )
+    public List<ArtifactMetadata> getDatabaseResults()
     {
         return databaseResults;
     }
 
-    public void setCurrentPage( int page )
+    public void setCurrentPage(int page)
     {
         this.currentPage = page;
     }
 
-    public int getCurrentPage( )
+    public int getCurrentPage()
     {
         return currentPage;
     }
 
-    public int getTotalPages( )
+    public int getTotalPages()
     {
         return totalPages;
     }
 
-    public void setTotalPages( int totalPages )
+    public void setTotalPages(int totalPages)
     {
         this.totalPages = totalPages;
     }
 
-    public boolean isSearchResultsOnly( )
+    public boolean isSearchResultsOnly()
     {
         return searchResultsOnly;
     }
 
-    public void setSearchResultsOnly( boolean searchResultsOnly )
+    public void setSearchResultsOnly(boolean searchResultsOnly)
     {
         this.searchResultsOnly = searchResultsOnly;
     }
 
-    public String getCompleteQueryString( )
+    public String getCompleteQueryString()
     {
         return completeQueryString;
     }
 
-    public void setCompleteQueryString( String completeQueryString )
+    public void setCompleteQueryString(String completeQueryString)
     {
         this.completeQueryString = completeQueryString;
     }
 
-    public Map<String, ManagedRepository> getManagedRepositories( )
+    public Map<String, ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
     {
-        return managedRepositoryAdmin.getManagedRepositoriesAsMap( );
+        return managedRepositoryAdmin.getManagedRepositoriesAsMap();
     }
 
     // wtf : does nothing ??
-    public void setManagedRepositories( Map<String, ManagedRepository> managedRepositories )
+    public void setManagedRepositories(Map<String, ManagedRepository> managedRepositories)
     {
     }
 
-    public String getGroupId( )
+    public String getGroupId()
     {
         return groupId;
     }
 
-    public void setGroupId( String groupId )
+    public void setGroupId(String groupId)
     {
         this.groupId = groupId;
     }
 
-    public String getArtifactId( )
+    public String getArtifactId()
     {
         return artifactId;
     }
 
-    public void setArtifactId( String artifactId )
+    public void setArtifactId(String artifactId)
     {
         this.artifactId = artifactId;
     }
 
-    public String getVersion( )
+    public String getVersion()
     {
         return version;
     }
 
-    public void setVersion( String version )
+    public void setVersion(String version)
     {
         this.version = version;
     }
 
-    public int getRowCount( )
+    public int getRowCount()
     {
         return rowCount;
     }
 
-    public void setRowCount( int rowCount )
+    public void setRowCount(int rowCount)
     {
         this.rowCount = rowCount;
     }
 
-    public boolean isFilterSearch( )
+    public boolean isFilterSearch()
     {
         return filterSearch;
     }
 
-    public void setFilterSearch( boolean filterSearch )
+    public void setFilterSearch(boolean filterSearch)
     {
         this.filterSearch = filterSearch;
     }
 
-    public String getRepositoryId( )
+    public String getRepositoryId()
     {
         return repositoryId;
     }
 
-    public void setRepositoryId( String repositoryId )
+    public void setRepositoryId(String repositoryId)
     {
         this.repositoryId = repositoryId;
     }
 
-    public List<String> getManagedRepositoryList( )
+    public List<String> getManagedRepositoryList()
     {
         return managedRepositoryList;
     }
 
-    public void setManagedRepositoryList( List<String> managedRepositoryList )
+    public void setManagedRepositoryList(List<String> managedRepositoryList)
     {
         this.managedRepositoryList = managedRepositoryList;
     }
 
-    public String getClassName( )
+    public String getClassName()
     {
         return className;
     }
 
-    public void setClassName( String className )
+    public void setClassName(String className)
     {
         this.className = className;
     }
 
-    public RepositorySearch getNexusSearch( )
+    public RepositorySearch getNexusSearch()
     {
         if ( nexusSearch == null )
         {
-            WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(
-                ServletActionContext.getServletContext( ) );
-            nexusSearch = wac.getBean( "nexusSearch", RepositorySearch.class );
+            WebApplicationContext wac =
+                WebApplicationContextUtils.getRequiredWebApplicationContext(ServletActionContext.getServletContext());
+            nexusSearch = wac.getBean("nexusSearch", RepositorySearch.class);
         }
         return nexusSearch;
     }
 
-    public void setNexusSearch( RepositorySearch nexusSearch )
+    public void setNexusSearch(RepositorySearch nexusSearch)
     {
         this.nexusSearch = nexusSearch;
     }
 
-    public Map<String, String> getSearchFields( )
+    public Map<String, String> getSearchFields()
     {
         return searchFields;
     }
 
-    public void setSearchFields( Map<String, String> searchFields )
+    public void setSearchFields(Map<String, String> searchFields)
     {
         this.searchFields = searchFields;
     }
 
-    public String getInfoMessage( )
+    public String getInfoMessage()
     {
         return infoMessage;
     }
 
-    public void setInfoMessage( String infoMessage )
+    public void setInfoMessage(String infoMessage)
     {
         this.infoMessage = infoMessage;
     }
 
-    public ManagedRepositoryAdmin getManagedRepositoryAdmin( )
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {
         return managedRepositoryAdmin;
     }
 
-    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    public void setManagedRepositoryAdmin(ManagedRepositoryAdmin managedRepositoryAdmin)
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
-    public String getBundleVersion( )
+    public String getBundleVersion()
     {
         return bundleVersion;
     }
 
-    public void setBundleVersion( String bundleVersion )
+    public void setBundleVersion(String bundleVersion)
     {
         this.bundleVersion = bundleVersion;
     }
 
-    public String getBundleSymbolicName( )
+    public String getBundleSymbolicName()
     {
         return bundleSymbolicName;
     }
 
-    public void setBundleSymbolicName( String bundleSymbolicName )
+    public void setBundleSymbolicName(String bundleSymbolicName)
     {
         this.bundleSymbolicName = bundleSymbolicName;
     }
 
-    public String getBundleExportPackage( )
+    public String getBundleExportPackage()
     {
         return bundleExportPackage;
     }
 
-    public void setBundleExportPackage( String bundleExportPackage )
+    public void setBundleExportPackage(String bundleExportPackage)
     {
         this.bundleExportPackage = bundleExportPackage;
     }
 
-    public String getBundleImportPackage( )
+    public String getBundleImportPackage()
     {
         return bundleImportPackage;
     }
 
-    public void setBundleImportPackage( String bundleImportPackage )
+    public void setBundleImportPackage(String bundleImportPackage)
     {
         this.bundleImportPackage = bundleImportPackage;
     }
 
-    public String getBundleName( )
+    public String getBundleName()
     {
         return bundleName;
     }
 
-    public void setBundleName( String bundleName )
+    public void setBundleName(String bundleName)
     {
         this.bundleName = bundleName;
     }
 
-    public String getBundleExportService( )
+    public String getBundleExportService()
     {
         return bundleExportService;
     }
 
-    public void setBundleExportService( String bundleExportService )
+    public void setBundleExportService(String bundleExportService)
     {
         this.bundleExportService = bundleExportService;
     }

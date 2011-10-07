@@ -35,6 +35,8 @@ public class SearchResults
     private Map<String, SearchResultHit> hits = new HashMap<String, SearchResultHit>();
 
     private int totalHits;
+    
+    private int totalHitsMapSize;
 
     private int returnedHitsCount;
 
@@ -118,6 +120,24 @@ public class SearchResults
     public void setReturnedHitsCount( int returnedHitsCount )
     {
         this.returnedHitsCount = returnedHitsCount;
+    }
+
+    /**
+     * @since 1.4-M1
+     * @return
+     */
+    public int getTotalHitsMapSize()
+    {
+        return totalHitsMapSize;
+    }
+
+    /**
+     * @since 1.4-M1
+     * @param totalHitsMapSize
+     */
+    public void setTotalHitsMapSize(int totalHitsMapSize)
+    {
+        this.totalHitsMapSize = totalHitsMapSize;
     }
 
     @Override

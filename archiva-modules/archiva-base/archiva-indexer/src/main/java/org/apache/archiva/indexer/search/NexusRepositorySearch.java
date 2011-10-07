@@ -462,6 +462,7 @@ public class NexusRepositorySearch
         }
 
         results.setTotalHits(response.getTotalHitsCount());
+        results.setTotalHitsMapSize(results.getHitsMap().values().size());
         results.setReturnedHitsCount(response.getReturnedHitsCount());
         results.setLimits(limits);
 
@@ -631,6 +632,7 @@ public class NexusRepositorySearch
         }
         paginated.setTotalHits(results.getTotalHits());
         paginated.setReturnedHitsCount(paginated.getHits().size());
+        paginated.setTotalHitsMapSize( results.getTotalHitsMapSize() );
         paginated.setLimits(limits);
 
         return paginated;
