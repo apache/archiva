@@ -198,7 +198,7 @@ public class ArtifactIndexingTask
 
         if ( context != null )
         {
-            LoggerFactory.getLogger( ArtifactIndexingTask.class ).warn(
+            LoggerFactory.getLogger( ArtifactIndexingTask.class ).debug(
                 "skip adding repository with id {} as already exists", repository.getId() );
             return context;
         }
