@@ -821,5 +821,10 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         log.info( "groupIds: " + groupIds );
+
+        assertEquals( 3, groupIds.size() );
+        assertTrue( groupIds.contains( "com" ));
+        assertTrue( groupIds.contains( "org.apache.felix") );
+        assertTrue( groupIds.contains( "org.apache.archiva" ) );
     }
 }
