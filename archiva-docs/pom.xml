@@ -30,6 +30,17 @@
   <url>http://archiva.apache.org/docs/${project.version}/</url>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <templateFile>${basedir}/src/maven-site.vm</templateFile>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-site-plugin</artifactId>

@@ -24,6 +24,10 @@
     <src>http://archiva.apache.org/images/archiva.png</src>
     <href>http://archiva.apache.org/</href>
   </bannerLeft>
+
+  <publishDate format="yyyy-MM-dd" position="left" />
+  <version position="left" />
+
   <body>
     <breadcrumbs>
       <item name="${project.version}" href="/index.html" />
