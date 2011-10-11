@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -802,5 +803,23 @@ public class NexusRepositorySearchTest
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
         assertEquals( "test-webapp", results.getHits().get( 0 ).getArtifactId() );
+    }
+
+    @Test
+    public void getAllGroupIds() throws Exception
+    {
+        createIndexContainingMoreArtifacts( true );
+
+        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 0 , 2 );
+
+        archivaConfigControl.replay();
+
+        Collection<String> groupIds = search.getAllGroupIds( "user", selectedRepos );
+
+        archivaConfigControl.verify();
+
+        log.info( "groupIds: " + groupIds );
     }
 }

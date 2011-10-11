@@ -19,6 +19,7 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -47,5 +48,8 @@ public interface RepositorySearch
      * @return
      */
     SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
+        throws RepositorySearchException;
+    
+    Collection<String> getAllGroupIds( String principal, List<String> selectedRepos )
         throws RepositorySearchException;
 }

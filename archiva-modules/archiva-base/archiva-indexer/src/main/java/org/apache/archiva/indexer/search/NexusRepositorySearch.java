@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -95,7 +96,7 @@ public class NexusRepositorySearch
                                 List<String> previousSearchTerms)
         throws RepositorySearchException
     {
-        List<String> indexingContextIds = addIndexingContexts(selectedRepos);
+        List<String> indexingContextIds = addIndexingContexts( selectedRepos );
 
         // since upgrade to nexus 2.0.0, query has changed from g:[QUERIED TERM]* to g:*[QUERIED TERM]*
         //      resulting to more wildcard searches so we need to increase max clause count
@@ -399,6 +400,28 @@ public class NexusRepositorySearch
         return ids;
     }
 
+    public Collection<String> getAllGroupIds(String principal, List<String> selectedRepos)
+        throws RepositorySearchException
+    {
+        List<IndexingContext> indexContexts = getIndexingContexts( selectedRepos );
+        if (indexContexts == null || indexContexts.isEmpty())
+        {
+            return Collections.emptyList();
+        }
+
+        try
+        {
+            Set<String> allGroupIds = new HashSet<String>(  );
+            for (IndexingContext indexingContext : indexContexts)
+            {
+                allGroupIds.addAll( indexingContext.getAllGroups() );
+            }
+            return allGroupIds;
+        } catch ( IOException e )
+        {
+            throw new RepositorySearchException( e.getMessage(), e );
+        }
+    }
 
     protected List<? extends IndexCreator> getAllIndexCreators()
     {
