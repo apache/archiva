@@ -27,6 +27,7 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
+import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
@@ -36,6 +37,7 @@ import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
@@ -47,6 +49,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -135,6 +138,27 @@ public class DefaultSearchService
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage() );
         }
+    }
+
+    public GroupIdList getAllGroupIds(List<String> selectedRepos)
+        throws ArchivaRestServiceException
+    {
+        List<String> observableRepos = getObservableRepos();
+        List<String> repos = ListUtils.intersection( observableRepos, selectedRepos );
+        if (repos == null || repos.isEmpty())
+        {
+            return new GroupIdList( Collections.<String>emptyList() );
+        }
+        try
+        {
+            return new GroupIdList( new ArrayList<String>( repositorySearch.getAllGroupIds( getPrincipal(), repos  ) ) );
+        }
+        catch ( RepositorySearchException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+
     }
 
     public List<Dependency> getDependencies( String groupId, String artifactId, String version )

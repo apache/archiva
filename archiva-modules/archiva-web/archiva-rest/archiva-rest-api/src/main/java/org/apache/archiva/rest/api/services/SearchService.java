@@ -22,6 +22,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
+import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -31,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.Collection;
 import java.util.List;
 
 @Path( "/searchService/" )
@@ -48,14 +50,14 @@ public interface SearchService
     @Path( "quickSearch" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    @RedbackAuthorization( noPermission = true, noRestriction = false )
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
     @Path( "getArtifactVersions" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    @RedbackAuthorization( noPermission = true, noRestriction = false )
     List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
                                         @QueryParam( "artifactId" ) String artifactId,
                                         @QueryParam( "packaging" ) String packaging )
@@ -64,8 +66,15 @@ public interface SearchService
     @Path( "searchArtifacts" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    @RedbackAuthorization( noPermission = true, noRestriction = false )
     List<Artifact> searchArtifacts( SearchRequest searchRequest )
+        throws ArchivaRestServiceException;
+
+    @Path( "getAllGroupIds" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true, noRestriction = false )
+    GroupIdList getAllGroupIds( @QueryParam( "selectedRepos" ) List<String> selectedRepos )
         throws ArchivaRestServiceException;
 
     @Path( "getDependencies" )

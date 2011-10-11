@@ -23,10 +23,13 @@ import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -219,6 +222,30 @@ public class SearchServiceTest
         deleteTestRepo( testRepoId, targetRepo );
     }
 
+    @Test
+    public void getAllGroupIds()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        File targetRepo = createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        Collection<String> groupIds = searchService.getAllGroupIds( Arrays.asList( testRepoId ) ).getGroupIds();
+        log.info( "groupIds  " + groupIds );
+        assertFalse( groupIds.isEmpty() );
+        assertTrue( groupIds.contains( "commons-cli") );
+        assertTrue( groupIds.contains( "org.apache.felix" ) );
+        deleteTestRepo( testRepoId, targetRepo );
+    }
+
     private File createAndIndexRepo( String testRepoId )
         throws Exception
     {
@@ -244,7 +271,9 @@ public class SearchServiceTest
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
 
-        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
+        getRoleManagementService( authorizationHeader ).assignTemplatedRole(ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "admin" );
+
+        getRepositoriesService(authorizationHeader).scanRepositoryNow( testRepoId, true );
 
         return targetRepo;
     }
