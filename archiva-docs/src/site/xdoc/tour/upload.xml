@@ -27,7 +27,7 @@
   <body>
     <section name="Artifact Upload">
       <div style="text-align: center">
-        <img src="../images/tour/upload.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/upload.png"><img src="../images/tour/upload.png" height="401" alt="" /></a>
         <p>
           Archiva now supports artifact uploads via UI. A pom file can also be included
           in the upload or Archiva can generate one during the upload.

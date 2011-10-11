@@ -27,7 +27,7 @@
   <body>
     <section name="Role-based Security">
       <div style="text-align: center">
-        <img src="../images/tour/security.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/security.png"><img src="../images/tour/security.png" height="401" alt="" /></a>
         <p>
           Archiva uses the Redback security framework to provide flexible role-based security controls for repositories.
           You can use the graphical interface to maintain user accounts, as well as secure repositories for read and/or write

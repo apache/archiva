@@ -27,7 +27,7 @@
   <body>
     <section name="Virtual Repositories">
       <div style="text-align: center">
-        <img src="../images/tour/virtual-repos.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/virtual-repos.png"><img src="../images/tour/virtual-repos.png" height="401" alt="" /></a>
         <p>
           Archiva implements the concept of virtual repositories, wherein a set of
           Archiva repositories can be grouped together under one URL and that one URL

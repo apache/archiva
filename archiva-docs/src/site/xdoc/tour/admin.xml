@@ -27,7 +27,7 @@
   <body>
     <section name="Graphical Administration">
       <div style="text-align: center">
-        <img src="../images/tour/admin.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/admin.png"><img src="../images/tour/admin.png" height="401" alt="" /></a>
         <p>
           Archiva has a comprehensive web-based administration interface for configuring repositories,
           remote proxies, scheduled jobs and more. The configuration is kept in sync with the XML

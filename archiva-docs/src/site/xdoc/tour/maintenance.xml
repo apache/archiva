@@ -27,7 +27,7 @@
   <body>
     <section name="Maintenance">
       <div style="text-align: center">
-        <img src="../images/tour/maintenance.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/maintenance.png"><img src="../images/tour/maintenance.png" height="401" alt="" /></a>
         <p>
           Archiva has utilities called consumers that can be used for maintaining the
           Archiva repositories. These can be configured or activated in the Repository

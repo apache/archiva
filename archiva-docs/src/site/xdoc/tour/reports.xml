@@ -27,14 +27,14 @@
   <body>
     <section name="Integrity Reports">
       <div style="text-align: center">
-        <img src="../images/tour/reports.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/reports.png"><img src="../images/tour/reports.png" height="401" alt="" /></a>
         <p>
           Archiva monitors the state of the managed repositories and keeps track of
           potential problems to allow improvement of metadata and to assist in
           troubleshooting problems.
         </p>
         <p>
-          <a href="../adminguide/security.html">Previous: Role-based Security</a> |
+          <a href="security.html">Previous: Role-based Security</a> |
           <strong>Integrity Reports</strong> |
           <a href="audit-log.html">Next: Audit Log Report</a>
         </p>

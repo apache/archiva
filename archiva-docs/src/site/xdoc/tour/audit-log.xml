@@ -27,7 +27,7 @@
   <body>
     <section name="Audit Log Report">
       <div style="text-align: center">
-        <img src="../images/tour/audit-log.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/audit-log.png"><img src="../images/tour/audit-log.png" height="401" alt="" /></a>
         <p>
           Archiva provides a user interface for querying audit logs. The current
           implementation only covers upload/deploy actions but will include other

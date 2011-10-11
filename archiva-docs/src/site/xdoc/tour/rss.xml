@@ -27,7 +27,7 @@
   <body>
     <section name="RSS Feeds">
       <div style="text-align: center">
-        <img src="../images/tour/rss.png" width="640" height="401" alt="" />
+        <a id="single_image" href="../images/tour/rss.png"><img src="../images/tour/rss.png" height="401" alt="" /></a>
         <p>
           Archiva provides RSS feeds for new artifacts in the repositories and new versions
           of a specific artifact.
@@ -35,7 +35,7 @@
         <p>
           <a href="virtual-repos.html">Previous: Virtual Repositories</a> |
           <strong>RSS Feeds</strong> |
-          <a href="../adminguide/security.html">Next: Role-based Security</a>
+          <a href="security.html">Next: Role-based Security</a>
         </p>
       </div>
     </section>
