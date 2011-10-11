@@ -68,7 +68,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>3.0.3</lucene.version>
-    <cxfVersion>2.4.2</cxfVersion>
+    <cxfVersion>2.4.3</cxfVersion>
   </properties>
 
   <dependencyManagement>
