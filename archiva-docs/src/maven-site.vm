@@ -554,7 +554,7 @@
       #if($decoration.body.footer)
         $decoration.body.footer
       #else
-        Copyright &copy;#copyright()All Rights Reserved.#publishDate( "bottom" $decoration.publishDate $decoration.version )
+        Copyright &copy;#copyright() Apache Archiva, Archiva, Apache, the Apache feather logo, and the Apache Archiva project logos are trademarks of The Apache Software Foundation. .#publishDate( "bottom" $decoration.publishDate $decoration.version )
       #end
     </footer>
   </body>
