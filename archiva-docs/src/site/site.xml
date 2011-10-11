@@ -99,5 +99,13 @@
     <menu name="More Information">
       <item name="Archiva Wiki"              href="http://cwiki.apache.org/confluence/display/ARCHIVA/Index" />
     </menu>
+
+    <menu name="ASF">
+      <item name="How Apache Works" href="http://www.apache.org/foundation/how-it-works.html"/>
+      <item name="Foundation" href="http://www.apache.org/foundation/"/>
+      <item name="Sponsoring Apache" href="http://www.apache.org/foundation/sponsorship.html"/>
+      <item name="Thanks" href="http://www.apache.org/foundation/thanks.html"/>
+    </menu>
+
   </body>
 </project>
