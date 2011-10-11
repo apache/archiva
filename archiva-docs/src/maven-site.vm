@@ -550,12 +550,13 @@
       </div>
     </div>
 
-    <footer>
+    <div id="footer">
       #if($decoration.body.footer)
         $decoration.body.footer
       #else
-        Copyright &copy;#copyright() Apache Archiva, Archiva, Apache, the Apache feather logo, and the Apache Archiva project logos are trademarks of The Apache Software Foundation. .#publishDate( "bottom" $decoration.publishDate $decoration.version )
+        Copyright &copy;#copyright() Apache Archiva, Archiva, Apache, the Apache feather logo, and the Apache Archiva project logos are trademarks of The Apache Software Foundation -
+        <a href="http://archiva.apache.org/privacy-policy.html">Privacy Policy</a> .#publishDate( "bottom" $decoration.publishDate $decoration.version )
       #end
-    </footer>
+    </div>
   </body>
 </html>

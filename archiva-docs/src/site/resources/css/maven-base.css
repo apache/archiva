@@ -35,3 +35,12 @@ body{padding-top: 4px;}
  #breadcrumbs {
   font-size: 11px;
 }
+
+#footer {
+  margin: 20px 0px 20px 0px;
+  border-top: solid #ccc 1px;
+  color: #333333;
+  padding: 3px 10px 3px 10px;
+  font-size: x-small;
+  text-align: center;
+}
