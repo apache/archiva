@@ -509,16 +509,6 @@
     #googleAnalytics( $decoration.googleAnalyticsAccountId )
   </head>
   <body>
-    ##<div class="topbar">
-    ##  <div class="topbar-inner">
-    ##    <div class="container-fluid">
-    ##      <a class="brand" href="$relativePath/index.html">$project.name</a>
-    ##      <ul class="nav">
-    ##        #links( $decoration.body.links )#publishDate( "right" $decoration.publishDate $decoration.version )
-    ##      </ul>
-    ##    </div>
-    ##  </div>
-    ##</div>
     <div id="banner">
       <ul class="media-grid">
        <li class="xleftbanner">#banner( $decoration.bannerLeft "bannerLeft" )</li>

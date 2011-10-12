@@ -31,3 +31,17 @@
 .sidebar ul {
     margin: 0 0 10px 15px;
 }
+
+
+.media-grid a{
+    float:left;
+    padding:4px;
+    margin:0 0 20px 20px;
+    border:0px solid #ddd;
+    -webkit-border-radius:0px;
+    -moz-border-radius:0px;
+    border-radius:0px;
+    -webkit-box-shadow:0 0px 0px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow:0 0px 0px rgba(0, 0, 0, 0.075);
+    box-shadow:0 0px 0px rgba(0, 0, 0, 0.075);
+}
