@@ -245,6 +245,7 @@ public class ArchivaIndexingTaskExecutor
                 : new File( indexDirectory );
             IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
             indexPacker.packIndex( request );
+            context.updateTimestamp( true );
 
             log.debug( "Index file packaged at '{}'.", indexLocation.getPath() );
 
