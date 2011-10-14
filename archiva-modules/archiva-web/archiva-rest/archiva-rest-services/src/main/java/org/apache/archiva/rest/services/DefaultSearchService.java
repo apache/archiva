@@ -105,6 +105,7 @@ public class DefaultSearchService
         searchField.setGroupId( groupId );
         searchField.setArtifactId( artifactId );
         searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
+        searchField.setRepositories( getObservableRepos() );
 
         try
         {

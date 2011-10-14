@@ -141,9 +141,9 @@ public class NexusRepositorySearch
 
         List<String> indexingContextIds = addIndexingContexts(searchFields.getRepositories());
 
-        // if no index found in the specified one return an empty search result instead of doing a search on all index
+        // if no index found in the specified ones return an empty search result instead of doing a search on all index
         // olamy: IMHO doesn't make sense
-        if (indexingContextIds == null || indexingContextIds.isEmpty() )
+        if ( !searchFields.getRepositories().isEmpty() && (indexingContextIds == null || indexingContextIds.isEmpty()) )
         {
             return new SearchResults();
         }
