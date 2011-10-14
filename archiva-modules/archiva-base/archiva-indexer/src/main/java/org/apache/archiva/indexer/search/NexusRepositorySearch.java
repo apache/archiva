@@ -141,6 +141,13 @@ public class NexusRepositorySearch
 
         List<String> indexingContextIds = addIndexingContexts(searchFields.getRepositories());
 
+        // if no index found in the specified one return an empty search result instead of doing a search on all index
+        // olamy: IMHO doesn't make sense
+        if (indexingContextIds == null || indexingContextIds.isEmpty() )
+        {
+            return new SearchResults();
+        }
+
         BooleanQuery q = new BooleanQuery();
         if ( StringUtils.isNotBlank(searchFields.getGroupId()) )
         {

@@ -827,4 +827,28 @@ public class NexusRepositorySearchTest
         assertTrue( groupIds.contains( "org.apache.felix") );
         assertTrue( groupIds.contains( "org.apache.archiva" ) );
     }
+
+    @Test
+    public void testSearchWithUnknownRepo()
+        throws Exception
+    {
+        createIndexContainingMoreArtifacts( true );
+
+        List<String> selectedRepos = Arrays.asList( "foo" );
+
+        SearchFields searchFields = new SearchFields();
+        searchFields.setClassName( "SomeClass" );
+        searchFields.setRepositories( selectedRepos );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+
+        archivaConfigControl.replay();
+
+        SearchResults results = search.search( "user", searchFields, null );
+
+        archivaConfigControl.verify();
+
+        assertNotNull( results );
+        assertEquals( 0, results.getHits().size() );
+    }
 }
