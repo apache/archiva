@@ -52,25 +52,25 @@ table.bodyTable tr.b {
       <table>
         <tr>
           <td>
-            <a href="project.html">
+            <a href="../images/tour/project.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/project.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
               1. Project Information
             </a>
           </td>
           <td>
-            <a href="search.html">
+            <a href="../images/tour/search.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/search.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
               2. Artifact Search
             </a>
           </td>
           <td>
-            <a href="proxy.html">
+            <a href="../images/tour/proxy.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/proxy.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
                3. Remote Proxying Cache
             </a>
           </td>
           <td>
-            <a href="upload.html">
+            <a href="../images/tour/upload.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/upload.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
                4. Artifact Upload
             </a>
@@ -78,25 +78,25 @@ table.bodyTable tr.b {
         </tr>
         <tr>
           <td>
-            <a href="admin.html">
+            <a href="../images/tour/admin.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/admin.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               5. Graphical Administration
             </a>
           </td>
           <td>
-            <a href="virtual-repos.html">
+            <a href="../images/tour/virtual-repos.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/virtual-repos.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               6. Virtual Repositories
             </a>
           </td>
           <td>
-            <a href="rss.html">
+            <a href="../images/tour/rss.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/rss.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               7. RSS Feeds
             </a>
           </td>
           <td>
-            <a href="../adminguide/security.html">
+            <a href="../images/tour/security.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/security.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               8. Role-based Security
             </a>
@@ -104,19 +104,19 @@ table.bodyTable tr.b {
         </tr>
         <tr>             
           <td>
-            <a href="reports.html">
+            <a href="../images/tour/reports.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/reports.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               9. Integrity Reports
             </a>
           </td>
           <td>
-            <a href="audit-log.html">
+            <a href="../images/tour/audit-log.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/audit-log.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               10. Audit Log Report
             </a>
           </td>
           <td>
-            <a href="maintenance.html">
+            <a href="../images/tour/maintenance.png" class="gallery_image" rel="gallery_image">
               <img src="../images/tour/maintenance.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               11. Maintenance
             </a>
