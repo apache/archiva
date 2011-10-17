@@ -51,6 +51,9 @@ public interface SearchService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
+    /**
+     * <b>search will be apply on all repositories the user used has karma</b>
+     */
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
@@ -58,6 +61,9 @@ public interface SearchService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
+    /**
+     * <b>search will be apply on all repositories the user used has karma</b>
+     */
     List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
                                         @QueryParam( "artifactId" ) String artifactId,
                                         @QueryParam( "packaging" ) String packaging )
@@ -67,6 +73,10 @@ public interface SearchService
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
+    /**
+     * If searchRequest contains repositories, the search will be done only on those repositories.
+     * <b>if no repositories, the search will be apply on all repositories the user used has karma</b>
+     */
     List<Artifact> searchArtifacts( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
 
@@ -74,6 +84,9 @@ public interface SearchService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
+    /**
+     * <b>this method applies on Maven Indexer lucene index, so datas not yet indexed won't be available</b>
+     */
     GroupIdList getAllGroupIds( @QueryParam( "selectedRepos" ) List<String> selectedRepos )
         throws ArchivaRestServiceException;
 
