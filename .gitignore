@@ -16,3 +16,4 @@ archiva-modules/archiva-web/archiva-webapp-test/cargo-installs/
 *.ipr
 *.iws
 .DS_Store
+.extract
