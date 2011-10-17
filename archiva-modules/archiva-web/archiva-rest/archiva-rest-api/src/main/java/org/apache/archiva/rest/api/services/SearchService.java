@@ -77,6 +77,7 @@ public interface SearchService
     GroupIdList getAllGroupIds( @QueryParam( "selectedRepos" ) List<String> selectedRepos )
         throws ArchivaRestServiceException;
 
+    /*
     @Path( "getDependencies" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
@@ -93,5 +94,6 @@ public interface SearchService
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<Artifact> getArtifactByChecksum( @QueryParam( "checksum" ) String checksum )
         throws ArchivaRestServiceException;
+    */
 
 }
