@@ -128,7 +128,7 @@ public class HttpProxyTransferTest
         ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
         if ( managedRepositoryAdmin.getManagedRepository( repo.getId() ) == null )
         {
-            managedRepositoryAdmin.addManagedRepository( repo, false, null );
+            managedRepositoryAdmin.addManagedRepository( repo, null );
         }
 
         //config.getConfiguration().addManagedRepository( repo );

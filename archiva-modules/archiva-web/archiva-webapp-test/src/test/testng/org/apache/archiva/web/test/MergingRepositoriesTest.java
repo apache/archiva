@@ -41,9 +41,9 @@ public class MergingRepositoriesTest
     public void testAddArtifactToStagingRepository()
     {
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getValidArtifactFilePath(),
-                     "merging-repo-stage", true );
+                     "merging-repo", true );
         assertTextPresent( "Artifact '" + getGroupId() + ":" + getArtifactId() + ":" + getVersion() +
-            "' was successfully deployed to repository 'merging-repo-stage'" );
+            "' was successfully staged for repository 'merging-repo'" );
     }
 
     // here we test the merging (no conflicts artifacts are available)
@@ -92,6 +92,7 @@ public class MergingRepositoriesTest
     @Test(dependsOnMethods = {"testAddArtifactToStagingRepository"})
     public void testConfigurationChangesOfStagingRepository()
     {
+        // STAGE FIXME: hardcoded ID
         editManagedRepository();
         addArtifact( getGroupId(), getArtifactId(), getVersion(), getPackaging(), getValidArtifactFilePath(),
                      "merging-repo-stage", true );

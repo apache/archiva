@@ -21,7 +21,6 @@ package org.apache.archiva.web.action;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
@@ -38,11 +37,13 @@ import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  *
@@ -69,104 +70,72 @@ public class MergeAction
 
     private String repoid;
 
-    private String sourceRepoId;
+    private Collection<ArtifactMetadata> conflictSourceArtifactsToBeDisplayed;
 
-    private final String action = "merge";
+    private static String SESSION_KEY = "default";
 
-    private final String hasConflicts = "CONFLICTS";
-
-    private List<ArtifactMetadata> conflictSourceArtifacts;
-
-    private List<ArtifactMetadata> conflictSourceArtifactsToBeDisplayed;
-
-    public String getConflicts()
+    public String requestMerge()
+        throws Exception
     {
-        try
+        if ( !repository.isStagingRequired() )
         {
-            sourceRepoId = repoid + "-stage";
-            ManagedRepository targetRepoConfig = managedRepositoryAdmin.getManagedRepository( sourceRepoId );
-
-            if ( targetRepoConfig != null )
-            {
-                return hasConflicts;
-            }
-            else
-            {
-                return ERROR;
-            }
-        }
-        catch ( RepositoryAdminException e )
-        {
-            addActionError( "RepositoryAdminException " + e.getMessage() );
+            addActionError( "Repository [" + repository.getId() + "] is not configured for staging" );
             return ERROR;
         }
+
+        // check for conflicts to display
+        HashMap<String, ArtifactMetadata> map = new LinkedHashMap<String, ArtifactMetadata>();
+        for ( ArtifactMetadata metadata : getConflictSourceArtifacts() )
+        {
+            String metadataId = metadata.getNamespace() + ":" + metadata.getProject() + ":" + metadata.getVersion();
+            map.put( metadataId, metadata );
+        }
+        conflictSourceArtifactsToBeDisplayed = map.values();
+
+        return "confirm";
     }
 
     public String doMerge()
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
-        try
-        {
-            MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
-
-            if ( repository.isReleases() && !repository.isSnapshots() )
-            {
-                mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepoId, repoid );
-            }
-            else
-            {
-                repositoryMerger.merge( metadataRepository, sourceRepoId, repoid );
-
-                for ( ArtifactMetadata metadata : sourceArtifacts )
-                {
-                    triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
-                }
-            }
-
-            scanRepository();
-
-            addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
-
-            return SUCCESS;
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            addActionError( "Error occurred while merging the repositories: " + e.getMessage() );
-            return ERROR;
-        }
-        finally
-        {
-            repositorySession.close();
-        }
+        return merge( true );
     }
 
     public String mergeBySkippingConflicts()
     {
+        return merge( false );
+    }
+
+    private String merge( boolean overwriteConflicts )
+    {
+        // FIXME: stage repo should only need the repoid
+        String sourceRepoId = null;
+
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
-            sourceArtifacts.removeAll( conflictSourceArtifacts );
-
-            if ( repository.isReleases() && !repository.isSnapshots() )
+            if ( !overwriteConflicts )
             {
-                mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepoId, repoid );
+                sourceArtifacts.removeAll( getConflictSourceArtifacts() );
+
+                Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>(
+                    sourceArtifacts );
+                repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactsWithOutConflicts );
             }
             else
             {
-
-                Filter<ArtifactMetadata> artifactsWithOutConflicts =
-                    new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-                repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactsWithOutConflicts );
-                for ( ArtifactMetadata metadata : sourceArtifacts )
-                {
-                    triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
-                }
+                repositoryMerger.merge( metadataRepository, sourceRepoId, repoid );
             }
 
+            // FIXME: this should happen in the merge itself
+            for ( ArtifactMetadata metadata : sourceArtifacts )
+            {
+                triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+            }
+
+            // FIXME: this should happen in the merge itself, don't re-scan the whole thing. Make sure we test the
+            //   results
             scanRepository();
 
             addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
@@ -183,31 +152,6 @@ public class MergeAction
         {
             repositorySession.close();
         }
-    }
-
-    public String mergeWithOutConlficts()
-    {
-        sourceRepoId = repoid + "-stage";
-
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
-        try
-        {
-            conflictSourceArtifacts =
-                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId, repoid );
-        }
-        catch ( Exception e )
-        {
-            addActionError( "Error occurred while merging the repositories." );
-            return ERROR;
-        }
-        finally
-        {
-            repositorySession.close();
-        }
-
-        addActionMessage( "Repository '" + sourceRepoId + "' successfully merged to '" + repoid + "'." );
-
-        return SUCCESS;
     }
 
     public ManagedRepository getRepository()
@@ -223,30 +167,7 @@ public class MergeAction
     public void prepare()
         throws Exception
     {
-        sourceRepoId = repoid + "-stage";
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
-        try
-        {
-            conflictSourceArtifacts =
-                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId, repoid );
-        }
-        finally
-        {
-            repositorySession.close();
-        }
-
         this.repository = managedRepositoryAdmin.getManagedRepository( repoid );
-        setConflictSourceArtifactsToBeDisplayed( conflictSourceArtifacts );
-    }
-
-    public String getSourceRepoId()
-    {
-        return sourceRepoId;
-    }
-
-    public void setSourceRepoId( String sourceRepoId )
-    {
-        this.sourceRepoId = sourceRepoId;
     }
 
     public String getRepoid()
@@ -260,56 +181,39 @@ public class MergeAction
     }
 
     public List<ArtifactMetadata> getConflictSourceArtifacts()
+        throws Exception
     {
-        return conflictSourceArtifacts;
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            return repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), repoid );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
     }
 
-    public void setConflictSourceArtifacts( List<ArtifactMetadata> conflictSourceArtifacts )
-    {
-        this.conflictSourceArtifacts = conflictSourceArtifacts;
-    }
-
-    public List<ArtifactMetadata> getConflictSourceArtifactsToBeDisplayed()
+    public Collection<ArtifactMetadata> getConflictSourceArtifactsToBeDisplayed()
     {
         return conflictSourceArtifactsToBeDisplayed;
     }
 
-    public void setConflictSourceArtifactsToBeDisplayed( List<ArtifactMetadata> conflictSourceArtifacts )
-        throws Exception
+    private Filter<ArtifactMetadata> filterOutSnapshots( List<ArtifactMetadata> sourceArtifacts, String repoid )
     {
-        this.conflictSourceArtifactsToBeDisplayed = new ArrayList<ArtifactMetadata>();
-        HashMap<String, ArtifactMetadata> map = new HashMap<String, ArtifactMetadata>();
-        for ( ArtifactMetadata metadata : conflictSourceArtifacts )
+        for ( Iterator<ArtifactMetadata> i = sourceArtifacts.iterator(); i.hasNext(); )
         {
-            String metadataId =
-                metadata.getNamespace() + metadata.getProject() + metadata.getProjectVersion() + metadata.getVersion();
-            map.put( metadataId, metadata );
-        }
-        conflictSourceArtifactsToBeDisplayed.addAll( map.values() );
-    }
-
-    private void mergeWithOutSnapshots( MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
-                                        String sourceRepoId, String repoid )
-        throws Exception
-    {
-        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
-        for ( ArtifactMetadata metadata : sourceArtifacts )
-        {
-
+            ArtifactMetadata metadata = i.next();
             if ( metadata.getProjectVersion().contains( "SNAPSHOT" ) )
             {
-                artifactsWithOutSnapshots.add( metadata );
+                i.remove();
             }
             else
             {
                 triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
             }
-
         }
-        sourceArtifacts.removeAll( artifactsWithOutSnapshots );
-
-        Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-        repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
+        return new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
     }
 
     private void scanRepository()

@@ -48,13 +48,14 @@ public class MockManagedRepositoryAdmin
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO add staging repo information back too
             ManagedRepository repo =
-                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
-                                       repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                       repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
-                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
-                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), true );
+                new ManagedRepository( repoConfig.getId(), repoConfig.getName(),
+                                       repoConfig.getLocation(), repoConfig.getLayout(), repoConfig.isSnapshots(),
+                                       repoConfig.isReleases(), repoConfig.isBlockRedeployments(),
+                                       repoConfig.getRefreshCronExpression(), repoConfig.getIndexDir(),
+                                       repoConfig.isScanned(), repoConfig.getDaysOlder(),
+                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(),
+                                       repoConfig.isStagingRequired() );
 
             managedRepos.add( repo );
         }
@@ -89,15 +90,14 @@ public class MockManagedRepositoryAdmin
         return null;
     }
 
-    public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                         AuditInformation auditInformation )
+    public Boolean addManagedRepository( ManagedRepository managedRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;
     }
 
-    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                            AuditInformation auditInformation, boolean resetStats )
+    public Boolean updateManagedRepository( ManagedRepository managedRepository, AuditInformation auditInformation,
+                                            boolean resetStats )
         throws RepositoryAdminException
     {
         return null;

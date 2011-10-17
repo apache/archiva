@@ -271,21 +271,13 @@
     <archiva:copy-paste-snippet object="${repository}" wrapper="toggle" />
   </td>
 </tr>
-
-
-  <c:set var="str" value="${repository.id}" />
-  <jsp:useBean id="str" type="java.lang.String" scope="page"/>
-  <c:set var="location" value="${repository.location}"/>
-  <jsp:useBean id="location" type="java.lang.String" scope="page"/>
-
-  <%-- TODO: fix this hard coding - make stage repository configuration more transparent than the actual ManagedRepositoryConfiguration --%>
-  <c:if test='<%= new File (new File(location ).getParent() ,str + "-stage" ).exists()%>'>
-     <tr>
-       <th>
-         stage repository location
-       </th>
+<c:if test="${repository.stagingRequired}">
+  <tr>
+    <th>
+      Stage repository location
+    </th>
     <td>
-      ${repository.location}${'-stage'}
+      ${repository.stagingLocation}
     </td>
   </tr>
   <redback:ifAuthorized permission="archiva-merge-repository" resource="${repository.id}">
@@ -294,22 +286,12 @@
     <td>
       <s:form action="merge" theme="simple">
         <s:hidden name="repoid" value="%{#attr.repository.id}"/>
-        <%--<s:hidden name="repository" value="%{repository}"/>--%>
-        <table>
-          <tr>
-            <td><s:submit id="Merge" value="Merge"/></td>
-          </tr>
-        </table>
+        <s:submit id="Merge" value="Merge"/>
       </s:form>
     </td>
   </tr>
   </redback:ifAuthorized>
-
-
-  </c:if>
-
-
-
+</c:if>
 </table>
 
 </div>

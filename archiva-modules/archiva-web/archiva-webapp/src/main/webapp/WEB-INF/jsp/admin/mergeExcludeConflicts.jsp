@@ -36,79 +36,38 @@
 </p>
 
 <div class="infobox">
-  <table class="infotable">
+<c:choose>
+  <c:when test="${empty (conflictSourceArtifactsToBeDisplayed)}">
+    <h1>No conflicting artifacts</h1>
 
-    <c:choose>
-      <c:when test="${empty (conflictSourceArtifacts)}">
-        <h1>No conflicting artifacts</h1>
-
-        <c:if test="${!repository.snapshots and repository.releases}">
-          <div class="warningbox">
-            <p>
-              <strong>WARNING:  Repository  "${repoid}" does not allow to merge snapshots</strong>
-            </p>
-          </div>
-        </c:if>
-
-        <s:form method="post" action="merge" namespace="/admin" validate="false" theme="simple">
-          <s:hidden name="repoid"/>
-          <div class="buttons">
-            <s:submit value="Merge All" method="doMerge"/>
-          </div>
-        </s:form>
-      </c:when>
-      <c:otherwise>
-        <div class="warningbox">
-          <c:if test="${!repository.snapshots and repository.releases}">
-            <p>
-              <strong>WARNING:  Repository "${repoid}" does not allow to merge snapshots</strong>
-            </p>
-          </c:if>
-          <p>
-            <strong>WARNING: The following are the artifacts in conflict.</strong>
-          </p>
-        </div>
-        <c:forEach items="${conflictSourceArtifactsToBeDisplayed}" var="artifact">
-          <tr>
-            <td>Artifact Id :</td>
-            <%--<td><code>${artifact.id}</code></td>--%>
-            <td align="left"> <code>${artifact.namespace} ${" "} ${artifact.project}  ${" "} ${artifact.version}</code></td>
-          </tr>
-        </c:forEach>
+    <s:form method="post" action="merge" namespace="/admin" validate="false" theme="simple">
+      <s:hidden name="repoid"/>
+      <div class="buttons">
+        <s:submit value="Merge All" method="doMerge"/>
+      </div>
+    </s:form>
+  </c:when>
+  <c:otherwise>
+    <div class="warningbox">
+      <p><strong>WARNING! The following are the artifacts in conflict:</strong></p>
+    </div>
+    <table class="infotable">
+      <c:forEach items="${conflictSourceArtifactsToBeDisplayed}" var="artifact">
         <tr>
-          <td>
-            <s:form action="merge" method="post" namespace="/admin" validate="false">
-              <s:hidden name="repoid"/>
-              <div class="buttons">
-                <table>
-                  <tr>
-                    <td>
-                      <table>
-                        <tr>
-                          <td>
-                            <s:submit value="Merge All" method="doMerge"/>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                    <td>
-                      <table>
-                        <tr>
-                          <td>
-                            <s:submit value="Merge With Skip" method="mergeBySkippingConflicts"/>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </s:form>
-          </td>
+          <td>Artifact Id :</td>
+          <td align="left"> <code>${artifact.namespace} : ${artifact.project} : ${artifact.version}</code></td>
         </tr>
-      </c:otherwise>
-    </c:choose>
-  </table>
+      </c:forEach>
+    </table>
+    <s:form action="merge" method="post" namespace="/admin" validate="false">
+      <s:hidden name="repoid"/>
+      <div class="buttons">
+        <s:submit value="Merge and Overwrite Conflicts" method="doMerge"/>
+        <s:submit value="Merge and Skip Conflicts" method="mergeBySkippingConflicts"/>
+      </div>
+    </s:form>
+  </c:otherwise>
+</c:choose>
 </div>
 </body>
 </html>

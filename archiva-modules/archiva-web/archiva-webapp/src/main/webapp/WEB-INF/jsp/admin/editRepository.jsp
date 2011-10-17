@@ -52,15 +52,6 @@
     <s:hidden name="repository.id"/>
     <s:label label="ID" name="repository.id" />
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-
-    <c:choose>
-      <c:when test="${empty(stagingRepository)}">
-        <s:checkbox id="stageNeeded" name="stageNeeded" value="false" label="Create stage repository"/>
-      </c:when>
-      <c:otherwise>
-        <s:checkbox name="stageNeeded" value="true" label="Create stage repository"/>
-      </c:otherwise>
-    </c:choose>
     <s:submit value="Update Repository"/>
   </s:form>
 

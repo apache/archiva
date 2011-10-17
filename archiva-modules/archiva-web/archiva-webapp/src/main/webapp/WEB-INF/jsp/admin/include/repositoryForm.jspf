@@ -34,3 +34,4 @@
 <s:checkbox name="repository.scanned" value="repository.scanned" label="Scannable"/>
 <s:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"
              label="Delete Released Snapshots"/>
+<s:checkbox name="repository.stagingRequired" value="repository.stagingRequired" label="Require staging repository"/>

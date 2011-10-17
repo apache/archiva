@@ -99,7 +99,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), null );
 
         String repoRoot = prepareTestRepos();
 
@@ -160,7 +160,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), null );
 
         String repoRoot = prepareTestRepos();
 
@@ -195,10 +195,10 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         */
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), null );
 
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ), false, null );
+            getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ), null );
 
         String repoRoot = prepareTestRepos();
 
@@ -248,7 +248,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         */
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), null );
 
         String repoRoot = prepareTestRepos();
 

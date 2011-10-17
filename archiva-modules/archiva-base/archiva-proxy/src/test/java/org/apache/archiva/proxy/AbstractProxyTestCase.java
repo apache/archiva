@@ -160,7 +160,7 @@ public abstract class AbstractProxyTestCase
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( config );
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, null );
         //config.getConfiguration().addManagedRepository( repoConfig );
 
         // Setup source repository (using legacy layout)
@@ -180,7 +180,7 @@ public abstract class AbstractProxyTestCase
         repoConfig = managedLegacyRepository.getRepository();
 
         //config.getConfiguration().addManagedRepository( repoConfig );
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, null );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",

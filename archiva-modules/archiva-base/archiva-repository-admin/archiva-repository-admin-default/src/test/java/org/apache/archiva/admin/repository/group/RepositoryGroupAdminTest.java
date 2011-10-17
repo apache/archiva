@@ -50,9 +50,9 @@ public class RepositoryGroupAdminTest
             ManagedRepository managedRepositoryTwo =
                 getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
 
-            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, getFakeAuditInformation() );
 
-            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, getFakeAuditInformation() );
 
             RepositoryGroup repositoryGroup =
                 new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one", "test-new-two" ) );
@@ -96,9 +96,9 @@ public class RepositoryGroupAdminTest
             ManagedRepository managedRepositoryTwo =
                 getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
 
-            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, getFakeAuditInformation() );
 
-            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, getFakeAuditInformation() );
 
             RepositoryGroup repositoryGroup = new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one" ) );
 
@@ -156,9 +156,9 @@ public class RepositoryGroupAdminTest
             ManagedRepository managedRepositoryTwo =
                 getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
 
-            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, getFakeAuditInformation() );
 
-            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, getFakeAuditInformation() );
 
             RepositoryGroup repositoryGroup =
                 new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one", "test-new-two" ) );

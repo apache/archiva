@@ -99,9 +99,7 @@ public class DefaultManagedRepositoriesService
 
         try
         {
-            return managedRepositoryAdmin.addManagedRepository( managedRepository,
-                                                                managedRepository.isStageRepoNeeded(),
-                                                                getAuditInformation() );
+            return managedRepositoryAdmin.addManagedRepository( managedRepository, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -116,9 +114,7 @@ public class DefaultManagedRepositoriesService
 
         try
         {
-            return managedRepositoryAdmin.updateManagedRepository( managedRepository,
-                                                                   managedRepository.isStageRepoNeeded(),
-                                                                   getAuditInformation(),
+            return managedRepositoryAdmin.updateManagedRepository( managedRepository, getAuditInformation(),
                                                                    managedRepository.isResetStats() );
         }
         catch ( RepositoryAdminException e )

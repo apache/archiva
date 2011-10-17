@@ -730,7 +730,7 @@ public abstract class AbstractArchivaTest
         setFieldValue( "repository.cronExpression", cron );
         setFieldValue( "repository.daysOlder", daysOlder );
         setFieldValue( "repository.retentionCount", retentionCount );
-        checkField( "stageNeeded" );
+        checkField( "repository.stagingRequired" );
 
         clickButtonWithValue( "Add Repository" );
     }

@@ -44,13 +44,12 @@ public interface ManagedRepositoryAdmin
     Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation, boolean deleteContent )
         throws RepositoryAdminException;
 
-    Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                  AuditInformation auditInformation )
+    Boolean addManagedRepository( ManagedRepository managedRepository, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
 
-    Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                     AuditInformation auditInformation, boolean resetStats )
+    Boolean updateManagedRepository( ManagedRepository managedRepository, AuditInformation auditInformation,
+                                     boolean resetStats )
         throws RepositoryAdminException;
 
 

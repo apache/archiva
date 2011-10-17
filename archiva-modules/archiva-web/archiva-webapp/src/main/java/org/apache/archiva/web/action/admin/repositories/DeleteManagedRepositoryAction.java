@@ -41,8 +41,6 @@ public class DeleteManagedRepositoryAction
 
     private ManagedRepository repository;
 
-    private ManagedRepository stagingRepository;
-
     private String repoid;
 
     public void prepare()
@@ -51,7 +49,6 @@ public class DeleteManagedRepositoryAction
         if ( StringUtils.isNotBlank( repoid ) )
         {
             this.repository = getManagedRepositoryAdmin().getManagedRepository( repoid );
-            this.stagingRepository = getManagedRepositoryAdmin().getManagedRepository( repoid + "-stage" );
         }
     }
 

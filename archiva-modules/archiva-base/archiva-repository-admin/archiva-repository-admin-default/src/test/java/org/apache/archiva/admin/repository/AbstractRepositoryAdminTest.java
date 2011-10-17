@@ -93,8 +93,8 @@ public abstract class AbstractRepositoryAdminTest
 
     protected ManagedRepository getTestManagedRepository( String repoId, String repoLocation )
     {
-        return new ManagedRepository( repoId, "test repo", repoLocation, "default", false, true, true, "0 0 * * * ?",
-                                      repoLocation + "/.index", false, 1, 2, true, false );
+        return new ManagedRepository( repoId, "test repo", repoLocation, "default", false, true, true,
+                                      "0 0 * * * ?", repoLocation + "/.index", false, 1, 2, true, false );
     }
 
     protected File clearRepoLocation( String path )

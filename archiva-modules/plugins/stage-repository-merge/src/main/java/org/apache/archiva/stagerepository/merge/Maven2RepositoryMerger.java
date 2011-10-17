@@ -157,6 +157,7 @@ public class Maven2RepositoryMerger
         // pom file copying
         String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
 
+        // STAGE FIXME: don't re-parse and construct the path - use the filename we already have
         // pom file copying
         // TODO need to use path translator to get the pom file path
 //        String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
@@ -172,10 +173,10 @@ public class Maven2RepositoryMerger
 
         String index = artifactPath.substring( lastIndex + 1 );
         int last = index.lastIndexOf( '.' );
-        File sourcePomFile = new File( sourceRepoPath, artifactPath.substring( 0, lastIndex ) + "/"
-            + artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
-        File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/"
-            + artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File sourcePomFile = new File( sourceRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
+            artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/" +
+            artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
 
         if ( !targetPomFile.exists() && sourcePomFile.exists() )
         {
@@ -187,15 +188,16 @@ public class Maven2RepositoryMerger
         {
 
             // updating version metadata files
-            File versionMetaDataFileInSourceRepo =
-                pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getNamespace(),
-                                       artifactMetadata.getProject(), artifactMetadata.getVersion(),
-                                       METADATA_FILENAME );
+            File versionMetaDataFileInSourceRepo = pathTranslator.toFile( new File( sourceRepoPath ),
+                                                                          artifactMetadata.getNamespace(),
+                                                                          artifactMetadata.getProject(),
+                                                                          artifactMetadata.getVersion(),
+                                                                          METADATA_FILENAME );
 
             if ( versionMetaDataFileInSourceRepo.exists() )
             {
-                String relativePathToVersionMetadataFile =
-                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                String relativePathToVersionMetadataFile = versionMetaDataFileInSourceRepo.getAbsolutePath().split(
+                    sourceRepoPath )[1];
                 File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !versionMetaDataFileInTargetRepo.exists() )
@@ -215,8 +217,8 @@ public class Maven2RepositoryMerger
 
             if ( projectMetadataFileInSourceRepo.exists() )
             {
-                String relativePathToProjectMetadataFile =
-                    projectMetadataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                String relativePathToProjectMetadataFile = projectMetadataFileInSourceRepo.getAbsolutePath().split(
+                    sourceRepoPath )[1];
                 File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
 
                 if ( !projectMetadataFileInTargetRepo.exists() )
@@ -234,6 +236,7 @@ public class Maven2RepositoryMerger
 
     }
 
+    // TODO: replace with another copy method
     private void copyFile( File sourceFile, File targetFile )
         throws IOException
     {
@@ -332,12 +335,11 @@ public class Maven2RepositoryMerger
         return metadata;
     }
 
-    public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
-                                                           String targetRepo )
+    public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String targetRepo )
         throws Exception
     {
         List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
-        List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
+        List<ArtifactMetadata> sourceArtifacts = Collections.emptyList(); // STAGE FIXME: metadataRepository.getArtifacts( sourceRepo );
         List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
 
         for ( ArtifactMetadata targetArtifact : targetArtifacts )
@@ -354,9 +356,6 @@ public class Maven2RepositoryMerger
             }
         }
 
-        sourceArtifacts.removeAll( conflictsArtifacts );
-        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-//        merge( sourceRepo, targetRepo, artifactsWithOutConflicts );
         return conflictsArtifacts;
     }
 
@@ -364,10 +363,10 @@ public class Maven2RepositoryMerger
     {
         boolean isSame = false;
 
-        if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) )
-            && ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) )
-            && ( sourceArtifact.getId().equals( targetArtifact.getId() ) )
-            && ( sourceArtifact.getProjectVersion().equals( targetArtifact.getProjectVersion() ) ) )
+        if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) ) &&
+            ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) && ( sourceArtifact.getId().equals(
+            targetArtifact.getId() ) ) && ( sourceArtifact.getProjectVersion().equals(
+            targetArtifact.getProjectVersion() ) ) )
 
         {
             isSame = true;

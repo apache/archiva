@@ -846,6 +846,8 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
+    // FIXME STAGE: test staging pushes it to the right place
+
     ManagedRepository getManagedRepository()
     {
         return new BeanReplicator().replicateBean( this.managedRepository, ManagedRepository.class );

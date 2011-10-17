@@ -181,15 +181,6 @@ public class DeleteManagedRepositoryActionTest
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
 
-        Configuration stageRepoConfiguration = new Configuration();
-        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
-        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
-
-
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-
-
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
@@ -344,13 +335,6 @@ public class DeleteManagedRepositoryActionTest
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration, expectCountGetConfig );
 
-        Configuration stageRepoConfiguration = new Configuration();
-        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
-        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
-
-        archivaConfiguration.save( configuration );
-
-        // save for staging repo delete
         archivaConfiguration.save( configuration );
 
         archivaConfigurationControl.replay();
@@ -401,23 +385,6 @@ public class DeleteManagedRepositoryActionTest
         r.setLocation( location.getAbsolutePath() );
         r.setLayout( "default" );
         r.setCronExpression( "* 0/5 * * * ?" );
-        r.setDaysOlder( 0 );
-        r.setRetentionCount( 0 );
-        r.setReleases( true );
-        r.setSnapshots( true );
-        r.setScanned( false );
-        r.setDeleteReleasedSnapshots( false );
-        return r;
-    }
-
-    private ManagedRepositoryConfiguration createStagingRepository()
-    {
-        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
-        r.setId( REPO_ID + "-stage" );
-        r.setName( "repo name" );
-        r.setLocation( location.getAbsolutePath() );
-        r.setLayout( "default" );
-        r.setRefreshCronExpression( "* 0/5 * * * ?" );
         r.setDaysOlder( 0 );
         r.setRetentionCount( 0 );
         r.setReleases( true );

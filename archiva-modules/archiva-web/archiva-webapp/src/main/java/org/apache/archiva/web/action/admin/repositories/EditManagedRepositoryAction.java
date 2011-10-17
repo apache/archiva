@@ -44,14 +44,9 @@ public class EditManagedRepositoryAction
 
     private ManagedRepository repository;
 
-    private ManagedRepository stagingRepository;
-
     private String repoid;
 
     private final String action = "editRepository";
-
-    private boolean stageNeeded;
-
 
     // FIXME better error message
     public void prepare()
@@ -60,12 +55,12 @@ public class EditManagedRepositoryAction
         if ( StringUtils.isNotBlank( repoid ) )
         {
             repository = getManagedRepositoryAdmin().getManagedRepository( repoid );
-            stagingRepository = getManagedRepositoryAdmin().getManagedRepository( repoid + "-stage" );
         }
         else if ( repository != null )
         {
             repository.setReleases( false );
             repository.setScanned( false );
+            repository.setStagingRequired( false );
         }
     }
 
@@ -115,7 +110,7 @@ public class EditManagedRepositoryAction
         String result = SUCCESS;
         try
         {
-            getManagedRepositoryAdmin().updateManagedRepository( repository, stageNeeded, getAuditInformation(),
+            getManagedRepositoryAdmin().updateManagedRepository( repository, getAuditInformation(),
                                                                  resetStats );
         }
         catch ( RepositoryAdminException e )
@@ -175,17 +170,6 @@ public class EditManagedRepositoryAction
     }
 
 
-    public boolean isStageNeeded()
-    {
-        return stageNeeded;
-    }
-
-    public void setStageNeeded( boolean stageNeeded )
-    {
-
-        this.stageNeeded = stageNeeded;
-    }
-
     public String getAction()
     {
         return action;
@@ -199,15 +183,5 @@ public class EditManagedRepositoryAction
     public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
-    }
-
-    public ManagedRepository getStagingRepository()
-    {
-        return stagingRepository;
-    }
-
-    public void setStagingRepository( ManagedRepository stagingRepository )
-    {
-        this.stagingRepository = stagingRepository;
     }
 }

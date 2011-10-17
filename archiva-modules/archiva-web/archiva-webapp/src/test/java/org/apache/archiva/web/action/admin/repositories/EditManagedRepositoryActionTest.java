@@ -154,9 +154,6 @@ public class EditManagedRepositoryActionTest
 
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
-        Configuration stageRepoConfiguration = new Configuration();
-        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
-        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
         archivaConfigurationControl.replay();
 
@@ -180,8 +177,6 @@ public class EditManagedRepositoryActionTest
     public void testEditRepository()
         throws Exception
     {
-        String stageRepoId = REPO_ID + "-stage";
-
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
         roleManagerControl.setReturnValue( false );
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
@@ -190,16 +185,6 @@ public class EditManagedRepositoryActionTest
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setReturnValue( false );
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
-        roleManagerControl.setVoidCallable();
-
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, stageRepoId );
-        roleManagerControl.setReturnValue( false );
-        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, stageRepoId );
-        roleManagerControl.setVoidCallable();
-
-        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, stageRepoId );
-        roleManagerControl.setReturnValue( false );
-        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, stageRepoId );
         roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
@@ -223,13 +208,6 @@ public class EditManagedRepositoryActionTest
         repositoryTaskScheduler.queueTask( task );
         repositoryTaskSchedulerControl.setVoidCallable();
 
-        RepositoryTask stageTask = new RepositoryTask();
-        stageTask.setRepositoryId( stageRepoId );
-        repositoryTaskScheduler.isProcessingRepositoryTask( stageRepoId );
-        repositoryTaskSchedulerControl.setReturnValue( false );
-        repositoryTaskScheduler.queueTask( stageTask );
-        repositoryTaskSchedulerControl.setVoidCallable();
-
         repositoryTaskSchedulerControl.replay();
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
@@ -241,9 +219,6 @@ public class EditManagedRepositoryActionTest
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
 
-        Configuration stageRepoConfiguration = new Configuration();
-        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
-        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
 
@@ -260,6 +235,7 @@ public class EditManagedRepositoryActionTest
         ManagedRepository repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
+        repository.setStagingRequired( true );
 
         MockControl repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         RepositoryStatisticsManager repositoryStatisticsManager =
@@ -269,10 +245,10 @@ public class EditManagedRepositoryActionTest
         // no deletion
         repositoryStatisticsManagerControl.replay();
 
+        // STAGE FIXME: hardcoded ID
         new File( "target/test/" + REPO_ID + "-stage" ).mkdirs();
 
         action.setRepository( repository );
-        action.setStageNeeded( true );
         String status = action.commit();
         assertEquals( Action.SUCCESS, status );
 
@@ -301,6 +277,7 @@ public class EditManagedRepositoryActionTest
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.setVoidCallable();
 
+        // STAGE FIXME: hardcoded ID
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID + "-stage" );
         roleManagerControl.setReturnValue( false );
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID + "-stage" );
@@ -345,15 +322,8 @@ public class EditManagedRepositoryActionTest
 
         archivaConfigurationControl.setReturnValue( buildEasyConfiguration() );
 
-        Configuration stageRepoConfiguration = buildEasyConfiguration();
-        stageRepoConfiguration.addManagedRepository( createStagingRepository() );
-        archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
-
-        archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
 
-        archivaConfiguration.save( configuration );
-        configuration.addManagedRepository( stageRepoConfiguration.getManagedRepositories().get( 0 ) );
         archivaConfiguration.save( configuration );
         archivaConfiguration.save( configuration );
 
@@ -367,9 +337,11 @@ public class EditManagedRepositoryActionTest
         repositoryStatisticsManager.deleteStatistics( metadataRepository, REPO_ID );
         repositoryStatisticsManagerControl.replay();
 
+        // STAGE FIXME: hardcoded ID
         new File( "target/test/location/" + REPO_ID + "-stage" ).mkdirs();
 
-        action.setStageNeeded( true );
+        // FIXME: stage setting needed
+//        action.setStageNeeded( true );
         action.setRepoid( REPO_ID );
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
@@ -598,30 +570,5 @@ public class EditManagedRepositoryActionTest
         r.setId( REPO_ID );
         populateRepository( r );
         return r;
-    }
-
-    private ManagedRepositoryConfiguration createStagingRepository()
-        throws IOException
-    {
-        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
-        r.setId( REPO_ID + "-stage" );
-        populateStagingRepository( r );
-        return r;
-    }
-
-    private void populateStagingRepository( ManagedRepositoryConfiguration repository )
-        throws IOException
-    {
-        repository.setId( REPO_ID + "-stage" );
-        repository.setName( "repo name" );
-        repository.setLocation( "${appserver.base}/location" );
-        repository.setLayout( "default" );
-        repository.setRefreshCronExpression( "* 0/5 * * * ?" );
-        repository.setDaysOlder( 31 );
-        repository.setRetentionCount( 20 );
-        repository.setReleases( true );
-        repository.setSnapshots( true );
-        repository.setScanned( false );
-        repository.setDeleteReleasedSnapshots( true );
     }
 }

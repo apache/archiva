@@ -415,8 +415,8 @@
     </action>
 
 
-    <action name="merge" class="mergeAction" method="getConflicts">
-      <result name="CONFLICTS">/WEB-INF/jsp/admin/mergeExcludeConflicts.jsp</result>
+    <action name="merge" class="mergeAction" method="requestMerge">
+      <result name="confirm">/WEB-INF/jsp/admin/mergeExcludeConflicts.jsp</result>
       <result name="success">/WEB-INF/jsp/admin/mergeResults.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>

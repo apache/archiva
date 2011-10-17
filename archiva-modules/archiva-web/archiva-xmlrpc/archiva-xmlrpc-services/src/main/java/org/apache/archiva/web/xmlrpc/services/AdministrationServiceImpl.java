@@ -87,8 +87,6 @@ public class AdministrationServiceImpl
 
     private RepositoryMerger repositoryMerger;
 
-    private static final String STAGE = "-stage";
-
     private AuditListener auditListener;
 
     private RepositorySessionFactory repositorySessionFactory;
@@ -360,7 +358,7 @@ public class AdministrationServiceImpl
 
     public Boolean addManagedRepository( String repoId, String layout, String name, String location,
                                          boolean blockRedeployments, boolean releasesIncluded,
-                                         boolean snapshotsIncluded, boolean stageRepoNeeded, String cronExpression,
+                                         boolean snapshotsIncluded, boolean stagingRequired, String cronExpression,
                                          int daysOlder, int retentionCount, boolean deleteReleasedSnapshots )
         throws Exception
     {
@@ -370,8 +368,8 @@ public class AdministrationServiceImpl
                                                                         snapshotsIncluded, releasesIncluded,
                                                                         blockRedeployments, cronExpression, null, false,
                                                                         daysOlder, retentionCount,
-                                                                        deleteReleasedSnapshots, false );
-        return managedRepositoryAdmin.addManagedRepository( repository, stageRepoNeeded, getAuditInformation() );
+                                                                        deleteReleasedSnapshots, stagingRequired );
+        return managedRepositoryAdmin.addManagedRepository( repository, getAuditInformation() );
 
     }
 
@@ -495,9 +493,7 @@ public class AdministrationServiceImpl
     public boolean merge( String repoId, boolean skipConflicts )
         throws Exception
     {
-        String stagingId = repoId + STAGE;
         org.apache.archiva.admin.model.beans.ManagedRepository repoConfig;
-        org.apache.archiva.admin.model.beans.ManagedRepository stagingConfig;
 
         repoConfig = managedRepositoryAdmin.getManagedRepository( repoId );
 
@@ -509,10 +505,11 @@ public class AdministrationServiceImpl
             MetadataRepository metadataRepository = repositorySession.getRepository();
             if ( repoConfig != null )
             {
-                stagingConfig = managedRepositoryAdmin.getManagedRepository( stagingId );
-
-                if ( stagingConfig != null )
+                String stagingId = "foo";
+                if ( repoConfig.isStagingRequired() )
                 {
+                    // STAGE FIXME: duplication with webapp - move all MergeAction to the staging module and have this
+                    // use it - make sure this gets tested
                     List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( stagingId );
 
                     if ( repoConfig.isReleases() && !repoConfig.isSnapshots() )
@@ -521,7 +518,7 @@ public class AdministrationServiceImpl
                         if ( skipConflicts )
                         {
                             List<ArtifactMetadata> conflicts =
-                                repositoryMerger.getConflictingArtifacts( metadataRepository, repoId, stagingId );
+                                repositoryMerger.getConflictingArtifacts( metadataRepository, repoId );
 
                             if ( log.isDebugEnabled() )
                             {
@@ -550,7 +547,7 @@ public class AdministrationServiceImpl
                         if ( skipConflicts )
                         {
                             List<ArtifactMetadata> conflicts =
-                                repositoryMerger.getConflictingArtifacts( metadataRepository, repoId, stagingId );
+                                repositoryMerger.getConflictingArtifacts( metadataRepository, repoId );
 
                             if ( log.isDebugEnabled() )
                             {
@@ -650,7 +647,6 @@ public class AdministrationServiceImpl
 
         repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
-
 
     // FIXME find a way to get user id and adress
     private AuditInformation getAuditInformation()

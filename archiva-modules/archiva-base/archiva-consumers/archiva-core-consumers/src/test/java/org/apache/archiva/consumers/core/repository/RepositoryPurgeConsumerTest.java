@@ -196,7 +196,7 @@ public class RepositoryPurgeConsumerTest
         {
             managedRepositoryAdmin.deleteManagedRepository( repoConfiguration.getId(), null, false );
         }
-        managedRepositoryAdmin.addManagedRepository( repoConfiguration, false, null );
+        managedRepositoryAdmin.addManagedRepository( repoConfiguration, null );
     }
 
     private void removeRepoFromConfiguration( String configHint, ManagedRepository repoConfiguration )

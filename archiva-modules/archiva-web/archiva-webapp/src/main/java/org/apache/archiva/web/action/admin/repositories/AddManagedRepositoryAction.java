@@ -44,8 +44,6 @@ public class AddManagedRepositoryAction
 
     private ManagedRepository repository;
 
-    private boolean stageNeeded;
-
     private String action = "addRepository";
 
     public void prepare()
@@ -54,6 +52,7 @@ public class AddManagedRepositoryAction
         this.repository.setReleases( false );
         this.repository.setScanned( false );
         this.repository.setBlockRedeployments( false );
+        this.repository.setStagingRequired( false );
     }
 
     public String input()
@@ -88,7 +87,7 @@ public class AddManagedRepositoryAction
         String result = SUCCESS;
         try
         {
-            getManagedRepositoryAdmin().addManagedRepository( repository, stageNeeded, getAuditInformation() );
+            getManagedRepositoryAdmin().addManagedRepository( repository, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -145,12 +144,6 @@ public class AddManagedRepositoryAction
     public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
-    }
-
-
-    public void setStageNeeded( boolean stageNeeded )
-    {
-        this.stageNeeded = stageNeeded;
     }
 
     public String getAction()

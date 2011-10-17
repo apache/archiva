@@ -51,8 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +58,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * FIXME remove all generic Exception to have usefull ones
@@ -76,8 +76,6 @@ public class DefaultManagedRepositoryAdmin
     public static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
     private Logger log = LoggerFactory.getLogger( getClass() );
-
-    public static final String STAGE_REPO_ID_END = "-stage";
 
 
     @Inject
@@ -107,13 +105,13 @@ public class DefaultManagedRepositoryAdmin
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO add staging repo information back too
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
                                        repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
-                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), false );
+                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(),
+                                       repoConfig.isStagingRequired() );
 
             managedRepos.add( repo );
         }
@@ -148,8 +146,7 @@ public class DefaultManagedRepositoryAdmin
         return null;
     }
 
-    public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                         AuditInformation auditInformation )
+    public Boolean addManagedRepository( ManagedRepository managedRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
 
@@ -158,18 +155,18 @@ public class DefaultManagedRepositoryAdmin
         return
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
-                                  managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
-                                  managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation,
-                                  getArchivaConfiguration().getConfiguration() ) != null;
+                                  managedRepository.isReleases(), managedRepository.isSnapshots(),
+                                  managedRepository.isStagingRequired(), managedRepository.getCronExpression(),
+                                  managedRepository.getIndexDirectory(), managedRepository.getDaysOlder(),
+                                  managedRepository.getRetentionCount(), managedRepository.isDeleteReleasedSnapshots(),
+                                  auditInformation, getArchivaConfiguration().getConfiguration() ) != null;
 
     }
 
     private ManagedRepositoryConfiguration addManagedRepository( String repoId, String layout, String name,
                                                                  String location, boolean blockRedeployments,
                                                                  boolean releasesIncluded, boolean snapshotsIncluded,
-                                                                 boolean stageRepoNeeded, String cronExpression,
+                                                                 boolean stagingRequired, String cronExpression,
                                                                  String indexDir, int daysOlder, int retentionCount,
                                                                  boolean deteleReleasedSnapshots,
                                                                  AuditInformation auditInformation,
@@ -205,6 +202,7 @@ public class DefaultManagedRepositoryAdmin
 
         repository.setId( repoId );
         repository.setBlockRedeployments( blockRedeployments );
+        repository.setStagingRequired( stagingRequired );
         repository.setReleases( releasesIncluded );
         repository.setSnapshots( snapshotsIncluded );
         repository.setName( name );
@@ -221,14 +219,6 @@ public class DefaultManagedRepositoryAdmin
         {
             addRepository( repository, config );
             addRepositoryRoles( repository );
-
-            if ( stageRepoNeeded )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-                addRepository( stagingRepository, config );
-                addRepositoryRoles( stagingRepository );
-                triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
-            }
         }
         catch ( RoleManagerException e )
         {
@@ -246,13 +236,6 @@ public class DefaultManagedRepositoryAdmin
         try
         {
             scanRepository( repoId, true );
-            // olamy no need of scanning staged repo
-            /*
-            if ( stageRepoNeeded )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-                scanRepository( stagingRepository.getId(), true );
-            }*/
         }
         catch ( Exception e )
         {
@@ -282,14 +265,7 @@ public class DefaultManagedRepositoryAdmin
 
         deleteManagedRepository( repository, deleteContent, config, false );
 
-        // stage repo exists ?
-        ManagedRepositoryConfiguration stagingRepository =
-            getArchivaConfiguration().getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
-        if ( stagingRepository != null )
-        {
-            // do not trigger event when deleting the staged one
-            deleteManagedRepository( stagingRepository, deleteContent, config, true );
-        }
+        // STAGE FIXME: delete staging location too
 
         try
         {
@@ -405,13 +381,14 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
-                                            AuditInformation auditInformation, boolean resetStats )
+    public Boolean updateManagedRepository( ManagedRepository managedRepository, AuditInformation auditInformation,
+                                            boolean resetStats )
         throws RepositoryAdminException
     {
-
-        log.debug( "updateManagedConfiguration repo {} needStage {} resetStats {} ",
-                   Arrays.asList( managedRepository, needStageRepo, resetStats ).toArray() );
+        if ( log.isDebugEnabled() )
+        {
+            log.debug( "updateManagedConfiguration repo {} resetStats {} ", Arrays.asList( managedRepository, resetStats ).toArray() );
+        }
 
         // Ensure that the fields are valid.
 
@@ -426,23 +403,16 @@ public class DefaultManagedRepositoryAdmin
             configuration.removeManagedRepository( toremove );
         }
 
-        ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( toremove );
-
         // TODO remove content from old if path has changed !!!!!
-
-        if ( stagingRepository != null )
-        {
-            configuration.removeManagedRepository( stagingRepository );
-        }
 
         ManagedRepositoryConfiguration managedRepositoryConfiguration =
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
-                                  managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
-                                  managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation,
-                                  getArchivaConfiguration().getConfiguration() );
+                                  managedRepository.isReleases(), managedRepository.isSnapshots(),
+                                  managedRepository.isStagingRequired(), managedRepository.getCronExpression(),
+                                  managedRepository.getIndexDirectory(), managedRepository.getDaysOlder(),
+                                  managedRepository.getRetentionCount(), managedRepository.isDeleteReleasedSnapshots(),
+                                  auditInformation, getArchivaConfiguration().getConfiguration() );
 
         // Save the repository configuration.
         RepositorySession repositorySession = getRepositorySessionFactory().createSession();
@@ -496,27 +466,6 @@ public class DefaultManagedRepositoryAdmin
         }
 
         configuration.addManagedRepository( repository );
-    }
-
-    private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )
-    {
-        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
-        stagingRepository.setId( repository.getId() + STAGE_REPO_ID_END );
-        stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + STAGE_REPO_ID_END );
-        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setDaysOlder( repository.getDaysOlder() );
-        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
-        stagingRepository.setIndexDir( repository.getIndexDir() );
-        String path = repository.getLocation();
-        int lastIndex = path.lastIndexOf( '/' );
-        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
-        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
-        stagingRepository.setReleases( repository.isReleases() );
-        stagingRepository.setRetentionCount( repository.getRetentionCount() );
-        stagingRepository.setScanned( repository.isScanned() );
-        stagingRepository.setSnapshots( repository.isSnapshots() );
-        return stagingRepository;
     }
 
     public Boolean scanRepository( String repositoryId, boolean fullScan )

@@ -158,8 +158,6 @@ public class AdministrationServiceImplTest
 
     private Registry registry;
 
-    private static final String STAGE = "-stage";
-
     private DefaultManagedRepositoryAdmin managedRepositoryAdmin;
 
     private DefaultRemoteRepositoryAdmin remoteRepositoryAdmin;
@@ -813,6 +811,7 @@ public class AdministrationServiceImplTest
         throws Exception
     {
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+        // STAGE FIXME: verify no staging
 
         configControl.expectAndReturn( config.getManagedRepositories(),
                                        Arrays.asList( createManagedRepo( "repo", "default", "repo", true, false ) ), 1,
@@ -848,18 +847,18 @@ public class AdministrationServiceImplTest
 
         ManagedRepositoryConfiguration merge = createManagedRepo( "merge", "default", "merge", true, true );
         merge.setLocation( "target/test-repository/merge" );
-        ManagedRepositoryConfiguration staging = createStagingRepo( merge );
 
         RepositoryTask task = new RepositoryTask();
         task.setScanAll( true );
 
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
-        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( merge, staging ), 1, 5 );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( merge ), 1, 5 );
+        // STAGE FIXME: verify no staging
 
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
+//        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
         repositoryMergerControl.expectAndDefaultReturn(
-            repositoryMerger.getConflictingArtifacts( metadataRepository, staging.getId(), merge.getId() ), sources );
-        repositoryMerger.merge( metadataRepository, staging.getId(), merge.getId() );
+            repositoryMerger.getConflictingArtifacts( metadataRepository, merge.getId() ), sources );
+//        repositoryMerger.merge( metadataRepository, staging.getId(), merge.getId() );
         repositoryMergerControl.setVoidCallable();
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "merge" ),
                                                         false );
@@ -919,15 +918,14 @@ public class AdministrationServiceImplTest
 
         ManagedRepositoryConfiguration repo = createManagedRepo( "repo", "default", "repo", true, true );
         repo.setLocation( "target/test-repository/one" );
-        ManagedRepositoryConfiguration staging = createStagingRepo( repo );
 
-        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( repo, staging ), 1, 5 );
+        configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( repo ), 1, 5 );
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
 
-        metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
+        // FIXME STAGE: get sources
         repositoryMergerControl.expectAndDefaultReturn(
-            repositoryMerger.getConflictingArtifacts( metadataRepository, staging.getId(), repo.getId() ), conflicts );
-        repositoryMerger.merge( metadataRepository, staging.getId(), repo.getId(), artifactsWithOutConflicts );
+            repositoryMerger.getConflictingArtifacts( metadataRepository, repo.getId() ), conflicts );
+        repositoryMerger.merge( metadataRepository, null, repo.getId(), artifactsWithOutConflicts );
         repositoryMergerControl.setMatcher( MockControl.ALWAYS_MATCHER );
         repositoryMergerControl.setVoidCallable();
         repositoryTaskSchedulerControl.expectAndReturn( repositoryTaskScheduler.isProcessingRepositoryTask( "repo" ),
@@ -967,6 +965,7 @@ public class AdministrationServiceImplTest
         String layout = "default";
         String name = projId + " Releases";
         String releaseLocation = "target/test-repository/" + projId + ".releases";
+        // STAGE FIXME: hardcoded ID
         String stageLocation = releaseLocation + "-stage";
         String appserverBase = "target";
 
@@ -999,6 +998,7 @@ public class AdministrationServiceImplTest
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
         roleManagerControl.setVoidCallable();
 
+        // STAGE FIXME: hardcoded ID
         roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId + "-stage" );
         roleManagerControl.setReturnValue( false );
         roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId + "-stage" );
@@ -1033,7 +1033,8 @@ public class AdministrationServiceImplTest
         repositoryTaskScheduler.queueTask( task );
         repositoryTaskSchedulerControl.setVoidCallable();
 
-        //staged repo
+        //STAGE FIXME: hardcoded id
+        String STAGE="-stage";
         repositoryTaskSchedulerControl.expectAndReturn(
             repositoryTaskScheduler.isProcessingRepositoryTask( repoId + STAGE ), false );
         task = new RepositoryTask();
@@ -1257,19 +1258,6 @@ public class AdministrationServiceImplTest
         repoConfig.setSnapshots( hasSnapshots );
 
         return repoConfig;
-    }
-
-    private ManagedRepositoryConfiguration createStagingRepo( ManagedRepositoryConfiguration repoConfig )
-    {
-        ManagedRepositoryConfiguration stagingRepo = new ManagedRepositoryConfiguration();
-        stagingRepo.setId( repoConfig.getId() + STAGE );
-        stagingRepo.setLayout( repoConfig.getLayout() );
-        stagingRepo.setName( repoConfig + STAGE );
-        stagingRepo.setReleases( repoConfig.isReleases() );
-        stagingRepo.setSnapshots( repoConfig.isSnapshots() );
-        stagingRepo.setLocation( repoConfig.getLocation() );
-
-        return stagingRepo;
     }
 
     private AuditEvent createAuditEvent( ManagedRepositoryConfiguration repoConfig )

@@ -141,13 +141,13 @@ public class ArchivaDavResourceFactoryTest
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
                 createManagedRepository( RELEASES_REPO, new File( "target/test-classes/" + RELEASES_REPO ).getPath(),
-                                         "default" ), false, null );
+                                         "default" ), null );
         }
         if ( defaultManagedRepositoryAdmin.getManagedRepository( INTERNAL_REPO ) == null )
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
                 createManagedRepository( INTERNAL_REPO, new File( "target/test-classes/" + INTERNAL_REPO ).getPath(),
-                                         "default" ), false, null );
+                                         "default" ), null );
         }
         RepositoryGroup repoGroupConfig = new RepositoryGroup();
         repoGroupConfig.setId( LOCAL_REPO_GROUP );
@@ -335,7 +335,7 @@ public class ArchivaDavResourceFactoryTest
 
         defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LOCAL_MIRROR_REPO, new File( "target/test-classes/local-mirror" ).getPath(),
-                                     "default" ), false, null );
+                                     "default" ), null );
 
         List<RepositoryGroupConfiguration> repoGroups = new ArrayList<RepositoryGroupConfiguration>();
         RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
@@ -506,7 +506,7 @@ public class ArchivaDavResourceFactoryTest
     {
         defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LEGACY_REPO, new File( "target/test-classes/" + LEGACY_REPO ).getPath(),
-                                     "legacy" ), false, null );
+                                     "legacy" ), null );
         DavResourceLocator locator =
             new ArchivaDavResourceLocator( "", "/repository/" + LEGACY_REPO + "/eclipse/maven-metadata.xml",
                                            LEGACY_REPO, new ArchivaDavLocatorFactory() );

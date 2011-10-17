@@ -83,16 +83,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -253,10 +253,11 @@ public class ArchivaDavResourceFactory
         }
         else
         {
-            ManagedRepositoryContent managedRepository = null;
+            ManagedRepositoryContent managedRepository;
 
             try
             {
+                // STAGE FIXME: replace with pseudo staging repository when needed - good time to switch to new repository API, and probably only use config here
                 managedRepository = repositoryFactory.getManagedRepositoryContent( archivaLocator.getRepositoryId() );
             }
             catch ( RepositoryNotFoundException e )
@@ -315,7 +316,7 @@ public class ArchivaDavResourceFactory
                 }
                 else
                 {
-                    if ( resourcesInAbsolutePath != null && resourcesInAbsolutePath.size() > 1 )
+                    if ( resourcesInAbsolutePath.size() > 1 )
                     {
                         // merge the metadata of all repos under group
                         ArchivaRepositoryMetadata mergedMetadata = new ArchivaRepositoryMetadata();
@@ -534,16 +535,19 @@ public class ArchivaDavResourceFactory
 
                 // check if target repo is enabled for releases
                 // we suppose that release-artifacts can be deployed only to repos enabled for releases
-                if ( managedRepository.getRepository().isReleases() && !repositoryRequest.isMetadata( resourcePath )
-                    && !repositoryRequest.isSupportFile( resourcePath ) )
+                // also ignore flag for staging repositories, no harm in redeploying there
+                if ( managedRepository.getRepository().isReleases() && !repositoryRequest.isMetadata( resourcePath ) &&
+                    !repositoryRequest.isSupportFile( resourcePath ) &&
+                    !managedRepository.getRepository().isStagingRequired() )
                 {
-                    ArtifactReference artifact = null;
+                    ArtifactReference artifact;
                     try
                     {
                         artifact = managedRepository.toArtifactReference( resourcePath );
 
                         if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
                         {
+                            // STAGE FIXME: make sure staging was already considered
                             // check if artifact already exists and if artifact re-deployment to the repository is allowed
                             if ( managedRepository.hasContent( artifact )
                                 && managedRepository.getRepository().isBlockRedeployments() )

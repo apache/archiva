@@ -45,14 +45,7 @@ public class ManagedRepository
      */
     private String cronExpression = "0 0 * * * ?";
 
-
-    /**
-     * not need when creating the repo : only available when reading
-     */
-    private ManagedRepository stagingRepository;
-
     private boolean scanned = false;
-
 
     /**
      * default model value
@@ -66,7 +59,8 @@ public class ManagedRepository
 
     private boolean deleteReleasedSnapshots;
 
-    private boolean stageRepoNeeded;
+    // TODO: move to staging plugin and allow custom per-repository configuration from plugins
+    private boolean stagingRequired;
 
     private boolean resetStats;
 
@@ -78,7 +72,7 @@ public class ManagedRepository
     public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
                               boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots,
-                              boolean stageRepoNeeded )
+                              boolean stagingRequired )
     {
         super( id, name, layout );
 
@@ -92,7 +86,7 @@ public class ManagedRepository
         this.daysOlder = daysOlder;
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
-        this.stageRepoNeeded = stageRepoNeeded;
+        this.stagingRequired = stagingRequired;
     }
 
     public String getCronExpression()
@@ -151,16 +145,6 @@ public class ManagedRepository
     }
 
 
-    public ManagedRepository getStagingRepository()
-    {
-        return stagingRepository;
-    }
-
-
-    public void setStagingRepository( ManagedRepository stagingRepository )
-    {
-        this.stagingRepository = stagingRepository;
-    }
 
     public boolean isScanned()
     {
@@ -203,14 +187,14 @@ public class ManagedRepository
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
     }
 
-    public boolean isStageRepoNeeded()
+    public boolean isStagingRequired()
     {
-        return stageRepoNeeded;
+        return stagingRequired;
     }
 
-    public void setStageRepoNeeded( boolean stageRepoNeeded )
+    public void setStagingRequired( boolean stagingRequired )
     {
-        this.stageRepoNeeded = stageRepoNeeded;
+        this.stagingRequired = stagingRequired;
     }
 
     public boolean isResetStats()
@@ -233,17 +217,15 @@ public class ManagedRepository
         sb.append( ", snapshots=" ).append( snapshots );
         sb.append( ", releases=" ).append( releases );
         sb.append( ", blockRedeployments=" ).append( blockRedeployments );
+        sb.append( ", stagingRequired=" ).append( stagingRequired );
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
-        sb.append( ", stagingRepository=" ).append( stagingRepository );
         sb.append( ", scanned=" ).append( scanned );
         sb.append( ", daysOlder=" ).append( daysOlder );
         sb.append( ", retentionCount=" ).append( retentionCount );
         sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );
-        sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
+        sb.append( ", stagingRequired=" ).append( stagingRequired );
         sb.append( ", resetStats=" ).append( resetStats );
         sb.append( '}' );
         return sb.toString();
     }
-
-
 }

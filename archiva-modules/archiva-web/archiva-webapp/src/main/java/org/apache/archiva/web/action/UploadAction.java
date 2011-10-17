@@ -292,6 +292,7 @@ public class UploadAction
     {
         try
         {
+            // STAGE FIXME: handle staging, reduce external duplication - should be a wrapper like block redeployment
             ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
 
             ArtifactReference artifactReference = new ArtifactReference();
@@ -424,6 +425,7 @@ public class UploadAction
                 }
             }
 
+            // STAGE FIXME: if it was staged, say "staged for"
             String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version
                 + "\' was successfully deployed to repository \'" + repositoryId + "\'";
 
