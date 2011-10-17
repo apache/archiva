@@ -81,7 +81,267 @@ Release Notes for Archiva ${project.version}
 
   Released: <<???>>
 
-  ~~TODO
+** New Feature
+
+    * [MRM-980] - Ability to merge repositories
+
+    * [MRM-1361] - Add support for NPanday artifact types
+
+    * [MRM-1362] - Add simple 'CRUD' pages for project-level metadata along with a "generic metadata" plugin
+
+    * [MRM-1409] - Web services for repository merging or artifact promotion
+
+    * [MRM-1417] - Add basic managed repository management support on adding repository, deleting repository, and loading repository by id
+
+    * [MRM-1489] - OBR Repository capability
+
+    * [MRM-1490] - Expose Archiva services trough REST
+
+    * [MRM-1501] - search on artifacts with OSGI Metadatas fields
+
+    * [MRM-1524] - downloading (optionnaly) remote index to display remote artifacts in search results
+
+** Improvement
+
+    * [MRM-811] - Improve error message when pom does not match the artifact's location in the repo
+
+    * [MRM-945] - Change the prompted message for users who do not have access to the repository
+
+    * [MRM-995] - Generated Descriptors are wrong after Eclipse Project Clean
+
+    * [MRM-1125] - default search should be AND not OR for multiple keywords
+
+    * [MRM-1282] - introduce a metadata content repository API
+
+    * [MRM-1283] - migrate Archiva's "browse" functionality to use the metadata content repository API
+
+    * [MRM-1287] - Nexus indexer drags in unnecessary dependencies
+
+    * [MRM-1288] - migrate XMLRPC from DefaultRepositoryBrowsing to the metadata content repository API
+
+    * [MRM-1292] - remove dependency-graph in favour of the maven-dependency-tree library
+
+    * [MRM-1293] - migrate repository statistics to the metadata content repository
+
+    * [MRM-1327] - implement alternative or improve repository metadata storage
+
+    * [MRM-1335] - improve the message appearing when an artifact's metadata is incomplete
+
+    * [MRM-1405] - Do not show the artifact and its pom as separate items in the conflicting artifacts page when merging repos
+
+    * [MRM-1436] - [patch] better map handling
+
+    * [MRM-1437] - [patch] make sure streams get closed
+
+    * [MRM-1448] - classifier / extension combinations containing multiple '.' place the extra part in the classifier
+
+    * [MRM-1452] - Ability to delete managed repository content from XMLRPC
+
+    * [MRM-1461] - Delete repositories gracefully
+
+    * [MRM-1470] - Ability to add a repository relative to Archiva's appserver.base without knowing it's filesystem location
+
+    * [MRM-1471] - Upgrade maven plugin versions (at least compiler plugin to be able to fork tru cli)
+
+    * [MRM-1472] - maven configuration to be able to run tomcat:run
+
+    * [MRM-1473] - remove use of plexus-spring
+
+    * [MRM-1474] - Paths in JavaScript on repository scanning page get remapped incorrectly in CollabNet's Lab Manager
+
+    * [MRM-1478] - Enable DB caching
+
+    * [MRM-1479] - upgrade jquery version 1.6.1
+
+    * [MRM-1481] - Ability to do user management through xmlrpc
+
+    * [MRM-1484] - Upgrade Atlassian XMLRPC Binder to 0.11
+
+    * [MRM-1502] - download artifacts from remote repository create http(s) connection for every artifacts
+
+    * [MRM-1503] - use wagon-http instead of wagon-http-lightweight (as it change proxy network system properties)
+
+    * [MRM-1504] - Add a new module for repository administration management
+
+    * [MRM-1526] - configure http connection pool values for wagon http
+
+** Bug
+
+    * [MRM-404] - formatting in download box can sometimes be cramped
+
+    * [MRM-552] - Download link should be entitled "Plugin", not "Jar" for maven plugins
+
+    * [MRM-585] - Project models for Maven 1 artifacts cannot be found in repo browse
+
+    * [MRM-665] - DependencyTree fetchGraph causes high load with large databases
+
+    * [MRM-786] - Endless loop in "Dependency Tree" in cyclic dependencies?
+
+    * [MRM-816] - Resolution parameters in URL are not expanded
+
+    * [MRM-908] - pom.xml could not be parsed if it contains an UTF8-BOM
+
+    * [MRM-909] - Direct connect proxy setting is ignored after undetermined event
+
+    * [MRM-979] - legacy support: 301 Moved Permanently html document is returned as pom file
+
+    * [MRM-1017] - quicksearch should not NPE without completeQueryString
+
+    * [MRM-1029] - Download box doesn't appear in the DependencyTree tab
+
+    * [MRM-1061] - 'Used By' page incorrect and 'Dependency Tree' page  crash when specifying dependency version using <dependencyManagement> in parent POM.
+
+    * [MRM-1064] - Dependency Tree does not show dependencies correctly
+
+    * [MRM-1070] - Dependencies/Dependency Tree/Used by doesn't work correctly with properties in version
+
+    * [MRM-1111] - upgrade to struts 2.1.8.1
+
+    * [MRM-1120] - groups that only have one subgroup, but also contain artifacts, get collapsed in browse
+
+    * [MRM-1129] - web applications are not indexed for java source code
+
+    * [MRM-1169] - Archiva does not seem to accept files > 2GB
+
+    * [MRM-1173] - Cannot delete patterns with single and double quotes.
+
+    * [MRM-1242] - Incorrect Total File Count in Repository Statistics report
+
+    * [MRM-1248] - Archiva "lends" its network proxy settings to Hudson
+
+    * [MRM-1255] - groupIds that are subsets of another groupId also display artifacts from that group
+
+    * [MRM-1285] - The content of the Downloads box is sometimes too large for the box
+
+    * [MRM-1286] - mailing lists tab doesn't work
+
+    * [MRM-1303] - NullPointerException when deleting an artifact
+
+    * [MRM-1315] - delete artifact action logs to audit log using g:a:v format instead of resource path as others do
+
+    * [MRM-1317] - Pagination is broken in audit log report in trunk
+
+    * [MRM-1323] - archiva webapp tests failed to run in internet explorer
+
+    * [MRM-1324] - Selenium tests fail in full multi-module build
+
+    * [MRM-1342] - repository statistics report doesn't appear to be working correctly
+
+    * [MRM-1344] - multiple versions appear in search results
+
+    * [MRM-1345] - update use of Nexus indexer to use Maven indexer
+
+    * [MRM-1346] - project models are not automatically populated
+
+    * [MRM-1372] - Outdated instruction for Maven and JUnit still in ReadMe.txt for selenium tests
+
+    * [MRM-1393] - Commons configuration bug causes build to fail on Windows 7
+
+    * [MRM-1397] - Staging repo does not capture/reflect the config changes of the managed repo it is attached to in MRM-980 branch
+
+    * [MRM-1398] - Repositories page is broken in MRM-980 branch
+
+    * [MRM-1400] - Metadata is not merged with the metadata in the target repo when merging two repositories
+
+    * [MRM-1401] - Do not allow snapshot artifacts to be merged to a managed repository that only contains releases
+
+    * [MRM-1402] - Audit event name for merged artifacts should be "Promoted Artifact" or "Merged Artifact" instead of "Merging Repositories"
+
+    * [MRM-1403] - An empty "Error Occurred" page is displayed when attempting to merge a staging repo containing an artifact with a classifier
+
+    * [MRM-1404] - Staging repo is not deleted when the managed repo it is attached to was removed
+
+    * [MRM-1406] - The repository specified in the audit logs report for artifact promotion/repo merging events should be the target repository instead of the staging repository
+
+    * [MRM-1408] - Message for successful merging should be shown as an info message instead of as a section heading
+
+    * [MRM-1411] - project information is missing if a POM could not be read correctly
+
+    * [MRM-1412] - 'Property xmlns cannot be set!' error during startup when using with IBM JDK
+
+    * [MRM-1413] - network-proxy configuration doesn't seen to work
+
+    * [MRM-1433] - @Override are on interface methods which is only possible in java 6
+
+    * [MRM-1435] - [patch] fix up useless boxing issues
+
+    * [MRM-1451] - NPE when merging through XMLRPC
+
+    * [MRM-1453] - ShowArtifactActionTest makes invalid comma separator assumptions
+
+    * [MRM-1459] - Error 404 when trying to merge artifacts from staging-repo to a remote repository using maven-stage-plugin's stage:copy
+
+    * [MRM-1475] - Add proxy connector is broken
+
+    * [MRM-1476] - 'Specified key was too long' error during startup when using MySQL databases with UTF8 charset
+
+    * [MRM-1487] - Unable to add a proxy connector
+
+    * [MRM-1488] - Using Archiva as proxy for downloading artifacts is very slow when used with LDAP authentication
+
+    * [MRM-1496] - Broken remote repository confuses Archiva
+
+    * [MRM-1500] - Fix sample on how to use ldap in applicationContext.xml
+
+    * [MRM-1516] - missing dependency on velocity - ClassNotFoundException org.apache.velocity.tools.view.ToolboxManager
+
+    * [MRM-1517] - Longer descriptions of artefacts overlap the Downloads box
+
+** Task
+
+    * [MRM-86] - The operations on the repository must be transactional
+
+    * [MRM-1003] - Repackage sources from org.apache.maven.archiva.. to org.apache.archiva..
+
+    * [MRM-1025] - remove the archiva database
+
+    * [MRM-1299] - migrate RSS to the metadata content repository API
+
+    * [MRM-1300] - migrate search to the metadata repository
+
+    * [MRM-1301] - migrate reports to the metadata repository
+
+    * [MRM-1322] - Fix broken selenium tests
+
+    * [MRM-1332] - remove database scanning configuration and handle upgrade
+
+    * [MRM-1333] - update documentation for database changes
+
+    * [MRM-1387] - Cannot build trunk of Archiva because of dependency missing in Central
+
+    * [MRM-1394] - Replace the use of clickLinkWithText() with getSelenium().open() for accessing navigation menu pages
+
+    * [MRM-1407] - Add documentation for repository staging
+
+    * [MRM-1424] - Implement WS for creating stage reporitory
+
+    * [MRM-1527] - remove http://download.java.net/maven/2/  from default remote repositories (now sync with central)
+
+
+** Sub-task
+
+    * [MRM-1505] - api to configure ManagedRepository
+
+    * [MRM-1506] - api to configure RemoteRepository
+
+    * [MRM-1507] - api to configure ProxyConnector
+
+    * [MRM-1508] - api to configure RepositoryGroups
+
+    * [MRM-1509] - change xmlrpc to use new repository administration management api
+
+    * [MRM-1510] - api to configure NetworkProxy
+
+    * [MRM-1511] - api to configure LegacyArtifactPath
+
+    * [MRM-1513] - Remove DatabaseScanningConfiguration fields
+
+    * [MRM-1514] - api to configure OrganisationInformation
+
+    * [MRM-1519] - api to configure WebappConfiguration
+
+    * [MRM-1520] - current first implementation duplicates too much beans so remove beans in rest-api
+
 
 Previous Releases
 
