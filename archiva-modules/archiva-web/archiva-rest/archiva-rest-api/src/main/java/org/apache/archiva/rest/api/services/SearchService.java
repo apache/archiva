@@ -52,7 +52,7 @@ public interface SearchService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
-     * <b>search will be apply on all repositories the user used has karma</b>
+     * <b>search will be apply on all repositories the current user has karma</b>
      */
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
@@ -62,7 +62,7 @@ public interface SearchService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
-     * <b>search will be apply on all repositories the user used has karma</b>
+     * <b>search will be apply on all repositories the current user has karma</b>
      */
     List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
                                         @QueryParam( "artifactId" ) String artifactId,
@@ -75,7 +75,7 @@ public interface SearchService
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
      * If searchRequest contains repositories, the search will be done only on those repositories.
-     * <b>if no repositories, the search will be apply on all repositories the user used has karma</b>
+     * <b>if no repositories, the search will be apply on all repositories the current user has karma</b>
      */
     List<Artifact> searchArtifacts( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
