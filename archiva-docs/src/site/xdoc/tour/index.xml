@@ -52,25 +52,34 @@ table.bodyTable tr.b {
       <table>
         <tr>
           <td>
-            <a href="../images/tour/project.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/project.png" class="gallery_image" rel="gallery_image" title="Archiva provides an informative display for artifacts stored in the repository.
+                      This includes a user-friendly display of the Maven informations, as well as the relationships between projects.">
               <img src="../images/tour/project.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
               1. Project Information
             </a>
           </td>
           <td>
-            <a href="../images/tour/search.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/search.png" class="gallery_image" rel="gallery_image"
+                title="Archiva has both a user-friendly browsing interface, and powerful search functionalities. The contents of all artifacts are indexed,
+                          including Maven project information and Java class information to facilitate locating code within any repository.
+                          By using the Find Artifact feature, you can identify unknown artifacts based on the database of known checksums for known artifacts.">
               <img src="../images/tour/search.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
               2. Artifact Search
             </a>
           </td>
           <td>
-            <a href="../images/tour/proxy.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/proxy.png" class="gallery_image" rel="gallery_image"
+                title="Archiva can operate as a proxy for remote repositories, allowing you to improve build
+                          performance by caching artifacts in a closer network location, and control artifact
+                          usage through the use of white and black lists on proxy connectors.">
               <img src="../images/tour/proxy.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
                3. Remote Proxying Cache
             </a>
           </td>
           <td>
-            <a href="../images/tour/upload.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/upload.png" class="gallery_image" rel="gallery_image"
+                title="Archiva now supports artifact uploads via UI. A pom file can also be included
+                          in the upload or Archiva can generate one during the upload.">
               <img src="../images/tour/upload.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
                4. Artifact Upload
             </a>
@@ -78,25 +87,36 @@ table.bodyTable tr.b {
         </tr>
         <tr>
           <td>
-            <a href="../images/tour/admin.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/admin.png" class="gallery_image" rel="gallery_image"
+                title="Archiva has a comprehensive web-based administration interface for configuring repositories,
+                          remote proxies, scheduled jobs and more. The configuration is kept in sync with the XML
+                          configuration files so that they can also be hand-edited if necessary.">
               <img src="../images/tour/admin.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               5. Graphical Administration
             </a>
           </td>
           <td>
-            <a href="../images/tour/virtual-repos.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/virtual-repos.png" class="gallery_image" rel="gallery_image"
+                title="Archiva implements the concept of virtual repositories, wherein a set of
+                          Archiva repositories can be grouped together under one URL and that one URL
+                          can be used by clients (s.a. Maven) to download from these repositories.">
               <img src="../images/tour/virtual-repos.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               6. Virtual Repositories
             </a>
           </td>
           <td>
-            <a href="../images/tour/rss.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/rss.png" class="gallery_image" rel="gallery_image"
+                title="Archiva provides RSS feeds for new artifacts in the repositories and new versions
+                          of a specific artifact.">
               <img src="../images/tour/rss.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               7. RSS Feeds
             </a>
           </td>
           <td>
-            <a href="../images/tour/security.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/security.png" class="gallery_image" rel="gallery_image"
+                title="Archiva uses the Redback security framework to provide flexible role-based security controls for repositories.
+                          You can use the graphical interface to maintain user accounts, as well as secure repositories for read and/or write
+                          access for individuals, or given roles.">
               <img src="../images/tour/security.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               8. Role-based Security
             </a>
@@ -104,19 +124,30 @@ table.bodyTable tr.b {
         </tr>
         <tr>             
           <td>
-            <a href="../images/tour/reports.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/reports.png" class="gallery_image" rel="gallery_image"
+                title="Archiva monitors the state of the managed repositories and keeps track of
+                          potential problems to allow improvement of metadata and to assist in
+                          troubleshooting problems.">
               <img src="../images/tour/reports.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               9. Integrity Reports
             </a>
           </td>
           <td>
-            <a href="../images/tour/audit-log.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/audit-log.png" class="gallery_image" rel="gallery_image"
+                title="Archiva provides a user interface for querying audit logs. The current
+                          implementation only covers upload/deploy actions but will include other
+                          actions such as artifact delete, repository configuration and more in the future.">
               <img src="../images/tour/audit-log.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               10. Audit Log Report
             </a>
           </td>
           <td>
-            <a href="../images/tour/maintenance.png" class="gallery_image" rel="gallery_image">
+            <a href="../images/tour/maintenance.png" class="gallery_image" rel="gallery_image"
+                title="Archiva has utilities called consumers that can be used for maintaining the
+                          Archiva repositories. These can be configured or activated in the Repository
+                          Scanning section of the webapp. The configuration are stored in Archiva's
+                          xml configuration files, meaning you can also hand-edit these config files to
+                          enable or disable these consumers.">
               <img src="../images/tour/maintenance.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               11. Maintenance
             </a>

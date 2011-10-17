@@ -45,3 +45,5 @@
     -moz-box-shadow:0 0px 0px rgba(0, 0, 0, 0.075);
     box-shadow:0 0px 0px rgba(0, 0, 0, 0.075);
 }
+
+#tip7-title b { display: block; margin-right: 80px; }
