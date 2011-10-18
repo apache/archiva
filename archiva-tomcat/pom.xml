@@ -28,8 +28,7 @@
   </parent>
   <artifactId>archiva-tomcat</artifactId>
   <packaging>pom</packaging>
-  <!-- This is filtered into the scripts, so should be set to Apache Archiva -->
-  <name>Apache Archiva</name>
+  <name>Apache Archiva :: Embeded Tomcat</name>
   <dependencies>
 
     <dependency>
