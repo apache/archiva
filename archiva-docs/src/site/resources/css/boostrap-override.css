@@ -47,3 +47,9 @@
 }
 
 #tip7-title b { display: block; margin-right: 80px; }
+
+tt {
+    color: #333333;
+    font-family: sans-serif,Verdana,Helvetica,Arial;
+    font-size: 12px;
+}
