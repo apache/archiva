@@ -17,8 +17,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
     <maven>2.2.1</maven>
@@ -32,7 +31,7 @@
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>1.4-M1-SNAPSHOT</version>
+  <version>1.4-M1</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
@@ -47,9 +46,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/tags/archiva-1.4-M1</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-1.4-M1</developerConnection>
+    <url>http://svn.apache.org/viewvc/archiva/tags/archiva-1.4-M1</url>
   </scm>
 
   <properties>
@@ -1403,7 +1402,7 @@
                     <exclude>net.sf.ehcache:ehcache</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
-                    <exclude>>org.codehaus.plexus:plexus-taskqueue</exclude>
+                    <exclude>&gt;org.codehaus.plexus:plexus-taskqueue</exclude>
                     <exclude>org.apache.maven.wagon:wagon-http-lightweight</exclude>
                   </excludes>
                 </bannedDependencies>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-repository-admin</artifactId>
-    <version>1.4-M1-SNAPSHOT</version>
+    <version>1.4-M1</version>
   </parent>
   <artifactId>archiva-repository-admin-default</artifactId>
   <name>Archiva Base :: Repository Admin Default</name>

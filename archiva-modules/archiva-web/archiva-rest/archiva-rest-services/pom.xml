@@ -22,17 +22,17 @@
   <parent>
     <artifactId>archiva-rest</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M1-SNAPSHOT</version>
+    <version>1.4-M1</version>
   </parent>
   <artifactId>archiva-rest-services</artifactId>
-  <version>1.4-M1-SNAPSHOT</version>
+  <version>1.4-M1</version>
   <name>Archiva Web :: REST support :: Services</name>
 
   <properties>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
-    <archiva.baseRestUrl></archiva.baseRestUrl>
+    <archiva.baseRestUrl />
     <tomcatVersion>7.0.21</tomcatVersion>
-    <rest.admin.pwd></rest.admin.pwd>
+    <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
   </properties>
 

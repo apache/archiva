@@ -18,13 +18,12 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-M1-SNAPSHOT</version>
+    <version>1.4-M1</version>
   </parent>
   <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
@@ -32,8 +31,8 @@
 
   <properties>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
-    <archiva.baseRestUrl></archiva.baseRestUrl>
-    <rest.admin.pwd></rest.admin.pwd>
+    <archiva.baseRestUrl />
+    <rest.admin.pwd />
   </properties>
 
   <dependencies>
@@ -585,9 +584,9 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/" />
                 <copy todir="${basedir}/target/archiva/WEB-INF/">
-                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml,**/ehcache.xml"/>
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml,**/ehcache.xml" />
                 </copy>
               </tasks>
             </configuration>
@@ -600,7 +599,7 @@
             <configuration>
               <tasks>
                 <copy todir="${basedir}/appserver-base">
-                  <fileset dir="src/appserver-base"/>
+                  <fileset dir="src/appserver-base" />
                 </copy>
               </tasks>
             </configuration>
