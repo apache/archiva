@@ -55,9 +55,6 @@ Release Notes for Archiva ${project.version}
   * You can now download Maven index content from remote repositories to include
     artifacts which are not present locally in your search results.
 
-  * New UI action in repositories view to merge the staging repo to the managed
-    repository.
-
 * Compatibility Changes
 
   * If upgrading from earlier versions of Archiva, the list of libraries in
