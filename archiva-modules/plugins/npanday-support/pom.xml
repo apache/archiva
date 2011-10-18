@@ -23,7 +23,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M1</version>
+    <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>npanday-support</artifactId>
   <name>Archiva Core Plugins :: NPanday Support for Archiva</name>

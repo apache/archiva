@@ -22,7 +22,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M1</version>
+    <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-store-file</artifactId>
   <name>Archiva Core Plugins :: File System Backed Metadata Repository</name>

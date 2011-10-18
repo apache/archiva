@@ -22,10 +22,10 @@
   <parent>
     <artifactId>archiva-rest</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M1</version>
+    <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-rest-services</artifactId>
-  <version>1.4-M1</version>
+  <version>1.4-M2-SNAPSHOT</version>
   <name>Archiva Web :: REST support :: Services</name>
 
   <properties>
