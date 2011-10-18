@@ -284,6 +284,8 @@ Release Notes for Archiva ${project.version}
 
     * [MRM-1517] - Longer descriptions of artefacts overlap the Downloads box
 
+    * [MRM-1531] - version sort order in search page is not working fine
+
 ** Task
 
     * [MRM-86] - The operations on the repository must be transactional
