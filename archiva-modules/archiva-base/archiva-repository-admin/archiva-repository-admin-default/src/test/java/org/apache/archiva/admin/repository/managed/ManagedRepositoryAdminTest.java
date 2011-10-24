@@ -35,6 +35,10 @@ public class ManagedRepositoryAdminTest
 {
     public static final String STAGE_REPO_ID_END = DefaultManagedRepositoryAdmin.STAGE_REPO_ID_END;
 
+
+    String repoId = "test-new-one";
+    String repoLocation = APPSERVER_BASE_PATH + File.separator + repoId;
+
     @Test
     public void getAllManagedRepos()
         throws Exception
@@ -68,10 +72,6 @@ public class ManagedRepositoryAdminTest
         throws Exception
     {
         mockAuditListener.clearEvents();
-
-        String repoId = "test-new-one";
-
-        String repoLocation = APPSERVER_BASE_PATH + File.separator + repoId;
 
         File repoDir = clearRepoLocation( repoLocation );
 
@@ -116,9 +116,6 @@ public class ManagedRepositoryAdminTest
     public void updateDeleteManagedRepo()
         throws Exception
     {
-        String repoId = "test-new-one";
-
-        String repoLocation = APPSERVER_BASE_PATH + File.separator + "new-path";
 
         File repoDir = clearRepoLocation( repoLocation );
 
@@ -177,9 +174,6 @@ public class ManagedRepositoryAdminTest
         throws Exception
     {
 
-        String repoId = "test-new-one";
-        String repoLocation = APPSERVER_BASE_PATH + File.separator + repoId;
-
         File repoDir = clearRepoLocation( repoLocation );
 
         mockAuditListener.clearEvents();
@@ -234,9 +228,6 @@ public class ManagedRepositoryAdminTest
     public void updateDeleteManagedRepoWithStagedRepo()
         throws Exception
     {
-        String repoId = "test-new-one";
-
-        String repoLocation = APPSERVER_BASE_PATH + File.separator + "new-path";
 
         String stageRepoLocation = APPSERVER_BASE_PATH + File.separator + repoId;
 
@@ -311,6 +302,7 @@ public class ManagedRepositoryAdminTest
         mockAuditListener.clearEvents();
 
     }
+
 
     //----------------------------------
     // utility methods

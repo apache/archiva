@@ -263,8 +263,6 @@ public class DefaultManagedRepositoryAdmin
         return repository;
     }
 
-
-    // FIXME cleanup repositoryGroups when deleting a ManagedRepo
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
                                             boolean deleteContent )
         throws RepositoryAdminException
