@@ -48,6 +48,14 @@ public interface ManagedRepositoryContent
         throws ContentNotFoundException;
 
     /**
+     * delete a specified artifact from the repository
+     * @param artifactReference
+     * @throws ContentNotFoundException
+     */
+    void deleteArtifact( ArtifactReference artifactReference )
+        throws ContentNotFoundException;
+
+    /**
      * <p>
      * Convenience method to get the repository id.
      * </p>

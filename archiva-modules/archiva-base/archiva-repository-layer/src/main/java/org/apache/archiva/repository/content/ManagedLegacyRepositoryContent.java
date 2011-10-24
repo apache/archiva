@@ -459,4 +459,10 @@ public class ManagedLegacyRepositoryContent
     {
         this.filetypes = fileTypes;
     }
+
+    public void deleteArtifact( ArtifactReference artifactReference )
+        throws ContentNotFoundException
+    {
+        // TODO implements for legacy ??
+    }
 }

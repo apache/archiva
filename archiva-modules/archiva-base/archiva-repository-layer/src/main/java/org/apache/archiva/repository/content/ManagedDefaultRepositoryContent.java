@@ -20,10 +20,9 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
@@ -31,6 +30,7 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -43,18 +43,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * ManagedDefaultRepositoryContent 
+ * ManagedDefaultRepositoryContent
  *
  * @version $Id$
  */
-@Service("managedRepositoryContent#default")
-@Scope("prototype")
+@Service( "managedRepositoryContent#default" )
+@Scope( "prototype" )
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
     @Inject
-    @Named(value = "fileTypes" )
+    @Named( value = "fileTypes" )
     private FileTypes filetypes;
 
     private ManagedRepository repository;
@@ -70,15 +70,31 @@ public class ManagedDefaultRepositoryContent
     {
         String path = toMetadataPath( reference );
         File projectPath = new File( getRepoRoot(), path );
-        
+
         File projectDir = projectPath.getParentFile();
-        if( projectDir.exists() && projectDir.isDirectory() )
+        if ( projectDir.exists() && projectDir.isDirectory() )
         {
             FileUtils.deleteQuietly( projectDir );
         }
         else
         {
             throw new ContentNotFoundException( "Unable to delete non-existing project directory: " + projectDir );
+        }
+    }
+
+    public void deleteArtifact( ArtifactReference artifactReference )
+        throws ContentNotFoundException
+    {
+        String path = toPath( artifactReference );
+        File filePath = new File( getRepoRoot(), path );
+
+        if ( filePath.exists() )
+        {
+            FileUtils.deleteQuietly( filePath );
+        }
+        else
+        {
+            throw new ContentNotFoundException( "Unable to delete non-existing project artifact: " + filePath );
         }
     }
 
@@ -95,14 +111,14 @@ public class ManagedDefaultRepositoryContent
 
         if ( !repoDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get related artifacts using a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get related artifacts using a non-existant directory: " + repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get related artifacts using a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get related artifacts using a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         Set<ArtifactReference> foundArtifacts = new HashSet<ArtifactReference>();
@@ -124,11 +140,10 @@ public class ManagedDefaultRepositoryContent
                 try
                 {
                     ArtifactReference artifact = toArtifactReference( relativePath );
-                    
+
                     // Test for related, groupId / artifactId / version must match.
-                    if ( artifact.getGroupId().equals( reference.getGroupId() )
-                        && artifact.getArtifactId().equals( reference.getArtifactId() )
-                        && artifact.getVersion().equals( reference.getVersion() ) )
+                    if ( artifact.getGroupId().equals( reference.getGroupId() ) && artifact.getArtifactId().equals(
+                        reference.getArtifactId() ) && artifact.getVersion().equals( reference.getVersion() ) )
                     {
                         foundArtifacts.add( artifact );
                     }
@@ -158,7 +173,7 @@ public class ManagedDefaultRepositoryContent
      * information.
      *
      * @return the Set of available versions, based on the project reference.
-     * @throws LayoutException 
+     * @throws LayoutException
      * @throws LayoutException
      */
     public Set<String> getVersions( ProjectReference reference )
@@ -176,14 +191,14 @@ public class ManagedDefaultRepositoryContent
 
         if ( !repoDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get Versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get Versions on a non-existant directory: " + repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get Versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get Versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         Set<String> foundVersions = new HashSet<String>();
@@ -229,14 +244,14 @@ public class ManagedDefaultRepositoryContent
 
         if ( !repoDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions on a non-existant directory: " + repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         Set<String> foundVersions = new HashSet<String>();
@@ -264,7 +279,7 @@ public class ManagedDefaultRepositoryContent
                 try
                 {
                     ArtifactReference artifact = toArtifactReference( relativePath );
-    
+
                     foundVersions.add( artifact.getVersion() );
                 }
                 catch ( LayoutException e )
@@ -323,7 +338,7 @@ public class ManagedDefaultRepositoryContent
 
     /**
      * Convert a path to an artifact reference.
-     * 
+     *
      * @param path the path to convert. (relative or full location path)
      * @throws LayoutException if the path cannot be converted to an artifact reference.
      */
@@ -343,7 +358,7 @@ public class ManagedDefaultRepositoryContent
     {
         return new File( repository.getLocation(), toPath( reference ) );
     }
-    
+
     public File toFile( ArchivaArtifact reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );
@@ -352,7 +367,7 @@ public class ManagedDefaultRepositoryContent
     /**
      * Get the first Artifact found in the provided VersionedReference location.
      *
-     * @param reference         the reference to the versioned reference to search within
+     * @param reference the reference to the versioned reference to search within
      * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
      *         no artifact was found within the versioned reference.
      * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
@@ -374,13 +389,13 @@ public class ManagedDefaultRepositoryContent
         if ( !repoDir.exists() )
         {
             throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+                                       + repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException(
+                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         File repoFiles[] = repoDir.listFiles();

@@ -33,6 +33,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
@@ -91,6 +92,18 @@ public class DeleteArtifactAction
      * The version of the artifact to be deleted.
      */
     private String version;
+
+    /**
+     * @since 1.4-M2
+     * The classifier of the artifact to be deleted (optionnal)
+     */
+    private String classifier;
+
+    /**
+     * @since 1.4-M2
+     * The type of the artifact to be deleted (optionnal) (default jar)
+     */
+    private String type;
 
     /**
      * The repository where the artifact is to be deleted.
@@ -177,6 +190,26 @@ public class DeleteArtifactAction
         managedRepos = getManagableRepos();
     }
 
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
     public String input()
     {
         return INPUT;
@@ -190,6 +223,8 @@ public class DeleteArtifactAction
         artifactId = "";
         version = "";
         repositoryId = "";
+        classifier = "";
+        type = "";
     }
 
     public String doDelete()
@@ -209,7 +244,34 @@ public class DeleteArtifactAction
             ref.setArtifactId( artifactId );
             ref.setGroupId( groupId );
             ref.setVersion( version );
+
             ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            if ( StringUtils.isNotBlank( classifier ) )
+            {
+                if (StringUtils.isBlank( type ))
+                {
+                    addFieldError( "type", "You must configure a type when using classifier" );
+                    return INPUT;
+                }
+                ArtifactReference artifactReference = new ArtifactReference();
+                artifactReference.setArtifactId( artifactId );
+                artifactReference.setGroupId( groupId );
+                artifactReference.setVersion( version );
+                artifactReference.setClassifier( classifier );
+                artifactReference.setType( type );
+                repository.deleteArtifact( artifactReference );
+                String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + classifier + ":" + version
+                    + "\' was successfully deleted from repository \'" + repositoryId + "\'";
+
+                addActionMessage( msg );
+
+                reset();
+                // as metadatarepository doesn't contains any informations regarding classifier we are free to return
+                // TODO when metadatarepository will contains such informations we will have to cleanup that !!
+                return SUCCESS;
+            }
+
 
             String path = repository.toMetadataPath( ref );
             int index = path.lastIndexOf( '/' );
@@ -231,6 +293,7 @@ public class DeleteArtifactAction
             updateMetadata( metadata, metadataFile, lastUpdatedTimestamp );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
+
             Collection<ArtifactMetadata> artifacts =
                 metadataRepository.getArtifacts( repositoryId, groupId, artifactId, version );
 
