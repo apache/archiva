@@ -668,7 +668,7 @@ public class UploadAction
         task.setRepositoryId( repositoryId );
         task.setResourceFile( localFile );
         task.setUpdateRelatedArtifacts( true );
-        task.setScanAll( true );
+        task.setScanAll( false );
 
         try
         {
