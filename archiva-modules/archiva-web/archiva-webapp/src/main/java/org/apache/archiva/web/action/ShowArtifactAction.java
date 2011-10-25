@@ -33,16 +33,17 @@ import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
-import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -54,13 +55,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.inject.Inject;
 
 /**
  * Browse the repository.
- *
+ * <p/>
  * TODO change name to ShowVersionedAction to conform to terminology.
- *
  */
 @SuppressWarnings( "serial" )
 @Controller( "showArtifactAction" )
@@ -155,7 +154,7 @@ public class ShowArtifactAction
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
 
         List<String> repos = getObservableRepos();
-        
+
         MetadataResolver metadataResolver = session.getResolver();
         for ( String repoId : repos )
         {
@@ -165,24 +164,25 @@ public class ShowArtifactAction
                 // "just-in-time" nature of picking up the metadata (if appropriate for the repository type) is used
                 try
                 {
-                    versionMetadata = metadataResolver.resolveProjectVersion( session, repoId, groupId, artifactId,
-                                                                              version );
+                    versionMetadata =
+                        metadataResolver.resolveProjectVersion( session, repoId, groupId, artifactId, version );
                     if ( versionMetadata != null )
                     {
                         MetadataFacet repoProbFacet;
-                        if ( (repoProbFacet = versionMetadata.getFacet( RepositoryProblemFacet.FACET_ID ) ) != null )
+                        if ( ( repoProbFacet = versionMetadata.getFacet( RepositoryProblemFacet.FACET_ID ) ) != null )
                         {
-                            addIncompleteModelWarning( "Artifact metadata is incomplete: " + ( ( RepositoryProblemFacet) repoProbFacet ).getProblem() );
+                            addIncompleteModelWarning( "Artifact metadata is incomplete: "
+                                                           + ( (RepositoryProblemFacet) repoProbFacet ).getProblem() );
                             //set metadata to complete so that no additional 'Artifact metadata is incomplete' warning is logged
                             versionMetadata.setIncomplete( false );
                         }
                     }
-                    
+
                 }
                 catch ( MetadataResolutionException e )
                 {
                     addIncompleteModelWarning( "Error resolving artifact metadata: " + e.getMessage() );
-                    
+
                     // TODO: need a consistent way to construct this - same in ArchivaMetadataCreationConsumer
                     versionMetadata = new ProjectVersionMetadata();
                     versionMetadata.setId( version );
@@ -194,10 +194,8 @@ public class ShowArtifactAction
                     List<ArtifactMetadata> artifacts;
                     try
                     {
-                        artifacts = new ArrayList<ArtifactMetadata>( metadataResolver.resolveArtifacts( session, repoId,
-                                                                                                        groupId,
-                                                                                                        artifactId,
-                                                                                                        version ) );
+                        artifacts = new ArrayList<ArtifactMetadata>(
+                            metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
                     }
                     catch ( MetadataResolutionException e )
                     {
@@ -233,7 +231,7 @@ public class ShowArtifactAction
 
         return versionMetadata;
     }
-    
+
     private void addIncompleteModelWarning( String warningMessage )
     {
         addActionError( warningMessage );
@@ -289,8 +287,9 @@ public class ShowArtifactAction
             for ( String repoId : getObservableRepos() )
             {
                 // TODO: what about if we want to see this irrespective of version?
-                references.addAll( metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId,
-                                                                              artifactId, version ) );
+                references.addAll(
+                    metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId, artifactId,
+                                                               version ) );
             }
         }
         finally
@@ -633,6 +632,8 @@ public class ShowArtifactAction
 
         private String path;
 
+        private String classifier;
+
         public ArtifactDownloadInfo( ArtifactMetadata artifact )
         {
             repositoryId = artifact.getRepositoryId();
@@ -662,9 +663,9 @@ public class ShowArtifactAction
             MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
             if ( facet != null )
             {
-                type = facet.getType();
+                this.type = facet.getType();
+                this.classifier = facet.getClassifier();
             }
-            this.type = type;
 
             namespace = artifact.getNamespace();
             project = artifact.getProject();
@@ -690,7 +691,7 @@ public class ShowArtifactAction
                 }
             }
 
-            DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US) );
+            DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
             size = df.format( s ) + " " + symbol;
             id = artifact.getId();
             version = artifact.getVersion();
@@ -734,6 +735,11 @@ public class ShowArtifactAction
         public String getPath()
         {
             return path;
+        }
+
+        public String getClassifier()
+        {
+            return classifier;
         }
     }
 }

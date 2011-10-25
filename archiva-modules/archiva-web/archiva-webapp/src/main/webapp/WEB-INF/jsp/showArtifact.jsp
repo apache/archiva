@@ -195,7 +195,12 @@
                 <%-- Must be last so that the above get picked up if possible --%>
                 <c:when test="${a.type == 'jar'}">
                   <c:url var="imageUrl" value="/images/download-type-jar.png"/>
-                  <c:set var="packageName">JAR</c:set>
+                  <c:if test="${a.classifier != null}">
+                    <c:set var="packageName">JAR - <c:out value="${a.classifier}"/></c:set>
+                  </c:if>
+                  <c:if test="${a.classifier == null}">
+                    <c:set var="packageName">JAR</c:set>
+                  </c:if>
                 </c:when>
                 <c:otherwise>
                   <c:url var="imageUrl" value="/images/download-type-other.png"/>
