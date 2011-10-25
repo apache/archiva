@@ -171,6 +171,30 @@ public class CopyPasteSnippetTag
         snippet.append( "      </snapshots>\n" );
         snippet.append( "    </repository>\n" );
         snippet.append( "  </repositories>\n" );
+        snippet.append( "  <pluginRepositories>\n" );
+        snippet.append( "    <pluginRepository>\n" );
+        snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
+        snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
+
+        snippet.append( "      <url>" );
+        snippet.append( ContextUtils.getBaseURL( pageContext, "repository" ) );
+        snippet.append( "/" ).append( repo.getId() ).append( "/" );
+
+        snippet.append( "</url>\n" );
+
+        if ( !"default".equals( repo.getLayout() ) )
+        {
+            snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>\n" );
+        }
+
+        snippet.append( "      <releases>\n" );
+        snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isReleases() ) ).append( "</enabled>\n" );
+        snippet.append( "      </releases>\n" );
+        snippet.append( "      <snapshots>\n" );
+        snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isSnapshots() ) ).append( "</enabled>\n" );
+        snippet.append( "      </snapshots>\n" );
+        snippet.append( "    </pluginRepository>\n" );
+        snippet.append( "  </pluginRepositories>\n" );
 
         snippet.append( "  ...\n" );
         snippet.append( "</project>\n" );
