@@ -51,7 +51,7 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
-      <version>1.4</version>
+      <version>${javaxMailVersion}</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
@@ -91,7 +91,7 @@
                 <extraDependency>
                   <groupId>javax.mail</groupId>
                   <artifactId>mail</artifactId>
-                  <version>1.4</version>
+                  <version>${javaxMailVersion}</version>
                 </extraDependency>
               </extraDependencies>
             </configuration>
