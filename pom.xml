@@ -362,6 +362,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-struts2-jqboot-theme</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-webapp</artifactId>
         <version>${project.version}</version>
         <type>war</type>

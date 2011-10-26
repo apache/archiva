@@ -28,6 +28,7 @@
   <modules>
     <module>archiva-applet</module>
     <module>archiva-security</module>
+    <module>archiva-struts2-jqboot-theme</module>
     <module>archiva-webapp</module>
     <module>archiva-webdav</module>
     <module>archiva-rss</module>

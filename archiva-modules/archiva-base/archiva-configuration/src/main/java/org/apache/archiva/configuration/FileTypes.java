@@ -19,12 +19,12 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.archiva.common.FileTypeUtils;
 import org.apache.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.archiva.configuration.io.registry.ConfigurationRegistryReader;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.configuration.CombinedConfiguration;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
@@ -77,6 +77,7 @@ public class FileTypes
      * Default exclusions from artifact consumers that are using the file types. Note that this is simplistic in the
      * case of the support files (based on extension) as it is elsewhere - it may be better to match these to actual
      * artifacts and exclude later during scanning.
+     *
      * @deprecated
      */
     public static final List<String> DEFAULT_EXCLUSIONS = FileTypeUtils.DEFAULT_EXCLUSIONS;
@@ -183,8 +184,7 @@ public class FileTypes
             Field fld = commonsRegistry.getClass().getDeclaredField( "configuration" );
             fld.setAccessible( true );
             fld.set( commonsRegistry, new CombinedConfiguration() );
-            commonsRegistry.addConfigurationFromResource(
-                "org/apache/archiva/configuration/default-archiva.xml" );
+            commonsRegistry.addConfigurationFromResource( "org/apache/archiva/configuration/default-archiva.xml" );
 
             // Read configuration as it was intended.
             ConfigurationRegistryReader configReader = new ConfigurationRegistryReader();
