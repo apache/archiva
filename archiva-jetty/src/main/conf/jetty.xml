@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -28,7 +28,7 @@
 <!-- =============================================================== -->
 
 
-<Configure id="Server" class="org.mortbay.jetty.Server">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
 
     <!-- =========================================================== -->
     <!-- Server Thread Pool                                          -->
@@ -36,14 +36,13 @@
     <Set name="ThreadPool">
       <!-- Default bounded blocking threadpool 
       -->
-      <New class="org.mortbay.thread.BoundedThreadPool">
+      <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
         <Set name="minThreads">10</Set>
         <Set name="maxThreads">250</Set>
-        <Set name="lowThreads">25</Set>
       </New>
 
       <!-- Optional Java 5 bounded threadpool with job queue 
-      <New class="org.mortbay.thread.concurrent.ThreadPool">
+      <New class="org.eclipse.jetty.util.thread.ExecutorThreadPool">
         <Set name="corePoolSize">250</Set>
         <Set name="maximumPoolSize">250</Set>
       </New>
@@ -61,7 +60,7 @@
     -->    
     <Call name="addConnector">
       <Arg>
-          <New class="org.mortbay.jetty.nio.SelectChannelConnector">
+          <New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
             <Set name="host"><SystemProperty name="jetty.host"/></Set>
             <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
             <Set name="maxIdleTime">30000</Set>
@@ -107,17 +106,17 @@
     <!-- Set handler Collection Structure                            --> 
     <!-- =========================================================== -->
     <Set name="handler">
-      <New id="Handlers" class="org.mortbay.jetty.handler.HandlerCollection">
+      <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
         <Set name="handlers">
-         <Array type="org.mortbay.jetty.Handler">
+         <Array type="org.eclipse.jetty.server.Handler">
            <Item>
-             <New id="Contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
+             <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
            </Item>
            <Item>
-             <New id="DefaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
+             <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
            </Item>
            <Item>
-             <New id="RequestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
+             <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler"/>
            </Item>
          </Array>
         </Set>
@@ -137,7 +136,7 @@
     <!-- =========================================================== -->
     <Call name="addLifeCycle">
       <Arg>
-        <New class="org.mortbay.jetty.deployer.ContextDeployer">
+        <New class="org.eclipse.jetty.deploy.ContextDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="configurationDir"><SystemProperty name="jetty.home" default="."/>/contexts</Set>
           <Set name="scanInterval">1</Set>
@@ -160,7 +159,7 @@
     <!-- =========================================================== -->
     <Call name="addLifeCycle">
       <Arg>
-        <New class="org.mortbay.jetty.deployer.WebAppDeployer">
+        <New class="org.eclipse.jetty.deploy.WebAppDeployer">
           <Set name="contexts"><Ref id="Contexts"/></Set>
           <Set name="webAppDir"><SystemProperty name="jetty.home" default="."/>/apps</Set>
 	        <Set name="parentLoaderPriority">false</Set>
@@ -179,7 +178,7 @@
     <!-- =========================================================== -->
     <Ref id="RequestLog">
       <Set name="requestLog">
-        <New id="RequestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
+        <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
           <Set name="filename"><SystemProperty name="jetty.logs" default="./logs"/>/yyyy_mm_dd.request.log</Set>
           <Set name="filenameDateFormat">yyyy_MM_dd</Set>
           <Set name="retainDays">90</Set>
@@ -242,37 +241,41 @@
   <!-- javax.transaction.UserTransaction.                          -->
 
 
+  <Call name="setAttribute">
+    <Arg>org.eclipse.jetty.webapp.configuration</Arg>
+    <Arg>
+      <Array type="java.lang.String">
+        <Item>org.eclipse.jetty.webapp.WebInfConfiguration</Item>
+        <Item>org.eclipse.jetty.webapp.WebXmlConfiguration</Item>
+        <Item>org.eclipse.jetty.webapp.MetaInfConfiguration</Item>
+        <Item>org.eclipse.jetty.webapp.FragmentConfiguration</Item>
+        <Item>org.eclipse.jetty.plus.webapp.EnvConfiguration</Item>
+        <Item>org.eclipse.jetty.plus.webapp.PlusConfiguration</Item>
+        <Item>org.eclipse.jetty.webapp.JettyWebXmlConfiguration</Item>
+        <Item>org.eclipse.jetty.webapp.TagLibConfiguration</Item>
+      </Array>
+    </Arg>
+  </Call>
+
 
   <!-- =========================================================== -->
   <!-- Configurations for WebAppContexts                           -->
   <!-- Sequence of configurations to be applied to a webapp.       -->
   <!-- =========================================================== -->
   <Array id="plusConfig" type="java.lang.String">
-    <Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>
-    <Item>org.mortbay.jetty.plus.webapp.EnvConfiguration</Item>
-    <Item>org.mortbay.jetty.plus.webapp.Configuration</Item>
-    <Item>org.mortbay.jetty.webapp.JettyWebXmlConfiguration</Item>
+    <Item>org.eclipse.jetty.webapp.WebInfConfiguration</Item>
+    <Item>org.eclipse.jetty.plus.webapp.EnvConfiguration</Item>
+    <Item>org.eclipse.jetty.webapp.Configuration</Item>
+    <Item>org.eclipse.jetty.webapp.JettyWebXmlConfiguration</Item>
     <Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
   </Array>
 
-  <!-- =========================================================== -->
-  <!-- Deploy all webapps in webapps-plus                          -->
-  <!-- =========================================================== -->
-  <Call class="org.mortbay.jetty.webapp.WebAppContext" name="addWebApplications">
-    <Arg><Ref id="Contexts"/></Arg>
-    <Arg>./apps</Arg>
-    <Arg>org/mortbay/jetty/webapp/webdefault.xml</Arg>
-    <Arg><Ref id="plusConfig"/></Arg>
-    <Arg type="boolean">True</Arg>
-    <Arg type="boolean">False</Arg>
-  </Call>
-
   <!-- ARCHIVA CONFIG -->
 	
-  <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="validation_mail" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>mail/Session</Arg>
     <Arg>
-      <New class="org.mortbay.naming.factories.MailSessionReference">
+      <New class="org.eclipse.jetty.jndi.factories.MailSessionReference">
         <Set name="user"></Set>
         <Set name="password"></Set>
         <Set name="properties">
@@ -286,7 +289,7 @@
 
   <!-- Users / Security Database -->
   
-  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="users" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
@@ -297,7 +300,7 @@
     </Arg>
   </New>
 
-  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="usersShutdown" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">

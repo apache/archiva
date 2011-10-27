@@ -52,19 +52,55 @@
       <version>${jettyVersion}</version>
       <scope>runtime</scope>
     </dependency>
-    <!--
+
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-</artifactId>
+      <artifactId>jetty-start</artifactId>
       <version>${jettyVersion}</version>
       <scope>runtime</scope>
     </dependency>
-    -->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-deploy</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jsp-2.1</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+    -->
+
+
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jsp-2.1-glassfish</artifactId>
+      <version>9.1.1.B60.25.p0</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jsp-api-2.1-glassfish</artifactId>
+      <version>9.1.1.B60.25.p0</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jdt.core.compiler</groupId>
+      <artifactId>ecj</artifactId>
+      <version>3.7</version>
+      <scope>runtime</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
@@ -97,7 +133,7 @@
           <daemons>
             <daemon>
               <id>archiva</id>
-              <mainClass>org.mortbay.start.Main</mainClass>
+              <mainClass>org.eclipse.jetty.start.Main</mainClass>
               <commandLineArguments>
                 <commandLineArgument>conf/jetty.xml</commandLineArgument>
               </commandLineArguments>
