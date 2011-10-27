@@ -1,6 +1,8 @@
-<supplementalDataModels>
+<supplementalDataModels xmlns="http://maven.apache.org/supplemental-model/1.0.0"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://maven.apache.org/supplemental-model/1.0.0 http://maven.apache.org/xsd/supplemental-model-1.0.0.xsd">
   <supplement>
-  	<project>
+    <project>
       <groupId>ant</groupId>
       <artifactId>ant</artifactId>
       <name>Ant</name>
@@ -18,7 +20,43 @@
     </project>
   </supplement>
   <supplement>
-  	<project>
+    <project>
+      <groupId>org.eclipse.jdt.core.compiler</groupId>
+      <artifactId>ecj</artifactId>
+      <name>Eclipse ECJ</name>
+      <url>http://www.eclipse.org/jdt</url>
+      <organization>
+        <name>The Eclipse Foundation</name>
+        <url>http://www.eclipse.org</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>Eclipse Public License v1.0</name>
+          <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+    <project>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>core</artifactId>
+      <name>Eclipse JDT Core</name>
+      <url>http://www.eclipse.org/jdt</url>
+      <organization>
+        <name>The Eclipse Foundation</name>
+        <url>http://www.eclipse.org</url>
+      </organization>
+      <licenses>
+        <license>
+          <name>Eclipse Public License v1.0</name>
+          <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
+        </license>
+      </licenses>
+    </project>
+  </supplement>
+  <supplement>
+    <project>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <name>Geronimo :: Java Transaction API Specification</name>
@@ -36,7 +74,7 @@
     </project>
   </supplement>
   <supplement>
-  	<project>
+    <project>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
       <name>JavaBeans Activation Framework (JAF)</name>
@@ -53,7 +91,7 @@
     </project>
   </supplement>
   <supplement>
-  	<project>
+    <project>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <name>JavaMail API</name>
@@ -70,7 +108,7 @@
     </project>
   </supplement>
   <supplement>
-  	<project>
+    <project>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <name>Xerces</name>
