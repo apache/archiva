@@ -87,55 +87,5 @@
       </licenses>
     </project>
   </supplement>
-  <supplement>
-  	<project>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler</artifactId>
-      <name>Tomcat Jasper Compiler</name>
-      <organization>
-        <name>The Apache Software Foundation</name>
-        <url>http://www.apache.org/</url>
-      </organization>
-      <licenses>
-        <license>
-          <name>The Apache Software License, Version 2.0</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-      </licenses>
-    </project>
-  </supplement>
-  <supplement>
-  	<project>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler-jdt</artifactId>
-      <name>Tomcat Jasper Compiler JDT</name>
-      <organization>
-        <name>The Apache Software Foundation</name>
-        <url>http://www.apache.org/</url>
-      </organization>
-      <licenses>
-        <license>
-          <name>The Apache Software License, Version 2.0</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-      </licenses>
-    </project>
-  </supplement>
-  <supplement>
-  	<project>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-runtime</artifactId>
-      <name>Tomcat Jasper Runtime</name>
-      <organization>
-        <name>The Apache Software Foundation</name>
-        <url>http://www.apache.org/</url>
-      </organization>
-      <licenses>
-        <license>
-          <name>The Apache Software License, Version 2.0</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-      </licenses>
-    </project>
-  </supplement>
+
 </supplementalDataModels>
