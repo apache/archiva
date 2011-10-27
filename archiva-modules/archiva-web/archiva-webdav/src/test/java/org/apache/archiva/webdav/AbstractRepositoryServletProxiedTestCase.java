@@ -21,20 +21,22 @@ package org.apache.archiva.webdav;
 
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.ContextHandler;
-import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.servlet.DefaultServlet;
-import org.mortbay.jetty.servlet.ServletHandler;
 
 import java.io.File;
 
@@ -122,14 +124,15 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         repo.server.setHandler( contexts );
 
-        ContextHandler context = new ContextHandler();
+        ServletContextHandler context = new ServletContextHandler();
         context.setContextPath( repo.context );
         context.setResourceBase( repo.root.getAbsolutePath() );
         context.setAttribute( "dirAllowed", true );
         context.setAttribute( "maxCacheSize", 0 );
-        ServletHandler servlet = new ServletHandler();
-        servlet.addServletWithMapping( DefaultServlet.class.getName(), "/" );
-        context.setHandler( servlet );
+
+        ServletHolder sh = new ServletHolder( DefaultServlet.class );
+        context.addServlet( sh, "/" );
+
         contexts.addHandler( context );
 
         repo.server.start();
