@@ -59,7 +59,6 @@
     <maven.version>2.0.8</maven.version>
     <wagon.version>2.0</wagon.version>
     <redback.version>1.3</redback.version>
-    <jetty.version>6.1.19</jetty.version>
     <slf4j.version>1.6.1</slf4j.version>
     <binder.version>0.11</binder.version>
     <spring.version>3.0.5.RELEASE</spring.version>
@@ -70,6 +69,7 @@
     <cxfVersion>2.4.3</cxfVersion>
     <derbyVersion>10.8.2.2</derbyVersion>
     <javaxMailVersion>1.4</javaxMailVersion>
+    <jettyVersion>7.4.5.v20110725</jettyVersion>
   </properties>
 
   <dependencyManagement>
@@ -1119,9 +1119,14 @@
         <version>1.5.2</version>
       </dependency>
       <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>${jetty.version}</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${jettyVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-plus</artifactId>
+        <version>${jettyVersion}</version>
       </dependency>
 
       <!-- xmlrpc -->

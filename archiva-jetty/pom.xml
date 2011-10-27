@@ -31,13 +31,8 @@
   <name>Apache Archiva</name>
   <dependencies>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>start</artifactId>
-      <version>${jetty.version}</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -52,21 +47,22 @@
     </dependency>
     <!-- Runtime dependencies that need to be included in the generated binaries -->
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-naming</artifactId>
-      <version>${jetty.version}</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jndi</artifactId>
+      <version>${jettyVersion}</version>
       <scope>runtime</scope>
     </dependency>
+    <!--
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jsp-2.1-jetty</artifactId>
-      <version>${jetty.version}</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-</artifactId>
+      <version>${jettyVersion}</version>
       <scope>runtime</scope>
     </dependency>
+    -->
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
+      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
-      <version>${jetty.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

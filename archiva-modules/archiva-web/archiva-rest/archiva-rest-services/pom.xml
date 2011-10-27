@@ -29,8 +29,7 @@
   <name>Archiva Web :: REST support :: Services</name>
 
   <properties>
-    <jettyVersion>7.4.5.v20110725</jettyVersion>
-    <archiva.baseRestUrl />
+<archiva.baseRestUrl />
     <tomcatVersion>7.0.21</tomcatVersion>
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
