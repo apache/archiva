@@ -120,7 +120,14 @@
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
-      <version>1.2.1</version>
+      <version>1.4</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.5.6</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
   <build>
