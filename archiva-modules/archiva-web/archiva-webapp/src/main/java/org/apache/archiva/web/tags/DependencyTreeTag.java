@@ -24,6 +24,8 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.web.tags.DependencyTree.TreeEntry;
+import org.apache.struts2.views.annotations.StrutsTag;
+import org.apache.struts2.views.annotations.StrutsTagAttribute;
 import org.springframework.beans.BeansException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -54,6 +56,7 @@ import javax.servlet.jsp.tagext.TryCatchFinally;
  *
  * @version $Id$
  */
+@StrutsTag(name = "dependency-tree", tldBodyContent = "JSP", tldTagClass = "org.apache.archiva.web.tags.DependencyTreeTag", description = "Render a dependency tree for the provided project.")
 public class DependencyTreeTag
     extends TagSupport
     implements IterationTag, TryCatchFinally
@@ -173,26 +176,31 @@ public class DependencyTreeTag
         super.release();
     }
 
+    @StrutsTagAttribute(description = "The artifactId", type = "String", defaultValue = "", required = true, rtexprvalue = true)
     public void setArtifactId( String artifactId )
     {
         this.artifactId = artifactId;
     }
 
+    @StrutsTagAttribute(description = "The groupId", type = "String", defaultValue = "", required = true, rtexprvalue = true)
     public void setGroupId( String groupId )
     {
         this.groupId = groupId;
     }
 
+    @StrutsTagAttribute(description = "The variable name for the node.", type = "String", defaultValue = "", required = false, rtexprvalue = true)
     public void setNodevar( String nodevar )
     {
         this.nodevar = nodevar;
     }
 
+    @StrutsTagAttribute(description = "The version", type = "String", defaultValue = "", required = true, rtexprvalue = true)
     public void setVersion( String version )
     {
         this.version = version;
     }
 
+    @StrutsTagAttribute(description = "The version of the project model. Used to verify the dependency graph for generic snapshots not yet in the repo.", type = "String", defaultValue = "", required = false, rtexprvalue = true)
     public void setModelVersion( String modelVersion )
     {
         this.modelVersion = modelVersion;

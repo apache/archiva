@@ -19,7 +19,7 @@
 
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="archiva" uri="/WEB-INF/taglib.tld" %>
+<%@ taglib prefix="archiva" uri="/WEB-INF/tld/web-tags.tld" %>
 
 <archiva:dependency-tree groupId="${groupId}" artifactId="${artifactId}" version="${version}"
                          modelVersion="${model.version}" nodevar="node">

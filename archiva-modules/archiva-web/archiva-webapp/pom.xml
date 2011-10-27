@@ -164,10 +164,12 @@
       <groupId>opensymphony</groupId>
       <artifactId>sitemesh</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
@@ -549,6 +551,16 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+
+    <!-- taglib annotation plugin -->
+    <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts-annotations</artifactId>
+      <version>1.0.5</version>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+
   </dependencies>
   <build>
     <resources>
@@ -657,7 +669,7 @@
       </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
-        <artifactId>maven-jetty-plugin</artifactId>
+        <artifactId>jetty-maven-plugin</artifactId>
         <version>${jettyVersion}</version>
         <configuration>
           <webAppConfig>
@@ -745,9 +757,43 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.myfaces.tobago</groupId>
+          <artifactId>maven-apt-plugin</artifactId>
+          <version>1.0.38</version>
+          <configuration>
+            <A>uri=/archiva-web-tag,tlibVersion=2.2.3,jspVersion=2.0,shortName=archiva,displayName=Archiva Taglib,
+              outFile=${basedir}/src/main/webapp/WEB-INF/tld/web-tags.tld,
+              description=Archiva taglibs.,
+              outTemplatesDir=${basedir}/target
+            </A>
+            <resourceTargetPath>target</resourceTargetPath>
+            <fork>true</fork>
+            <force>true</force>
+            <nocompile>true</nocompile>
+            <showWarnings>true</showWarnings>
+            <factory>org.apache.struts.annotations.taglib.apt.TLDAnnotationProcessorFactory</factory>
+            <includes>
+              <include>org/apache/archiva/web/tags/*Tag.java</include>
+            </includes>
+          </configuration>
+
+        </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>

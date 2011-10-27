@@ -25,6 +25,9 @@ import org.apache.struts2.components.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+
+import org.apache.struts2.views.annotations.StrutsTag;
+import org.apache.struts2.views.annotations.StrutsTagAttribute;
 import org.apache.struts2.views.jsp.ComponentTagSupport;
 
 /**
@@ -32,6 +35,7 @@ import org.apache.struts2.views.jsp.ComponentTagSupport;
  *
  * @version $Id$
  */
+@StrutsTag(name = "groupIdLink", tldBodyContent = "empty", tldTagClass = "org.apache.archiva.web.tags.GroupIdLinkTag", description = "Render a groupId as a set of Links")
 public class GroupIdLinkTag
     extends ComponentTagSupport
 {
@@ -78,11 +82,13 @@ public class GroupIdLinkTag
         var = exprTool.optionalString( "var", var_, "" );
     }
 
+    @StrutsTagAttribute(description = "The GroupID String", type = "String", defaultValue = "", required = true, rtexprvalue = true)
     public void setVar( String value )
     {
         this.var_ = value;
     }
 
+    @StrutsTagAttribute(description = "Boolean indicating if 'top' link should be created or not.", type = "String", defaultValue = "", required = false, rtexprvalue = true)
     public void setIncludeTop( boolean includeTop )
     {
         this.includeTop = includeTop;

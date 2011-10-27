@@ -22,6 +22,8 @@ package org.apache.archiva.web.tags;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.struts2.views.annotations.StrutsTag;
+import org.apache.struts2.views.annotations.StrutsTagAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ import java.io.IOException;
  *
  * @version $Id$
  */
+@StrutsTag(name = "copy-paste-snippet", tldBodyContent = "empty", tldTagClass = "org.apache.archiva.web.tags.CopyPasteSnippetTag", description = "Render a copy paste snippet for the provided object")
 public class CopyPasteSnippetTag
     extends TagSupport
 {
@@ -111,11 +114,13 @@ public class CopyPasteSnippetTag
         return super.doEndTag();
     }
 
+    @StrutsTagAttribute(description = "The Object to Render", type = "String", defaultValue = "", required = true, rtexprvalue = true)
     public void setObject( Object object )
     {
         this.object = object;
     }
 
+    @StrutsTagAttribute(description = "The wrapper type to use, can be 'pre' or 'toggle'", type = "String", defaultValue = "", required = false, rtexprvalue = true)
     public void setWrapper( String wrapper )
     {
         this.wrapper = wrapper;

@@ -17,3 +17,4 @@ archiva-modules/archiva-web/archiva-webapp-test/cargo-installs/
 *.iws
 .DS_Store
 .extract
+archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/tld/
