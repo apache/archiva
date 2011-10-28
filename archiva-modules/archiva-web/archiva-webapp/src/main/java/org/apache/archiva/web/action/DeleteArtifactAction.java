@@ -261,14 +261,14 @@ public class DeleteArtifactAction
                 artifactReference.setClassifier( classifier );
                 artifactReference.setType( type );
                 repository.deleteArtifact( artifactReference );
+
                 String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + classifier + ":" + version
                     + "\' was successfully deleted from repository \'" + repositoryId + "\'";
 
                 addActionMessage( msg );
 
                 reset();
-                // as metadatarepository doesn't contains any informations regarding classifier we are free to return
-                // TODO when metadatarepository will contains such informations we will have to cleanup that !!
+                // TODO cleanup facet which contains classifier information
                 return SUCCESS;
             }
 
