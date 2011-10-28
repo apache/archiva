@@ -19,12 +19,12 @@
   -->
 
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
-<Configure id='wac' class="org.mortbay.jetty.webapp.WebAppContext">
+<Configure id='wac' class="org.eclipse.jetty.webapp.WebAppContext">
 
-  <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="validation_mail" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>mail/Session</Arg>
     <Arg>
-      <New class="org.mortbay.naming.factories.MailSessionReference">
+      <New class="org.eclipse.jetty.jndi.factories.MailSessionReference">
         <Set name="user"></Set>
         <Set name="password"></Set>
         <Set name="properties">
@@ -40,7 +40,7 @@
   </New>
 
   <!-- Users / Security Database -->
-  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="users" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/users</Arg>
     <Arg>
@@ -52,7 +52,7 @@
     </Arg>
   </New>
 
-  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="usersShutdown" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg><Ref id="wac"/></Arg>
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
