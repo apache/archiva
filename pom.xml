@@ -25,6 +25,7 @@
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
     <version>9</version>
+    <relativePath />
   </parent>
 
   <groupId>org.apache.archiva</groupId>
