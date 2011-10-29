@@ -36,6 +36,7 @@
     <module>archiva-lucene-consumers</module>
     <module>archiva-signature-consumers</module>
     <module>archiva-metadata-consumer</module>
+    <module>archiva-consumer-archetype</module>
   </modules>
 
 </project>
