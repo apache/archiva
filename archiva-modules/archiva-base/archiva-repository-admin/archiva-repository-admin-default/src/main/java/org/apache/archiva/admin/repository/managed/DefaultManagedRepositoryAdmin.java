@@ -24,8 +24,13 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -37,12 +42,10 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -51,10 +54,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -93,9 +98,22 @@ public class DefaultManagedRepositoryAdmin
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
 
+    @Inject
+    private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
     protected RoleManager roleManager;
+
+    @PostConstruct
+    private void initialize()
+        throws RepositoryAdminException
+    {
+        // initialize index context on start
+        for ( ManagedRepository managedRepository : getManagedRepositories() )
+        {
+            createIndexContext( managedRepository );
+        }
+    }
 
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
@@ -494,6 +512,62 @@ public class DefaultManagedRepositoryAdmin
         }
 
         configuration.addManagedRepository( repository );
+
+    }
+
+    public IndexingContext createIndexContext( ManagedRepository repository )
+        throws RepositoryAdminException
+    {
+        try
+        {
+            List<? extends IndexCreator> indexCreators = mavenIndexerUtils.getAllIndexCreators();
+            NexusIndexer indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+
+            IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
+
+            if ( context != null )
+            {
+                log.debug( "skip adding repository with id {} as already exists", repository.getId() );
+                return context;
+            }
+
+            String indexDir = repository.getIndexDirectory();
+            File managedRepository = new File( repository.getLocation() );
+
+            File indexDirectory = null;
+            if ( indexDir != null && !"".equals( indexDir ) )
+            {
+                indexDirectory = new File( repository.getIndexDirectory() );
+            }
+            else
+            {
+                indexDirectory = new File( managedRepository, ".indexer" );
+            }
+
+            context =
+                indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
+                                            managedRepository.toURI().toURL().toExternalForm(),
+                                            indexDirectory.toURI().toURL().toString(), indexCreators );
+
+            context.setSearchable( repository.isScanned() );
+            return context;
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( PlexusSisuBridgeException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( UnsupportedExistingLuceneIndexException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
     }
 
     private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )

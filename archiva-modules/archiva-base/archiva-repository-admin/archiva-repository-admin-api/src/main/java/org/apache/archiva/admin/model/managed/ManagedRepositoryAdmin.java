@@ -22,6 +22,7 @@ package org.apache.archiva.admin.model.managed;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.maven.index.context.IndexingContext;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,16 @@ public interface ManagedRepositoryAdmin
     Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                      AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException;
+
+    /**
+     *
+     * @param repository
+     * @return
+     * @throws RepositoryAdminException
+     * @since 1.4-M2
+     */
+    IndexingContext createIndexContext( ManagedRepository repository )
+            throws RepositoryAdminException;
 
 
 }
