@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.index.context.IndexingContext;
 
 import java.util.List;
 import java.util.Map;
@@ -79,5 +80,11 @@ public class MockRemoteRepositoryAdmin
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public IndexingContext createIndexContext( RemoteRepository repository )
+        throws RepositoryAdminException
+    {
+        return null;
     }
 }

@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.index.context.IndexingContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,5 +112,11 @@ public class MockManagedRepositoryAdmin
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public IndexingContext createIndexContext( ManagedRepository repository )
+        throws RepositoryAdminException
+    {
+        return null;
     }
 }
