@@ -50,6 +50,7 @@ import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -948,49 +949,69 @@ public class ArchivaDavResourceFactory
                 File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
                 if ( resourceFile.exists() )
                 {
-                    // for prompted authentication
-                    if ( httpAuth.getSecuritySession( request.getSession( true ) ) != null )
+                    // in case of group displaying index directory doesn't have sense !!
+                    String repoIndexDirectory = managedRepository.getRepository().getIndexDirectory();
+                    if ( !new File( repoIndexDirectory ).isAbsolute() )
                     {
-                        try
-                        {
-                            if ( isAuthorized( request, repository ) )
-                            {
-                                mergedRepositoryContents.add( resourceFile );
-                                log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
-                            }
-                        }
-                        catch ( DavException e )
-                        {
-                            // TODO: review exception handling
-                            if ( log.isDebugEnabled() )
-                            {
-                                log.debug(
-                                    "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
-                                        + "': " + e.getMessage() );
-                            }
-                        }
+                        repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
+                                                       StringUtils.isEmpty( repoIndexDirectory )
+                                                           ? ".indexer"
+                                                           : repoIndexDirectory ).getAbsolutePath();
                     }
-                    else
+                    if ( StringUtils.isEmpty( repoIndexDirectory ) )
                     {
-                        // for the current user logged in
-                        try
+                        repoIndexDirectory =
+                            new File( managedRepository.getRepository().getLocation(), ".indexer" ).getAbsolutePath();
+                    }
+
+                    if ( !StringUtils.equals( FilenameUtils.normalize( repoIndexDirectory ),
+                                              FilenameUtils.normalize( resourceFile.getAbsolutePath() ) ) )
+                    {
+                        // for prompted authentication
+                        if ( httpAuth.getSecuritySession( request.getSession( true ) ) != null )
                         {
-                            if ( servletAuth.isAuthorized( activePrincipal, repository,
-                                                           WebdavMethodUtil.getMethodPermission(
-                                                               request.getMethod() ) ) )
+                            try
                             {
-                                mergedRepositoryContents.add( resourceFile );
-                                log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                if ( isAuthorized( request, repository ) )
+                                {
+                                    mergedRepositoryContents.add( resourceFile );
+                                    log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                }
                             }
-                        }
-                        catch ( UnauthorizedException e )
-                        {
-                            // TODO: review exception handling
-                            if ( log.isDebugEnabled() )
+                            catch ( DavException e )
                             {
-                                log.debug(
-                                    "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
-                                        + "': " + e.getMessage() );
+                                // TODO: review exception handling
+                                if ( log.isDebugEnabled() )
+                                {
+                                    log.debug(
+                                        "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
+                                            + "': " + e.getMessage() );
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            // for the current user logged in
+                            try
+                            {
+                                if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                                               WebdavMethodUtil.getMethodPermission(
+                                                                   request.getMethod() ) ) )
+                                {
+                                    mergedRepositoryContents.add( resourceFile );
+                                    log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                }
+                            }
+                            catch ( UnauthorizedException e )
+                            {
+                                // TODO: review exception handling
+                                if ( log.isDebugEnabled() )
+                                {
+                                    log.debug(
+                                        "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
+                                            + "': " + e.getMessage() );
+                                }
                             }
                         }
                     }
