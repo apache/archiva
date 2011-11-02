@@ -19,22 +19,23 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -44,8 +45,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -54,13 +55,13 @@ import java.util.List;
 /**
  * Consumer for indexing the repository to provide search and IDE integration features.
  */
-@Service("knownRepositoryContentConsumer#index-content")
-@Scope("prototype")
+@Service( "knownRepositoryContentConsumer#index-content" )
+@Scope( "prototype" )
 public class NexusIndexerConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
-    private Logger log = LoggerFactory.getLogger( NexusIndexerConsumer.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     private ArchivaConfiguration configuration;
 
@@ -79,6 +80,9 @@ public class NexusIndexerConsumer
     private ManagedRepository repository;
 
     private List<? extends IndexCreator> allIndexCreators;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
                                  ArchivaConfiguration configuration, FileTypes filetypes,
@@ -116,13 +120,9 @@ public class NexusIndexerConsumer
         try
         {
             log.info( "Creating indexing context for repo : {}", repository.getId() );
-            context = ArtifactIndexingTask.createContext( repository, nexusIndexer, allIndexCreators );
+            context = managedRepositoryAdmin.createIndexContext( repository );
         }
-        catch ( IOException e )
-        {
-            throw new ConsumerException( e.getMessage(), e );
-        }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( RepositoryAdminException e )
         {
             throw new ConsumerException( e.getMessage(), e );
         }

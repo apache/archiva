@@ -21,6 +21,7 @@ package org.apache.archiva.scheduler.indexing;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
@@ -76,6 +77,9 @@ public class ArchivaIndexingTaskExecutorTest
     @Inject
     MavenIndexerUtils mavenIndexerUtils;
 
+    @Inject
+    ManagedRepositoryAdmin managedRepositoryAdmin;
+
     @Before
     public void setUp()
         throws Exception
@@ -93,7 +97,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
-        ArtifactIndexingTask.createContext( repositoryConfig, indexer, mavenIndexerUtils.getAllIndexCreators() );
+        managedRepositoryAdmin.createIndexContext( repositoryConfig );
     }
 
     @After

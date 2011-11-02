@@ -181,48 +181,4 @@ public class ArtifactIndexingTask
             + resourceFile + "]";
     }
 
-    /**
-     * FIXME remove this static somewhere else !
-     * @param repository
-     * @param indexer
-     * @param indexCreators
-     * @return
-     * @throws IOException
-     * @throws UnsupportedExistingLuceneIndexException
-     */
-    public static IndexingContext createContext( ManagedRepository repository, NexusIndexer indexer,
-                                                 List<? extends IndexCreator> indexCreators )
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
-
-        if ( context != null )
-        {
-            LoggerFactory.getLogger( ArtifactIndexingTask.class ).debug(
-                "skip adding repository with id {} as already exists", repository.getId() );
-            return context;
-        }
-
-
-        String indexDir = repository.getIndexDirectory();
-        File managedRepository = new File( repository.getLocation() );
-
-        File indexDirectory = null;
-        if ( indexDir != null && !"".equals( indexDir ) )
-        {
-            indexDirectory = new File( repository.getIndexDirectory() );
-        }
-        else
-        {
-            indexDirectory = new File( managedRepository, ".indexer" );
-        }
-
-
-        context = indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-                                              managedRepository.toURI().toURL().toExternalForm(),
-                                              indexDirectory.toURI().toURL().toString(), indexCreators );
-
-        context.setSearchable( repository.isScanned() );
-        return context;
-    }
 }

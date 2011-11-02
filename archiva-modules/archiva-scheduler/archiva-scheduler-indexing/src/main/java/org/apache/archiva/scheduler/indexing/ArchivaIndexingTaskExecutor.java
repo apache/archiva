@@ -20,7 +20,9 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -29,7 +31,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
-import org.apache.maven.index.DefaultArtifactContextProducer;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
@@ -37,7 +38,6 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
@@ -77,6 +77,9 @@ public class ArchivaIndexingTaskExecutor
 
     @Inject
     private MavenIndexerUtils mavenIndexerUtils;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private NexusIndexer nexusIndexer;
 
@@ -130,15 +133,9 @@ public class ArchivaIndexingTaskExecutor
                     {
                         log.debug( "Creating indexing context on resource: {}",
                                    indexingTask.getResourceFile().getPath() );
-                        context = ArtifactIndexingTask.createContext( repository, nexusIndexer, allIndexCreators );
+                        context = managedRepositoryAdmin.createIndexContext( repository );
                     }
-                    catch ( IOException e )
-                    {
-                        log.error( "Error occurred while creating context: " + e.getMessage() );
-                        throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage(),
-                                                          e );
-                    }
-                    catch ( UnsupportedExistingLuceneIndexException e )
+                    catch ( RepositoryAdminException e )
                     {
                         log.error( "Error occurred while creating context: " + e.getMessage() );
                         throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage(),

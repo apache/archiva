@@ -175,10 +175,7 @@ public class DefaultRepositoriesService
         {
             ManagedRepository repository = managedRepositoryAdmin.getManagedRepository( repositoryId );
 
-            IndexingContext context =
-                ArtifactIndexingTask.createContext( repository, plexusSisuBridge.lookup( NexusIndexer.class ),
-                                                    new ArrayList<IndexCreator>(
-                                                        mavenIndexerUtils.getAllIndexCreators( ) ) );
+            IndexingContext context = managedRepositoryAdmin.createIndexContext( repository );
             ArtifactIndexingTask task =
                 new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
 
