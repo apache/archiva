@@ -22,6 +22,7 @@ package org.apache.archiva.admin.model.remote;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.maven.index.context.IndexingContext;
 
 import java.util.List;
 import java.util.Map;
@@ -48,5 +49,14 @@ public interface RemoteRepositoryAdmin
         throws RepositoryAdminException;
 
     Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
+        throws RepositoryAdminException;
+
+    /**
+     * @param repository
+     * @return
+     * @throws RepositoryAdminException
+     * @since 1.4-M2
+     */
+    IndexingContext createIndexContext( RemoteRepository repository )
         throws RepositoryAdminException;
 }

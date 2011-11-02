@@ -173,7 +173,7 @@ public class DefaultManagedRepositoryAdmin
 
         getRepositoryCommonValidator().basicValidation( managedRepository, false );
         triggerAuditEvent( managedRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
-        return
+        Boolean res =
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
                                   managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
@@ -181,6 +181,9 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
                                   managedRepository.isDeleteReleasedSnapshots(), auditInformation,
                                   getArchivaConfiguration().getConfiguration() ) != null;
+
+        createIndexContext( managedRepository );
+        return res;
 
     }
 
@@ -486,7 +489,7 @@ public class DefaultManagedRepositoryAdmin
         {
             repositorySession.close();
         }
-
+        createIndexContext( managedRepository );
         return true;
     }
 
@@ -512,7 +515,7 @@ public class DefaultManagedRepositoryAdmin
         }
 
         configuration.addManagedRepository( repository );
-
+        
     }
 
     public IndexingContext createIndexContext( ManagedRepository repository )

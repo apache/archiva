@@ -24,12 +24,24 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +56,22 @@ public class DefaultRemoteRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements RemoteRepositoryAdmin
 {
+
+    @Inject
+    private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private MavenIndexerUtils mavenIndexerUtils;
+
+    @PostConstruct
+    private void initialize()
+        throws RepositoryAdminException
+    {
+        for ( RemoteRepository remoteRepository : getRemoteRepositories() )
+        {
+            createIndexContext( remoteRepository );
+        }
+    }
 
 
     public List<RemoteRepository> getRemoteRepositories()
@@ -182,6 +210,75 @@ public class DefaultRemoteRepositoryAdmin
         }
 
         return map;
+    }
+
+    public IndexingContext createIndexContext( RemoteRepository remoteRepository )
+        throws RepositoryAdminException
+    {
+        try
+        {
+            // FIXME get this from ArchivaAdministration
+            String appServerBase = System.getProperty( "appserver.base" );
+
+            List<? extends IndexCreator> indexCreators = mavenIndexerUtils.getAllIndexCreators();
+            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+
+            String contextKey = "remote-" + remoteRepository.getId();
+            IndexingContext indexingContext = nexusIndexer.getIndexingContexts().get( contextKey );
+            if ( indexingContext != null )
+            {
+                return indexingContext;
+            }
+            // create path
+            File repoDir = new File( appServerBase, "data/remotes/" + remoteRepository.getId() );
+            if ( !repoDir.exists() )
+            {
+                repoDir.mkdirs();
+            }
+            File indexDirectory = new File( repoDir, ".index" );
+            if ( !indexDirectory.exists() )
+            {
+                indexDirectory.mkdirs();
+            }
+            return nexusIndexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
+                                                    remoteRepository.getUrl(),
+                                                    calculateIndexRemoteUrl( remoteRepository ),
+                                                    mavenIndexerUtils.getAllIndexCreators() );
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( PlexusSisuBridgeException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( UnsupportedExistingLuceneIndexException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+
+    }
+
+    protected String calculateIndexRemoteUrl( RemoteRepository remoteRepository )
+    {
+        if ( StringUtils.startsWith( remoteRepository.getRemoteIndexUrl(), "http" ) )
+        {
+            String baseUrl = remoteRepository.getRemoteIndexUrl();
+            return baseUrl.endsWith( "/" ) ? StringUtils.substringBeforeLast( baseUrl, "/" ) : baseUrl;
+        }
+        String baseUrl = StringUtils.endsWith( remoteRepository.getUrl(), "/" ) ? StringUtils.substringBeforeLast(
+            remoteRepository.getUrl(), "/" ) : remoteRepository.getUrl();
+
+        baseUrl = StringUtils.isEmpty( remoteRepository.getRemoteIndexUrl() )
+            ? baseUrl + "/.index"
+            : baseUrl + "/" + remoteRepository.getRemoteIndexUrl();
+        return baseUrl;
+
     }
 
     private RemoteRepositoryConfiguration getRemoteRepositoryConfiguration( RemoteRepository remoteRepository )
