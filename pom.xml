@@ -47,7 +47,7 @@
     <repository>
       <id>vmbuild.staging</id>
       <name>Apache Release Staging Repository on VMBuild</name>
-      <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
+      <url>http://vmbuild.apache.org/archiva/repository/archiva-releases-stage</url>
     </repository>
     <snapshotRepository>
       <id>vmbuild.snapshots</id>
