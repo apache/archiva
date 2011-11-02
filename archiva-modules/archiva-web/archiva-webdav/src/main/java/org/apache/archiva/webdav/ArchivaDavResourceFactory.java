@@ -19,6 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
@@ -28,6 +29,9 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
@@ -93,7 +97,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -161,6 +167,12 @@ public class ArchivaDavResourceFactory
     @Inject
     @Named( value = "httpAuthenticator#basic" )
     private HttpAuthenticator httpAuth;
+
+    @Inject
+    private IndexMerger indexMerger;
+
+    @Inject
+    private RepositorySearch repositorySearch;
 
     /**
      * Lock Manager - use simple implementation from JackRabbit
@@ -1019,6 +1031,51 @@ public class ArchivaDavResourceFactory
                         }
                     }
                 }
+            }
+            // remove last /
+            String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/"  );
+            if ( StringUtils.endsWith( path, ".indexer" ) )
+            {
+                try
+                {
+                    Set<String> authzRepos = new HashSet<String>();
+                    for ( String repository : repositories )
+                    {
+                        try
+                        {
+                            if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                                           WebdavMethodUtil.getMethodPermission(
+                                                               request.getMethod() ) ) )
+                            {
+                                authzRepos.add( repository );
+                                authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository ) );
+                            }
+                        }
+                        catch ( UnauthorizedException e )
+                        {
+                            // TODO: review exception handling
+                            if ( log.isDebugEnabled() )
+                            {
+                                log.debug(
+                                    "Skipping repository '" + repository + "' for user '" + activePrincipal + "': "
+                                        + e.getMessage() );
+                            }
+                        }
+                    }
+
+                    File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos );
+                    mergedRepositoryContents.add( mergedRepoDir );
+
+                }
+                catch ( RepositoryAdminException e )
+                {
+                    throw new DavException( 500, e );
+                }
+                catch ( IndexMergerException e )
+                {
+                    throw new DavException( 500, e );
+                }
+
             }
         }
         else

@@ -328,6 +328,10 @@ public class NexusRepositorySearch
                     if ( indexDir != null && !"".equals( indexDir ) )
                     {
                         indexDirectory = new File( repoConfig.getIndexDirectory() );
+                        if ( !indexDirectory.isAbsolute() )
+                        {
+                            indexDirectory = new File( repoConfig.getLocation(), repoConfig.getIndexDirectory() );
+                        }
                     }
                     else
                     {
@@ -388,7 +392,7 @@ public class NexusRepositorySearch
     }
 
 
-    private Set<String> getRemoteIndexingContextIds( String managedRepoId )
+    public Set<String> getRemoteIndexingContextIds( String managedRepoId )
         throws RepositoryAdminException
     {
         Set<String> ids = new HashSet<String>();
@@ -674,4 +678,6 @@ public class NexusRepositorySearch
 
         return paginated;
     }
+
+
 }

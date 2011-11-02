@@ -19,29 +19,32 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 
 public interface RepositorySearch
 {
     /**
      * Quick search.
-     * 
+     *
      * @param principal
      * @param selectedRepos
      * @param term
      * @param limits
-     * @param previousSearchTerms 
+     * @param previousSearchTerms
      * @return
      */
     SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
                           List<String> previousSearchTerms )
         throws RepositorySearchException;
-    
+
     /**
      * Advanced search.
-     * 
+     *
      * @param principal
      * @param searchFields
      * @param limits
@@ -49,7 +52,10 @@ public interface RepositorySearch
      */
     SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
         throws RepositorySearchException;
-    
+
     Collection<String> getAllGroupIds( String principal, List<String> selectedRepos )
         throws RepositorySearchException;
+
+    Set<String> getRemoteIndexingContextIds( String managedRepoId )
+        throws RepositoryAdminException;
 }
