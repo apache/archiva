@@ -32,6 +32,8 @@ Writing a Consumer Plugin
  For a sample custom consumer, you can checkout the archiva-consumer-plugin at the archiva sandbox in the SVN repository:
  Prior to release 1.4, plexus components are not anymore supported, you must use Spring components.
 
+* Writing manually
+
 +----+
 http://svn.apache.org/repos/asf/archiva/sandbox/archiva-consumer-plugin
 +----+
@@ -66,3 +68,17 @@ where,
    <knownContentConsumer>)
 
  [[8]] Start up Archiva again.
+
+* Use the archetype
+
+  Prior to version 1.4-M2, you can use an archetype.
+
++----+
+mvn archetype:generate \
+   -DarchetypeRepository=repo1.maven.org \
+   -DarchetypeGroupId=org.apache.archiva \
+   -DarchetypeArtifactId=archiva-consumer-archetype \
+   -DarchetypeVersion=${project.version}
++----+
+
+  Note: if you want to use a SNAPSHOT version, replace with the following parameter: -DarchetypeRepository=http://vmbuild.apache.org/archiva/repository/snapshots \
