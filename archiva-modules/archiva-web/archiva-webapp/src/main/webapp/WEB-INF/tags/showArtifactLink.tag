@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="archiva"   uri="/WEB-INF/taglib.tld" %>
+<%@ taglib prefix="archiva"   uri="/WEB-INF/tld/web-tags.tld" %>
 
 <%@ attribute name="groupId" required="true" %>
 <%@ attribute name="artifactId" %>
