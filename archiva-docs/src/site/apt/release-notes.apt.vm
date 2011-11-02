@@ -38,22 +38,7 @@ Release Notes for Archiva ${project.version}
 
   Some new features has been added in ${project.version}:
 
-  * It is now possible to create a staging repository for any managed repository
-    and later merge the results
-
-  * You can now use REST services to control Archiva or search for artifacts. 
-    See {{{./adminguide/webservices/rest.html}REST Services}} for more
-    information.
-
-  * Database storage for repository metadata has been replaced with a JCR 
-    repository based on Apache Jackrabbit by default (other options such as
-    a flat-file storage may be made available in the future).
-
-  * The search interface provide now the capability to search on OSGI metadata
-    (based on the update of the Apache Maven Indexer library).
-
-  * You can now download Maven index content from remote repositories to include
-    artifacts which are not present locally in your search results.
+  * Repositories group can now return a merged index in path .indexer.
 
 * Compatibility Changes
 
@@ -77,6 +62,12 @@ Release Notes for Archiva ${project.version}
 * Changes in Archiva ${project.version}
 
   Released: <<???>>
+
+Previous Releases
+
+* Changes in Archiva 1.4-M1
+
+  Released: <<October, 26 2011>>
 
 ** New Feature
 
