@@ -951,12 +951,15 @@ public class ArchivaDavResourceFactory
                 {
                     // in case of group displaying index directory doesn't have sense !!
                     String repoIndexDirectory = managedRepository.getRepository().getIndexDirectory();
-                    if ( !new File( repoIndexDirectory ).isAbsolute() )
+                    if ( StringUtils.isNotEmpty( repoIndexDirectory ) )
                     {
-                        repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
-                                                       StringUtils.isEmpty( repoIndexDirectory )
-                                                           ? ".indexer"
-                                                           : repoIndexDirectory ).getAbsolutePath();
+                        if ( !new File( repoIndexDirectory ).isAbsolute() )
+                        {
+                            repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
+                                                           StringUtils.isEmpty( repoIndexDirectory )
+                                                               ? ".indexer"
+                                                               : repoIndexDirectory ).getAbsolutePath();
+                        }
                     }
                     if ( StringUtils.isEmpty( repoIndexDirectory ) )
                     {
