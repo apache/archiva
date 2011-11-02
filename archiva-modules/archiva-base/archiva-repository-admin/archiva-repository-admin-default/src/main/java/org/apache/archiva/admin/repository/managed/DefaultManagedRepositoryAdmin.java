@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
@@ -104,14 +105,50 @@ public class DefaultManagedRepositoryAdmin
     @Inject
     protected RoleManager roleManager;
 
+    // fields
+    List<? extends IndexCreator> indexCreators;
+
+    NexusIndexer indexer;
+
     @PostConstruct
     private void initialize()
         throws RepositoryAdminException
     {
+        try
+        {
+            indexCreators = mavenIndexerUtils.getAllIndexCreators();
+            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        }
+        catch ( PlexusSisuBridgeException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
         // initialize index context on start
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {
             createIndexContext( managedRepository );
+        }
+    }
+
+    @PreDestroy
+    private void shutdown()
+        throws RepositoryAdminException
+    {
+        try
+        {
+            // close index on shutdown
+            for ( ManagedRepository managedRepository : getManagedRepositories() )
+            {
+                IndexingContext context = indexer.getIndexingContexts().get( managedRepository.getId() );
+                if ( context != null )
+                {
+                    indexer.removeIndexingContext( context, false );
+                }
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
         }
     }
 
@@ -523,8 +560,6 @@ public class DefaultManagedRepositoryAdmin
     {
         try
         {
-            List<? extends IndexCreator> indexCreators = mavenIndexerUtils.getAllIndexCreators();
-            NexusIndexer indexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
             IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
 
@@ -564,10 +599,6 @@ public class DefaultManagedRepositoryAdmin
             throw new RepositoryAdminException( e.getMessage(), e );
         }
         catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( PlexusSisuBridgeException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }

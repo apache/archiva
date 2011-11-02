@@ -38,6 +38,7 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -63,13 +64,49 @@ public class DefaultRemoteRepositoryAdmin
     @Inject
     private MavenIndexerUtils mavenIndexerUtils;
 
+    // fields
+    List<? extends IndexCreator> indexCreators;
+
+    NexusIndexer indexer;
+
     @PostConstruct
     private void initialize()
         throws RepositoryAdminException
     {
+        try
+        {
+            indexCreators = mavenIndexerUtils.getAllIndexCreators();
+            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        }
+        catch ( PlexusSisuBridgeException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
         for ( RemoteRepository remoteRepository : getRemoteRepositories() )
         {
             createIndexContext( remoteRepository );
+        }
+    }
+
+    @PreDestroy
+    private void shutdown()
+        throws RepositoryAdminException
+    {
+        try
+        {
+            // close index on shutdown
+            for ( RemoteRepository remoteRepository : getRemoteRepositories() )
+            {
+                IndexingContext context = indexer.getIndexingContexts().get( remoteRepository.getId() );
+                if ( context != null )
+                {
+                    indexer.removeIndexingContext( context, false );
+                }
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
         }
     }
 
@@ -220,11 +257,8 @@ public class DefaultRemoteRepositoryAdmin
             // FIXME get this from ArchivaAdministration
             String appServerBase = System.getProperty( "appserver.base" );
 
-            List<? extends IndexCreator> indexCreators = mavenIndexerUtils.getAllIndexCreators();
-            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
             String contextKey = "remote-" + remoteRepository.getId();
-            IndexingContext indexingContext = nexusIndexer.getIndexingContexts().get( contextKey );
+            IndexingContext indexingContext = indexer.getIndexingContexts().get( contextKey );
             if ( indexingContext != null )
             {
                 return indexingContext;
@@ -240,20 +274,15 @@ public class DefaultRemoteRepositoryAdmin
             {
                 indexDirectory.mkdirs();
             }
-            return nexusIndexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
-                                                    remoteRepository.getUrl(),
-                                                    calculateIndexRemoteUrl( remoteRepository ),
-                                                    mavenIndexerUtils.getAllIndexCreators() );
+            return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
+                                               remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
+                                               mavenIndexerUtils.getAllIndexCreators() );
         }
         catch ( MalformedURLException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
         catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( PlexusSisuBridgeException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
