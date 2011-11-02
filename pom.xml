@@ -37,6 +37,14 @@
   <name>Apache Archiva</name>
   <url>http://archiva.apache.org</url>
 
+  <distributionManagement>
+    <repository>
+      <id>vmbuild.staging</id>
+      <name>Apache Release Staging Repository on VMBuild</name>
+      <url>http://vmbuild.apache.org/archiva/repository/archiva-releases-stage</url>
+    </repository>
+  </distributionManagement>
+
   <modules>
     <module>skin</module>
     <module>archiva-cli</module>
