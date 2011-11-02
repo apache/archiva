@@ -19,21 +19,28 @@ package org.apache.archiva.indexer.merger;
  */
 
 import com.google.common.io.Files;
-import com.google.inject.Inject;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Olivier Lamy
@@ -44,6 +51,8 @@ public class DefaultIndexMerger
     implements IndexMerger
 {
 
+    private Logger log = LoggerFactory.getLogger( getClass() );
+
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
@@ -53,7 +62,9 @@ public class DefaultIndexMerger
 
     private IndexPacker indexPacker;
 
-    @javax.inject.Inject
+    private List<TemporaryIndex> temporaryIndexes = new CopyOnWriteArrayList<TemporaryIndex>();
+
+    @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
     {
@@ -93,6 +104,7 @@ public class DefaultIndexMerger
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
+            temporaryIndexes.add( new TemporaryIndex( tempRepoFile ) );
             return indexingContext.getIndexDirectoryFile();
         }
         catch ( IOException e )
@@ -102,6 +114,62 @@ public class DefaultIndexMerger
         catch ( UnsupportedExistingLuceneIndexException e )
         {
             throw new IndexMergerException( e.getMessage(), e );
+        }
+    }
+
+
+    @Scheduled( fixedDelay = 900000 )
+    public void cleanTemporaryIndex()
+    {
+        for ( TemporaryIndex temporaryIndex : temporaryIndexes )
+        {
+            // cleanup files older than 30 minutes
+            if ( new Date().getTime() - temporaryIndex.creationTime > 1800000 )
+            {
+                try
+                {
+                    FileUtils.deleteDirectory( temporaryIndex.directory );
+                    temporaryIndexes.remove( temporaryIndex );
+                    log.debug( "remove directory {}", temporaryIndex.directory );
+                }
+                catch ( IOException e )
+                {
+                    log.warn( "failed to remove directory:" + temporaryIndex.directory, e );
+                }
+            }
+            temporaryIndexes.remove( temporaryIndex );
+        }
+    }
+
+    private static class TemporaryIndex
+    {
+        private long creationTime = new Date().getTime();
+
+        private File directory;
+
+        TemporaryIndex( File directory )
+        {
+            this.directory = directory;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Long.toString( creationTime ).hashCode();
+        }
+
+        @Override
+        public boolean equals( Object o )
+        {
+            if ( this == o )
+            {
+                return true;
+            }
+            if ( !( o instanceof TemporaryIndex ) )
+            {
+                return false;
+            }
+            return this.creationTime == ( (TemporaryIndex) o ).creationTime;
         }
     }
 }
