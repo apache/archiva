@@ -1033,7 +1033,7 @@ public class ArchivaDavResourceFactory
                 }
             }
             // remove last /
-            String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/"  );
+            String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
             if ( StringUtils.endsWith( path, ".indexer" ) )
             {
                 try
@@ -1063,7 +1063,7 @@ public class ArchivaDavResourceFactory
                         }
                     }
 
-                    File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos );
+                    File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos, true );
                     mergedRepositoryContents.add( mergedRepoDir );
 
                 }

@@ -29,9 +29,10 @@ public interface IndexMerger
 {
     /**
      * @param repositoriesIds repositories Ids to merge content
+     * @param packIndex will generate a downloadable index
      * @return a temporary directory with a merge index (directory marked deleteOnExit)
      * @throws IndexMergerException
      */
-    File buildMergedIndex( Collection<String> repositoriesIds )
+    File buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
         throws IndexMergerException;
 }

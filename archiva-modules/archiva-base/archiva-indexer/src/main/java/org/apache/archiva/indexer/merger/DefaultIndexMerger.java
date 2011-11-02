@@ -27,6 +27,8 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -49,15 +51,18 @@ public class DefaultIndexMerger
 
     private NexusIndexer indexer;
 
+    private IndexPacker indexPacker;
+
     @javax.inject.Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
     {
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.mavenIndexerUtils = mavenIndexerUtils;
+        indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
     }
 
-    public File buildMergedIndex( Collection<String> repositoriesIds )
+    public File buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
         throws IndexMergerException
     {
         File tempRepoFile = Files.createTempDir();
@@ -67,9 +72,10 @@ public class DefaultIndexMerger
 
         try
         {
+            File indexLocation = new File( tempRepoFile, ".indexer" );
             IndexingContext indexingContext =
-                indexer.addIndexingContext( tempRepoId, tempRepoId, tempRepoFile, new File( tempRepoFile, ".indexer" ),
-                                            null, null, mavenIndexerUtils.getAllIndexCreators() );
+                indexer.addIndexingContext( tempRepoId, tempRepoId, tempRepoFile, indexLocation, null, null,
+                                            mavenIndexerUtils.getAllIndexCreators() );
 
             for ( String repoId : repositoriesIds )
             {
@@ -80,6 +86,13 @@ public class DefaultIndexMerger
                 }
             }
 
+            indexingContext.optimize();
+
+            if ( packIndex )
+            {
+                IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
+                indexPacker.packIndex( request );
+            }
             return indexingContext.getIndexDirectoryFile();
         }
         catch ( IOException e )
