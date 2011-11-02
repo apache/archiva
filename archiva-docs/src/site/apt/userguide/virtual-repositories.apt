@@ -106,7 +106,9 @@ Virtual Repositories
   When Archiva receives a request with a virtual repo (or repo group) URL, Archiva would look for the requested artifact
   from the repositories under that group. It would only check the repositories the user has permission to access (meaning
   only those repositories which the user has an Obeserver role for). The first resource found for the requested artifact
-  would be returned.  
+  would be returned.
+
+  Prior to version 1.4-M2, Virtual repositories can return a Maven index in the path /.indexer path
 
 * Configuring Virtual Repositories
 
