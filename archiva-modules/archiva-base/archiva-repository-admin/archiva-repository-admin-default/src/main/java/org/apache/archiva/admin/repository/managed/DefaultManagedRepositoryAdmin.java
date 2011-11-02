@@ -515,7 +515,7 @@ public class DefaultManagedRepositoryAdmin
         }
 
         configuration.addManagedRepository( repository );
-        
+
     }
 
     public IndexingContext createIndexContext( ManagedRepository repository )
@@ -541,6 +541,10 @@ public class DefaultManagedRepositoryAdmin
             if ( indexDir != null && !"".equals( indexDir ) )
             {
                 indexDirectory = new File( repository.getIndexDirectory() );
+                if ( !indexDirectory.isAbsolute() )
+                {
+                    indexDirectory = new File( managedRepository, repository.getIndexDirectory() );
+                }
             }
             else
             {
