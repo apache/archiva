@@ -23,7 +23,6 @@ package org.apache.archiva.scheduler.indexing;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.lang.StringUtils;
@@ -36,7 +35,6 @@ import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
@@ -52,7 +50,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
@@ -76,14 +73,9 @@ public class ArchivaIndexingTaskExecutor
     private PlexusSisuBridge plexusSisuBridge;
 
     @Inject
-    private MavenIndexerUtils mavenIndexerUtils;
-
-    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private NexusIndexer nexusIndexer;
-
-    private List<? extends IndexCreator> allIndexCreators;
 
     @PostConstruct
     public void initialize()
@@ -97,7 +89,6 @@ public class ArchivaIndexingTaskExecutor
 
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
-        allIndexCreators = mavenIndexerUtils.getAllIndexCreators();
     }
 
     public void executeTask( Task task )

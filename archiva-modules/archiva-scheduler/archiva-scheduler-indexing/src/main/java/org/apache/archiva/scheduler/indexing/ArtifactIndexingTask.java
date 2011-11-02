@@ -20,16 +20,10 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.taskqueue.Task;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 public class ArtifactIndexingTask
     implements Task
