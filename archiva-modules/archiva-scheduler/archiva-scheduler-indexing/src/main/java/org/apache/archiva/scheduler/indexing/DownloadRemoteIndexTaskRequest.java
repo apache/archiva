@@ -20,6 +20,7 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.updater.IndexUpdater;
@@ -32,7 +33,7 @@ public class DownloadRemoteIndexTaskRequest
 {
     private RemoteRepository remoteRepository;
 
-    private NexusIndexer nexusIndexer;
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
     private WagonFactory wagonFactory;
 
@@ -58,16 +59,6 @@ public class DownloadRemoteIndexTaskRequest
         return this;
     }
 
-    public NexusIndexer getNexusIndexer()
-    {
-        return nexusIndexer;
-    }
-
-    public DownloadRemoteIndexTaskRequest setNexusIndexer( NexusIndexer nexusIndexer )
-    {
-        this.nexusIndexer = nexusIndexer;
-        return this;
-    }
 
     public WagonFactory getWagonFactory()
     {
@@ -110,6 +101,17 @@ public class DownloadRemoteIndexTaskRequest
     public DownloadRemoteIndexTaskRequest setIndexUpdater( IndexUpdater indexUpdater )
     {
         this.indexUpdater = indexUpdater;
+        return this;
+    }
+
+    public RemoteRepositoryAdmin getRemoteRepositoryAdmin()
+    {
+        return remoteRepositoryAdmin;
+    }
+
+    public DownloadRemoteIndexTaskRequest setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
+    {
+        this.remoteRepositoryAdmin = remoteRepositoryAdmin;
         return this;
     }
 }

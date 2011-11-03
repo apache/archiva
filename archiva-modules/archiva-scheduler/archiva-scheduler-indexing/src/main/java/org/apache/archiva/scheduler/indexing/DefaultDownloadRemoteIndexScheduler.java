@@ -175,8 +175,8 @@ public class DefaultDownloadRemoteIndexScheduler
 
             DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest =
                 new DownloadRemoteIndexTaskRequest().setRemoteRepository( remoteRepository ).setNetworkProxy(
-                    networkProxy ).setFullDownload( fullDownload ).setWagonFactory( wagonFactory ).setNexusIndexer(
-                    nexusIndexer ).setIndexUpdater( indexUpdater );
+                    networkProxy ).setFullDownload( fullDownload ).setWagonFactory(
+                    wagonFactory ).setRemoteRepositoryAdmin( remoteRepositoryAdmin ).setIndexUpdater( indexUpdater );
 
             if ( now )
             {
