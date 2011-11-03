@@ -27,15 +27,14 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-    <bean id="indexerConsumer" class="org.apache.archiva.consumers.lucene.NexusIndexerConsumer" lazy-init="true">      
-      <constructor-arg ref="archivaTaskScheduler#indexing"/>
-      <constructor-arg ref="archivaConfiguration"/>
-      <constructor-arg ref="fileTypes"/>
-      <constructor-arg ref="plexusSisuBridge"/>
-      <constructor-arg ref="mavenIndexerUtils"/>
-    </bean>
+  <context:annotation-config/>
+  <context:component-scan base-package="org.apache.archiva.consumers.lucene"/>
 
-    <bean id="logger" class="org.apache.archiva.common.utils.Slf4JPlexusLogger">
-      <constructor-arg type="java.lang.Class"><value>org.sonatype.nexus.index.DefaultNexusIndexer</value></constructor-arg>
-    </bean>
+  <alias name="knownRepositoryContentConsumer#index-content" alias="indexerConsumer"/>
+
+  <bean id="logger" class="org.apache.archiva.common.utils.Slf4JPlexusLogger">
+    <constructor-arg type="java.lang.Class">
+      <value>org.apache.maven.index.DefaultNexusIndexer</value>
+    </constructor-arg>
+  </bean>
 </beans>

@@ -21,14 +21,14 @@ package org.apache.archiva.consumers.lucene;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.junit.After;
 import org.junit.Before;
@@ -85,7 +85,7 @@ public class NexusIndexerConsumerTest
         }
     }
 
-    private KnownRepositoryContentConsumer nexusIndexerConsumer;
+    private NexusIndexerConsumer nexusIndexerConsumer;
 
     private ManagedRepository repositoryConfig;
 
@@ -99,6 +99,9 @@ public class NexusIndexerConsumerTest
 
     @Inject
     private MavenIndexerUtils mavenIndexerUtils;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
 
     @Override
@@ -115,7 +118,8 @@ public class NexusIndexerConsumerTest
         FileTypes filetypes = applicationContext.getBean( FileTypes.class );
 
         nexusIndexerConsumer =
-            new NexusIndexerConsumer( scheduler, configuration, filetypes, plexusSisuBridge, mavenIndexerUtils );
+            new NexusIndexerConsumer( scheduler, configuration, filetypes, plexusSisuBridge, mavenIndexerUtils,
+                                      managedRepositoryAdmin );
 
         // initialize to set the file types to be processed
         ( (NexusIndexerConsumer) nexusIndexerConsumer ).initialize();

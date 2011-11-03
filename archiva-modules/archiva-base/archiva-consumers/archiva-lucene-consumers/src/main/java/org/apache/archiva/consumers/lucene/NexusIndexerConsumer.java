@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,12 +82,13 @@ public class NexusIndexerConsumer
 
     private List<? extends IndexCreator> allIndexCreators;
 
-    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    public NexusIndexerConsumer( ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
-                                 ArchivaConfiguration configuration, FileTypes filetypes,
-                                 PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
+    @Inject
+    public NexusIndexerConsumer(
+        @Named( value = "archivaTaskScheduler#indexing" ) ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
+        @Named(value = "archivaConfiguration") ArchivaConfiguration configuration, FileTypes filetypes, PlexusSisuBridge plexusSisuBridge,
+        MavenIndexerUtils mavenIndexerUtils, ManagedRepositoryAdmin managedRepositoryAdmin )
         throws PlexusSisuBridgeException
     {
         this.configuration = configuration;
@@ -94,6 +96,7 @@ public class NexusIndexerConsumer
         this.scheduler = scheduler;
         this.nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.allIndexCreators = mavenIndexerUtils.getAllIndexCreators();
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
     public String getDescription()
