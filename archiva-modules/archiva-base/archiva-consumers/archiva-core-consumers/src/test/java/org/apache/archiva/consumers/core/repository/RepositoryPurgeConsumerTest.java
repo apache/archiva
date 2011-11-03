@@ -22,15 +22,16 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -52,6 +53,13 @@ public class RepositoryPurgeConsumerTest
 
         TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
         factory.setRepository( metadataRepository );
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
     }
 
     @Test
@@ -181,16 +189,7 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-        /**
-         Configuration configuration = archivaConfiguration.getConfiguration();
-         ManagedRepositoryConfiguration managedRepositoryConfiguration =
-         configuration.findManagedRepositoryById( repoConfiguration.getId() );
-         if ( managedRepositoryConfiguration != null )
-         {
-         configuration.removeManagedRepository( managedRepositoryConfiguration );
-         }
-         configuration.addManagedRepository( repoConfiguration );
-         **/
+
         ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
         if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
         {
@@ -207,14 +206,7 @@ public class RepositoryPurgeConsumerTest
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-        /**
-         Configuration configuration = archivaConfiguration.getConfiguration();
-         ManagedRepositoryConfiguration managedRepositoryConfiguration =
-         configuration.findManagedRepositoryById( repoConfiguration.getId() );
-         if ( managedRepositoryConfiguration != null )
-         {
-         configuration.removeManagedRepository( managedRepositoryConfiguration );
-         }*/
+
         ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
         if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
         {

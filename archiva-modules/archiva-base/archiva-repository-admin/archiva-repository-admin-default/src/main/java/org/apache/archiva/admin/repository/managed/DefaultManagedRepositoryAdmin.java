@@ -111,7 +111,7 @@ public class DefaultManagedRepositoryAdmin
     NexusIndexer indexer;
 
     @PostConstruct
-    private void initialize()
+    public void initialize()
         throws RepositoryAdminException
     {
         try
@@ -131,7 +131,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
     @PreDestroy
-    private void shutdown()
+    public void shutdown()
         throws RepositoryAdminException
     {
         try
@@ -371,7 +371,9 @@ public class DefaultManagedRepositoryAdmin
             IndexingContext context = nexusIndexer.getIndexingContexts().get( repository.getId() );
             if ( context != null )
             {
-                nexusIndexer.removeIndexingContext( context, deleteContent );
+                // delete content only if directory exists
+                nexusIndexer.removeIndexingContext( context,
+                                                    deleteContent && context.getIndexDirectoryFile().exists() );
             }
         }
         catch ( PlexusSisuBridgeException e )
@@ -584,6 +586,11 @@ public class DefaultManagedRepositoryAdmin
             else
             {
                 indexDirectory = new File( managedRepository, ".indexer" );
+            }
+
+            if ( !indexDirectory.exists() )
+            {
+                indexDirectory.mkdirs();
             }
 
             context =

@@ -21,6 +21,7 @@ package org.apache.archiva.consumers.core.repository;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,6 +44,13 @@ public class RetentionCountRepositoryPurgeTest
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), repoConfiguration.getRetentionCount(),
                                                        repositorySession, listeners );
+    }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
     }
 
     /**

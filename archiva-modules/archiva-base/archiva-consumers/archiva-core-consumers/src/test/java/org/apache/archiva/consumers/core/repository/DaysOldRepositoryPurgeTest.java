@@ -48,6 +48,14 @@ public class DaysOldRepositoryPurgeTest
         }
     }
 
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        repoPurge = null;
+    }
+
     @Test
     public void testByLastModified()
         throws Exception
@@ -223,11 +231,5 @@ public class DaysOldRepositoryPurgeTest
         }
     }
 
-    @After
-    public void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-        repoPurge = null;
-    }
+
 }

@@ -20,12 +20,16 @@ package org.apache.archiva.consumers.core;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +41,7 @@ import javax.inject.Inject;
 import java.io.File;
 
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractArtifactConsumerTest
     extends TestCase
 {
@@ -50,6 +54,10 @@ public abstract class AbstractArtifactConsumerTest
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    protected PlexusSisuBridge plexusSisuBridge;
+
 
     @Before
     public void setUp()
@@ -64,6 +72,18 @@ public abstract class AbstractArtifactConsumerTest
 
         repoLocation = new File( "target/test-" + getName() + "/test-repo" );
     }
+
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
+        {
+            nexusIndexer.removeIndexingContext( indexingContext, false );
+        }
+    }
+
 
     @Test
     public void testConsumption()

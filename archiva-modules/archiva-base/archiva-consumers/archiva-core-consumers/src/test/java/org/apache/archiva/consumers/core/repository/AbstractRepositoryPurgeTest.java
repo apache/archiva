@@ -21,12 +21,18 @@ package org.apache.archiva.consumers.core.repository;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
 import org.easymock.MockControl;
 import org.junit.After;
 import org.junit.Before;
@@ -93,6 +99,11 @@ public abstract class AbstractRepositoryPurgeTest
     @Inject
     protected ApplicationContext applicationContext;
 
+    @Inject
+    protected PlexusSisuBridge plexusSisuBridge;
+
+    ArchivaConfiguration previousArchivaConfiguration;
+
     @Before
     public void setUp()
         throws Exception
@@ -106,15 +117,24 @@ public abstract class AbstractRepositoryPurgeTest
         repositorySession = mock( RepositorySession.class );
         metadataRepository = mock( MetadataRepository.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+
+        previousArchivaConfiguration = ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
+            ManagedRepositoryAdmin.class ) ).getArchivaConfiguration();
     }
 
     @After
     public void tearDown()
         throws Exception
     {
+        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
+        {
+            nexusIndexer.removeIndexingContext( indexingContext, false );
+        }
         super.tearDown();
         config = null;
         repo = null;
+
     }
 
     public ManagedRepository getRepoConfiguration( String repoId, String repoName )

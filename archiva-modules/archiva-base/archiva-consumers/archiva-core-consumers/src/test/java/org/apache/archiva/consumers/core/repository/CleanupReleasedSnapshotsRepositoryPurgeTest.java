@@ -91,13 +91,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testReleasedSnapshotsExistsInSameRepo()
         throws Exception
     {
-        /**
-         Configuration config = archivaConfiguration.getConfiguration();
-         config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
-         config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
-         **/
-
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, true );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
 
@@ -154,9 +148,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testNonArtifactFile()
         throws Exception
     {
-        /*Configuration config = archivaConfiguration.getConfiguration();
-        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
-        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );*/
 
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
@@ -187,12 +178,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testReleasedSnapshotsExistsInDifferentRepo()
         throws Exception
     {
-        /*
-        Configuration config = archivaConfiguration.getConfiguration();
-        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
-        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
-        config.addManagedRepository( getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ) );
-        */
+
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
@@ -241,11 +227,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testHigherSnapshotExistsInSameRepo()
         throws Exception
     {
-        /*
-        Configuration config = archivaConfiguration.getConfiguration();
-        config.removeManagedRepository( config.findManagedRepositoryById( TEST_REPO_ID ) );
-        config.addManagedRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
-        */
+
         applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
