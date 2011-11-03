@@ -143,6 +143,11 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-security-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-common-test-resources</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
