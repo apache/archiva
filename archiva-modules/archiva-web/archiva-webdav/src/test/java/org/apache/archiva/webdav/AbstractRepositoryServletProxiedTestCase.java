@@ -100,6 +100,16 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         super.setUp();
     }
 
+    @Override
+    @After
+    public void tearDown()
+        throws Exception
+    {
+        shutdownServer( remoteCentral );
+        shutdownServer( remoteSnapshots );
+        super.tearDown();
+    }
+
     protected RemoteRepoInfo createServer( String id )
         throws Exception
     {
@@ -254,13 +264,5 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         setupCleanRepo( remoteSnapshots.root );
     }
 
-    @Override
-    @After
-    public void tearDown()
-        throws Exception
-    {
-        shutdownServer( remoteCentral );
-        shutdownServer( remoteSnapshots );
-        super.tearDown();
-    }
+
 }

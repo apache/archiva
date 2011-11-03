@@ -27,11 +27,14 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -136,6 +139,8 @@ public abstract class AbstractRepositoryServletTestCase
     public void tearDown()
         throws Exception
     {
+
+
         if ( sc != null )
         {
             sc.clearContents();

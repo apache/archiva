@@ -27,6 +27,9 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>org.apache.archiva.webdav.util.MavenIndexerCleaner</listener-class>
+  </listener>
   <context-param>
 	  <param-name>contextClass</param-name>
 	  <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
