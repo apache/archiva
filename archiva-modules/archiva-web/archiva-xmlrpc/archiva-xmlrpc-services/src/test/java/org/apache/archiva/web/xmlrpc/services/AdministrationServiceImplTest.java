@@ -29,23 +29,8 @@ import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorA
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.filter.IncludesFilter;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.repository.events.RepositoryListener;
-import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.archiva.security.ArchivaRoleConstants;
-import org.apache.archiva.stagerepository.merge.RepositoryMerger;
-import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
-import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
@@ -55,22 +40,41 @@ import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.stagerepository.merge.RepositoryMerger;
+import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
+import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -170,6 +174,12 @@ public class AdministrationServiceImplTest
 
     private DefaultRepositoryGroupAdmin repositoryGroupAdmin;
 
+    @Inject
+    PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    MavenIndexerUtils mavenIndexerUtils;
+
     @Before
     public void setUp()
         throws Exception
@@ -181,6 +191,8 @@ public class AdministrationServiceImplTest
 
         configControl = MockClassControl.createControl( Configuration.class );
         config = (Configuration) configControl.getMock();
+
+
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
@@ -236,6 +248,14 @@ public class AdministrationServiceImplTest
         managedRepositoryAdmin.setRepositorySessionFactory( repositorySessionFactory );
         managedRepositoryAdmin.setAuditListeners( Arrays.asList( auditListener ) );
         managedRepositoryAdmin.setRoleManager( roleManager );
+        managedRepositoryAdmin.setMavenIndexerUtils( mavenIndexerUtils );
+        managedRepositoryAdmin.setPlexusSisuBridge( plexusSisuBridge );
+        archivaConfigControl.reset();
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 3 );
+        configControl.expectAndReturn( config.getManagedRepositories(), new ArrayList( 0 ) );
+        archivaConfigControl.replay();
+        configControl.replay();
+        managedRepositoryAdmin.initialize();
 
         RepositoryCommonValidator repositoryCommonValidator = new RepositoryCommonValidator();
         repositoryCommonValidator.setArchivaConfiguration( archivaConfig );
@@ -266,6 +286,18 @@ public class AdministrationServiceImplTest
                                                  Collections.singletonList( listener ), repositoryStatisticsManager,
                                                  repositoryMerger, auditListener, managedRepositoryAdmin,
                                                  remoteRepositoryAdmin, proxyConnectorAdmin, repositoryGroupAdmin );
+
+
+    }
+
+    @After
+    public void shutdown()
+        throws Exception
+    {
+        //archivaConfigControl.reset();
+        //archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1 );
+        //configControl.expectAndReturn( config.getManagedRepositories(), new ArrayList( 0 ), 1 );
+        //managedRepositoryAdmin.shutdown();
     }
 
     /* Tests for repository consumers */
@@ -305,7 +337,9 @@ public class AdministrationServiceImplTest
         // test enable "check-metadata" consumer
         recordRepoConsumers();
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getRepositoryScanning(), repoScanning, 1, 5 );
 
         archivaConfig.save( config );
@@ -406,7 +440,9 @@ public class AdministrationServiceImplTest
     {
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
@@ -458,8 +494,9 @@ public class AdministrationServiceImplTest
         PathParser parser = (PathParser) pathParserControl.getMock();
 
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "legacy", "legacy-repo" );
-
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
 
         ManagedLegacyRepositoryContent repoContent = new ManagedLegacyRepositoryContent();
@@ -520,7 +557,9 @@ public class AdministrationServiceImplTest
     {
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
 
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
@@ -569,7 +608,9 @@ public class AdministrationServiceImplTest
     public void testDeleteArtifacRepositoryDoesNotExist()
         throws Exception
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList() );
 
         archivaConfigControl.replay();
@@ -594,7 +635,9 @@ public class AdministrationServiceImplTest
     public void testExecuteRepoScannerRepoExistsAndNotBeingScanned()
         throws Exception
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList(
             createManagedRepo( "internal", "default", "Internal Repository", true, false ) ), 1, 5 );
 
@@ -630,8 +673,10 @@ public class AdministrationServiceImplTest
     public void testExecuteRepoScannerRepoExistsButBeingScanned()
         throws Exception
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList(
             createManagedRepo( "internal", "default", "Internal Repository", true, false ) ), 1, 5 );
 
@@ -661,7 +706,9 @@ public class AdministrationServiceImplTest
     public void testExecuteRepoScannerRepoDoesNotExist()
         throws Exception
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList(), 1, 5 );
 
         archivaConfigControl.replay();
@@ -690,7 +737,9 @@ public class AdministrationServiceImplTest
         managedRepos.add( createManagedRepo( "internal", "default", "Internal Repository", true, false ) );
         managedRepos.add( createManagedRepo( "snapshots", "default", "Snapshots Repository", false, true ) );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), managedRepos );
 
         archivaConfigControl.replay();
@@ -718,7 +767,9 @@ public class AdministrationServiceImplTest
         remoteRepos.add(
             createRemoteRepository( "dummy", "Dummy Remote Repository", "legacy", "http://dummy.com/dummy" ) );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getRemoteRepositories(), remoteRepos );
 
         archivaConfigControl.replay();
@@ -739,7 +790,9 @@ public class AdministrationServiceImplTest
     @Test
     public void testDeleteInvalidRepositoryContent()
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList(), 1, 5 );
 
         archivaConfigControl.replay();
@@ -765,7 +818,9 @@ public class AdministrationServiceImplTest
         ManagedRepositoryConfiguration managedRepo = createManagedRepo( "default", "default-repo" );
         assertTrue( new File( managedRepo.getLocation(), "org" ).exists() );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 3 );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( managedRepo ), 1, 5 );
         metadataRepository.removeRepository( "internal" );
 
@@ -789,7 +844,9 @@ public class AdministrationServiceImplTest
     public void testMergeRepositoryWithInvalidRepository()
         throws Exception
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Collections.emptyList(), 1, 2 );
 
         archivaConfigControl.replay();
@@ -812,8 +869,10 @@ public class AdministrationServiceImplTest
     public void testMergeWithNoStagingRepository()
         throws Exception
     {
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
 
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(),
                                        Arrays.asList( createManagedRepo( "repo", "default", "repo", true, false ) ), 1,
                                        4 );
@@ -853,7 +912,9 @@ public class AdministrationServiceImplTest
         RepositoryTask task = new RepositoryTask();
         task.setScanAll( true );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( merge, staging ), 1, 5 );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
@@ -921,7 +982,9 @@ public class AdministrationServiceImplTest
         repo.setLocation( "target/test-repository/one" );
         ManagedRepositoryConfiguration staging = createStagingRepo( repo );
 
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositories(), Arrays.asList( repo, staging ), 1, 5 );
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
 
         metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( staging.getId() ), sources );
@@ -984,8 +1047,10 @@ public class AdministrationServiceImplTest
         remoteRepoMap.put( "repo1", remoteRepo );
         repoGroupMap.put( "repo1", repoGroup );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
         configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
         configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
@@ -1051,7 +1116,7 @@ public class AdministrationServiceImplTest
         assertFalse( new File( releaseLocation ).isDirectory() );
         assertFalse( new File( stageLocation ).isDirectory() );
         boolean success = service.addManagedRepository( repoId, layout, name,
-                                                        "${appserver.base}/test-repository/" + projId + ".releases",
+                                                        appserverBase + "/test-repository/" + projId + ".releases",
                                                         true, true, false, true, "0 15 3 * * ? *", 1, 1, true );
         assertTrue( success );
         assertTrue( new File( releaseLocation ).isDirectory() );
@@ -1085,8 +1150,10 @@ public class AdministrationServiceImplTest
         remoteRepoMap.put( "repo1", remoteRepo );
         repoGroupMap.put( "repo1", repoGroup );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
         configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
         configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
@@ -1097,7 +1164,7 @@ public class AdministrationServiceImplTest
         try
         {
             service.addManagedRepository( repoId, layout, name,
-                                          "${appserver.base}/test-repository/" + projId + ".releases", true, true,
+                                           "target/test-repository/" + projId + ".releases", true, true,
                                           false, true, "0 15 3 * * ? *", 1, 1, true );
             fail( "An exception should have been thrown! Repository ID is not valid." );
         }
@@ -1132,8 +1199,10 @@ public class AdministrationServiceImplTest
         remoteRepoMap.put( "repo1", remoteRepo );
         repoGroupMap.put( "repo1", repoGroup );
 
+        archivaConfigControl.reset();
         archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
 
+        configControl.reset();
         configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
         configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
         configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
@@ -1144,7 +1213,7 @@ public class AdministrationServiceImplTest
         try
         {
             service.addManagedRepository( repoId, layout, name,
-                                          "${appserver.base}/test-repository/" + projId + ".releases", true, true,
+                                          "target/test-repository/" + projId + ".releases", true, true,
                                           false, true, "0 15 3 * * ? *", 1, 1, true );
             fail( "An exception should have been thrown! Repository name is not valid." );
         }
@@ -1181,11 +1250,12 @@ public class AdministrationServiceImplTest
         remoteRepoMap.put( "repo1", remoteRepo );
         repoGroupMap.put( "repo1", repoGroup );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config );
+        archivaConfigControl.reset();
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 3 );
 
-        configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap );
-        configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap );
+        configControl.reset();
+        configControl.expectAndReturn( config.getManagedRepositoriesAsMap(), managedRepoMap, 0, 3 );
+        configControl.expectAndReturn( config.getRemoteRepositoriesAsMap(), remoteRepoMap, 1, 3 );
         configControl.expectAndReturn( config.getRepositoryGroupsAsMap(), repoGroupMap );
         registryControl.expectAndReturn( registry.getString( "appserver.base", "${appserver.base}" ), appserverBase );
         registryControl.expectAndReturn( registry.getString( "appserver.home", "${appserver.home}" ), appserverBase );

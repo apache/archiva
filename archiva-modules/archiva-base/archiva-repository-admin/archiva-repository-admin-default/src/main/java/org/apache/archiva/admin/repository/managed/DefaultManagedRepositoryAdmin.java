@@ -63,6 +63,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +158,11 @@ public class DefaultManagedRepositoryAdmin
     {
         List<ManagedRepositoryConfiguration> managedRepoConfigs =
             getArchivaConfiguration().getConfiguration().getManagedRepositories();
+
+        if ( managedRepoConfigs == null )
+        {
+            return Collections.emptyList();
+        }
 
         List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( managedRepoConfigs.size() );
 
@@ -738,5 +744,25 @@ public class DefaultManagedRepositoryAdmin
     public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
     {
         this.repositoryTaskScheduler = repositoryTaskScheduler;
+    }
+
+    public PlexusSisuBridge getPlexusSisuBridge()
+    {
+        return plexusSisuBridge;
+    }
+
+    public void setPlexusSisuBridge( PlexusSisuBridge plexusSisuBridge )
+    {
+        this.plexusSisuBridge = plexusSisuBridge;
+    }
+
+    public MavenIndexerUtils getMavenIndexerUtils()
+    {
+        return mavenIndexerUtils;
+    }
+
+    public void setMavenIndexerUtils( MavenIndexerUtils mavenIndexerUtils )
+    {
+        this.mavenIndexerUtils = mavenIndexerUtils;
     }
 }
