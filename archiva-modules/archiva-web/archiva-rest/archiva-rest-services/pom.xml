@@ -29,7 +29,7 @@
   <name>Archiva Web :: REST support :: Services</name>
 
   <properties>
-<archiva.baseRestUrl />
+    <archiva.baseRestUrl />
     <tomcatVersion>7.0.21</tomcatVersion>
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
