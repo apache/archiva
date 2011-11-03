@@ -53,7 +53,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -68,7 +68,7 @@ public class SearchServiceTest
                     artifacts.size() == 6 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
-        deleteTestRepo( testRepoId, targetRepo );
+        deleteTestRepo( testRepoId );
     }
 
     @Test
@@ -83,7 +83,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         // START SNIPPET: searchservice-artifact-versions
         SearchService searchService = getSearchService( authorizationHeader );
@@ -97,7 +97,7 @@ public class SearchServiceTest
                     artifacts.size() == 13 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
-        deleteTestRepo( testRepoId, targetRepo );
+        deleteTestRepo( testRepoId );
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -130,7 +130,7 @@ public class SearchServiceTest
                     artifacts.size() == 2 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
 
-        deleteTestRepo( testRepoId, targetRepo );
+        deleteTestRepo( testRepoId );
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -161,7 +161,7 @@ public class SearchServiceTest
             " not 1 results for Bundle Symbolic Name org.apache.karaf.features.command but " + artifacts.size() + ":"
                 + artifacts, artifacts.size() == 1 );
 
-        deleteTestRepo( testRepoId, targetRepo );
+        deleteTestRepo( testRepoId );
     }
 
     @Test
@@ -176,7 +176,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -190,7 +190,7 @@ public class SearchServiceTest
             " not 2 results for Bundle Symbolic Name org.apache.karaf.features.core but " + artifacts.size() + ":"
                 + artifacts, artifacts.size() == 2 );
 
-        deleteTestRepo( testRepoId, targetRepo );
+        deleteTestRepo( testRepoId );
     }
 
     @Test
@@ -205,7 +205,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -218,8 +218,8 @@ public class SearchServiceTest
         assertTrue( " not 1 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
-        log.info( "artifcat url " + artifacts.get( 0 ).getUrl() );
-        deleteTestRepo( testRepoId, targetRepo );
+        log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
+        deleteTestRepo( testRepoId );
     }
 
     @Test
@@ -234,51 +234,52 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        File targetRepo = createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
         Collection<String> groupIds = searchService.getAllGroupIds( Arrays.asList( testRepoId ) ).getGroupIds();
         log.info( "groupIds  " + groupIds );
         assertFalse( groupIds.isEmpty() );
-        assertTrue( groupIds.contains( "commons-cli") );
+        assertTrue( groupIds.contains( "commons-cli" ) );
         assertTrue( groupIds.contains( "org.apache.felix" ) );
-        deleteTestRepo( testRepoId, targetRepo );
+        deleteTestRepo( testRepoId );
     }
 
-    private File createAndIndexRepo( String testRepoId )
+    private void createAndIndexRepo( String testRepoId )
         throws Exception
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, true );
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, false );
         }
-        File targetRepo = new File( "target/test-origin-repo" );
-        if ( targetRepo.exists() )
-        {
-            FileUtils.deleteDirectory( targetRepo );
-        }
-        assertFalse( targetRepo.exists() );
-        FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), targetRepo );
+        //File targetRepo = new File( "target/test-origin-repo" );
+        //if ( targetRepo.exists() )
+        //{
+        //    FileUtils.deleteDirectory( targetRepo );
+        //}
+        //assertFalse( targetRepo.exists() );
+        //FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), targetRepo );
 
         ManagedRepository managedRepository = new ManagedRepository();
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 
-        managedRepository.setLocation( targetRepo.getPath() );
+        managedRepository.setLocation( new File( "src/test/repo-with-osgi" ).getPath() );
         managedRepository.setIndexDirectory( "target/.index-" + Long.toString( new Date().getTime() ) );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
 
-        getRoleManagementService( authorizationHeader ).assignTemplatedRole(ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "admin" );
+        getRoleManagementService( authorizationHeader ).assignTemplatedRole(
+            ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "admin" );
 
-        getRepositoriesService(authorizationHeader).scanRepositoryNow( testRepoId, true );
+        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
 
-        return targetRepo;
+        //return targetRepo;
     }
 
-    private void deleteTestRepo( String id, File targetRepo )
+    private void deleteTestRepo( String id )
         throws Exception
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )

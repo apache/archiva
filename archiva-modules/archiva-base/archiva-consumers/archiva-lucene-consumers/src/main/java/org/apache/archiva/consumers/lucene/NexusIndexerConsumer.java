@@ -87,8 +87,9 @@ public class NexusIndexerConsumer
     @Inject
     public NexusIndexerConsumer(
         @Named( value = "archivaTaskScheduler#indexing" ) ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
-        @Named(value = "archivaConfiguration") ArchivaConfiguration configuration, FileTypes filetypes, PlexusSisuBridge plexusSisuBridge,
-        MavenIndexerUtils mavenIndexerUtils, ManagedRepositoryAdmin managedRepositoryAdmin )
+        @Named( value = "archivaConfiguration" ) ArchivaConfiguration configuration, FileTypes filetypes,
+        PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils,
+        ManagedRepositoryAdmin managedRepositoryAdmin )
         throws PlexusSisuBridgeException
     {
         this.configuration = configuration;
