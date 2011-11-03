@@ -41,8 +41,4 @@
   </bean>
 
 
-  <task:executor id="springExecutor" pool-size="2"/>
-  <task:scheduler id="springScheduler" pool-size="2"/>
-  <task:annotation-driven executor="springExecutor" scheduler="springScheduler"/>
-
 </beans>
