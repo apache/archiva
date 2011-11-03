@@ -49,7 +49,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -141,18 +140,18 @@ public class DefaultSearchService
         }
     }
 
-    public GroupIdList getAllGroupIds(List<String> selectedRepos)
+    public GroupIdList getAllGroupIds( List<String> selectedRepos )
         throws ArchivaRestServiceException
     {
         List<String> observableRepos = getObservableRepos();
         List<String> repos = ListUtils.intersection( observableRepos, selectedRepos );
-        if (repos == null || repos.isEmpty())
+        if ( repos == null || repos.isEmpty() )
         {
             return new GroupIdList( Collections.<String>emptyList() );
         }
         try
         {
-            return new GroupIdList( new ArrayList<String>( repositorySearch.getAllGroupIds( getPrincipal(), repos  ) ) );
+            return new GroupIdList( new ArrayList<String>( repositorySearch.getAllGroupIds( getPrincipal(), repos ) ) );
         }
         catch ( RepositorySearchException e )
         {
@@ -293,7 +292,8 @@ public class DefaultSearchService
 
     protected String getBaseUrl( HttpServletRequest req )
     {
-        return req.getScheme() + "://" + req.getServerName()
-            + ( req.getServerPort() == 80 ? "" : ":" + req.getServerPort() ) + req.getContextPath();
+        return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
+            ? ""
+            : ":" + req.getServerPort() ) + req.getContextPath();
     }
 }
