@@ -24,7 +24,6 @@ import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -217,6 +216,70 @@ public class SearchServiceTest
 
         assertNotNull( artifacts );
         assertTrue( " not 1 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
+                        + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
+
+        log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
+        deleteTestRepo( testRepoId );
+    }
+
+    @Test
+    /**
+     * ensure we don't return response for an unknown repo
+     */
+    public void searchWithSearchUnknwownRepoId()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setBundleExportPackage( "org.apache.karaf.features.command.completers" );
+        searchRequest.setRepositories( Arrays.asList( "tototititata" ) );
+
+        List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
+
+        assertNotNull( artifacts );
+        assertTrue( " not 0 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
+                        + artifacts.size() + ":" + artifacts, artifacts.size() == 0 );
+
+        deleteTestRepo( testRepoId );
+    }
+
+    @Test
+    /**
+     * ensure we revert to all observable repos in case of no repo in the request
+     */
+    public void searchWithSearchNoRepos()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setBundleExportPackage( "org.apache.karaf.features.command.completers" );
+
+        List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
+
+        assertNotNull( artifacts );
+        assertTrue( " not 0 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
         log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
