@@ -1,1 +1,0 @@
-<#include "/${parameters.templateDir}/xhtml/controlheader.ftl" />
