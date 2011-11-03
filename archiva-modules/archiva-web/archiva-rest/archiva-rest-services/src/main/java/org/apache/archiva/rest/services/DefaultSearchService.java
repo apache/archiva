@@ -128,6 +128,12 @@ public class DefaultSearchService
         SearchFields searchField = new BeanReplicator().replicateBean( searchRequest, SearchFields.class );
         SearchResultLimits limits = new SearchResultLimits( 0 );
 
+        // if no repos set we use ones available for the user
+        if ( searchField.getRepositories() == null || searchField.getRepositories().isEmpty() )
+        {
+            searchField.setRepositories( getObservableRepos() );
+        }
+
         try
         {
             SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );

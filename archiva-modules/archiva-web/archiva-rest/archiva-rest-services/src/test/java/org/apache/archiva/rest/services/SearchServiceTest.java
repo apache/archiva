@@ -211,6 +211,7 @@ public class SearchServiceTest
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setBundleExportPackage( "org.apache.karaf.features.command.completers" );
+        searchRequest.setRepositories( Arrays.asList( testRepoId ) );
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
