@@ -18,7 +18,6 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
-import com.opensymphony.xwork2.inject.Inject;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -31,6 +30,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -44,7 +44,25 @@ public class MavenIndexerCleaner
     Logger log = LoggerFactory.getLogger( getClass() );
 
 
-    PlexusSisuBridge plexusSisuBridge;
+    private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private ApplicationContext applicationContext;
+
+    @PostConstruct
+    public void startup() throws Exception
+    {
+        plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
+        cleanupIndex( );
+    }
+
+    @PreDestroy
+    public void shutdown()
+        throws Exception
+    {
+        cleanupIndex( );
+    }
+
 
     public void contextInitialized( ServletContextEvent servletContextEvent )
     {
@@ -86,23 +104,6 @@ public class MavenIndexerCleaner
         {
             nexusIndexer.removeIndexingContext( context, true );
         }
-    }
-
-    @Inject
-    private ApplicationContext applicationContext;
-
-    @PostConstruct
-    public void startup() throws Exception
-    {
-        plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        cleanupIndex( );
-    }
-
-    @PreDestroy
-    public void shutdown()
-        throws Exception
-    {
-        cleanupIndex( );
     }
 
 

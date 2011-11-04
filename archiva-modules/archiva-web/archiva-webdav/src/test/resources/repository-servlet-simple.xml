@@ -27,6 +27,10 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="false">
 
+
+  <context:annotation-config/>
+  <context:component-scan base-package="org.apache.archiva.webdav.util,org.apache.archiva.common.plexusbridge"/>
+
   <bean name="archivaConfiguration#default"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#default"/>
   </bean>
@@ -52,7 +56,5 @@
 
   <bean name="componentContainer" class="org.codehaus.redback.components.springutils.ComponentContainer"/>
 
-  <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.webdav.util"/>
 
 </beans>

@@ -30,7 +30,8 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.webdav,org.apache.archiva.metadata.repository"/>
+  <context:component-scan
+      base-package="org.apache.archiva.webdav,org.apache.archiva.metadata.repository,org.apache.archiva.webdav.util,org.apache.archiva.common.plexusbridge"/>
 
   <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
@@ -46,7 +47,7 @@
 
   <bean name="servletAuthenticator" class="org.apache.archiva.webdav.MockServletAuthenticator"/>
 
-  <bean name="archivaConfiguration#default"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#default" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#default"/>
   </bean>
 
