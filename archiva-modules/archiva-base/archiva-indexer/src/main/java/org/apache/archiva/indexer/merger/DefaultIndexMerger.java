@@ -104,7 +104,7 @@ public class DefaultIndexMerger
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
-            temporaryIndexes.add( new TemporaryIndex( tempRepoFile ) );
+            temporaryIndexes.add( new TemporaryIndex( tempRepoFile, tempRepoId ) );
             return indexingContext.getIndexDirectoryFile();
         }
         catch ( IOException e )
@@ -128,7 +128,15 @@ public class DefaultIndexMerger
             {
                 try
                 {
-                    FileUtils.deleteDirectory( temporaryIndex.directory );
+                    IndexingContext context = indexer.getIndexingContexts().get( temporaryIndex.indexId );
+                    if ( context != null )
+                    {
+                        indexer.removeIndexingContext( context, true );
+                    }
+                    else
+                    {
+                        FileUtils.deleteDirectory( temporaryIndex.directory );
+                    }
                     temporaryIndexes.remove( temporaryIndex );
                     log.debug( "remove directory {}", temporaryIndex.directory );
                 }
@@ -147,9 +155,12 @@ public class DefaultIndexMerger
 
         private File directory;
 
-        TemporaryIndex( File directory )
+        private String indexId;
+
+        TemporaryIndex( File directory, String indexId )
         {
             this.directory = directory;
+            this.indexId = indexId;
         }
 
         @Override
