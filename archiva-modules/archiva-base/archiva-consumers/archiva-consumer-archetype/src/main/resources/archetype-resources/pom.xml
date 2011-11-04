@@ -7,7 +7,7 @@
   <version>${version}</version>
   <packaging>jar</packaging>
   <name>Simple Archiva Consumer</name>
-  <url>http://maven.apache.org</url>
+  <url>http://archiva.apache.org</url>
   <description>
     This is a simple consumer component which demonstrates how a
     component can be plugged in Archiva.
@@ -48,12 +48,72 @@
       <version>4.9</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.6.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
+      <version>${archiva.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-store-jcr</artifactId>
+      <version>${archiva.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <version>2.3.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-common-test-resources</artifactId>
+      <scope>test</scope>
+      <version>1.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-rbac-memory</artifactId>
+      <scope>test</scope>
+      <version>1.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-rbac-cached</artifactId>
+      <scope>test</scope>
+      <version>1.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-rbac-role-manager</artifactId>
+      <scope>test</scope>
+      <version>1.4-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
         <executions>
           <execution>
             <id>package</id>
@@ -61,7 +121,7 @@
             <configuration>
               <tasks>
                 <echo>
-                Remember to add the the following to the knownconsumers section in ~/.m2/archiva.xml 
+                Remember to add the the following to the knownconsumers section in your archiva.xml file
                  &lt;knownContentConsumer>simple-artifact-consumer&lt;/knownContentConsumer>
                 </echo>
               </tasks>
@@ -75,9 +135,24 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.10</version>
+        <configuration>
+          <systemPropertyVariables>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+            <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
+            <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
+            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
+            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
@@ -86,6 +161,17 @@
     <repository>
       <id>vmbuild.snapshots</id>
       <url>http://vmbuild.apache.org/archiva/repository/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>redback.snapshots</id>
+      <name>Codehaus Redback Snapshots Repository</name>
+      <url>http://snapshots.repository.codehaus.org/</url>
       <releases>
         <enabled>false</enabled>
       </releases>

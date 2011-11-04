@@ -28,6 +28,7 @@ import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.codehaus.plexus.redback.rbac.memory.MemoryResource;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -197,43 +198,41 @@ public class TestRBACManager implements RBACManager
 
     public boolean operationExists( Operation operation )
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     public Operation saveOperation( Operation operation )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public List<Operation> getAllOperations()
         throws RbacManagerException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void removeOperation( Operation operation )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void removeOperation( String operationName )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Resource createResource( String identifier )
         throws RbacManagerException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new MemoryResource();
     }
 
     public boolean resourceExists( String identifier )

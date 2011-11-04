@@ -37,7 +37,6 @@ public class ArchivaJcrRepositoryConfig
         if ( !homeFile.exists( ) )
         {
             homeFile.mkdirs( );
-
         }
 
         File configurationFile = new File( file );
