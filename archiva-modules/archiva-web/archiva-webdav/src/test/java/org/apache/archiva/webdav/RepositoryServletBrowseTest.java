@@ -60,7 +60,7 @@ public class RepositoryServletBrowseTest
 
         // dumpResponse( response );
 
-        String expectedLinks[] = new String[]{ ".indexer", "commons-lang/", "net/", "org/" };
+        String expectedLinks[] = new String[]{ ".indexer/", "commons-lang/", "net/", "org/" };
         assertLinks( expectedLinks, response.getLinks() );
     }
 
