@@ -43,7 +43,7 @@
         <![CDATA[
         <configuration>
           <system/>
-          <xml fileName="${appserver.base}/conf/archiva.xml" config-forceCreate="true"
+          <xml fileName="${test.resources.path}/repository-archiva.xml" config-forceCreate="true"
                config-optional="true"
                config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
         </configuration>

@@ -27,16 +27,18 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexingContext;
+import org.apache.archiva.webdav.util.MavenIndexerCleaner;
+import org.apache.commons.io.FileUtils;
+import org.apache.lucene.store.Lock;
+import org.apache.lucene.store.LockReleaseFailedException;
+import org.apache.lucene.store.NativeFSLockFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * AbstractRepositoryServletTestCase
@@ -85,11 +89,47 @@ public abstract class AbstractRepositoryServletTestCase
         saveConfiguration( archivaConfiguration );
     }
 
+    @BeforeClass
+    public static void lockCleanup()
+        throws Exception
+    {
+        /*
+
+        try
+        {
+
+            /*
+            Field locks = NativeFSLockFactory.class.getDeclaredClasses()[0].getField( "LOCK_HELD" );
+            locks.setAccessible( true );
+            Method clear = locks.getClass().getMethod( "clear" );
+
+            clear.invoke( field, null );
+            */
+
+        /*
+            NativeFSLockFactory nativeFSLockFactory =
+                new NativeFSLockFactory( new File( "target/appserver-base/data/repositories/internal/.indexer" ) );
+
+            Lock lock = nativeFSLockFactory.makeLock( "write.lock" );
+            lock.release();
+            LoggerFactory.getLogger( AbstractRepositoryServletTestCase.class ).info( "cleanup lock" );
+
+
+        }
+        catch ( LockReleaseFailedException e )
+        {
+            // ignore
+        }
+        */
+    }
+
 
     @Before
     public void setUp()
         throws Exception
     {
+
+        lockCleanup();
         super.setUp();
 
         String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
@@ -105,7 +145,6 @@ public abstract class AbstractRepositoryServletTestCase
 
         archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
 
-        //archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
@@ -128,6 +167,8 @@ public abstract class AbstractRepositoryServletTestCase
 
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
+        applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
+
         sr = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
 
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
@@ -139,7 +180,6 @@ public abstract class AbstractRepositoryServletTestCase
     public void tearDown()
         throws Exception
     {
-
 
         if ( sc != null )
         {

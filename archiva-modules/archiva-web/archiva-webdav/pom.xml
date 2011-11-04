@@ -197,6 +197,9 @@
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
+            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
+            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

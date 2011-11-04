@@ -19,6 +19,9 @@ package org.apache.archiva.webdav.util;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.lucene.store.Lock;
+import org.apache.lucene.store.LockReleaseFailedException;
+import org.apache.lucene.store.NativeFSLockFactory;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
@@ -33,6 +36,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.io.File;
 
 /**
  * @author Olivier Lamy
@@ -50,17 +54,18 @@ public class MavenIndexerCleaner
     private ApplicationContext applicationContext;
 
     @PostConstruct
-    public void startup() throws Exception
+    public void startup()
+        throws Exception
     {
         plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        cleanupIndex( );
+        cleanupIndex();
     }
 
     @PreDestroy
     public void shutdown()
         throws Exception
     {
-        cleanupIndex( );
+        cleanupIndex();
     }
 
 
@@ -71,7 +76,7 @@ public class MavenIndexerCleaner
             WebApplicationContext wacu =
                 WebApplicationContextUtils.getRequiredWebApplicationContext( servletContextEvent.getServletContext() );
             plexusSisuBridge = wacu.getBean( PlexusSisuBridge.class );
-            cleanupIndex(  );
+            cleanupIndex();
 
         }
         catch ( Exception e )
@@ -85,7 +90,7 @@ public class MavenIndexerCleaner
     {
         try
         {
-            cleanupIndex( );
+            cleanupIndex();
 
         }
         catch ( Exception e )
@@ -95,7 +100,7 @@ public class MavenIndexerCleaner
         }
     }
 
-    public void cleanupIndex(  )
+    public void cleanupIndex()
         throws Exception
     {
         log.info( "cleanup IndexingContext" );
@@ -104,6 +109,21 @@ public class MavenIndexerCleaner
         {
             nexusIndexer.removeIndexingContext( context, true );
         }
+
+        /*
+        try
+        {
+            NativeFSLockFactory nativeFSLockFactory =
+                new NativeFSLockFactory( new File( "target/appserver-base/data/repositories/internal/.indexer" ) );
+            Lock lock = nativeFSLockFactory.makeLock( "write.lock" );
+            lock.release();
+            log.info( "cleanup lock" );
+        }
+        catch ( LockReleaseFailedException e )
+        {
+            // ignore
+        }*/
+
     }
 
 
