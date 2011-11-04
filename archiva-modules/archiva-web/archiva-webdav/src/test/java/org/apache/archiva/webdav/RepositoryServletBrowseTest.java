@@ -26,12 +26,11 @@ import com.meterware.httpunit.WebResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * RepositoryServletBrowseTest 
+ * RepositoryServletBrowseTest
  *
  * @version $Id$
  */
@@ -41,10 +40,10 @@ public class RepositoryServletBrowseTest
     @Override
     @Before
     public void setUp()
-        throws Exception 
+        throws Exception
     {
         super.setUp();
-        
+
         new File( repoRootInternal, "org/apache/archiva" ).mkdirs();
         new File( repoRootInternal, "org/codehaus/mojo/" ).mkdirs();
         new File( repoRootInternal, "net/sourceforge" ).mkdirs();
@@ -56,13 +55,13 @@ public class RepositoryServletBrowseTest
         throws Exception
     {
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
 
         // dumpResponse( response );
 
-        String expectedLinks[] = new String[] { "commons-lang/", "net/", "org/" };
-        assertLinks(expectedLinks, response.getLinks());
+        String expectedLinks[] = new String[]{ ".indexer", "commons-lang/", "net/", "org/" };
+        assertLinks( expectedLinks, response.getLinks() );
     }
 
     @Test
@@ -70,11 +69,11 @@ public class RepositoryServletBrowseTest
         throws Exception
     {
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/org" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertEquals( "Response", HttpServletResponse.SC_OK, response.getResponseCode() );
-        
-        String expectedLinks[] = new String[] { "../", "apache/", "codehaus/" };
-        assertLinks(expectedLinks, response.getLinks());
+
+        String expectedLinks[] = new String[]{ "../", "apache/", "codehaus/" };
+        assertLinks( expectedLinks, response.getLinks() );
     }
 
     @Test
@@ -84,30 +83,33 @@ public class RepositoryServletBrowseTest
         new File( repoRootInternal, "org/apache/archiva/artifactId/1.0" ).mkdirs();
         new File( repoRootInternal, "org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" ).createNewFile();
 
-        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId" );
-        WebResponse response = sc.getResponse( request );
+        WebRequest request =
+            new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId" );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertEquals( "1st Response", HttpServletResponse.SC_OK, response.getResponseCode() );
 
         request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertEquals( "2nd Response", HttpServletResponse.SC_OK, response.getResponseCode() );
-        
-        request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" );
-        response = sc.getResponse( request );
+
+        request = new GetMethodWebRequest(
+            "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" );
+        response = getServletUnitClient().getResponse( request );
         assertEquals( "3rd Response", HttpServletResponse.SC_OK, response.getResponseCode() );
-        
-        request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar/" );
-        response = sc.getResponse( request );
+
+        request = new GetMethodWebRequest(
+            "http://machine.com/repository/internal/org/apache/archiva/artifactId/1.0/artifactId-1.0.jar/" );
+        response = getServletUnitClient().getResponse( request );
         assertEquals( "4th Response", HttpServletResponse.SC_NOT_FOUND, response.getResponseCode() );
     }
-    
-    
-    private void assertLinks(String expectedLinks[], WebLink actualLinks[])
+
+
+    private void assertLinks( String expectedLinks[], WebLink actualLinks[] )
     {
         assertEquals( "Links.length", expectedLinks.length, actualLinks.length );
         for ( int i = 0; i < actualLinks.length; i++ )
         {
             assertEquals( "Link[" + i + "]", expectedLinks[i], actualLinks[i].getURLString() );
-        }        
+        }
     }
 }

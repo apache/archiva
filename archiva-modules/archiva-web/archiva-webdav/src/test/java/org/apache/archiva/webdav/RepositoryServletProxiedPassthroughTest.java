@@ -155,7 +155,7 @@ public class RepositoryServletProxiedPassthroughTest
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + path );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         // --- Verification
 

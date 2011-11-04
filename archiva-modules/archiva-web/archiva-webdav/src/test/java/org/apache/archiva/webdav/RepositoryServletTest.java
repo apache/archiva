@@ -48,7 +48,7 @@ public class RepositoryServletTest
     public void testGetRepository()
         throws Exception
     {
-        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = (RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
         assertRepositoryValid( servlet, REPOID_INTERNAL );
@@ -58,7 +58,7 @@ public class RepositoryServletTest
     public void testGetRepositoryAfterDelete()
         throws Exception
     {
-        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = (RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -74,7 +74,7 @@ public class RepositoryServletTest
     public void testGetRepositoryAfterAdd()
         throws Exception
     {
-        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = (RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -108,7 +108,7 @@ public class RepositoryServletTest
         populateRepo( repoRootInternal, ".index/filecontent/segments.gen", "index file" );
         
         WebRequest request = new GetMethodWebRequest( path );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
         assertEquals( "index file", response.getText() );        
     }
@@ -120,7 +120,7 @@ public class RepositoryServletTest
         String path = REQUEST_PATH + ".index/filecontent/foo.bar";
 
         WebRequest request = new GetMethodWebRequest( path );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
         assertEquals( "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path.", response.getResponseMessage() );
     }

@@ -33,12 +33,8 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.store.Lock;
-import org.apache.lucene.store.LockReleaseFailedException;
-import org.apache.lucene.store.NativeFSLockFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +46,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * AbstractRepositoryServletTestCase
@@ -67,13 +61,13 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected static final String REPOID_LEGACY = "legacy";
 
-    protected ServletUnitClient sc;
-
     protected File repoRootInternal;
 
     protected File repoRootLegacy;
 
-    private ServletRunner sr;
+    protected ServletUnitClient servletUnitClient;
+
+    private ServletRunner servletRunner;
 
     protected ArchivaConfiguration archivaConfiguration;
 
@@ -88,8 +82,6 @@ public abstract class AbstractRepositoryServletTestCase
     {
         saveConfiguration( archivaConfiguration );
     }
-
-
 
     @Before
     public void setUp()
@@ -135,10 +127,22 @@ public abstract class AbstractRepositoryServletTestCase
 
         applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
-        sr = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
+    }
 
-        sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
-        sc = sr.newClient();
+    protected ServletUnitClient getServletUnitClient()
+        throws Exception
+    {
+        if ( servletUnitClient != null )
+        {
+            return servletUnitClient;
+        }
+        servletRunner = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
+
+        servletRunner.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
+
+        servletUnitClient = servletRunner.newClient();
+
+        return servletUnitClient;
     }
 
     @Override
@@ -147,14 +151,14 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
 
-        if ( sc != null )
+        if ( servletUnitClient != null )
         {
-            sc.clearContents();
+            servletUnitClient.clearContents();
         }
 
-        if ( sr != null )
+        if ( servletRunner != null )
         {
-            sr.shutDown();
+            servletRunner.shutDown();
         }
 
         if ( repoRootInternal.exists() )

@@ -56,7 +56,7 @@ public class RepositoryServletDeployTest
 
         WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
 
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         assertFileContents( "artifact.jar\n", repoRootInternal, ARTIFACT_DEFAULT_LAYOUT );
     }    
@@ -83,23 +83,23 @@ public class RepositoryServletDeployTest
 
         // send request #1 and verify it's successful
         WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/artifact.jar.sha1" );
         request = new PutMethodWebRequest( checksumUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/maven-metadata.xml" );
         request = new PutMethodWebRequest( metadataUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         // send request #2 and verify it's blocked
         is = getClass().getResourceAsStream( "/artifact.jar" );
         request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseConflictError( response );        
     }
 
@@ -124,23 +124,23 @@ public class RepositoryServletDeployTest
     
         // send request #1 and verify it's successful
         WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/artifact.jar.sha1" );
         request = new PutMethodWebRequest( checksumUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/maven-metadata.xml" );
         request = new PutMethodWebRequest( metadataUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         // send request #2 and verify if it's still successful
         is = getClass().getResourceAsStream( "/artifact.jar" );
         request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseNoContent( response );        
     }
 
@@ -160,23 +160,23 @@ public class RepositoryServletDeployTest
 
         // send request #1 and verify it's successful
         WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/artifact.jar.sha1" );
         request = new PutMethodWebRequest( checksumUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/maven-metadata.xml" );
         request = new PutMethodWebRequest( metadataUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         // send request #2 and verify it's re-deployed
         is = getClass().getResourceAsStream( "/artifact.jar" );
         request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseNoContent( response );
     } 
 
@@ -196,23 +196,23 @@ public class RepositoryServletDeployTest
 
         // send request #1 and verify it's successful
         WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/artifact.jar.sha1" );
         request = new PutMethodWebRequest( checksumUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         is = getClass().getResourceAsStream( "/maven-metadata.xml" );
         request = new PutMethodWebRequest( metadataUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseCreated( response );
         
         // send request #2 and verify it's re-deployed
         is = getClass().getResourceAsStream( "/artifact.jar" );
         request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
-        response = sc.getResponse( request );
+        response = getServletUnitClient().getResponse( request );
         assertResponseNoContent( response );
     } 
 
@@ -226,7 +226,7 @@ public class RepositoryServletDeployTest
 
         WebRequest request = new MkColMethodWebRequest( putUrl );
 
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         
         assertEquals(HttpServletResponse.SC_CONFLICT, response.getResponseCode());
         

@@ -152,7 +152,7 @@ public class RepositoryServletRepositoryGroupTest
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
         assertEquals( "Expected file contents", "first", response.getText() );
@@ -173,7 +173,7 @@ public class RepositoryServletRepositoryGroupTest
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
         assertEquals( "Expected file contents", "last", response.getText() );
@@ -190,7 +190,7 @@ public class RepositoryServletRepositoryGroupTest
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseNotFound( response );
     }
@@ -206,7 +206,7 @@ public class RepositoryServletRepositoryGroupTest
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_INVALID_REPOS + "/" + resourceName );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseInternalServerError( response );
     }
@@ -223,7 +223,7 @@ public class RepositoryServletRepositoryGroupTest
         InputStream is = getClass().getResourceAsStream( "/artifact.jar" );
 
         WebRequest request = new PutMethodWebRequest( putUrl, is, "text/plain" );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseMethodNotAllowed( response );
     }
@@ -257,7 +257,7 @@ public class RepositoryServletRepositoryGroupTest
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
                 + "dummy-merged-metadata-resource/maven-metadata.xml" );
-        WebResponse response = sc.getResource( request );
+        WebResponse response = getServletUnitClient().getResource( request );
 
         File returnedMetadata = new File( "target/test-classes/retrievedMetadataFile.xml" );
         FileUtils.writeStringToFile( returnedMetadata, response.getText() );
@@ -282,7 +282,7 @@ public class RepositoryServletRepositoryGroupTest
         // request the sha1 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
                                                + "dummy-merged-metadata-resource/maven-metadata.xml.sha1" );
-        response = sc.getResource( request );
+        response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
         assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml",
@@ -291,7 +291,7 @@ public class RepositoryServletRepositoryGroupTest
         // request the md5 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
                                                + "dummy-merged-metadata-resource/maven-metadata.xml.md5" );
-        response = sc.getResource( request );
+        response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
         assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml",
@@ -317,7 +317,7 @@ public class RepositoryServletRepositoryGroupTest
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/dummy-artifact/" );
-        WebResponse response = sc.getResource( request );
+        WebResponse response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
         assertTrue( StringUtils.contains( response.getText(), "Collection" ) );

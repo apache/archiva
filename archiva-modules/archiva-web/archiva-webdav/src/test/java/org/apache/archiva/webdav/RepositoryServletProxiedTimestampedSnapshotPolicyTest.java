@@ -205,7 +205,7 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
         HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + resourcePath );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
 
         // --- Verification
 

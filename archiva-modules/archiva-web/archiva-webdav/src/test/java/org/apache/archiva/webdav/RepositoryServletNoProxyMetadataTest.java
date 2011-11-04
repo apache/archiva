@@ -48,7 +48,7 @@ public class RepositoryServletNoProxyMetadataTest
         FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
@@ -67,7 +67,7 @@ public class RepositoryServletNoProxyMetadataTest
         FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
@@ -86,7 +86,7 @@ public class RepositoryServletNoProxyMetadataTest
         FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
@@ -105,7 +105,7 @@ public class RepositoryServletNoProxyMetadataTest
         FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + assemblyPluginMetadata );
-        WebResponse response = sc.getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
         assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
