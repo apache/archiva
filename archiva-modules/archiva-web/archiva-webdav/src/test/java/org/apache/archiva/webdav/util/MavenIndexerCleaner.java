@@ -110,20 +110,6 @@ public class MavenIndexerCleaner
             nexusIndexer.removeIndexingContext( context, true );
         }
 
-        /*
-        try
-        {
-            NativeFSLockFactory nativeFSLockFactory =
-                new NativeFSLockFactory( new File( "target/appserver-base/data/repositories/internal/.indexer" ) );
-            Lock lock = nativeFSLockFactory.makeLock( "write.lock" );
-            lock.release();
-            log.info( "cleanup lock" );
-        }
-        catch ( LockReleaseFailedException e )
-        {
-            // ignore
-        }*/
-
     }
 
 

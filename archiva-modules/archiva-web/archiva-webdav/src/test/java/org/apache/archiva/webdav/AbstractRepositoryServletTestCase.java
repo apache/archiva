@@ -89,39 +89,6 @@ public abstract class AbstractRepositoryServletTestCase
         saveConfiguration( archivaConfiguration );
     }
 
-    @BeforeClass
-    public static void lockCleanup()
-        throws Exception
-    {
-        /*
-
-        try
-        {
-
-            /*
-            Field locks = NativeFSLockFactory.class.getDeclaredClasses()[0].getField( "LOCK_HELD" );
-            locks.setAccessible( true );
-            Method clear = locks.getClass().getMethod( "clear" );
-
-            clear.invoke( field, null );
-            */
-
-        /*
-            NativeFSLockFactory nativeFSLockFactory =
-                new NativeFSLockFactory( new File( "target/appserver-base/data/repositories/internal/.indexer" ) );
-
-            Lock lock = nativeFSLockFactory.makeLock( "write.lock" );
-            lock.release();
-            LoggerFactory.getLogger( AbstractRepositoryServletTestCase.class ).info( "cleanup lock" );
-
-
-        }
-        catch ( LockReleaseFailedException e )
-        {
-            // ignore
-        }
-        */
-    }
 
 
     @Before
@@ -129,7 +96,6 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
 
-        lockCleanup();
         super.setUp();
 
         String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
