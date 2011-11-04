@@ -311,6 +311,8 @@
             <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
             <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
             <test.useTomcat>${test.useTomcat}</test.useTomcat>
+            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
+            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
           </systemPropertyVariables>
         </configuration>
       </plugin>

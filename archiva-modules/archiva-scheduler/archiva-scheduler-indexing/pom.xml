@@ -27,10 +27,6 @@
   <artifactId>archiva-scheduler-indexing</artifactId>
   <name>Archiva Scheduler :: Indexing</name>
 
-  <properties>
-    <jettyVersion>7.4.5.v20110725</jettyVersion>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -151,6 +147,8 @@
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
+            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
             <basedir>${basedir}</basedir>
           </systemPropertyVariables>
         </configuration>

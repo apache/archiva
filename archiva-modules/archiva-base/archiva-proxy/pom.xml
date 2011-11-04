@@ -159,6 +159,8 @@
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
+            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
           </systemPropertyVariables>
         </configuration>
       </plugin>
