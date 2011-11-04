@@ -43,4 +43,25 @@
 
   <alias name="securitySystem#test" alias="securitySystem"/>
 
+  <bean name="archivaConfiguration#default"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
+    <property name="registry" ref="registry#default"/>
+  </bean>
+
+  <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
+
+  <bean name="registry#default" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <xml fileName="${test.resources.path}/empty-archiva.xml" config-forceCreate="true"
+               config-optional="true"
+               config-name="org.apache.archiva.base" config-at="org.apache.archiva"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
 </beans>

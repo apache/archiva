@@ -28,13 +28,19 @@ import com.meterware.servletunit.ServletUnitClient;
 import junit.framework.TestCase;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.jackrabbit.core.RepositoryImpl;
-import org.apache.jackrabbit.core.util.RepositoryLock;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 
-
-import java.io.File;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 
+@RunWith( BlockJUnit4ClassRunner.class )
 public class RssFeedServletTest
     extends TestCase
 {
@@ -42,6 +48,25 @@ public class RssFeedServletTest
 
     private ServletUnitClient client;
 
+    static String PREVIOUS_ARCHIVA_PATH;
+
+    @BeforeClass
+    public static void initConfigurationPath()
+        throws Exception
+    {
+        PREVIOUS_ARCHIVA_PATH = System.getProperty( "archiva.user.configFileName" );
+        System.setProperty( "archiva.user.configFileName",
+                            System.getProperty( "test.resources.path/" ) + "empty-archiva.xml" );
+    }
+
+    @AfterClass
+    public static void restoreConfigurationPath()
+        throws Exception
+    {
+        System.setProperty( "archiva.user.configFileName", PREVIOUS_ARCHIVA_PATH );
+    }
+
+    @Before
     public void setUp()
         throws Exception
     {
@@ -49,8 +74,8 @@ public class RssFeedServletTest
         client = sr.newClient();
     }
 
-    @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         if ( client != null )
@@ -66,25 +91,27 @@ public class RssFeedServletTest
         super.tearDown();
     }
 
+    @Test
     public void testRetrieveServlet()
         throws Exception
     {
 
-        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
-            "http://localhost/feeds/test-repo" ).getServlet();
+        RssFeedServlet servlet =
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
     }
 
+    @Test
     public void testRequestNewArtifactsInRepo()
         throws Exception
     {
-        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
-            "http://localhost/feeds/test-repo" ).getServlet();
+        RssFeedServlet servlet =
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/test-repo" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/test-repo" );
 
-        Base64 encoder = new Base64(0, new byte[0]);
+        Base64 encoder = new Base64( 0, new byte[0] );
         String userPass = "user1:password1";
         String encodedUserPass = encoder.encodeToString( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
@@ -96,6 +123,7 @@ public class RssFeedServletTest
 
     }
 
+    @Test
     public void testRequestNewVersionsOfArtifact()
         throws Exception
     {
@@ -105,7 +133,7 @@ public class RssFeedServletTest
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/org/apache/archiva/artifact-two" );
 
-        Base64 encoder = new Base64(0, new byte[0]);
+        Base64 encoder = new Base64( 0, new byte[0] );
         String userPass = "user1:password1";
         String encodedUserPass = encoder.encodeToString( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
@@ -116,11 +144,12 @@ public class RssFeedServletTest
         assertEquals( "Should have been an OK response code.", HttpServletResponse.SC_OK, response.getResponseCode() );
     }
 
+    @Ignore
     public void XXX_testInvalidRequest()
         throws Exception
     {
-        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
-            "http://localhost/feeds?invalid_param=xxx" ).getServlet();
+        RssFeedServlet servlet =
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds?invalid_param=xxx" ).getServlet();
         assertNotNull( servlet );
 
         try
@@ -135,11 +164,12 @@ public class RssFeedServletTest
         }
     }
 
+    @Ignore
     public void XXX_testInvalidAuthenticationRequest()
         throws Exception
     {
-        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
-            "http://localhost/feeds/unauthorized-repo" ).getServlet();
+        RssFeedServlet servlet =
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
@@ -161,16 +191,17 @@ public class RssFeedServletTest
         }
     }
 
+    @Ignore
     public void XXX_testUnauthorizedRequest()
         throws Exception
     {
-        RssFeedServlet servlet = (RssFeedServlet) client.newInvocation(
-            "http://localhost/feeds/unauthorized-repo" ).getServlet();
+        RssFeedServlet servlet =
+            (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
         assertNotNull( servlet );
 
         WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
 
-        Base64 encoder = new Base64(0, new byte[0]);
+        Base64 encoder = new Base64( 0, new byte[0] );
         String userPass = "user1:password1";
         String encodedUserPass = encoder.encodeToString( userPass.getBytes() );
         request.setHeaderField( "Authorization", "BASIC " + encodedUserPass );
@@ -186,7 +217,6 @@ public class RssFeedServletTest
                           he.getResponseCode() );
         }
     }
-
 
 
 }
