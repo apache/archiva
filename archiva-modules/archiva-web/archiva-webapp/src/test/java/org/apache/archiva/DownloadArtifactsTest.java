@@ -32,8 +32,8 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.codehaus.redback.rest.api.model.User;
 import org.codehaus.redback.rest.api.services.RoleManagementService;
 import org.codehaus.redback.rest.api.services.UserService;
 import org.codehaus.redback.rest.services.FakeCreateAdminService;
@@ -58,11 +58,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -183,10 +179,13 @@ public class DownloadArtifactsTest
         this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
         log.info( "redirect server port {}", redirectPort );
 
-        FakeCreateAdminService fakeCreateAdminService = getFakeCreateAdminService();
+        User user = new User();
+        user.setEmail( "toto@toto.fr" );
+        user.setFullName( "the root user" );
+        user.setUsername( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
+        user.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
 
-        Boolean res = fakeCreateAdminService.createAdminIfNeeded();
-        assertTrue( res.booleanValue() );
+        getUserService( null ).createAdminUser( user );
 
 
     }
@@ -222,7 +221,6 @@ public class DownloadArtifactsTest
                                                    "guest" );
 
         getUserService( authorizationHeader ).removeFromCache( "guest" );
-
 
         /*
         URL url = new URL( "http://localhost:" + port + "/repository/internal/junit/junit/4.9/junit-4.9.jar" );
