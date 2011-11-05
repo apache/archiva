@@ -27,11 +27,6 @@ import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.webdav.DavException;
-import org.apache.jackrabbit.webdav.DavResourceLocator;
-import org.apache.jackrabbit.webdav.DavServletRequest;
-import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
@@ -41,6 +36,11 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.LegacyPathParser;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.RepositoryRequest;
+import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletRequest;
+import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 import org.junit.After;
@@ -218,10 +218,12 @@ public class ArchivaDavResourceFactoryTest
             archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
+            requestControl.expectAndReturn( request.getPathInfo(), "org/apache/archiva", 0, 2 );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( RELEASES_REPO ),
                                                        releasesRepo );
             requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
             requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
+
             repoRequestControl.expectAndReturn(
                 repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
                 false );
@@ -285,6 +287,7 @@ public class ArchivaDavResourceFactoryTest
             archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
+            requestControl.expectAndReturn( request.getPathInfo(), "org/apache/archiva", 0, 2 );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
                                                        internalRepo );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( RELEASES_REPO ),
@@ -355,6 +358,7 @@ public class ArchivaDavResourceFactoryTest
             archivaConfigurationControl.reset();
             archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
             requestControl.expectAndReturn( request.getMethod(), "GET", 4 );
+            requestControl.expectAndReturn( request.getPathInfo(), "org/apache/archiva", 0, 2 );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
                                                        internalRepo );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( LOCAL_MIRROR_REPO ),
