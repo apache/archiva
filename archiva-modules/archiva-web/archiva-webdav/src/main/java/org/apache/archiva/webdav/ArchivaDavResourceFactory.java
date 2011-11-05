@@ -92,6 +92,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -939,131 +940,14 @@ public class ArchivaDavResourceFactory
 
         if ( allow )
         {
-            for ( String repository : repositories )
-            {
-                ManagedRepositoryContent managedRepository = null;
 
-                try
-                {
-                    managedRepository = repositoryFactory.getManagedRepositoryContent( repository );
-                }
-                catch ( RepositoryNotFoundException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                            "Invalid managed repository <" + repository + ">: " + e.getMessage() );
-                }
-                catch ( RepositoryException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                            "Invalid managed repository <" + repository + ">: " + e.getMessage() );
-                }
-
-                File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
-                if ( resourceFile.exists() )
-                {
-                    // in case of group displaying index directory doesn't have sense !!
-                    String repoIndexDirectory = managedRepository.getRepository().getIndexDirectory();
-                    if ( StringUtils.isNotEmpty( repoIndexDirectory ) )
-                    {
-                        if ( !new File( repoIndexDirectory ).isAbsolute() )
-                        {
-                            repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
-                                                           StringUtils.isEmpty( repoIndexDirectory )
-                                                               ? ".indexer"
-                                                               : repoIndexDirectory ).getAbsolutePath();
-                        }
-                    }
-                    if ( StringUtils.isEmpty( repoIndexDirectory ) )
-                    {
-                        repoIndexDirectory =
-                            new File( managedRepository.getRepository().getLocation(), ".indexer" ).getAbsolutePath();
-                    }
-
-                    if ( !StringUtils.equals( FilenameUtils.normalize( repoIndexDirectory ),
-                                              FilenameUtils.normalize( resourceFile.getAbsolutePath() ) ) )
-                    {
-                        // for prompted authentication
-                        if ( httpAuth.getSecuritySession( request.getSession( true ) ) != null )
-                        {
-                            try
-                            {
-                                if ( isAuthorized( request, repository ) )
-                                {
-                                    mergedRepositoryContents.add( resourceFile );
-                                    log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
-                                }
-                            }
-                            catch ( DavException e )
-                            {
-                                // TODO: review exception handling
-                                if ( log.isDebugEnabled() )
-                                {
-                                    log.debug(
-                                        "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
-                                            + "': " + e.getMessage() );
-                                }
-                            }
-
-                        }
-                        else
-                        {
-                            // for the current user logged in
-                            try
-                            {
-                                if ( servletAuth.isAuthorized( activePrincipal, repository,
-                                                               WebdavMethodUtil.getMethodPermission(
-                                                                   request.getMethod() ) ) )
-                                {
-                                    mergedRepositoryContents.add( resourceFile );
-                                    log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
-                                }
-                            }
-                            catch ( UnauthorizedException e )
-                            {
-                                // TODO: review exception handling
-                                if ( log.isDebugEnabled() )
-                                {
-                                    log.debug(
-                                        "Skipping repository '" + managedRepository + "' for user '" + activePrincipal
-                                            + "': " + e.getMessage() );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             // remove last /
             String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
-            if ( StringUtils.endsWith( path, ".indexer" ) )
+            if ( StringUtils.endsWith( pathInfo, "/.indexer" ) )
             {
                 try
                 {
-                    Set<String> authzRepos = new HashSet<String>();
-                    for ( String repository : repositories )
-                    {
-                        try
-                        {
-                            if ( servletAuth.isAuthorized( activePrincipal, repository,
-                                                           WebdavMethodUtil.getMethodPermission(
-                                                               request.getMethod() ) ) )
-                            {
-                                authzRepos.add( repository );
-                                authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository ) );
-                            }
-                        }
-                        catch ( UnauthorizedException e )
-                        {
-                            // TODO: review exception handling
-                            if ( log.isDebugEnabled() )
-                            {
-                                log.debug(
-                                    "Skipping repository '" + repository + "' for user '" + activePrincipal + "': "
-                                        + e.getMessage() );
-                            }
-                        }
-                    }
-
-                    File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos, true );
+                    File mergedRepoDir = buildMergedIndexDirectory( repositories, activePrincipal, request );
                     mergedRepositoryContents.add( mergedRepoDir );
 
                 }
@@ -1076,6 +960,100 @@ public class ArchivaDavResourceFactory
                     throw new DavException( 500, e );
                 }
 
+            }
+            else
+            {
+                for ( String repository : repositories )
+                {
+                    ManagedRepositoryContent managedRepository = null;
+
+                    try
+                    {
+                        managedRepository = repositoryFactory.getManagedRepositoryContent( repository );
+                    }
+                    catch ( RepositoryNotFoundException e )
+                    {
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                "Invalid managed repository <" + repository + ">: " + e.getMessage() );
+                    }
+                    catch ( RepositoryException e )
+                    {
+                        throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                "Invalid managed repository <" + repository + ">: " + e.getMessage() );
+                    }
+
+                    File resourceFile = new File( managedRepository.getRepoRoot(), logicalResource.getPath() );
+                    if ( resourceFile.exists() )
+                    {
+                        // in case of group displaying index directory doesn't have sense !!
+                        String repoIndexDirectory = managedRepository.getRepository().getIndexDirectory();
+                        if ( StringUtils.isNotEmpty( repoIndexDirectory ) )
+                        {
+                            if ( !new File( repoIndexDirectory ).isAbsolute() )
+                            {
+                                repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
+                                                               StringUtils.isEmpty( repoIndexDirectory )
+                                                                   ? ".indexer"
+                                                                   : repoIndexDirectory ).getAbsolutePath();
+                            }
+                        }
+                        if ( StringUtils.isEmpty( repoIndexDirectory ) )
+                        {
+                            repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
+                                                           ".indexer" ).getAbsolutePath();
+                        }
+
+                        if ( !StringUtils.equals( FilenameUtils.normalize( repoIndexDirectory ),
+                                                  FilenameUtils.normalize( resourceFile.getAbsolutePath() ) ) )
+                        {
+                            // for prompted authentication
+                            if ( httpAuth.getSecuritySession( request.getSession( true ) ) != null )
+                            {
+                                try
+                                {
+                                    if ( isAuthorized( request, repository ) )
+                                    {
+                                        mergedRepositoryContents.add( resourceFile );
+                                        log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                    }
+                                }
+                                catch ( DavException e )
+                                {
+                                    // TODO: review exception handling
+                                    if ( log.isDebugEnabled() )
+                                    {
+                                        log.debug( "Skipping repository '" + managedRepository + "' for user '"
+                                                       + activePrincipal + "': " + e.getMessage() );
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                // for the current user logged in
+                                try
+                                {
+                                    if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                                                   WebdavMethodUtil.getMethodPermission(
+                                                                       request.getMethod() ) ) )
+                                    {
+                                        mergedRepositoryContents.add( resourceFile );
+                                        log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                    }
+                                }
+                                catch ( UnauthorizedException e )
+                                {
+                                    // TODO: review exception handling
+                                    if ( log.isDebugEnabled() )
+                                    {
+                                        log.debug( "Skipping repository '" + managedRepository + "' for user '"
+                                                       + activePrincipal + "': " + e.getMessage() );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         else
@@ -1201,6 +1179,39 @@ public class ArchivaDavResourceFactory
             return true;
         }
     }
+
+    protected File buildMergedIndexDirectory( List<String> repositories, String activePrincipal,
+                                              DavServletRequest request )
+        throws RepositoryAdminException, IndexMergerException
+    {
+
+        Set<String> authzRepos = new HashSet<String>();
+        for ( String repository : repositories )
+        {
+            try
+            {
+                if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                               WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
+                {
+                    authzRepos.add( repository );
+                    authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository ) );
+                }
+            }
+            catch ( UnauthorizedException e )
+            {
+                // TODO: review exception handling
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Skipping repository '" + repository + "' for user '" + activePrincipal + "': "
+                                   + e.getMessage() );
+                }
+            }
+        }
+
+        File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos, true );
+        return mergedRepoDir;
+    }
+
 
     public void setServletAuth( ServletAuthenticator servletAuth )
     {
