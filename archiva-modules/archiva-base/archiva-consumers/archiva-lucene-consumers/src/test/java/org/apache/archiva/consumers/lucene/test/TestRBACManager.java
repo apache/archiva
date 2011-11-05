@@ -28,7 +28,6 @@ import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
-import org.codehaus.plexus.redback.rbac.memory.MemoryResource;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -232,7 +231,7 @@ public class TestRBACManager implements RBACManager
     public Resource createResource( String identifier )
         throws RbacManagerException
     {
-        return new MemoryResource();
+        return null;
     }
 
     public boolean resourceExists( String identifier )
