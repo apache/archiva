@@ -98,8 +98,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -253,7 +255,8 @@ public class ArchivaDavResourceFactory
             // handle browse requests for virtual repos
             if ( RepositoryPathUtil.getLogicalResource( archivaLocator.getOrigResourcePath() ).endsWith( "/" ) )
             {
-                return getResource( request, repoGroupConfig.getRepositories(), archivaLocator );
+                return getResource( request, repoGroupConfig.getRepositories(), archivaLocator,
+                                    archivaLocator.getRepositoryId() );
             }
             else
             {
@@ -262,7 +265,7 @@ public class ArchivaDavResourceFactory
                 //  infrequent
                 List<String> repositories = new ArrayList<String>( repoGroupConfig.getRepositories() );
                 resource = processRepositoryGroup( request, archivaLocator, repositories, activePrincipal,
-                                                   resourcesInAbsolutePath );
+                                                   resourcesInAbsolutePath, archivaLocator.getRepositoryId() );
             }
         }
         else
@@ -394,51 +397,71 @@ public class ArchivaDavResourceFactory
 
     private DavResource processRepositoryGroup( final DavServletRequest request,
                                                 ArchivaDavResourceLocator archivaLocator, List<String> repositories,
-                                                String activePrincipal, List<String> resourcesInAbsolutePath )
+                                                String activePrincipal, List<String> resourcesInAbsolutePath,
+                                                String repositoryGroupId )
         throws DavException
     {
         DavResource resource = null;
         List<DavException> storedExceptions = new ArrayList<DavException>();
 
-        for ( String repositoryId : repositories )
+        String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
+
+        String rootPath = StringUtils.substringBeforeLast( pathInfo, "/" );
+
+        if ( StringUtils.endsWith( rootPath, "/.indexer" ) )
         {
-            ManagedRepositoryContent managedRepository;
-            try
-            {
-                managedRepository = repositoryFactory.getManagedRepositoryContent( repositoryId );
-            }
-            catch ( RepositoryNotFoundException e )
-            {
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-            }
-            catch ( RepositoryException e )
-            {
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-            }
+            // we are in the case of index file request
+            String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
+            File temporaryIndexDirectory =
+                buildMergedIndexDirectory( repositories, activePrincipal, request, repositoryGroupId );
 
-            try
+            File resourceFile = new File( temporaryIndexDirectory, requestedFileName );
+            resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), requestedFileName, null,
+                                               request.getRemoteAddr(), activePrincipal, request.getDavSession(),
+                                               archivaLocator, this, mimeTypes, auditListeners, scheduler );
+
+        }
+        else
+        {
+            for ( String repositoryId : repositories )
             {
-                DavResource updatedResource =
-                    processRepository( request, archivaLocator, activePrincipal, managedRepository );
-                if ( resource == null )
+                ManagedRepositoryContent managedRepository;
+                try
                 {
-                    resource = updatedResource;
+                    managedRepository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+                }
+                catch ( RepositoryNotFoundException e )
+                {
+                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+                }
+                catch ( RepositoryException e )
+                {
+                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
                 }
 
-                String logicalResource = RepositoryPathUtil.getLogicalResource( archivaLocator.getResourcePath() );
-                if ( logicalResource.endsWith( "/" ) )
+                try
                 {
-                    logicalResource = logicalResource.substring( 1 );
+                    DavResource updatedResource =
+                        processRepository( request, archivaLocator, activePrincipal, managedRepository );
+                    if ( resource == null )
+                    {
+                        resource = updatedResource;
+                    }
+
+                    String logicalResource = RepositoryPathUtil.getLogicalResource( archivaLocator.getResourcePath() );
+                    if ( logicalResource.endsWith( "/" ) )
+                    {
+                        logicalResource = logicalResource.substring( 1 );
+                    }
+                    resourcesInAbsolutePath.add(
+                        new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
                 }
-                resourcesInAbsolutePath.add(
-                    new File( managedRepository.getRepoRoot(), logicalResource ).getAbsolutePath() );
-            }
-            catch ( DavException e )
-            {
-                storedExceptions.add( e );
+                catch ( DavException e )
+                {
+                    storedExceptions.add( e );
+                }
             }
         }
-
         if ( resource == null )
         {
             if ( !storedExceptions.isEmpty() )
@@ -918,7 +941,7 @@ public class ArchivaDavResourceFactory
     }
 
     private DavResource getResource( DavServletRequest request, List<String> repositories,
-                                     ArchivaDavResourceLocator locator )
+                                     ArchivaDavResourceLocator locator, String groupId )
         throws DavException
     {
         List<File> mergedRepositoryContents = new ArrayList<File>();
@@ -945,21 +968,8 @@ public class ArchivaDavResourceFactory
             String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
             if ( StringUtils.endsWith( pathInfo, "/.indexer" ) )
             {
-                try
-                {
-                    File mergedRepoDir = buildMergedIndexDirectory( repositories, activePrincipal, request );
-                    mergedRepositoryContents.add( mergedRepoDir );
-
-                }
-                catch ( RepositoryAdminException e )
-                {
-                    throw new DavException( 500, e );
-                }
-                catch ( IndexMergerException e )
-                {
-                    throw new DavException( 500, e );
-                }
-
+                File mergedRepoDir = buildMergedIndexDirectory( repositories, activePrincipal, request, groupId );
+                mergedRepositoryContents.add( mergedRepoDir );
             }
             else
             {
@@ -1181,35 +1191,61 @@ public class ArchivaDavResourceFactory
     }
 
     protected File buildMergedIndexDirectory( List<String> repositories, String activePrincipal,
-                                              DavServletRequest request )
-        throws RepositoryAdminException, IndexMergerException
+                                              DavServletRequest request, String groupId )
+        throws DavException
     {
 
-        Set<String> authzRepos = new HashSet<String>();
-        for ( String repository : repositories )
+        try
         {
-            try
+            HttpSession session = request.getSession();
+            Map<String, File> testValue = (Map<String, File>) session.getAttribute( "TMP_GROUP_INDEXES" );
+            if ( testValue == null )
             {
-                if ( servletAuth.isAuthorized( activePrincipal, repository,
-                                               WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
-                {
-                    authzRepos.add( repository );
-                    authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository ) );
-                }
+                testValue = new HashMap<String, File>();
             }
-            catch ( UnauthorizedException e )
-            {
-                // TODO: review exception handling
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Skipping repository '" + repository + "' for user '" + activePrincipal + "': "
-                                   + e.getMessage() );
-                }
-            }
-        }
 
-        File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos, true );
-        return mergedRepoDir;
+            File tmp = testValue.get( groupId );
+            if ( tmp != null )
+            {
+                return tmp;
+            }
+
+            Set<String> authzRepos = new HashSet<String>();
+            for ( String repository : repositories )
+            {
+                try
+                {
+                    if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                                   WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
+                    {
+                        authzRepos.add( repository );
+                        authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository ) );
+                    }
+                }
+                catch ( UnauthorizedException e )
+                {
+                    // TODO: review exception handling
+                    if ( log.isDebugEnabled() )
+                    {
+                        log.debug( "Skipping repository '" + repository + "' for user '" + activePrincipal + "': "
+                                       + e.getMessage() );
+                    }
+                }
+            }
+
+            File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos, true );
+            testValue.put( groupId, mergedRepoDir );
+            session.setAttribute( "TMP_GROUP_INDEXES", testValue );
+            return mergedRepoDir;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new DavException( 500, e );
+        }
+        catch ( IndexMergerException e )
+        {
+            throw new DavException( 500, e );
+        }
     }
 
 

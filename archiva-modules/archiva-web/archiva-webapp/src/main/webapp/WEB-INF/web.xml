@@ -85,6 +85,10 @@
     </listener-class>
 	</listener>
 
+  <listener>
+    <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+  </listener>
+
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
@@ -189,5 +193,10 @@
     <servlet-name>CXFServlet</servlet-name>
     <url-pattern>/restServices/*</url-pattern>
   </servlet-mapping>
+
+  <session-config>
+    <!-- 30 minutes session timeout -->
+    <session-timeout>30</session-timeout>
+  </session-config>
 
 </web-app>
