@@ -71,4 +71,4 @@ public class TemporaryGroupIndexSessionCleaner
         }
     }
 }
-}
+
