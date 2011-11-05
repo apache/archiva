@@ -18,6 +18,8 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
+import org.apache.maven.index.context.IndexingContext;
+
 import java.io.File;
 import java.util.Collection;
 
@@ -28,11 +30,20 @@ import java.util.Collection;
 public interface IndexMerger
 {
     /**
+     * default tmp created group index ttl in minutes
+     */
+    static final int DEFAULT_GROUP_INDEX_TTL = 1;
+
+    /**
      * @param repositoriesIds repositories Ids to merge content
-     * @param packIndex will generate a downloadable index
+     * @param packIndex       will generate a downloadable index
      * @return a temporary directory with a merge index (directory marked deleteOnExit)
      * @throws IndexMergerException
      */
-    File buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
+    IndexingContext buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
         throws IndexMergerException;
+
+    void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex );
+
+    Collection<TemporaryGroupIndex> getTemporaryGroupIndexes();
 }

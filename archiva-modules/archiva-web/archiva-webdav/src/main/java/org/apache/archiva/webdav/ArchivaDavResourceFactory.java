@@ -31,6 +31,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
@@ -52,6 +53,7 @@ import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.archiva.webdav.util.RepositoryPathUtil;
+import org.apache.archiva.webdav.util.TemporaryGroupIndexSessionCleaner;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -65,6 +67,7 @@ import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
+import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
@@ -98,6 +101,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1198,16 +1202,29 @@ public class ArchivaDavResourceFactory
         try
         {
             HttpSession session = request.getSession();
-            Map<String, File> testValue = (Map<String, File>) session.getAttribute( "TMP_GROUP_INDEXES" );
-            if ( testValue == null )
+
+            Map<String, TemporaryGroupIndex> temporaryGroupIndexMap =
+                (Map<String, TemporaryGroupIndex>) session.getAttribute(
+                    TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY );
+            if ( temporaryGroupIndexMap == null )
             {
-                testValue = new HashMap<String, File>();
+                temporaryGroupIndexMap = new HashMap<String, TemporaryGroupIndex>();
             }
 
-            File tmp = testValue.get( groupId );
-            if ( tmp != null )
+            TemporaryGroupIndex tmp = temporaryGroupIndexMap.get( groupId );
+
+            if ( tmp != null && tmp.getDirectory() != null && tmp.getDirectory().exists() )
             {
-                return tmp;
+                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( IndexMerger.DEFAULT_GROUP_INDEX_TTL * 60
+                    * 1000 ) )
+                {
+                    log.debug( "tmp group index is too old so delete it" );
+                    indexMerger.cleanTemporaryGroupIndex( tmp );
+                }
+                else
+                {
+                    return tmp.getDirectory();
+                }
             }
 
             Set<String> authzRepos = new HashSet<String>();
@@ -1232,10 +1249,14 @@ public class ArchivaDavResourceFactory
                     }
                 }
             }
-
-            File mergedRepoDir = indexMerger.buildMergedIndex( authzRepos, true );
-            testValue.put( groupId, mergedRepoDir );
-            session.setAttribute( "TMP_GROUP_INDEXES", testValue );
+            IndexingContext indexingContext = indexMerger.buildMergedIndex( authzRepos, true );
+            File mergedRepoDir = indexingContext.getIndexDirectoryFile();
+            TemporaryGroupIndex temporaryGroupIndex =
+                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId() ).setCreationTime(
+                    new Date().getTime() );
+            temporaryGroupIndexMap.put( groupId, temporaryGroupIndex );
+            session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,
+                                  temporaryGroupIndexMap );
             return mergedRepoDir;
         }
         catch ( RepositoryAdminException e )

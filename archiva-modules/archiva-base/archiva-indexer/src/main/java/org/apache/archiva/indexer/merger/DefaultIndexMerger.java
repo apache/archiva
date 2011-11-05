@@ -23,7 +23,6 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -31,14 +30,13 @@ import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -62,7 +60,7 @@ public class DefaultIndexMerger
 
     private IndexPacker indexPacker;
 
-    private List<TemporaryIndex> temporaryIndexes = new CopyOnWriteArrayList<TemporaryIndex>();
+    private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
 
     @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
@@ -73,7 +71,7 @@ public class DefaultIndexMerger
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
     }
 
-    public File buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
+    public IndexingContext buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
         throws IndexMergerException
     {
         File tempRepoFile = Files.createTempDir();
@@ -104,8 +102,8 @@ public class DefaultIndexMerger
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
-            temporaryIndexes.add( new TemporaryIndex( tempRepoFile, tempRepoId ) );
-            return indexingContext.getIndexDirectoryFile();
+            temporaryGroupIndexes.add( new TemporaryGroupIndex( tempRepoFile, tempRepoId ) );
+            return indexingContext;
         }
         catch ( IOException e )
         {
@@ -117,70 +115,30 @@ public class DefaultIndexMerger
         }
     }
 
-
-    @Scheduled( fixedDelay = 900000 )
-    public void cleanTemporaryIndex()
+    @Async
+    public void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex )
     {
-        for ( TemporaryIndex temporaryIndex : temporaryIndexes )
+        if ( temporaryGroupIndex == null )
         {
-            // cleanup files older than 30 minutes
-            if ( new Date().getTime() - temporaryIndex.creationTime > 1800000 )
+            return;
+        }
+
+        try
+        {
+            IndexingContext indexingContext = indexer.getIndexingContexts().get( temporaryGroupIndex.getIndexId() );
+            if ( indexingContext != null )
             {
-                try
-                {
-                    IndexingContext context = indexer.getIndexingContexts().get( temporaryIndex.indexId );
-                    if ( context != null )
-                    {
-                        indexer.removeIndexingContext( context, true );
-                    }
-                    else
-                    {
-                        FileUtils.deleteDirectory( temporaryIndex.directory );
-                    }
-                    temporaryIndexes.remove( temporaryIndex );
-                    log.debug( "remove directory {}", temporaryIndex.directory );
-                }
-                catch ( IOException e )
-                {
-                    log.warn( "failed to remove directory:" + temporaryIndex.directory, e );
-                }
+                indexer.removeIndexingContext( indexingContext, true );
             }
-            temporaryIndexes.remove( temporaryIndex );
+        }
+        catch ( IOException e )
+        {
+            log.warn( "fail to delete temporary group index {}", temporaryGroupIndex.getIndexId(), e );
         }
     }
 
-    private static class TemporaryIndex
+    public Collection<TemporaryGroupIndex> getTemporaryGroupIndexes()
     {
-        private long creationTime = new Date().getTime();
-
-        private File directory;
-
-        private String indexId;
-
-        TemporaryIndex( File directory, String indexId )
-        {
-            this.directory = directory;
-            this.indexId = indexId;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Long.toString( creationTime ).hashCode();
-        }
-
-        @Override
-        public boolean equals( Object o )
-        {
-            if ( this == o )
-            {
-                return true;
-            }
-            if ( !( o instanceof TemporaryIndex ) )
-            {
-                return false;
-            }
-            return this.creationTime == ( (TemporaryIndex) o ).creationTime;
-        }
+        return this.temporaryGroupIndexes;
     }
 }

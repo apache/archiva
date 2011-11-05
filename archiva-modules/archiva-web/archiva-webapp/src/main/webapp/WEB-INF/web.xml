@@ -89,6 +89,11 @@
     <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
   </listener>
 
+  <!-- to cleanup temporary group index created during a session -->
+  <listener>
+    <listener-class>org.apache.archiva.webdav.util.TemporaryGroupIndexSessionCleaner</listener-class>
+  </listener>
+
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
