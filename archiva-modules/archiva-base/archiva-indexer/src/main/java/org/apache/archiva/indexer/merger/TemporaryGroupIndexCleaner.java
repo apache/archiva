@@ -21,14 +21,12 @@ package org.apache.archiva.indexer.merger;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -61,24 +59,8 @@ public class TemporaryGroupIndexCleaner
             // cleanup files older than 60 minutes 3600000
             if ( new Date().getTime() - temporaryGroupIndex.getCreationTime() > 3600000 )
             {
-                try
-                {
-                    IndexingContext context = indexer.getIndexingContexts().get( temporaryGroupIndex.getIndexId() );
-                    if ( context != null )
-                    {
-                        indexer.removeIndexingContext( context, true );
-                    }
-                    else
-                    {
-                        indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );
-                    }
-                    indexMerger.getTemporaryGroupIndexes().remove( temporaryGroupIndex );
-                    log.debug( "remove directory {}", temporaryGroupIndex.getDirectory() );
-                }
-                catch ( IOException e )
-                {
-                    log.warn( "failed to remove directory:" + temporaryGroupIndex.getDirectory(), e );
-                }
+                indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );
+
             }
         }
     }

@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -130,6 +131,12 @@ public class DefaultIndexMerger
             {
                 indexer.removeIndexingContext( indexingContext, true );
             }
+            File directory = temporaryGroupIndex.getDirectory();
+            if ( directory != null && directory.exists() )
+            {
+                FileUtils.deleteDirectory( directory );
+            }
+            temporaryGroupIndexes.remove( temporaryGroupIndex );
         }
         catch ( IOException e )
         {
