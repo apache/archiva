@@ -211,6 +211,7 @@
                   <systemProperty>derby.system.home=%ARCHIVA_BASE%/logs</systemProperty>
                   -->
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
+                  <systemProperty>java.io.tmpdir=./temp</systemProperty>
                 </systemProperties>
               </jvmSettings>
             </daemon>

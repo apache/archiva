@@ -99,6 +99,10 @@
         <include>LICENSE</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>src/main/temp/</directory>
+      <outputDirectory>/temp</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
