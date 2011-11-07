@@ -199,8 +199,8 @@
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
             <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
             <archiva.user.configFileName>${project.build.testOutputDirectory}/repository-archiva.xml</archiva.user.configFileName>
-            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
-            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
+            <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
+            <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

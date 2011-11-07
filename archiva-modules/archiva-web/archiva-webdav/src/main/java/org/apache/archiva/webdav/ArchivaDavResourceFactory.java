@@ -1215,7 +1215,7 @@ public class ArchivaDavResourceFactory
 
             if ( tmp != null && tmp.getDirectory() != null && tmp.getDirectory().exists() )
             {
-                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( IndexMerger.DEFAULT_GROUP_INDEX_TTL * 60
+                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( indexMerger.getDefaultGroupIndexTtl() * 60
                     * 1000 ) )
                 {
                     log.debug( "tmp group index is too old so delete it" );

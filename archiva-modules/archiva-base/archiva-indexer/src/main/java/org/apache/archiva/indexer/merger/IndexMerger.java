@@ -29,11 +29,12 @@ import java.util.Collection;
  */
 public interface IndexMerger
 {
-    /**
-     * default tmp created group index ttl in minutes
-     */
-    static final int DEFAULT_GROUP_INDEX_TTL = 30;
 
+    /**
+     * system property which contains the value in s for ttl of temporary index groups
+     */
+    static final String TMP_GROUP_INDEX_SYS_KEY = "archiva.tmp.group.index.ttl";
+    
     /**
      * @param repositoriesIds repositories Ids to merge content
      * @param packIndex       will generate a downloadable index
@@ -47,5 +48,9 @@ public interface IndexMerger
 
     Collection<TemporaryGroupIndex> getTemporaryGroupIndexes();
 
+    /**
+     * @return ttl of temporay group index
+     */
+    int getDefaultGroupIndexTtl();
 
 }

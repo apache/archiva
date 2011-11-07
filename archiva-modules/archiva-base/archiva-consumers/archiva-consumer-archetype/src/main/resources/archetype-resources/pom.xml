@@ -150,7 +150,8 @@
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
             <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
-            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
+            <!-- restore when we will be able to use a derby in memory database -->
+            <!--redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url-->
             <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
           </systemPropertyVariables>
         </configuration>

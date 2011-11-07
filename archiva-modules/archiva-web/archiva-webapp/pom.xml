@@ -579,8 +579,8 @@
             <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
             <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
             <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
-            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
-            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
+            <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
+            <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <basedir>${basedir}</basedir>
           </systemPropertyVariables>
         </configuration>
@@ -648,6 +648,7 @@
             <appserver.home>${project.build.directory}/appserver-home</appserver.home>
             <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
+            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
           </systemProperties>
         </configuration>
         <dependencies>

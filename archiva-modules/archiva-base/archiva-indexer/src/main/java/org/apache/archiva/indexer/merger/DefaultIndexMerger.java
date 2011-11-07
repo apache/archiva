@@ -24,6 +24,7 @@ import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +52,11 @@ public class DefaultIndexMerger
     implements IndexMerger
 {
 
+    /**
+     * default tmp created group index ttl in minutes
+     */
+    static final int DEFAULT_GROUP_INDEX_TTL = 30;
+
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
@@ -63,6 +70,8 @@ public class DefaultIndexMerger
 
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
 
+    private int defaultGroupIndexTtl;
+
     @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
@@ -70,6 +79,15 @@ public class DefaultIndexMerger
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.mavenIndexerUtils = mavenIndexerUtils;
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
+    }
+
+    @PostConstruct
+    public void intialize()
+    {
+        String ttlStr =
+            System.getProperty( IndexMerger.TMP_GROUP_INDEX_SYS_KEY, Integer.toString( DEFAULT_GROUP_INDEX_TTL ) );
+        this.defaultGroupIndexTtl = NumberUtils.toInt( ttlStr, DEFAULT_GROUP_INDEX_TTL );
+
     }
 
     public IndexingContext buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
@@ -147,5 +165,10 @@ public class DefaultIndexMerger
     public Collection<TemporaryGroupIndex> getTemporaryGroupIndexes()
     {
         return this.temporaryGroupIndexes;
+    }
+
+    public int getDefaultGroupIndexTtl()
+    {
+        return this.defaultGroupIndexTtl;
     }
 }
