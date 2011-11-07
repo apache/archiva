@@ -213,8 +213,8 @@
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                   <systemProperty>java.io.tmpdir=./temp</systemProperty>
                 </systemProperties>
-                <initialMemorySize>256m</initialMemorySize>
-                <maxMemorySize>256m</maxMemorySize>
+                <initialMemorySize>512m</initialMemorySize>
+                <maxMemorySize>512m</maxMemorySize>
               </jvmSettings>
             </daemon>
           </daemons>
