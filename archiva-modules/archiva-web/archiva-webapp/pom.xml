@@ -1073,6 +1073,7 @@
                 <appserver.home>${project.build.directory}/appserver-home</appserver.home>
                 <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
                 <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
+                <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               </systemProperties>
             </configuration>
             <dependencies>
