@@ -32,7 +32,7 @@ public interface IndexMerger
     /**
      * default tmp created group index ttl in minutes
      */
-    static final int DEFAULT_GROUP_INDEX_TTL = 1;
+    static final int DEFAULT_GROUP_INDEX_TTL = 30;
 
     /**
      * @param repositoriesIds repositories Ids to merge content
@@ -46,4 +46,6 @@ public interface IndexMerger
     void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex );
 
     Collection<TemporaryGroupIndex> getTemporaryGroupIndexes();
+
+
 }
