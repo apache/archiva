@@ -212,6 +212,7 @@
                   -->
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                   <systemProperty>java.io.tmpdir=./temp</systemProperty>
+                  <systemProperty>archiva.tmp.group.index.ttl=30</systemProperty>
                 </systemProperties>
                 <initialMemorySize>512m</initialMemorySize>
                 <maxMemorySize>512m</maxMemorySize>
