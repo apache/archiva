@@ -133,4 +133,13 @@ Virtual Repositories
   User will be asked to authenticate if the 'guest' account is not enabled for the repositories. Only those repositories
   which the user has permission to access will be shown.
 
+* Merged index
+
+  With version 1.4-M2, you can download a merged index for a virtual repository. This merged index is generated "on the fly" with
+  merging repositories index for which the current user has karma.
+  This merged index is available in the path .indexer .
+
+  To not generate this merged index on each request, there is a ttl value for build merged index.
+  This ttl has a default value of 30 minutes. You can change it with modifying the sys props value <<<archiva.tmp.group.index.ttl>>> (see your <<<wrapper.conf>>> file)
+
 

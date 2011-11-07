@@ -38,7 +38,7 @@ Release Notes for Archiva ${project.version}
 
   Some new features has been added in ${project.version}:
 
-  * Repositories group can now return a merged index in path .indexer.
+  * Repositories group can now return a merged index in path .indexer .
 
 * Compatibility Changes
 
