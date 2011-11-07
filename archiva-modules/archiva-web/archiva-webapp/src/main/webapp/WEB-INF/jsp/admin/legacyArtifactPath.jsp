@@ -20,7 +20,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
+<%@ taglib prefix="redback" uri="/redback/taglib-1.0" %>
 <%@ taglib prefix="archiva"   uri="/WEB-INF/tld/web-tags.tld" %>
 
 <html>

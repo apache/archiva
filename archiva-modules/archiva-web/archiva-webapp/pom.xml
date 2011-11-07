@@ -946,7 +946,7 @@
                   </artifactItems>
                 </configuration>
               </execution>
-              <!-- redefine to override exclude configuration (and add back struts-security.xml -->
+              <!-- redefine to override exclude configuration (and add back struts-security.xml ) -->
               <execution>
                 <id>unpack-redback-war</id>
                 <goals>
@@ -1060,6 +1060,56 @@
       <id>tdev</id>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <!-- redefine to skip its execution in Tomcat -->
+              <execution>
+                <id>copy</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <skip>true</skip>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>${project.groupId}</groupId>
+                      <artifactId>archiva-applet</artifactId>
+                      <version>${project.version}</version>
+                      <outputDirectory>src/main/webapp</outputDirectory>
+                      <destFileName>archiva-applet.jar</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+              <!--
+              redefine to override exclude configuration (and exlude back struts-security.xml :-)
+              tomcat plugin 2.0 has a better support of war overlay
+              -->
+              <execution>
+                <id>unpack-redback-war</id>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <phase>compile</phase>
+                <configuration>
+                  <artifactItems combine.self="override">
+                    <artifactItem>
+                      <groupId>org.codehaus.redback</groupId>
+                      <artifactId>redback-struts2-content</artifactId>
+                      <version>${redback.version}</version>
+                      <type>war</type>
+                      <overWrite>false</overWrite>
+                      <outputDirectory>${basedir}/src/main/webapp</outputDirectory>
+                      <excludes>**/web.xml,**/struts*.jar,**/sitemesh*.jar,**/struts-security.xml</excludes>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.apache.tomcat.maven</groupId>
             <artifactId>tomcat6-maven-plugin</artifactId>

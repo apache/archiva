@@ -22,7 +22,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva"   uri="/WEB-INF/tld/web-tags.tld" %>
-<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
+<%@ taglib prefix="redback" uri="/redback/taglib-1.0" %>
 
 <html>
 <head>
