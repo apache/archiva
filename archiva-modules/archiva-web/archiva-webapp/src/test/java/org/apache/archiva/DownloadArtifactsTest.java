@@ -18,28 +18,13 @@ package org.apache.archiva;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.rest.api.services.ProxyConnectorService;
-import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.webdav.RepositoryServlet;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.common.util.Base64Utility;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
-import org.codehaus.redback.rest.api.model.User;
 import org.codehaus.redback.rest.api.services.RoleManagementService;
-import org.codehaus.redback.rest.api.services.UserService;
-import org.codehaus.redback.rest.services.FakeCreateAdminService;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
@@ -51,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.ContextLoaderListener;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -71,53 +55,18 @@ import java.util.zip.ZipFile;
  */
 @RunWith( JUnit4.class )
 public class DownloadArtifactsTest
-    extends TestCase
+    extends AbstractDownloadTest
 {
 
-    protected static Logger log = LoggerFactory.getLogger( DownloadArtifactsTest.class );
-
-    public String authorizationHeader = getAdminAuthzHeader();
-
-    public Server server = null;
+    protected Logger log = LoggerFactory.getLogger( DownloadArtifactsTest.class );
 
     public Server redirectServer = null;
 
-    public int port;
-
     public int redirectPort;
-
-    public static String encode( String uid, String password )
-    {
-        return "Basic " + Base64Utility.encode( ( uid + ":" + password ).getBytes() );
-    }
-
-    public static String getAdminAuthzHeader()
-    {
-        String adminPwdSysProps = System.getProperty( "rest.admin.pwd" );
-        if ( StringUtils.isBlank( adminPwdSysProps ) )
-        {
-            return encode( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, FakeCreateAdminService.ADMIN_TEST_PWD );
-        }
-        return encode( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, adminPwdSysProps );
-    }
-
-    protected String getSpringConfigLocation()
-    {
-        return "classpath*:META-INF/spring-context.xml classpath*:spring-context-artifacts-download.xml";
-    }
-
-
-    protected String getRestServicesPath()
-    {
-        return "restServices";
-    }
-
-    static String previousAppServerBase;
 
     @BeforeClass
     public static void setAppServerBase()
     {
-
         previousAppServerBase = System.getProperty( "appserver.base" );
         System.setProperty( "appserver.base", "target/" + DownloadArtifactsTest.class.getName() );
     }
@@ -126,7 +75,6 @@ public class DownloadArtifactsTest
     @AfterClass
     public static void resetAppServerBase()
     {
-
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
@@ -134,41 +82,12 @@ public class DownloadArtifactsTest
     public void startServer()
         throws Exception
     {
-
-        System.setProperty( "redback.admin.creation.file", "target/auto-admin-creation.properties" );
-        this.server = new Server( 0 );
-
-        ServletContextHandler context = new ServletContextHandler();
-
-        context.setContextPath( "/" );
-
-        context.setInitParameter( "contextConfigLocation", getSpringConfigLocation() );
-
-        ContextLoaderListener contextLoaderListener = new ContextLoaderListener();
-
-        context.addEventListener( contextLoaderListener );
-
-        ServletHolder sh = new ServletHolder( CXFServlet.class );
-
-        SessionHandler sessionHandler = new SessionHandler();
-
-        context.setSessionHandler( sessionHandler );
-
-        context.addServlet( sh, "/" + getRestServicesPath() + "/*" );
-
-        ServletHolder repoSh = new ServletHolder( RepositoryServlet.class );
-        context.addServlet( repoSh, "/repository/*" );
-
-        server.setHandler( context );
-        this.server.start();
-        Connector connector = this.server.getConnectors()[0];
-        this.port = connector.getLocalPort();
-        log.info( "start server on port " + this.port );
+        super.startServer();
 
         //redirect handler
 
         this.redirectServer = new Server( 0 );
-        ServletHolder shRedirect = new ServletHolder( RedirectServlet.class );
+        ServletHolder shRedirect = new ServletHolder( getServletClass() );
         ServletContextHandler contextRedirect = new ServletContextHandler();
 
         contextRedirect.setContextPath( "/" );
@@ -178,24 +97,17 @@ public class DownloadArtifactsTest
         redirectServer.start();
         this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
         log.info( "redirect server port {}", redirectPort );
-
-        User user = new User();
-        user.setEmail( "toto@toto.fr" );
-        user.setFullName( "the root user" );
-        user.setUsername( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
-        user.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
-
-        getUserService( null ).createAdminUser( user );
-
-
     }
 
     @After
     public void tearDown()
         throws Exception
     {
-        System.clearProperty( "redback.admin.creation.file" );
         super.tearDown();
+        if ( this.redirectServer != null )
+        {
+            this.redirectServer.stop();
+        }
     }
 
     @Test
@@ -222,12 +134,6 @@ public class DownloadArtifactsTest
 
         getUserService( authorizationHeader ).removeFromCache( "guest" );
 
-        /*
-        URL url = new URL( "http://localhost:" + port + "/repository/internal/junit/junit/4.9/junit-4.9.jar" );
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        //urlConnection.setRequestProperty( "Authorization", authorizationHeader );
-        InputStream is = urlConnection.getInputStream();
-        */
         File file = new File( "target/junit-4.9.jar" );
         if ( file.exists() )
         {
@@ -239,9 +145,6 @@ public class DownloadArtifactsTest
 
         httpWagon.get( "/repository/internal/junit/junit/4.9/junit-4.9.jar", file );
 
-        //FileWriter fw = new FileWriter( file );
-        //IOUtil.copy( is, fw );
-        // assert jar contains org/junit/runners/JUnit4.class
         ZipFile zipFile = new ZipFile( file );
         List<String> entries = getZipEntriesNames( zipFile );
         ZipEntry zipEntry = zipFile.getEntry( "org/junit/runners/JUnit4.class" );
@@ -270,6 +173,12 @@ public class DownloadArtifactsTest
         return Collections.emptyList();
     }
 
+    @Override
+    protected Class getServletClass()
+    {
+        return RedirectServlet.class;
+    }
+
     public static class RedirectServlet
         extends HttpServlet
     {
@@ -278,7 +187,7 @@ public class DownloadArtifactsTest
             throws ServletException, IOException
         {
 
-            log.info( "redirect servlet receive: {}", req.getRequestURI() );
+            LoggerFactory.getLogger( getClass() ).info( "redirect servlet receive: {}", req.getRequestURI() );
             resp.setStatus( 302 );
             resp.getWriter().write( "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n" + "<html><head>\n"
                                         + "<title>302 Found</title>\n" + "</head><body>\n" + "<h1>Found</h1>\n"
@@ -287,74 +196,6 @@ public class DownloadArtifactsTest
                                         + "<html><head>\n" );
             resp.sendRedirect( "http://repo1.maven.apache.org/maven2/" + req.getRequestURI() );
         }
-    }
-
-    protected ProxyConnectorService getProxyConnectorService()
-    {
-        ProxyConnectorService service =
-            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ProxyConnectorService.class );
-
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
-        return service;
-    }
-
-    protected RemoteRepositoriesService getRemoteRepositoriesService()
-    {
-        RemoteRepositoriesService service =
-            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       RemoteRepositoriesService.class );
-
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
-        return service;
-    }
-
-    protected String getBaseUrl()
-    {
-        String baseUrlSysProps = System.getProperty( "archiva.baseRestUrl" );
-        return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + port : baseUrlSysProps;
-    }
-
-
-    protected RoleManagementService getRoleManagementService( String authzHeader )
-    {
-        RoleManagementService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
-                                       RoleManagementService.class );
-
-        // for debuging purpose
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
-
-        if ( authzHeader != null )
-        {
-            WebClient.client( service ).header( "Authorization", authzHeader );
-        }
-        return service;
-    }
-
-    protected UserService getUserService( String authzHeader )
-    {
-        UserService service =
-            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
-                                       UserService.class );
-
-        // for debuging purpose
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
-
-        if ( authzHeader != null )
-        {
-            WebClient.client( service ).header( "Authorization", authzHeader );
-        }
-        return service;
-    }
-
-    protected FakeCreateAdminService getFakeCreateAdminService()
-    {
-        return JAXRSClientFactory.create(
-            "http://localhost:" + port + "/" + getRestServicesPath() + "/fakeCreateAdminService/",
-            FakeCreateAdminService.class );
     }
 
 
