@@ -30,7 +30,6 @@
 
   <properties>
     <archiva.baseRestUrl />
-    <tomcatVersion>7.0.21</tomcatVersion>
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
   </properties>
@@ -200,33 +199,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-servlet-api</artifactId>
-      <version>${tomcatVersion}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>${tomcatVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-juli</artifactId>
-      <version>${tomcatVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-logging-juli</artifactId>
-      <version>${tomcatVersion}</version>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
