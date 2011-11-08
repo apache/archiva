@@ -19,8 +19,12 @@ package org.apache.archiva;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
+import org.apache.archiva.rest.api.services.RepositoriesService;
+import org.apache.archiva.rest.api.services.RepositoryGroupService;
+import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.webdav.RepositoryServlet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.Base64Utility;
@@ -76,10 +80,7 @@ public abstract class AbstractDownloadTest
     }
 
 
-    protected String getSpringConfigLocation()
-    {
-        return "classpath*:META-INF/spring-context.xml classpath*:spring-context-artifacts-download.xml";
-    }
+    protected abstract String getSpringConfigLocation();
 
 
     protected String getRestServicesPath()
@@ -134,7 +135,6 @@ public abstract class AbstractDownloadTest
 
     }
 
-    protected abstract Class getServletClass();
 
     @After
     public void tearDown()
@@ -165,6 +165,51 @@ public abstract class AbstractDownloadTest
         RemoteRepositoriesService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        RemoteRepositoriesService.class );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
+        return service;
+    }
+
+    protected ManagedRepositoriesService getManagedRepositoriesService()
+    {
+        ManagedRepositoriesService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       ManagedRepositoriesService.class );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
+        return service;
+    }
+
+
+    protected RepositoryGroupService getRepositoryGroupService()
+    {
+        RepositoryGroupService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       RepositoryGroupService.class );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
+        return service;
+    }
+
+    protected RepositoriesService getRepositoriesService()
+    {
+        RepositoriesService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       RepositoriesService.class );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
+        return service;
+    }
+
+    protected SearchService getSearchService()
+    {
+        SearchService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       SearchService.class );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -216,4 +261,5 @@ public abstract class AbstractDownloadTest
             "http://localhost:" + port + "/" + getRestServicesPath() + "/fakeCreateAdminService/",
             FakeCreateAdminService.class );
     }
+
 }

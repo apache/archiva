@@ -78,6 +78,11 @@ public class DownloadArtifactsTest
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
+    protected String getSpringConfigLocation()
+    {
+        return "classpath*:META-INF/spring-context.xml classpath*:spring-context-artifacts-download.xml";
+    }
+
     @Before
     public void startServer()
         throws Exception
@@ -87,7 +92,7 @@ public class DownloadArtifactsTest
         //redirect handler
 
         this.redirectServer = new Server( 0 );
-        ServletHolder shRedirect = new ServletHolder( getServletClass() );
+        ServletHolder shRedirect = new ServletHolder( RedirectServlet.class );
         ServletContextHandler contextRedirect = new ServletContextHandler();
 
         contextRedirect.setContextPath( "/" );
@@ -173,11 +178,6 @@ public class DownloadArtifactsTest
         return Collections.emptyList();
     }
 
-    @Override
-    protected Class getServletClass()
-    {
-        return RedirectServlet.class;
-    }
 
     public static class RedirectServlet
         extends HttpServlet

@@ -19,18 +19,17 @@ package org.apache.archiva.web.xmlrpc.api;
  * under the License.
  */
 
-import java.util.Date;
-import java.util.List;
-
+import com.atlassian.xmlrpc.ServiceObject;
 import org.apache.archiva.web.xmlrpc.api.beans.Artifact;
 import org.apache.archiva.web.xmlrpc.api.beans.Dependency;
 
-import com.atlassian.xmlrpc.ServiceObject;
+import java.util.Date;
+import java.util.List;
 
-@ServiceObject("SearchService")
+@ServiceObject( "SearchService" )
 public interface SearchService
 {
-   /*
+    /*
     * quick/general text search which returns a list of artifacts
     * query for an artifact based on a checksum
     * query for all available versions of an artifact, sorted in version significance order
@@ -40,21 +39,25 @@ public interface SearchService
     * query for all artifacts that depend on a given artifact
     */
 
-    public List<Artifact> quickSearch( String queryString ) 
-            throws Exception;
+    public List<Artifact> quickSearch( String queryString )
+        throws Exception;
 
-    public List<Artifact> getArtifactByChecksum( String checksum) throws Exception;
-    
-    public List<Artifact> getArtifactVersions( String groupId, String artifactId ) throws Exception;
-    
-    public List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version, Date whenGathered )
-            throws Exception;
+    public List<Artifact> getArtifactByChecksum( String checksum )
+        throws Exception;
 
-    public List<Dependency> getDependencies( String groupId, String artifactId, String version ) 
-            throws Exception;
-    
-    public List<Artifact> getDependencyTree( String groupId, String artifactId, String version ) throws Exception;
-    
+    public List<Artifact> getArtifactVersions( String groupId, String artifactId )
+        throws Exception;
+
+    public List<Artifact> getArtifactVersionsByDate( String groupId, String artifactId, String version,
+                                                     Date whenGathered )
+        throws Exception;
+
+    public List<Dependency> getDependencies( String groupId, String artifactId, String version )
+        throws Exception;
+
+    public List<Artifact> getDependencyTree( String groupId, String artifactId, String version )
+        throws Exception;
+
     public List<Artifact> getDependees( String groupId, String artifactId, String version )
-            throws Exception;    
+        throws Exception;
 }
