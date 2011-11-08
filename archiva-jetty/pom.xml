@@ -214,6 +214,9 @@
                   <systemProperty>java.io.tmpdir=./temp</systemProperty>
                   <systemProperty>archiva.tmp.group.index.ttl=30</systemProperty>
                 </systemProperties>
+                <extraArguments>
+                  <extraArgument>-XX:MaxPermSize=128m</extraArgument>
+                </extraArguments>
                 <initialMemorySize>512</initialMemorySize>
                 <maxMemorySize>512</maxMemorySize>
               </jvmSettings>
