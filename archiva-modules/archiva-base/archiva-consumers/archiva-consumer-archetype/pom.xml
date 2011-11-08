@@ -45,14 +45,18 @@
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>2.1</version>
+        <version>2.2-SNAPSHOT</version>
       </extension>
     </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-archetype-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.2-SNAPSHOT</version>
+        <configuration>
+          <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
+          <localRepositoryPath>${basedir}/target/local-repo</localRepositoryPath>
+        </configuration>
       </plugin>
     </plugins>
   </build>
