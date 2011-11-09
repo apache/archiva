@@ -20,7 +20,6 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
-import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,35 +38,35 @@ public class CopyArtifactTest
 
     static final String SOURCE_REPO_ID = "test-origin-repo";
 
-    private void initSourceTargetRepo( )
+    protected void initSourceTargetRepo()
         throws Exception
     {
         File targetRepo = new File( "target/test-repo-copy" );
-        if ( targetRepo.exists( ) )
+        if ( targetRepo.exists() )
         {
             FileUtils.deleteDirectory( targetRepo );
         }
-        assertFalse( targetRepo.exists( ) );
-        targetRepo.mkdirs( );
+        assertFalse( targetRepo.exists() );
+        targetRepo.mkdirs();
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) != null )
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
             assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
         }
-        ManagedRepository managedRepository = getTestManagedRepository( );
+        ManagedRepository managedRepository = getTestManagedRepository();
         managedRepository.setId( TARGET_REPO_ID );
-        managedRepository.setLocation( targetRepo.getCanonicalPath( ) );
+        managedRepository.setLocation( targetRepo.getCanonicalPath() );
         managedRepository.setCronExpression( "* * * * * ?" );
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
 
         File originRepo = new File( "target/test-origin-repo" );
-        if ( originRepo.exists( ) )
+        if ( originRepo.exists() )
         {
             FileUtils.deleteDirectory( originRepo );
         }
-        assertFalse( originRepo.exists( ) );
+        assertFalse( originRepo.exists() );
         FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), originRepo );
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
@@ -76,19 +75,19 @@ public class CopyArtifactTest
             assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
         }
 
-        managedRepository = getTestManagedRepository( );
+        managedRepository = getTestManagedRepository();
         managedRepository.setId( SOURCE_REPO_ID );
-        managedRepository.setLocation( originRepo.getCanonicalPath( ) );
+        managedRepository.setLocation( originRepo.getCanonicalPath() );
 
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
 
-        getArchivaAdministrationService( ).addKnownContentConsumer( "create-missing-checksums" );
-        getArchivaAdministrationService( ).addKnownContentConsumer( "metadata-updater" );
+        getArchivaAdministrationService().addKnownContentConsumer( "create-missing-checksums" );
+        getArchivaAdministrationService().addKnownContentConsumer( "metadata-updater" );
 
     }
 
-    public void clean( )
+    public void clean()
         throws Exception
     {
 
@@ -106,17 +105,17 @@ public class CopyArtifactTest
     }
 
     @Test
-    public void copyToAnEmptyRepo( )
+    public void copyToAnEmptyRepo()
         throws Exception
     {
         try
         {
-            initSourceTargetRepo( );
+            initSourceTargetRepo();
 
             // START SNIPPET: copy-artifact
             // configure the artifact you want to copy
             // if package ommited default will be jar
-            ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest( );
+            ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest();
             artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
             artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
             artifactTransferRequest.setVersion( "2.2.2" );
@@ -130,32 +129,32 @@ public class CopyArtifactTest
             assertTrue( res );
 
             String targetRepoPath = getManagedRepositoriesService( authorizationHeader ).getManagedRepository(
-                TARGET_REPO_ID ).getLocation( );
+                TARGET_REPO_ID ).getLocation();
 
             File artifact = new File( targetRepoPath,
                                       "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
-            assertTrue( artifact.exists( ) );
+            assertTrue( artifact.exists() );
             File pom = new File( targetRepoPath,
                                  "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.pom" );
 
-            assertTrue( "not exists " + pom.getPath( ), pom.exists( ) );
+            assertTrue( "not exists " + pom.getPath(), pom.exists() );
             // TODO find a way to force metadata generation and test it !!
         }
         finally
         {
-            clean( );
+            clean();
         }
     }
 
     @Test( expected = ServerWebApplicationException.class )
-    public void copyNonExistingArtifact( )
+    public void copyNonExistingArtifact()
         throws Throwable
     {
         try
         {
-            initSourceTargetRepo( );
+            initSourceTargetRepo();
 
-            ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest( );
+            ArtifactTransferRequest artifactTransferRequest = new ArtifactTransferRequest();
             artifactTransferRequest.setGroupId( "org.apache.karaf.features" );
             artifactTransferRequest.setArtifactId( "org.apache.karaf.features.core" );
             artifactTransferRequest.setVersion( "3.0.6552" );
@@ -167,21 +166,21 @@ public class CopyArtifactTest
         }
         catch ( ServerWebApplicationException e )
         {
-            assertTrue( StringUtils.contains( e.getMessage( ), "cannot find artifact" ) );
+            assertTrue( StringUtils.contains( e.getMessage(), "cannot find artifact" ) );
             throw e;
         }
         finally
         {
-            clean( );
+            clean();
         }
 
     }
 
     //@Test
-    public void copyToAnExistingRepo( )
+    public void copyToAnExistingRepo()
         throws Exception
     {
-        initSourceTargetRepo( );
-        clean( );
+        initSourceTargetRepo();
+        clean();
     }
 }
