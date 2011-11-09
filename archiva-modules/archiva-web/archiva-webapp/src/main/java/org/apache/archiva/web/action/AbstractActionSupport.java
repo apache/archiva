@@ -243,7 +243,7 @@ public abstract class AbstractActionSupport
 
         public String getUsername()
         {
-            return null;
+            return this.principal;
         }
 
         public void setUsername( String name )

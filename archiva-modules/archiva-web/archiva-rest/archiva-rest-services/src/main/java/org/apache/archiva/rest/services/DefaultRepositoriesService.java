@@ -609,7 +609,7 @@ public class DefaultRepositoriesService
     public Boolean deleteArtifact( Artifact artifact, String repositoryId )
         throws ArchivaRestServiceException
     {
-        String userName = (String) getAuditInformation().getUser().getPrincipal();
+        String userName = (String) getAuditInformation().getUser().getUsername();
         if ( StringUtils.isBlank( userName ) )
         {
             // TODO use constants from a class instead of magic number

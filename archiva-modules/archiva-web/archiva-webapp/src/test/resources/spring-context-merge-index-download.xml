@@ -51,4 +51,6 @@
     </property>
   </bean>
 
+  <bean name="repositorySessionFactory" class="org.apache.archiva.webtest.memory.TestRepositorySessionFactory"/>
+
 </beans>
