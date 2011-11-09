@@ -100,6 +100,7 @@ public interface RepositoriesService
     @RedbackAuthorization( noPermission = true )
     /**
      * permission are checked in impl
+     * @since 1.4-M2
      */
     Boolean deleteArtifact( @QueryParam( "" ) Artifact artifact, @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
