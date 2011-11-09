@@ -606,11 +606,10 @@ public class DefaultRepositoriesService
         }
     }
 
-
     public Boolean deleteArtifact( Artifact artifact, String repositoryId )
         throws ArchivaRestServiceException
     {
-        String userName = getAuditInformation().getUser().getUsername();
+        String userName = (String) getAuditInformation().getUser().getPrincipal();
         if ( StringUtils.isBlank( userName ) )
         {
             // TODO use constants from a class instead of magic number
@@ -820,6 +819,56 @@ public class DefaultRepositoriesService
         {
             auditListener.auditEvent( auditEvent );
         }
+    }
+
+    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
+    {
+        return managedRepositoryAdmin;
+    }
+
+    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    public RepositoryContentFactory getRepositoryFactory()
+    {
+        return repositoryFactory;
+    }
+
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory()
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
+
+    public List<RepositoryListener> getListeners()
+    {
+        return listeners;
+    }
+
+    public void setListeners( List<RepositoryListener> listeners )
+    {
+        this.listeners = listeners;
+    }
+
+    public ArchivaAdministration getArchivaAdministration()
+    {
+        return archivaAdministration;
+    }
+
+    public void setArchivaAdministration( ArchivaAdministration archivaAdministration )
+    {
+        this.archivaAdministration = archivaAdministration;
     }
 }
 

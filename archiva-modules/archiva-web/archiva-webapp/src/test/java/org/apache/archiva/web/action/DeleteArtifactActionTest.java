@@ -22,25 +22,32 @@ package org.apache.archiva.web.action;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.apache.archiva.rest.services.DefaultRepositoriesService;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsSpringTestCase;
+import org.codehaus.plexus.redback.users.User;
+import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
+import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 public class DeleteArtifactActionTest
@@ -82,8 +89,8 @@ public class DeleteArtifactActionTest
     {
         super.setUp();
 
-        //action = (DeleteArtifactAction) lookup( Action.class.getName(), "deleteArtifactAction" );
         action = (DeleteArtifactAction) getActionProxy( "/deleteArtifact.action" ).getAction();
+        action.setPrincipal( "admin" );
         assertNotNull( action );
 
         configurationControl = MockControl.createControl( ArchivaConfiguration.class );
@@ -103,8 +110,9 @@ public class DeleteArtifactActionTest
 
         repositorySessionFactory.setRepositorySession( repositorySession );
 
-        (( DefaultManagedRepositoryAdmin)action.getManagedRepositoryAdmin()).setArchivaConfiguration( configuration );
-        action.setRepositoryFactory( repositoryFactory );
+        ( (DefaultManagedRepositoryAdmin) ( (DefaultRepositoriesService) action.getRepositoriesService() ).getManagedRepositoryAdmin() ).setArchivaConfiguration(
+            configuration );
+        ( (DefaultRepositoriesService) action.getRepositoriesService() ).setRepositoryFactory( repositoryFactory );
     }
 
     @Override
@@ -116,12 +124,6 @@ public class DeleteArtifactActionTest
         super.tearDown();
     }
 
-    public void testGetListeners()
-        throws Exception
-    {
-        assertNotNull( action.getListeners() );
-        assertFalse( action.getListeners().isEmpty() );
-    }
 
     public void testNPEInDeleteArtifact()
         throws Exception
@@ -151,8 +153,10 @@ public class DeleteArtifactActionTest
 
         action.doDelete();
 
-        String artifactPath = REPO_LOCATION + "/" + StringUtils.replace( GROUP_ID, ".", "/" ) + "/"
-            + StringUtils.replace( ARTIFACT_ID, ".", "/" ) + "/" + VERSION + "/" + ARTIFACT_ID + "-" + VERSION;
+        String artifactPath =
+            REPO_LOCATION + "/" + StringUtils.replace( GROUP_ID, ".", "/" ) + "/" + StringUtils.replace( ARTIFACT_ID,
+                                                                                                         ".", "/" )
+                + "/" + VERSION + "/" + ARTIFACT_ID + "-" + VERSION;
 
         assertFalse( new File( artifactPath + ".jar" ).exists() );
         assertFalse( new File( artifactPath + ".jar.sha1" ).exists() );

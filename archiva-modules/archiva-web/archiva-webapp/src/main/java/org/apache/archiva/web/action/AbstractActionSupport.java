@@ -32,6 +32,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.codehaus.plexus.redback.users.User;
+import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -190,6 +191,11 @@ public abstract class AbstractActionSupport
         AuditInformation auditInformation = new AuditInformation( new SimpleUser( getPrincipal() ), getRemoteAddr() );
 
         return auditInformation;
+    }
+
+    protected RedbackRequestInformation getRedbackRequestInformation()
+    {
+        return new RedbackRequestInformation( new SimpleUser( getPrincipal() ), getRemoteAddr() );
     }
 
     public String getArchivaVersion()

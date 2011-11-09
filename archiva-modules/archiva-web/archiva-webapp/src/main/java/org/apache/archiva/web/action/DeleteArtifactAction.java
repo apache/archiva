@@ -21,53 +21,26 @@ package org.apache.archiva.web.action;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
-import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.common.utils.VersionComparator;
-import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.model.VersionedReference;
-import org.apache.archiva.repository.ContentNotFoundException;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryNotFoundException;
-import org.apache.archiva.repository.metadata.MetadataTools;
-import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
-import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Delete an artifact. Metadata will be updated if one exists, otherwise it would be created.
@@ -95,13 +68,13 @@ public class DeleteArtifactAction
 
     /**
      * @since 1.4-M2
-     * The classifier of the artifact to be deleted (optionnal)
+     *        The classifier of the artifact to be deleted (optionnal)
      */
     private String classifier;
 
     /**
      * @since 1.4-M2
-     * The type of the artifact to be deleted (optionnal) (default jar)
+     *        The type of the artifact to be deleted (optionnal) (default jar)
      */
     private String type;
 
@@ -119,13 +92,10 @@ public class DeleteArtifactAction
     private UserRepositories userRepositories;
 
     @Inject
-    private RepositoryContentFactory repositoryFactory;
-
-    @Inject
-    private List<RepositoryListener> listeners;
-
-    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private RepositoriesService repositoriesService;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -229,128 +199,27 @@ public class DeleteArtifactAction
 
     public String doDelete()
     {
-
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        // services need a ThreadLocal variable to test karma
+        RedbackAuthenticationThreadLocal.set( getRedbackRequestInformation() );
         try
         {
-            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
+            Artifact artifact = new Artifact();
+            artifact.setGroupId( groupId );
+            artifact.setArtifactId( artifactId );
+            artifact.setVersion( version );
+            artifact.setClassifier( classifier );
+            artifact.setPackaging( type );
 
-            TimeZone timezone = TimeZone.getTimeZone( "UTC" );
-            DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-            fmt.setTimeZone( timezone );
-            ManagedRepository repoConfig = getManagedRepositoryAdmin().getManagedRepository( repositoryId );
-
-            VersionedReference ref = new VersionedReference();
-            ref.setArtifactId( artifactId );
-            ref.setGroupId( groupId );
-            ref.setVersion( version );
-
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
-
-            if ( StringUtils.isNotBlank( classifier ) )
-            {
-                if (StringUtils.isBlank( type ))
-                {
-                    addFieldError( "type", "You must configure a type when using classifier" );
-                    return INPUT;
-                }
-                ArtifactReference artifactReference = new ArtifactReference();
-                artifactReference.setArtifactId( artifactId );
-                artifactReference.setGroupId( groupId );
-                artifactReference.setVersion( version );
-                artifactReference.setClassifier( classifier );
-                artifactReference.setType( type );
-                repository.deleteArtifact( artifactReference );
-
-                String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + classifier + ":" + version
-                    + "\' was successfully deleted from repository \'" + repositoryId + "\'";
-
-                addActionMessage( msg );
-
-                reset();
-                // TODO cleanup facet which contains classifier information
-                return SUCCESS;
-            }
-
-
-            String path = repository.toMetadataPath( ref );
-            int index = path.lastIndexOf( '/' );
-            path = path.substring( 0, index );
-            File targetPath = new File( repoConfig.getLocation(), path );
-
-            if ( !targetPath.exists() )
-            {
-                throw new ContentNotFoundException( groupId + ":" + artifactId + ":" + version );
-            }
-
-            // TODO: this should be in the storage mechanism so that it is all tied together
-            // delete from file system
-            repository.deleteVersion( ref );
-
-            File metadataFile = getMetadata( targetPath.getAbsolutePath() );
-            ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
-
-            updateMetadata( metadata, metadataFile, lastUpdatedTimestamp );
-
-            MetadataRepository metadataRepository = repositorySession.getRepository();
-
-            Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( repositoryId, groupId, artifactId, version );
-
-            for ( ArtifactMetadata artifact : artifacts )
-            {
-                // TODO: mismatch between artifact (snapshot) version and project (base) version here
-                if ( artifact.getVersion().equals( version ) )
-                {
-                    metadataRepository.removeArtifact( artifact.getRepositoryId(), artifact.getNamespace(),
-                                                       artifact.getProject(), artifact.getVersion(), artifact.getId() );
-
-                    // TODO: move into the metadata repository proper - need to differentiate attachment of
-                    //       repository metadata to an artifact
-                    for ( RepositoryListener listener : listeners )
-                    {
-                        listener.deleteArtifact( metadataRepository, repository.getId(), artifact.getNamespace(),
-                                                 artifact.getProject(), artifact.getVersion(), artifact.getId() );
-                    }
-
-                    triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
-                }
-            }
-            repositorySession.save();
+            repositoriesService.deleteArtifact( artifact, repositoryId );
         }
-        catch ( ContentNotFoundException e )
+        catch ( ArchivaRestServiceException e )
         {
-            addActionError( "Artifact does not exist: " + e.getMessage() );
-            return ERROR;
-        }
-        catch ( RepositoryNotFoundException e )
-        {
-            addActionError( "Target repository cannot be found: " + e.getMessage() );
-            return ERROR;
-        }
-        catch ( RepositoryException e )
-        {
-            addActionError( "Repository exception: " + e.getMessage() );
-            return ERROR;
-        }
-        catch ( MetadataResolutionException e )
-        {
-            addActionError( "Repository exception: " + e.getMessage() );
-            return ERROR;
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            addActionError( "Repository exception: " + e.getMessage() );
-            return ERROR;
-        }
-        catch ( RepositoryAdminException e )
-        {
-            addActionError( "RepositoryAdmin exception: " + e.getMessage() );
+            addActionError( "ArchivaRestServiceException exception: " + e.getMessage() );
             return ERROR;
         }
         finally
         {
-            repositorySession.close();
+            RedbackAuthenticationThreadLocal.set( null );
         }
 
         String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version
@@ -360,83 +229,6 @@ public class DeleteArtifactAction
 
         reset();
         return SUCCESS;
-    }
-
-    private File getMetadata( String targetPath )
-    {
-        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
-
-        return new File( artifactPath, MetadataTools.MAVEN_METADATA );
-    }
-
-    private ArchivaRepositoryMetadata getMetadata( File metadataFile )
-        throws RepositoryMetadataException
-    {
-        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-        if ( metadataFile.exists() )
-        {
-            metadata = RepositoryMetadataReader.read( metadataFile );
-        }
-        return metadata;
-    }
-
-    /**
-     * Update artifact level metadata. Creates one if metadata does not exist after artifact deletion.
-     *
-     * @param metadata
-     */
-    private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp )
-        throws RepositoryMetadataException
-    {
-        List<String> availableVersions = new ArrayList<String>();
-        String latestVersion = "";
-
-        if ( metadataFile.exists() )
-        {
-            if ( metadata.getAvailableVersions() != null )
-            {
-                availableVersions = metadata.getAvailableVersions();
-
-                if ( availableVersions.size() > 0 )
-                {
-                    Collections.sort( availableVersions, VersionComparator.getInstance() );
-
-                    if ( availableVersions.contains( version ) )
-                    {
-                        availableVersions.remove( availableVersions.indexOf( version ) );
-                    }
-                    if ( availableVersions.size() > 0 )
-                    {
-                        latestVersion = availableVersions.get( availableVersions.size() - 1 );
-                    }
-                }
-            }
-        }
-
-        if ( metadata.getGroupId() == null )
-        {
-            metadata.setGroupId( groupId );
-        }
-        if ( metadata.getArtifactId() == null )
-        {
-            metadata.setArtifactId( artifactId );
-        }
-
-        if ( !VersionUtil.isSnapshot( version ) )
-        {
-            if ( metadata.getReleasedVersion() != null && metadata.getReleasedVersion().equals( version ) )
-            {
-                metadata.setReleasedVersion( latestVersion );
-            }
-        }
-
-        metadata.setLatestVersion( latestVersion );
-        metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
-        metadata.setAvailableVersions( availableVersions );
-
-        RepositoryMetadataWriter.write( metadata, metadataFile );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
-        checksum.fixChecksums( algorithms );
     }
 
     public void validate()
@@ -511,16 +303,6 @@ public class DeleteArtifactAction
         }
     }
 
-    public List<RepositoryListener> getListeners()
-    {
-        return listeners;
-    }
-
-    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
-    {
-        this.repositoryFactory = repositoryFactory;
-    }
-
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {
         return managedRepositoryAdmin;
@@ -529,5 +311,15 @@ public class DeleteArtifactAction
     public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    public RepositoriesService getRepositoriesService()
+    {
+        return repositoriesService;
+    }
+
+    public void setRepositoriesService( RepositoriesService repositoriesService )
+    {
+        this.repositoriesService = repositoriesService;
     }
 }
