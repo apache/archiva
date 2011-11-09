@@ -51,4 +51,14 @@ public abstract class AbstractRestService
         String remoteAddr = redbackRequestInformation == null ? null : redbackRequestInformation.getRemoteAddr();
         return new AuditInformation( user, remoteAddr );
     }
+
+    public List<AuditListener> getAuditListeners()
+    {
+        return auditListeners;
+    }
+
+    public void setAuditListeners( List<AuditListener> auditListeners )
+    {
+        this.auditListeners = auditListeners;
+    }
 }

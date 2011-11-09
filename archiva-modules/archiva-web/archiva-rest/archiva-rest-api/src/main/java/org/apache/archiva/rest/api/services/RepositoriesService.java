@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -91,5 +92,17 @@ public interface RepositoriesService
                                          @QueryParam( "now" ) boolean now,
                                          @QueryParam( "fullDownload" ) boolean fullDownload )
         throws ArchivaRestServiceException;
+
+
+    @Path( "deleteArtifact" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true )
+    /**
+     * permission are checked in impl
+     */
+    Boolean deleteArtifact( @QueryParam( "" ) Artifact artifact, @QueryParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
 
 }

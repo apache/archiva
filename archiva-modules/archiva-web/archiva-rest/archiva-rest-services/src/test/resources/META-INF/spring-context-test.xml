@@ -82,4 +82,6 @@
     <constructor-arg value="${appserver.base}/jcr"/>
   </bean>
 
+  <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
+
 </beans>

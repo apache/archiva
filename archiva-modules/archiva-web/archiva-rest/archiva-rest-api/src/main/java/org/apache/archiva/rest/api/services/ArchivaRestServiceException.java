@@ -25,8 +25,27 @@ package org.apache.archiva.rest.api.services;
 public class ArchivaRestServiceException
     extends Exception
 {
+
+    private int httpErrorCode;
+
     public ArchivaRestServiceException( String message )
     {
         super( message );
+    }
+
+    public ArchivaRestServiceException( String s, int httpErrorCode )
+    {
+        super( s );
+        this.httpErrorCode = httpErrorCode;
+    }
+
+    public int getHttpErrorCode()
+    {
+        return httpErrorCode;
+    }
+
+    public void setHttpErrorCode( int httpErrorCode )
+    {
+        this.httpErrorCode = httpErrorCode;
     }
 }

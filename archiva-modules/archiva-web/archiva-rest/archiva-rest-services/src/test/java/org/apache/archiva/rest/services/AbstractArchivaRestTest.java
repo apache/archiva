@@ -30,6 +30,7 @@ import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -188,5 +189,79 @@ public abstract class AbstractArchivaRestTest
     {
         String baseUrlSysProps = System.getProperty( "archiva.baseRestUrl" );
         return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + port : baseUrlSysProps;
+    }
+
+    //-----------------------------------------------------
+    // utilities to create repos for testing
+    //-----------------------------------------------------
+
+    static final String TARGET_REPO_ID = "test-copy-target";
+
+    static final String SOURCE_REPO_ID = "test-origin-repo";
+
+    protected void initSourceTargetRepo()
+        throws Exception
+    {
+        File targetRepo = new File( "target/test-repo-copy" );
+        if ( targetRepo.exists() )
+        {
+            FileUtils.deleteDirectory( targetRepo );
+        }
+        assertFalse( targetRepo.exists() );
+        targetRepo.mkdirs();
+
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+        }
+        ManagedRepository managedRepository = getTestManagedRepository();
+        managedRepository.setId( TARGET_REPO_ID );
+        managedRepository.setLocation( targetRepo.getCanonicalPath() );
+        managedRepository.setCronExpression( "* * * * * ?" );
+        getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
+        assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+
+        File originRepo = new File( "target/test-origin-repo" );
+        if ( originRepo.exists() )
+        {
+            FileUtils.deleteDirectory( originRepo );
+        }
+        assertFalse( originRepo.exists() );
+        FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), originRepo );
+
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+        }
+
+        managedRepository = getTestManagedRepository();
+        managedRepository.setId( SOURCE_REPO_ID );
+        managedRepository.setLocation( originRepo.getCanonicalPath() );
+
+        getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
+        assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+
+        getArchivaAdministrationService().addKnownContentConsumer( "create-missing-checksums" );
+        getArchivaAdministrationService().addKnownContentConsumer( "metadata-updater" );
+
+    }
+
+    protected void cleanRepos()
+        throws Exception
+    {
+
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+        }
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
+            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+        }
+
     }
 }

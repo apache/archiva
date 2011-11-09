@@ -21,10 +21,10 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
-import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Test;
 
 import java.io.File;
@@ -56,13 +56,9 @@ public class RepositoriesServiceTest
     public void scanRepo()
         throws Exception
     {
-        RepositoriesService service = getRepositoriesService();
-        WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        RepositoriesService service = getRepositoriesService( authorizationHeader );
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService( authorizationHeader );
-
-        WebClient.getConfig( managedRepositoriesService ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 
         String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();
 
@@ -74,6 +70,72 @@ public class RepositoriesServiceTest
         }
 
         assertTrue( service.scanRepository( repoId, true ) );
+    }
+
+    @Test( expected = ServerWebApplicationException.class )
+    public void deleteArtifactKarmaFailed()
+        throws Exception
+    {
+        initSourceTargetRepo();
+        try
+        {
+            File artifactFile =
+                new File( "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1.jar" );
+
+            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            Artifact artifact = new Artifact();
+            artifact.setGroupId( "commons-logging" );
+            artifact.setArtifactId( "commons-logging" );
+            artifact.setVersion( "1.0.1" );
+            artifact.setPackaging( "jar" );
+
+            RepositoriesService repositoriesService = getRepositoriesService( null );
+
+            repositoriesService.deleteArtifact( artifact, SOURCE_REPO_ID );
+        }
+        catch ( ServerWebApplicationException e )
+        {
+            assertEquals( 403, e.getStatus() );
+            throw e;
+
+        }
+        finally
+        {
+            cleanRepos();
+        }
+    }
+
+
+    @Test
+    public void deleteArtifact()
+        throws Exception
+    {
+        initSourceTargetRepo();
+        try
+        {
+            File artifactFile =
+                new File( "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1.jar" );
+
+            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            Artifact artifact = new Artifact();
+            artifact.setGroupId( "commons-logging" );
+            artifact.setArtifactId( "commons-logging" );
+            artifact.setVersion( "1.0.1" );
+            artifact.setPackaging( "jar" );
+
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+            repositoriesService.deleteArtifact( artifact, SOURCE_REPO_ID );
+
+            assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+        }
+        finally
+        {
+            cleanRepos();
+        }
     }
 
 

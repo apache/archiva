@@ -19,25 +19,39 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
@@ -52,8 +66,6 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -73,11 +85,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author Olivier Lamy
@@ -88,7 +104,7 @@ public class DefaultRepositoriesService
     extends AbstractRestService
     implements RepositoriesService
 {
-    private Logger log = LoggerFactory.getLogger( getClass( ) );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
@@ -123,6 +139,13 @@ public class DefaultRepositoriesService
     @Inject
     private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
+    @Inject
+    @Named( value = "repositorySessionFactory" )
+    protected RepositorySessionFactory repositorySessionFactory;
+
+    @Inject
+    protected List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
+
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
     public Boolean scanRepository( String repositoryId, boolean fullScan )
@@ -132,7 +155,7 @@ public class DefaultRepositoriesService
             log.info( "scanning of repository with id {} already scheduled", repositoryId );
             return Boolean.FALSE;
         }
-        RepositoryTask task = new RepositoryTask( );
+        RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
         task.setScanAll( fullScan );
         try
@@ -154,7 +177,7 @@ public class DefaultRepositoriesService
 
     public Boolean removeScanningTaskFromQueue( String repositoryId )
     {
-        RepositoryTask task = new RepositoryTask( );
+        RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
         try
         {
@@ -187,8 +210,8 @@ public class DefaultRepositoriesService
         }
         catch ( Exception e )
         {
-            log.error( e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
     }
 
@@ -201,8 +224,8 @@ public class DefaultRepositoriesService
         }
         catch ( DownloadRemoteIndexException e )
         {
-            log.error( e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
         return Boolean.TRUE;
     }
@@ -211,18 +234,18 @@ public class DefaultRepositoriesService
         throws ArchivaRestServiceException
     {
         // check parameters
-        String userName = getAuditInformation( ).getUser( ).getUsername( );
+        String userName = getAuditInformation().getUser().getUsername();
         if ( StringUtils.isBlank( userName ) )
         {
             throw new ArchivaRestServiceException( "copyArtifact call: userName not found" );
         }
 
-        if ( StringUtils.isBlank( artifactTransferRequest.getRepositoryId( ) ) )
+        if ( StringUtils.isBlank( artifactTransferRequest.getRepositoryId() ) )
         {
             throw new ArchivaRestServiceException( "copyArtifact call: sourceRepositoryId cannot be null" );
         }
 
-        if ( StringUtils.isBlank( artifactTransferRequest.getTargetRepositoryId( ) ) )
+        if ( StringUtils.isBlank( artifactTransferRequest.getTargetRepositoryId() ) )
         {
             throw new ArchivaRestServiceException( "copyArtifact call: targetRepositoryId cannot be null" );
         }
@@ -230,51 +253,51 @@ public class DefaultRepositoriesService
         ManagedRepository source = null;
         try
         {
-            source = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getRepositoryId( ) );
+            source = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getRepositoryId() );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
 
         if ( source == null )
         {
             throw new ArchivaRestServiceException(
-                "cannot find repository with id " + artifactTransferRequest.getRepositoryId( ) );
+                "cannot find repository with id " + artifactTransferRequest.getRepositoryId() );
         }
 
         ManagedRepository target = null;
         try
         {
-            target = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getTargetRepositoryId( ) );
+            target = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getTargetRepositoryId() );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
 
         if ( target == null )
         {
             throw new ArchivaRestServiceException(
-                "cannot find repository with id " + artifactTransferRequest.getTargetRepositoryId( ) );
+                "cannot find repository with id " + artifactTransferRequest.getTargetRepositoryId() );
         }
 
-        if ( StringUtils.isBlank( artifactTransferRequest.getGroupId( ) ) )
+        if ( StringUtils.isBlank( artifactTransferRequest.getGroupId() ) )
         {
             throw new ArchivaRestServiceException( "groupId is mandatory" );
         }
 
-        if ( StringUtils.isBlank( artifactTransferRequest.getArtifactId( ) ) )
+        if ( StringUtils.isBlank( artifactTransferRequest.getArtifactId() ) )
         {
             throw new ArchivaRestServiceException( "artifactId is mandatory" );
         }
 
-        if ( StringUtils.isBlank( artifactTransferRequest.getVersion( ) ) )
+        if ( StringUtils.isBlank( artifactTransferRequest.getVersion() ) )
         {
             throw new ArchivaRestServiceException( "version is mandatory" );
         }
 
-        if ( VersionUtil.isSnapshot( artifactTransferRequest.getVersion( ) ) )
+        if ( VersionUtil.isSnapshot( artifactTransferRequest.getVersion() ) )
         {
             throw new ArchivaRestServiceException( "copy of SNAPSHOT not supported" );
         }
@@ -284,7 +307,7 @@ public class DefaultRepositoriesService
         User user = null;
         try
         {
-            user = securitySystem.getUserManager( ).findUser( userName );
+            user = securitySystem.getUserManager().findUser( userName );
         }
         catch ( UserNotFoundException e )
         {
@@ -298,17 +321,17 @@ public class DefaultRepositoriesService
         {
             boolean authz =
                 securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
-                                             artifactTransferRequest.getRepositoryId( ) );
+                                             artifactTransferRequest.getRepositoryId() );
             if ( !authz )
             {
                 throw new ArchivaRestServiceException(
-                    "not authorized to access repo:" + artifactTransferRequest.getRepositoryId( ) );
+                    "not authorized to access repo:" + artifactTransferRequest.getRepositoryId() );
             }
         }
         catch ( AuthorizationException e )
         {
-            log.error( "error reading permission: " + e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( "error reading permission: " + e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
 
         // check karma on target: write
@@ -316,71 +339,71 @@ public class DefaultRepositoriesService
         {
             boolean authz =
                 securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
-                                             artifactTransferRequest.getTargetRepositoryId( ) );
+                                             artifactTransferRequest.getTargetRepositoryId() );
             if ( !authz )
             {
                 throw new ArchivaRestServiceException(
-                    "not authorized to write to repo:" + artifactTransferRequest.getTargetRepositoryId( ) );
+                    "not authorized to write to repo:" + artifactTransferRequest.getTargetRepositoryId() );
             }
         }
         catch ( AuthorizationException e )
         {
-            log.error( "error reading permission: " + e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( "error reading permission: " + e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
 
         // sounds good we can continue !
 
-        ArtifactReference artifactReference = new ArtifactReference( );
-        artifactReference.setArtifactId( artifactTransferRequest.getArtifactId( ) );
-        artifactReference.setGroupId( artifactTransferRequest.getGroupId( ) );
-        artifactReference.setVersion( artifactTransferRequest.getVersion( ) );
-        artifactReference.setClassifier( artifactTransferRequest.getClassifier( ) );
-        String packaging = StringUtils.trim( artifactTransferRequest.getPackaging( ) );
+        ArtifactReference artifactReference = new ArtifactReference();
+        artifactReference.setArtifactId( artifactTransferRequest.getArtifactId() );
+        artifactReference.setGroupId( artifactTransferRequest.getGroupId() );
+        artifactReference.setVersion( artifactTransferRequest.getVersion() );
+        artifactReference.setClassifier( artifactTransferRequest.getClassifier() );
+        String packaging = StringUtils.trim( artifactTransferRequest.getPackaging() );
         artifactReference.setType( StringUtils.isEmpty( packaging ) ? "jar" : packaging );
 
         try
         {
 
             ManagedRepositoryContent sourceRepository =
-                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getRepositoryId( ) );
+                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
 
             String artifactSourcePath = sourceRepository.toPath( artifactReference );
 
             if ( StringUtils.isEmpty( artifactSourcePath ) )
             {
-                log.error( "cannot find artifact " + artifactTransferRequest.toString( ) );
-                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString( ) );
+                log.error( "cannot find artifact " + artifactTransferRequest.toString() );
+                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString() );
             }
 
-            File artifactFile = new File( source.getLocation( ), artifactSourcePath );
+            File artifactFile = new File( source.getLocation(), artifactSourcePath );
 
-            if ( !artifactFile.exists( ) )
+            if ( !artifactFile.exists() )
             {
-                log.error( "cannot find artifact " + artifactTransferRequest.toString( ) );
-                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString( ) );
+                log.error( "cannot find artifact " + artifactTransferRequest.toString() );
+                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString() );
             }
 
             ManagedRepositoryContent targetRepository =
-                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId( ) );
+                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId() );
 
             String artifactPath = targetRepository.toPath( artifactReference );
 
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            File targetPath = new File( target.getLocation( ), path );
+            File targetPath = new File( target.getLocation(), path );
 
-            Date lastUpdatedTimestamp = Calendar.getInstance( ).getTime( );
+            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = 1;
             String timestamp = null;
 
             File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
             ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
 
-            if ( !targetPath.exists( ) )
+            if ( !targetPath.exists() )
             {
-                targetPath.mkdirs( );
+                targetPath.mkdirs();
             }
 
             String filename = artifactPath.substring( lastIndex + 1 );
@@ -388,70 +411,70 @@ public class DefaultRepositoriesService
             // FIXME some dupe with uploadaction
 
             boolean fixChecksums =
-                !( archivaAdministration.getKnownContentConsumers( ).contains( "create-missing-checksums" ) );
+                !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
             File targetFile = new File( targetPath, filename );
-            if ( targetFile.exists( ) && target.isBlockRedeployments( ) )
+            if ( targetFile.exists() && target.isBlockRedeployments() )
             {
                 throw new ArchivaRestServiceException(
-                    "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId( )
+                    "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId()
                         + " and redeployment blocked" );
             }
             else
             {
                 copyFile( artifactFile, targetPath, filename, fixChecksums );
-                queueRepositoryTask( target.getId( ), targetFile );
+                queueRepositoryTask( target.getId(), targetFile );
             }
 
             // copy source pom to target repo
             String pomFilename = filename;
-            if ( StringUtils.isNotBlank( artifactTransferRequest.getClassifier( ) ) )
+            if ( StringUtils.isNotBlank( artifactTransferRequest.getClassifier() ) )
             {
-                pomFilename = StringUtils.remove( pomFilename, "-" + artifactTransferRequest.getClassifier( ) );
+                pomFilename = StringUtils.remove( pomFilename, "-" + artifactTransferRequest.getClassifier() );
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
 
             File pomFile = new File(
-                new File( source.getLocation( ), artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) ) ),
+                new File( source.getLocation(), artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) ) ),
                 pomFilename );
 
-            if ( pomFile != null && pomFile.length( ) > 0 )
+            if ( pomFile != null && pomFile.length() > 0 )
             {
                 copyFile( pomFile, targetPath, pomFilename, fixChecksums );
-                queueRepositoryTask( target.getId( ), new File( targetPath, pomFilename ) );
+                queueRepositoryTask( target.getId(), new File( targetPath, pomFilename ) );
 
 
             }
 
             // explicitly update only if metadata-updater consumer is not enabled!
-            if ( !archivaAdministration.getKnownContentConsumers( ).contains( "metadata-updater" ) )
+            if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
             {
-                updateProjectMetadata( targetPath.getAbsolutePath( ), lastUpdatedTimestamp, timestamp, newBuildNumber,
+                updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
                                        fixChecksums, artifactTransferRequest );
 
 
             }
 
             String msg =
-                "Artifact \'" + artifactTransferRequest.getGroupId( ) + ":" + artifactTransferRequest.getArtifactId( )
-                    + ":" + artifactTransferRequest.getVersion( ) + "\' was successfully deployed to repository \'"
-                    + artifactTransferRequest.getTargetRepositoryId( ) + "\'";
+                "Artifact \'" + artifactTransferRequest.getGroupId() + ":" + artifactTransferRequest.getArtifactId()
+                    + ":" + artifactTransferRequest.getVersion() + "\' was successfully deployed to repository \'"
+                    + artifactTransferRequest.getTargetRepositoryId() + "\'";
 
         }
         catch ( RepositoryException e )
         {
-            log.error( "RepositoryException: " + e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( "RepositoryException: " + e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "RepositoryAdminException: " + e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( "RepositoryAdminException: " + e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
         catch ( IOException e )
         {
-            log.error( "IOException: " + e.getMessage( ), e );
-            throw new ArchivaRestServiceException( e.getMessage( ) );
+            log.error( "IOException: " + e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
         }
         return true;
     }
@@ -460,7 +483,7 @@ public class DefaultRepositoriesService
 
     private void queueRepositoryTask( String repositoryId, File localFile )
     {
-        RepositoryTask task = new RepositoryTask( );
+        RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
         task.setResourceFile( localFile );
         task.setUpdateRelatedArtifacts( true );
@@ -472,7 +495,7 @@ public class DefaultRepositoriesService
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName( )
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
                            + "']." );
         }
     }
@@ -480,12 +503,19 @@ public class DefaultRepositoriesService
     private ArchivaRepositoryMetadata getMetadata( File metadataFile )
         throws RepositoryMetadataException
     {
-        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata( );
-        if ( metadataFile.exists( ) )
+        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
+        if ( metadataFile.exists() )
         {
             metadata = RepositoryMetadataReader.read( metadataFile );
         }
         return metadata;
+    }
+
+    private File getMetadata( String targetPath )
+    {
+        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
+
+        return new File( artifactPath, MetadataTools.MAVEN_METADATA );
     }
 
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
@@ -500,8 +530,8 @@ public class DefaultRepositoriesService
         }
         finally
         {
-            out.close( );
-            input.close( );
+            out.close();
+            input.close();
         }
 
         if ( fixChecksums )
@@ -520,50 +550,50 @@ public class DefaultRepositoriesService
                                         boolean fixChecksums, ArtifactTransferRequest artifactTransferRequest )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>( );
-        String latestVersion = artifactTransferRequest.getVersion( );
+        List<String> availableVersions = new ArrayList<String>();
+        String latestVersion = artifactTransferRequest.getVersion();
 
-        File projectDir = new File( targetPath ).getParentFile( );
+        File projectDir = new File( targetPath ).getParentFile();
         File projectMetadataFile = new File( projectDir, MetadataTools.MAVEN_METADATA );
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
 
-        if ( projectMetadataFile.exists( ) )
+        if ( projectMetadataFile.exists() )
         {
-            availableVersions = projectMetadata.getAvailableVersions( );
+            availableVersions = projectMetadata.getAvailableVersions();
 
-            Collections.sort( availableVersions, VersionComparator.getInstance( ) );
+            Collections.sort( availableVersions, VersionComparator.getInstance() );
 
-            if ( !availableVersions.contains( artifactTransferRequest.getVersion( ) ) )
+            if ( !availableVersions.contains( artifactTransferRequest.getVersion() ) )
             {
-                availableVersions.add( artifactTransferRequest.getVersion( ) );
+                availableVersions.add( artifactTransferRequest.getVersion() );
             }
 
-            latestVersion = availableVersions.get( availableVersions.size( ) - 1 );
+            latestVersion = availableVersions.get( availableVersions.size() - 1 );
         }
         else
         {
-            availableVersions.add( artifactTransferRequest.getVersion( ) );
+            availableVersions.add( artifactTransferRequest.getVersion() );
 
-            projectMetadata.setGroupId( artifactTransferRequest.getGroupId( ) );
-            projectMetadata.setArtifactId( artifactTransferRequest.getArtifactId( ) );
+            projectMetadata.setGroupId( artifactTransferRequest.getGroupId() );
+            projectMetadata.setArtifactId( artifactTransferRequest.getArtifactId() );
         }
 
-        if ( projectMetadata.getGroupId( ) == null )
+        if ( projectMetadata.getGroupId() == null )
         {
-            projectMetadata.setGroupId( artifactTransferRequest.getGroupId( ) );
+            projectMetadata.setGroupId( artifactTransferRequest.getGroupId() );
         }
 
-        if ( projectMetadata.getArtifactId( ) == null )
+        if ( projectMetadata.getArtifactId() == null )
         {
-            projectMetadata.setArtifactId( artifactTransferRequest.getArtifactId( ) );
+            projectMetadata.setArtifactId( artifactTransferRequest.getArtifactId() );
         }
 
         projectMetadata.setLatestVersion( latestVersion );
         projectMetadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
         projectMetadata.setAvailableVersions( availableVersions );
 
-        if ( !VersionUtil.isSnapshot( artifactTransferRequest.getVersion( ) ) )
+        if ( !VersionUtil.isSnapshot( artifactTransferRequest.getVersion() ) )
         {
             projectMetadata.setReleasedVersion( latestVersion );
         }
@@ -573,6 +603,222 @@ public class DefaultRepositoriesService
         if ( fixChecksums )
         {
             fixChecksums( projectMetadataFile );
+        }
+    }
+
+
+    public Boolean deleteArtifact( Artifact artifact, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        String userName = getAuditInformation().getUser().getUsername();
+        if ( StringUtils.isBlank( userName ) )
+        {
+            // TODO use constants from a class instead of magic number
+            throw new ArchivaRestServiceException( "deleteArtifact call: userName not found", 403 );
+        }
+        if ( artifact == null )
+        {
+            throw new ArchivaRestServiceException( "artifact cannot be null", 400 );
+        }
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400 );
+        }
+
+        // TODO more control on artifact fields
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
+
+            TimeZone timezone = TimeZone.getTimeZone( "UTC" );
+            DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+            fmt.setTimeZone( timezone );
+            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            VersionedReference ref = new VersionedReference();
+            ref.setArtifactId( artifact.getArtifactId() );
+            ref.setGroupId( artifact.getGroupId() );
+            ref.setVersion( artifact.getVersion() );
+
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
+            {
+                if ( StringUtils.isBlank( artifact.getPackaging() ) )
+                {
+                    throw new ArchivaRestServiceException( "You must configure a type/packaging when using classifier",
+                                                           400 );
+                }
+                ArtifactReference artifactReference = new ArtifactReference();
+                artifactReference.setArtifactId( artifact.getArtifactId() );
+                artifactReference.setGroupId( artifact.getGroupId() );
+                artifactReference.setVersion( artifact.getVersion() );
+                artifactReference.setClassifier( artifact.getClassifier() );
+                artifactReference.setType( artifact.getPackaging() );
+                repository.deleteArtifact( artifactReference );
+
+                // TODO cleanup facet which contains classifier information
+                return Boolean.TRUE;
+            }
+
+            String path = repository.toMetadataPath( ref );
+            int index = path.lastIndexOf( '/' );
+            path = path.substring( 0, index );
+            File targetPath = new File( repoConfig.getLocation(), path );
+
+            if ( !targetPath.exists() )
+            {
+                throw new ContentNotFoundException(
+                    artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
+            }
+
+            // TODO: this should be in the storage mechanism so that it is all tied together
+            // delete from file system
+            repository.deleteVersion( ref );
+
+            File metadataFile = getMetadata( targetPath.getAbsolutePath() );
+            ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
+
+            updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
+
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            Collection<ArtifactMetadata> artifacts =
+                metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
+                                                 artifact.getVersion() );
+
+            for ( ArtifactMetadata artifactMetadata : artifacts )
+            {
+                // TODO: mismatch between artifact (snapshot) version and project (base) version here
+                if ( artifact.getVersion().equals( artifact.getVersion() ) )
+                {
+                    metadataRepository.removeArtifact( artifactMetadata.getRepositoryId(),
+                                                       artifactMetadata.getNamespace(), artifactMetadata.getProject(),
+                                                       artifact.getVersion(), artifactMetadata.getId() );
+
+                    // TODO: move into the metadata repository proper - need to differentiate attachment of
+                    //       repository metadata to an artifact
+                    for ( RepositoryListener listener : listeners )
+                    {
+                        listener.deleteArtifact( metadataRepository, repository.getId(),
+                                                 artifactMetadata.getNamespace(), artifactMetadata.getProject(),
+                                                 artifactMetadata.getVersion(), artifactMetadata.getId() );
+                    }
+
+                    triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
+                }
+            }
+            repositorySession.save();
+        }
+
+        catch ( ContentNotFoundException e )
+        {
+            throw new ArchivaRestServiceException( "Artifact does not exist: " + e.getMessage(), 400 );
+        }
+        catch ( RepositoryNotFoundException e )
+        {
+            throw new ArchivaRestServiceException( "Target repository cannot be found: " + e.getMessage(), 400 );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 400 );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 400 );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 400 );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(), 400 );
+        }
+        finally
+
+        {
+            repositorySession.close();
+        }
+        return Boolean.TRUE;
+    }
+
+
+    /**
+     * Update artifact level metadata. Creates one if metadata does not exist after artifact deletion.
+     *
+     * @param metadata
+     */
+    private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
+                                 Artifact artifact )
+        throws RepositoryMetadataException
+    {
+        List<String> availableVersions = new ArrayList<String>();
+        String latestVersion = "";
+
+        if ( metadataFile.exists() )
+        {
+            if ( metadata.getAvailableVersions() != null )
+            {
+                availableVersions = metadata.getAvailableVersions();
+
+                if ( availableVersions.size() > 0 )
+                {
+                    Collections.sort( availableVersions, VersionComparator.getInstance() );
+
+                    if ( availableVersions.contains( artifact.getVersion() ) )
+                    {
+                        availableVersions.remove( availableVersions.indexOf( artifact.getVersion() ) );
+                    }
+                    if ( availableVersions.size() > 0 )
+                    {
+                        latestVersion = availableVersions.get( availableVersions.size() - 1 );
+                    }
+                }
+            }
+        }
+
+        if ( metadata.getGroupId() == null )
+        {
+            metadata.setGroupId( artifact.getGroupId() );
+        }
+        if ( metadata.getArtifactId() == null )
+        {
+            metadata.setArtifactId( artifact.getArtifactId() );
+        }
+
+        if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
+        {
+            if ( metadata.getReleasedVersion() != null && metadata.getReleasedVersion().equals(
+                artifact.getVersion() ) )
+            {
+                metadata.setReleasedVersion( latestVersion );
+            }
+        }
+
+        metadata.setLatestVersion( latestVersion );
+        metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
+        metadata.setAvailableVersions( availableVersions );
+
+        RepositoryMetadataWriter.write( metadata, metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        checksum.fixChecksums( algorithms );
+    }
+
+    protected void triggerAuditEvent( String repositoryId, String filePath, String action )
+    {
+        AuditEvent auditEvent = new AuditEvent();
+        auditEvent.setAction( action );
+        auditEvent.setRepositoryId( repositoryId );
+        auditEvent.setResource( filePath );
+        AuditInformation auditInformation = getAuditInformation();
+        auditEvent.setUserId( auditInformation.getUser() == null ? "" : auditInformation.getUser().getUsername() );
+        auditEvent.setRemoteIP( auditInformation.getRemoteAddr() );
+        for ( AuditListener auditListener : getAuditListeners() )
+        {
+            auditListener.auditEvent( auditEvent );
         }
     }
 }
