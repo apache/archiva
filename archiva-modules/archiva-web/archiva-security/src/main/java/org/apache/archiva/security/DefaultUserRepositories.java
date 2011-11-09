@@ -22,6 +22,7 @@ package org.apache.archiva.security;
 import com.google.common.collect.Lists;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -48,21 +49,13 @@ import java.util.List;
 public class DefaultUserRepositories
     implements UserRepositories
 {
-    /**
-     *
-     */
+
     @Inject
     private SecuritySystem securitySystem;
 
-    /**
-     *
-     */
     @Inject
     private RoleManager roleManager;
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 

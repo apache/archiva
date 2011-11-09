@@ -19,6 +19,7 @@ package org.apache.archiva.security;
  * under the License.
  */
 
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;

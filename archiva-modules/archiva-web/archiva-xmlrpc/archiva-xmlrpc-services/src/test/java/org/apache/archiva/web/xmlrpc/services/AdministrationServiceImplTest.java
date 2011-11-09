@@ -57,7 +57,7 @@ import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.archiva.security.ArchivaRoleConstants;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.stagerepository.merge.RepositoryMerger;
 import org.apache.archiva.web.xmlrpc.api.beans.ManagedRepository;
 import org.apache.archiva.web.xmlrpc.api.beans.RemoteRepository;

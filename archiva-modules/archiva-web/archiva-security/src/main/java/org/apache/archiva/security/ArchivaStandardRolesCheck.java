@@ -21,6 +21,7 @@ package org.apache.archiva.security;
 
 import java.util.List;
 
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.slf4j.Logger;

@@ -20,8 +20,8 @@ package org.apache.archiva.xmlrpc.security;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator;
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.common.XmlRpcHttpRequestConfigImpl;
 import org.codehaus.plexus.redback.role.RoleManager;

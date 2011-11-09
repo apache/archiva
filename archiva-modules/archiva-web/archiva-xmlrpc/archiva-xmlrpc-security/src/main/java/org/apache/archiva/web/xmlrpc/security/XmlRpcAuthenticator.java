@@ -21,9 +21,9 @@ package org.apache.archiva.web.xmlrpc.security;
 
 import java.util.List;
 
-import org.apache.archiva.security.ArchivaRoleConstants;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.UserRepositories;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.common.XmlRpcHttpRequestConfigImpl;

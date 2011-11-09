@@ -19,6 +19,7 @@ package org.apache.archiva.security;
  * under the License.
  */
 
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;

@@ -22,6 +22,7 @@ package org.apache.archiva.security;
 import com.google.common.collect.Lists;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
