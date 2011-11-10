@@ -25,6 +25,6 @@
 <s:textfield name="artifactId" label="Artifact Id" size="50" required="true"/>
 <s:textfield name="version" label="Version" size="50" required="true"/>
 <s:textfield name="classifier" label="Classifier" size="60" required="false"/>
-<s:textfield name="type" label="Type (manadatory when using classifier)" size="60" required="false" />
+<s:textfield name="type" label="Type (mandatory when using classifier)" size="60" required="false" />
 <s:select name="repositoryId" list="managedRepos" label="Repository Id"/>
 	
