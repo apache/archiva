@@ -18,22 +18,28 @@ package org.apache.archiva.rest.services.interceptors;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.rest.services.RestError;
+import org.springframework.stereotype.Service;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
 /**
  * @author Olivier Lamy
- * @since 1.4-M1
+ * @since 1.4-M2
  */
-public class HttpContextThreadLocal
+@Provider
+@Service( "archivaRestServiceExceptionMapper" )
+public class ArchivaRestServiceExceptionMapper
+    implements ExceptionMapper<ArchivaRestServiceException>
 {
-    private static final ThreadLocal<HttpContext> userThreadLocal =
-        new ThreadLocal<HttpContext>();
-
-    public static void set( HttpContext httpContext )
+    public Response toResponse( ArchivaRestServiceException e )
     {
-        userThreadLocal.set( httpContext );
-    }
-
-    public static HttpContext get()
-    {
-        return userThreadLocal.get();
+        RestError restError = new RestError( e );
+        Response.ResponseBuilder responseBuilder = Response.status( e.getHttpErrorCode() ).entity( restError );
+        return responseBuilder.build();
     }
 }

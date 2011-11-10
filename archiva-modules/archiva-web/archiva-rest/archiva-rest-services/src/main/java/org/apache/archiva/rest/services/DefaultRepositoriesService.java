@@ -81,6 +81,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -614,11 +616,23 @@ public class DefaultRepositoriesService
         {
             // TODO use constants from a class instead of magic number
             throw new ArchivaRestServiceException( "deleteArtifact call: userName not found", 403 );
+
         }
         if ( artifact == null )
         {
             throw new ArchivaRestServiceException( "artifact cannot be null", 400 );
         }
+
+        if ( StringUtils.isEmpty( artifact.getGroupId() ) )
+        {
+            throw new ArchivaRestServiceException( "artifact.groupId cannot be null", 400 );
+        }
+
+        if ( StringUtils.isEmpty( artifact.getArtifactId() ) )
+        {
+            throw new ArchivaRestServiceException( "artifact.artifactId cannot be null", 400 );
+        }
+
         if ( StringUtils.isEmpty( repositoryId ) )
         {
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400 );

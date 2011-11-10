@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.api.services;
+package org.apache.archiva.rest.services;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,30 +18,34 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Olivier Lamy
- * @since 1.4-M1
+ * @since 1.4-M2
  */
-public class ArchivaRestServiceException
-    extends Exception
+@XmlRootElement( name = "restError" )
+public class RestError
 {
-
+    
     private int httpErrorCode;
     
     private String errorKey;
-
-
-    public ArchivaRestServiceException( String message )
+    
+    private String errorMessage;
+    
+    public RestError()
     {
-        super( message );
+        // no op
     }
-
-    public ArchivaRestServiceException( String s, int httpErrorCode )
+    
+    public RestError( ArchivaRestServiceException e)
     {
-        super( s );
-        this.httpErrorCode = httpErrorCode;
+        httpErrorCode = e.getHttpErrorCode();
+        errorKey = e.getErrorKey();
+        errorMessage = e.getMessage();
     }
 
     public int getHttpErrorCode()
@@ -62,5 +66,15 @@ public class ArchivaRestServiceException
     public void setErrorKey( String errorKey )
     {
         this.errorKey = errorKey;
+    }
+
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+
+    public void setErrorMessage( String errorMessage )
+    {
+        this.errorMessage = errorMessage;
     }
 }

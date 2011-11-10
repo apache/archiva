@@ -76,14 +76,8 @@ public class RepositoriesServiceTest
     public void deleteArtifactKarmaFailed()
         throws Exception
     {
-        initSourceTargetRepo();
         try
         {
-            File artifactFile =
-                new File( "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1.jar" );
-
-            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
-
             Artifact artifact = new Artifact();
             artifact.setGroupId( "commons-logging" );
             artifact.setArtifactId( "commons-logging" );
@@ -100,9 +94,29 @@ public class RepositoriesServiceTest
             throw e;
 
         }
-        finally
+    }
+
+    @Test( expected = ServerWebApplicationException.class )
+    public void deleteWithRepoNull()
+        throws Exception
+    {
+        try
         {
-            cleanRepos();
+
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+            Artifact artifact = new Artifact();
+            artifact.setGroupId( "commons-logging" );
+            artifact.setArtifactId( "commons-logging" );
+            artifact.setVersion( "1.0.1" );
+            artifact.setPackaging( "jar" );
+
+            repositoriesService.deleteArtifact( artifact, null );
+        }
+        catch ( ServerWebApplicationException e )
+        {
+            assertEquals( "not http 400 status", 400, e.getStatus() );
+            throw e;
         }
     }
 
