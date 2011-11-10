@@ -222,11 +222,18 @@ public class DeleteArtifactAction
             RedbackAuthenticationThreadLocal.set( null );
         }
 
-        String msg = "Artifact \'" + groupId + ":" + artifactId + ":" + version
-            + "\' was successfully deleted from repository \'" + repositoryId + "\'";
+        StringBuilder msg = new StringBuilder( "Artifact \'" ).append( groupId ).append( ":" ).append( artifactId );
 
-        addActionMessage( msg );
+        if ( StringUtils.isNotEmpty( classifier ) )
+        {
 
+            msg.append( ":" ).append( classifier );
+
+
+        }
+        msg.append( ":" ).append( version ).append( "' was successfully deleted from repository '" ).append(
+            repositoryId ).append( "'" );
+        addActionMessage( msg.toString() );
         reset();
         return SUCCESS;
     }
