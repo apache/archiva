@@ -39,8 +39,8 @@
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
     <!-- TODO: review how appropriate the memory settings are - should work with less -->
     <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
-    <seleniumPluginVersion>2.0</seleniumPluginVersion>
-    <selenium-server.version>2.6.0</selenium-server.version>
+    <seleniumPluginVersion>2.1</seleniumPluginVersion>
+    <selenium-server.version>2.12.0</selenium-server.version>
     <apache.mirror.url>http://archive.apache.org/dist</apache.mirror.url>
     <apache.archive.url>http://archive.apache.org/dist</apache.archive.url>
   </properties>
