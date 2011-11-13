@@ -28,7 +28,7 @@ public class ArchivaRestServiceException
     extends Exception
 {
 
-    private int httpErrorCode;
+    private int httpErrorCode = 500;
     
     private String errorKey;
 
