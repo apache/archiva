@@ -47,6 +47,10 @@
       <outputDirectory>logs</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/generated-resources/appassembler/jsw/archiva/temp</directory>
+      <outputDirectory>temp</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>   
@@ -98,10 +102,6 @@
       <includes>
         <include>LICENSE</include>
       </includes>
-    </fileSet>
-    <fileSet>
-      <directory>src/main/temp/</directory>
-      <outputDirectory>/temp</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>

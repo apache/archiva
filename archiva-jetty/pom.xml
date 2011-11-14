@@ -264,6 +264,7 @@
                   <fileset dir="src/main/conf" />
                 </copy>
                 <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs" />
+                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/temp" />
               </tasks>
             </configuration>
             <goals>
