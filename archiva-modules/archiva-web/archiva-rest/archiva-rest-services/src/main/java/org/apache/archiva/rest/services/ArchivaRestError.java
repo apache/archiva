@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Olivier Lamy
  * @since 1.4-M2
  */
-@XmlRootElement( name = "restError" )
-public class RestError
+@XmlRootElement( name = "archivaRestError" )
+public class ArchivaRestError
 {
     
     private int httpErrorCode;
@@ -36,12 +36,12 @@ public class RestError
     
     private String errorMessage;
     
-    public RestError()
+    public ArchivaRestError()
     {
         // no op
     }
     
-    public RestError( ArchivaRestServiceException e)
+    public ArchivaRestError( ArchivaRestServiceException e )
     {
         httpErrorCode = e.getHttpErrorCode();
         errorKey = e.getErrorKey();

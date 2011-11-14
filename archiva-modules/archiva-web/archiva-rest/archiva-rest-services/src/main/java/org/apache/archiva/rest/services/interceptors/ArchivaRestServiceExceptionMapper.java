@@ -19,10 +19,9 @@ package org.apache.archiva.rest.services.interceptors;
  */
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.apache.archiva.rest.services.RestError;
+import org.apache.archiva.rest.services.ArchivaRestError;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -38,7 +37,7 @@ public class ArchivaRestServiceExceptionMapper
 {
     public Response toResponse( ArchivaRestServiceException e )
     {
-        RestError restError = new RestError( e );
+        ArchivaRestError restError = new ArchivaRestError( e );
         Response.ResponseBuilder responseBuilder = Response.status( e.getHttpErrorCode() ).entity( restError );
         return responseBuilder.build();
     }
