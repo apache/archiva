@@ -29,9 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement( name = "archivaRestError" )
 public class ArchivaRestError
 {
-    
-    private int httpErrorCode;
-    
+
     private String errorKey;
     
     private String errorMessage;
@@ -43,19 +41,8 @@ public class ArchivaRestError
     
     public ArchivaRestError( ArchivaRestServiceException e )
     {
-        httpErrorCode = e.getHttpErrorCode();
         errorKey = e.getErrorKey();
         errorMessage = e.getMessage();
-    }
-
-    public int getHttpErrorCode()
-    {
-        return httpErrorCode;
-    }
-
-    public void setHttpErrorCode( int httpErrorCode )
-    {
-        this.httpErrorCode = httpErrorCode;
     }
 
     public String getErrorKey()
