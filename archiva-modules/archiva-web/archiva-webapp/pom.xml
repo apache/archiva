@@ -32,6 +32,7 @@
   <properties>
     <archiva.baseRestUrl />
     <rest.admin.pwd />
+    <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
   </properties>
 
   <dependencies>
@@ -641,7 +642,7 @@
         <configuration>
           <port>9091</port>
           <path>/archiva</path>
-          <contextFile>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</contextFile>
+          <contextFile>${tomcatContextXml}</contextFile>
           <systemProperties>
             <plexus.home>${basedir}/appserver-base</plexus.home>
             <appserver.base>${basedir}/appserver-base</appserver.base>
@@ -1117,7 +1118,7 @@
             <configuration>
               <port>9091</port>
               <path>/archiva</path>
-              <contextFile>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</contextFile>
+              <contextFile>${tomcatContextXml}</contextFile>
               <systemProperties>
                 <plexus.home>${basedir}/appserver-base</plexus.home>
                 <appserver.base>${basedir}/appserver-base</appserver.base>
@@ -1147,7 +1148,7 @@
             <configuration>
               <port>9091</port>
               <path>/archiva</path>
-              <contextFile>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</contextFile>
+              <contextFile>${tomcatContextXml}</contextFile>
               <systemProperties>
                 <plexus.home>${basedir}/appserver-base</plexus.home>
                 <appserver.base>${basedir}/appserver-base</appserver.base>
