@@ -18,8 +18,6 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @author Olivier Lamy
  * @since 1.4-M1
@@ -29,7 +27,7 @@ public class ArchivaRestServiceException
 {
 
     private int httpErrorCode = 500;
-    
+
     private String errorKey;
 
 

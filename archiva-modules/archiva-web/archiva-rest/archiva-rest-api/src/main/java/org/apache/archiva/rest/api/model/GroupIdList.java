@@ -31,12 +31,13 @@ public class GroupIdList
     implements Serializable
 {
     private List<String> groupIds;
-    public GroupIdList (  )
+
+    public GroupIdList()
     {
         // no op
     }
 
-    public GroupIdList ( List<String> groupIds )
+    public GroupIdList( List<String> groupIds )
     {
         this.groupIds = groupIds;
     }
@@ -46,7 +47,7 @@ public class GroupIdList
         return groupIds;
     }
 
-    public void setGroupIds(List<String> groupIds)
+    public void setGroupIds( List<String> groupIds )
     {
         this.groupIds = groupIds;
     }

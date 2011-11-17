@@ -31,14 +31,14 @@ public class ArchivaRestError
 {
 
     private String errorKey;
-    
+
     private String errorMessage;
-    
+
     public ArchivaRestError()
     {
         // no op
     }
-    
+
     public ArchivaRestError( ArchivaRestServiceException e )
     {
         errorKey = e.getErrorKey();

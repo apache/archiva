@@ -47,6 +47,7 @@ public interface PingService
 
     /**
      * same as #ping but check authz
+     *
      * @return
      */
     @Path( "pingWithAuthz" )

@@ -76,7 +76,6 @@ public interface ProxyConnectorService
      *
      * @param proxyConnector
      * @return
-     *
      */
     @Path( "updateProxyConnector" )
     @POST

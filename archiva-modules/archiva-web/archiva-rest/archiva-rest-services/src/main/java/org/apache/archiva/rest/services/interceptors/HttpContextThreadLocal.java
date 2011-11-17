@@ -24,8 +24,7 @@ package org.apache.archiva.rest.services.interceptors;
  */
 public class HttpContextThreadLocal
 {
-    private static final ThreadLocal<HttpContext> userThreadLocal =
-        new ThreadLocal<HttpContext>();
+    private static final ThreadLocal<HttpContext> userThreadLocal = new ThreadLocal<HttpContext>();
 
     public static void set( HttpContext httpContext )
     {

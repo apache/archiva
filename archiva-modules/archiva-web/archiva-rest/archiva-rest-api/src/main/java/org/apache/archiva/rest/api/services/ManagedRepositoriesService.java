@@ -81,5 +81,4 @@ public interface ManagedRepositoriesService
         throws ArchivaRestServiceException;
 
 
-
 }

@@ -21,7 +21,6 @@ package org.apache.archiva.rest.api.services;
 
 
 import org.apache.archiva.rest.api.model.Artifact;
-import org.apache.archiva.rest.api.model.Dependency;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -32,7 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
 import java.util.List;
 
 @Path( "/searchService/" )
