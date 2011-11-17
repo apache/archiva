@@ -52,7 +52,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -82,7 +82,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         // START SNIPPET: searchservice-artifact-versions
         SearchService searchService = getSearchService( authorizationHeader );
@@ -111,7 +111,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -144,7 +144,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -175,7 +175,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -204,7 +204,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -237,7 +237,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -269,7 +269,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -298,7 +298,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId );
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -310,7 +310,7 @@ public class SearchServiceTest
         deleteTestRepo( testRepoId );
     }
 
-    private void createAndIndexRepo( String testRepoId )
+    private void createAndIndexRepo( String testRepoId, String repoPath )
         throws Exception
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
@@ -329,7 +329,7 @@ public class SearchServiceTest
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 
-        managedRepository.setLocation( new File( "src/test/repo-with-osgi" ).getPath() );
+        managedRepository.setLocation( new File( repoPath ).getPath() );
         managedRepository.setIndexDirectory( "target/.index-" + Long.toString( new Date().getTime() ) );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
