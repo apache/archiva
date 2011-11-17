@@ -128,7 +128,7 @@ public class Artifact
     private String packaging;
 
     /**
-     * file extension of the search result
+     * file extension of the artifact
      * @since 1.4-M2
      */
     private String fileExtension;
