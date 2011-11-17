@@ -127,6 +127,12 @@ public class Artifact
 
     private String packaging;
 
+    /**
+     * file extension of the search result
+     * @since 1.4-M2
+     */
+    private String fileExtension;
+
 
     public Artifact()
     {
@@ -334,6 +340,15 @@ public class Artifact
         this.packaging = packaging;
     }
 
+    public String getFileExtension()
+    {
+        return fileExtension;
+    }
+
+    public void setFileExtension( String fileExtension )
+    {
+        this.fileExtension = fileExtension;
+    }
 
     @Override
     public String toString()
@@ -360,6 +375,7 @@ public class Artifact
         sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( ", packaging='" ).append( packaging ).append( '\'' );
+        sb.append( ", fileExtension='" ).append( fileExtension ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

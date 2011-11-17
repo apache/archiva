@@ -29,7 +29,7 @@ import java.util.Set;
 public interface RepositorySearch
 {
     /**
-     * Quick search.
+     * Quick search by won't return artifact with file extension pom
      *
      * @param principal
      * @param selectedRepos

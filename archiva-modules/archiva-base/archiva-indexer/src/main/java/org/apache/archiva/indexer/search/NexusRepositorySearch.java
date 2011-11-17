@@ -124,7 +124,7 @@ public class NexusRepositorySearch
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST, principal, selectedRepos );
+        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST, selectedRepos, false );
 
     }
 
@@ -235,13 +235,13 @@ public class NexusRepositorySearch
             throw new RepositorySearchException( "No search fields set." );
         }
 
-        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList(), principal,
-                       searchFields.getRepositories() );
+        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList(),
+                       searchFields.getRepositories(), searchFields.isIncludePomArtifacts() );
     }
 
     private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
-                                  List<? extends ArtifactInfoFiler> filters, String principal,
-                                  List<String> selectedRepos )
+                                  List<? extends ArtifactInfoFiler> filters,
+                                  List<String> selectedRepos, boolean includePoms)
         throws RepositorySearchException
     {
 
@@ -259,7 +259,7 @@ public class NexusRepositorySearch
                 return results;
             }
 
-            return convertToSearchResults( response, limits, filters, principal, selectedRepos );
+            return convertToSearchResults( response, limits, filters, selectedRepos, includePoms );
         }
         catch ( IOException e )
         {
@@ -449,7 +449,7 @@ public class NexusRepositorySearch
 
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
                                                   List<? extends ArtifactInfoFiler> artifactInfoFilers,
-                                                  String principal, List<String> selectedRepos )
+                                                  List<String>selectedRepos, boolean includePoms)
         throws RepositoryAdminException
     {
         SearchResults results = new SearchResults();
@@ -457,7 +457,7 @@ public class NexusRepositorySearch
 
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
-            if ( StringUtils.equalsIgnoreCase( "pom", artifactInfo.fextension ) )
+            if ( StringUtils.equalsIgnoreCase( "pom", artifactInfo.fextension ) && !includePoms )
             {
                 continue;
             }
@@ -500,6 +500,7 @@ public class NexusRepositorySearch
                 hit.setPrefix( artifactInfo.prefix );
                 hit.setPackaging( artifactInfo.packaging );
                 hit.setClassifier( artifactInfo.classifier );
+                hit.setFileExtension( artifactInfo.fextension );
                 hit.setUrl( getBaseUrl( artifactInfo, selectedRepos ) );
             }
 

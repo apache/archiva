@@ -129,6 +129,12 @@ public class SearchResultHit
 
     private String classifier;
 
+    /**
+     * file extension of the search result
+     * @since 1.4-M2
+     */
+    private String fileExtension;
+
     public String getContext()
     {
         return context;
@@ -344,6 +350,16 @@ public class SearchResultHit
         this.classifier = classifier;
     }
 
+    public String getFileExtension()
+    {
+        return fileExtension;
+    }
+
+    public void setFileExtension( String fileExtension )
+    {
+        this.fileExtension = fileExtension;
+    }
+
     @Override
     public String toString()
     {
@@ -369,6 +385,7 @@ public class SearchResultHit
         sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
         sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", fileExtension='" ).append( fileExtension ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

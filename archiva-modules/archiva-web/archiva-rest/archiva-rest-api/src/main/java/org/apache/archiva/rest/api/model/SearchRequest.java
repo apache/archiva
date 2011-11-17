@@ -86,6 +86,12 @@ public class SearchRequest
 
     private String classifier;
 
+    /**
+     * not return artifact with file extension pom
+     * @since 1.4-M2
+     */
+    private boolean includePomArtifacts = false;
+
     public SearchRequest()
     {
         // no op
@@ -213,6 +219,16 @@ public class SearchRequest
         this.classifier = classifier;
     }
 
+    public boolean isIncludePomArtifacts()
+    {
+        return includePomArtifacts;
+    }
+
+    public void setIncludePomArtifacts( boolean includePomArtifacts )
+    {
+        this.includePomArtifacts = includePomArtifacts;
+    }
+
     @Override
     public String toString()
     {
@@ -229,6 +245,7 @@ public class SearchRequest
         sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
         sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", includePomArtifacts=" ).append( includePomArtifacts );
         sb.append( '}' );
         return sb.toString();
     }

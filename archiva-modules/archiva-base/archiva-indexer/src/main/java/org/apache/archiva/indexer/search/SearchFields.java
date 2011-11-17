@@ -97,6 +97,12 @@ public class SearchFields
      */
     private String bundleExportService;
 
+    /**
+     * not return artifact with file extension pom
+     * @since 1.4-M2
+     */
+    private boolean includePomArtifacts = false;
+
     private String classifier;
 
     public SearchFields()
@@ -246,6 +252,16 @@ public class SearchFields
         this.bundleName = bundleName;
     }
 
+    public boolean isIncludePomArtifacts()
+    {
+        return includePomArtifacts;
+    }
+
+    public void setIncludePomArtifacts( boolean includePomArtifacts )
+    {
+        this.includePomArtifacts = includePomArtifacts;
+    }
+
     @Override
     public String toString()
     {
@@ -263,6 +279,7 @@ public class SearchFields
         sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
         sb.append( ", bundleName='" ).append( bundleName ).append( '\'' );
         sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( ", includePomArtifacts=" ).append( includePomArtifacts );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
