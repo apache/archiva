@@ -193,6 +193,15 @@ public class DefaultDownloadRemoteIndexScheduler
                 taskScheduler.schedule(
                     new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
                     new CronTrigger( remoteRepository.getCronExpression() ) );
+
+                if ( remoteRepository.isDownloadRemoteIndexOnStartup() )
+                {
+                    log.info(
+                        "remote repository {} configured with downloadRemoteIndexOnStartup schedule now a download" );
+                    taskScheduler.schedule(
+                        new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
+                        new Date() );
+                }
             }
 
         }

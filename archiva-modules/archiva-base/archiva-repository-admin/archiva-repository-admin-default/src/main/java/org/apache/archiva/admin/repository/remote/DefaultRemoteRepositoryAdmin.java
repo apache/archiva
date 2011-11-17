@@ -129,6 +129,8 @@ public class DefaultRemoteRepositoryAdmin
             remoteRepository.setRemoteDownloadNetworkProxyId(
                 repositoryConfiguration.getRemoteDownloadNetworkProxyId() );
             remoteRepository.setRemoteDownloadTimeout( repositoryConfiguration.getRemoteDownloadTimeout() );
+            remoteRepository.setDownloadRemoteIndexOnStartup(
+                repositoryConfiguration.isDownloadRemoteIndexOnStartup() );
             remoteRepositories.add( remoteRepository );
         }
         return remoteRepositories;
@@ -327,6 +329,8 @@ public class DefaultRemoteRepositoryAdmin
         remoteRepositoryConfiguration.setRemoteDownloadNetworkProxyId(
             remoteRepository.getRemoteDownloadNetworkProxyId() );
         remoteRepositoryConfiguration.setRemoteDownloadTimeout( remoteRepository.getRemoteDownloadTimeout() );
+        remoteRepositoryConfiguration.setDownloadRemoteIndexOnStartup(
+            remoteRepository.isDownloadRemoteIndexOnStartup() );
         return remoteRepositoryConfiguration;
     }
 

@@ -1104,7 +1104,7 @@
                       <type>war</type>
                       <overWrite>false</overWrite>
                       <outputDirectory>${basedir}/src/main/webapp</outputDirectory>
-                      <excludes>**/web.xml,**/struts*.jar,**/sitemesh*.jar,**/struts-security.xml</excludes>
+                      <excludes>**/web.xml,**/**.jar,**/struts-security.xml</excludes>
                     </artifactItem>
                   </artifactItems>
                 </configuration>

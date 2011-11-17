@@ -59,6 +59,11 @@ public class RemoteRepository
 
     private int remoteDownloadTimeout = 300;
 
+    /**
+     * @since 1.4-M2
+     */
+    private boolean downloadRemoteIndexOnStartup = false;
+
 
     public RemoteRepository()
     {
@@ -171,11 +176,20 @@ public class RemoteRepository
         this.remoteDownloadTimeout = remoteDownloadTimeout;
     }
 
+    public boolean isDownloadRemoteIndexOnStartup()
+    {
+        return downloadRemoteIndexOnStartup;
+    }
+
+    public void setDownloadRemoteIndexOnStartup( boolean downloadRemoteIndexOnStartup )
+    {
+        this.downloadRemoteIndexOnStartup = downloadRemoteIndexOnStartup;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append( super.toString() );
         sb.append( "RemoteRepository" );
         sb.append( "{url='" ).append( url ).append( '\'' );
         sb.append( ", userName='" ).append( userName ).append( '\'' );
@@ -186,6 +200,7 @@ public class RemoteRepository
         sb.append( ", remoteDownloadNetworkProxyId='" ).append( remoteDownloadNetworkProxyId ).append( '\'' );
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", remoteDownloadTimeout=" ).append( remoteDownloadTimeout );
+        sb.append( ", downloadRemoteIndexOnStartup=" ).append( downloadRemoteIndexOnStartup );
         sb.append( '}' );
         return sb.toString();
     }

@@ -35,5 +35,6 @@
 <s:textfield name="repository.remoteDownloadTimeout" label="Download Remote Index Timeout in seconds" size="10" required="false"/>
 <s:select list="networkProxies" name="repository.remoteDownloadNetworkProxyId" emptyOption="true"
 required="false" listKey="id" listValue="id" label="Network Proxy to Use for download Remote Index"/>
+<s:checkbox name="repository.downloadRemoteIndexOnStartup" label="Download remote index on Archiva startup" />
 
 

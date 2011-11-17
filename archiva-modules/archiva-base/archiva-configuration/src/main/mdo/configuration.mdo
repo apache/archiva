@@ -538,6 +538,15 @@
           </description>
           <defaultValue>300</defaultValue>
         </field>
+        <field>
+          <name>downloadRemoteIndexOnStartup</name>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <description>
+            Schedule download of remote index when archiva start
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
