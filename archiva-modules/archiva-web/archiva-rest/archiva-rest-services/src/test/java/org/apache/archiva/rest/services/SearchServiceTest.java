@@ -310,6 +310,34 @@ public class SearchServiceTest
         deleteTestRepo( testRepoId );
     }
 
+    @Test
+    /**
+     * test we don't return 2 artifacts pom + zip one
+     */
+    public void getSearchArtifactsWithOnlyClassifier()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-classifier-only" );
+
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        SearchRequest searchRequest =
+            new SearchRequest( "org.foo", "studio-all-update-site", null, null, null, Arrays.asList( "test-repo" ) );
+
+        List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
+        log.info( "artifacts:" + artifacts );
+        assertEquals( 1, artifacts.size() );
+        deleteTestRepo( testRepoId );
+    }
+
     private void createAndIndexRepo( String testRepoId, String repoPath )
         throws Exception
     {
@@ -317,13 +345,6 @@ public class SearchServiceTest
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, false );
         }
-        //File targetRepo = new File( "target/test-origin-repo" );
-        //if ( targetRepo.exists() )
-        //{
-        //    FileUtils.deleteDirectory( targetRepo );
-        //}
-        //assertFalse( targetRepo.exists() );
-        //FileUtils.copyDirectory( new File( "src/test/repo-with-osgi" ), targetRepo );
 
         ManagedRepository managedRepository = new ManagedRepository();
         managedRepository.setId( testRepoId );
@@ -340,7 +361,6 @@ public class SearchServiceTest
 
         getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
 
-        //return targetRepo;
     }
 
     private void deleteTestRepo( String id )

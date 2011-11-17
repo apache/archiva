@@ -457,6 +457,10 @@ public class NexusRepositorySearch
 
         for ( ArtifactInfo artifactInfo : artifactInfos )
         {
+            if ( StringUtils.equalsIgnoreCase( "pom", artifactInfo.fextension ) )
+            {
+                continue;
+            }
             String id = SearchUtil.getHitId( artifactInfo.groupId, artifactInfo.artifactId, artifactInfo.classifier,
                                              artifactInfo.packaging );
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
