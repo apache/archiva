@@ -21,13 +21,13 @@ package org.apache.archiva.indexer.search;
 
 /**
  * SearchResultLimits - used to provide the search some limits on how the results are returned.
- * This can provide paging for the 
+ * This can provide paging for the
  *
  * @version $Id: SearchResultLimits.java 718864 2008-11-19 06:33:35Z brett $
  */
 public class SearchResultLimits
 {
-    /** 
+    /**
      * Constant to use for {@link #setSelectedPage(int)} to indicate a desire to get ALL PAGES.
      * USE WITH CAUTION!!
      */
@@ -49,7 +49,7 @@ public class SearchResultLimits
 
     /**
      * Set page size for maximum # of hits to return per page.
-     * 
+     *
      * @param pageSize size of page by # of hits. (maximum value is 200)
      */
     public void setPageSize( int pageSize )

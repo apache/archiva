@@ -31,7 +31,7 @@ public class RepositorySearchException
     {
         super( msg );
     }
-    
+
     public RepositorySearchException( Throwable e )
     {
         super( e );

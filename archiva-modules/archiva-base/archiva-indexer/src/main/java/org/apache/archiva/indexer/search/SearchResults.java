@@ -35,7 +35,7 @@ public class SearchResults
     private Map<String, SearchResultHit> hits = new HashMap<String, SearchResultHit>();
 
     private int totalHits;
-    
+
     private int totalHitsMapSize;
 
     private int returnedHitsCount;
@@ -123,8 +123,8 @@ public class SearchResults
     }
 
     /**
-     * @since 1.4-M1
      * @return
+     * @since 1.4-M1
      */
     public int getTotalHitsMapSize()
     {
@@ -132,10 +132,10 @@ public class SearchResults
     }
 
     /**
-     * @since 1.4-M1
      * @param totalHitsMapSize
+     * @since 1.4-M1
      */
-    public void setTotalHitsMapSize(int totalHitsMapSize)
+    public void setTotalHitsMapSize( int totalHitsMapSize )
     {
         this.totalHitsMapSize = totalHitsMapSize;
     }

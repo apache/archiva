@@ -118,7 +118,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.reset();
 
         // search groupId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2);
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -141,7 +141,7 @@ public class NexusRepositorySearchTest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -161,7 +161,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.reset();
 
         // search groupId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -185,7 +185,7 @@ public class NexusRepositorySearchTest
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -215,7 +215,7 @@ public class NexusRepositorySearchTest
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -251,7 +251,7 @@ public class NexusRepositorySearchTest
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
         archivaConfigControl.replay();
 
         SearchResults results = search.search( "user", selectedRepos, "archiva search", null, null );
@@ -275,7 +275,7 @@ public class NexusRepositorySearchTest
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -295,7 +295,7 @@ public class NexusRepositorySearchTest
         limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -330,7 +330,7 @@ public class NexusRepositorySearchTest
 
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 5 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
 
         archivaConfigControl.replay();
 
@@ -365,7 +365,7 @@ public class NexusRepositorySearchTest
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -384,7 +384,7 @@ public class NexusRepositorySearchTest
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -402,7 +402,7 @@ public class NexusRepositorySearchTest
         List<String> selectedRepos = new ArrayList<String>();
         selectedRepos.add( "non-existing-repo" );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -425,7 +425,7 @@ public class NexusRepositorySearchTest
         List<String> previousSearchTerms = new ArrayList<String>();
         previousSearchTerms.add( "archiva-test" );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -463,7 +463,7 @@ public class NexusRepositorySearchTest
         searchFields.setVersion( "1.0" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -498,7 +498,7 @@ public class NexusRepositorySearchTest
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -516,7 +516,7 @@ public class NexusRepositorySearchTest
         limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -548,7 +548,7 @@ public class NexusRepositorySearchTest
         searchFields.setArtifactId( "artifactid-numeric" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -591,7 +591,7 @@ public class NexusRepositorySearchTest
 
         try
         {
-            archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+            archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
             archivaConfigControl.replay();
 
@@ -625,7 +625,7 @@ public class NexusRepositorySearchTest
 
         try
         {
-            archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+            archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
             archivaConfigControl.replay();
 
@@ -658,7 +658,7 @@ public class NexusRepositorySearchTest
         searchFields.setClassName( "org.apache.archiva.test.App" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -689,7 +689,7 @@ public class NexusRepositorySearchTest
         searchFields.setPackaging( "jar" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -740,7 +740,7 @@ public class NexusRepositorySearchTest
         searchFields.setClassName( "com.classname.search.App" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -768,7 +768,7 @@ public class NexusRepositorySearchTest
         searchFields.setGroupId( "org.apache.archiva" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -792,7 +792,7 @@ public class NexusRepositorySearchTest
         searchFields.setClassName( "SomeClass" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -806,13 +806,14 @@ public class NexusRepositorySearchTest
     }
 
     @Test
-    public void getAllGroupIds() throws Exception
+    public void getAllGroupIds()
+        throws Exception
     {
         createIndexContainingMoreArtifacts( true );
 
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 0 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 0, 2 );
 
         archivaConfigControl.replay();
 
@@ -823,8 +824,8 @@ public class NexusRepositorySearchTest
         log.info( "groupIds: " + groupIds );
 
         assertEquals( 3, groupIds.size() );
-        assertTrue( groupIds.contains( "com" ));
-        assertTrue( groupIds.contains( "org.apache.felix") );
+        assertTrue( groupIds.contains( "com" ) );
+        assertTrue( groupIds.contains( "org.apache.felix" ) );
         assertTrue( groupIds.contains( "org.apache.archiva" ) );
     }
 
@@ -840,7 +841,7 @@ public class NexusRepositorySearchTest
         searchFields.setClassName( "SomeClass" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config , 1 , 2 );
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
 
         archivaConfigControl.replay();
 

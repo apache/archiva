@@ -39,11 +39,11 @@ public class NexusRepositorySearchPaginateTest
     {
         NexusRepositorySearch search = new NexusRepositorySearch();
 
-        SearchResults searchResults = build(10, new SearchResultLimits(0));
+        SearchResults searchResults = build( 10, new SearchResultLimits( 0 ) );
 
-        searchResults = search.paginate(searchResults);
+        searchResults = search.paginate( searchResults );
 
-        assertEquals(10, searchResults.getReturnedHitsCount());
+        assertEquals( 10, searchResults.getReturnedHitsCount() );
 
     }
 
@@ -53,17 +53,17 @@ public class NexusRepositorySearchPaginateTest
     {
         NexusRepositorySearch search = new NexusRepositorySearch();
 
-        SearchResults origSearchResults = build(63, new SearchResultLimits(0));
+        SearchResults origSearchResults = build( 63, new SearchResultLimits( 0 ) );
 
-        SearchResults searchResults = search.paginate(origSearchResults);
+        SearchResults searchResults = search.paginate( origSearchResults );
 
-        assertEquals(30, searchResults.getReturnedHitsCount());
+        assertEquals( 30, searchResults.getReturnedHitsCount() );
 
-        origSearchResults = build(63, new SearchResultLimits(1));
+        origSearchResults = build( 63, new SearchResultLimits( 1 ) );
 
-        searchResults = search.paginate(origSearchResults);
+        searchResults = search.paginate( origSearchResults );
 
-        assertEquals(30, searchResults.getReturnedHitsCount());
+        assertEquals( 30, searchResults.getReturnedHitsCount() );
 
     }
 
@@ -73,32 +73,32 @@ public class NexusRepositorySearchPaginateTest
     {
         NexusRepositorySearch search = new NexusRepositorySearch();
 
-        SearchResults searchResults = build(32, new SearchResultLimits(1));
+        SearchResults searchResults = build( 32, new SearchResultLimits( 1 ) );
 
-        searchResults = search.paginate(searchResults);
+        searchResults = search.paginate( searchResults );
 
-        assertEquals(2, searchResults.getReturnedHitsCount());
+        assertEquals( 2, searchResults.getReturnedHitsCount() );
 
     }
 
 
-    SearchResults build(int number, SearchResultLimits limits)
+    SearchResults build( int number, SearchResultLimits limits )
     {
         SearchResults searchResults = new SearchResults();
-        searchResults.setLimits(limits);
+        searchResults.setLimits( limits );
         for ( int i = 0; i < number; i++ )
         {
             SearchResultHit hit = new SearchResultHit();
-            hit.setGroupId("commons-foo");
-            hit.setArtifactId("commons-bar-" + i);
-            hit.setPackaging("jar");
-            hit.setVersions(Arrays.asList("1.0"));
+            hit.setGroupId( "commons-foo" );
+            hit.setArtifactId( "commons-bar-" + i );
+            hit.setPackaging( "jar" );
+            hit.setVersions( Arrays.asList( "1.0" ) );
             String id =
-                SearchUtil.getHitId(hit.getGroupId(), hit.getArtifactId(), hit.getClassifier(), hit.getPackaging());
-            searchResults.addHit(id, hit);
+                SearchUtil.getHitId( hit.getGroupId(), hit.getArtifactId(), hit.getClassifier(), hit.getPackaging() );
+            searchResults.addHit( id, hit );
         }
 
-        searchResults.setTotalHits(number);
+        searchResults.setTotalHits( number );
         return searchResults;
 
     }
