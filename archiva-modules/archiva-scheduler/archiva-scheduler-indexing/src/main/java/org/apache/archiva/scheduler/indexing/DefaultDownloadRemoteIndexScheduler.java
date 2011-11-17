@@ -197,7 +197,8 @@ public class DefaultDownloadRemoteIndexScheduler
                 if ( remoteRepository.isDownloadRemoteIndexOnStartup() )
                 {
                     log.info(
-                        "remote repository {} configured with downloadRemoteIndexOnStartup schedule now a download" );
+                        "remote repository {} configured with downloadRemoteIndexOnStartup schedule now a download",
+                        remoteRepository.getId() );
                     taskScheduler.schedule(
                         new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
                         new Date() );
