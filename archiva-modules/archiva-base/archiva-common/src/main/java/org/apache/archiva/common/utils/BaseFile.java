@@ -24,7 +24,7 @@ import java.net.URI;
 
 /**
  * BaseFile - convenient File object that tracks the Base Directory and can provide relative path values
- * for the file object based on that Base Directory value. 
+ * for the file object based on that Base Directory value.
  *
  * @version $Id$
  */
@@ -78,8 +78,8 @@ public class BaseFile
     public BaseFile( URI uri )
     {
         super( uri ); // only to satisfy java compiler.
-        throw new IllegalStateException( "The " + BaseFile.class.getName()
-            + " object does not support URI construction." );
+        throw new IllegalStateException(
+            "The " + BaseFile.class.getName() + " object does not support URI construction." );
     }
 
     public File getBaseDir()

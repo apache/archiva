@@ -25,7 +25,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 /**
- * PathUtil - simple utility methods for path manipulation. 
+ * PathUtil - simple utility methods for path manipulation.
  *
  * @version $Id$
  */
@@ -62,9 +62,9 @@ public class PathUtil
 
     /**
      * Given a basedir and a child file, return the relative path to the child.
-     * 
+     *
      * @param basedir the basedir.
-     * @param file the file to get the relative path for.
+     * @param file    the file to get the relative path for.
      * @return the relative path to the child. (NOTE: this path will NOT start with a {@link File#separator} character)
      */
     public static String getRelative( String basedir, File file )
@@ -74,9 +74,9 @@ public class PathUtil
 
     /**
      * Given a basedir and a child file, return the relative path to the child.
-     * 
+     *
      * @param basedir the basedir.
-     * @param child the child path (can be a full path)
+     * @param child   the child path (can be a full path)
      * @return the relative path to the child. (NOTE: this path will NOT start with a {@link File#separator} character)
      */
     public static String getRelative( String basedir, String child )
@@ -100,7 +100,7 @@ public class PathUtil
         }
 
         // File is not within basedir.
-        throw new IllegalStateException( "Unable to obtain relative path of file " + child
-            + ", it is not within basedir " + basedir + "." );
+        throw new IllegalStateException(
+            "Unable to obtain relative path of file " + child + ", it is not within basedir " + basedir + "." );
     }
 }

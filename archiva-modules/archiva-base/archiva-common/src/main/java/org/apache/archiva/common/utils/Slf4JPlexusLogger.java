@@ -28,102 +28,134 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Id$
  */
-public class Slf4JPlexusLogger implements org.codehaus.plexus.logging.Logger {
+public class Slf4JPlexusLogger
+    implements org.codehaus.plexus.logging.Logger
+{
     private Logger log;
 
-    public Slf4JPlexusLogger(Class<?> clazz) {
-        log = LoggerFactory.getLogger(clazz);
+    public Slf4JPlexusLogger( Class<?> clazz )
+    {
+        log = LoggerFactory.getLogger( clazz );
     }
 
-    public Slf4JPlexusLogger(String name) {
-        log = LoggerFactory.getLogger(name);
+    public Slf4JPlexusLogger( String name )
+    {
+        log = LoggerFactory.getLogger( name );
     }
 
-    public void debug(String message) {
-        log.debug(message);
+    public void debug( String message )
+    {
+        log.debug( message );
     }
 
-    public void debug(String message, Throwable throwable) {
-        log.debug(message, throwable);
+    public void debug( String message, Throwable throwable )
+    {
+        log.debug( message, throwable );
     }
 
-    public void error(String message) {
-        log.error(message);
+    public void error( String message )
+    {
+        log.error( message );
     }
 
-    public void error(String message, Throwable throwable) {
-        log.error(message, throwable);
+    public void error( String message, Throwable throwable )
+    {
+        log.error( message, throwable );
     }
 
-    public void fatalError(String message) {
-        log.error(message);
+    public void fatalError( String message )
+    {
+        log.error( message );
     }
 
-    public void fatalError(String message, Throwable throwable) {
-        log.error(message, throwable);
+    public void fatalError( String message, Throwable throwable )
+    {
+        log.error( message, throwable );
     }
 
-    public org.codehaus.plexus.logging.Logger getChildLogger(String name) {
-        return new Slf4JPlexusLogger(log.getName() + "." + name);
+    public org.codehaus.plexus.logging.Logger getChildLogger( String name )
+    {
+        return new Slf4JPlexusLogger( log.getName() + "." + name );
     }
 
-    public String getName() {
+    public String getName()
+    {
         return log.getName();
     }
 
-    public int getThreshold() {
-        if (log.isTraceEnabled()) {
+    public int getThreshold()
+    {
+        if ( log.isTraceEnabled() )
+        {
             return org.codehaus.plexus.logging.Logger.LEVEL_DEBUG;
-        } else if (log.isDebugEnabled()) {
+        }
+        else if ( log.isDebugEnabled() )
+        {
             return org.codehaus.plexus.logging.Logger.LEVEL_DEBUG;
-        } else if (log.isInfoEnabled()) {
+        }
+        else if ( log.isInfoEnabled() )
+        {
             return org.codehaus.plexus.logging.Logger.LEVEL_INFO;
-        } else if (log.isWarnEnabled()) {
+        }
+        else if ( log.isWarnEnabled() )
+        {
             return org.codehaus.plexus.logging.Logger.LEVEL_WARN;
-        } else if (log.isErrorEnabled()) {
+        }
+        else if ( log.isErrorEnabled() )
+        {
             return org.codehaus.plexus.logging.Logger.LEVEL_ERROR;
         }
 
         return org.codehaus.plexus.logging.Logger.LEVEL_DISABLED;
     }
 
-    public void info(String message) {
-        log.info(message);
+    public void info( String message )
+    {
+        log.info( message );
     }
 
-    public void info(String message, Throwable throwable) {
-        log.info(message, throwable);
+    public void info( String message, Throwable throwable )
+    {
+        log.info( message, throwable );
     }
 
-    public boolean isDebugEnabled() {
+    public boolean isDebugEnabled()
+    {
         return log.isDebugEnabled();
     }
 
-    public boolean isErrorEnabled() {
+    public boolean isErrorEnabled()
+    {
         return log.isErrorEnabled();
     }
 
-    public boolean isFatalErrorEnabled() {
+    public boolean isFatalErrorEnabled()
+    {
         return log.isErrorEnabled();
     }
 
-    public boolean isInfoEnabled() {
+    public boolean isInfoEnabled()
+    {
         return log.isInfoEnabled();
     }
 
-    public boolean isWarnEnabled() {
+    public boolean isWarnEnabled()
+    {
         return log.isWarnEnabled();
     }
 
-    public void setThreshold(int threshold) {
+    public void setThreshold( int threshold )
+    {
         /* do nothing */
     }
 
-    public void warn(String message) {
-        log.warn(message);
+    public void warn( String message )
+    {
+        log.warn( message );
     }
 
-    public void warn(String message, Throwable throwable) {
-        log.warn(message, throwable);
+    public void warn( String message, Throwable throwable )
+    {
+        log.warn( message, throwable );
     }
 }

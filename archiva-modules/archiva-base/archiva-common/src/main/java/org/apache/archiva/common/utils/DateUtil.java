@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * DateUtil - some (not-so) common date utility methods. 
+ * DateUtil - some (not-so) common date utility methods.
  *
  * @version $Id$
  */
@@ -34,7 +34,7 @@ public class DateUtil
     {
         return getDuration( new Date( 0 ), new Date( duration ) );
     }
-    
+
     public static String getDuration( long ms1, long ms2 )
     {
         return getDuration( new Date( ms1 ), new Date( ms2 ) );
@@ -90,7 +90,7 @@ public class DateUtil
             leftMins += 60;
             --leftHours;
         }
-        
+
         if ( leftHours < 0 )
         {
             leftHours += 24;
