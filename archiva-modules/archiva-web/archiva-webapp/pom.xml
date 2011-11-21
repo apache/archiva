@@ -763,43 +763,9 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.myfaces.tobago</groupId>
-          <artifactId>maven-apt-plugin</artifactId>
-          <version>1.0.38</version>
-          <configuration>
-            <A>uri=/archiva-web-tag,tlibVersion=2.2.3,jspVersion=2.0,shortName=archiva,displayName=Archiva Taglib,
-              outFile=${basedir}/src/main/webapp/WEB-INF/tld/web-tags.tld,
-              description=Archiva taglibs.,
-              outTemplatesDir=${basedir}/target
-            </A>
-            <resourceTargetPath>target</resourceTargetPath>
-            <fork>true</fork>
-            <force>true</force>
-            <nocompile>true</nocompile>
-            <showWarnings>true</showWarnings>
-            <factory>org.apache.struts.annotations.taglib.apt.TLDAnnotationProcessorFactory</factory>
-            <includes>
-              <include>org/apache/archiva/web/tags/*Tag.java</include>
-            </includes>
-          </configuration>
-
-        </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>

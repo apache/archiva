@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+  <description><![CDATA[Archiva taglibs.]]></description>
+  <display-name>Archiva Taglib</display-name>
+  <tlib-version>2.2.3</tlib-version>
+  <short-name>archiva</short-name>
+  <uri>/archiva-web-tag</uri>
+  <tag>
+    <description><![CDATA[Render a copy paste snippet for the provided object]]></description>
+    <name>copy-paste-snippet</name>
+    <tag-class>org.apache.archiva.web.tags.CopyPasteSnippetTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description><![CDATA[The Object to Render]]></description>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The wrapper type to use, can be 'pre' or 'toggle']]></description>
+      <name>wrapper</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  <tag>
+    <description><![CDATA[Render a dependency tree for the provided project.]]></description>
+    <name>dependency-tree</name>
+    <tag-class>org.apache.archiva.web.tags.DependencyTreeTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description><![CDATA[The artifactId]]></description>
+      <name>artifactId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The groupId]]></description>
+      <name>groupId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The version of the project model. Used to verify the dependency graph for generic snapshots not yet in the repo.]]></description>
+      <name>modelVersion</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The variable name for the node.]]></description>
+      <name>nodevar</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The version]]></description>
+      <name>version</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+  <tag>
+    <description><![CDATA[Render a groupId as a set of Links]]></description>
+    <name>groupIdLink</name>
+    <tag-class>org.apache.archiva.web.tags.GroupIdLinkTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description><![CDATA[Boolean indicating if 'top' link should be created or not.]]></description>
+      <name>includeTop</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description><![CDATA[The GroupID String]]></description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>false</dynamic-attributes>
+  </tag>
+</taglib>
