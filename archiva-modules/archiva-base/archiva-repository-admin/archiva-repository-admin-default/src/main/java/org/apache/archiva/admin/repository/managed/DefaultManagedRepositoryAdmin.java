@@ -633,7 +633,7 @@ public class DefaultManagedRepositoryAdmin
         stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
         stagingRepository.setIndexDir( repository.getIndexDir() );
         String path = repository.getLocation();
-        int lastIndex = path.lastIndexOf( '/' );
+        int lastIndex = path.replace( '\\', '/' ).lastIndexOf( '/' );
         stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
         stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
         stagingRepository.setReleases( repository.isReleases() );
