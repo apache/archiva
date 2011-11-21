@@ -24,7 +24,6 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
@@ -36,10 +35,14 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.wagon.Wagon;
 import org.codehaus.plexus.util.FileUtils;
 import org.easymock.ArgumentsMatcher;
 import org.easymock.MockControl;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -211,6 +214,19 @@ public abstract class AbstractProxyTestCase
 
         log.info( "\n.\\ " + name + "() \\._________________________________________\n" );
     }
+
+    @After
+    public void shutdown()
+        throws Exception
+    {
+        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+
+        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
+        {
+            nexusIndexer.removeIndexingContext( indexingContext, false );
+        }
+    }
+
 
     protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()
     {
