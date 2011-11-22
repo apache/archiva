@@ -91,8 +91,8 @@
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
-    <sisu-inject-plexus.version>2.2.2</sisu-inject-plexus.version>
-    <sisu-guice.version>3.0.1</sisu-guice.version>
+    <sisu-inject-plexus.version>2.3.0</sisu-inject-plexus.version>
+    <sisu-guice.version>3.1.0</sisu-guice.version>
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>1.0-rc1</plexus-expression-evaluator.version>
     <plexus-utils.version>1.5.5</plexus-utils.version>
