@@ -250,6 +250,26 @@
           <artifactId>jetty-server</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-continuation</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-http</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-security</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -557,6 +577,16 @@
     </dependency>
     <dependency>
       <groupId>jpox</groupId>
+      <artifactId>jpox</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jpox</groupId>
       <artifactId>jpox-ehcache</artifactId>
       <exclusions>
         <exclusion>
@@ -671,10 +701,9 @@
           <!-- Some versions of maven-war-plugin (snapshots) have this incorrectly defaulted to true.
                Specifically setting this to false to avoid accidental jar file creation. -->
           <archiveClasses>false</archiveClasses>
-          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**
-          </dependentWarExcludes>
+          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**</dependentWarExcludes>
           <warSourceExcludes>
-            WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar,WEB-INF/lib/commons-lang-*.jar,WEB-INF/lib/commons-configuration-*.jar
+            WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar,WEB-INF/lib/commons-lang-*.jar,WEB-INF/lib/commons-configuration-*.jar,WEB-INF/lib/jetty-*.jar
           </warSourceExcludes>
           <archive>
             <manifest>
