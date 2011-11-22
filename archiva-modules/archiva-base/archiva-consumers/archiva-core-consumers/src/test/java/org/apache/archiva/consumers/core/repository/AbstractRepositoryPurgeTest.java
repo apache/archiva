@@ -120,10 +120,22 @@ public abstract class AbstractRepositoryPurgeTest
 
         previousArchivaConfiguration = ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).getArchivaConfiguration();
+
+        removeMavenIndexes();
     }
 
     @After
     public void tearDown()
+        throws Exception
+    {
+        removeMavenIndexes();
+        super.tearDown();
+        config = null;
+        repo = null;
+
+    }
+
+    protected void removeMavenIndexes()
         throws Exception
     {
         NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
@@ -131,10 +143,6 @@ public abstract class AbstractRepositoryPurgeTest
         {
             nexusIndexer.removeIndexingContext( indexingContext, false );
         }
-        super.tearDown();
-        config = null;
-        repo = null;
-
     }
 
     public ManagedRepository getRepoConfiguration( String repoId, String repoName )
