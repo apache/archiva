@@ -900,6 +900,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.velocity</groupId>
+        <artifactId>velocity</artifactId>
+        <version>1.7</version>
+      </dependency>
+      <dependency>
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rbac-cached</artifactId>
         <version>${redback.version}</version>
@@ -1434,6 +1439,7 @@
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>org.slf4j:jcl104-over-slf4j</exclude>
                     <exclude>velocity:velocity-dep</exclude>
+                    <exclude>velocity:velocity</exclude>
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
                     <exclude>javax.sql:jdbc-stdext</exclude>
