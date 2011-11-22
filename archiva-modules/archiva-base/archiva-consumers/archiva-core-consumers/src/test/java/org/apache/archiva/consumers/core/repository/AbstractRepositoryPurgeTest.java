@@ -187,8 +187,9 @@ public abstract class AbstractRepositoryPurgeTest
     }
 
     protected String prepareTestRepos()
-        throws IOException
+        throws Exception
     {
+        removeMavenIndexes();
         File testDir = getTestRepoRoot();
         FileUtils.deleteDirectory( testDir );
         FileUtils.copyDirectory( new File( "target/test-classes/" + TEST_REPO_ID ), testDir );
