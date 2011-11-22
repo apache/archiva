@@ -85,6 +85,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
+        removeMavenIndexes();
     }
 
     @Test

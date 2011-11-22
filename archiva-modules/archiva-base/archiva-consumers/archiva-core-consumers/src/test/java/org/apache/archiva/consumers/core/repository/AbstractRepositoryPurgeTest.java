@@ -102,13 +102,14 @@ public abstract class AbstractRepositoryPurgeTest
     @Inject
     protected PlexusSisuBridge plexusSisuBridge;
 
-    ArchivaConfiguration previousArchivaConfiguration;
 
     @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
+
+        removeMavenIndexes();
 
         listenerControl = MockControl.createControl( RepositoryListener.class );
 
@@ -118,10 +119,8 @@ public abstract class AbstractRepositoryPurgeTest
         metadataRepository = mock( MetadataRepository.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
 
-        previousArchivaConfiguration = ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
-            ManagedRepositoryAdmin.class ) ).getArchivaConfiguration();
 
-        removeMavenIndexes();
+
     }
 
     @After
