@@ -663,7 +663,7 @@
       <dependency>
         <groupId>org.apache.xmlrpc</groupId>
         <artifactId>xmlrpc-server</artifactId>
-        <version>3.1</version>
+        <version>3.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
