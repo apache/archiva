@@ -164,7 +164,9 @@ public abstract class AbstractProxyTestCase
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( config );
 
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
-        //config.getConfiguration().addManagedRepository( repoConfig );
+
+        // to prevent windauze file leaking
+        removeMavenIndexes();
 
         // Setup source repository (using legacy layout)
         repoLocation = new File( REPOPATH_LEGACY_MANAGED_TARGET );
@@ -217,6 +219,13 @@ public abstract class AbstractProxyTestCase
 
     @After
     public void shutdown()
+        throws Exception
+    {
+       removeMavenIndexes();
+    }
+
+
+    protected void removeMavenIndexes()
         throws Exception
     {
         NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );

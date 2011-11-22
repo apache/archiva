@@ -103,13 +103,6 @@ public class MetadataTransferTest
     @Named(value = "metadataTools#mocked")
     private MetadataTools metadataTools;
 
-    @Before
-    public void init()
-        throws Exception
-    {
-        super.setUp();
-        //metadataTools = applicationContext.getBean( MetadataTools.class );
-    }
 
     @Test
     public void testGetProjectMetadataProxiedNotLocalOnRemoteConnectoDisabled()
