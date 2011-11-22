@@ -25,10 +25,9 @@
     <artifactId>archiva-consumers</artifactId>
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
-
   <artifactId>archiva-core-consumers</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Consumers :: Core Consumers</name>
-
   <dependencies>
     <!-- TODO: remove this hard dependency by using an event mechanism -->
     <dependency>
@@ -138,6 +137,41 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.consumers.core</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.consumers.core*;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              org.apache.archiva.admin.model*;version=${project.version},
+              org.apache.archiva.checksum;version=${project.version},
+              org.apache.archiva.common.utils;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.apache.archiva.common.plexusbridge;version=${project.version},
+              org.apache.archiva.consumers;version=${project.version},
+              org.apache.archiva.metadata.repository;version=${project.version},
+              org.apache.archiva.model;version=${project.version},
+              org.apache.archiva.repository;version=${project.version},
+              org.apache.archiva.repository.events;version=${project.version},
+              org.apache.archiva.repository.layout;version=${project.version},
+              org.apache.archiva.repository.metadata;version=${project.version},
+              org.apache.commons.io;version="[1.4,2)",
+              org.apache.commons.lang*;version="[2.4,3)",
+              org.springframework*;version="[3,4)",
+              org.codehaus.plexus.digest,
+              org.codehaus.plexus.registry,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

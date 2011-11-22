@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<features name="archiva-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+  <feature name="archiva-common" description="Archiva Common module" version="${project.version}" resolver="(obr)">
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax-inject.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/${aopalliance.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-classworlds/${plexus-classworlds.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-component-annotations/${plexus-component-annotations.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-utils/${plexus-utils.version}</bundle>
+    <bundle>mvn:org.sonatype.sisu/sisu-guava/${sisu-guava.version}</bundle>
+    <bundle>mvn:org.sonatype.sisu/sisu-guice/${sisu-guice.version}</bundle>
+    <bundle>mvn:org.sonatype.sisu/sisu-inject-bean/${sisu-inject-bean.version}</bundle>
+    <bundle>mvn:org.sonatype.sisu/sisu-inject-plexus/${sisu-inject-plexus.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-common/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-checksum" description="Archiva Checksum module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-checksum/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-policies" description="Archiva Policies module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-checksum</feature>
+    <feature version="[3,4)">spring</feature>
+    <bundle>wrap:mvn:org.codehaus.redback.components.cache/spring-cache-api/${redback.cache.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ehcache/${ehcache.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback.components.cache/spring-cache-ehcache/${redback.cache.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-policies/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-configuration" description="Archiva Configuration module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-policies</feature>
+    <feature>http</feature>
+    <feature version="[3,4)">spring-web</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/${commons-codec.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-digester/${commons-digester.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-jxpath/${commons-jxpath.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-configuration/${commons-configuration.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-expression-evaluator/${plexus-expression-evaluator.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-interpolation/${plexus-interpolation.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback.components.registry/spring-registry-api/${redback.registry.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback.components.registry/spring-registry-commons/${redback.registry.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback.components/spring-utils/${redback.spring-utils.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-configuration/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-model" description="Archiva Model module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <bundle>mvn:org.apache.archiva/archiva-model/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-plexus-bridge" description="Archive Plexus Bridge module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-digest/${plexus-digest.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-plexus-bridge/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-repository-admin-api" description="Archiva Repository Admin API module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <bundle>wrap:mvn:org.codehaus.redback/redback-users-api/${redback.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback/redback-configuration/${redback.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback/redback-policy/${redback.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback/redback-users-memory/${redback.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-repository-admin-api/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-metadata" description="Archiva Metadata module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="[3,4)">spring</feature>
+    <bundle>mvn:org.apache.archiva/metadata-model/${project.version}</bundle>
+    <bundle>mvn:org.apache.archiva/metadata-repository-api/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-audit" description="Archiva Audit module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <bundle>mvn:org.apache.archiva/audit/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-xml-tools" description="Archiva XML Tools module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/${dom4j.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-xml-tools/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-maven2-repository" description="Archiva Maven 2 Repository module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-proxy-common</feature>
+    <feature version="${project.version}">archiva-reports</feature>
+    <feature version="${project.version}">archiva-xml-tools</feature>
+    <bundle>wrap:mvn:org.apache.maven/maven-artifact/${maven.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-model/${maven.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-project/${maven.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-settings/${maven.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-artifact-manager/${maven.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.shared/maven-dependency-tree/${maven-dependency-tree.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/${jdom.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/${lucene.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.archetype/archetype-catalog/${maven.archetype.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.archetype/archetype-registry/${maven.archetype.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.archetype/archetype-descriptor/${maven.archetype.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.shared/maven-invoker/${maven.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.indexer/indexer-core/${maven.indexer.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.indexer/indexer-artifact/${maven.indexer.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/${oro.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.velocity/${velocity.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.plexus/plexus-velocity/${plexus-velocity.version}</bundle>
+    <bundle>wrap:mvn:net.sourceforge.jchardet/jchardet/${jcharset.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.archetype/archetype-common/${maven.archetype.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-model-builder/${maven3x.version}</bundle>
+    <bundle>mvn:org.apache.archiva/maven2-repository/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-consumers-api" description="Archiva Consumers API module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-consumer-api/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-consumers" description="Archiva Consumers module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-consumers-api</feature>
+    <feature version="${project.version}">archiva-checksum</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-model</feature>
+    <feature version="${project.version}">archiva-scheduler-api</feature>
+    <bundle>mvn:org.apache.archiva/archiva-core-consumers/${project.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-lucene-consumers/${project.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-metadata-consumer/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-reports" description="Archiva Problem Reports module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-checksum</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-consumers-api</feature>
+    <bundle>mvn:org.apache.archiva/problem-reports/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-repository-layer" description="Archiva Repository Layer module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-checksum</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-model</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-xml-tools</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/${dom4j.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-repository-layer/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-proxy-common" description="Archiva Proxy Common module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-model</feature>
+    <feature version="${project.version}">archiva-policies</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-scheduler-api</feature>
+    <feature version="${project.version}">archiva-repository-layer</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.wagon/wagon-provider-api/${wagon.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.wagon/wagon-file/${wagon.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpclient.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jsoup/${jsoup.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.wagon/wagon-http-shared4/${wagon.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.wagon/wagon-http/${wagon.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-proxy-common/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-proxy" description="Archiva Proxy module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-proxy-common</feature>
+    <bundle>mvn:org.apache.archiva/archiva-proxy/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-scheduler-api" description="Archiva Scheduler API module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-proxy</feature>
+    <bundle>wrap:mvn:org.codehaus.redback.components/spring-taskqueue/${redback.taskqueue.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-scheduler-api/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-repository-statistics" description="Archiva Repository Statistics module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-maven2-repository</feature>
+    <bundle dependency="true">mvn:javax.jcr/jcr/${javax.jcr.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.jackrabbit/jackrabbit-jcr-commons/${jackrabbit.version}</bundle>
+    <bundle>mvn:org.apache.archiva/repository-statistics/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-repository-scanner" description="Archiva Repository Scanner module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archive-repository-layer</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-consumers-api</feature>
+    <bundle>mvn:org.apache.archiva/archiva-repository-scanner/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-scheduler" description="Archiva Scheduler module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-scheduler-api</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-repository-statistics</feature>
+    <feature version="${project.version}">archiva-proxy</feature>
+    <bundle>wrap:mvn:org.codehaus.redback.components/spring-quartz/${redback.quartz.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.quartz/${quartz.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/${lucene.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.indexer/indexer-artifact/${maven.indexer.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-scheduler-indexing/${project.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-scheduler-repository/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-repository-admin-default" description="Archiva Repository Admin Default module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-audit</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-scheduler</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-validator/${commons-validator.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.cglib/${cglib.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/${xpp3.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstream.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jcip-annotations/${jcip-annotations.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.beanlib/${beanlib.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.stax-utils/${stax-utils.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback/redback-rbac/${redback.version}</bundle>
+    <bundle>wrap:mvn:org.codehaus.redback/redback-rbac-role-manager/${redback.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-repository-admin-default/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-transaction" description="Archiva Transaction module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-transaction/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-artifact-converter" description="Archiva Artifact Converter module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-transaction</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-model-v3/${maven-model-v3.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-model/${maven3x.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven.shared/maven-model-converter/${maven-model-converter.version}</bundle>
+    <bundle>wrap:mvn:org.apache.maven/maven-repository-metadata/${maven.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-artifact-converter/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-converter" description="Archiva Converter module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-model</feature>
+    <feature version="${project.version}">archiva-consumers-api</feature>
+    <feature version="${project.version}">archiva-repository-layer</feature>
+    <feature version="${project.version}">archiva-repository-scanner</feature>
+    <feature version="${project.version}">archiva-transaction</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-converter/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-indexer" description="Archiva Indexer module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/${lucene.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-indexer/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-security-common" description="Archiva Security Common module" version="${project.version}" resolver="(obr)">
+    <bundle>mvn:org.apache.archiva/archiva-security-common/${project.version}</bundle>
+  </feature>
+
+
+
+</features>

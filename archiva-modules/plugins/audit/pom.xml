@@ -25,6 +25,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>audit</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: Audit Logging</name>
   <dependencies>
     <dependency>
@@ -41,4 +42,30 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.audit</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.audit;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.inject,
+              org.apache.archiva.metadata.model;version=${project.version},
+              org.apache.archiva.metadata.repository;version=${project.version},
+              org.springframework.stereotype;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

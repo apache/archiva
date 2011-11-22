@@ -25,6 +25,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-repository-api</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Metadata :: Repository API</name>
   <dependencies>
     <dependency>
@@ -55,6 +56,28 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.metadata.repository.api</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.metadata.repository;version=${project.version};-split-package:=merge-first,
+              org.apache.archiva.metadata.repository.filter;version=${project.version};-split-package:=merge-first,
+              org.apache.archiva.metadata.repository.storage;version=${project.version};-split-package:=merge-first,
+              org.apache.archiva.repository.events;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.inject,
+              org.apache.archiva.metadata.model;version=${project.version},
+              org.springframework.stereotype;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

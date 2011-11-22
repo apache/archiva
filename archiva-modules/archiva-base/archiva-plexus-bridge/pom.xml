@@ -26,6 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-plexus-bridge</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Plexus Bridge</name>
   <dependencies>
 
@@ -64,4 +65,34 @@
       </exclusions>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.common.plexusbridge</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.common.plexusbridge;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              org.codehaus.plexus,
+              org.codehaus.plexus.classworlds*,
+              org.codehaus.plexus.component.repository.exception,
+              org.codehaus.plexus.digest,
+              org.springframework.stereotype,
+              org.apache.maven.index.context;resolution:=optional,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

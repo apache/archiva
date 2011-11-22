@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>7</version>
+    <version>8-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -65,22 +65,37 @@
     <struts.version>2.2.3.1</struts.version>
     <maven3x.version>3.0.3</maven3x.version>
     <maven.version>2.0.8</maven.version>
+    <maven-dependency-tree.version>1.2</maven-dependency-tree.version>
+    <maven-model-converter.version>2.1</maven-model-converter.version>
+    <maven.indexer.version>4.1.2</maven.indexer.version>
     <wagon.version>2.0</wagon.version>
     <redback.version>1.4-SNAPSHOT</redback.version>
+    <redback.cache.version>1.0</redback.cache.version>
+    <redback.quartz.version>1.0</redback.quartz.version>
+    <redback.registry.version>1.0</redback.registry.version>
+    <redback.spring-utils.version>1.0</redback.spring-utils.version>
+    <redback.taskqueue.version>1.0</redback.taskqueue.version>
     <slf4j.version>1.6.4</slf4j.version>
     <binder.version>0.11</binder.version>
     <spring.version>3.0.5.RELEASE</spring.version>
     <jackrabbit.version>2.3.3</jackrabbit.version>
+    <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>3.0.3</lucene.version>
     <cxfVersion>2.4.4</cxfVersion>
     <derbyVersion>10.8.2.2</derbyVersion>
+    <httpclient.version>4.1.2</httpclient.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
+    <sisu-inject-plexus.version>2.2.2</sisu-inject-plexus.version>
+    <sisu-guice.version>3.0.1</sisu-guice.version>
+    <plexus-digest.version>1.1</plexus-digest.version>
+    <plexus-expression-evaluator.version>1.0-rc1</plexus-expression-evaluator.version>
+    <plexus-utils.version>1.5.5</plexus-utils.version>
   </properties>
 
   <dependencyManagement>
@@ -263,7 +278,7 @@
       <dependency>
         <groupId>org.apache.maven.indexer</groupId>
         <artifactId>indexer-core</artifactId>
-        <version>4.1.2</version>
+        <version>${maven.indexer.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -417,7 +432,7 @@
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
         <artifactId>spring-utils</artifactId>
-        <version>1.0</version>
+        <version>${redback.spring-utils.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
@@ -433,12 +448,12 @@
       <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-inject-plexus</artifactId>
-        <version>2.2.2</version>
+        <version>${sisu-inject-plexus.version}</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-guice</artifactId>
-        <version>3.0.1</version>
+        <version>${sisu-guice.version}</version>
       </dependency>
 
       <dependency>
@@ -696,12 +711,12 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-digest</artifactId>
-        <version>1.1</version>
+        <version>${plexus-digest.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-expression-evaluator</artifactId>
-        <version>1.0-rc1</version>
+        <version>${plexus-expression-evaluator.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -738,12 +753,12 @@
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
         <artifactId>spring-taskqueue</artifactId>
-        <version>1.0</version>
+        <version>${redback.taskqueue.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components</groupId>
         <artifactId>spring-quartz</artifactId>
-        <version>1.0</version>
+        <version>${redback.quartz.version}</version>
       </dependency>
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
@@ -763,17 +778,17 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>1.5.5</version>
+        <version>${plexus-utils.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components.cache</groupId>
         <artifactId>spring-cache-api</artifactId>
-        <version>1.0</version>
+        <version>${redback.cache.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components.cache</groupId>
         <artifactId>spring-cache-ehcache</artifactId>
-        <version>1.0</version>
+        <version>${redback.cache.version}</version>
       </dependency>
 
       <!-- redback -->
@@ -991,12 +1006,12 @@
       <dependency>
         <groupId>org.codehaus.redback.components.registry</groupId>
         <artifactId>spring-registry-api</artifactId>
-        <version>1.0</version>
+        <version>${redback.registry.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.redback.components.registry</groupId>
         <artifactId>spring-registry-commons</artifactId>
-        <version>1.0</version>
+        <version>${redback.registry.version}</version>
         <exclusions>
           <exclusion>
             <groupId>ant</groupId>
@@ -1084,7 +1099,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.1.2</version>
+        <version>${httpclient.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -1200,7 +1215,7 @@
       <dependency>
         <groupId>javax.jcr</groupId>
         <artifactId>jcr</artifactId>
-        <version>2.0</version>
+        <version>${javax.jcr.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
@@ -1299,7 +1314,7 @@
       <dependency>
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-model-converter</artifactId>
-        <version>2.1</version>
+        <version>${maven-model-converter.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -1310,7 +1325,7 @@
       <dependency>
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-dependency-tree</artifactId>
-        <version>1.2</version>
+        <version>${maven-dependency-tree.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>

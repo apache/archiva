@@ -26,5 +26,26 @@
   </parent>
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva-security-common</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Security Common</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.security.common</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.security.common;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -25,10 +25,9 @@
     <artifactId>archiva-consumers</artifactId>
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
-
   <artifactId>archiva-consumer-api</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Consumers :: API</name>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -43,4 +42,28 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.consumers.api</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.consumers*;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              org.apache.archiva.admin.model.beans;version=${project.version},
+              org.apache.archiva.common*;version=${project.version},
+              org.apache.commons.collections;version="[3.2,4)",
+              org.apache.commons.io;version="[1.4,2)",
+              org.codehaus.plexus.util
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

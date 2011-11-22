@@ -26,6 +26,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-metadata-consumer</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Consumers :: Metadata</name>
   <dependencies>
     <dependency>
@@ -57,4 +58,35 @@
       <artifactId>spring-registry-api</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.consumers.metadata</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.consumers.metadata;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              org.apache.archiva.admin.model.beans;version=${project.version},
+              org.apache.archiva.common.utils;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.apache.archiva.consumers;version=${project.version},
+              org.apache.archiva.metadata.model;version=${project.version},
+              org.apache.archiva.metadata.repository;version=${project.version},
+              org.apache.archiva.metadata.repository.storage;version=${project.version},
+              org.springframework*;version="[3,4)",
+              org.codehaus.plexus.registry,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

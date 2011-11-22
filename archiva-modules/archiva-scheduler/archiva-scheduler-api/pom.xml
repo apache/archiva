@@ -25,6 +25,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-api</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Scheduler :: API</name>
   <dependencies>
     <dependency>
@@ -36,4 +37,24 @@
       <artifactId>spring-taskqueue</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.scheduler.api</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.scheduler;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              org.codehaus.plexus.taskqueue
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -32,6 +32,7 @@
     <module>archiva-base</module>
     <module>archiva-scheduler</module>
     <module>archiva-web</module>
+    <module>archiva-karaf</module>
     <module>metadata</module>
     <module>plugins</module>
   </modules>

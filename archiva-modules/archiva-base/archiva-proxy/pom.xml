@@ -26,6 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-proxy</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Proxy</name>
   <dependencies>
     <dependency>
@@ -151,6 +152,43 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.proxy</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.proxy;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              com.google.common.collect,
+              org.apache.archiva.admin.model.beans;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.apache.archiva.model;version=${project.version},
+              org.apache.archiva.policies*;version=${project.version},
+              org.apache.archiva.proxy.common;version=${project.version},
+              org.apache.archiva.repository*;version=${project.version},
+              org.apache.archiva.scheduler*;version=${project.version},
+              org.apache.commons.collections;version="[3.2,4)",
+              org.apache.commons.io;version="[1.4,2)",
+              org.apache.commons.lang;version="[2.4,3)",
+              org.springframework.stereotype;version="[3,4)",
+              org.codehaus.plexus.registry,
+              org.codehaus.plexus.taskqueue,
+              org.codehaus.plexus.util,
+              org.apache.maven.wagon,
+              org.apache.maven.wagon.authentication,
+              org.apache.maven.wagon.proxy,
+              org.apache.maven.wagon.repository,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

@@ -26,14 +26,12 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-consumer-archetype</artifactId>
-
   <packaging>maven-archetype</packaging>
   <name>Archiva Consumers :: Consumers Archetype</name>
   <description>Simple archetype to create archiva consumers</description>
   <properties>
     <archivaVersion>${project.version}</archivaVersion>
   </properties>
-
   <build>
     <resources>
       <resource>

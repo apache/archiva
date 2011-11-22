@@ -26,6 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-policies</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Policies</name>
   <dependencies>
     <dependency>
@@ -105,6 +106,28 @@
           <systemPropertyVariables>
             <basedir>${basedir}</basedir>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.policies</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.policies*;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.inject,
+              org.apache.archiva.checksum;version=${project.version},
+              org.apache.archiva.common*;version=${project.version},
+              org.apache.commons.lang;version="[2,3)",
+              org.springframework.stereotype;version="[3,4)",
+              org.codehaus.plexus.cache,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
         </configuration>
       </plugin>
     </plugins>

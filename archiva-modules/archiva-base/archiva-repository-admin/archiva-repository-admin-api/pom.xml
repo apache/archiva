@@ -26,6 +26,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-repository-admin-api</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Repository Admin Api</name>
   <dependencies>
     <dependency>
@@ -82,6 +83,26 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.repository.admin.api</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.admin.model*;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.xml.bind.annotation,
+              org.apache.commons.collections;version="[3.2,4)",
+              org.apache.commons.lang;version="[2.4,3)",
+              org.codehaus.plexus.redback.users,
+              org.apache.maven.index.context;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>

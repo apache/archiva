@@ -26,6 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-common</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Common</name>
   <dependencies>
     <!-- TO OTHER DEVELOPERS:
@@ -72,6 +73,26 @@
     </dependency>
   </dependencies>
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.common</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.common*;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              org.apache.commons.lang*;version="[2,3)",
+              org.codehaus.plexus.logging,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>

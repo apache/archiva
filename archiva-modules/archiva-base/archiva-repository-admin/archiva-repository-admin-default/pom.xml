@@ -26,6 +26,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-repository-admin-default</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Base :: Repository Admin Default</name>
   <dependencies>
     <dependency>
@@ -204,6 +205,44 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.repository.admin.default</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.admin.repository*;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              net.sf.beanlib.provider.replicator,
+              org.apache.archiva.admin.model*;version=${project.version},
+              org.apache.archiva.audit;version=${project.version},
+              org.apache.archiva.common.plexusbridge;version=${project.version},
+              org.apache.archiva.configuration*;version=${project.version},
+              org.apache.archiva.metadata*;version=${project.version},
+              org.apache.archiva.scheduler*;version=${project.version},
+              org.apache.commons.collections;version="[3.2,4)",
+              org.apache.commons.io;version="[1.4,2)",
+              org.apache.commons.lang*;version="[2.4,3)",
+              org.apache.commons.validator;version="[1.3,2)",
+              org.apache.http*;version="[4,5)",
+              org.springframework*;version="[3,4)",
+              org.apache.maven.index*,
+              org.apache.maven.wagon*,
+              org.codehaus.plexus.redback.role,
+              org.codehaus.plexus.redback.users,
+              org.codehaus.plexus.registry,
+              org.codehaus.plexus.taskqueue,
+              org.codehaus.redback.components.scheduler,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

@@ -26,6 +26,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-artifact-converter</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Artifact Converter</name>
   <description>Converts between Legacy and Modern Layout Artifacts.</description>
   <dependencies>
@@ -82,6 +83,31 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.artifact.converter</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.converter.artifact*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              org.apache.archiva.common.plexusbridge;version=${project.version},
+              org.apache.archiva.transaction;version=${project.version},
+              org.apache.commons.io;version="[1.4,2)",
+              org.springframework*;version="[3,4)",
+              org.apache.maven.artifact*,
+              org.apache.maven.model*,
+              org.codehaus.plexus.digest,
+              org.codehaus.plexus.util*
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
