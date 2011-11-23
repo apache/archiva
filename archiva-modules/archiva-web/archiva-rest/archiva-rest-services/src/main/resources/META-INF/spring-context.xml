@@ -44,7 +44,6 @@
     <jaxrs:providers>
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
-      <ref bean="httpContextThreadLocalInterceptor#rest"/>
       <ref bean="archivaRestServiceExceptionMapper"/>
     </jaxrs:providers>
 
@@ -62,7 +61,6 @@
 
     <jaxrs:outInterceptors>
       <ref bean="threadLocalUserCleaner#rest"/>
-      <ref bean="httpContextThreadLocalCleaner#rest"/>
     </jaxrs:outInterceptors>
 
     <jaxrs:outFaultInterceptors>

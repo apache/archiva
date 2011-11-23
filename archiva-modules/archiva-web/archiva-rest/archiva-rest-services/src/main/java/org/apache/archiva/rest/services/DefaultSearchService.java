@@ -48,6 +48,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -67,6 +68,9 @@ public class DefaultSearchService
 
     @Inject
     private UserRepositories userRepositories;
+
+    @Context
+    private HttpServletRequest httpServletRequest;
 
     public List<Artifact> quickSearch( String queryString )
         throws ArchivaRestServiceException
@@ -216,7 +220,6 @@ public class DefaultSearchService
     protected List<Artifact> getArtifacts( SearchResults searchResults )
     {
 
-        HttpContext httpContext = HttpContextThreadLocal.get();
         if ( searchResults == null || searchResults.isEmpty() )
         {
             return Collections.emptyList();
@@ -235,7 +238,7 @@ public class DefaultSearchService
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
-                        versionned.setUrl( getArtifactUrl( httpContext, versionned ) );
+                        versionned.setUrl( getArtifactUrl( versionned ) );
 
                         artifacts.add( versionned );
 
@@ -248,17 +251,13 @@ public class DefaultSearchService
 
     /**
      * TODO add a configuration mechanism to have configured the base archiva url
-     * @param httpContext
      * @param artifact
      * @return
      */
-    private String getArtifactUrl( HttpContext httpContext, Artifact artifact )
+    private String getArtifactUrl( Artifact artifact )
     {
-        if ( httpContext == null )
-        {
-            return null;
-        }
-        if ( httpContext.getHttpServletRequest() == null )
+
+        if ( httpServletRequest == null )
         {
             return null;
         }
@@ -266,7 +265,7 @@ public class DefaultSearchService
         {
             return null;
         }
-        StringBuilder sb = new StringBuilder( getBaseUrl( httpContext.getHttpServletRequest() ) );
+        StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
 
         sb.append( "/repository" );
         if ( !StringUtils.startsWith( artifact.getUrl(), "/" ) )
