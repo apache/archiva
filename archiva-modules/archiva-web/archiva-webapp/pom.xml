@@ -236,6 +236,30 @@
       <artifactId>commons-configuration</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <exclusions>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -338,12 +362,7 @@
       </exclusions>
     </dependency>
     <!-- Redback Dependencies -->
-    <dependency>
-      <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-struts2-content</artifactId>
-      <type>war</type>
-      <scope>runtime</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-struts2-integration</artifactId>
@@ -383,6 +402,14 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-struts2-content</artifactId>
+      <scope>runtime</scope>
+      <type>war</type>
+    </dependency>
+
     <!-- Other dependencies -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -723,6 +750,18 @@
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
           </archive>
+          <overlays>
+            <overlay>
+              <id>redback-contents</id>
+              <groupId>org.codehaus.redback</groupId>
+              <artifactId>redback-struts2-content</artifactId>
+              <excludes>
+                <exclude>WEB-INF/lib/**.jar</exclude>
+                <exclude>WEB-INF/web.xml</exclude>
+                <exclude>META-INF/**</exclude>
+              </excludes>
+            </overlay>
+          </overlays>
         </configuration>
       </plugin>
       <plugin>
