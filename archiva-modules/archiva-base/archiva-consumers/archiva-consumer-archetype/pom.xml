@@ -31,6 +31,7 @@
   <description>Simple archetype to create archiva consumers</description>
   <properties>
     <archivaVersion>${project.version}</archivaVersion>
+    <archetypeVersion>2.2</archetypeVersion>
   </properties>
   <build>
     <resources>
@@ -43,14 +44,14 @@
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>${archetypeVersion}</version>
       </extension>
     </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-archetype-plugin</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>${archetypeVersion}</version>
         <configuration>
           <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
           <localRepositoryPath>${basedir}/target/local-repo</localRepositoryPath>
