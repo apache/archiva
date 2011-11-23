@@ -31,8 +31,6 @@ import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.apache.archiva.rest.services.interceptors.HttpContext;
-import org.apache.archiva.rest.services.interceptors.HttpContextThreadLocal;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
