@@ -15,6 +15,8 @@
 -->
 <features name="archiva-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
 
+  <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
+
   <feature name="archiva-common" description="Archiva Common module" version="${project.version}" resolver="(obr)">
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax-inject.bundle.version}</bundle>
@@ -308,6 +310,23 @@
     <bundle>mvn:org.apache.archiva/archiva-security-common/${project.version}</bundle>
   </feature>
 
+  <feature name="archiva-rest-api" description="Archiva REST API module" version="${project.version}" resolver="(obr)">
+    <feature version="[2.4,3)">cxf</feature>
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <bundle>mvn:org.apache.archiva/archiva-rest-api/${project.version}</bundle>
+  </feature>
 
+  <feature name="archiva-rest-services" description="Archiva REST Services module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-rest-api</feature>
+    <bundle>mvn:org.apache.archiva/archiva-rest-services/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva-rss" description="Archiva RSS module" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.rome/${rome.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-rss/${project.version}</bundle>
+  </feature>
 
 </features>

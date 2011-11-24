@@ -26,6 +26,7 @@
   </parent>
   <artifactId>archiva-rest-services</artifactId>
   <version>1.4-M2-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <name>Archiva Web :: REST support :: Services</name>
 
   <properties>
@@ -272,6 +273,17 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.rest.services</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Require-Bundle>org.apache.cxf.bundle,org.springframework.beans,org.apache.archiva.rest.api</Require-Bundle>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
