@@ -26,6 +26,7 @@
   </parent>
   <groupId>org.apache.archiva</groupId>
   <artifactId>stage-repository-merge</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: Stage Repository Merge</name>
 
   <dependencies>
@@ -72,6 +73,29 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.stagerepository.merge</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.stagerepository.merge;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.inject,
+              org.apache.archiva.common.utils;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.apache.archiva.metadata.*;version=${project.version},
+              org.apache.archiva.model;version=${project.version},
+              org.apache.archiva.repository*;version=${project.version},
+              org.apache.commons.io;version="[1.4,2)",
+              org.springframework*;version="[3,4)"
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

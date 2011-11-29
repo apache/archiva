@@ -25,6 +25,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-xmlrpc-api</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Web :: XML-RPC API</name>
   <dependencies>
     <dependency>
@@ -44,4 +45,25 @@
       <artifactId>atlassian-xmlrpc-binder-annotations</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.web.xmlrpc.api</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.web.xmlrpc.api*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              org.apache.archiva.admin.model;version=${project.version},
+              com.atlassian.xmlrpc;version="[0.11,1)"
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

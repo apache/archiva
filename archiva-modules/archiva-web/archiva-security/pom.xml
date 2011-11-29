@@ -26,6 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-security</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Web :: Security Configuration</name>
   <dependencies>
     <dependency>
@@ -155,6 +156,35 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.security</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.security;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              com.google.common.collect,
+              javax.inject,
+              javax.servlet.http,
+              org.apache.archiva.common;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.codehaus.plexus.redback.authentication,
+              org.codehaus.plexus.redback.authorization,
+              org.codehaus.plexus.redback.policy,
+              org.codehaus.plexus.redback.rbac,
+              org.codehaus.plexus.redback.system*,
+              org.codehaus.plexus.redback.users,
+              org.codehaus.plexus.redback.role,
+              org.springframework*;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

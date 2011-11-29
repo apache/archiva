@@ -31,6 +31,7 @@
 
   <properties>
     <aopalliance.bundle.version>1.0_5</aopalliance.bundle.version>
+    <atlassian-xmlrpc-binder-annotations.bundle.version>0.11_1-SNAPSHOT</atlassian-xmlrpc-binder-annotations.bundle.version>
     <beanlib.bundle.version>5.0.2beta_1-SNAPSHOT</beanlib.bundle.version>
     <cglib.bundle.version>2.2_2</cglib.bundle.version>
     <commons-beanutils.bundle.version>1.8.2_2</commons-beanutils.bundle.version>
@@ -48,6 +49,7 @@
     <jcharset.version>1.0</jcharset.version>
     <jcip-annotations.bundle.version>1.0_1-SNAPSHOT</jcip-annotations.bundle.version>
     <jdom.bundle.version>1.1_4</jdom.bundle.version>
+    <joda-time.bundle.version>1.5.2_4</joda-time.bundle.version>
     <jsoup.bundle.version>1.5.2_1</jsoup.bundle.version>
     <lucene.bundle.version>3.0.3_2</lucene.bundle.version>
     <maven.archetype.version>2.1</maven.archetype.version>
@@ -64,8 +66,10 @@
     <sisu-guava.version>0.9.9</sisu-guava.version>
     <stax-utils.bundle.version>20040917_2</stax-utils.bundle.version>
     <velocity.bundle.version>1.7_3</velocity.bundle.version>
+    <xmlrpc-server.bundle.version>3.1.2_1-SNAPSHOT</xmlrpc-server.bundle.version>
     <xpp3.bundle.version>1.1.4c_5</xpp3.bundle.version>
     <xstream.bundle.version>1.4_1</xstream.bundle.version>
+    <ws-commons-util.bundle.version>1.0.2_1-SNAPSHOT</ws-commons-util.bundle.version>
   </properties>
 
   <build>

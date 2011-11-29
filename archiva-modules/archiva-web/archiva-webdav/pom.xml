@@ -27,6 +27,7 @@
   </parent>
 
   <artifactId>archiva-webdav</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Web :: WebDAV</name>
 
   <properties>
@@ -188,6 +189,50 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.webdav</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.webdav*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              javax.servlet*,
+              org.apache.archiva.admin.model*;version=${project.version},
+              org.apache.archiva.audit;version=${project.version},
+              org.apache.archiva.common.plexusbridge;version=${project.version},
+              org.apache.archiva.common.utils;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.apache.archiva.indexer.*;version=${project.version},
+              org.apache.archiva.model;version=${project.version},
+              org.apache.archiva.policies;version=${project.version},
+              org.apache.archiva.proxy;version=${project.version},
+              org.apache.archiva.repository*;version=${project.version},
+              org.apache.archiva.scheduler*;version=${project.version},
+              org.apache.archiva.security;version=${project.version},
+              org.apache.commons.io;version="[1.4,2)",
+              org.apache.commons.lang;version="[2.4,3)",
+              org.apache.jackrabbit.util;version="[2.3,3)",
+              org.apache.jackrabbit.webdav*;version="[2.3,3)",
+              org.joda.time*;version="[1.5,2)",
+              org.springframework*;version="[3,4)",
+              org.apache.maven.index*,
+              org.apache.maven.model*,
+              org.codehaus.plexus.digest,
+              org.codehaus.plexus.redback.*,
+              org.codehaus.plexus.taskqueue,
+              org.codehaus.plexus.util*,
+              org.codehaus.redback.integration.filter.authentication,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

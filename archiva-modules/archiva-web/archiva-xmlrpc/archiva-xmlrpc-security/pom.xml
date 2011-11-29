@@ -26,6 +26,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-xmlrpc-security</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Web :: XML-RPC Security</name>
   <dependencies>
     <dependency>
@@ -136,6 +137,30 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.web.xmlrpc.security</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.web.xmlrpc.security;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              org.apache.archiva.security;version=${project.version},
+              org.apache.xmlrpc;version="[3,4)",
+              org.apache.xmlrpc.common;version="[3,4)",
+              org.apache.xmlrpc.server;version="[3,4)",
+              org.codehaus.plexus.redback.authentication,
+              org.codehaus.plexus.redback.authorization,
+              org.codehaus.plexus.redback.policy,
+              org.codehaus.plexus.redback.system,
+              org.codehaus.plexus.redback.users
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

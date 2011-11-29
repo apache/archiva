@@ -26,6 +26,7 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-store-jcr</artifactId>
+  <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: JCR Storage for Metadata</name>
   <dependencies>
     <dependency>
@@ -80,5 +81,34 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.metadata.repository.jcr</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.metadata.repository.jcr;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              javax.jcr,
+              javax.jcr.nodetype,
+              javax.jcr.query,
+              org.apache.archiva.metadata.model;version=${project.version},
+              org.apache.archiva.metadata.repository;version=${project.version},
+              org.apache.commons.lang;version="[2.4,3)",
+              org.apache.jackrabbit.commons;version="[2.3,3)",
+              org.apache.jackrabbit.core.config;version="[2.3,3)",
+              org.springframework*;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
