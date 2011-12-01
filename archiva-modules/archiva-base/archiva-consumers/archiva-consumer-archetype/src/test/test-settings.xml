@@ -28,7 +28,7 @@ under the License.
       </activation>
       <repositories>
         <repository>
-          <id>local.central</id>
+          <id>central</id>
           <url>@localRepositoryUrl@</url>
           <releases>
             <enabled>true</enabled>
@@ -40,7 +40,7 @@ under the License.
       </repositories>
       <pluginRepositories>
         <pluginRepository>
-          <id>local.central</id>
+          <id>central</id>
           <url>@localRepositoryUrl@</url>
           <releases>
             <enabled>true</enabled>
