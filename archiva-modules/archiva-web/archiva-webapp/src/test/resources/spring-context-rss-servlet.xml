@@ -63,5 +63,7 @@
       </value>
     </property>
   </bean>
+  
+  <bean name="RoleManagerStub" class="org.apache.archiva.web.rss.RoleManagerStub"/>
 
 </beans>

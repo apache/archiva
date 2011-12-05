@@ -836,6 +836,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <argLine>-XX:MaxPermSize=256m -client</argLine>
           <runOrder>alphabetical</runOrder>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>

@@ -32,10 +32,13 @@ import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
+import org.codehaus.plexus.redback.users.UserManagerListener;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.codehaus.plexus.redback.users.UserQuery;
 import org.codehaus.plexus.redback.users.jdo.JdoUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +129,437 @@ public class SecuritySystemStub
 
     public UserManager getUserManager()
     {
-        return null;
+        return new UserManager()
+        {
+            public boolean isReadOnly()
+            {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public String getId()
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void addUserManagerListener( UserManagerListener listener )
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void removeUserManagerListener( UserManagerListener listener )
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User createUser( String username, String fullName, String emailAddress )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User createGuestUser()
+            {
+                return new User()
+                {
+                    public Object getPrincipal()
+                    {
+                        return "guest";
+                    }
+
+                    public String getUsername()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setUsername( String name )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getFullName()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setFullName( String name )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getEmail()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setEmail( String address )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getPassword()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPassword( String rawPassword )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getEncodedPassword()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setEncodedPassword( String encodedPassword )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Date getLastPasswordChange()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setLastPasswordChange( Date passwordChangeDate )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public List<String> getPreviousEncodedPasswords()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPreviousEncodedPasswords( List<String> encodedPasswordList )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void addPreviousEncodedPassword( String encodedPassword )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isPermanent()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPermanent( boolean permanent )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isLocked()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setLocked( boolean locked )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isPasswordChangeRequired()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPasswordChangeRequired( boolean changeRequired )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isValidated()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setValidated( boolean valid )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public int getCountFailedLoginAttempts()
+                    {
+                        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setCountFailedLoginAttempts( int count )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Date getAccountCreationDate()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setAccountCreationDate( Date date )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Date getLastLoginDate()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setLastLoginDate( Date date )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+                };
+            }
+
+            public UserQuery createUserQuery()
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public List<User> getUsers()
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public List<User> getUsers( boolean orderAscending )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User addUser( User user )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User updateUser( User user )
+                throws UserNotFoundException
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User findUser( String username )
+                throws UserNotFoundException
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User getGuestUser()
+                throws UserNotFoundException
+            {
+                return new User()
+                {
+                    public Object getPrincipal()
+                    {
+                        return "guest";
+                    }
+
+                    public String getUsername()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setUsername( String name )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getFullName()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setFullName( String name )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getEmail()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setEmail( String address )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getPassword()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPassword( String rawPassword )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getEncodedPassword()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setEncodedPassword( String encodedPassword )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Date getLastPasswordChange()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setLastPasswordChange( Date passwordChangeDate )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public List<String> getPreviousEncodedPasswords()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPreviousEncodedPasswords( List<String> encodedPasswordList )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void addPreviousEncodedPassword( String encodedPassword )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isPermanent()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPermanent( boolean permanent )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isLocked()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setLocked( boolean locked )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isPasswordChangeRequired()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setPasswordChangeRequired( boolean changeRequired )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public boolean isValidated()
+                    {
+                        return false;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setValidated( boolean valid )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public int getCountFailedLoginAttempts()
+                    {
+                        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setCountFailedLoginAttempts( int count )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Date getAccountCreationDate()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setAccountCreationDate( Date date )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public Date getLastLoginDate()
+                    {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public void setLastLoginDate( Date date )
+                    {
+                        //To change body of implemented methods use File | Settings | File Templates.
+                    }
+                };
+            }
+
+            public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public List<User> findUsersByQuery( UserQuery query )
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User findUser( Object principal )
+                throws UserNotFoundException
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public boolean userExists( Object principal )
+            {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void deleteUser( Object principal )
+                throws UserNotFoundException
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void deleteUser( String username )
+                throws UserNotFoundException
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void addUserUnchecked( User user )
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void eraseDatabase()
+            {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public User updateUser( User user, boolean passwordChangeRequired )
+                throws UserNotFoundException
+            {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
     }
 
     public boolean isAuthenticated( AuthenticationDataSource arg0 )
