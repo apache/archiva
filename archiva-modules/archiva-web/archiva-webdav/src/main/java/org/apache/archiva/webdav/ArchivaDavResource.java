@@ -681,7 +681,7 @@ public class ArchivaDavResource
         task.setRepositoryId( repository.getId() );
         task.setResourceFile( localFile );
         task.setUpdateRelatedArtifacts( false );
-        task.setScanAll( true );
+        task.setScanAll( false );
 
         try
         {
