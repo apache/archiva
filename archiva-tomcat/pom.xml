@@ -28,7 +28,7 @@
   </parent>
   <artifactId>archiva-tomcat</artifactId>
   <packaging>pom</packaging>
-  <name>Apache Archiva :: Embeded Tomcat</name>
+  <name>Apache Archiva :: Embedded Tomcat</name>
   <dependencies>
 
     <dependency>
