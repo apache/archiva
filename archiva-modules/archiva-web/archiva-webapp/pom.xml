@@ -145,6 +145,14 @@
       <artifactId>archiva-lucene-consumers</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queries</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>stage-repository-merge</artifactId>
     </dependency>
