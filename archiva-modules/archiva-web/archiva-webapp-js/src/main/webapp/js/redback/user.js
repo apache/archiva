@@ -224,52 +224,69 @@ $(function() {
     var url = 'restServices/redbackServices/loginService/logIn?userName='+$("#user-login-form-username").val();
     url += "&password="+$("#user-login-form-password").val();
 
-    $.ajax({
-      url: url,
-      success: function(result){
-        var logged = false;
-        if (result == null) {
-          logged = false;
-        } else {
-          if (result.user) {
-            logged = true;
-          }
+    var successCallbackFn=function(result){
+      var logged = false;
+      if (result == null) {
+        logged = false;
+      } else {
+        if (result.user) {
+          logged = true;
         }
-        if (logged == true) {
-          var user = mapUser(result.user);
-          $.log("user.passwordChangeRequired:"+user.passwordChangeRequired());
-          if (user.passwordChangeRequired()==true){
-            changePasswordBox(true,false,user);
-            return;
-          }
-          // not really needed as an exception is returned but "ceintures et bretelles" as we said in French :-)
-          if (user.locked()==true){
-            $.log("user locked");
-            displayErrorMessage($.i18n.prop("accout.locked"));
-            return
-          }          
-          // FIXME check validated
-          reccordLoginCookie(user);
-          $("#login-link").hide();
-          $("#logout-link").show();
-          $("#register-link").hide();
-          $("#change-password-link").show();
-          window.modalLoginWindow.modal('hide');
-          clearForm("#user-login-form");
-          decorateMenuWithKarma(user);
+      }
+      if (logged == true) {
+        var user = mapUser(result.user);
+        $.log("user.passwordChangeRequired:"+user.passwordChangeRequired());
+        if (user.passwordChangeRequired()==true){
+          changePasswordBox(true,false,user);
           return;
         }
-        $("#modal-login-err-message").html($.i18n.prop("incorrect.username.password"));
-        $("#modal-login-err-message").show();
-      },
-      error: function(result) {
-       var obj = jQuery.parseJSON(result.responseText);
-       displayRedbackError(obj);
-      },
-      complete: function(){
-        $("#modal-login-ok").removeAttr("disabled");
-        $("#login-spinner").remove();
+        // not really needed as an exception is returned but "ceintures et bretelles" as we said in French :-)
+        if (user.locked()==true){
+          $.log("user locked");
+          displayErrorMessage($.i18n.prop("accout.locked"));
+          return
+        }
+        // FIXME check validated
+        reccordLoginCookie(user);
+        $("#login-link").hide();
+        $("#logout-link").show();
+        $("#register-link").hide();
+        $("#change-password-link").show();
+        window.modalLoginWindow.modal('hide');
+        clearForm("#user-login-form");
+        decorateMenuWithKarma(user);
+        return;
       }
+      $("#modal-login-err-message").html($.i18n.prop("incorrect.username.password"));
+      $("#modal-login-err-message").show();
+    }
+
+    var errorCallbackFn= function(result) {
+     var obj = jQuery.parseJSON(result.responseText);
+     displayRedbackError(obj);
+    }
+
+    var completeCallbackFn=function(){
+      $("#modal-login-ok").removeAttr("disabled");
+      $("#login-spinner").remove();
+    }
+
+    loginCall($("#user-login-form-username").val(),$("#user-login-form-password").val()
+        ,successCallbackFn,errorCallbackFn,completeCallbackFn);
+
+
+
+  }
+
+  loginCall=function(username,password,successCallbackFn, errorCallbackFn, completeCallbackFn) {
+    var url = 'restServices/redbackServices/loginService/logIn?userName='+username;
+    url += "&password="+password;
+
+    $.ajax({
+      url: url,
+      success: successCallbackFn,
+      error: errorCallbackFn,
+      complete: completeCallbackFn
     });
 
   }
