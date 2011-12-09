@@ -163,11 +163,6 @@
     <property name="session" ref="mailSession"/>
   </bean>
 
-  <!-- This is used to prevent the old profile activator being loaded from the running instance of Maven in jetty:run -->
-  <bean name="profileActivator#jdk-prefix" class="org.apache.archiva.web.spring.DummyProfileActivator"/>
-  <bean name="profileActivator#system-property" class="org.apache.archiva.web.spring.DummyProfileActivator"/>
-  <bean name="profileActivator#always-on" class="org.apache.archiva.web.spring.DummyProfileActivator"/>
-  
   <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
