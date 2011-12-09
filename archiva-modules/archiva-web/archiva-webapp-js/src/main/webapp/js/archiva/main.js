@@ -35,10 +35,10 @@ function($) {
        * return a user see user.js if user logged otherwise null
        */
       userLogged=function() {
-        // call /restServices/redbackServices/loginService/isLogged to know
+        // call restServices/redbackServices/loginService/isLogged to know
         // if a session exists and check the cookie
         var userLogged = true;
-        $.ajax("/restServices/redbackServices/loginService/isLogged", {
+        $.ajax("restServices/redbackServices/loginService/isLogged", {
           type: "GET",
           async: false,
           success: function(data) {
@@ -78,7 +78,7 @@ function($) {
         screenChange();
         $("#main-content").html("");
         $.ajax({
-          url: '/restServices/redbackServices/loginService/logout'
+          url: 'restServices/redbackServices/loginService/logout'
         });
       }
 
@@ -88,7 +88,7 @@ function($) {
           if ($.isFunction(username)){
             username = user.username();
           }
-          var url = '/restServices/redbackServices/userService/getCurrentUserOperations';
+          var url = 'restServices/redbackServices/userService/getCurrentUserOperations';
           $.ajax({
             url: url,
             success: function(data){
@@ -131,7 +131,7 @@ function($) {
       $('#sidebar-content').html($("#main-menu"));
 
 
-      $.ajax("/restServices/redbackServices/userService/isAdminUserExists", {
+      $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
         type: "GET",
         dataType: 'json',
         success: function(data) {

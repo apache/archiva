@@ -50,7 +50,7 @@ $(function() {
     user.fullName = $("#user-register-form-fullname").val();
     user.email = $("#user-register-form-email").val();
     jQuery.ajax({
-      url:  '/restServices/redbackServices/userService/registerUser',
+      url:  'restServices/redbackServices/userService/registerUser',
       data:  '{"user":'+JSON.stringify(user)+'}',
       type: 'POST',
       contentType: "application/json",
@@ -89,7 +89,7 @@ $(function() {
   validateKey=function(key) {
     // spinner display
     $.ajax({
-      url: '/restServices/redbackServices/userService/validateKey/'+key,
+      url: 'restServices/redbackServices/userService/validateKey/'+key,
       type: 'GET',
        success: function(result){
          window.redbackModel.key=key;

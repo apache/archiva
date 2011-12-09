@@ -45,7 +45,7 @@ $(function() {
       };
       this.createUser = function() {
         var currentUser = this;
-        $.ajax("/restServices/redbackServices/userService/createUser", {
+        $.ajax("restServices/redbackServices/userService/createUser", {
             data: "{\"user\": " +  ko.toJSON(this)+"}",
             contentType: 'application/json',
             type: "POST",
@@ -76,7 +76,7 @@ $(function() {
             return;
         }
 
-        $.ajax("/restServices/redbackServices/userService/createAdminUser", {
+        $.ajax("restServices/redbackServices/userService/createAdminUser", {
             data: "{\"user\": " +  ko.toJSON(this)+"}",
             contentType: 'application/json',
             type: "POST",
@@ -102,7 +102,7 @@ $(function() {
         // FIXME i18n
         var currentUser = this;
         openDialogConfirm(function(){
-          $.ajax("/restServices/redbackServices/userService/deleteUser/"+currentUser.username(), {
+          $.ajax("restServices/redbackServices/userService/deleteUser/"+currentUser.username(), {
                 type: "GET",
                 dataType: 'json',
                 success: function(data) {
@@ -126,7 +126,7 @@ $(function() {
 
       this.update=function(){
         var currentUser = this;
-        $.ajax("/restServices/redbackServices/userService/updateUser", {
+        $.ajax("restServices/redbackServices/userService/updateUser", {
             data: "{\"user\": " +  ko.toJSON(this)+"}",
             contentType: 'application/json',
             type: "POST",
@@ -215,7 +215,7 @@ $(function() {
     //#modal-login-footer
     $('#modal-login-footer').append(smallSpinnerImg());
 
-    var url = '/restServices/redbackServices/loginService/logIn?userName='+$("#user-login-form-username").val();
+    var url = 'restServices/redbackServices/loginService/logIn?userName='+$("#user-login-form-username").val();
     url += "&password="+$("#user-login-form-password").val();
 
     $.ajax({
@@ -356,7 +356,7 @@ $(function() {
 
   editUserDetails=function(user){
     $("#modal-user-edit-err-message").html("");
-    $.ajax("/restServices/redbackServices/userService/updateMe", {
+    $.ajax("restServices/redbackServices/userService/updateMe", {
         data: "{\"user\": " +  ko.toJSON(user)+"}",
         contentType: 'application/json',
         type: "POST",
@@ -397,12 +397,12 @@ $(function() {
     $('#modal-password-change-footer').append(smallSpinnerImg());
 
     if (registration==true) {
-      var url = '/restServices/redbackServices/passwordService/changePasswordWithKey?';
+      var url = 'restServices/redbackServices/passwordService/changePasswordWithKey?';
       url += "password="+$("#passwordChangeFormNewPassword").val();
       url += "&passwordConfirmation="+$("#passwordChangeFormNewPasswordConfirm").val();
       url += "&key="+window.redbackModel.key;
     } else {
-      var url = '/restServices/redbackServices/passwordService/changePassword?';
+      var url = 'restServices/redbackServices/passwordService/changePassword?';
       url += "password="+$("#passwordChangeFormNewPassword").val();
       url += "&passwordConfirmation="+$("#passwordChangeFormNewPasswordConfirm").val();
       url += "&previousPassword="+$("#password-change-form-current-password").val();

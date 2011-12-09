@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-require(["text!templates/menu.html","text!templates/topbar.html","text!templates/message.html"],
+require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html"],
   function(menu,topbar,message) {
 
     // template loading

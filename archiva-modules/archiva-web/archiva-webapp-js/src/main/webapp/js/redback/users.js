@@ -20,7 +20,7 @@ $(function() {
     var self = this;
 
     this.loadUsers = function() {
-      $.ajax("/restServices/redbackServices/userService/getUsers", {
+      $.ajax("restServices/redbackServices/userService/getUsers", {
           type: "GET",
           dataType: 'json',
           success: function(data) {
