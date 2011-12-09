@@ -133,31 +133,42 @@ function($) {
       $('#topbar-menu-container').html($("#topbar-menu"));
       $('#sidebar-content').html($("#main-menu"));
 
-
-      $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
-          var adminExists = JSON.parse(data);
-          if (adminExists == false) {
-            $("#create-admin-link").show();
+      checkCreateAdminLink=function(){
+        $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            var adminExists = JSON.parse(data);
+            if (adminExists == false) {
+              $("#create-admin-link").show();
+            } else {
+              $("#create-admin-link").hide();
+            }
           }
-        }
-      });
-
-      hideElementWithKarma();
-
-      var user = userLogged();
-      if (!user) {
-        $("#login-link").show();
-        $("#register-link").show();
-        $("#change-password-link").hide();
-      } else {
-        $("#change-password-link").show();
-        $("#logout-link").show();
-        decorateMenuWithKarma(user);
+        });
       }
 
+      checkCreateAdminLink();
+      hideElementWithKarma();
+
+      checkSecurityLinks=function(){
+        var user = userLogged();
+        $.log("checkSecurityLinks, user:"+user);
+
+        if (!user) {
+          $("#login-link").show();
+          $("#register-link").show();
+          $("#change-password-link").hide();
+        } else {
+          $("#change-password-link").show();
+          $("#logout-link").show();
+          $("#register-link").hide();
+          $("#login-link").hide();
+          decorateMenuWithKarma(user);
+        }
+      }
+
+      checkSecurityLinks();
 
 
       /**
@@ -199,6 +210,7 @@ function($) {
       }
 
       screenChange=function(){
+        $("#main-content").html("");
         clearUserMessages();
       }
 

@@ -79,7 +79,7 @@ $(function() {
         if (!valid) {
             return;
         }
-
+        var currentAdminUser = this;
         $.ajax("restServices/redbackServices/userService/createAdminUser", {
             data: "{\"user\": " +  ko.toJSON(this)+"}",
             contentType: 'application/json',
@@ -89,6 +89,7 @@ $(function() {
               var created = JSON.parse(result);
               if (created == true) {
                 displaySuccessMessage("admin user created");
+                loginCall(currentAdminUser.username(), currentAdminUser.password(),function(){screenChange();checkCreateAdminLink();checkSecurityLinks();});
                 return this;
               } else {
                 displayErrorMessage("admin user not created");
