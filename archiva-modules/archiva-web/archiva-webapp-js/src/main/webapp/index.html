@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/aristo.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.1.4.0.css">
+
+  <script type="text/javascript" src="js/jquery-1.7.js"></script>
+
+  <script type="text/javascript" src="js/lab.js"></script>
+  <script type="text/javascript" src="js/require.1.0.1.js"></script>
+
+</head>
+
+<body style="padding-top: 40px;">
+
+<div id="topbar-menu-container"></div>
+
+<div class="container-fluid">
+  <div class="sidebar" id="sidebar-content"></div>
+
+  <div class="content">
+    <div class="row" id="user-messages"></div>
+
+    <div class="row" id="main-content"></div>
+  </div>
+</div>
+
+
+
+
+<div id="html-fragments" class="hide"></div>
+
+</body>
+
+<div id="dialog-confirm" title="" style="display: none">
+</div>
+
+<script type="text/javascript">
+    require.config({
+        baseUrl: "js/"
+      });
+    $LAB.setGlobalDefaults({AlwaysPreserveOrder:true,BasePath:"js/",explicit_preloading:false});
+    $LAB
+       .script("utils.js").wait()
+       .script("jquery.tmpl.js").wait()
+       .script("jquery.cookie.1.0.0.js").wait()
+       .script("knockout-debug.js").wait()
+       .script("jquery-ui-1.8.16.custom.min.js").wait()
+       .script("redback/register.js").wait()
+       .script("jquery.i18n.properties-1.0.9.js").wait()
+       .script("redback/i18nload.js").wait()
+       .script("jquery.validate.js").wait()
+       .script("jquery.json-2.3.min.js").wait()
+       .script("redback/operation.js").wait()
+       .script("main-tmpl.js").wait()
+       .script("redback/redback-tmpl.js").wait()
+       .script("bootstrap-modal.js").wait()
+       .script("bootstrap-alerts.js").wait()
+       .script("bootstrap-dropdown.js").wait()
+       .script("knockout.simpleGrid.js").wait()
+       .script("redback/user.js").wait()
+       .script("redback/users.js").wait()
+       .script("main.js");
+
+</script>
+
+</html>

@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task-3.0.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+  <context:property-placeholder location="classpath:application.properties"/>
+
+  <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
+        init-method="initialize"/>
+
+  <!-- only here to cleanup temp indexes for groups increase number if use for something else -->
+  <task:executor id="springExecutor" pool-size="2"/>
+  <task:scheduler id="springScheduler" pool-size="2"/>
+  <task:annotation-driven executor="springExecutor" scheduler="springScheduler"/>
+
+  <alias name="repositoryStatisticsManager#default" alias="repositoryStatisticsManager"/>
+  <!-- TODO olamy need to find a more dynamic way if using jcr impl -->
+  <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
+
+
+  <bean name="xmlRpcUserRepositories" class="org.apache.archiva.web.xmlrpc.security.XmlRpcUserRepositories">
+    <constructor-arg ref="userRepositories"/>
+    <constructor-arg ref="xmlRpcAuthenticator"/>
+  </bean>
+
+  <!--  Web Service : Ping Service -->
+  <bean name="pingService" lazy-init="true" scope="singleton"
+        class="org.apache.archiva.web.xmlrpc.services.PingServiceImpl"/>
+
+
+  <!-- Web Services : Search Service -->
+  <bean name="searchService" lazy-init="true" scope="singleton"
+        class="org.apache.archiva.web.xmlrpc.services.SearchServiceImpl">
+    <constructor-arg ref="xmlRpcUserRepositories"/>
+    <constructor-arg ref="repositorySessionFactory"/>
+    <constructor-arg ref="nexusSearch"/>
+  </bean>
+
+
+
+  <!-- Web Services : Administration Service -->
+  <bean name="administrationService" lazy-init="true" scope="singleton"
+        class="org.apache.archiva.web.xmlrpc.services.AdministrationServiceImpl">
+    <constructor-arg ref="archivaAdministration#default"/>
+    <constructor-arg ref="repositoryContentConsumers"/>
+    <constructor-arg ref="repositoryContentFactory#default"/>
+    <constructor-arg ref="repositorySessionFactory"/>
+    <constructor-arg ref="archivaTaskScheduler#repository"/>
+    <constructor-arg>
+      <bean class="org.apache.archiva.web.spring.RepositoryListenerFactoryBean"/>
+    </constructor-arg>
+    <constructor-arg ref="repositoryStatisticsManager"/>
+    <constructor-arg ref="repositoryMerger#maven2"/>
+    <constructor-arg ref="auditListener#logging"/>
+    <constructor-arg ref="managedRepositoryAdmin#default"/>
+    <constructor-arg ref="remoteRepositoryAdmin#default"/>
+    <constructor-arg ref="proxyConnectorAdmin#default"/>
+    <constructor-arg ref="repositoryGroupAdmin#default"/>
+  </bean>
+
+
+  <!-- Redback Web Services -->
+  <bean name="redbackRoleService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.RoleServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+    <constructor-arg ref="roleManager"/>
+  </bean>
+
+  <bean name="redbackOperationService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.OperationServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+  </bean>
+
+  <bean name="redbackPermissionService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.PermissionServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+  </bean>
+
+  <bean name="redbackResourceService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.ResourceServiceImpl">
+    <constructor-arg ref="rBACManager#cached"/>
+  </bean>
+
+  <bean name="redbackUserService" lazy-init="true" scope="singleton"
+        class="org.codehaus.redback.xmlrpc.service.UserServiceImpl">
+    <constructor-arg ref="userManager#cached"/>
+  </bean>
+
+  <bean name="xmlrpcServicesList" lazy-init="true" scope="singleton" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="administrationService"/>
+        <ref bean="searchService"/>
+        <ref bean="pingService"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean name="xmlRpcAuthenticator" class="org.apache.archiva.web.xmlrpc.security.XmlRpcAuthenticator">
+    <constructor-arg ref="securitySystem"/>
+    <constructor-arg ref="userRepositories"/>
+  </bean>
+
+  <bean name="redbackXmlrpcServicesList" class="java.util.ArrayList">
+    <constructor-arg>
+      <list>
+        <ref bean="redbackOperationService"/>
+        <ref bean="redbackPermissionService"/>
+        <ref bean="redbackResourceService"/>
+        <ref bean="redbackRoleService"/>
+        <ref bean="redbackUserService"/>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean name="redbackXmlRpcAuthenticator" class="org.codehaus.redback.xmlrpc.security.XmlRpcAuthenticator">
+    <constructor-arg ref="securitySystem"/>
+  </bean>
+
+  <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/mail/Session">
+    </property>
+  </bean>
+
+  <bean name="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="session" ref="mailSession"/>
+  </bean>
+
+  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <jndi prefix="java:comp/env" config-optional="true"/>
+          <xml fileName="${user.home}/.m2/archiva.xml" config-optional="true"
+               config-name="org.apache.archiva.user"
+               config-at="org.apache.archiva"/>
+          <xml fileName="${user.home}/.m2/shared.xml" config-optional="true"
+               config-name="org.apache.maven.shared.app.user" config-at="org.apache.maven.shared.app"
+               config-forceCreate="true"/>
+          <properties fileName="${user.home}/.m2/security.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.redback"/>
+          <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.redback"/>
+          <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
+               config-name="org.apache.archiva.base"
+               config-at="org.apache.archiva"/>
+          <xml fileName="${appserver.base}/conf/shared.xml" config-optional="true"
+               config-name="org.apache.maven.shared.app.base" config-at="org.apache.maven.shared.app"/>
+          <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
+          <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.redback"/>
+          <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
+               config-at="org.apache.archiva"/>
+          <xml fileName="${appserver.home}/conf/shared.xml" config-optional="true"
+               config-at="org.apache.maven.shared.app"/>
+          <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
+          <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.redback"/>
+          <properties fileName="org/apache/archiva/security.properties" config-at="org.codehaus.plexus.redback"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>    
+  </bean>
+  
+  <bean name="jdoFactory#users" class="org.codehaus.plexus.jdo.DataSourceConfigurableJdoFactory">
+    <property name="connectionFactoryName" value="java:comp/env/jdbc/users"/>
+    <property name="shutdownConnectionFactoryName" value="java:comp/env/jdbc/usersShutdown"/>
+    <property name="persistenceManagerFactoryClass" value="org.jpox.PersistenceManagerFactoryImpl"/>
+    <property name="otherProperties">
+      <props>
+        <prop key="org.jpox.autoCreateSchema">true</prop>
+        <prop key="org.jpox.validateTables">false</prop>
+        <prop key="org.jpox.validateConstraints">false</prop>
+        <prop key="org.jpox.validateColumns">false</prop>
+        <prop key="org.jpox.autoStartMechanism">None</prop>
+        <prop key="org.jpox.transactionIsolation">READ_COMMITTED</prop>
+        <prop key="org.jpox.poid.transactionIsolation">READ_COMMITTED</prop>
+        <prop key="org.jpox.rdbms.dateTimezone">JDK_DEFAULT_TIMEZONE</prop>
+        <!-- NEEDED FOR MYSQL UTF-8 Databases -->
+        <prop key="org.jpox.rdbms.stringDefaultLength">255</prop>
+
+        <!-- NEEDED FOR POSTGRES, But causes problems in other JDBC implementations.
+        <prop key="org.jpox.identifier.case">PreserveCase</prop>
+        -->
+
+        <!-- cache activation -->
+        <prop key="org.jpox.cache.level2">true</prop>
+        <prop key="org.jpox.cache.level2.type">ehcacheclassbased</prop>
+        <prop key="org.jpox.cache.level2.cacheName">defaultJpox</prop>
+        <prop key="org.jpox.cache.level2.configurationFile">/ehcache.xml</prop>
+      </props>
+    </property>
+  </bean>
+
+
+  <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
+    <property name="properties">
+      <props>
+        <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>
+        <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+        <prop key="org.quartz.threadPool.threadCount">2</prop>
+        <prop key="org.quartz.threadPool.threadPriority">4</prop>
+        <prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+      </props>
+    </property>
+  </bean>
+  
+
+    
+    <!-- <component>
+      <role>org.apache.archiva.webdav.util.MimeTypes</role>
+      <implementation>org.apache.archiva.webdav.util.MimeTypes</implementation>
+      <description>MimeTypes</description>
+      <configuration>
+        <resource>archiva-mime-types.txt</resource>
+      </configuration>
+    </component> -->
+
+
+    <!--
+    olamy TODO check if necessary !!
+   PLXREDBACK-81 bad role hint, redefining here until redback alpha-2 is released.
+
+    <component>
+      <role>org.codehaus.plexus.redback.system.check.EnvironmentCheck</role>
+      <role-hint>locked-admin-check</role-hint>
+      <implementation>org.codehaus.redback.integration.checks.security.LockedAdminEnvironmentCheck</implementation>
+      <description>LockedAdminEnvironmentCheck: checks if accounts marked as system administrator are locked
+        and unlocks them on startup.
+      </description>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.redback.users.UserManager</role>
+          <role-hint>cached</role-hint>
+          <field-name>userManager</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
+          <role-hint>cached</role-hint>
+          <field-name>rbacManager</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    -->
+
+  <!-- TODO move to spring sample and test it -->
+    <!-- START SNIPPET: ldap -->
+    <!-- 
+       Ldap Authentication can be enabled by setting enabling these components and setting the following configuration options in your security.properties file
+
+       ============================================================
+       user.manager.impl=ldap
+       ldap.bind.authenticator.enabled=true
+       redback.default.admin=admin
+       security.policy.password.expiration.enabled=false
+
+       ldap.config.hostname=ldap.hostname
+       ldap.config.port=389
+       ldap.config.base.dn=o=com
+       ldap.config.context.factory=com.sun.jndi.ldap.LdapCtxFactory
+       ldap.config.bind.dn=uid=myusername,o=com
+       ldap.config.password=s3cr3t
+       #ldap.config.authentication.method=
+       ============================================================
+
+       * ldap.config.hostname - The hostname of the ldap server
+       * ldap.config.port - The port of the ldap server
+       * ldap.config.base.dn - The baseDn of the ldap system
+       * ldap.config.context.factory - context factory for ldap connections
+       * ldap.config.bind.dn - the core user used for authentication the ldap server, must be able to perform the necessary searches, etc.
+       * ldap.config.password - password for the bindDn for the root ldap connection
+
+       until this process is better documented, the following is the document for configuration ldap with redback
+      
+       http://redback.codehaus.org/integration/ldap.html
+    -->
+
+    <!--
+    
+    this component manages the connection to the ldap server
+     -->
+
+    <!--
+    <bean name="ldapConnectionFactory" class="org.codehaus.plexus.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
+      <property name="userConf" ref="userConfiguration"/>
+    </bean>
+    -->
+
+    
+    <!-- 
+    
+    this component manages the mapping of attributes in ldap to user information in redback. To configure the mapping, you can add the following properties in your security.properties
+
+       ============================================================
+       ldap.config.mapper.attribute.email=mail
+       ldap.config.mapper.attribute.fullname=givenName
+       ldap.config.mapper.attribute.password=userPassword
+       ldap.config.mapper.attribute.user.id=cn
+       ldap.config.mapper.attribute.user.base.dn=
+       ldap.config.mapper.attribute.user.object.class=inetOrgPerson
+       ldap.config.mapper.attribute.user.filter=(attributeName=value)
+       ============================================================
+
+
+     * email-attribute - The name of the attribute on a user that contains the email address
+     * full-name-attribute - The name of the attribute on a user that contains the users fullName
+     * password-attribute - The name of the attribute containing the users password, used for the authentiction using the user manager and not the ldap bind authenticator
+     * user-id-attribute - The name of the attribute containing the users userId, most commonly cn or sn.
+     * user-base-dn - The base dn that will be subtree searched for users.
+     * user-object-class - the objectClass used in the ldap server for indentifying users, most commonly inetOrgPerson.
+     -->
+    
+    <!--
+    <bean name="ldapUserMapper" class="org.codehaus.plexus.redback.common.ldap.LdapUserMapper">
+      <property name="emailAttribute" value="email"/>
+      <property name="fullNameAttribute" value="givenName"/>
+      <property name="passwordAttribute" value="userPassword"/>
+      <property name="userIdAttribute" value="cn"/>
+      <property name="userBaseDn" value="o=com"/>
+      <property name="userObjectClass" value="inetOrgPerson"/>
+      <property name="userConf" ref="userConfiguration"/>
+    </bean>     
+    -->
+  
+
+    
+    <!--
+     
+    If caching is desired to improve performance then make uncomment this and make sure the following configuration parameter is in the security.properties
+     
+    user.manager.impl=cached
+    -->
+     
+    <!--
+    <bean name="userManager#cached" class="org.codehaus.plexus.redback.users.cached.CachedUserManager">
+      <property name="userImpl" ref="userMapper#ldap"/>
+      <property name="usersCache" ref="cache#users"/>
+    </bean>     
+    -->
+  
+
+    
+    <!-- 
+    
+    if using the user manager authenticator to authenticate the user and not the ldap bind authenticator make sure
+    this definition has the correct password encoder
+    
+    Note: you should probably just use the ldap bind authenticator which is enabled by putting
+    
+    ldap.bind.authenticator.enabled=true
+    
+    in the security.properties
+    -->
+    <!--
+    <bean name="userSecurityPolicy" class="org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy">
+      <property name="config" ref="userConfiguration"/>
+      <property name="passwordEncoder" ref="passwordEncoder#sha1"/>
+      <property name="userValidationSettings" ref="userValidationSettings"/>
+      <property name="rememberMeCookieSettings" ref="cookieSettings#rememberMe"/>
+      <property name="signonCookieSettings" ref="cookieSettings#signon"/>
+      <property name="rules">
+        add the rules you want to applied
+        <list>
+          <ref bean="passwordRule#alpha-count"/>
+          <ref bean="passwordRule#alpha-numeric"/>
+          <ref bean="passwordRule#character-length"/>
+          <ref bean="passwordRule#must-have"/>
+          <ref bean="passwordRule#no-whitespaces"/>
+          <ref bean="passwordRule#numerical-count"/>
+        </list>
+      </property>
+    </bean>
+    -->
+    <!-- END SNIPPET: ldap -->
+
+
+
+  <!-- override jcr repository location -->
+  <!-- START SNIPPET: jcr-location -->
+  <!--
+  <bean id="jcr-config" class="org.apache.archiva.metadata.repository.jcr.ArchivaJcrRepositoryConfig" factory-method="create">
+    <constructor-arg value="${appserver.base}/conf/repository.xml"/>
+    <constructor-arg value="${appserver.base}/data/jcr"/>
+  </bean>
+  -->
+  <!-- END SNIPPET: jcr-location -->
+
+</beans>

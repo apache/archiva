@@ -922,6 +922,17 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.redback</groupId>
+        <artifactId>redback-integrations-security</artifactId>
+        <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.apache.velocity</groupId>
         <artifactId>velocity</artifactId>
         <version>1.7</version>
