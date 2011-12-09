@@ -8,7 +8,7 @@
   </parent>
 
   <artifactId>archiva-webapp-common</artifactId>
-
+  <packaging>bundle</packaging>
   <name>archiva-webapp-common</name>
 
   <dependencies>
@@ -88,5 +88,50 @@
       <artifactId>spring-web</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>org.apache.archiva.webapp.common</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              org.apache.archiva.web.spring;version=${project.version},
+              org.apache.archiva.web.startup;version=${project.version}
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject,
+              javax.servlet,
+              org.apache.archiva.common;version=${project.version},
+              org.apache.archiva.common.plexusbridge;version=${project.version},
+              org.apache.archiva.configuration;version=${project.version},
+              org.apache.archiva.repository.events;version=${project.version},
+              org.apache.archiva.scheduler.repository;version=${project.version},
+              org.apache.archiva.security.common;version=${project.version},
+              org.apache.commons.collections;version="[3.2,4)",
+              org.apache.commons.lang;version="[2.4,3)",
+              org.apache.maven.index,
+              org.apache.maven.index.context,
+              org.codehaus.plexus.redback.rbac,
+              org.codehaus.plexus.redback.role,
+              org.codehaus.plexus.redback.system.check,
+              org.codehaus.plexus.registry,
+              org.codehaus.plexus.taskqueue,
+              org.codehaus.plexus.taskqueue.execution,
+              org.codehaus.redback.components.scheduler,
+              org.quartz;version="[2,3)",
+              org.slf4j;resolution:=optional,
+              org.springframework*;version="[3,4)",
+              org.springframework.web*;version="[3,4)"
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

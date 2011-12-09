@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
@@ -30,8 +31,8 @@
   <name>Archiva Web :: Application</name>
 
   <properties>
-    <archiva.baseRestUrl />
-    <rest.admin.pwd />
+    <archiva.baseRestUrl/>
+    <rest.admin.pwd/>
     <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
   </properties>
 
@@ -877,9 +878,9 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/archiva/WEB-INF/" />
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
                 <copy todir="${basedir}/target/archiva/WEB-INF/">
-                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml,**/ehcache.xml" />
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml,**/ehcache.xml"/>
                 </copy>
               </tasks>
             </configuration>
@@ -892,7 +893,7 @@
             <configuration>
               <tasks>
                 <copy todir="${basedir}/appserver-base">
-                  <fileset dir="src/appserver-base" />
+                  <fileset dir="src/appserver-base"/>
                 </copy>
               </tasks>
             </configuration>
@@ -904,18 +905,14 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.1.1</version>
         <configuration>
-          <!-- Some versions of maven-war-plugin (snapshots) have this incorrectly defaulted to true.
-               Specifically setting this to false to avoid accidental jar file creation. -->
           <archiveClasses>false</archiveClasses>
-          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**</dependentWarExcludes>
+          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml,WEB-INF/lib/**
+          </dependentWarExcludes>
           <warSourceExcludes>
             WEB-INF/lib/xalan-*.jar,WEB-INF/lib/velocity-dep-*.jar,WEB-INF/lib/xml-apis-*.jar,WEB-INF/lib/wstx-asl-*.jar,WEB-INF/lib/stax-utils-*.jar,WEB-INF/lib/xercesImpl-*.jar,WEB-INF/lib/commons-lang-*.jar,WEB-INF/lib/commons-configuration-*.jar,WEB-INF/lib/jetty-*.jar
           </warSourceExcludes>
           <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
           </archive>
           <overlays>
             <overlay>
@@ -929,6 +926,126 @@
               </excludes>
             </overlay>
           </overlays>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>bundle-manifest</id>
+              <phase>process-classes</phase>
+              <goals>
+                <goal>manifest</goal>
+              </goals>
+              <configuration>
+                <instructions>
+                  <Bundle-SymbolicName>org.apache.archiva.webapp</Bundle-SymbolicName>
+                  <Bundle-Version>${project.version}</Bundle-Version>
+                  <Export-Package>
+                    org.apache.archiva.web.action*;version=${project.version},
+                    org.apache.archiva.web.interceptor*;version=${project.version},
+                    org.apache.archiva.web.mapper*;version=${project.version},
+                    org.apache.archiva.web.rss*;version=${project.version},
+                    org.apache.archiva.web.tags*;version=${project.version},
+                    org.apache.archiva.web.util*;version=${project.version},
+                    org.apache.archiva.web.validator*;version=${project.version}
+                  </Export-Package>
+                  <Import-Package>
+                    com.opensymphony.xwork2,
+                    com.opensymphony.xwork2.config,
+                    com.opensymphony.xwork2.interceptor,
+                    com.opensymphony.xwork2.util,
+                    com.opensymphony.xwork2.validator,
+                    com.opensymphony.xwork2.validator.validators,
+                    com.sun.syndication.feed.synd,
+                    com.sun.syndication.io,
+                    javax.annotation,
+                    javax.inject,
+                    javax.servlet,
+                    javax.servlet.http,
+                    javax.servlet.jsp,
+                    javax.servlet.jsp.tagext,
+                    org.apache.archiva.admin.model;version=${project.version},
+                    org.apache.archiva.admin.model.admin;version=${project.version},
+                    org.apache.archiva.admin.model.beans;version=${project.version},
+                    org.apache.archiva.admin.model.group;version=${project.version},
+                    org.apache.archiva.admin.model.managed;version=${project.version},
+                    org.apache.archiva.admin.model.networkproxy;version=${project.version},
+                    org.apache.archiva.admin.model.proxyconnector;version=${project.version},
+                    org.apache.archiva.admin.model.remote;version=${project.version},
+                    org.apache.archiva.admin.repository;version=${project.version},
+                    org.apache.archiva.admin.repository.admin;version=${project.version},
+                    org.apache.archiva.admin.repository.utils;version=${project.version},
+                    org.apache.archiva.audit;version=${project.version},
+                    org.apache.archiva.checksum;version=${project.version},
+                    org.apache.archiva.common;version=${project.version},
+                    org.apache.archiva.common.utils;version=${project.version},
+                    org.apache.archiva.configuration;version=${project.version},
+                    org.apache.archiva.consumers;version=${project.version},
+                    org.apache.archiva.dependency.tree.maven2;version=${project.version},
+                    org.apache.archiva.indexer.search;version=${project.version},
+                    org.apache.archiva.metadata.generic;version=${project.version},
+                    org.apache.archiva.metadata.model;version=${project.version},
+                    org.apache.archiva.metadata.repository;version=${project.version},
+                    org.apache.archiva.metadata.repository.filter;version=${project.version},
+                    org.apache.archiva.metadata.repository.stats;version=${project.version},
+                    org.apache.archiva.metadata.repository.storage.maven2;version=${project.version},
+                    org.apache.archiva.model;version=${project.version},
+                    org.apache.archiva.policies;version=${project.version},
+                    org.apache.archiva.reports;version=${project.version},
+                    org.apache.archiva.repository;version=${project.version},
+                    org.apache.archiva.repository.metadata;version=${project.version},
+                    org.apache.archiva.repository.scanner;version=${project.version},
+                    org.apache.archiva.rest.api.model;version=${project.version},
+                    org.apache.archiva.rest.api.services;version=${project.version},
+                    org.apache.archiva.rss.processor;version=${project.version},
+                    org.apache.archiva.scheduler;version=${project.version},
+                    org.apache.archiva.scheduler.indexing;version=${project.version},
+                    org.apache.archiva.scheduler.repository;version=${project.version},
+                    org.apache.archiva.security;version=${project.version},
+                    org.apache.archiva.stagerepository.merge;version=${project.version},
+                    org.apache.commons.codec;version="[1.3,2)",
+                    org.apache.commons.codec.binary;version="[1.3,2)",
+                    org.apache.commons.collections;version="[3.2,4)",
+                    org.apache.commons.io;version="[1.4,2)",
+                    org.apache.commons.lang*;version="[2.4,3)",
+                    org.apache.maven.artifact,
+                    org.apache.maven.artifact.versioning,
+                    org.apache.maven.model,
+                    org.apache.maven.model.io.xpp3,
+                    org.apache.maven.shared.dependency.tree,
+                    org.apache.maven.shared.dependency.tree.traversal,
+                    org.apache.struts2*;version="[2.2,3)",
+                    org.apache.taglibs.standard.tag.common.core,
+                    org.apache.taglibs.standard.tag.el.core,
+                    org.codehaus.plexus.cache,
+                    org.codehaus.plexus.redback.authentication,
+                    org.codehaus.plexus.redback.authorization,
+                    org.codehaus.plexus.redback.policy,
+                    org.codehaus.plexus.redback.system,
+                    org.codehaus.plexus.redback.users,
+                    org.codehaus.plexus.registry,
+                    org.codehaus.plexus.taskqueue,
+                    org.codehaus.plexus.util,
+                    org.codehaus.redback.components.scheduler,
+                    org.codehaus.redback.integration.filter.authentication,
+                    org.codehaus.redback.integration.interceptor,
+                    org.codehaus.redback.rest.services,
+                    org.slf4j;resolution:=optional,
+                    org.springframework*;version="[3,4)",
+                    org.springframework.web*;version="[3,4)"
+                  </Import-Package>
+                </instructions>
+              </configuration>
+            </execution>
+          </executions>
+        <configuration>
+          <supportedProjectTypes>
+            <supportedProjectType>jar</supportedProjectType>
+            <supportedProjectType>bundle</supportedProjectType>
+            <supportedProjectType>war</supportedProjectType>
+          </supportedProjectTypes>
         </configuration>
       </plugin>
       <plugin>
@@ -1176,9 +1293,11 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml" todir="${project.build.directory}/classes" />
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties" todir="${basedir}/target/" />
-                    <delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml"
+                          todir="${project.build.directory}/classes"/>
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties"
+                          todir="${basedir}/target/"/>
+                    <delete dir="${basedir}/src/main/webapp/WEB-INF/lib"/>
                   </tasks>
                 </configuration>
               </execution>
@@ -1385,7 +1504,8 @@
                 <appserver.base>${basedir}/appserver-base</appserver.base>
                 <appserver.home>${project.build.directory}/appserver-home</appserver.home>
                 <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
-                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
+                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
+                </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               </systemProperties>
             </configuration>
@@ -1415,7 +1535,8 @@
                 <appserver.base>${basedir}/appserver-base</appserver.base>
                 <appserver.home>${project.build.directory}/appserver-home</appserver.home>
                 <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
-                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
+                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
+                </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               </systemProperties>
             </configuration>

@@ -426,4 +426,61 @@
     <bundle>mvn:org.apache.archiva/npanday-support/${project.version}</bundle>
   </feature>
 
+  <feature name="archiva-webapp-common" description="Archiva WebApp Common" version="${project.version}" resolver="(obr)">
+    <feature>war</feature>
+    <feature version="[3,4)">spring</feature>
+    <feature version="[3,4)">spring-web</feature>
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-repository-layer</feature>
+    <feature version="${project.version}">archiva-security</feature>
+    <bundle>mvn:org.apache.archiva/archiva-webapp-common/${project.version}</bundle>
+  </feature>
+
+  <feature name="archiva" description="Archiva application" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">archiva-common</feature>
+    <feature version="${project.version}">archiva-checksum</feature>
+    <feature version="${project.version}">archiva-policies</feature>
+    <feature version="${project.version}">archiva-configuration</feature>
+    <feature version="${project.version}">archiva-model</feature>
+    <feature version="${project.version}">archiva-plexus-bridge</feature>
+    <feature version="${project.version}">archiva-repository-admin-api</feature>
+    <feature version="${project.version}">archiva-metadata</feature>
+    <feature version="${project.version}">archiva-audit</feature>
+    <feature version="${project.version}">archiva-xml-tools</feature>
+    <feature version="${project.version}">archiva-repository-layer</feature>
+    <feature version="${project.version}">archiva-maven2-repository</feature>
+    <feature version="${project.version}">archiva-consumers-api</feature>
+    <feature version="${project.version}">archiva-consumers</feature>
+    <feature version="${project.version}">archiva-reports</feature>
+    <feature version="${project.version}">archiva-proxy-common</feature>
+    <feature version="${project.version}">archiva-proxy</feature>
+    <feature version="${project.version}">archiva-scheduler-api</feature>
+    <feature version="${project.version}">archiva-repository-statistics</feature>
+    <feature version="${project.version}">archiva-repository-scanner</feature>
+    <feature version="${project.version}">archiva-scheduler</feature>
+    <feature version="${project.version}">archiva-repository-admin-default</feature>
+    <feature version="${project.version}">archiva-transaction</feature>
+    <feature version="${project.version}">archiva-artifact-converter</feature>
+    <feature version="${project.version}">archiva-indexer</feature>
+    <feature version="${project.version}">archiva-security-common</feature>
+    <feature version="${project.version}">archiva-rest-api</feature>
+    <feature version="${project.version}">archiva-rest-service</feature>
+    <feature version="${project.version}">archiva-rss</feature>
+    <feature version="${project.version}">archiva-security</feature>
+    <feature version="${project.version}">archiva-webdav</feature>
+    <feature version="${project.version}">archiva-xmlrpc-api</feature>
+    <feature version="${project.version}">archiva-xmlrpc-security</feature>
+    <feature version="${project.version}">archiva-stage-repository</feature>
+    <feature version="${project.version}">archiva-xmlrpc-services</feature>
+    <feature version="${project.version}">archiva-generic-metadata-support</feature>
+    <feature version="${project.version}">archiva-metadata-store-jcr</feature>
+    <feature version="${project.version}">archiva-npanday-support</feature>
+    <feature version="${project.version}">archiva-webapp-common</feature>
+    <bundle dependency="true">mvn:org.apache.struts/struts2-core/${struts.version}</bundle>
+    <bundle dependency="true">mvn:org.apache.struts.xwork/xwork-core/${struts.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-webapp/${project.version}/war</bundle>
+  </feature>
+
 </features>
