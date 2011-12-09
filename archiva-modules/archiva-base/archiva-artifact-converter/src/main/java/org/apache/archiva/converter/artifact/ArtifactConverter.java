@@ -32,8 +32,6 @@ import java.util.Map;
  */
 public interface ArtifactConverter
 {
-    public static final String ROLE = ArtifactConverter.class.getName();
-    
     /**
      * Convert an provided artifact, and place it into the destination repository.
      * 
