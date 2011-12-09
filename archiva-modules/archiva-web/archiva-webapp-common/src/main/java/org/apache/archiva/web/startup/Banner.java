@@ -1,4 +1,4 @@
-package org.apache.archiva.webapp.startup;
+package org.apache.archiva.web.startup;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
