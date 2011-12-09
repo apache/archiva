@@ -97,7 +97,7 @@ $(function() {
        success: function(result){
          window.redbackModel.key=key;
          $.log("validateKey#sucess");
-         changePasswordBox(false,true);
+         changePasswordBox(false,true,null);
        },
        complete: function(){
          // hide spinner
@@ -110,14 +110,5 @@ $(function() {
        }
     })
   }
-
-
-  // handle url with registration link
-  $(document).ready(function() {
-    var validateMeId = $.urlParam('validateMe');
-    if (validateMeId) {
-      validateKey(validateMeId);
-    }
-  });
 
 });

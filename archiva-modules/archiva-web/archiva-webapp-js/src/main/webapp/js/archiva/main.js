@@ -36,27 +36,6 @@ $(function() {
   }
 
   /**
-   * return a user see user.js if user logged otherwise null
-   */
-  userLogged=function() {
-    // call restServices/redbackServices/loginService/isLogged to know
-    // if a session exists and check the cookie
-    var userLogged = true;
-    $.ajax("restServices/redbackServices/loginService/isLogged", {
-      type: "GET",
-      async: false,
-      success: function(data) {
-        userLogged = JSON.parse(data);
-      }
-    });
-    if (userLogged == false)
-    {
-      return null;
-    }
-    return jQuery.parseJSON($.cookie('redback_login'));
-  }
-
-  /**
    * reccord a cookie for session with the logged user
    * @param user see user.js
    */
@@ -167,13 +146,20 @@ $(function() {
 
 
 
+  // handle url with registration link
+  $(document).ready(function() {
+    var validateMeId = $.urlParam('validateMe');
+    if (validateMeId) {
+      validateKey(validateMeId);
+    }
+  });
 
-    $.log("main.js dom ready");
-    $('#topbar-menu-container').html($("#topbar-menu"));
-    $('#sidebar-content').html($("#main-menu"));
-    checkCreateAdminLink();
-    hideElementWithKarma();
-    checkSecurityLinks();
+  $.log("main.js dom ready");
+  $('#topbar-menu-container').html($("#topbar-menu"));
+  $('#sidebar-content').html($("#main-menu"));
+  checkCreateAdminLink();
+  hideElementWithKarma();
+  checkSecurityLinks();
 
 })
 });

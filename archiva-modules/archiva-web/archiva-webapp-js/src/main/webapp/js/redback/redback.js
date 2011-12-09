@@ -74,4 +74,25 @@ $(function() {
     $("#dialog-confirm" ).dialog("close");
   }
 
+  /**
+   * return a user see user.js if user logged otherwise null
+   */
+  userLogged=function() {
+    // call restServices/redbackServices/loginService/isLogged to know
+    // if a session exists and check the cookie
+    var userLogged = true;
+    $.ajax("restServices/redbackServices/loginService/isLogged", {
+      type: "GET",
+      async: false,
+      success: function(data) {
+        userLogged = JSON.parse(data);
+      }
+    });
+    if (userLogged == false)
+    {
+      return null;
+    }
+    return jQuery.parseJSON($.cookie('redback_login'));
+  }
+
 });
