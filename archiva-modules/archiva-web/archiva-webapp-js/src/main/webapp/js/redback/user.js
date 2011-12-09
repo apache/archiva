@@ -211,6 +211,57 @@ $(function() {
     $("#modal-login").focus();
   }
 
+  var successLoginCallbackFn=function(result){
+    var logged = false;
+    if (result == null) {
+      logged = false;
+    } else {
+      if (result.user) {
+        logged = true;
+      }
+    }
+    $.log("successLoginCallbackFn, logged:"+logged);
+    if (logged == true) {
+      var user = mapUser(result.user);
+      $.log("user.passwordChangeRequired:"+user.passwordChangeRequired());
+      if (user.passwordChangeRequired()==true){
+        changePasswordBox(true,false,user);
+        return;
+      }
+      // not really needed as an exception is returned but "ceintures et bretelles" as we said in French :-)
+      if (user.locked()==true){
+        $.log("user locked");
+        displayErrorMessage($.i18n.prop("accout.locked"));
+        return
+      }
+      // FIXME check validated
+      reccordLoginCookie(user);
+      $("#login-link").hide();
+      $("#logout-link").show();
+      $("#register-link").hide();
+      $("#change-password-link").show();
+      if (window.modalLoginWindow){
+        window.modalLoginWindow.modal('hide');
+      }
+      clearForm("#user-login-form");
+      decorateMenuWithKarma(user);
+      return;
+    }
+    $("#modal-login-err-message").html($.i18n.prop("incorrect.username.password"));
+    $("#modal-login-err-message").show();
+  }
+
+  var errorLoginCallbackFn= function(result) {
+   var obj = jQuery.parseJSON(result.responseText);
+   displayRedbackError(obj,"modal-login-err-message");
+   $("#modal-login-err-message").show();
+  }
+
+  var completeLoginCallbackFn=function(){
+    $("#modal-login-ok").removeAttr("disabled");
+    $("#login-spinner").remove();
+  }
+
   login=function(){
     $("#modal-login-err-message").html("");
     screenChange();
@@ -226,56 +277,8 @@ $(function() {
     var url = 'restServices/redbackServices/loginService/logIn?userName='+$("#user-login-form-username").val();
     url += "&password="+$("#user-login-form-password").val();
 
-    var successCallbackFn=function(result){
-      var logged = false;
-      if (result == null) {
-        logged = false;
-      } else {
-        if (result.user) {
-          logged = true;
-        }
-      }
-      if (logged == true) {
-        var user = mapUser(result.user);
-        $.log("user.passwordChangeRequired:"+user.passwordChangeRequired());
-        if (user.passwordChangeRequired()==true){
-          changePasswordBox(true,false,user);
-          return;
-        }
-        // not really needed as an exception is returned but "ceintures et bretelles" as we said in French :-)
-        if (user.locked()==true){
-          $.log("user locked");
-          displayErrorMessage($.i18n.prop("accout.locked"));
-          return
-        }
-        // FIXME check validated
-        reccordLoginCookie(user);
-        $("#login-link").hide();
-        $("#logout-link").show();
-        $("#register-link").hide();
-        $("#change-password-link").show();
-        window.modalLoginWindow.modal('hide');
-        clearForm("#user-login-form");
-        decorateMenuWithKarma(user);
-        return;
-      }
-      $("#modal-login-err-message").html($.i18n.prop("incorrect.username.password"));
-      $("#modal-login-err-message").show();
-    }
-
-    var errorCallbackFn= function(result) {
-     var obj = jQuery.parseJSON(result.responseText);
-     displayRedbackError(obj,"modal-login-err-message");
-     $("#modal-login-err-message").show();
-    }
-
-    var completeCallbackFn=function(){
-      $("#modal-login-ok").removeAttr("disabled");
-      $("#login-spinner").remove();
-    }
-
     loginCall($("#user-login-form-username").val(),$("#user-login-form-password").val()
-        ,successCallbackFn,errorCallbackFn,completeCallbackFn);
+        ,successLoginCallbackFn,errorLoginCallbackFn,completeLoginCallbackFn);
 
 
 
@@ -439,14 +442,20 @@ $(function() {
     $.ajax({
       url: url,
       success: function(result){
-        var ok = JSON.parse(result);
-        if (ok == true) {
+        $.log("changePassword#success result:"+result);
+        var user = mapUser(result.user);
+        if (user) {
           window.modalChangePasswordBox.modal('hide');
-          displaySuccessMessage($.i18n.prop('change.password.success.section.title'));
+          $.log("changePassword#sucess,registration:"+registration);
+          if (registration==true) {
+            displaySuccessMessage($.i18n.prop('change.password.success.section.title'))
+            loginCall(user.username(), $("#passwordChangeFormNewPassword").val(),successLoginCallbackFn);
+          } else {
+            displaySuccessMessage($.i18n.prop('change.password.success.section.title'));
+          }
         } else {
           displayErrorMessage("issue appended");
         }
-        // menu etc....
 
       },
       complete: function(){

@@ -1,0 +1,8 @@
+ui pages to do in js:
+
+* Redback:
+  ** user roles list/edition/assignment (Repository Manager and Repository Observer: per repo for user)
+  ** roles list
+  ** single roles read (parent, childs, permissions, users with a parent role, users with this role)
+
+* too much for archiva :-)
