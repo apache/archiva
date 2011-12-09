@@ -1,4 +1,4 @@
-package org.apache.archiva.web.startup;
+package org.apache.archiva.webapp.startup;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +19,13 @@ package org.apache.archiva.web.startup;
  * under the License.
  */
 
-import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;

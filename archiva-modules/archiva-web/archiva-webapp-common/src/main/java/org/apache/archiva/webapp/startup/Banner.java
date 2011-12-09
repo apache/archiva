@@ -1,4 +1,4 @@
-package org.apache.archiva.web.startup;
+package org.apache.archiva.webapp.startup;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,11 +19,11 @@ package org.apache.archiva.web.startup;
  * under the License.
  */
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Banner 

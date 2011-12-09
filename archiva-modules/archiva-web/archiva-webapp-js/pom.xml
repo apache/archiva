@@ -23,7 +23,6 @@
     <version>1.4-M2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-webapp-js</artifactId>
-  <version>1.4-M2-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>Archiva Web :: Javascript Application</name>
@@ -357,6 +356,11 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-webapp-common</artifactId>
     </dependency>
 
     <dependency>

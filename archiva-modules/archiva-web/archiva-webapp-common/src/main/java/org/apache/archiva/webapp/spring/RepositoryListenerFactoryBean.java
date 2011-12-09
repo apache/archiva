@@ -1,4 +1,4 @@
-package org.apache.archiva.web.spring;
+package org.apache.archiva.webapp.spring;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
