@@ -25,12 +25,15 @@ $(function() {
   displayRedbackError=function(obj,idToAppend) {
     // {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
     if ($.isArray(obj.redbackRestError.errorMessages)) {
+      $.log("displayRedbackError with array");
       for(var i=0; i<obj.redbackRestError.errorMessages.length; i++ ) {
         if(obj.redbackRestError.errorMessages[i].errorKey) {
+          $.log("displayRedbackError with array loop");
           displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages[i].errorKey, obj.redbackRestError.errorMessages[i].args ),idToAppend);
         }
       }
     } else {
+      $.log("displayRedbackError no array");
       displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages.errorKey, obj.redbackRestError.errorMessages.args ),idToAppend);
     }
   }

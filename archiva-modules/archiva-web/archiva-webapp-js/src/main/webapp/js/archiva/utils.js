@@ -31,3 +31,60 @@ $.urlParam = function(name){
     }
     return null;
 }
+
+/**
+ * display a success message
+ * @param text the success text
+ * @param idToAppend the id to append the success box
+ */
+displaySuccessMessage=function(text,idToAppend){
+  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+  $.tmpl($("#alert-message-success").html(), { "message" : text }).appendTo( textId );
+  $(textId).focus();
+}
+
+/**
+ * display an error message
+ * @param text the success text
+ * @param idToAppend the id to append the success box
+ */
+displayErrorMessage=function(text,idToAppend){
+  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+  $.tmpl($("#alert-message-error").html(), { "message" : text }).appendTo( textId );
+  $(textId).focus();
+}
+
+/**
+ * display a warning message
+ * @param text the success text
+ * @param idToAppend the id to append the success box
+ */
+displayWarningMessage=function(text,idToAppend){
+  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+  $.tmpl($("#alert-message-warning").html(), { "message" : text }).appendTo( textId );
+  $(textId).focus();
+}
+
+screenChange=function(){
+  $("#main-content").html("");
+  clearUserMessages();
+}
+
+clearUserMessages=function(idToAppend){
+  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+  $(textId).html('');
+}
+
+/**
+ * clear all input text and password found in the the selector
+ * @param selectorStr
+ */
+clearForm=function(selectorStr){
+  $(selectorStr+" input[type='text']").each(function(ele){
+    $(this).val("");
+  });
+  $(selectorStr+" input[type='password']").each(function(ele){
+    $(this).val("");
+  });
+
+}

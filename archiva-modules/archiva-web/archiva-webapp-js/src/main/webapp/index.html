@@ -2,7 +2,7 @@
 <html>
 <head>
   <link rel="stylesheet" href="css/aristo.css"/>
-    <link rel="stylesheet" href="css/bootstrap.min.1.4.0.css">
+  <link rel="stylesheet" href="css/bootstrap.min.1.4.0.css">
 
   <script type="text/javascript" src="js/jquery-1.7.js"></script>
 
@@ -41,18 +41,17 @@
       });
     $LAB.setGlobalDefaults({AlwaysPreserveOrder:true,BasePath:"js/",explicit_preloading:false});
     $LAB
-       .script("archiva/utils.js").wait()
        .script("jquery.tmpl.js").wait()
+       .script("archiva/utils.js").wait()
+       .script("jquery.i18n.properties-1.0.9.js").wait()
+       .script("redback/i18nload.js").wait()
+       .script("archiva/main-tmpl.js").wait()
        .script("jquery.cookie.1.0.0.js").wait()
        .script("knockout-debug.js").wait()
        .script("jquery-ui-1.8.16.custom.min.js").wait()
-       .script("redback/register.js").wait()
-       .script("jquery.i18n.properties-1.0.9.js").wait()
-       .script("redback/i18nload.js").wait()
        .script("jquery.validate.js").wait()
        .script("jquery.json-2.3.min.js").wait()
        .script("redback/operation.js").wait()
-       .script("archiva/main-tmpl.js").wait()
        .script("redback/redback-tmpl.js").wait()
        .script("bootstrap-modal.js").wait()
        .script("bootstrap-alerts.js").wait()
@@ -60,6 +59,8 @@
        .script("knockout.simpleGrid.js").wait()
        .script("redback/user.js").wait()
        .script("redback/users.js").wait()
+       .script("redback/redback.js").wait()
+       .script("redback/register.js").wait()
        .script("archiva/main.js");
 
 </script>

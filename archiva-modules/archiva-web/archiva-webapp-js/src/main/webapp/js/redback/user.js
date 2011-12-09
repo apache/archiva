@@ -103,7 +103,7 @@ $(function() {
       };
 
       this.deleteUser=function() {
-        screenChange();
+        clearUserMessages();
         // FIXME i18n
         var currentUser = this;
         openDialogConfirm(function(){
@@ -212,6 +212,7 @@ $(function() {
   }
 
   login=function(){
+    $("#modal-login-err-message").html("");
     screenChange();
     var valid = $("#user-login-form").valid();
     if (!valid) {
@@ -264,7 +265,8 @@ $(function() {
 
     var errorCallbackFn= function(result) {
      var obj = jQuery.parseJSON(result.responseText);
-     displayRedbackError(obj);
+     displayRedbackError(obj,"modal-login-err-message");
+     $("#modal-login-err-message").show();
     }
 
     var completeCallbackFn=function(){
@@ -299,6 +301,7 @@ $(function() {
    */
   changePasswordBox=function(previousPassword,registration,user){
     screenChange();
+    $.log("changePasswordBox previousPassword:"+previousPassword+",registration:"+registration+",user:"+user);
     if (previousPassword==true){
       $("#password-change-form-current-password-div").show();
       $("#password-change-form-current-password").addClass("required");

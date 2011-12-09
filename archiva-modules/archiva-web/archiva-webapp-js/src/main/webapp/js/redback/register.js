@@ -90,19 +90,22 @@ $(function() {
    * @param key
    */
   validateKey=function(key) {
-    // spinner display
+    // FIXME spinner display
     $.ajax({
       url: 'restServices/redbackServices/userService/validateKey/'+key,
       type: 'GET',
        success: function(result){
          window.redbackModel.key=key;
+         $.log("validateKey#sucess");
          changePasswordBox(false,true);
        },
        complete: function(){
          // hide spinner
        },
        error: function(result) {
+         $.log("validateKey#error");
          var obj = jQuery.parseJSON(result.responseText);
+         $.log("validateKey#error response:"+obj);
          displayRedbackError(obj);
        }
     })
