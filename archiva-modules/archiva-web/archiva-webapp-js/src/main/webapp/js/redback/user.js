@@ -254,6 +254,8 @@ $(function() {
           $("#logout-link").show();
           $("#register-link").hide();
           $("#change-password-link").show();
+          window.modalLoginWindow.modal('hide');
+          clearForm("#user-login-form");
           decorateMenuWithKarma(user);
           return;
         }
@@ -265,10 +267,8 @@ $(function() {
        displayRedbackError(obj);
       },
       complete: function(){
-        clearForm("#user-login-form");
         $("#modal-login-ok").removeAttr("disabled");
         $("#login-spinner").remove();
-        window.modalLoginWindow.modal('hide');
       }
     });
 
