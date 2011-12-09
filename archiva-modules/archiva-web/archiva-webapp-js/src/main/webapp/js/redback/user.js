@@ -72,6 +72,7 @@ $(function() {
 
       this.createAdmin = function() {
         var valid = $("#user-create").valid();
+        $.log("create admin");
         if (!valid) {
             return;
         }
@@ -151,8 +152,9 @@ $(function() {
       }
 
       this.save=function(){
+        $.log("user.save create:"+window.redbackModel.createUser);
         if (window.redbackModel.createUser==true){
-          return this.createUser();
+          return this.create();
         } else {
           return this.update();
         }
@@ -163,10 +165,11 @@ $(function() {
 
 
   adminUserViewModel=function() {
-    this.user = new user("admin");
+    this.user = new user("admin","aze123","aze123", "the admin");
   }
 
   adminCreateBox=function() {
+    window.redbackModel.createUser=true;
     jQuery("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
     var viewModel = new adminUserViewModel();
     ko.applyBindings(viewModel);
