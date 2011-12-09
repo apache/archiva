@@ -1,0 +1,29 @@
+<div id="modal-login" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close">&times;</a>
+    <h3>${$.i18n.prop('login.section.title')}</h3>
+  </div>
+  <div class="modal-body" id="modal-login-content">
+      <form id="user-login-form">
+        <div id="modal-login-err-message" class="alert-message error" style="display:none"></div>
+        <fieldset>
+          <div class="clearfix">
+            <label for="user-login-form-username">${username}</label>
+            <div class="input">
+              <input type="text" id="user-login-form-username" name="user-login-form-username" class="required" value="admin"/>
+            </div>
+          </div>
+          <div class="clearfix">
+            <label for="user-login-form-password">${password}</label>
+            <div class="input">
+              <input type="password" id="user-login-form-password" name="user-login-form-password" class="required" value="admin123"/>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+  <div class="modal-footer" id="modal-login-footer">
+      <button class="btn primary" onclick="return login();" id="modal-login-ok">${login}</button>
+  </div>
+</div>
+

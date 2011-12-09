@@ -1,0 +1,60 @@
+<script id='redback/user-edit-tmpl' type='text/x-jquery-tmpl'>
+    <form id="user-create">
+      <fieldset id="user-create-fieldset">
+        <div class="clearfix">
+          <label for="username">${i18n('username')}</label>
+          <div class="input" id="username-div">
+            {{if $data.username}}
+              <span class="uneditable-input">${$data.username}</span>
+            {{else}}
+              <input type="text" id="username" name="username" size="30" class="required" data-bind="value: username"/>
+            {{/if}}
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="fullname">${i18n('full.name')}</label>
+          <div class="input">
+            <input type="text" id="fullname" name="fullname" size="30" class="required" data-bind="value: fullName"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="password">${i18n('password')}</label>
+          <div class="input">
+            <input type="password" id="password" name="password" class="required" data-bind="value: password"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="confirmPassword">${i18n('confirm.password')}</label>
+          <div class="input">
+            <input type="password" id="confirmPassword" name="confirmPassword" data-bind="value: confirmPassword"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="email">${i18n('email.address')}</label>
+          <div class="input">
+            <input type="text" id="email" name="email" class="required email" data-bind="value: email"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="validated">${i18n('validated')}</label>
+          <div class="input">
+            <input type="checkbox" id="validated" name="validated" data-bind="checked: validated"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="locked">${i18n('locked')}</label>
+          <div class="input">
+            <input type="checkbox" id="locked" name="locked" data-bind="checked: locked"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="passwordChangeRequired">${i18n('passwordChangeRequired')}</label>
+          <div class="input">
+            <input type="checkbox" id="passwordChangeRequired" name="passwordChangeRequired" data-bind="checked: passwordChangeRequired"/>
+          </div>
+        </div>
+      </fieldset>
+      <button data-bind="click: save" class="btn" id="user-create-form-register-button">${i18n('save')}</button>
+      <button onclick="$('#user-create').hide()" class="btn" id="user-create-form-cancel-button">${i18n('cancel')}</button>
+    </form>
+</script>
