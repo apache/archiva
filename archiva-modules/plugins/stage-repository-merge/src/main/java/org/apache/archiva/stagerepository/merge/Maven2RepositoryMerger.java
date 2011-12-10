@@ -19,24 +19,26 @@ package org.apache.archiva.stagerepository.merge;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.filter.IncludesFilter;
-import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.commons.io.IOUtils;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,8 +51,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  *
@@ -142,7 +142,7 @@ public class Maven2RepositoryMerger
 
         File targetArtifactFile = new File( targetRepoPath, artifactPath );
 
-        int lastIndex = artifactPath.lastIndexOf( '/' );
+        int lastIndex = artifactPath.lastIndexOf( File.separatorChar );
 
         File targetFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) );
 
