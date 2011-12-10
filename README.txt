@@ -15,6 +15,10 @@ and hit in your browser : http://localhost:9091/archiva
 note with dev profile admin account is automatically created with password admin123
 see file : archiva-modules/archiva-web/archiva-webapp/src/test/tomcat/auto-admin-creation.properties
 
+NOTE: you will need a MAVEN_OPTS with some memory setup as sample :
+export MAVEN_OPTS="-Xmx768m -Xms768m -XX:MaxPermSize=256m"
+
+
 Running webapp full js
 ========================
 As webapp js is in dev and won't probably be released soon, the module is not activated by default and it's included only in a profile
