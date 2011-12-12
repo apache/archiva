@@ -91,7 +91,8 @@
               org.apache.archiva.model;version=${project.version},
               org.apache.archiva.repository*;version=${project.version},
               org.apache.commons.io;version="[1.4,2)",
-              org.springframework*;version="[3,4)"
+              org.springframework*;version="[3,4)",
+              org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
         </configuration>

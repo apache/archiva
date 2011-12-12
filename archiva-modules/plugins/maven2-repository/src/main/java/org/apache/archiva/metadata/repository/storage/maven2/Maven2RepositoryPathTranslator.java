@@ -22,6 +22,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -38,11 +40,17 @@ import java.util.regex.Pattern;
 public class Maven2RepositoryPathTranslator
     implements RepositoryPathTranslator
 {
-    private static final char PATH_SEPARATOR = '/';
+
+    private Logger log = LoggerFactory.getLogger( getClass() );
+
+    private static final char PATH_SEPARATOR = File.separatorChar;// '/';
 
     private static final char GROUP_SEPARATOR = '.';
 
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
+    
+
+    private static final Pattern MAVEN_PLUGIN_PATTERN = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );    
 
     /**
      *
@@ -59,7 +67,6 @@ public class Maven2RepositoryPathTranslator
     @PostConstruct
     public void initialize()
     {
-
         //artifactMappingProviders = new ArrayList<ArtifactMappingProvider>(
         //    applicationContext.getBeansOfType( ArtifactMappingProvider.class ).values() );
 
@@ -323,7 +330,6 @@ public class Maven2RepositoryPathTranslator
         return metadata;
     }
 
-    private static final Pattern MAVEN_PLUGIN_PATTERN = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
 
     public boolean isArtifactIdValidMavenPlugin( String artifactId )
     {

@@ -35,6 +35,8 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -59,6 +61,8 @@ import java.util.TimeZone;
 public class Maven2RepositoryMerger
     implements RepositoryMerger
 {
+
+    private Logger log = LoggerFactory.getLogger( getClass() );
     /**
      *
      */
@@ -134,6 +138,8 @@ public class Maven2RepositoryMerger
         String targetRepoPath = targetRepoConfig.getLocation();
 
         String sourceRepoPath = sourceRepoConfig.getLocation();
+
+
 
         String artifactPath = pathTranslator.toPath( artifactMetadata.getNamespace(), artifactMetadata.getProject(),
                                                      artifactMetadata.getProjectVersion(), artifactMetadata.getId() );
