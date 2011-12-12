@@ -47,6 +47,11 @@ $(function() {
         }
       };
       this.createUser = function() {
+        $.log("user#createUser");
+        var valid = $("#user-create").valid();
+        if (!valid) {
+            return;
+        }
         var currentUser = this;
         $.ajax("restServices/redbackServices/userService/createUser", {
             data: "{\"user\": " +  ko.toJSON(this)+"}",
@@ -158,7 +163,15 @@ $(function() {
       this.save=function(){
         $.log("user.save create:"+window.redbackModel.createUser);
         if (window.redbackModel.createUser==true){
-          return this.create();
+          var valid = $("#main-content #createUserForm #user-create").valid();
+
+          if (valid==false) {
+            $.log("user#save valid:false");
+            return;
+          } else {
+            $.log("user#save valid:true");
+            return this.create();
+          }
         } else {
           return this.update();
         }

@@ -4,7 +4,7 @@
         <div class="clearfix">
           <label for="username">${i18n('username')}</label>
           <div class="input" id="username-div">
-            {{if $data.username}}
+            {{if $data.username.length>0}}
               <span class="uneditable-input">${$data.username}</span>
             {{else}}
               <input type="text" id="username" name="username" size="30" class="required" data-bind="value: username"/>
@@ -55,6 +55,6 @@
         </div>
       </fieldset>
       <button data-bind="click: save" class="btn" id="user-create-form-register-button">${i18n('save')}</button>
-      <button onclick="$('#user-create').hide()" class="btn" id="user-create-form-cancel-button">${i18n('cancel')}</button>
+      <button class="btn" id="user-create-form-cancel-button">${i18n('cancel')}</button>
     </form>
 </script>

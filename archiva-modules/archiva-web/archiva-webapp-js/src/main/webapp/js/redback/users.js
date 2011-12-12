@@ -54,12 +54,12 @@ $(function() {
     });
 
     this.addUser=function() {
-      screenChange();
+      clearUserMessages();
       window.redbackModel.createUser=true;
       $("#main-content #user-edit").remove();
       $('#main-content #user-create').show();
       ko.renderTemplate("redback/user-edit-tmpl", new user(), null, $("#createUserForm").get(0),"replaceChildren");
-      $("#user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
+      $("#main-content #createUserForm #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
         $('#user-create').hide();
       });
@@ -73,13 +73,8 @@ $(function() {
           customShowError(validator,errorMap,errorMap);
         }
       });
-      $("#createUserForm #user-create").delegate("#user-create-form-save-button", "click keydown", function(e) {
+      $("#main-content #createUserForm #user-create").delegate("#user-create-form-register-button", "click keydown", function(e) {
         e.preventDefault();
-        var valid = $("#user-create").valid();
-        if (!valid) {
-            return;
-        }
-        user.createUser();
       });
     };
 
@@ -110,7 +105,7 @@ $(function() {
 
     this.editUserBox=function(user) {
       window.redbackModel.createUser=false;
-      screenChange();
+      clearUserMessages();
       $("#main-content #user-edit").remove();
       $("#main-content").append("<div id='user-edit'></div>");
       $("#main-content #user-edit").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
@@ -120,20 +115,13 @@ $(function() {
       var viewModel = new userViewModel(user);
 
       ko.applyBindings(viewModel,$("#main-content #user-edit").get(0));
-      jQuery("#main-content #user-create").validate({
-        rules: {
-          confirmPassword: {
-            equalTo: "#password"
-          }
-        },
-        showErrors: function(validator, errorMap, errorList) {
-          customShowError(validator,errorMap,errorMap);
-        }
-      });
+
+
       $("#main-content #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
         $('#main-content #user-create').remove();
       });
+
       $("#main-content #user-create").validate({
         rules: {
           confirmPassword: {
@@ -152,6 +140,7 @@ $(function() {
         }
         user.update();
       });
+
     }
 
   }
