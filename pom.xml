@@ -46,7 +46,6 @@
   </distributionManagement>
 
   <modules>
-    <module>skin</module>
     <module>archiva-cli</module>
     <module>archiva-modules</module>
     <module>archiva-docs</module>
