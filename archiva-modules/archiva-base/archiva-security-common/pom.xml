@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-base</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M2-SNAPSHOT</version>
+    <version>1.4-M3-SNAPSHOT</version>
   </parent>
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva-security-common</artifactId>
