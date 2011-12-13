@@ -36,8 +36,8 @@
     <module>archiva-checksum</module>
     <module>archiva-plexus-bridge</module>
     <module>archiva-policies</module>
-    <module>archiva-consumers</module>
     <module>archiva-indexer</module>
+    <module>archiva-consumers</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
     <module>archiva-proxy-common</module>
