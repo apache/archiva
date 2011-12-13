@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -562,6 +563,11 @@ public class RepositoryContentConsumersTest
         public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public Environment getEnvironment()
+        {
+            return null;
         }
     }
 }

@@ -76,7 +76,7 @@
     <redback.taskqueue.version>1.0</redback.taskqueue.version>
     <slf4j.version>1.6.4</slf4j.version>
     <binder.version>0.11</binder.version>
-    <spring.version>3.0.6.RELEASE</spring.version>
+    <spring.version>3.1.0.RELEASE</spring.version>
     <jackrabbit.version>2.3.4</jackrabbit.version>
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1329,6 +1329,17 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
         <version>${spring.version}</version>
         <exclusions>
           <exclusion>
