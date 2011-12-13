@@ -87,25 +87,25 @@
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
-      <version>1.4-SNAPSHOT</version>
+      <version>${redback.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rbac-memory</artifactId>
       <scope>test</scope>
-      <version>1.4-SNAPSHOT</version>
+      <version>${redback.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rbac-cached</artifactId>
       <scope>test</scope>
-      <version>1.4-SNAPSHOT</version>
+      <version>${redback.version}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rbac-role-manager</artifactId>
       <scope>test</scope>
-      <version>1.4-SNAPSHOT</version>
+      <version>${redback.version}</version>
     </dependency>
   </dependencies>
   <build>
