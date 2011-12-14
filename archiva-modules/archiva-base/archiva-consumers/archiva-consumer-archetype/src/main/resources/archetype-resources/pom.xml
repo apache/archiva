@@ -229,17 +229,6 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>vmbuild.snapshots</id>
-      <url>http://vmbuild.apache.org/archiva/repository/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
     <repository>
       <id>redback.snapshots</id>
       <name>Codehaus Redback Snapshots Repository</name>
