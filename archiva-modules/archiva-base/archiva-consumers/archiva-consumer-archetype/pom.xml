@@ -33,6 +33,34 @@
     <archivaVersion>${project.version}</archivaVersion>
     <archetypeVersion>2.2</archetypeVersion>
   </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-consumer-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-indexer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-store-jcr</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
   <build>
     <resources>
       <resource>
