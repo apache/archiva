@@ -31,7 +31,7 @@
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>1.4-M2</version>
+  <version>1.4-M3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
@@ -54,9 +54,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/tags/archiva-1.4-M2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-1.4-M2</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/tags/archiva-1.4-M2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/branches/1.4-M2-RC</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/1.4-M2-RC</developerConnection>
+    <url>http://svn.apache.org/viewvc/archiva/branches/1.4-M2-RC</url>
   </scm>
 
   <properties>
