@@ -18,21 +18,20 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-M2-SNAPSHOT</version>
+    <version>1.4-M2</version>
   </parent>
   <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
   <name>Archiva Web :: Application</name>
 
   <properties>
-    <archiva.baseRestUrl/>
-    <rest.admin.pwd/>
+    <archiva.baseRestUrl />
+    <rest.admin.pwd />
     <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
   </properties>
 
@@ -878,9 +877,9 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <mkdir dir="${basedir}/target/archiva/WEB-INF/"/>
+                <mkdir dir="${basedir}/target/archiva/WEB-INF/" />
                 <copy todir="${basedir}/target/archiva/WEB-INF/">
-                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml,**/ehcache.xml"/>
+                  <fileset dir="${basedir}/target" includes="classes/" excludes="**/struts.xml,**/ehcache.xml" />
                 </copy>
               </tasks>
             </configuration>
@@ -893,7 +892,7 @@
             <configuration>
               <tasks>
                 <copy todir="${basedir}/appserver-base">
-                  <fileset dir="src/appserver-base"/>
+                  <fileset dir="src/appserver-base" />
                 </copy>
               </tasks>
             </configuration>
@@ -1293,11 +1292,9 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml"
-                          todir="${project.build.directory}/classes"/>
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties"
-                          todir="${basedir}/target/"/>
-                    <delete dir="${basedir}/src/main/webapp/WEB-INF/lib"/>
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml" todir="${project.build.directory}/classes" />
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties" todir="${basedir}/target/" />
+                    <delete dir="${basedir}/src/main/webapp/WEB-INF/lib" />
                   </tasks>
                 </configuration>
               </execution>

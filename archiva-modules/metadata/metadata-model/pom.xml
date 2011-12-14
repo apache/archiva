@@ -21,7 +21,7 @@
   <parent>
     <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M2-SNAPSHOT</version>
+    <version>1.4-M2</version>
   </parent>
   <artifactId>metadata-model</artifactId>
   <packaging>bundle</packaging>
