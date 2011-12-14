@@ -1,1 +1,1 @@
-clean verify
+clean,verify,-Dsurefire.useFile=false
