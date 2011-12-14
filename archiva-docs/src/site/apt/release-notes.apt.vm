@@ -63,6 +63,60 @@ Release Notes for Archiva ${project.version}
 
   Released: <<???>>
 
+** New Feature
+
+    * [MRM-815] - aggregate indices for repository groups
+
+    * [MRM-1547] - release an archetype to create consumer
+
+    * [MRM-1560] - Add the possibility to schedule retrieve remote indexes when application startup
+
+** Improvement
+
+    * [MRM-1175] - archiva-consumer-plugin-archetype: generates code that does not compile
+
+    * [MRM-1425] - Add Implementation details to MANIFEST.MF in the produced war
+
+    * [MRM-1426] - Set welcome page in web.xml
+
+    * [MRM-1430] - create test-jar for consumers
+
+    * [MRM-1534] - deprecated configuration warning for default install
+
+    * [MRM-1535] - Invalid reference (result HTTP 404) for css/no-theme/jquery-ui-1.8.14.theme.css
+
+    * [MRM-1538] - Managed Repositories > Show Snippet ought to include a pluginRepositories section
+
+    * [MRM-1539] - Upgrade to Jetty 7
+
+    * [MRM-1545] - upgrade derby version to 10.8.2.2
+
+    * [MRM-1548] - configure a java.io.tmpdir in ./temp for jetty distrib
+
+    * [MRM-1549] - add some initial memory setup in wrapper.conf
+
+    * [MRM-1551] - add rest method to delete artifact.
+
+    * [MRM-1555] - upgrade derby version to 10.8.2.2
+
+** Bug
+
+    * [MRM-684] - Clients timeout due to Archiva blocking when downloading large files
+
+    * [MRM-788] - Database Issue: java.sql.SQLException: Already closed.
+
+    * [MRM-1318] - Nexus index of a repository group is incomplete
+
+    * [MRM-1370] - Artifacts labelled "Distribution-zip" in the orange frame.
+
+    * [MRM-1542] - missing classifier field in the delete artifact web page
+
+    * [MRM-1552] - Perm-Gen space exception on MAC using the wrapper
+
+** Test
+
+    * [MRM-1557] - archive-rest-services unit tests broken
+
 Previous Releases
 
 * Changes in Archiva 1.4-M1
