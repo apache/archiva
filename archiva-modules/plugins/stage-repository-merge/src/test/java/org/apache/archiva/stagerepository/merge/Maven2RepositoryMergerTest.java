@@ -106,6 +106,7 @@ public class Maven2RepositoryMergerTest
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
     }
 
+    @Test
     public void testMergeWithOutConflictArtifacts()
         throws Exception
     {
