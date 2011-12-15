@@ -148,6 +148,8 @@ public class Maven2RepositoryMerger
 
         File targetArtifactFile = new File( targetRepoPath, artifactPath );
 
+        log.debug( "artifactPath {}", artifactPath );
+
         int lastIndex = artifactPath.lastIndexOf( File.separatorChar );
 
         File targetFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) );
