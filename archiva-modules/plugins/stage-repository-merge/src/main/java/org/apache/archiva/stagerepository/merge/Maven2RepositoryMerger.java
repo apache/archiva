@@ -35,6 +35,7 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -150,7 +151,7 @@ public class Maven2RepositoryMerger
 
         log.debug( "artifactPath {}", artifactPath );
 
-        int lastIndex = artifactPath.lastIndexOf( File.separatorChar );
+        int lastIndex = artifactPath.lastIndexOf( RepositoryPathTranslator.PATH_SEPARATOR );
 
         File targetFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) );
 

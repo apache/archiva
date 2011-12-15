@@ -43,8 +43,6 @@ public class Maven2RepositoryPathTranslator
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    private static final char PATH_SEPARATOR = '/';
-
     private static final char GROUP_SEPARATOR = '.';
 
     private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
