@@ -43,7 +43,7 @@ public class Maven2RepositoryPathTranslator
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    private static final char PATH_SEPARATOR = File.separatorChar;// '/';
+    private static final char PATH_SEPARATOR = '/';
 
     private static final char GROUP_SEPARATOR = '.';
 
