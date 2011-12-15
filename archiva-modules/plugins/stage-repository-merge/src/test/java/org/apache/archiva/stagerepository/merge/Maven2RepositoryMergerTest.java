@@ -20,12 +20,12 @@ package org.apache.archiva.stagerepository.merge;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +86,7 @@ public class Maven2RepositoryMergerTest
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( "target/test-repository" );
+        testRepo.setLocation( "target" + File.separatorChar + "test-repository" );
 
         RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
         List<String> knownContentConsumers = new ArrayList<String>();
@@ -126,9 +126,10 @@ public class Maven2RepositoryMergerTest
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( "target/test-repository" );
+        testRepo.setLocation( "target" + File.separatorChar + "test-repository" );
 
-        String sourceRepo = "src/test/resources/test-repository-with-conflict-artifacts";
+        String sourceRepo = "src" + File.separatorChar + "test" + File.separatorChar + "resources" + File.separatorChar
+            + "test-repository-with-conflict-artifacts";
         ManagedRepositoryConfiguration testRepoWithConflicts = new ManagedRepositoryConfiguration();
         testRepoWithConflicts.setId( sourceRepoId );
         testRepoWithConflicts.setLocation( sourceRepo );
