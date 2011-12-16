@@ -31,7 +31,6 @@
     <module>archiva-security</module>
     <module>archiva-webdav</module>
     <module>archiva-rss</module>
-    <module>archiva-xmlrpc</module>
     <module>archiva-rest</module>
     <module>archiva-webapp-common</module>
     <module>archiva-webapp</module>
