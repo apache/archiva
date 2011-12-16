@@ -25,6 +25,7 @@ $(function() {
     this.loadUsers = function() {
       $.ajax("restServices/redbackServices/userService/getUsers", {
           type: "GET",
+          async: false,
           dataType: 'json',
           success: function(data) {
               var mappedUsers = $.map(data.user, function(item) {
@@ -152,7 +153,18 @@ $(function() {
     window.redbackModel.usersViewModel = new usersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
     ko.applyBindings(window.redbackModel.usersViewModel,jQuery("#main-content").get(0));
+    $("#users-view-tabs").tabs();
+    $("#users-view-tabs").bind('change', function (e) {
+      //$.log( $(e.target).attr("href") ); // activated tab
+      //e.relatedTarget // previous tab
+      if ($(e.target).attr("href")=="#createUserForm") {
+        window.redbackModel.usersViewModel.addUser();
+      }
+    })
+    $("#users-view-tabs-content #users-view").addClass("active");
   }
+
+
 
   userViewModel=function(user) {
       this.user=user;

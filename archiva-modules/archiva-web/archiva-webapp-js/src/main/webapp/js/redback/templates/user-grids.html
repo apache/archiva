@@ -89,17 +89,22 @@
 <script id="usersGrid"  type="text/x-jquery-tmpl">
     <h2>Users list</h2>
 
-    <button data-bind='click: addUser' class="btn">
-        Add User
-    </button>
-
     <button data-bind='click: sortByName'  class="btn">
         Sort by name
     </button>
-
-    <div id="usersPagination"></div>
-
-    <table class="bordered-table zebra-striped" data-bind="simpleGrid: gridViewModel" id="usersTable"></table>
-
-    <div id="createUserForm"></div>
+    <ul id="users-view-tabs" class="tabs">
+      <li class="active">
+        <a href="#users-view">Users</a>
+      </li>
+      <li>
+        <a href="#createUserForm">Add User</a>
+      </li>
+    </ul>
+    <div id="users-view-tabs-content" class="tab-content">
+      <div id="users-view">
+          <table class="bordered-table zebra-striped" data-bind="simpleGrid: gridViewModel" id="usersTable"></table>
+          <div id="usersPagination"></div>
+      </div>
+      <div id="createUserForm"></div>
+    </div>
 </script>
