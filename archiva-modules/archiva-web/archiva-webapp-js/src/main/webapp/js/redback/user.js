@@ -60,12 +60,17 @@ $(function() {
             dataType: 'json',
             success: function(result) {
               var created = JSON.parse(result);
-              // FIXME use a message div and i18n
               if (created == true) {
                 displaySuccessMessage("user created:"+currentUser.username());
                 window.redbackModel.usersViewModel.users.push(currentUser);
                 clearForm("#main-content #user-create");
                 $("#main-content #user-create").hide();
+
+                $("#main-content #users-view-tabs li").removeClass("active");
+                $("#main-content #users-view-tabs-content div").removeClass("active");
+                // activate users grid tab
+                $("#main-content #users-view-tabs-content #users-view").addClass("active");
+                $("#users-view-tabs-li-tabs").addClass("active");
                 return this;
               } else {
                 displayErrorMessage("user cannot created");
