@@ -808,6 +808,14 @@
       <optional>true</optional>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-webapp-common</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+      <version>${project.version}</version>
+    </dependency>
+
   </dependencies>
   <build>
     <resources>

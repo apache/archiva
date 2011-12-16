@@ -44,6 +44,24 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-rss</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.redback</groupId>
+      <artifactId>redback-common-integrations</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>stax</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-plexus-bridge</artifactId>
     </dependency>
     <dependency>
@@ -105,6 +123,21 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
+    <dependency>
+      <groupId>httpunit</groupId>
+      <artifactId>httpunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -124,6 +157,7 @@
               javax.annotation,
               javax.inject,
               javax.servlet,
+              javax.servlet.http,
               org.apache.archiva.common;version=${project.version},
               org.apache.archiva.common.plexusbridge;version=${project.version},
               org.apache.archiva.configuration;version=${project.version},
@@ -144,9 +178,49 @@
               org.quartz;version="[2,3)",
               org.slf4j;resolution:=optional,
               org.springframework*;version="[3,4)",
-              org.springframework.web*;version="[3,4)"
+              org.springframework.web*;version="[3,4)",
+              com.sun.syndication.feed.synd,
+              com.sun.syndication.io,
+              org.apache.archiva.metadata.repository,
+              org.apache.archiva.rss.processor,
+              org.apache.archiva.security,
+              org.apache.commons.codec,
+              org.apache.commons.codec.binary,
+              org.codehaus.plexus.redback.authentication,
+              org.codehaus.plexus.redback.authorization,
+              org.codehaus.plexus.redback.policy,
+              org.codehaus.plexus.redback.system,
+              org.codehaus.plexus.redback.users,
+              org.codehaus.redback.integration.filter.authentication
             </Import-Package>
           </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
+            <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
+            <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
+            <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <basedir>${basedir}</basedir>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
