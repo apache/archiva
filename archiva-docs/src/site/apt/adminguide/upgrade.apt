@@ -62,6 +62,17 @@ Upgrading Archiva
   that in Archiva 1.4+ you must use the <<<org.apache.archiva>>> configuration search path instead of
   <<<org.apache.maven.archiva>>>.
 
+** Updated Jetty configuration
+
+  If you are using the Jetty standalone configuration with a custom
+  <<<jetty.xml>>>, note that it has been upgraded to Jetty 7 as of Archiva 1.4-M2.
+  You will need to recreate your customisations using the <<<jetty.xml>>> shipped
+  with Archiva.
+
+  In addition, you now need to ensure that a <<<temp>>> directory is created
+  inside the Archiva application base directory (alongside <<<conf>>>, <<<data>>>
+  and <<<logs>>>).
+
 * Upgrading Archiva to 1.2.2
 
    Since Archiva 1.2.2, the Jetty version has been upgraded to 6.1.19.

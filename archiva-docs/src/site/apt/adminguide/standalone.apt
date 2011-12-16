@@ -69,7 +69,10 @@ Installing Standalone Distribution of Apache Archiva
 
   This is achieved by the following steps:
 
-   [[1]] Create the base location. For example, you might install Archiva in <<</opt/archiva-1.4>>> and the data in <<</var/archiva>>>. Create the directories <<</var/archiva/logs>>>, <<</var/archiva/data>>> and <<</var/archiva/conf>>>.
+   [[1]] Create the base location. For example, you might install Archiva in
+         <<</opt/archiva-1.4>>> and the data in <<</var/archiva>>>. Create the
+         directories <<</var/archiva/logs>>>, <<</var/archiva/data>>>,
+         <<</var/archiva/temp>>> and <<</var/archiva/conf>>>.
 
    [[2]] Move the configuration files from the Archiva installation (e.g. <<</opt/archiva-1.4/conf>>> to the new location (e.g. <<</var/archiva/conf>>>). If you've previously run Archiva, you may need to edit <<<conf/archiva.xml>>> to change the location of the repositories.
 
