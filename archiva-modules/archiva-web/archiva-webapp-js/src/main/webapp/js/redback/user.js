@@ -70,7 +70,7 @@ $(function() {
                 $("#main-content #users-view-tabs-content div").removeClass("active");
                 // activate users grid tab
                 $("#main-content #users-view-tabs-content #users-view").addClass("active");
-                $("#users-view-tabs-li-tabs").addClass("active");
+                $("#users-view-tabs-li-users-grid").addClass("active");
                 return this;
               } else {
                 displayErrorMessage("user cannot created");
