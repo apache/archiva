@@ -110,7 +110,7 @@
               </transformers>
               <artifactSet>
                 <excludes>
-		              <exclude>xerces:xercesImpl</exclude>
+                  <exclude>xerces:xercesImpl</exclude>
                   <exclude>xml-apis:xml-apis</exclude>
                   <exclude>xalan:xalan</exclude>
                   <exclude>commons-beanutils:commons-beanutils</exclude>

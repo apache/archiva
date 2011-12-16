@@ -27,9 +27,9 @@
 <head>
   <title>Search Results</title>
   <s:head/>
-  <script type="text/javascript">  
+  <script type="text/javascript">
     function addSearchField(fieldText, field, divName)
-    {     
+    {
       var element = document.getElementById( field );
       if( element != null )
       {
@@ -40,8 +40,8 @@
       var table = document.getElementById( "dynamicTable" );
       var row = document.createElement( "TR" );
       var label = document.createElement("TD");
-      label.innerHTML = fieldText + ": ";	
-     
+      label.innerHTML = fieldText + ": ";
+
       var textfield = document.createElement( "TD" );
       var inp1 =  document.createElement( "INPUT" );
       inp1.setAttribute( "type", "text" );
@@ -50,11 +50,11 @@
       inp1.setAttribute( "name", field );
       textfield.appendChild( inp1 );
 
-      row.appendChild( label ); 
+      row.appendChild( label );
       row.appendChild( textfield );
       table.appendChild( row );
     }
-  </script>  
+  </script>
 </head>
 
 <body>
@@ -66,7 +66,7 @@
 </c:if>
 <c:if test="${fromFilterSearch == false}">
   <h1>Search</h1>
-</c:if> 
+</c:if>
 
 <c:url var="imgNextPageUrl" value="/images/icon_next_page.gif"/>
 <c:url var="imgPrevPageUrl" value="/images/icon_prev_page.gif"/>
@@ -86,23 +86,23 @@
         <tr>
           <td>
           <s:form id="filteredSearch" method="get" action="filteredSearch" validate="true">
-            <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}" theme="simple"/>  
-            <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/> 
+            <s:hidden name="fromFilterSearch" value="%{#attr.fromFilterSearch}" theme="simple"/>
+            <label><strong>Advanced Search Fields: </strong></label><s:select name="searchField" list="searchFields" theme="simple"/>
             <s:a href="#" title="Add Search Field" onclick="addSearchField( document.filteredSearch.searchField.options[document.filteredSearch.searchField.selectedIndex].text, document.filteredSearch.searchField.value, 'dynamicFields' )" theme="simple">
               <img src="${iconCreateUrl}" />
             </s:a>
             <table id="dynamicTable">
               <tr>
                 <td><label>Repository: </td>
-                <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td> 
-              </tr>          
+                <td><s:select name="repositoryId" list="managedRepositoryList" theme="simple"/></td>
+              </tr>
               <tr>
                 <td/>
-                <td/>  
+                <td/>
               </tr>
-            </table> 
-            <s:submit value="Search" theme="simple"/>  
-          </s:form>  
+            </table>
+            <s:submit value="Search" theme="simple"/>
+          </s:form>
           </td>
         </tr>
       </table>
@@ -110,10 +110,10 @@
     <c:if test="${fromFilterSearch == false}">
       <s:form method="get" action="quickSearch" validate="true">
         <s:textfield label="Search for" size="50" name="q"/>
-        <s:checkbox label="Search within results" name="searchResultsOnly"/>        
-        <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>        
+        <s:checkbox label="Search within results" name="searchResultsOnly"/>
+        <s:hidden name="completeQueryString" value="%{#attr.completeQueryString}"/>
         <s:submit label="Go!"/>
-      </s:form> 
+      </s:form>
       <script type="text/javascript">
         document.getElementById("quickSearchValue").focus();
       </script>
@@ -145,160 +145,160 @@
           </c:when>
           <c:otherwise>
             <p>Hits: 1 to ${hitsNum} of ${results.totalHits}</p>
-          </c:otherwise>        
+          </c:otherwise>
         </c:choose>
         <c:choose>
           <c:when test="${empty results.hits}">
             <p>No results</p>
           </c:when>
           <c:otherwise>
-      	      	    
-      	  <%-- Pagination start --%>
-      	    <p>                       
-            <%-- Prev & Next icons --%>
+
+            <%-- Pagination start --%>
+            <p>
+              <%-- Prev & Next icons --%>
               <c:if test="${fromFilterSearch == false}">
-               <c:set var="prevPageUrl">
-                 <s:url action="quickSearch" namespace="/">
-                   <s:param name="q" value="%{#attr.q}"/>                
-                   <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
-                 </s:url>
-       	      </c:set>
-       	      <c:set var="nextPageUrl">
-                 <s:url action="quickSearch" namespace="/">
-                   <s:param name="q" value="%{#attr.q}"/>                
-                   <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
-                 </s:url>
-       	      </c:set>    
+                <c:set var="prevPageUrl">
+                  <s:url action="quickSearch" namespace="/">
+                    <s:param name="q" value="%{#attr.q}"/>
+                    <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
+                  </s:url>
+                </c:set>
+                <c:set var="nextPageUrl">
+                  <s:url action="quickSearch" namespace="/">
+                    <s:param name="q" value="%{#attr.q}"/>
+                    <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
+                  </s:url>
+                </c:set>
               </c:if>
 
               <c:if test="${fromFilterSearch == true}">
-               <c:set var="prevPageUrl">
-                 <s:url action="filteredSearch" namespace="/">
-                   <s:param name="rowCount" value="%{#attr.rowCount}"/>
-                   <s:param name="groupId" value="%{#attr.groupId}"/>
-                   <s:param name="artifactId" value="%{#attr.artifactId}"/>
-                   <s:param name="version" value="%{#attr.version}"/>
-                   <s:param name="className" value="%{#attr.className}"/>
-                   <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
-                   <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-                   <s:param name="fromResultsPage" value="true"/>
-                   <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
-                   <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-                   <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
-                 </s:url>
-       	      </c:set>
-       	      <c:set var="nextPageUrl">
-                <s:url action="filteredSearch" namespace="/">
-                  <s:param name="rowCount" value="%{#attr.rowCount}"/>
-                  <s:param name="groupId" value="%{#attr.groupId}"/>
-                  <s:param name="artifactId" value="%{#attr.artifactId}"/>
-                  <s:param name="version" value="%{#attr.version}"/>
-                  <s:param name="className" value="%{#attr.className}"/>
-                  <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
-                  <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-  		          <s:param name="fromResultsPage" value="true"/>
-                  <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
- 		          <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		          <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
-                </s:url>
-      	      </c:set>    
-             </c:if>
-            
-            <c:choose>
-              <c:when test="${currentPage == 0}">                               
-	            <img src="${imgPrevPageDisabledUrl}"/>
-	          </c:when>
-	          <c:otherwise>
-	            <a href="${prevPageUrl}">
-	              <img src="${imgPrevPageUrl}"/>
-	            </a>      
-	          </c:otherwise>
-            </c:choose>
-			
-			<%-- Google-style pagination --%>
-			<c:choose>
-			  <c:when test="${totalPages > 11}">
-			    <c:choose>
-			      <c:when test="${(currentPage - 5) < 0}">
-			        <c:set var="beginVal">0</c:set>
-			        <c:set var="endVal">10</c:set> 
-			      </c:when>			        
-			      <c:when test="${(currentPage + 5) > (totalPages - 1)}">
-			        <c:set var="beginVal">${(totalPages -1) - 10}</c:set>
-			        <c:set var="endVal">${totalPages - 1}</c:set>
-			      </c:when>
-			      <c:otherwise>
-			        <c:set var="beginVal">${currentPage - 5}</c:set>
-			        <c:set var="endVal">${currentPage + 5}</c:set>
-			      </c:otherwise>
-			    </c:choose>  
-			  </c:when>
-			  <c:otherwise>
-			    <c:set var="beginVal">0</c:set>
-			    <c:set var="endVal">${totalPages - 1}</c:set> 
-			  </c:otherwise>
-			</c:choose>
-						
-			<c:forEach var="i" begin="${beginVal}" end="${endVal}">
-              <c:if test="${fromFilterSearch == false}">
-                <c:choose>                   			    
-		          <c:when test="${i != currentPage}">
-		            <c:set var="specificPageUrl">
-		              <s:url action="quickSearch" namespace="/">
-		                <s:param name="q" value="%{#attr.q}"/>
-		                <s:param name="currentPage" value="%{#attr.i}"/>
-		                <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		                <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
-  		              </s:url>
-		      	    </c:set>
-			        <a href="${specificPageUrl}">${i + 1}</a>
-			      </c:when>
-			      <c:otherwise>		
-		       	    <b>${i + 1}</b>   
-		          </c:otherwise>				  			    
-                </c:choose>
+                <c:set var="prevPageUrl">
+                  <s:url action="filteredSearch" namespace="/">
+                    <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                    <s:param name="groupId" value="%{#attr.groupId}"/>
+                    <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                    <s:param name="version" value="%{#attr.version}"/>
+                    <s:param name="className" value="%{#attr.className}"/>
+                    <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                    <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
+                    <s:param name="fromResultsPage" value="true"/>
+                    <s:param name="currentPage" value="%{#attr.currentPage - 1}"/>
+                    <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+                    <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+                  </s:url>
+                </c:set>
+                <c:set var="nextPageUrl">
+                  <s:url action="filteredSearch" namespace="/">
+                    <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                    <s:param name="groupId" value="%{#attr.groupId}"/>
+                    <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                    <s:param name="version" value="%{#attr.version}"/>
+                    <s:param name="className" value="%{#attr.className}"/>
+                    <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                    <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
+                    <s:param name="fromResultsPage" value="true"/>
+                    <s:param name="currentPage" value="%{#attr.currentPage + 1}"/>
+                    <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+                    <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+                  </s:url>
+                </c:set>
               </c:if>
 
-              <c:if test="${fromFilterSearch == true}">
-                <c:choose>                  			    
-		          <c:when test="${i != currentPage}">
-		            <c:set var="specificPageUrl">
-		              <s:url action="filteredSearch" namespace="/">
-                        <s:param name="rowCount" value="%{#attr.rowCount}"/>
-                        <s:param name="groupId" value="%{#attr.groupId}"/>
-                        <s:param name="artifactId" value="%{#attr.artifactId}"/>
-                        <s:param name="version" value="%{#attr.version}"/>
-                        <s:param name="className" value="%{#attr.className}"/>
-                        <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
-                        <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
-		                <s:param name="fromResultsPage" value="true"/>
-		                <s:param name="currentPage" value="%{#attr.i}"/>
-		                <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
-		                <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
-		              </s:url>
-		      	    </c:set>
-				    <a href="${specificPageUrl}">${i + 1}</a>
-			      </c:when>
-			      <c:otherwise>		
-		            <b>${i + 1}</b>   
-			      </c:otherwise>
-                </c:choose>
-              </c:if>
-			</c:forEach>
-			
-            <c:choose>
-			  <c:when test="${currentPage == (totalPages - 1)}">
-			    <img src="${imgNextPageDisabledUrl}"/>
-              </c:when>
-              <c:otherwise>
-	            <a href="${nextPageUrl}">
-	              <img src="${imgNextPageUrl}"/>
-	            </a>
-	          </c:otherwise>   
-            </c:choose>
-            </p>    
-          <%-- Pagination end --%>
-            
+              <c:choose>
+                <c:when test="${currentPage == 0}">
+                  <img src="${imgPrevPageDisabledUrl}"/>
+                </c:when>
+                <c:otherwise>
+                  <a href="${prevPageUrl}">
+                    <img src="${imgPrevPageUrl}"/>
+                  </a>
+                </c:otherwise>
+              </c:choose>
+
+              <%-- Google-style pagination --%>
+              <c:choose>
+                <c:when test="${totalPages > 11}">
+                  <c:choose>
+                    <c:when test="${(currentPage - 5) < 0}">
+                      <c:set var="beginVal">0</c:set>
+                      <c:set var="endVal">10</c:set>
+                    </c:when>
+                    <c:when test="${(currentPage + 5) > (totalPages - 1)}">
+                      <c:set var="beginVal">${(totalPages -1) - 10}</c:set>
+                      <c:set var="endVal">${totalPages - 1}</c:set>
+                    </c:when>
+                    <c:otherwise>
+                      <c:set var="beginVal">${currentPage - 5}</c:set>
+                      <c:set var="endVal">${currentPage + 5}</c:set>
+                    </c:otherwise>
+                  </c:choose>
+                </c:when>
+                <c:otherwise>
+                  <c:set var="beginVal">0</c:set>
+                  <c:set var="endVal">${totalPages - 1}</c:set>
+                </c:otherwise>
+              </c:choose>
+
+              <c:forEach var="i" begin="${beginVal}" end="${endVal}">
+                <c:if test="${fromFilterSearch == false}">
+                  <c:choose>
+                    <c:when test="${i != currentPage}">
+                      <c:set var="specificPageUrl">
+                        <s:url action="quickSearch" namespace="/">
+                          <s:param name="q" value="%{#attr.q}"/>
+                          <s:param name="currentPage" value="%{#attr.i}"/>
+                          <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+                          <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+                        </s:url>
+                      </c:set>
+                      <a href="${specificPageUrl}">${i + 1}</a>
+                    </c:when>
+                    <c:otherwise>
+                      <b>${i + 1}</b>
+                    </c:otherwise>
+                  </c:choose>
+                </c:if>
+
+                <c:if test="${fromFilterSearch == true}">
+                  <c:choose>
+                    <c:when test="${i != currentPage}">
+                      <c:set var="specificPageUrl">
+                        <s:url action="filteredSearch" namespace="/">
+                          <s:param name="rowCount" value="%{#attr.rowCount}"/>
+                          <s:param name="groupId" value="%{#attr.groupId}"/>
+                          <s:param name="artifactId" value="%{#attr.artifactId}"/>
+                          <s:param name="version" value="%{#attr.version}"/>
+                          <s:param name="className" value="%{#attr.className}"/>
+                          <s:param name="repositoryId" value="%{#attr.repositoryId}"/>
+                          <s:param name="filterSearch" value="%{#attr.filterSearch}"/>
+                          <s:param name="fromResultsPage" value="true"/>
+                          <s:param name="currentPage" value="%{#attr.i}"/>
+                          <s:param name="searchResultsOnly" value="%{#attr.searchResultsOnly}"/>
+                          <s:param name="completeQueryString" value="%{#attr.completeQueryString}"/>
+                        </s:url>
+                      </c:set>
+                      <a href="${specificPageUrl}">${i + 1}</a>
+                    </c:when>
+                    <c:otherwise>
+                      <b>${i + 1}</b>
+                    </c:otherwise>
+                  </c:choose>
+                </c:if>
+              </c:forEach>
+
+              <c:choose>
+                <c:when test="${currentPage == (totalPages - 1)}">
+                  <img src="${imgNextPageDisabledUrl}"/>
+                </c:when>
+                <c:otherwise>
+                  <a href="${nextPageUrl}">
+                    <img src="${imgNextPageUrl}"/>
+                  </a>
+                </c:otherwise>
+              </c:choose>
+            </p>
+            <%-- Pagination end --%>
+
             <c:forEach items="${results.hits}" var="record" varStatus="i">
               <c:choose>
                 <c:when test="${not empty (record.groupId)}">

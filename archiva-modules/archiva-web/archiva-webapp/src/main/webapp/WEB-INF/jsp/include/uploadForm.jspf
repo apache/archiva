@@ -28,10 +28,7 @@
 <s:textfield name="version" label="Version" size="50" required="true"/>
 <s:textfield name="packaging" label="Packaging" size="50" required="true"/>
 <s:textfield name="classifier" label="Classifier" size="50" required="false"/>
-<s:checkbox name="generatePom" value="generatePom"
-	label="Generate Maven 2 POM"/> 
+<s:checkbox name="generatePom" value="generatePom" label="Generate Maven 2 POM"/> 
 <s:file name="artifact" label="Artifact File" required="true"/>
 <s:file name="pom" label="POM File"/>
 <s:select name="repositoryId" list="managedRepoIdList" label="Repository Id"/>
-
-	

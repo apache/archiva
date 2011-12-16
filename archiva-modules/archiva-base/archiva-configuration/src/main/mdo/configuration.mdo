@@ -230,10 +230,10 @@
     }
 
     private java.util.Map<String, java.util.List<String>> groupToRepositoryMap;
-    	
+
     public java.util.Map<String, java.util.List<String>> getGroupToRepositoryMap()
     {
-    	if ( repositoryGroups != null && managedRepositories != null )
+        if ( repositoryGroups != null && managedRepositories != null )
         {
             java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
             
@@ -701,23 +701,23 @@
     public String getGroupId()
     {
         return artifact.split( ":" )[0];
-	}
+    }
 
     public String getArtifactId()
     {
         return artifact.split( ":" )[1];
-	}
+    }
         
     public String getVersion()
     {
         return artifact.split( ":" )[2];
-	}
+    }
     
     public String getClassifier()
     {
-		String classifier = artifact.split( ":" )[3];
+        String classifier = artifact.split( ":" )[3];
         return classifier.length() > 0 ? classifier : null;
-	}
+    }
     
     public String getType()
     {

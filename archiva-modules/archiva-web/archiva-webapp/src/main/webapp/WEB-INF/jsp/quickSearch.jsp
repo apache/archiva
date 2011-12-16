@@ -39,7 +39,7 @@
       var table = document.getElementById( "dynamicTable" );
       var row = document.createElement( "TR" );
       var label = document.createElement("TD");
-      label.innerHTML = fieldText + ": ";	
+      label.innerHTML = fieldText + ": ";
      
       var textfield = document.createElement( "TD" );
       var inp1 =  document.createElement( "INPUT" );

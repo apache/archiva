@@ -76,8 +76,8 @@ public class RepositoryActionMapper
         String path = httpServletRequest.getServletPath();
 
         if ("".equals(path)){
-        	// if JEE 5 spec is correctly implemented, the "/*" pattern implies an empty string in servletpath
-        	path = httpServletRequest.getPathInfo();
+            // if JEE 5 spec is correctly implemented, the "/*" pattern implies an empty string in servletpath
+            path = httpServletRequest.getPathInfo();
         }
 
         if (StringUtils.isEmpty( path ))

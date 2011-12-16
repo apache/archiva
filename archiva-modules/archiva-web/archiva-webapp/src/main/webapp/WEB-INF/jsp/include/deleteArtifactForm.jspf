@@ -27,4 +27,3 @@
 <s:textfield name="classifier" label="Classifier" size="60" required="false"/>
 <s:textfield name="type" label="Type (mandatory when using classifier)" size="60" required="false" />
 <s:select name="repositoryId" list="managedRepos" label="Repository Id"/>
-	

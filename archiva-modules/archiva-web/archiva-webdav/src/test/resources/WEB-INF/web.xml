@@ -31,8 +31,8 @@
     <listener-class>org.apache.archiva.webdav.util.MavenIndexerCleaner</listener-class>
   </listener>
   <context-param>
-	  <param-name>contextClass</param-name>
-	  <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
+    <param-name>contextClass</param-name>
+    <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
   </context-param>
   <context-param>
     <param-name>contextConfigLocation</param-name>

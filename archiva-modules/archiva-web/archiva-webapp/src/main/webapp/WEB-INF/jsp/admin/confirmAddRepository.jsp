@@ -70,14 +70,14 @@
         <%--td>${repository.layout}</td--%>
         <td>
           <c:choose>
-	        <c:when test="${repository.layout == 'default'}">
-	          Maven 2.x Repository
-	        </c:when>
-	        <c:otherwise>
-	          Maven 1.x Repository
-	        </c:otherwise>
-	      </c:choose>
-	    </td>
+            <c:when test="${repository.layout == 'default'}">
+              Maven 2.x Repository
+            </c:when>
+            <c:otherwise>
+              Maven 1.x Repository
+            </c:otherwise>
+          </c:choose>
+        </td>
       </tr>
       <tr>
         <td>Cron:</td>
@@ -109,7 +109,7 @@
       </tr>
     </table>
   </div>
-  	
+
   <s:form method="post" action="%{action}" namespace="/admin" validate="true" theme="simple">
     <div class="buttons">      
       <s:hidden name="repository.id" value="%{#attr.repository.id}"/>
@@ -127,12 +127,12 @@
       
       <c:choose>      
         <c:when test="${action == 'addRepository'}">
-      	  <s:submit value="Save" method="confirmAdd"/>
-      	</c:when>
-      	<c:otherwise>
-      	  <s:submit value="Save" method="confirmUpdate"/>
-      	</c:otherwise>
-     </c:choose>
+          <s:submit value="Save" method="confirmAdd"/>
+        </c:when>
+        <c:otherwise>
+          <s:submit value="Save" method="confirmUpdate"/>
+        </c:otherwise>
+      </c:choose>
       
       <s:submit value="Cancel" method="execute"/>
     </div>

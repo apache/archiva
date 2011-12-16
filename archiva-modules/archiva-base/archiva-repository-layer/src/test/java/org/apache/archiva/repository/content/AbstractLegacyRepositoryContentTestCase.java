@@ -345,13 +345,13 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertLayout( path, groupId, artifactId, version, null, type );
     }
 
-	/**
-	 * [MRM-768] Artifact type "maven-plugin" does not distinguish maven1 and maven2 plugins. 
-	 * This produces conflicts when m2 plugins are stored in legacy-layout repository
-	 */
+    /**
+     * [MRM-768] Artifact type "maven-plugin" does not distinguish maven1 and maven2 plugins. 
+     * This produces conflicts when m2 plugins are stored in legacy-layout repository
+     */
     @Test
-	public void testMaven1Maven2PluginTypeDistinc()
-	    throws Exception
+    public void testMaven1Maven2PluginTypeDistinc()
+        throws Exception
     {
         String groupId = "com.sun.tools.xjc.maven2";
         String artifactId = "maven-jaxb-plugin";
@@ -360,8 +360,8 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String path = "com.sun.tools.xjc.maven2/maven-plugins/maven-jaxb-plugin-1.1.jar";
 
         assertLayout( path, groupId, artifactId, version, null, type );
-	}
-	
+    }
+
     /**
      * Perform a roundtrip through the layout routines to determine success.
      * @param classifier TODO

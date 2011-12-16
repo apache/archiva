@@ -33,8 +33,8 @@
   <script type="text/javascript" charset="utf-8">
     $(document).ready(function()
     {
-    	$('#startDate').datepicker();
-    	$('#endDate').datepicker();
+      $('#startDate').datepicker();
+      $('#endDate').datepicker();
     });
   </script>
 </head>
@@ -54,8 +54,8 @@
       addToRightOnclick="selectAllOptions(document.getElementById('generateStatisticsReport_availableRepositories'));selectAllOptions(document.getElementById('generateStatisticsReport_selectedRepositories'));"
       addAllToLeftOnclick="selectAllOptions(document.getElementById('generateStatisticsReport_availableRepositories'));selectAllOptions(document.getElementById('generateStatisticsReport_selectedRepositories'));"
       addToLeftOnclick="selectAllOptions(document.getElementById('generateStatisticsReport_availableRepositories'));selectAllOptions(document.getElementById('generateStatisticsReport_selectedRepositories'));"
-		/>
-	
+    />
+
     <s:textfield label="Row Count" name="rowCount" />
 
     <s:textfield label="Start Date" id="startDate" name="startDate"/>

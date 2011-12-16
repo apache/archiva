@@ -62,19 +62,18 @@
 
 <div style="float:right">  
   <c:choose>
-	<c:when test="${remoteRepoExists}">
-	  <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-	    <s:url id="addProxyConnectorUrl" action="addProxyConnector"/>
-	    <s:a href="%{addProxyConnectorUrl}" cssClass="create">
-	      <img src="<c:url value="/images/icons/create.png" />"/>
-	      Add
-	    </s:a>
-	  </redback:ifAnyAuthorized>
-	</c:when>
-	<c:otherwise>
-		<img src="<c:url value="/images/icons/create.png" />"/>
-	      Add (Disabled. No remote repositories)
-	</c:otherwise>
+    <c:when test="${remoteRepoExists}">
+      <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
+        <s:url id="addProxyConnectorUrl" action="addProxyConnector"/>
+        <s:a href="%{addProxyConnectorUrl}" cssClass="create">
+          <img src="<c:url value="/images/icons/create.png" />"/> Add
+        </s:a>
+      </redback:ifAnyAuthorized>
+    </c:when>
+    <c:otherwise>
+      <img src="<c:url value="/images/icons/create.png" />"/>
+      Add (Disabled. No remote repositories)
+    </c:otherwise>
   </c:choose>    
 </div>
 
@@ -143,14 +142,14 @@
           <s:param name="struts.token"><s:property value="struts.token"/></s:param>
         </s:url>
         <c:if test="${connector.disabled}">
-            <s:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">
-				<img src="${iconDisable}"/>
-			</s:a>
+          <s:a href="%{enableProxyConnectorUrl}" title="Enable Proxy Connector">
+            <img src="${iconDisable}"/>
+          </s:a>
         </c:if>
         <c:if test="${connector.disabled == false}">
-            <s:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">
-				<img src="${iconEnable}"/>
-			</s:a>
+          <s:a href="%{disableProxyConnectorUrl}" title="Disable Proxy Connector">
+            <img src="${iconEnable}"/>
+          </s:a>
         </c:if>
         <c:if test="${pc.count > 1}">
           <s:a href="%{sortUpProxyConnectorUrl}" title="Move Proxy Connector Up">

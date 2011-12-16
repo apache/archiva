@@ -120,7 +120,7 @@
   </redback:ifAnyAuthorized>
   <c:url var="rssFeedIconUrl" value="/images/icons/rss-feed.png"/>
   <a href='/archiva/feeds/<c:out value="${repository.id}" />'>
-	<img src="${rssFeedIconUrl}" />
+    <img src="${rssFeedIconUrl}" />
   </a>
 </div>
 
@@ -149,10 +149,10 @@
   <td><c:out value="${repository.location}" /></td>
 </tr>
 <c:if test="${!empty (repository.indexDirectory)}">
-	<tr>
-	  <th>Index Directory</th>
-	  <td><c:out value="${repository.indexDirectory}" /></td>
-	</tr>
+  <tr>
+    <th>Index Directory</th>
+    <td><c:out value="${repository.indexDirectory}" /></td>
+  </tr>
 </c:if>
 <tr>
   <th>WebDAV URL</th>

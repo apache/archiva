@@ -34,23 +34,22 @@
 <div id="contentArea">
 
   <c:forEach var="repository" items="${repositoriesMap}">
-	<strong>Repository: ${repository.key}</strong>
-	<c:forEach var="report" items='${repository.value}'>
-	
-	    <p>
-      	<archiva:groupIdLink var="${report.namespace}" includeTop="true"/>
-      	<c:set var="url">
-        <s:url action="browseArtifact" namespace="/">
-          <s:param name="groupId" value="%{#attr.report.namespace}"/>
-          <s:param name="artifactId" value="%{#attr.report.project}"/>
-        </s:url>
-      	</c:set>
-      	<a href="${url}">${report.project}</a> /
-      	<strong>${report.version}</strong>
-    	</p>
+    <strong>Repository: ${repository.key}</strong>
+    <c:forEach var="report" items='${repository.value}'>
+      <p>
+        <archiva:groupIdLink var="${report.namespace}" includeTop="true"/>
+        <c:set var="url">
+          <s:url action="browseArtifact" namespace="/">
+            <s:param name="groupId" value="%{#attr.report.namespace}"/>
+            <s:param name="artifactId" value="%{#attr.report.project}"/>
+          </s:url>
+        </c:set>
+        <a href="${url}">${report.project}</a> /
+        <strong>${report.version}</strong>
+      </p>
     
-		<blockquote><c:out value="${report.message}" /></blockquote>
-	</c:forEach>
+      <blockquote><c:out value="${report.message}" /></blockquote>
+    </c:forEach>
   </c:forEach>
 
   <c:set var="prevPageUrl">

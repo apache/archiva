@@ -24,7 +24,7 @@
 <c:choose>
   <c:when test="${mode == 'edit'}">
     <c:set var="addedit" value="Edit" />
-	<c:set var="networkProxyName" value="${proxy.id}" />
+    <c:set var="networkProxyName" value="${proxy.id}" />
   </c:when>
   <c:otherwise>
     <c:set var="addedit" value="Add" />
@@ -65,14 +65,14 @@
     <s:hidden name="mode"/>
     <s:token/>
     
-	<c:choose>
-	  <c:when test="${mode == 'edit'}">
-	    <s:hidden name="proxy.id"/>
-	  </c:when>
-	  <c:otherwise>
-	    <s:textfield name="proxy.id" label="Identifier" size="10" required="true"/>
-	  </c:otherwise>
-	</c:choose>
+    <c:choose>
+      <c:when test="${mode == 'edit'}">
+        <s:hidden name="proxy.id"/>
+      </c:when>
+      <c:otherwise>
+        <s:textfield name="proxy.id" label="Identifier" size="10" required="true"/>
+      </c:otherwise>
+    </c:choose>
     
     <%@ include file="/WEB-INF/jsp/admin/include/networkProxyForm.jspf" %>
     <s:submit value="Save Network Proxy"/>

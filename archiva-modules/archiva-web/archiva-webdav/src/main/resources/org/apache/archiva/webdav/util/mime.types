@@ -10,7 +10,7 @@
 
 application/andrew-inset                 ez
 application/atom+xml                     atom
-application/java-archive				 jar
+application/java-archive                 jar
 application/mac-binhex40                 hqx
 application/mac-compactpro               cpt
 application/mathml+xml                   mathml
@@ -19,7 +19,7 @@ application/octet-stream                 bin dms lha lzh exe class so dll dmg
 application/oda                          oda
 application/ogg                          ogg
 application/pdf                          pdf
-application/pgp-encrypted				 pgp
+application/pgp-encrypted                pgp
 application/postscript                   ai eps ps
 application/rdf+xml                      rdf
 application/smil                         smi smil

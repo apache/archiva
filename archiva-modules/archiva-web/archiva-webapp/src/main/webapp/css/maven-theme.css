@@ -33,8 +33,8 @@ select, input {
 
 select {
     padding-left: 3px;
-	height: auto;
-	width: auto;	
+    height: auto;
+    width: auto;
 }
 
 input {
@@ -42,8 +42,8 @@ input {
 }
 
 label .required {
-	color: red;
-	font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
 
 th {
@@ -305,7 +305,7 @@ pre.pom code {
 #footer {
     border-top: 1px solid #CCCCCC;
     padding: 14px 4px 12px 4px;
-	color: #333333;
+    color: #333333;
     margin-top: 2em;
 }
 
@@ -327,21 +327,21 @@ blockquote {
 }
 
 .missing {
-	background-color: red;
-	color: white;
-	font-weight: bold;
-	padding: 4px;
-	margin-left: 20px;
-	margin-right: 20px;
-	
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    margin-left: 20px;
+    margin-right: 20px;
+    
 }
 
 #searchBox {
-	margin: 5%;
+    margin: 5%;
 }
 
 #searchHint {
-	margin: 5%;
+    margin: 5%;
 }
 
 #topSearchBox {

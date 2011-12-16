@@ -78,65 +78,65 @@ public class LegacySupportTest
         assertTextPresent( "You must enter a type." );
     }
 
-	public void testAddLegacyArtifact_InvalidValues()
-	{
+    public void testAddLegacyArtifact_InvalidValues()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "<> ~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"",
+        addLegacyArtifactPath( "<> ~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"" , "<> \\/~+[ ]'\"",
                                false );
-		assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
+        assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+    }
 
-	public void testAddLegacyArtifact_InvalidLegacyPath()
-	{
+    public void testAddLegacyArtifact_InvalidLegacyPath()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "<> ~+[ ]'\"" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "jar", false );
-		assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
-	}
+        addLegacyArtifactPath( "<> ~+[ ]'\"" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "jar", false );
+        assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
+    }
 
-	public void testAddLegacyArtifact_InvalidGroupId()
-	{
+    public void testAddLegacyArtifact_InvalidGroupId()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "test" , "<> \\/~+[ ]'\"" , "test" , "1.0-SNAPSHOT" , "testing" , "jar", false );
-		assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+        addLegacyArtifactPath( "test" , "<> \\/~+[ ]'\"" , "test" , "1.0-SNAPSHOT" , "testing" , "jar", false );
+        assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 
-	public void testAddLegacyArtifact_InvalidArtifactId()
-	{
+    public void testAddLegacyArtifact_InvalidArtifactId()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "test" , "test" , "<> \\/~+[ ]'\"" , "1.0-SNAPSHOT" , "testing" , "jar", false );
-		assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+        addLegacyArtifactPath( "test" , "test" , "<> \\/~+[ ]'\"" , "1.0-SNAPSHOT" , "testing" , "jar", false );
+        assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 
-	public void testAddLegacyArtifact_InvalidVersion()
-	{
+    public void testAddLegacyArtifact_InvalidVersion()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "test" , "test" , "test" , "<> \\/~+[ ]'\"" , "testing" , "jar", false );
-		assertTextPresent( "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+        addLegacyArtifactPath( "test" , "test" , "test" , "<> \\/~+[ ]'\"" , "testing" , "jar", false );
+        assertTextPresent( "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 
-	public void testAddLegacyArtifact_InvalidType()
-	{
+    public void testAddLegacyArtifact_InvalidType()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "<> \\/~+[ ]'\"", false );
-		assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+        addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "testing" , "<> \\/~+[ ]'\"", false );
+        assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 
-	public void testAddLegacyArtifact_InvalidClassifier()
-	{
+    public void testAddLegacyArtifact_InvalidClassifier()
+    {
         goToLegacySupportPage();
         clickLinkWithText( "Add" );
-		addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "<> \\/~+[ ]'\"" , "jar", false );
-		assertTextPresent( "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-	}
+        addLegacyArtifactPath( "test" , "test" , "test" , "1.0-SNAPSHOT" , "<> \\/~+[ ]'\"" , "jar", false );
+        assertTextPresent( "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
+    }
 }

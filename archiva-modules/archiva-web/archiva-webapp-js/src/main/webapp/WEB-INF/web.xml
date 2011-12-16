@@ -44,118 +44,117 @@
     </init-param>
   </filter>
 
-	<filter-mapping>
-		<filter-name>encodingFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <listener>
- 		<listener-class>
- 			org.springframework.web.context.ContextLoaderListener
- 		</listener-class>
- 	</listener>
- 	<listener>
- 		<!-- TODO: some Spring technique for this? -->
- 		<listener-class>
-       org.apache.archiva.web.startup.ArchivaStartup
-     </listener-class>
- 	</listener>
+    <listener-class>
+      org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
+  <listener>
+    <!-- TODO: some Spring technique for this? -->
+    <listener-class>
+      org.apache.archiva.web.startup.ArchivaStartup
+    </listener-class>
+  </listener>
 
-   <listener>
-     <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
-   </listener>
+  <listener>
+    <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+  </listener>
 
-   <!-- to cleanup temporary group index created during a session -->
-   <listener>
-     <listener-class>org.apache.archiva.webdav.util.TemporaryGroupIndexSessionCleaner</listener-class>
-   </listener>
+  <!-- to cleanup temporary group index created during a session -->
+  <listener>
+    <listener-class>org.apache.archiva.webdav.util.TemporaryGroupIndexSessionCleaner</listener-class>
+  </listener>
 
   <servlet>
-  		<servlet-name>RepositoryServlet</servlet-name>
-  		<servlet-class>
-        org.apache.archiva.webdav.RepositoryServlet
-      </servlet-class>
-  		<!-- Loading this on startup so as to take advantage of configuration listeners -->
-  		<load-on-startup>1</load-on-startup>
-  	</servlet>
+    <servlet-name>RepositoryServlet</servlet-name>
+    <servlet-class>
+      org.apache.archiva.webdav.RepositoryServlet
+    </servlet-class>
+    <!-- Loading this on startup so as to take advantage of configuration listeners -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
 
-  	<servlet>
-  		<servlet-name>XmlRpcServlet</servlet-name>
-  		<servlet-class>
-  			com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet
-  		</servlet-class>
-  		<init-param>
-  			<param-name>serviceListBeanName</param-name>
-  			<param-value>xmlrpcServicesList</param-value>
-  		</init-param>
-  		<init-param>
-  			<param-name>authHandlerBeanName</param-name>
-  			<param-value>xmlRpcAuthenticator</param-value>
-  		</init-param>
-  		<init-param>
-  		  <param-name>enabledForExtensions</param-name>
-  		  <param-value>true</param-value>
-  		</init-param>
-  		<load-on-startup>2</load-on-startup>
-  	</servlet>
+  <servlet>
+    <servlet-name>XmlRpcServlet</servlet-name>
+    <servlet-class>
+      com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet
+    </servlet-class>
+    <init-param>
+      <param-name>serviceListBeanName</param-name>
+      <param-value>xmlrpcServicesList</param-value>
+    </init-param>
+    <init-param>
+      <param-name>authHandlerBeanName</param-name>
+      <param-value>xmlRpcAuthenticator</param-value>
+    </init-param>
+    <init-param>
+      <param-name>enabledForExtensions</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
 
-    <servlet>
-      <servlet-name>RedbackXmlRpcServlet</servlet-name>
-      <servlet-class>com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet</servlet-class>
-      <init-param>
-        <param-name>serviceListBeanName</param-name>
-        <param-value>redbackXmlrpcServicesList</param-value>
-      </init-param>
-      <init-param>
-        <param-name>authHandlerBeanName</param-name>
-        <param-value>redbackXmlRpcAuthenticator</param-value>
-      </init-param>
-      <init-param>
-        <param-name>enabledForExtensions</param-name>
-        <param-value>true</param-value>
-      </init-param>
-    </servlet>
+  <servlet>
+    <servlet-name>RedbackXmlRpcServlet</servlet-name>
+    <servlet-class>com.atlassian.xmlrpc.spring.BinderSpringXmlRpcServlet</servlet-class>
+    <init-param>
+      <param-name>serviceListBeanName</param-name>
+      <param-value>redbackXmlrpcServicesList</param-value>
+    </init-param>
+    <init-param>
+      <param-name>authHandlerBeanName</param-name>
+      <param-value>redbackXmlRpcAuthenticator</param-value>
+    </init-param>
+    <init-param>
+      <param-name>enabledForExtensions</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </servlet>
 
-  	<servlet>
-  		<servlet-name>RssFeedServlet</servlet-name>
-  		<servlet-class>
-        org.apache.archiva.web.rss.RssFeedServlet
-      </servlet-class>
-  	</servlet>
+  <servlet>
+    <servlet-name>RssFeedServlet</servlet-name>
+    <servlet-class>
+      org.apache.archiva.web.rss.RssFeedServlet
+    </servlet-class>
+  </servlet>
 
-  	<servlet-mapping>
-  		<servlet-name>RssFeedServlet</servlet-name>
-  		<url-pattern>/feeds/*</url-pattern>
-  	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RssFeedServlet</servlet-name>
+    <url-pattern>/feeds/*</url-pattern>
+  </servlet-mapping>
 
-  	<servlet-mapping>
-  		<servlet-name>RepositoryServlet</servlet-name>
-  		<url-pattern>/repository/*</url-pattern>
-  	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RepositoryServlet</servlet-name>
+    <url-pattern>/repository/*</url-pattern>
+  </servlet-mapping>
 
-  	<servlet-mapping>
-  		<servlet-name>XmlRpcServlet</servlet-name>
-  		<url-pattern>/xmlrpc</url-pattern>
-  	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>XmlRpcServlet</servlet-name>
+    <url-pattern>/xmlrpc</url-pattern>
+  </servlet-mapping>
 
-    <servlet-mapping>
-      <servlet-name>RedbackXmlRpcServlet</servlet-name>
-      <url-pattern>/redback-xmlrpc</url-pattern>
-    </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RedbackXmlRpcServlet</servlet-name>
+    <url-pattern>/redback-xmlrpc</url-pattern>
+  </servlet-mapping>
 
-  	<resource-ref>
-  		<res-ref-name>jdbc/users</res-ref-name>
-  		<res-type>javax.sql.DataSource</res-type>
-  		<res-auth>Container</res-auth>
-  		<res-sharing-scope>Shareable</res-sharing-scope>
-  	</resource-ref>
-  	<resource-ref>
-  		<res-ref-name>mail/Session</res-ref-name>
-  		<res-type>javax.mail.Session</res-type>
-  		<res-auth>Container</res-auth>
-  		<res-sharing-scope>Shareable</res-sharing-scope>
-  	</resource-ref>
-
+  <resource-ref>
+    <res-ref-name>jdbc/users</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <resource-ref>
+    <res-ref-name>mail/Session</res-ref-name>
+    <res-type>javax.mail.Session</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
 
   <servlet>
     <servlet-name>CXFServlet</servlet-name>

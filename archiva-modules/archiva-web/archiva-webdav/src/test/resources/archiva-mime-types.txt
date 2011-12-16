@@ -19,7 +19,7 @@ application/octet-stream                 bin dms lha lzh exe class so dll dmg
 application/oda                          oda
 application/ogg                          ogg
 application/pdf                          pdf
-application/pgp-encrypted				 pgp
+application/pgp-encrypted                pgp
 application/postscript                   ai eps ps
 application/rdf+xml                      rdf
 application/smil                         smi smil
