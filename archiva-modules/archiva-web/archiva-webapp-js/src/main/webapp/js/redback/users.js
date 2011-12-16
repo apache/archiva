@@ -82,18 +82,21 @@ $(function() {
     this.lock = function(user){
       clearUserMessages();
       user.locked(true);
+      window.redbackModel.createUser=false;
       user.save();
     }
 
     this.unlock = function(user){
       clearUserMessages();
       user.locked(false);
+      window.redbackModel.createUser=false;
       user.save();
     }
 
     this.passwordChangeRequire = function(user,forceChangedPassword){
       clearUserMessages();
       user.passwordChangeRequired(forceChangedPassword);
+      window.redbackModel.createUser=false;
       user.save();
     }
 
