@@ -102,7 +102,7 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-struts2-integration</artifactId>
+      <artifactId>redback-common-integrations</artifactId>
       <exclusions>
         <exclusion>
           <groupId>stax</groupId>
