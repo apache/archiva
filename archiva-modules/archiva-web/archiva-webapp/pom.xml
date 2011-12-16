@@ -173,18 +173,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-xmlrpc-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-xmlrpc-services</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-xmlrpc-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-rest-services</artifactId>
       <exclusions>
         <exclusion>
@@ -468,16 +456,7 @@
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-common-integrations</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-xmlrpc-services</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.redback</groupId>
-      <artifactId>redback-xmlrpc-security</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
@@ -632,11 +611,7 @@
       <!-- provided by jcl-over-slf4j, don't want this in the webapp -->
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.atlassian.xmlrpc</groupId>
-      <artifactId>atlassian-xmlrpc-binder-server-spring</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
