@@ -62,7 +62,7 @@ $(function() {
       ko.renderTemplate("redback/user-edit-tmpl", new user(), null, $("#createUserForm").get(0),"replaceChildren");
       $("#main-content #createUserForm #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
-        $('#user-create').hide();
+        activateUsersGridTab();
       });
       $("#user-create").validate({
         rules: {
@@ -110,20 +110,23 @@ $(function() {
     this.editUserBox=function(user) {
       window.redbackModel.createUser=false;
       clearUserMessages();
-      $("#main-content #user-edit").remove();
+      //$("#main-content #user-edit").remove();
       $("#main-content").append("<div id='user-edit'></div>");
-      $("#main-content #user-edit").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
-      $("#main-content #user-create").remove();
-      $("#main-content #user-edit").show();
+      //$("#main-content #user-edit").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
+      $("#main-content #createUserForm").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
+
+      //$("#main-content #user-create").remove();
+      //$("#main-content #user-edit").show();
 
       var viewModel = new userViewModel(user);
 
-      ko.applyBindings(viewModel,$("#main-content #user-edit").get(0));
+      ko.applyBindings(viewModel,$("#main-content #createUserForm").get(0));
 
+      activateUsersEditTab();
 
       $("#main-content #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
-        $('#main-content #user-create').remove();
+        activateUsersGridTab();
       });
 
       $("#main-content #user-create").validate({
@@ -173,6 +176,21 @@ $(function() {
       this.user=user;
   }
 
+  activateUsersGridTab=function(){
+    $("#main-content #users-view-tabs li").removeClass("active");
+    $("#main-content #users-view-tabs-content div").removeClass("active");
+    // activate users grid tab
+    $("#main-content #users-view-tabs-content #users-view").addClass("active");
+    $("#users-view-tabs-li-users-grid").addClass("active");
+  }
+
+  activateUsersEditTab=function(){
+    $("#main-content #users-view-tabs li").removeClass("active");
+    $("#main-content #users-view-tabs-content div").removeClass("active");
+    // activate users edit tab
+    $("#main-content #users-view-tabs-content #createUserForm").addClass("active");
+    $("#users-view-tabs-li-user-edit").addClass("active");
+  }
 
 
   $(document).ready(function() {

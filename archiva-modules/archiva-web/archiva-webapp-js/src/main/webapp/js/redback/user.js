@@ -65,12 +65,7 @@ $(function() {
                 window.redbackModel.usersViewModel.users.push(currentUser);
                 clearForm("#main-content #user-create");
                 $("#main-content #user-create").hide();
-
-                $("#main-content #users-view-tabs li").removeClass("active");
-                $("#main-content #users-view-tabs-content div").removeClass("active");
-                // activate users grid tab
-                $("#main-content #users-view-tabs-content #users-view").addClass("active");
-                $("#users-view-tabs-li-users-grid").addClass("active");
+                activateUsersGridTab();
                 return this;
               } else {
                 displayErrorMessage("user cannot created");
@@ -152,7 +147,7 @@ $(function() {
               if (created == true) {
                 displaySuccessMessage("user updated:"+currentUser.username());
                 clearForm("#main-content #user-create");
-                $("#main-content #user-create").hide();
+                activateUsersGridTab();
                 return this;
               } else {
                 displayErrorMessage("user cannot be updated");
@@ -168,7 +163,7 @@ $(function() {
       this.save=function(){
         $.log("user.save create:"+window.redbackModel.createUser);
         if (window.redbackModel.createUser==true){
-          var valid = $("#main-content #createUserForm #user-create").valid();
+          var valid = $("#main-content #user-create").valid();
 
           if (valid==false) {
             $.log("user#save valid:false");
