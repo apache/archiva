@@ -87,11 +87,9 @@
 
 
 <script id="usersGrid"  type="text/x-jquery-tmpl">
-    <h2>Users list</h2>
-
-    <button data-bind='click: sortByName'  class="btn">
-        Sort by name
-    </button>
+    <div class="page-header">
+      <h2>Users list</h2>
+    </div>
     <ul id="users-view-tabs" class="tabs">
       <li class="active" id="users-view-tabs-li-users-grid">
         <a href="#users-view">Users</a>
@@ -102,8 +100,11 @@
     </ul>
     <div id="users-view-tabs-content" class="tab-content">
       <div id="users-view">
-          <table class="bordered-table zebra-striped" data-bind="simpleGrid: gridViewModel" id="usersTable"></table>
-          <div id="usersPagination"></div>
+        <button data-bind='click: sortByName'  class="btn">
+          Sort by name
+        </button>
+        <table class="bordered-table zebra-striped" data-bind="simpleGrid: gridViewModel" id="usersTable"></table>
+        <div id="usersPagination"></div>
       </div>
       <div id="createUserForm"></div>
     </div>
