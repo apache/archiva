@@ -124,6 +124,8 @@ $(function() {
 
       activateUsersEditTab();
 
+      $("#users-view-tabs-li-user-edit a").html($.i18n.prop("user.edit"));
+
       $("#main-content #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
         activateUsersGridTab();
@@ -166,6 +168,10 @@ $(function() {
       if ($(e.target).attr("href")=="#createUserForm") {
         window.redbackModel.usersViewModel.addUser();
       }
+      if ($(e.target).attr("href")=="#users-view") {
+        $("#users-view-tabs-li-user-edit a").html($.i18n.prop("user.add"));
+      }
+
     })
     $("#users-view-tabs-content #users-view").addClass("active");
   }
