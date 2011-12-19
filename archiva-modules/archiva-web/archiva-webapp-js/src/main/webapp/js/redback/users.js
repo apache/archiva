@@ -113,13 +113,7 @@ $(function() {
     this.editUserBox=function(user) {
       window.redbackModel.createUser=false;
       clearUserMessages();
-      //$("#main-content #user-edit").remove();
-      $("#main-content").append("<div id='user-edit'></div>");
-      //$("#main-content #user-edit").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
       $("#main-content #createUserForm").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
-
-      //$("#main-content #user-create").remove();
-      //$("#main-content #user-edit").show();
 
       var viewModel = new userViewModel(user);
 
@@ -152,6 +146,17 @@ $(function() {
         }
         user.update();
       });
+
+      $.ajax("restServices/redbackServices/roleManagementService/getEffectivelyAssignedRoles/"+user.username(), {
+          type: "GET",
+          async: false,
+          dataType: 'json',
+          success: function(data) {
+            $( "#user-edit-roles-view" ).append( jQuery("#user_edit_roles_tmpl" ).tmpl( data.role ) );
+            $("#user-edit-roles-view").show();
+          }
+        }
+      );
 
     }
   }

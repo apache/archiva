@@ -1,4 +1,7 @@
 <script id='redback/user-edit-tmpl' type='text/x-jquery-tmpl'>
+
+  <div class="row">
+    <div class="span10 columns">
     <form id="user-create">
       <fieldset id="user-create-fieldset">
         <div class="clearfix">
@@ -57,4 +60,14 @@
       <button data-bind="click: save" class="btn" id="user-create-form-register-button">${i18n('save')}</button>
       <button class="btn" id="user-create-form-cancel-button">${i18n('cancel')}</button>
     </form>
+    </div>
+    <div class="span6 columns" id="user-edit-roles-view" style="display:none">
+      <div class="page-header">
+        <h3>${$.i18n.prop('effective.roles')}</h3>
+      </div>
+    </div>
+  </div>
+
 </script>
+
+
