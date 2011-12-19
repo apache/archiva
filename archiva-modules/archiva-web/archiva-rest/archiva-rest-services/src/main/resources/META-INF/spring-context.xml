@@ -57,6 +57,7 @@
       <ref bean="networkProxyService#rest"/>
       <ref bean="archivaAdministrationService#default"/>
       <ref bean="searchService#rest"/>
+      <ref bean="commonServices#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>
