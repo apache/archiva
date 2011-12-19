@@ -16,6 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+/**
+ * log message in the console
+ */
 $.log = (function(message) {
   if (typeof window.console != 'undefined' && typeof window.console.log != 'undefined') {
     console.log(message);
@@ -24,6 +28,10 @@ $.log = (function(message) {
   }
 });
 
+/**
+ * return value of a param in the url
+ * @param name
+ */
 $.urlParam = function(name){
     var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
     if (results) {
@@ -65,11 +73,18 @@ displayWarningMessage=function(text,idToAppend){
   $(textId).focus();
 }
 
+/**
+ * clear #main-content and call clearUserMessages
+  */
 screenChange=function(){
   $("#main-content").html("");
   clearUserMessages();
 }
 
+/**
+ * clear content of id if none clear content of #user-messages
+  * @param idToAppend
+ */
 clearUserMessages=function(idToAppend){
   var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
   $(textId).html('');
