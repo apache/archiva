@@ -17,6 +17,22 @@
  * under the License.
  */
 $(function() {
+  /**
+   * object model for user with some function to create/update/delete users
+   * @param username
+   * @param password
+   * @param confirmPassword
+   * @param fullName
+   * @param email
+   * @param permanent
+   * @param validated
+   * @param timestampAccountCreation
+   * @param timestampLastLogin
+   * @param timestampLastPasswordChange
+   * @param locked
+   * @param passwordChangeRequired
+   * @param ownerViewModel
+   */
   user=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
       // Potentially Editable Field.
       this.username = ko.observable(username);
@@ -116,7 +132,7 @@ $(function() {
                 type: "GET",
                 dataType: 'json',
                 success: function(data) {
-                    // FIXME i18n and use a messages div
+                  // FIXME i18n
                   window.redbackModel.usersViewModel.users.remove(currentUser);
                   displaySuccessMessage("user " + currentUser.username() + " deleted");
                 },
@@ -180,11 +196,16 @@ $(function() {
       this.i18n = $.i18n.prop;
   }
 
-
+  /**
+   * view for admin user creation
+   */
   adminUserViewModel=function() {
     this.user = new user("admin","aze123","aze123", "the admin");
   }
 
+  /**
+   * open a modal box to create admin user
+   */
   adminCreateBox=function() {
     window.redbackModel.createUser=true;
     jQuery("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
@@ -203,6 +224,9 @@ $(function() {
 
   }
 
+  /**
+   * open a modal box for login
+   */
   loginBox=function(){
     screenChange();
     if (window.modalLoginWindow==null) {
@@ -224,6 +248,11 @@ $(function() {
     $("#modal-login").focus();
   }
 
+  /**
+   * callback success function on rest login call.
+   * modal close and hide/show some links (login,logout,register...)
+   * @param result
+   */
   var successLoginCallbackFn=function(result){
     var logged = false;
     if (result == null) {
@@ -264,17 +293,28 @@ $(function() {
     $("#modal-login-err-message").show();
   }
 
+  /**
+   * callback error function on rest login call. display error message
+   * @param result
+   */
   var errorLoginCallbackFn= function(result) {
    var obj = jQuery.parseJSON(result.responseText);
    displayRedbackError(obj,"modal-login-err-message");
    $("#modal-login-err-message").show();
   }
 
+  /**
+   * callback complate function on rest login call. remove spinner from modal login box
+   * @param result
+   */
   var completeLoginCallbackFn=function(){
     $("#modal-login-ok").removeAttr("disabled");
     $("#login-spinner").remove();
   }
 
+  /**
+   * validate login box before ajax call
+   */
   login=function(){
     $("#modal-login-err-message").html("");
     screenChange();
@@ -293,10 +333,16 @@ $(function() {
     loginCall($("#user-login-form-username").val(),$("#user-login-form-password").val()
         ,successLoginCallbackFn,errorLoginCallbackFn,completeLoginCallbackFn);
 
-
-
   }
 
+  /**
+   * call REST method for login
+   * @param username
+   * @param password
+   * @param successCallbackFn
+   * @param errorCallbackFn
+   * @param completeCallbackFn
+   */
   loginCall=function(username,password,successCallbackFn, errorCallbackFn, completeCallbackFn) {
     var url = 'restServices/redbackServices/loginService/logIn?userName='+username;
     url += "&password="+password;
@@ -351,6 +397,9 @@ $(function() {
     $("#modal-password-change").focus();
   }
 
+  /**
+   * display modal box for updating current user details
+   */
   editUserDetailsBox=function(){
     screenChange();
     $("#modal-user-edit-err-message").hide();
@@ -397,6 +446,10 @@ $(function() {
     $("#modal-user-edit").focus();
   }
 
+  /**
+   * REST call to update current user
+   * @param user
+   */
   editUserDetails=function(user){
     $("#modal-user-edit-err-message").html("");
     $.ajax("restServices/redbackServices/userService/updateMe", {
@@ -406,7 +459,7 @@ $(function() {
         dataType: 'json',
         success: function(result) {
           var created = JSON.parse(result);
-          // FIXME use a message div and i18n
+          // FIXME i18n
           if (created == true) {
             displaySuccessMessage("details updated.");
             window.modalEditUserBox.modal('hide');
@@ -430,7 +483,7 @@ $(function() {
   /**
    *
    * @param previousPassword display and validate previous password text field
-   * @param registration are we in registration mode ?
+   * @param registration are we in registration mode ? if yes the user will be logged
    */
   changePassword=function(previousPassword,registration,user){
     var valid = $("#password-change-form").valid();

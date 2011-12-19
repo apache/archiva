@@ -18,6 +18,9 @@
  */
 $(function() {
 
+  /**
+   * open the register modal box
+   */
   registerBox=function(){
     if (window.modalRegisterWindow==null) {
       window.modalRegisterWindow = $("#modal-register").modal({backdrop:'static',show:false});
@@ -38,6 +41,9 @@ $(function() {
     $("#modal-register").focus();
   }
 
+  /**
+   * validate the register form and call REST service
+   */
   register=function(){
     var valid = $("#user-register-form").valid();
     if (!valid) {

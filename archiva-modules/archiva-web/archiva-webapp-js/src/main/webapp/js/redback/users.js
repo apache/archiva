@@ -18,6 +18,9 @@
  */
 $(function() {
 
+  /**
+   * view model used for users grid
+   */
   usersViewModel=function() {
     this.users = ko.observableArray([]);
     var self = this;
@@ -154,6 +157,9 @@ $(function() {
 
   }
 
+  /**
+   * called from the menu to display tabs with users grid
+    */
   displayUsersGrid=function() {
     screenChange();
     jQuery("#main-content").attr("data-bind","");
@@ -198,7 +204,10 @@ $(function() {
     $("#users-view-tabs-li-user-edit").addClass("active");
   }
 
-
+  /**
+   * not used as we don't have the mapping in web.xml
+   * but why to handle such urls which go directly to a view
+   */
   $(document).ready(function() {
     // url ends with /users/list
     // and current has archiva-manage-users karma
