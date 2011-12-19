@@ -29,6 +29,9 @@
         this.maxPageIndex = ko.dependentObservable(function () {
             return Math.ceil(ko.utils.unwrapObservable(this.data).length / this.pageSize);
         }, this);
+        this.i18n=function(key){
+          return $.i18n.prop(key);
+        };
       }
     };
 

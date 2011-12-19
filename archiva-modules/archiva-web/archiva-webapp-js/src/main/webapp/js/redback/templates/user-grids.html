@@ -4,10 +4,10 @@
           {{each(i, columnDefinition) columns}}
               <th>${ columnDefinition.headerText }</th>
           {{/each}}
-          <th>Edit</th>
-          <th>Delete</th>
-          <th>Locked</th>
-          <th>Change password required</th>
+          <th>${$.i18n.prop('edit')}</th>
+          <th>${$.i18n.prop('delete')}</th>
+          <th>${$.i18n.prop('user.list.locked')}</th>
+          <th>${$.i18n.prop('user.change.password.required')}</th>
       </tr>
   </thead>
   <tbody>
@@ -22,7 +22,7 @@
               {{else}}
                 <td>
                   <a href="#" data-bind="click: function(){ row.deleteUser() }">
-                    <img src="images/delete.png" alt="Delete"/>
+                    <img src="images/delete.png" alt="${$.i18n.prop('delete')}"/>
                   </a>
                 </td>
               {{/if}}
@@ -88,14 +88,14 @@
 
 <script id="usersGrid"  type="text/x-jquery-tmpl">
     <div class="page-header">
-      <h2>Users list</h2>
+      <h2>${$.i18n.prop('users.list')}</h2>
     </div>
     <ul id="users-view-tabs" class="tabs">
       <li class="active" id="users-view-tabs-li-users-grid">
-        <a href="#users-view">Users</a>
+        <a href="#users-view">${$.i18n.prop('users.grid.tab.title')}</a>
       </li>
       <li id="users-view-tabs-li-user-edit">
-        <a href="#createUserForm">{window.redbackModel.i18n('user.add')}</a>
+        <a href="#createUserForm">${$.i18n.prop('user.add')}</a>
       </li>
     </ul>
     <div id="users-view-tabs-content" class="tab-content">

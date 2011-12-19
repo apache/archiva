@@ -29,6 +29,5 @@ require(["text!redback/templates/user-edit.html", "text!redback/templates/user-g
       // template loading
       $("#html-fragments").append(usercreate);
       $("#html-fragments").append(usergrids);
-
     }
 );

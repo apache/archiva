@@ -154,7 +154,6 @@ $(function() {
       });
 
     }
-
   }
 
   /**
@@ -164,6 +163,7 @@ $(function() {
     screenChange();
     jQuery("#main-content").attr("data-bind","");
     jQuery("#main-content").html($("#usersGrid").html());
+    jQuery("#main-content").attr("data-bind",'template: {name:"usersGrid"}');
     window.redbackModel.usersViewModel = new usersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
     ko.applyBindings(window.redbackModel.usersViewModel,jQuery("#main-content").get(0));
