@@ -200,7 +200,7 @@ $(function() {
    * view for admin user creation
    */
   adminUserViewModel=function() {
-    this.user = new user("admin","aze123","aze123", "the admin");
+    this.user = new user("admin","","", "the administrator");
   }
 
   /**
