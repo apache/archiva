@@ -158,10 +158,10 @@ $(function() {
             type: "POST",
             dataType: 'json',
             success: function(result) {
-              var created = JSON.parse(result);
-              // FIXME use a message div and i18n
-              if (created == true) {
-                displaySuccessMessage("user updated:"+currentUser.username());
+              var updated = JSON.parse(result);
+              if (updated == true) {
+                displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
+                $("#users-view-tabs-li-user-edit a").html($.i18n.prop("user.add"));
                 clearForm("#main-content #user-create");
                 activateUsersGridTab();
                 return this;
