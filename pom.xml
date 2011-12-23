@@ -673,11 +673,6 @@
         <version>${javaxMailVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.xmlrpc</groupId>
-        <artifactId>xmlrpc-server</artifactId>
-        <version>3.1.2</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
         <version>${maven3x.version}</version>
@@ -977,17 +972,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.codehaus.redback</groupId>
-        <artifactId>redback-xmlrpc-services</artifactId>
-        <version>${redback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.redback</groupId>
-        <artifactId>redback-xmlrpc-security</artifactId>
-        <version>${redback.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.codehaus.redback</groupId>
         <artifactId>redback-rest-api</artifactId>
