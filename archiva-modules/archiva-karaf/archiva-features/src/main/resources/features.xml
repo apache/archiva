@@ -38,7 +38,6 @@
   </feature>
 
   <feature name="archiva-policies" description="Archiva Policies module" version="${project.version}" resolver="(obr)">
-    <feature version="${project.version}">archiva-common</feature>
     <feature version="${project.version}">archiva-checksum</feature>
     <feature version="[3,4)">spring</feature>
     <bundle>wrap:mvn:org.codehaus.redback.components.cache/spring-cache-api/${redback.cache.version}</bundle>
@@ -108,7 +107,6 @@
   </feature>
 
   <feature name="archiva-maven2-repository" description="Archiva Maven 2 Repository module" version="${project.version}" resolver="(obr)">
-    <feature version="${project.version}">archiva-common</feature>
     <feature version="${project.version}">archiva-metadata</feature>
     <feature version="${project.version}">archiva-proxy-common</feature>
     <feature version="${project.version}">archiva-reports</feature>
@@ -358,20 +356,6 @@
     <bundle>mvn:org.apache.archiva/archiva-webdav/${project.version}</bundle>
   </feature>
 
-  <feature name="archiva-xmlrpc-api" description="Archiva XML-RPC API module" version="${project.version}" resolver="(obr)">
-    <feature version="${project.version}">archiva-model</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.atlassian-xmlrpc-binder-annotations/${atlassian-xmlrpc-binder-annotations.bundle.version}</bundle>
-    <bundle>mvn:org.apache.archiva/archiva-xmlrpc-api/${project.version}</bundle>
-  </feature>
-
-  <feature name="archiva-xmlrpc-security" description="Archiva XML-RPC Security module" version="${project.version}" resolver="(obr)">
-    <feature version="${project.version}">archiva-security</feature>
-    <feature version="${project.version}">archiva-xmlrpc-api</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ws-commons-util/${ws-commons-util.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlrpc-server/${xmlrpc-server.bundle.version}</bundle>
-    <bundle>mvn:org.apache.archiva/archiva-xmlrpc-security/${project.version}</bundle>
-  </feature>
-
   <feature name="archiva-stage-repository-merge" description="Archiva Stage Repository Merge module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-common</feature>
     <feature version="${project.version}">archiva-configuration</feature>
@@ -380,23 +364,6 @@
     <feature version="${project.version}">archiva-repository-layer</feature>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
     <bundle>mvn:org.apache.archiva/stage-repository-merge/${project.version}</bundle>
-  </feature>
-
-  <feature name="archiva-xmlrpc-services" description="Archiva XML-RPC Services module" version="${project.version}" resolver="(obr)">
-    <feature version="${project.version}">archiva-common</feature>
-    <feature version="${project.version}">archiva-repository-admin-api</feature>
-    <feature version="${project.version}">archiva-audit</feature>
-    <feature version="${project.version}">archiva-consumers</feature>
-    <feature version="${project.version}">archiva-indexer</feature>
-    <feature version="${project.version}">archiva-metadata</feature>
-    <feature version="${project.version}">archiva-model</feature>
-    <feature version="${project.version}">archiva-repository-layer</feature>
-    <feature version="${project.version}">archiva-scheduler</feature>
-    <feature version="${project.version}">archiva-stage-repository-merge</feature>
-    <feature version="${project.version}">archiva-xmlrpc-api</feature>
-    <feature version="${project.version}">archiva-xmlrpc-security</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
-    <bundle>mvn:org.apache.archiva/archiva-xmlrpc-services/${project.version}</bundle>
   </feature>
 
   <feature name="archiva-generic-metadata-support" description="Archiva Generic Metadata Support module" version="${project.version}" resolver="(obr)">
@@ -470,10 +437,7 @@
     <feature version="${project.version}">archiva-rss</feature>
     <feature version="${project.version}">archiva-security</feature>
     <feature version="${project.version}">archiva-webdav</feature>
-    <feature version="${project.version}">archiva-xmlrpc-api</feature>
-    <feature version="${project.version}">archiva-xmlrpc-security</feature>
     <feature version="${project.version}">archiva-stage-repository</feature>
-    <feature version="${project.version}">archiva-xmlrpc-services</feature>
     <feature version="${project.version}">archiva-generic-metadata-support</feature>
     <feature version="${project.version}">archiva-metadata-store-jcr</feature>
     <feature version="${project.version}">archiva-npanday-support</feature>
