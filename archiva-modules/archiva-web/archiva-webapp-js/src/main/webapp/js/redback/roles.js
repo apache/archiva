@@ -24,6 +24,8 @@ $(function() {
   }
 
   displayRolesGrid = function(){
+    $("#user-messages").html("");
+    $("#main-content").html("");
     $.ajax("restServices/redbackServices/roleManagementService/allRoles",
       {
        type: "GET",
@@ -33,6 +35,8 @@ $(function() {
          var roles = $.map(data.role, function(item) {
              return mapRole(item);
          });
+         $("#main-content").html($("#rolesGrid").tmpl(data));
+
        }
       }
     );

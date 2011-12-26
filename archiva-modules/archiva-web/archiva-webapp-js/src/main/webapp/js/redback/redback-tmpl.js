@@ -18,8 +18,8 @@
  */
 require(["text!redback/templates/user-edit.html", "text!redback/templates/user-grids.html", "text!redback/templates/login.html"
           , "text!redback/templates/register-form.html","text!redback/templates/password-change-form.html"
-          ,"text!redback/templates/user-edit-form.html"],
-    function(usercreate, usergrids, login,register,passwordchange,useredit) {
+          ,"text!redback/templates/user-edit-form.html","text!redback/templates/roles-tmpl.html"],
+    function(usercreate, usergrids, login,register,passwordchange,useredit,roles_tmpl) {
 
 
       $.tmpl( login, $.i18n.map ).appendTo("#html-fragments");
@@ -29,5 +29,7 @@ require(["text!redback/templates/user-edit.html", "text!redback/templates/user-g
       // template loading
       $("#html-fragments").append(usercreate);
       $("#html-fragments").append(usergrids);
+      $("#html-fragments").append(roles_tmpl);
+
     }
 );

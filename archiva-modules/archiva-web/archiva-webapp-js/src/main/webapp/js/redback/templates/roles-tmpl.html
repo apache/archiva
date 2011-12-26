@@ -1,0 +1,18 @@
+<script id="rolesGrid"  type="text/x-jquery-tmpl">
+  <table class="bordered-table zebra-striped" id="rolesTable">
+    <thead>
+      <tr>
+        <td>${$.i18n.prop('roles.name')}</td>
+        <td>${$.i18n.prop('roles.description')}</td>
+      </tr>
+    </thead>
+    <tbody>
+      {{each role}}
+        <tr>
+          <td>${$value.name}</td>
+          <td>${$value.description}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
