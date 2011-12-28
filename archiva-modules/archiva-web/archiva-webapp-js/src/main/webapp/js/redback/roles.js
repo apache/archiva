@@ -18,9 +18,14 @@
  */
 $(function() {
 
-  role = function(name,description){
+  role = function(name,description,permissions){
     this.name = name;
     this.description = description;
+    this.permissions=permissions;
+  }
+
+  permission = function(){
+
   }
 
   displayRolesGrid = function(){
@@ -29,7 +34,6 @@ $(function() {
     $.ajax("restServices/redbackServices/roleManagementService/allRoles",
       {
        type: "GET",
-       async: false,
        dataType: 'json',
        success: function(data) {
          var roles = $.map(data.role, function(item) {
@@ -38,7 +42,23 @@ $(function() {
 
          $("#main-content").html($("#rolesTabs").tmpl());
          $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(data));
+         $("#roles-view-tabs").tabs();
          activateRolesGridTab();
+       }
+      }
+    );
+  }
+
+  editRole = function(roleName){
+    $.log("edit role:"+roleName);
+    $.ajax("restServices/redbackServices/roleManagementService/getRole/"+roleName,
+      {
+       type: "GET",
+       dataType: 'json',
+       success: function(data) {
+         var role = mapRole(data.role);
+         $("#main-content #roles-view-tabs-content #role-edit").html($("#editRoleTab").tmpl(data.role));
+         activateRoleEditTab();
        }
       }
     );
