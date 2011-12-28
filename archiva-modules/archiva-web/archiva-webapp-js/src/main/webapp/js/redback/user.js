@@ -110,7 +110,14 @@ $(function() {
               var created = JSON.parse(result);
               if (created == true) {
                 displaySuccessMessage("admin user created");
-                loginCall(currentAdminUser.username(), currentAdminUser.password(),function(){screenChange();checkCreateAdminLink();checkSecurityLinks();});
+                var onSuccessCall=function(){
+                  $.log("onSuccessCall after admin creation");
+                  reccordLoginCookie(currentAdminUser);
+                  screenChange();
+                  checkCreateAdminLink();
+                  checkSecurityLinks();
+                }
+                loginCall(currentAdminUser.username(), currentAdminUser.password(),onSuccessCall);
                 return this;
               } else {
                 displayErrorMessage("admin user not created");

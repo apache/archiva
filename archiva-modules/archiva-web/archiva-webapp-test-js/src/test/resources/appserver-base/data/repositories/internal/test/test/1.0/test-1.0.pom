@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>test</groupId>
+  <artifactId>test</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+  <name>test</name>
+  <url>http://maven.apache.org</url>
+  
+  <licenses>
+    <license>
+      <name>Test License</name>
+      <url>http://www.test.org/test.html</url>
+    </license>
+  </licenses>
+  
+  <mailingLists>
+    <mailingList>
+      <name>test user list</name>
+      <subscribe>http://test.net/lists/listinfo/test-user</subscribe>
+      <unsubscribe>http://test.net/lists/listinfo/test-user</unsubscribe>
+      <archive>http://www.test-archive.com/test-user%40lists.test.net/</archive>
+    </mailingList>
+    <mailingList>
+      <name>test developer list</name>
+      <subscribe>http://test.net/lists/listinfo/test-dev</subscribe>
+      <unsubscribe>http://test.net/lists/listinfo/test-dev</unsubscribe>
+      <archive>http://www.test-archive.com/test-dev%40lists.test.net/</archive>
+    </mailingList>
+  </mailingLists>
+  
+  <dependencies>
+    <dependency>
+      <groupId>test.group.id</groupId>
+      <artifactId>testArtifactId</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  
+<distributionManagement>
+<repository>
+  <id>test</id>
+<url>file://localhost/Users/brett/scm/archiva/archiva/archiva-modules/archiva-web/archiva-webapp-test/src/test/it-resources/appserver-base/data/repositories/internal</url>
+</repository>
+</distributionManagement>
+</project>
+

@@ -25,6 +25,11 @@ $(function() {
   loadAndParseFile("restServices/redbackServices/utilServices/getBundleResources", {cache:false, mode: 'map',encoding:'utf-8'});
   // load browser locale
   var browserLang = $.i18n.browserLang();
+  var requestLang = $.urlParam('request_lang');
+  if (requestLang) {
+    browserLang=requestLang;
+  }
+  $.log("use browserLang:"+browserLang);
   loadAndParseFile("restServices/redbackServices/utilServices/getBundleResources?locale="+browserLang, {cache:false, mode: 'map',encoding:'utf-8'});
   // -- archiva
   // load default

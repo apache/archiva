@@ -395,6 +395,12 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-webapp-js</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-xml-tools</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1515,6 +1521,11 @@
               <version>1.0-alpha-21</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.cargo</groupId>
+          <artifactId>cargo-maven2-plugin</artifactId>
+          <version>1.1.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

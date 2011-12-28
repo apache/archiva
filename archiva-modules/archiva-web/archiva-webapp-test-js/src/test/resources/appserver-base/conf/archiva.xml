@@ -1,0 +1,8 @@
+<configuration>
+  <localRepository></localRepository>
+  <webapp>
+    <ui>
+      <appletFindEnabled>false</appletFindEnabled>
+    </ui>
+  </webapp>
+</configuration>

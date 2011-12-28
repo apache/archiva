@@ -26,6 +26,22 @@
   <name>Archiva Web</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <container.test.port>9696</container.test.port>
+    <tomcat5x.version>5.5.34</tomcat5x.version>
+    <tomcat6x.version>6.0.35</tomcat6x.version>
+    <cargo.wait>false</cargo.wait>
+    <cargo.timeout>600000</cargo.timeout>
+    <cargo.install.dir>${project.build.directory}/cargo/installs</cargo.install.dir>
+    <maxWaitTimeInMs>10000</maxWaitTimeInMs>
+    <!-- TODO: review how appropriate the memory settings are - should work with less -->
+    <cargo.jvm.args>-Xmx512m -XX:MaxPermSize=256m</cargo.jvm.args>
+    <seleniumPluginVersion>2.2-SNAPSHOT</seleniumPluginVersion>
+    <selenium-server.version>2.15.0</selenium-server.version>
+    <apache.mirror.url>http://archive.apache.org/dist</apache.mirror.url>
+    <apache.archive.url>http://archive.apache.org/dist</apache.archive.url>
+  </properties>
+
   <modules>
     <module>archiva-applet</module>
     <module>archiva-security</module>
@@ -35,6 +51,44 @@
     <module>archiva-webapp-common</module>
     <module>archiva-webapp</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>6.2.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-command-line</artifactId>
+        <version>1.0-alpha-2</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>plexus-container-default</artifactId>
+            <groupId>org.codehaus.plexus</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>plexus-component-api</artifactId>
+            <groupId>org.codehaus.plexus</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium.client-drivers</groupId>
+        <artifactId>selenium-java-client-driver</artifactId>
+        <version>1.0.2</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <pluginManagement>
@@ -64,6 +118,13 @@
       <id>js</id>
       <modules>
         <module>archiva-webapp-js</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>it-js</id>
+      <modules>
+        <module>archiva-webapp-js</module>
+        <module>archiva-webapp-test-js</module>
       </modules>
     </profile>
   </profiles>
