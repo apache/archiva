@@ -36,7 +36,6 @@ $(function() {
              return mapRole(item);
          });
          $("#main-content").html($("#rolesGrid").tmpl(data));
-
        }
       }
     );

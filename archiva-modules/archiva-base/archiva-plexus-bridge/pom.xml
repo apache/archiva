@@ -85,7 +85,7 @@
               org.codehaus.plexus.classworlds*,
               org.codehaus.plexus.component.repository.exception,
               org.codehaus.plexus.digest,
-              org.springframework.stereotype,
+              org.springframework.stereotype;version="[3,4)",
               org.apache.maven.index.context;resolution:=optional,
               org.slf4j;resolution:=optional
             </Import-Package>
