@@ -101,7 +101,7 @@
     <div id="users-view-tabs-content" class="tab-content">
       <div id="users-view">
         <button data-bind='click: sortByName'  class="btn">
-          Sort by name
+            ${$.i18n.prop('users.sort.byname')}
         </button>
         <table class="bordered-table zebra-striped" data-bind="simpleGrid: gridViewModel" id="usersTable"></table>
         <div id="usersPagination"></div>

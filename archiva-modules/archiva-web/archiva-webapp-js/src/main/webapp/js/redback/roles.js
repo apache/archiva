@@ -35,7 +35,10 @@ $(function() {
          var roles = $.map(data.role, function(item) {
              return mapRole(item);
          });
-         $("#main-content").html($("#rolesGrid").tmpl(data));
+
+         $("#main-content").html($("#rolesTabs").tmpl());
+         $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(data));
+         activateRolesGridTab();
        }
       }
     );
@@ -46,6 +49,22 @@ $(function() {
    */
   mapRole=function(data) {
     return new role(data.name, data.description);
+  }
+
+  activateRolesGridTab=function(){
+    $("#main-content #roles-view-tabs li").removeClass("active");
+    $("#main-content #roles-view-tabs-content div").removeClass("active");
+    // activate roles grid tab
+    $("#main-content #roles-view-tabs-content #roles-view").addClass("active");
+    $("#main-content #roles-view-tabs-li-roles-grid").addClass("active");
+  }
+
+  activateRoleEditTab=function(){
+    $("#main-content #roles-view-tabs li").removeClass("active");
+    $("#main-content #roles-view-tabs-content div").removeClass("active");
+    // activate role edit tab
+    $("#main-content #roles-view-tabs-content #role-edit").addClass("active");
+    $("#roles-view-tabs-li-roles-edit").addClass("active");
   }
 
 });

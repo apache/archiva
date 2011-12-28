@@ -1,7 +1,4 @@
 <script id="rolesGrid"  type="text/x-jquery-tmpl">
-  <div class="page-header">
-    <h2>${$.i18n.prop('roles.list')}</h2>
-  </div>
   <table class="bordered-table zebra-striped" id="rolesTable">
     <thead>
       <tr>
@@ -18,4 +15,25 @@
       {{/each}}
     </tbody>
   </table>
+</script>
+
+<script id="rolesTabs" type="text/x-jquery-tmpl">
+  <div class="page-header">
+    <h2>${$.i18n.prop('roles.list')}</h2>
+  </div>
+
+  <ul id="roles-view-tabs" class="tabs">
+    <li class="active" id="roles-view-tabs-li-roles-grid">
+      <a href="#roles-view">${$.i18n.prop('roles.grid.tab.title')}</a>
+    </li>
+    <li id="roles-view-tabs-li-roles-edit">
+      <a href="#role-edit">${$.i18n.prop('role.edit')}</a>
+    </li>
+  </ul>
+  <div id="roles-view-tabs-content" class="tab-content">
+    <div id="roles-view">
+    </div>
+    <div id="role-edit"></div>
+  </div>
+
 </script>
