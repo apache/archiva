@@ -62,20 +62,32 @@
   <div class="page-header">
     <h3>${$.i18n.prop('role.parents')}</h3>
   </div>
-  <ul>
-  {{each parentRoleNames}}
-    <li>${$value}</li>
-  {{/each}}
-  </ul>
+  {{if childRoleNames}}
+    <ul>
+      {{if $.isArray(childRoleNames)}}
+        {{each parentRoleNames}}
+          <li>${$value}</li>
+        {{/each}}
+      {{else}}
+        <li>${childRoleNames}</li>
+      {{/if}}
+    </ul>
+  {{/if}}
 
   <div class="page-header">
     <h3>${$.i18n.prop('role.childs')}</h3>
   </div>
-  <ul>
-    {{each childRoleNames}}
-      <li>${$value}</li>
-    {{/each}}
-  </ul>
+  {{if childRoleNames}}
+    <ul>
+      {{if $.isArray(childRoleNames)}}
+        {{each childRoleNames}}
+          <li>${$value}</li>
+        {{/each}}
+      {{else}}
+        <li>${childRoleNames}</li>
+      {{/if}}
+    </ul>
+  {{/if}}
 
   {{if permissions}}
     <div class="page-header">
@@ -90,13 +102,21 @@
         </tr>
       </thead>
       <tbody>
-        {{each permissions}}
+        {{if $.isArray(permissions)}}
+          {{each permissions}}
+            <tr>
+              <td>${$value.name}</td>
+              <td>${$value.operation.name}</td>
+              <td>${$value.resource.identifier}</td>
+            </tr>
+          {{/each}}
+        {{else}}
           <tr>
-            <td>${$value.name}</td>
-            <td>${$value.operation.name}</td>
-            <td>${$value.resource.identifier}</td>
+            <td>${permissions.name}</td>
+            <td>${permissions.operation.name}</td>
+            <td>${permissions.resource.identifier}</td>
           </tr>
-        {{/each}}
+        {{/if}}
       </tbody>
     </table>
   {{/if}}
