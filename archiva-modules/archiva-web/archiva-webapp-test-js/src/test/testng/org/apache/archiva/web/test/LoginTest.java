@@ -29,80 +29,67 @@ import org.testng.annotations.Test;
  * http://code.google.com/p/testng/source/browse/trunk/CHANGES.txt
  * Waiting 5.9 release. It's comming soon.
  */
+
 /**
  * Based on LoginTest of Emmanuel Venisse test.
- * 
+ *
  * @author José Morales Martínez
  * @version $Id$
  */
 
-@Test( groups = { "login" }, dependsOnGroups = {"about"})
+@Test( groups = { "login" }, dependsOnGroups = { "about" } )
 public class LoginTest
     extends AbstractArchivaTest
 {
-    @Test(alwaysRun = true)
+    @Test( alwaysRun = true )
     public void testWithBadUsername()
     {
         goToLoginPage();
         setFieldValue( "user-login-form-username", "badUsername" );
+        clickLinkWithLocator( "modal-login-ok", true );
+        assertTextPresent( "This field is required." );
 
-        waitPage();
-        assertElementPresent( "//ul[@class=\'errorMessage\']" );
-        //assertTextPresent( "You have entered an incorrect username and/or password" );
     }
 
     @Test( dependsOnMethods = { "testWithBadUsername" }, alwaysRun = true )
     public void testWithBadPassword()
     {
         goToLoginPage();
-        setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        setFieldValue( "loginForm_password", "badPassword" );
-        getSelenium().click( "loginSubmit" );
-        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        waitPage();
-        //assertTextPresent( "You have entered an incorrect username and/or password" );
-        //<ul class="errorMessage"><li><span>
-        assertElementPresent( "//ul[@class=\'errorMessage\']" );
+        setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
+        setFieldValue( "user-login-form-password", "badPassword" );
+        clickLinkWithLocator( "modal-login-ok", true );
+        assertTextPresent( "You have entered an incorrect username and/or password" );
     }
 
     @Test( dependsOnMethods = { "testWithBadPassword" }, alwaysRun = true )
     public void testWithEmptyUsername()
     {
         goToLoginPage();
-        setFieldValue( "loginForm_password", "password" );
-        getSelenium().click( "loginSubmit" );
-        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        waitPage();
+        setFieldValue( "user-login-form-password", "password" );
+        clickLinkWithLocator( "modal-login-ok", true );
         //assertTextPresent( "User Name is required" );
-        assertElementPresent( "//tr[@errorFor=\'loginForm_username\']");
+        assertTextPresent( "This field is required." );
     }
 
     @Test( dependsOnMethods = { "testWithEmptyUsername" }, alwaysRun = true )
     public void testWithEmptyPassword()
     {
         goToLoginPage();
-        setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().click( "loginSubmit" );
-        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        waitPage();
+        setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
+        clickLinkWithLocator( "modal-login-ok", true );
         //assertTextPresent( "You have entered an incorrect username and/or password" );
-        assertElementPresent( "//ul[@class=\'errorMessage\']" );
+        assertTextPresent( "This field is required." );
     }
 
     @Test( groups = { "loginSuccess" }, dependsOnMethods = { "testWithEmptyPassword" }, alwaysRun = true )
     public void testWithCorrectUsernamePassword()
     {
         goToLoginPage();
-        setFieldValue( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        setFieldValue( "loginForm_password", getProperty( "ADMIN_PASSWORD" ) );
-        getSelenium().click( "loginSubmit" );
-        //getSelenium().waitForPageToLoad( maxWaitTimeInMs );
-        waitPage();
-        //assertTextPresent( "Logout" );
-        assertElementPresent( "logoutLink" );
-        //assertTextPresent( "Edit Details" );
-        assertElementPresent( "editUserLink" );
-        assertTextPresent( getProperty( "ADMIN_USERNAME" ) );
+        setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
+        setFieldValue( "user-login-form-password", getProperty( "ADMIN_PASSWORD" ) );
+        clickLinkWithLocator( "modal-login-ok", true );
+
+        assertUserLoggedIn( getProperty( "ADMIN_USERNAME" ) );
     }
 
     @BeforeTest

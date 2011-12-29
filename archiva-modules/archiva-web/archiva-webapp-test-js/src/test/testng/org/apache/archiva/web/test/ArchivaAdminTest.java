@@ -58,7 +58,7 @@ public class ArchivaAdminTest
 
         getSelenium().open( baseUrl );
 
-        getSelenium().refresh();
+        waitPage();
 
         // if not admin user created create one
         if ( isElementVisible( "create-admin-link" ) )

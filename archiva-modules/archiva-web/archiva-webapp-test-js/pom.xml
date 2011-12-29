@@ -422,7 +422,7 @@
         </property>
       </activation>
       <properties>
-        <baseUrl>http://localhost:${container.test.port}/archiva/index.html</baseUrl>
+        <baseUrl>http://localhost:${container.test.port}/archiva/index.html?request_lang=en</baseUrl>
       </properties>
     </profile>
     <profile>
