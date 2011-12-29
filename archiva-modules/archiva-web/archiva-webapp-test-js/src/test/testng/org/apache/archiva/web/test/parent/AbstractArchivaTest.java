@@ -234,11 +234,7 @@ public abstract class AbstractArchivaTest
 
         clickLinkWithLocator( "user-create-form-register-button", true );
 
-        assertTextPresent( "user created:guest_user" );
-
-        //assertUserRolesPage();
-
-        //clickButtonWithName( "submitRolesButton", true );
+        assertTextPresent( "user created:"+userName );
 
         if ( valid )
         {
@@ -265,7 +261,11 @@ public abstract class AbstractArchivaTest
 
         clickLinkWithLocator( "users-grid-delete-" + userName );
 
+        clickLinkWithLocator( "dialog-confirm-modal-ok" );
+
         assertTextPresent( "user " + userName + " deleted" );
+
+        clickLinkWithLocator( "alert-message-success-close-a" );
 
         assertTextNotPresent( userName );
         assertTextNotPresent( fullName );
@@ -724,8 +724,8 @@ public abstract class AbstractArchivaTest
     {
         clickLinkWithText( "Logout" );
         assertTextNotPresent( "Current User:" );
-        assertLinkNotPresent( "Edit Details" );
-        assertLinkNotPresent( "Logout" );
-        assertLinkPresent( "Login" );
+        assertLinkNotVisible( "Edit Details" );
+        assertLinkNotVisible( "Logout" );
+        assertLinkVisible( "Login" );
     }
 }

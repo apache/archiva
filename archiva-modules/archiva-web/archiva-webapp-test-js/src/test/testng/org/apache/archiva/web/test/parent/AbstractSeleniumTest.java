@@ -212,6 +212,16 @@ public abstract class AbstractSeleniumTest
         Assert.assertFalse( isElementPresent( "link=" + text ), "The link('" + text + "' is present." );
     }
 
+    public void assertLinkNotVisible( String text )
+    {
+        Assert.assertFalse( isElementVisible( "link=" + text ), "The link('" + text + "' is visible." );
+    }
+
+    public void assertLinkVisible( String text )
+    {
+        Assert.assertTrue( isElementVisible( "link=" + text ), "The link('" + text + "' is not visible." );
+    }
+
     public void assertImgWithAlt( String alt )
     {
         assertElementPresent( "/¯img[@alt='" + alt + "']" );
