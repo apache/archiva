@@ -21,7 +21,7 @@
                 <td></td>
               {{else}}
                 <td>
-                  <a href="#" data-bind="click: function(){ row.deleteUser() }">
+                  <a href="#" data-bind="click: function(){ row.deleteUser() }" id="users-grid-delete-${row.username()}">
                     <img src="images/delete.png" alt="${$.i18n.prop('delete')}"/>
                   </a>
                 </td>
@@ -95,7 +95,7 @@
         <a href="#users-view">${$.i18n.prop('users.grid.tab.title')}</a>
       </li>
       <li id="users-view-tabs-li-user-edit">
-        <a href="#createUserForm">${$.i18n.prop('user.add')}</a>
+        <a href="#createUserForm" id="users-view-tabs-li-user-edit-a">${$.i18n.prop('user.add')}</a>
       </li>
     </ul>
     <div id="users-view-tabs-content" class="tab-content">
