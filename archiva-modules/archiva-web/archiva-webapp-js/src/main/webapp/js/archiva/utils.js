@@ -103,3 +103,77 @@ clearForm=function(selectorStr){
   });
 
 }
+
+/**
+ * open a confirm dialog based on bootstrap modal
+ * @param okFn callback function to call on ok confirm
+ * @param okMessage
+ * @param cancelMessage
+ * @param title
+ */
+openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
+  if (window.modalConfirmDialog==null) {
+    window.modalConfirmDialog = $("#dialog-confirm-modal").modal({backdrop:'static',show:false});
+    window.modalConfirmDialog.bind('hidden', function () {
+      $("#dialog-confirm-modal-header-title").html("");
+      $("#dialog-confirm-modal-body-text").html("");
+    })
+    $("#dialog-confirm-modal-cancel").on("click", function(){
+      window.modalConfirmDialog.modal('hide');
+    });
+  }
+  $("#dialog-confirm-modal-header-title").html(title);
+  $("#dialog-confirm-modal-body-text").html(bodyText);
+  if (okMessage){
+    $("#dialog-confirm-modal-ok").html(okMessage);
+  }
+  if (cancelMessage){
+    $("#dialog-confirm-modal-cancel").html(cancelMessage);
+  }
+  window.modalConfirmDialog.modal('show');
+
+  // unbind previous events !!
+  $("#dialog-confirm-modal-ok").off( );
+  $("#dialog-confirm-modal-ok").on("click", okFn);
+
+}
+
+/**
+ * return a small spinner html img element
+ */
+smallSpinnerImg=function(){
+  return "<img id=\"login-spinner\" src=\"images/small-spinner.gif\"/>";
+};
+
+closeDialogConfirm=function(){
+  window.modalConfirmDialog.modal('hide');
+}
+
+closeDialogConfirmui=function(){
+  $("#dialog-confirm" ).dialog("close");
+}
+
+/**
+ * open a confirm dialog with jqueryui
+ * @param okFn callback function to call on ok confirm
+ * @param okMessage
+ * @param cancelMessage
+ * @param title
+ */
+openDialogConfirmui=function(okFn, okMessage, cancelMessage, title){
+  $("#dialog-confirm" ).dialog({
+    resizable: false,
+    title: title,
+    modal: true,
+    show: 'slide',
+    buttons: [{
+      text: okMessage,
+      click: okFn},
+      {
+      text: cancelMessage,
+      click:function() {
+        $(this).dialog( "close" );
+      }
+    }]
+  });
+}

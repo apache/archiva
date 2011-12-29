@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html"],
-  function(menu,topbar,message) {
+require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html",
+          "text!archiva/templates/modal.html"],
+  function(menu,topbar,message,modal) {
 
     // template loading
     $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
     $.tmpl( topbar, $.i18n.map ).appendTo("#html-fragments");
+    $.tmpl( modal, $.i18n.map ).appendTo("#html-fragments");
     $("#html-fragments").append(message);
     $.log("main-tmpl.js menu loaded");
   }

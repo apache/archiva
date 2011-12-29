@@ -132,7 +132,7 @@ $(function() {
 
       this.deleteUser=function() {
         clearUserMessages();
-        // FIXME i18n
+
         var currentUser = this;
         openDialogConfirm(function(){
           $.ajax("restServices/redbackServices/userService/deleteUser/"+currentUser.username(), {
