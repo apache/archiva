@@ -1,7 +1,11 @@
 
   <div class='well' id="main-menu" redback-permissions="{permissions: ['archiva-manage-users']}" style="display: none">
     <ul class="navigation">
-      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}"><a href="#" onclick="displayUsersGrid()">${$.i18n.prop('users.list')}</a></li>
-      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}"><a href="#" onclick="displayRolesGrid()">${$.i18n.prop('roles.list')}</a></li>
+      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
+        <a href="#" id="menu-users-list-a" onclick="displayUsersGrid()">${$.i18n.prop('users.list')}</a>
+      </li>
+      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
+        <a href="#" id="menu-roles-list-a" onclick="displayRolesGrid()">${$.i18n.prop('roles.list')}</a>
+      </li>
     </ul>
   </div>

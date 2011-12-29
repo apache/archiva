@@ -1,6 +1,5 @@
 package org.apache.archiva.web.test.parent;
 
-import org.apache.archiva.web.test.XPathExpressionUtil;
 import org.testng.Assert;
 
 import java.io.File;
@@ -222,27 +221,30 @@ public abstract class AbstractArchivaTest
     private void createUser( String userName, String fullName, String emailAd, String password, String confirmPassword,
                              boolean valid )
     {
-        // login( getAdminUsername() , getAdminPassword() );
-        getSelenium().open( "/archiva/security/userlist.action" );
-        clickButtonWithLocator( "userCreateButton", true );
-        //clickButtonWithValue( "Create New User" );
+
+        clickLinkWithLocator( "menu-users-list-a", true );
+        clickLinkWithLocator( "users-view-tabs-li-user-edit-a", true );
+
         assertCreateUserPage();
-        setFieldValue( "user.username", userName );
-        setFieldValue( "user.fullName", fullName );
-        setFieldValue( "user.email", emailAd );
-        setFieldValue( "user.password", password );
-        setFieldValue( "user.confirmPassword", confirmPassword );
-        submit();
+        setFieldValue( "username", userName );
+        setFieldValue( "fullname", fullName );
+        setFieldValue( "email", emailAd );
+        setFieldValue( "password", password );
+        setFieldValue( "confirmPassword", confirmPassword );
 
-        assertUserRolesPage();
+        clickLinkWithLocator( "user-create-form-register-button", true );
 
-        //clickButtonWithValue( "Submit" );
-        clickButtonWithName( "submitRolesButton", true );
+        assertTextPresent( "user created:guest_user" );
+
+        //assertUserRolesPage();
+
+        //clickButtonWithName( "submitRolesButton", true );
 
         if ( valid )
         {
-            String[] columnValues = { userName, fullName, emailAd };
-            assertElementPresent( XPathExpressionUtil.getTableRow( columnValues ) );
+            //String[] columnValues = { userName, fullName, emailAd };
+            //assertElementPresent( XPathExpressionUtil.getTableRow( columnValues ) );
+
         }
         else
         {
@@ -257,12 +259,18 @@ public abstract class AbstractArchivaTest
 
     public void deleteUser( String userName, String fullName, String emailAd, boolean validated, boolean locked )
     {
-        String[] columnValues = { userName, fullName, emailAd };
-        // clickLinkWithText( "userlist" );
-        clickLinkWithXPath( "//table[@id='ec_table']/tbody[2]/tr[3]/td[7]/a/img" );
-        assertDeleteUserPage( userName );
-        submit();
-        assertElementNotPresent( XPathExpressionUtil.getTableRow( columnValues ) );
+        clickLinkWithLocator( "menu-users-list-a", true );
+        assertTextPresent( userName );
+        assertTextPresent( fullName );
+
+        clickLinkWithLocator( "users-grid-delete-" + userName );
+
+        assertTextPresent( "user " + userName + " deleted" );
+
+        assertTextNotPresent( userName );
+        assertTextNotPresent( fullName );
+
+
     }
 
     public void login( String username, String password )
@@ -371,21 +379,18 @@ public abstract class AbstractArchivaTest
 
     public void assertCreateUserPage()
     {
-        //assertPage( "Apache Archiva \\ [Admin] User Create" );
-        //assertTextPresent( "[Admin] User Create" );
-        assertTextPresent( "Username*:", "Nom d'utilisateur*:" );
-        assertElementPresent( "user.username" );
-        assertTextPresent( "Full Name*:", "Nom complet*:" );
-        assertElementPresent( "user.fullName" );
-        assertTextPresent( "Email Address*:", "Adresse email*:" );
-        assertElementPresent( "user.email" );
-        assertTextPresent( "Password*:", "Mot de passe*:" );
-        assertElementPresent( "user.password" );
-        assertTextPresent( "Confirm Password*:", "Confirmer le mot de passe*" );
-        assertElementPresent( "user.confirmPassword" );
-        //assertButtonWithValuePresent( "Create User" );
-        assertButtonWithIdPresent( "userCreateSubmit" );
-//        assertElementNotPresent( "userCreateSubmit" );
+        assertTextPresent( "Username" );
+        assertElementPresent( "username" );
+        assertTextPresent( "Full Name" );
+        assertElementPresent( "fullname" );
+        assertTextPresent( "Email Address" );
+        assertElementPresent( "email" );
+        assertTextPresent( "Password" );
+        assertElementPresent( "password" );
+        assertTextPresent( "Confirm Password" );
+        assertElementPresent( "confirmPassword" );
+        assertButtonWithIdPresent( "user-create-form-register-button" );
+
     }
 
     public void assertLeftNavMenuWithRole( String role )
