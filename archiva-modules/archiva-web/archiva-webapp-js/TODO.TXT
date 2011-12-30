@@ -5,4 +5,4 @@ ui pages to do in js:
   ** roles list
   ** single roles read (parent, childs, permissions, users with a parent role, users with this role)
 
-* too much for archiva :-)
+* too much todo for archiva :-)

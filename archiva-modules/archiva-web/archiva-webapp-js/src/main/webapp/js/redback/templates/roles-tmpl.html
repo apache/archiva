@@ -2,8 +2,8 @@
   <table class="bordered-table zebra-striped" id="rolesTable">
     <thead>
       <tr>
-        <th>${$.i18n.prop('roles.name')}</th>
-        <th>${$.i18n.prop('roles.description')}</th>
+        <th>${$.i18n.prop('name')}</th>
+        <th>${$.i18n.prop('description')}</th>
         <th>${$.i18n.prop('edit')}</th>
       </tr>
     </thead>
@@ -31,7 +31,7 @@
       <a href="#roles-view">${$.i18n.prop('roles.grid.tab.title')}</a>
     </li>
     <li id="roles-view-tabs-li-roles-edit">
-      <a href="#role-edit">${$.i18n.prop('role.edit')}</a>
+      <a href="#role-edit">${$.i18n.prop('edit')}</a>
     </li>
   </ul>
   <div id="roles-view-tabs-content" class="tab-content">
@@ -44,23 +44,23 @@
 
 <script id="editRoleTab" type="text/x-jquery-tmpl">
   <div class="page-header">
-    <h3>${$.i18n.prop('role.edit')}</h3>
+    <h3>${$.i18n.prop('role')}</h3>
   </div>
   <table class="bordered-table" id="editRoleTable">
     <tbody>
       <tr>
-        <td>${$.i18n.prop('role.edit.name')}:</td>
+        <td>${$.i18n.prop('name')}:</td>
         <td>${name}</td>
       </tr>
       <tr>
-        <td>${$.i18n.prop('role.edit.description')}:</td>
+        <td>${$.i18n.prop('description')}:</td>
         <td>${description}</td>
       </tr>
     </tbody>
   </table>
 
   <div class="page-header">
-    <h3>${$.i18n.prop('role.parents')}</h3>
+    <h3>${$.i18n.prop('role.model.parent.roles')}</h3>
   </div>
   {{if parentRoleNames}}
     <ul>
@@ -75,7 +75,7 @@
   {{/if}}
 
   <div class="page-header">
-    <h3>${$.i18n.prop('role.childs')}</h3>
+    <h3>${$.i18n.prop('role.model.child.roles')}</h3>
   </div>
   {{if childRoleNames}}
     <ul>
@@ -89,16 +89,16 @@
     </ul>
   {{/if}}
 
+  <div class="page-header">
+    <h3>${$.i18n.prop('permissions')}</h3>
+  </div>
   {{if permissions}}
-    <div class="page-header">
-      <h3>${$.i18n.prop('role.permissions')}</h3>
-    </div>
     <table class="bordered-table zebra-striped" id="rolePermissionsTable">
       <thead>
         <tr>
-          <th>${$.i18n.prop('role.permission.name')}</th>
-          <th>${$.i18n.prop('role.permission.operation.name')}</th>
-          <th>${$.i18n.prop('role.permission.resource.')}</th>
+          <th>${$.i18n.prop('name')}</th>
+          <th>${$.i18n.prop('role.operation')}</th>
+          <th>${$.i18n.prop('role.resource')}</th>
         </tr>
       </thead>
       <tbody>
@@ -120,5 +120,10 @@
       </tbody>
     </table>
   {{/if}}
+
+  <div class="page-header">
+    <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
+  </div>
+
 
 </script>
