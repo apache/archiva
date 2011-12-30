@@ -122,8 +122,43 @@
   {{/if}}
 
   <div class="page-header">
+    <h2>${$.i18n.prop('role.edit.section.users')}</h2>
+  </div>
+  {{if parentsRolesUsers}}
+    <div class="page-header">
+      <h3>${$.i18n.prop('role.edit.users.defined.in.parent.roles')}</h3>
+    </div>
+    {{if $.isArray(parentsRolesUsers)}}
+      <ul>
+      {{each parentsRolesUsers}}
+        <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
+      {{/each}}
+      </ul>
+    {{else}}
+      <ul>
+        <li>${parentsRolesUsers.fullName} - ( ${parentsRolesUsers.username} - ${parentsRolesUsers.email} ) </li>
+      </ul>
+    {{/if}}
+  {{/if}}
+
+  <div class="page-header">
     <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
   </div>
 
+  {{if users}}
+    {{if $.isArray(users)}}
+      <ul>
+      {{each users}}
+        <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
+      {{/each}}
+      </ul>
+    {{else}}
+      <ul>
+        <li>${users.fullName} - ( ${users.username} - ${users.email} ) </li>
+      </ul>
+    {{/if}}
+  {{else}}
+    ${$.i18n.prop('role.edit.no.user.defined')}
+  {{/if}}
 
 </script>
