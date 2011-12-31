@@ -69,14 +69,14 @@
   <div class="page-header">
     <h3>${$.i18n.prop('role.model.parent.roles')}</h3>
   </div>
-  {{if parentRoleNames()}}
+  {{if parentRoleNames}}
     <ul>
-      {{if $.isArray(parentRoleNames())}}
-        {{each parentRoleNames()}}
+      {{if $.isArray(parentRoleNames)}}
+        {{each parentRoleNames}}
           <li>${$value}</li>
         {{/each}}
       {{else}}
-        <li>${parentRoleNames()}</li>
+        <li>${parentRoleNames}</li>
       {{/if}}
     </ul>
   {{/if}}

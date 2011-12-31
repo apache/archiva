@@ -81,7 +81,7 @@ $(function() {
   displayRolesGrid = function(){
     $("#user-messages").html("");
     $("#main-content").html("");
-    $.ajax("restServices/redbackServices/roleManagementService/allRoles",
+    $.ajax("restServices/redbackServices/roleManagementService/detailledAllRoles",
       {
        type: "GET",
        dataType: 'json',
@@ -89,7 +89,7 @@ $(function() {
          var roles = $.map(data.role, function(item) {
            return mapRole(item);
          });
-         $.log(ko.toJSON(roles));
+         //$.log(ko.toJSON(roles));
          $("#main-content").html($("#rolesTabs").tmpl());
          var data = {roles: roles};
          $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(data));
@@ -128,20 +128,20 @@ $(function() {
    */
   mapRole=function(data) {
     // name, description, assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions
-    $.log("mapRole:"+data.name+":");
+    //$.log("mapRole:"+data.name+":");
     var childRoleNames = mapStringArray(data.childRoleNames);
     var parentRoleNames = mapStringArray(data.parentRoleNames);
-    var users = data.users ? $.map(data.users, function(item) {
+    var users = data.users ? $.isArray(data.users) ? $.map(data.users, function(item) {
       return mapUser(item);
-    }):null;
+    }):[mapUser(data.users)]:null;
 
-    var parentsRolesUsers = data.parentsRolesUsers ? $.map(data.parentsRolesUsers, function(item) {
+    var parentsRolesUsers = data.parentsRolesUsers ? $.isArray(data.parentsRolesUsers)? $.map(data.parentsRolesUsers, function(item) {
       return mapUser(item);
-    }):null;
+    }):[mapUser(data.parentsRolesUsers)]:null;
 
     var permissions = data.permissions? $.isArray(data.permissions) ? $.map(data.permissions, function(item){
       return mapPermission(item);
-    }): new Array(mapPermission(data.permissions)) :null;
+    }): [mapPermission(data.permissions)] :null;
 
     return new role(data.name, data.description,data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions);
   }
