@@ -19,15 +19,16 @@
 $(function() {
 
 
-  operation=function(name) {
-    this.name=ko.observable(name);
+  resource=function(identifier,pattern) {
+    this.identifier=ko.observable(identifier);
+    this.pattern=ko.observable(pattern);
   }
 
   /**
-   * @param data Operation response from redback rest api
+   * @param data Resource response from redback rest api
    */
-  mapOperation=function(data) {
-    return new operation(data.name,null);
+  mapResource=function(data) {
+    return new resource(data.identifier,data.pattern);
   }
 
 

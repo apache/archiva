@@ -19,15 +19,19 @@
 $(function() {
 
 
-  operation=function(name) {
+  permission=function(name,operation,resource) {
     this.name=ko.observable(name);
+    this.operation=ko.observable(operation);
+    this.resource=ko.observable(resource);
   }
 
   /**
-   * @param data Operation response from redback rest api
+   * @param data Permission response from redback rest api
    */
-  mapOperation=function(data) {
-    return new operation(data.name,null);
+  mapPermission=function(data) {
+    return new permission(data.name,
+                          data.operation?mapOperation(data.operation):null,
+                          data.resource?mapResource(data.resource):null);
   }
 
 

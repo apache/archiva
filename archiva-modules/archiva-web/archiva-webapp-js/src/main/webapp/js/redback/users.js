@@ -31,10 +31,10 @@ $(function() {
           async: false,
           dataType: 'json',
           success: function(data) {
-              var mappedUsers = $.map(data.user, function(item) {
-                  return mapUser(item);
-              });
-              self.users(mappedUsers);
+            var mappedUsers = $.map(data.user, function(item) {
+              return mapUser(item);
+            });
+            self.users(mappedUsers);
           }
         }
       );

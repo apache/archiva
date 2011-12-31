@@ -177,3 +177,19 @@ openDialogConfirmui=function(okFn, okMessage, cancelMessage, title){
     }]
   });
 }
+
+mapStringArray=function(data){
+  //if (data){
+    if ($.isArray(data)){
+      $.log("isArray");
+      return $.map(data,function(item){
+            return item;
+      });
+    } else {
+      $.log("not Array");
+      return new Array(data);
+    }
+  //}
+
+  //return null;
+}

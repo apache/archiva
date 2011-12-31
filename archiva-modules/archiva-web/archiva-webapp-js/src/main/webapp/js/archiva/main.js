@@ -79,7 +79,7 @@ $(function() {
               return mapOperation(item);
           });
           window.redbackModel.operatioNames = $.map(mappedOperations, function(item){
-            return item.name;
+            return item.name();
           });
 
           $("[redback-permissions]").each(function(element){
@@ -88,7 +88,6 @@ $(function() {
             var neededKarmas = $(eval(bindingValue)).toArray();
             var karmaOk = false;
             $(neededKarmas).each(function(value){
-              //alert(neededKarmas[value]);
               if ($.inArray(neededKarmas[value],window.redbackModel.operatioNames)>=0) {
                 karmaOk = true;
               }

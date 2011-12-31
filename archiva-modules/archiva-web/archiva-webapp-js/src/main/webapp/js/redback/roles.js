@@ -18,15 +18,43 @@
  */
 $(function() {
 
-  role = function(name,description,permissions){
-    this.name = name;
-    this.description = description;
-    this.permissions=permissions;
+  role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions){
+    this.name = ko.observable(name);
+    this.description = ko.observable(description);
+    this.assignable = ko.observable(assignable);
+    this.childRoleNames = ko.observableArray(childRoleNames);//read only
+    this.parentRoleNames = ko.observableArray(parentRoleNames);//read only
+    this.users = ko.observableArray(users);
+    this.parentsRolesUsers = ko.observableArray(parentsRolesUsers);//read only
+    this.permissions = ko.observableArray(permissions);//read only
+
+
+
+
+
+
+    this.updateDescription=function(){
+      var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
+      var roleName = this.name();
+      url += "roleName="+encodeURIComponent(roleName);
+      url += "&roleDescription="+encodeURIComponent(this.description());
+      $.ajax(url,
+        {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            $.log("role description updated");
+            displaySuccessMessage($.i18n.prop("role.updated",roleName));
+          },
+          error: function(data){
+            displayErrorMessage("error updating role description");
+          }
+        }
+      );
+    }
   }
 
-  permission = function(){
 
-  }
 
   displayRolesGrid = function(){
     $("#user-messages").html("");
@@ -37,11 +65,11 @@ $(function() {
        dataType: 'json',
        success: function(data) {
          var roles = $.map(data.role, function(item) {
-             return mapRole(item);
+           return mapRole(item);
          });
-
+         $.log(ko.toJSON(roles));
          $("#main-content").html($("#rolesTabs").tmpl());
-         $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(data));
+         $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(roles));
          $("#roles-view-tabs").tabs();
          activateRolesGridTab();
        }
@@ -68,22 +96,7 @@ $(function() {
     var roleName = $("#editRoleTable #role-edit-name").html();
     var description = $("#editRoleTable #role-edit-description").val();
     clearUserMessages();
-    var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
-    url += "roleName="+encodeURIComponent(roleName);
-    url += "&roleDescription="+encodeURIComponent(description);
-    $.ajax(url,
-      {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
-          $.log("role description updated");
-          displaySuccessMessage($.i18n.prop("role.updated",roleName));
-        },
-        error: function(data){
-          displayErrorMessage("error updating role description");
-        }
-      }
-    );
+    new role(roleName,description).updateDescription();
 
   }
 
@@ -91,7 +104,23 @@ $(function() {
    * @param data Role response from redback rest api
    */
   mapRole=function(data) {
-    return new role(data.name, data.description);
+    // name, description, assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions
+    $.log("mapRole:"+data.name+":");
+    var childRoleNames = mapStringArray(data.childRoleNames);
+    var parentRoleNames = mapStringArray(data.parentRoleNames);
+    var users = data.users ? $.map(data.users, function(item) {
+      return mapUser(item);
+    }):null;
+
+    var parentsRolesUsers = data.parentsRolesUsers ? $.map(data.parentsRolesUsers, function(item) {
+      return mapUser(item);
+    }):null;
+
+    var permissions = data.permissions? $.map(data.permissions, function(item){
+      return mapPermission(item);
+    }):null;
+
+    return new role(data.name, data.description,data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions);
   }
 
   activateRolesGridTab=function(){
