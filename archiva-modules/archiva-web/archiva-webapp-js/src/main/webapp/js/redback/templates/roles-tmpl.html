@@ -50,11 +50,18 @@
     <tbody>
       <tr>
         <td>${$.i18n.prop('name')}:</td>
-        <td>${name}</td>
+        <td id="role-edit-name">${name}</td>
       </tr>
       <tr>
         <td>${$.i18n.prop('description')}:</td>
-        <td>${description}</td>
+        <td><input type="text" id="role-edit-description" value="${description}"></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div class="pull-left">
+            <button class="btn" onclick="saveRoleDescription();">${$.i18n.prop('save')}</button>
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>

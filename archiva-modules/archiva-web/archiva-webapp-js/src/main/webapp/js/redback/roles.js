@@ -64,6 +64,29 @@ $(function() {
     );
   }
 
+  saveRoleDescription=function(){
+    var roleName = $("#editRoleTable #role-edit-name").html();
+    var description = $("#editRoleTable #role-edit-description").val();
+    clearUserMessages();
+    var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
+    url += "roleName="+encodeURIComponent(roleName);
+    url += "&roleDescription="+encodeURIComponent(description);
+    $.ajax(url,
+      {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          $.log("role description updated");
+          displaySuccessMessage($.i18n.prop("role.updated",roleName));
+        },
+        error: function(data){
+          displayErrorMessage("error updating role description");
+        }
+      }
+    );
+
+  }
+
   /**
    * @param data Role response from redback rest api
    */
