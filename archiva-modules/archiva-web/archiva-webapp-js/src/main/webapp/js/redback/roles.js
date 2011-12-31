@@ -116,9 +116,9 @@ $(function() {
       return mapUser(item);
     }):null;
 
-    var permissions = data.permissions? $.map(data.permissions, function(item){
+    var permissions = data.permissions? $.isArray(data.permissions) ? $.map(data.permissions, function(item){
       return mapPermission(item);
-    }):null;
+    }): new Array(mapPermission(data.permissions)) :null;
 
     return new role(data.name, data.description,data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions);
   }
