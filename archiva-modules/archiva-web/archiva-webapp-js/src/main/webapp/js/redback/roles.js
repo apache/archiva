@@ -54,6 +54,28 @@ $(function() {
     }
   }
 
+  /**
+   * view model used for roles grid
+   */
+  rolesViewModel=function() {
+    this.roles = ko.observableArray([]);
+
+    this.loadRoles = function() {
+      $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
+          type: "GET",
+          async: false,
+          dataType: 'json',
+          success: function(data) {
+            var mappedRoles = $.map(data.role, function(item) {
+              return mapRole(item);
+            });
+            self.roles(mappedRoles);
+          }
+        }
+      );
+    };
+
+  }
 
 
   displayRolesGrid = function(){
@@ -69,7 +91,8 @@ $(function() {
          });
          $.log(ko.toJSON(roles));
          $("#main-content").html($("#rolesTabs").tmpl());
-         $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(roles));
+         var data = {roles: roles};
+         $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(data));
          $("#roles-view-tabs").tabs();
          activateRolesGridTab();
        }

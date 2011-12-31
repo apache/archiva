@@ -8,7 +8,7 @@
       </tr>
     </thead>
     <tbody>
-      {{each role}}
+      {{each roles}}
         <tr>
           <td>${$value.name}</td>
           <td>${$value.description}</td>
@@ -69,18 +69,18 @@
   <div class="page-header">
     <h3>${$.i18n.prop('role.model.parent.roles')}</h3>
   </div>
-  {{if parentRoleNames}}
+  {{if parentRoleNames()}}
     <ul>
-      {{if $.isArray(parentRoleNames)}}
-        {{each parentRoleNames}}
+      {{if $.isArray(parentRoleNames())}}
+        {{each parentRoleNames()}}
           <li>${$value}</li>
         {{/each}}
       {{else}}
-        <li>${parentRoleNames}</li>
+        <li>${parentRoleNames()}</li>
       {{/if}}
     </ul>
   {{/if}}
-  <!--
+
   <div class="page-header">
     <h3>${$.i18n.prop('role.model.child.roles')}</h3>
   </div>
@@ -167,5 +167,5 @@
   {{else}}
     ${$.i18n.prop('role.edit.no.user.defined')}
   {{/if}}
-  -->
+
 </script>
