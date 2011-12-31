@@ -102,7 +102,7 @@
               org.apache.archiva.metadata.repository;version=${project.version},
               org.apache.commons.lang;version="[2.4,3)",
               org.apache.jackrabbit.commons;version="[2.3,3)",
-              org.apache.jackrabbit.core.config;version="[2.3,3)",
+              org.apache.jackrabbit.core.config,
               org.springframework*;version="[3,4)",
               org.slf4j;resolution:=optional
             </Import-Package>

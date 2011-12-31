@@ -34,25 +34,29 @@
     <beanlib.bundle.version>5.0.2beta_1-SNAPSHOT</beanlib.bundle.version>
     <cglib.bundle.version>2.2_2</cglib.bundle.version>
     <commons-beanutils.bundle.version>1.8.2_2</commons-beanutils.bundle.version>
-    <commons-codec.bundle.version>1.3_4</commons-codec.bundle.version>
     <commons-collections.bundle.version>3.2.1_2</commons-collections.bundle.version>
     <commons-configuration.bundle.version>1.4_3</commons-configuration.bundle.version>
     <commons-digester.bundle.version>1.8_3</commons-digester.bundle.version>
+    <commons-httpclient.bundle.version>3.1_6</commons-httpclient.bundle.version>
+    <commons-io.2.version>2.0.1</commons-io.2.version>
     <commons-io.bundle.version>1.4_2</commons-io.bundle.version>
     <commons-jxpath.bundle.version>1.2_5</commons-jxpath.bundle.version>
-    <commons-lang.bundle.version>2.4_5</commons-lang.bundle.version>
     <commons-validator.bundle.version>1.3.1_1-SNAPSHOT</commons-validator.bundle.version>
     <dom4j.bundle.version>1.6.1_4</dom4j.bundle.version>
     <ehcache.bundle.version>2.4.3_1</ehcache.bundle.version>
+    <freemarker.bundle.version>2.3.18_1</freemarker.bundle.version>
+    <javassist.bundle.version>3.12.1.ga_1</javassist.bundle.version>
     <javax-inject.bundle.version>1_1</javax-inject.bundle.version>
     <jcharset.version>1.0</jcharset.version>
     <jcip-annotations.bundle.version>1.0_1-SNAPSHOT</jcip-annotations.bundle.version>
     <jdom.bundle.version>1.1_4</jdom.bundle.version>
     <joda-time.bundle.version>1.5.2_4</joda-time.bundle.version>
     <jsoup.bundle.version>1.5.2_1</jsoup.bundle.version>
+    <junit.bundle.version>4.9_1</junit.bundle.version>
     <lucene.bundle.version>3.0.3_2</lucene.bundle.version>
     <maven.archetype.version>2.1</maven.archetype.version>
     <maven-model-v3.version>2.0</maven-model-v3.version>
+    <ognl.bundle.version>2.7.3_5</ognl.bundle.version>
     <oro.bundle.version>2.0.8_5</oro.bundle.version>
     <plexus-classworlds.version>2.4</plexus-classworlds.version>
     <plexus-component-annotations.version>1.5.5</plexus-component-annotations.version>
@@ -64,7 +68,9 @@
     <sisu-inject-bean.version>2.3.0</sisu-inject-bean.version>
     <sisu-guava.version>0.9.9</sisu-guava.version>
     <stax-utils.bundle.version>20040917_2</stax-utils.bundle.version>
+    <testng.version>6.3.1</testng.version>
     <velocity.bundle.version>1.7_3</velocity.bundle.version>
+    <velocity-tools.version>2.0-alpha1</velocity-tools.version>
     <xpp3.bundle.version>1.1.4c_5</xpp3.bundle.version>
     <xstream.bundle.version>1.4_1</xstream.bundle.version>
     <ws-commons-util.bundle.version>1.0.2_1-SNAPSHOT</ws-commons-util.bundle.version>

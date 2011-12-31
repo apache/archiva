@@ -61,6 +61,9 @@
   <properties>
     <!-- Note: when upgrading to 2.3.1+, template/xhtml can be removed from the
          webapp resources -->
+    <commons-codec.version>1.5</commons-codec.version>
+    <commons-fileupload.version>1.2.2</commons-fileupload.version>
+    <commons-lang.version>2.6</commons-lang.version>
     <struts.version>2.2.3.1</struts.version>
     <maven3x.version>3.0.3</maven3x.version>
     <maven.version>2.0.8</maven.version>
@@ -513,7 +516,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.5</version>
+        <version>${commons-codec.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-configuration</groupId>
@@ -577,7 +580,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.2.2</version>
+        <version>${commons-fileupload.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -587,7 +590,7 @@
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
+        <version>${commons-lang.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
