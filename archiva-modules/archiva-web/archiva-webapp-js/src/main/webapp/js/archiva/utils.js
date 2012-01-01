@@ -142,8 +142,20 @@ openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
  * return a small spinner html img element
  */
 smallSpinnerImg=function(){
-  return "<img id=\"login-spinner\" src=\"images/small-spinner.gif\"/>";
+  return "<img id=\"small-spinner\" src=\"images/small-spinner.gif\"/>";
 };
+
+removeSmallSpinnerImg=function(){
+  $("#small-spinner").remove();
+}
+
+mediumSpinnerImg=function(){
+  return "<img id=\"medium-spinner\" src=\"images/medium-spinner.gif\"/>";
+};
+
+removeMediumSpinnerImg=function(){
+  $("#small-spinner").remove();
+}
 
 closeDialogConfirm=function(){
   window.modalConfirmDialog.modal('hide');

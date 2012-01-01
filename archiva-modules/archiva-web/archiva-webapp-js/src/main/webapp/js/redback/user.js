@@ -316,7 +316,7 @@ $(function() {
    */
   var completeLoginCallbackFn=function(){
     $("#modal-login-ok").removeAttr("disabled");
-    $("#login-spinner").remove();
+    $("#small-spinner").remove();
   }
 
   /**
@@ -532,7 +532,7 @@ $(function() {
 
       },
       complete: function(){
-        $("#login-spinner").remove();
+        $("#small-spinner").remove();
         window.modalChangePasswordBox.modal('hide');
       },
       error: function(result) {

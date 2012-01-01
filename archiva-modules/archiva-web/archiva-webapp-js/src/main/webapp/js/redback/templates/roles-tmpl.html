@@ -1,26 +1,3 @@
-<script id="rolesGrid"  type="text/x-jquery-tmpl">
-  <table class="bordered-table zebra-striped" id="rolesTable">
-    <thead>
-      <tr>
-        <th>${$.i18n.prop('name')}</th>
-        <th>${$.i18n.prop('description')}</th>
-        <th>${$.i18n.prop('edit')}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{each roles}}
-        <tr>
-          <td>${$value.name}</td>
-          <td>${$value.description}</td>
-          <td>
-            <a href="#" onclick="javascript:editRole(encodeURI('${$value.name}'));">${$.i18n.prop('edit')}</a>
-          </td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
-</script>
-
 <script id="rolesTabs" type="text/x-jquery-tmpl">
   <div class="page-header">
     <h2>${$.i18n.prop('roles.list')}</h2>
@@ -36,6 +13,10 @@
   </ul>
   <div id="roles-view-tabs-content" class="tab-content">
     <div id="roles-view">
+        <table class="bordered-table zebra-striped" id="usersTable"
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_rolesGrid',simpleGridPagerTemplate:'ko_rolesGrid_pageLinks',pageLinksId:'rolesPagination'">
+        </table>
+        <div id="rolesPagination"></div>
     </div>
     <div id="role-edit"></div>
   </div>
@@ -168,4 +149,42 @@
     ${$.i18n.prop('role.edit.no.user.defined')}
   {{/if}}
 
+</script>
+
+
+<script id='ko_rolesGrid' type='text/x-jquery-tmpl'>
+  <thead>
+      <tr>
+        {{each(i, columnDefinition) columns}}
+          <th>${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>${$.i18n.prop('edit')}</th>
+
+      </tr>
+  </thead>
+  <tbody>
+      {{each(i, row) itemsOnCurrentPage()}}
+          <tr>
+              {{each(j, columnDefinition) columns}}
+              <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+              {{/each}}
+              <td><a href="#" data-bind="click: function(){ window.redbackModel.rolesViewModel.editRole(row) }">Edit</a></td>
+          </tr>
+      {{/each}}
+  </tbody>
+
+</script>
+
+<script id="ko_rolesGrid_pageLinks" type="text/x-jquery-tmpl">
+  <div class="pagination">
+      <ul>
+      {{each(i) ko.utils.range(1, maxPageIndex)}}
+          <li data-bind="css: { active: i == currentPageIndex() }">
+            <a href="#" data-bind="click: function() { currentPageIndex(i) }">
+              ${ i + 1 }
+            </a>
+          </li>
+      {{/each}}
+      </ul>
+  </div>
 </script>

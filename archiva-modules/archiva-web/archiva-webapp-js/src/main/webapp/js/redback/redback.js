@@ -19,7 +19,7 @@
 $(function() {
 
   // define a container object with various datas
-  window.redbackModel = {usersViewModel:null,userOperationNames:null,key:null,userCreate:false,i18n:$.i18n.map};
+  window.redbackModel = {usersViewModel:null,userOperationNames:null,key:null,userCreate:false,i18n:$.i18n.map,rolesViewModel:null};
 
   /**
    * display redback error from redback json error response

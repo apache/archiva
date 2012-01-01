@@ -16,3 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+/* medium-spinner */
+#medium-spinner {
+ z-index: 20001;
+}

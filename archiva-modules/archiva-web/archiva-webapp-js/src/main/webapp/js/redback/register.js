@@ -80,7 +80,7 @@ $(function() {
       },
       complete: function(){
         $("#modal-register-ok").removeAttr("disabled");
-        $("#login-spinner").remove();
+        removeSmallSpinnerImg();
       },
       error: function(result) {
         var obj = jQuery.parseJSON(result.responseText);

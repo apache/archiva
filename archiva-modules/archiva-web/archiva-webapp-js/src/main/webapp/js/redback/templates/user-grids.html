@@ -1,13 +1,13 @@
 <script id='ko_usersGrid_grid' type='text/x-jquery-tmpl'>
   <thead>
       <tr>
-          {{each(i, columnDefinition) columns}}
-              <th>${ columnDefinition.headerText }</th>
-          {{/each}}
-          <th>${$.i18n.prop('edit')}</th>
-          <th>${$.i18n.prop('delete')}</th>
-          <th>${$.i18n.prop('user.list.locked')}</th>
-          <th>${$.i18n.prop('user.change.password.required')}</th>
+        {{each(i, columnDefinition) columns}}
+          <th>${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('user.list.locked')}</th>
+        <th>${$.i18n.prop('user.change.password.required')}</th>
       </tr>
   </thead>
   <tbody>
@@ -103,7 +103,9 @@
         <button data-bind='click: sortByName'  class="btn">
             ${$.i18n.prop('users.sort.byname')}
         </button>
-        <table class="bordered-table zebra-striped" data-bind="simpleGrid: gridViewModel" id="usersTable"></table>
+        <table class="bordered-table zebra-striped" id="usersTable"
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',simpleGridPagerTemplate:'ko_usersGrid_pageLinks',pageLinksId:'usersPagination'">
+        </table>
         <div id="usersPagination"></div>
       </div>
       <div id="createUserForm"></div>

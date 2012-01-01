@@ -57,9 +57,9 @@ $(function() {
   /**
    * view model used for roles grid
    */
-  rolesViewModel=function() {
+  RolesViewModel=function() {
     this.roles = ko.observableArray([]);
-
+    var self = this;
     this.loadRoles = function() {
       $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
           type: "GET",
@@ -75,12 +75,45 @@ $(function() {
       );
     };
 
+
+    this.gridViewModel = new ko.simpleGrid.viewModel({
+      data: this.roles,
+      viewModel: this,
+      columns: [
+        {
+          headerText: $.i18n.prop('name'),
+          rowText: "name"
+        },
+        {
+          headerText: $.i18n.prop('description'),
+          rowText: "description"
+        }
+      ],
+      pageSize: 10
+    });
+
+    this.editRole=function(role){
+      $("#main-content #roles-view-tabs-content #role-edit").attr("data-bind",'template: {name:"editRoleTab",data: role}');
+
+      var viewModel = new roleViewModel(role);
+      ko.applyBindings(viewModel,$("#main-content #roles-view-tabs-content #role-edit").get(0));
+    }
+
   }
+
 
 
   displayRolesGrid = function(){
     $("#user-messages").html("");
-    $("#main-content").html("");
+    $("#main-content").html(mediumSpinnerImg());
+    window.redbackModel.rolesViewModel = new RolesViewModel();
+    window.redbackModel.rolesViewModel.loadRoles();
+    $("#main-content").html($("#rolesTabs").tmpl());
+    ko.applyBindings(window.redbackModel.rolesViewModel,jQuery("#main-content").get(0));
+    $("#roles-view-tabs").tabs();
+    activateRolesGridTab();
+    removeMediumSpinnerImg();
+    /*
     $.ajax("restServices/redbackServices/roleManagementService/detailledAllRoles",
       {
        type: "GET",
@@ -95,9 +128,13 @@ $(function() {
          $("#main-content #roles-view-tabs-content #roles-view").html($("#rolesGrid").tmpl(data));
          $("#roles-view-tabs").tabs();
          activateRolesGridTab();
+       },
+       complete: function(){
+         removeMediumSpinnerImg();
        }
       }
     );
+    */
   }
 
   editRole = function(roleName){
@@ -121,6 +158,10 @@ $(function() {
     clearUserMessages();
     new role(roleName,description).updateDescription();
 
+  }
+
+  roleViewModel=function(role){
+    this.role=role;
   }
 
   /**

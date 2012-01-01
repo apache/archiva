@@ -42,7 +42,6 @@ $(function() {
     this.gridViewModel = new ko.simpleGrid.viewModel({
       data: this.users,
       viewModel: this,
-      pageLinksId: "usersPagination",
       columns: [
         {
           headerText: "User Name",
@@ -166,8 +165,6 @@ $(function() {
     */
   displayUsersGrid=function() {
     screenChange();
-    jQuery("#main-content").attr("data-bind","");
-    jQuery("#main-content").html($("#usersGrid").html());
     jQuery("#main-content").attr("data-bind",'template: {name:"usersGrid"}');
     window.redbackModel.usersViewModel = new usersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
