@@ -162,7 +162,7 @@ $(function() {
       return mapPermission(item);
     }): new Array(mapPermission(data.permissions)) :null;
 
-    return new role(data.name, data.description,data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions);
+    return new role(data.name, data.description?data.description:"",data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions);
   }
 
   activateRolesGridTab=function(){
