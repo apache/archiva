@@ -191,14 +191,14 @@ openDialogConfirmui=function(okFn, okMessage, cancelMessage, title){
 }
 
 mapStringArray=function(data){
-  if ($.isArray(data)){
-    //$.log("isArray");
-    return $.map(data,function(item){
-      return item;
-    });
-  } else {
-    //$.log("not Array");
-    return [data];
+  if (data) {
+    if ($.isArray(data)){
+      return $.map(data,function(item){
+        return item;
+     });
+    } else {
+      return new Array(data);
+    }
   }
-
+  return null;
 }

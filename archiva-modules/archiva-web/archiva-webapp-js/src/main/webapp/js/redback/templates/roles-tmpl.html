@@ -31,16 +31,16 @@
     <tbody>
       <tr>
         <td>${$.i18n.prop('name')}:</td>
-        <td id="role-edit-name">${name}</td>
+        <td id="role-edit-name">${$data.name}</td>
       </tr>
       <tr>
         <td>${$.i18n.prop('description')}:</td>
-        <td><input type="text" id="role-edit-description" value="${description}"></td>
+        <td><input type="text" id="role-edit-description" data-bind="value: description"></td>
       </tr>
       <tr>
         <td colspan="2">
           <div class="pull-left">
-            <button class="btn" onclick="saveRoleDescription();">${$.i18n.prop('save')}</button>
+            <button class="btn" data-bind="click: saveRoleDescription">${$.i18n.prop('save')}</button>
           </div>
         </td>
       </tr>
@@ -50,37 +50,30 @@
   <div class="page-header">
     <h3>${$.i18n.prop('role.model.parent.roles')}</h3>
   </div>
-  {{if parentRoleNames}}
+  {{if $data.parentRoleNames}}
     <ul>
-      {{if $.isArray(parentRoleNames)}}
-        {{each parentRoleNames}}
+        {{each $data.parentRoleNames}}
           <li>${$value}</li>
         {{/each}}
-      {{else}}
-        <li>${parentRoleNames}</li>
-      {{/if}}
+
     </ul>
   {{/if}}
 
   <div class="page-header">
     <h3>${$.i18n.prop('role.model.child.roles')}</h3>
   </div>
-  {{if childRoleNames}}
+  {{if $data.childRoleNames}}
     <ul>
-      {{if $.isArray(childRoleNames)}}
-        {{each childRoleNames}}
+        {{each $data.childRoleNames}}
           <li>${$value}</li>
         {{/each}}
-      {{else}}
-        <li>${childRoleNames}</li>
-      {{/if}}
     </ul>
   {{/if}}
 
   <div class="page-header">
     <h3>${$.i18n.prop('permissions')}</h3>
   </div>
-  {{if permissions}}
+  {{if $data.permissions}}
     <table class="bordered-table zebra-striped" id="rolePermissionsTable">
       <thead>
         <tr>
@@ -90,21 +83,21 @@
         </tr>
       </thead>
       <tbody>
-        {{if $.isArray(permissions)}}
           {{each permissions}}
             <tr>
               <td>${$value.name}</td>
-              <td>${$value.operation.name}</td>
-              <td>${$value.resource.identifier}</td>
+              {{if $value.operation }}
+                <td>${$value.operation.name}</td>
+              {{else}}
+                <td></td>
+              {{/if}}
+              {{if $value.resource }}
+                <td>${$value.resource.identifier}</td>
+              {{else}}
+                <td></td>
+              {{/if}}
             </tr>
           {{/each}}
-        {{else}}
-          <tr>
-            <td>${permissions.name}</td>
-            <td>${permissions.operation.name}</td>
-            <td>${permissions.resource.identifier}</td>
-          </tr>
-        {{/if}}
       </tbody>
     </table>
   {{/if}}
@@ -112,39 +105,27 @@
   <div class="page-header">
     <h2>${$.i18n.prop('role.edit.section.users')}</h2>
   </div>
-  {{if parentsRolesUsers}}
+  {{if $data.parentsRolesUsers}}
     <div class="page-header">
       <h3>${$.i18n.prop('role.edit.users.defined.in.parent.roles')}</h3>
     </div>
-    {{if $.isArray(parentsRolesUsers)}}
       <ul>
-      {{each parentsRolesUsers}}
+      {{each $data.parentsRolesUsers}}
         <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
       {{/each}}
       </ul>
-    {{else}}
-      <ul>
-        <li>${parentsRolesUsers.fullName} - ( ${parentsRolesUsers.username} - ${parentsRolesUsers.email} ) </li>
-      </ul>
-    {{/if}}
   {{/if}}
 
   <div class="page-header">
     <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
   </div>
 
-  {{if users}}
-    {{if $.isArray(users)}}
+  {{if $data.users}}
       <ul>
       {{each users}}
         <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
       {{/each}}
       </ul>
-    {{else}}
-      <ul>
-        <li>${users.fullName} - ( ${users.username} - ${users.email} ) </li>
-      </ul>
-    {{/if}}
   {{else}}
     ${$.i18n.prop('role.edit.no.user.defined')}
   {{/if}}
