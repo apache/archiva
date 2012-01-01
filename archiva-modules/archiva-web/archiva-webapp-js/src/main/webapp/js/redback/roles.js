@@ -119,8 +119,7 @@ $(function() {
 
 
   displayRolesGrid = function(){
-    $("#user-messages").html("");
-    $("#main-content").removeAttr("data-bind");
+    screenChange();
     $("#main-content").html(mediumSpinnerImg());
     window.redbackModel.rolesViewModel = new RolesViewModel();
     window.redbackModel.rolesViewModel.loadRoles();

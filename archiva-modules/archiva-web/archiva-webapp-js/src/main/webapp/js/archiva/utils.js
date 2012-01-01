@@ -78,6 +78,7 @@ displayWarningMessage=function(text,idToAppend){
   */
 screenChange=function(){
   $("#main-content").html("");
+  $("#main-content").removeAttr("data-bind");
   clearUserMessages();
 }
 
