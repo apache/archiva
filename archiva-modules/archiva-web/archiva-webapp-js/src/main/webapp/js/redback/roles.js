@@ -146,6 +146,8 @@ $(function() {
    * @param data Role response from redback rest api
    */
   mapRole=function(data) {
+    // olamy this mapping has issues when fields are array or not
+    //return ko.mapping.fromJS(data);
     // name, description, assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions
     //$.log("mapRole:"+data.name+":");
     var childRoleNames = mapStringArray(data.childRoleNames);
