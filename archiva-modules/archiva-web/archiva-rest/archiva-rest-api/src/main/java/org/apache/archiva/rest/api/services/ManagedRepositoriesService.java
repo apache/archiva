@@ -43,21 +43,21 @@ public interface ManagedRepositoriesService
     @Path( "getManagedRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<ManagedRepository> getManagedRepositories()
         throws ArchivaRestServiceException;
 
     @Path( "getManagedRepository/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "deleteManagedRepository" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteManagedRepository( @QueryParam( "repositoryId" ) String repositoryId,
                                      @QueryParam( "deleteContent" ) boolean deleteContent )
         throws ArchivaRestServiceException;
@@ -67,7 +67,7 @@ public interface ManagedRepositoriesService
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
 
@@ -76,7 +76,7 @@ public interface ManagedRepositoriesService
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
 

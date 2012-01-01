@@ -45,7 +45,7 @@ public interface ArchivaAdministrationService
     @Path( "getLegacyArtifactPaths" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws ArchivaRestServiceException;
 
@@ -53,28 +53,28 @@ public interface ArchivaAdministrationService
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
         throws ArchivaRestServiceException;
 
     @Path( "deleteLegacyArtifactPath" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteLegacyArtifactPath( @QueryParam( "path" ) String path )
         throws ArchivaRestServiceException;
 
     @Path( "addFileTypePattern" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addFileTypePattern( @QueryParam( "fileTypeId" ) String fileTypeId, @QueryParam( "pattern" ) String pattern )
         throws ArchivaRestServiceException;
 
     @Path( "removeFileTypePattern" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean removeFileTypePattern( @QueryParam( "fileTypeId" ) String fileTypeId,
                                    @QueryParam( "pattern" ) String pattern )
         throws ArchivaRestServiceException;
@@ -82,35 +82,35 @@ public interface ArchivaAdministrationService
     @Path( "getFileType" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     FileType getFileType( @QueryParam( "fileTypeId" ) String fileTypeId )
         throws ArchivaRestServiceException;
 
     @Path( "addFileType" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void addFileType( FileType fileType )
         throws ArchivaRestServiceException;
 
     @Path( "removeFileType" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean removeFileType( @QueryParam( "fileTypeId" ) String fileTypeId )
         throws ArchivaRestServiceException;
 
     @Path( "addKnownContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
         throws ArchivaRestServiceException;
 
     @Path( "setKnownContentConsumers" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void setKnownContentConsumers( List<String> knownContentConsumers )
         throws ArchivaRestServiceException;
 
@@ -118,77 +118,77 @@ public interface ArchivaAdministrationService
     @Path( "removeKnownContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean removeKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
         throws ArchivaRestServiceException;
 
     @Path( "addInvalidContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addInvalidContentConsumer( @QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
         throws ArchivaRestServiceException;
 
     @Path( "setInvalidContentConsumers" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void setInvalidContentConsumers( List<String> invalidContentConsumers )
         throws ArchivaRestServiceException;
 
     @Path( "removeInvalidContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean removeInvalidContentConsumer( @QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
         throws ArchivaRestServiceException;
 
     @Path( "getFileTypes" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<FileType> getFileTypes()
         throws ArchivaRestServiceException;
 
     @Path( "getKnownContentConsumers" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<String> getKnownContentConsumers()
         throws ArchivaRestServiceException;
 
     @Path( "getInvalidContentConsumers" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<String> getInvalidContentConsumers()
         throws ArchivaRestServiceException;
 
     @Path( "getOrganisationInformation" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     OrganisationInformation getOrganisationInformation()
         throws ArchivaRestServiceException;
 
     @Path( "setOrganisationInformation" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws ArchivaRestServiceException;
 
     @Path( "getUiConfiguration" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     UiConfiguration getUiConfiguration()
         throws ArchivaRestServiceException;
 
     @Path( "setUiConfiguration" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void setUiConfiguration( UiConfiguration uiConfiguration )
         throws ArchivaRestServiceException;
 
@@ -196,14 +196,14 @@ public interface ArchivaAdministrationService
     @Path( "getNetworkConfiguration" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     NetworkConfiguration getNetworkConfiguration()
         throws ArchivaRestServiceException;
 
     @Path( "setNetworkConfiguration" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws ArchivaRestServiceException;
 }

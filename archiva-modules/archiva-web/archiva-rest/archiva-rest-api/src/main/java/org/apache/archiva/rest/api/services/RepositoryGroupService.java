@@ -42,14 +42,14 @@ public interface RepositoryGroupService
     @Path( "getRepositoriesGroups" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<RepositoryGroup> getRepositoriesGroups()
         throws ArchivaRestServiceException;
 
     @Path( "getRepositoryGroup/{repositoryGroupId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     RepositoryGroup getRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
         throws ArchivaRestServiceException;
 
@@ -57,7 +57,7 @@ public interface RepositoryGroupService
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addRepositoryGroup( RepositoryGroup repositoryGroup )
         throws ArchivaRestServiceException;
 
@@ -65,21 +65,21 @@ public interface RepositoryGroupService
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateRepositoryGroup( RepositoryGroup repositoryGroup )
         throws ArchivaRestServiceException;
 
     @Path( "deleteRepositoryGroup/{repositoryGroupId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
         throws ArchivaRestServiceException;
 
     @Path( "addRepositoryToGroup" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean addRepositoryToGroup( @QueryParam( "repositoryGroupId" ) String repositoryGroupId,
                                   @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
@@ -87,7 +87,7 @@ public interface RepositoryGroupService
     @Path( "addRepositoryToGroup" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean deleteRepositoryFromGroup( @QueryParam( "repositoryGroupId" ) String repositoryGroupId,
                                        @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;

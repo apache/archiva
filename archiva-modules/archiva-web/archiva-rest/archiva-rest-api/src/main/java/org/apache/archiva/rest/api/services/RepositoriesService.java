@@ -44,7 +44,7 @@ public interface RepositoriesService
     @Path( "scanRepository" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean scanRepository( @QueryParam( "repositoryId" ) String repositoryId,
                             @QueryParam( "fullScan" ) boolean fullScan )
         throws ArchivaRestServiceException;
@@ -53,21 +53,21 @@ public interface RepositoriesService
     @Path( "alreadyScanning/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean alreadyScanning( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "removeScanningTaskFromQueue/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean removeScanningTaskFromQueue( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "scanRepositoryNow" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean scanRepositoryNow( @QueryParam( "repositoryId" ) String repositoryId,
                                @QueryParam( "fullScan" ) boolean fullScan )
         throws ArchivaRestServiceException;
@@ -78,7 +78,7 @@ public interface RepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true )
     /**
-     * permission are checked in impl
+     * permissions are checked in impl
      * will copy an artifact from the source repository to the target repository
      */
     Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
@@ -87,7 +87,7 @@ public interface RepositoriesService
     @Path( "scheduleDownloadRemoteIndex" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permission = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
     Boolean scheduleDownloadRemoteIndex( @QueryParam( "repositoryId" ) String repositoryId,
                                          @QueryParam( "now" ) boolean now,
                                          @QueryParam( "fullDownload" ) boolean fullDownload )
@@ -99,7 +99,7 @@ public interface RepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true )
     /**
-     * permission are checked in impl
+     * permissions are checked in impl
      * @since 1.4-M2
      */
     Boolean deleteArtifact( @QueryParam( "" ) Artifact artifact, @QueryParam( "repositoryId" ) String repositoryId )
