@@ -165,6 +165,7 @@ $(function() {
     */
   displayUsersGrid=function() {
     screenChange();
+    $("#main-content").html(mediumSpinnerImg());
     jQuery("#main-content").attr("data-bind",'template: {name:"usersGrid"}');
     window.redbackModel.usersViewModel = new usersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
