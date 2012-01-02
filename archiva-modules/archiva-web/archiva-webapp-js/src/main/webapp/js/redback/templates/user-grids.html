@@ -71,21 +71,6 @@
 
 </script>
 
-<script id="ko_usersGrid_pageLinks" type="text/x-jquery-tmpl">
-  <div class="pagination">
-      <ul>
-      {{each(i) ko.utils.range(1, maxPageIndex)}}
-          <li data-bind="css: { active: i == currentPageIndex() }">
-            <a href="#" data-bind="click: function() { currentPageIndex(i) }">
-              ${ i + 1 }
-            </a>
-          </li>
-      {{/each}}
-      </ul>
-  </div>
-</script>
-
-
 <script id="usersGrid"  type="text/x-jquery-tmpl">
     <div class="page-header">
       <h2>${$.i18n.prop('users.list')}</h2>
@@ -104,7 +89,7 @@
             ${$.i18n.prop('users.sort.byname')}
         </button>
         <table class="bordered-table zebra-striped" id="usersTable"
-               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',simpleGridPagerTemplate:'ko_usersGrid_pageLinks',pageLinksId:'usersPagination'">
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',pageLinksId:'usersPagination'">
         </table>
         <div id="usersPagination"></div>
       </div>

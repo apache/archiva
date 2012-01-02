@@ -1,0 +1,13 @@
+<script id="ko_simpleGrid_pageLinks" type="text/x-jquery-tmpl">
+  <div class="pagination">
+      <ul>
+      {{each(i) ko.utils.range(1, maxPageIndex)}}
+          <li data-bind="css: { active: i == currentPageIndex() }">
+            <a href="#" data-bind="click: function() { currentPageIndex(i) }">
+              ${ i + 1 }
+            </a>
+          </li>
+      {{/each}}
+      </ul>
+  </div>
+</script>

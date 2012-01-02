@@ -17,14 +17,15 @@
  * under the License.
  */
 require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html",
-          "text!archiva/templates/modal.html"],
-  function(menu,topbar,message,modal) {
+          "text!archiva/templates/modal.html","text!archiva/templates/grids-generics.html"],
+  function(menu,topbar,message,modal,grids_generics) {
 
     // template loading
     $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
     $.tmpl( topbar, $.i18n.map ).appendTo("#html-fragments");
     $.tmpl( modal, $.i18n.map ).appendTo("#html-fragments");
     $("#html-fragments").append(message);
+    $("#html-fragments").append(grids_generics);
     $.log("main-tmpl.js menu loaded");
   }
 );

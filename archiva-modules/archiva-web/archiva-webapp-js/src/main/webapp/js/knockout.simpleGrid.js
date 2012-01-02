@@ -50,7 +50,7 @@
 
           // Allow the default templates to be overridden
           var gridTemplateName      = allBindings.simpleGridTemplate || "ko_usersGrid_grid",
-              pageLinksTemplateName = allBindings.simpleGridPagerTemplate || "ko_usersGrid_pageLinks";
+              pageLinksTemplateName = allBindings.simpleGridPagerTemplate || "ko_simpleGrid_pageLinks";
 
           // Render the main grid
           var gridContainer = element.appendChild(document.createElement("DIV"));
