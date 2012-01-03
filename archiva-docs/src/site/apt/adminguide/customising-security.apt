@@ -48,6 +48,7 @@ Archiva Security Configuration
 #security.policy.password.encoder=
 security.policy.password.previous.count=6
 security.policy.password.expiration.days=90
+security.policy.password.expiration.enabled=true
 security.policy.allowed.login.attempt=3
 
 # Password Rules
