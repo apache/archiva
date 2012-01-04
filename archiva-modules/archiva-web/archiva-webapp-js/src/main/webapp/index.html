@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="stylesheet" href="css/jquery-ui-1.8.16.custom.css"/>
   <link rel="stylesheet" href="css/bootstrap.min.1.4.0.css">
   <link rel="stylesheet" href="css/archiva.css">
+
 
   <script type="text/javascript" src="js/jquery-1.7.js"></script>
 
@@ -22,7 +24,34 @@
   <div class="content">
     <div id="user-messages"></div>
 
-    <div id="main-content"></div>
+    <div id="main-content">
+
+<div id="role-edit-users" class="clearfix ar-multiselect" style="float: left">
+<div class="ar-multiselect-column ar-multiselect-left">
+<select id="role-edit-available-users" class="" multiple="true">
+<option value="">admin</option>
+</select>
+</div>
+<div class="ar-multiselect-column ar-multiselect-center">
+<ul>
+<li>
+<button class="btn">&gt;</button>
+</li>
+<li>
+<button class="btn">&lt;</button>
+</li>
+</ul>
+</div>
+<div class="ar-multiselect-column ar-multiselect-right">
+<select id="role-edit-affected-users" class="" multiple="true">
+<option value="">admin</option>
+</select>
+</div>
+</div>
+</div>
+
+
+    </div>
   </div>
 </div>
 

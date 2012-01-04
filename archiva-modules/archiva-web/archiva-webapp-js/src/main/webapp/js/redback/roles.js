@@ -18,7 +18,7 @@
  */
 $(function() {
 
-  role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions){
+  role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
     this.name = ko.observable(name);
     this.description = ko.observable(description);
     this.assignable = ko.observable(assignable);
@@ -27,6 +27,8 @@ $(function() {
     this.users = ko.observableArray(users);
     this.parentsRolesUsers = ko.observableArray(parentsRolesUsers);//read only
     this.permissions = ko.observableArray(permissions);//read only
+    // when editing a role other users not assign to this role are populated
+    this.otherUsers = ko.observableArray(otherUsers);
 
     this.updateDescription=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
@@ -54,6 +56,7 @@ $(function() {
    */
   RolesViewModel=function() {
     this.roles = ko.observableArray([]);
+
     var self = this;
     this.loadRoles = function() {
       $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
@@ -96,22 +99,17 @@ $(function() {
          dataType: 'json',
          success: function(data) {
            var mappedRole = mapRole(data.role);
-           $("#main-content #roles-view-tabs-content #role-edit").attr("data-bind",'template: {name:"editRoleTab",data: role}');
+           $("#main-content #roles-view-tabs-content #role-edit").attr("data-bind",'template: {name:"editRoleTab",data: currentRole}');
            role.parentRoleNames=mappedRole.parentRoleNames;
            role.parentsRolesUsers=mappedRole.parentsRolesUsers;
            role.users=mappedRole.users;
-           var viewModel = new roleViewModel(role);
+           role.otherUsers=mappedRole.otherUsers;
+           var viewModel = new RoleViewModel(role);
            ko.applyBindings(viewModel,$("#main-content #roles-view-tabs-content #role-edit").get(0));
            activateRoleEditTab();
          }
         }
       );
-
-
-    }
-
-    this.saveRoleDescription=function(role){
-      $.log("saveRoleDescription:"+role.description);
     }
 
   }
@@ -130,16 +128,30 @@ $(function() {
     removeMediumSpinnerImg();
   }
 
-  saveRoleDescription=function(){
-    var roleName = $("#editRoleTable #role-edit-name").html();
-    var description = $("#editRoleTable #role-edit-description").val();
-    clearUserMessages();
-    new role(roleName,description).updateDescription();
+  RoleViewModel=function(role){
+    selectedOtherUsers=new ko.observableArray();
+    selectedUsers=new ko.observableArray();
+    currentRole=role;
+    var self=this;
+    addUser=function(){
+      var removed = currentRole.otherUsers.removeAll(selectedOtherUsers());
+      for (var i = 0; i < removed.length; i++) {
+        currentRole.users.push(removed[i]);
+      }
+      selectedOtherUsers([]);
+    }
 
-  }
-
-  roleViewModel=function(role){
-    this.role=role;
+    removeUser=function(){
+      var added = currentRole.users.removeAll(selectedUsers());
+      for (var i = 0; i < added.length; i++) {
+        currentRole.otherUsers.push(added[i]);
+      }
+      selectedUsers([]);
+    }
+    saveRoleDescription=function(){
+      $.log("saveRoleDescription:"+currentRole.description());
+      currentRole.updateDescription();
+    }
   }
 
   /**
@@ -164,7 +176,11 @@ $(function() {
       return mapPermission(item);
     }): new Array(mapPermission(data.permissions)) :null;
 
-    return new role(data.name, data.description?data.description:"",data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions);
+    var otherUsers = data.otherUsers ? $.isArray(data.otherUsers)? $.map(data.otherUsers, function(item) {
+      return mapUser(item);
+    }):new Array(mapUser(data.otherUsers)):null;
+
+    return new role(data.name, data.description?data.description:"",data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers);
   }
 
   activateRolesGridTab=function(){

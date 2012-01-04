@@ -130,6 +130,21 @@
     ${$.i18n.prop('role.edit.no.user.defined')}
   {{/if}}
 
+  <div id="role-edit-users" class="clearfix ar-multiselect">
+    <div class="ar-multiselect-column ar-multiselect-left">
+    <select data-bind="options: otherUsers ,optionsText: 'username',selectedOptions:selectedOtherUsers" multiple="true" id="role-edit-available-users"></select>
+    </div>
+    <div class="ar-multiselect-column ar-multiselect-center">
+    <ul style="list-style: none">
+      <li><button class="btn" data-bind="click: addUser">&gt;</button></li>
+      <li><button class="btn" data-bind="click: removeUser">&lt;</button></li>
+    </ul>
+    </div>
+    <div class="ar-multiselect-column ar-multiselect-right">
+      <select data-bind="options: users ,optionsText: 'username',selectedOptions:selectedUsers" multiple="true" id="role-edit-affected-users"></select>
+    </div>
+  </div>
+
 </script>
 
 
