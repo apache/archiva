@@ -143,6 +143,7 @@
     <div class="ar-multiselect-column ar-multiselect-right">
       <select data-bind="options: users ,optionsText: 'username',selectedOptions:selectedUsers" multiple="true" id="role-edit-affected-users"></select>
     </div>
+    <button class="btn" data-bind="click: saveUsers">${$.i18n.prop('save')}</button>
   </div>
 
 </script>

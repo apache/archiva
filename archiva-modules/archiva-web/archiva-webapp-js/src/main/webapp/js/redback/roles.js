@@ -29,6 +29,7 @@ $(function() {
     this.permissions = ko.observableArray(permissions);//read only
     // when editing a role other users not assign to this role are populated
     this.otherUsers = ko.observableArray(otherUsers);
+    this.removedUsers=ko.observableArray([]);
 
     this.updateDescription=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
@@ -45,6 +46,23 @@ $(function() {
           },
           error: function(data){
             displayErrorMessage("error updating role description");
+          }
+        }
+      );
+    }
+    this.updateUsers=function(){
+      var url = "restServices/redbackServices/roleManagementService/updateRoleUsers";
+      $.ajax(url,
+        {
+          type: "POST",
+          dataType: 'json',
+          contentType: 'application/json',
+          data: "{\"role\": " +  ko.toJSON(this)+"}",
+          success: function(data) {
+            displaySuccessMessage($.i18n.prop("role.users.updated",this.name));
+          },
+          error: function(data){
+            displayErrorMessage("error updating users role");
           }
         }
       );
@@ -145,12 +163,17 @@ $(function() {
       var added = currentRole.users.removeAll(selectedUsers());
       for (var i = 0; i < added.length; i++) {
         currentRole.otherUsers.push(added[i]);
+        currentRole.removedUsers.push(added[i]);
       }
       selectedUsers([]);
+
     }
     saveRoleDescription=function(){
       $.log("saveRoleDescription:"+currentRole.description());
       currentRole.updateDescription();
+    }
+    saveUsers=function(){
+      currentRole.updateUsers();
     }
   }
 
