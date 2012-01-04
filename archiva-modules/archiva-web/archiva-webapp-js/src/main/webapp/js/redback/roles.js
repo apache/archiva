@@ -67,6 +67,15 @@ $(function() {
         }
       );
     }
+
+    this.updateMode=function(){
+      $("#main-content #role-list-users").hide();
+      $("#main-content #role-edit-users").show();
+    }
+    this.viewMode=function(){
+      $("#main-content #role-edit-users").hide();
+      $("#main-content #role-list-users").show();
+    }
   }
 
   /**

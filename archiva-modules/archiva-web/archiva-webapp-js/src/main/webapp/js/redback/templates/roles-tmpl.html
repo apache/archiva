@@ -119,18 +119,23 @@
   <div class="page-header">
     <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
   </div>
+  <div id="role-list-users">
+    {{if $data.users}}
+        <ul>
+        {{each users}}
+          <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
+        {{/each}}
+        </ul>
+    {{else}}
+      ${$.i18n.prop('role.edit.no.user.defined')}
+    {{/if}}
 
-  {{if $data.users}}
-      <ul>
-      {{each users}}
-        <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
-      {{/each}}
-      </ul>
-  {{else}}
-    ${$.i18n.prop('role.edit.no.user.defined')}
-  {{/if}}
+    <button class="btn" data-bind="click:updateMode">${$.i18n.prop('role.update.mode')}</button>
 
-  <div id="role-edit-users" class="clearfix ar-multiselect">
+  </div>
+
+  <div id="role-edit-users" class="clearfix ar-multiselect" style="display:none">
+
     <div class="ar-multiselect-column ar-multiselect-left">
     <select data-bind="options: otherUsers ,optionsText: 'username',selectedOptions:selectedOtherUsers" multiple="true" id="role-edit-available-users"></select>
     </div>
@@ -144,6 +149,8 @@
       <select data-bind="options: users ,optionsText: 'username',selectedOptions:selectedUsers" multiple="true" id="role-edit-affected-users"></select>
     </div>
     <button class="btn" data-bind="click: saveUsers">${$.i18n.prop('save')}</button>
+    <br/>
+    <button class="btn" data-bind="click:viewMode">${$.i18n.prop('role.view.mode')}</button>
   </div>
 
 </script>
