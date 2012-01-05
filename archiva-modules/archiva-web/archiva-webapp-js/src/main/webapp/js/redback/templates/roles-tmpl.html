@@ -130,7 +130,7 @@
       ${$.i18n.prop('role.edit.no.user.defined')}
     {{/if}}
 
-    <button class="btn" data-bind="click:updateMode">${$.i18n.prop('role.update.mode')}</button>
+    <input class="btn" type="button" id="role-list-users-update-mode" data-bind="click: updateMode" value="${$.i18n.prop('role.update.mode')}"/>
 
   </div>
 
@@ -141,19 +141,21 @@
     </div>
     <div class="ar-multiselect-column ar-multiselect-center">
     <ul style="list-style: none">
-      <li><button class="btn" data-bind="click: addUser">&gt;</button></li>
-      <li><button class="btn" data-bind="click: removeUser">&lt;</button></li>
+      <li><input class="btn" id="role-edit-users-add-user" type="button" data-bind="click: addUser" value="&gt;"/></li>
+      <li><input class="btn" id="role-edit-users-remove-user" type="button" data-bind="click: removeUser" value="&lt;"/></li>
     </ul>
     </div>
     <div class="ar-multiselect-column ar-multiselect-right">
       <select data-bind="options: users ,optionsText: 'username',selectedOptions:selectedUsers" multiple="true" id="role-edit-affected-users"></select>
     </div>
-    <button class="btn" data-bind="click: saveUsers">${$.i18n.prop('save')}</button>
+    <button class="btn" id="role-edit-users-save" data-bind="click: saveUsers">${$.i18n.prop('save')}</button>
     <br/>
-    <button class="btn" data-bind="click:viewMode">${$.i18n.prop('role.view.mode')}</button>
+    <input class="btn" id="role-edit-users-view-mode" type="button" data-bind="click: viewMode" value="${$.i18n.prop('role.view.mode')}"/>
   </div>
 
 </script>
+
+
 
 
 <script id='ko_rolesGrid' type='text/x-jquery-tmpl'>

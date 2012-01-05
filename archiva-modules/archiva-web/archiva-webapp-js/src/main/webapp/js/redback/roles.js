@@ -18,7 +18,7 @@
  */
 $(function() {
 
-  role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
+  Role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
     this.name = ko.observable(name);
     this.description = ko.observable(description);
     this.assignable = ko.observable(assignable);
@@ -28,8 +28,8 @@ $(function() {
     this.parentsRolesUsers = ko.observableArray(parentsRolesUsers);//read only
     this.permissions = ko.observableArray(permissions);//read only
     // when editing a role other users not assign to this role are populated
-    this.otherUsers = ko.observableArray(otherUsers);
-    this.removedUsers=ko.observableArray([]);
+    this.otherUsers = ko.observableArray(otherUsers?otherUsers:new Array());
+    this.removedUsers= ko.observableArray(new Array());
 
     this.updateDescription=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
@@ -50,6 +50,7 @@ $(function() {
         }
       );
     }
+    var self=this;
     this.updateUsers=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleUsers";
       $.ajax(url,
@@ -57,7 +58,7 @@ $(function() {
           type: "POST",
           dataType: 'json',
           contentType: 'application/json',
-          data: "{\"role\": " +  ko.toJSON(this)+"}",
+          data: "{\"role\": " +  ko.toJSON(self)+"}",
           success: function(data) {
             displaySuccessMessage($.i18n.prop("role.users.updated",this.name));
           },
@@ -68,14 +69,6 @@ $(function() {
       );
     }
 
-    this.updateMode=function(){
-      $("#main-content #role-list-users").hide();
-      $("#main-content #role-edit-users").show();
-    }
-    this.viewMode=function(){
-      $("#main-content #role-edit-users").hide();
-      $("#main-content #role-list-users").show();
-    }
   }
 
   /**
@@ -156,13 +149,15 @@ $(function() {
   }
 
   RoleViewModel=function(role){
-    selectedOtherUsers=new ko.observableArray();
-    selectedUsers=new ko.observableArray();
+    selectedOtherUsers= ko.observableArray();
+    selectedUsers= ko.observableArray();
     currentRole=role;
     var self=this;
     addUser=function(){
+      $.log("addUser");
       var removed = currentRole.otherUsers.removeAll(selectedOtherUsers());
       for (var i = 0; i < removed.length; i++) {
+        $.log("add user:"+removed[i].username());
         currentRole.users.push(removed[i]);
       }
       selectedOtherUsers([]);
@@ -183,6 +178,15 @@ $(function() {
     }
     saveUsers=function(){
       currentRole.updateUsers();
+    }
+
+    updateMode=function(){
+      $("#main-content #role-list-users").hide();
+      $("#main-content #role-edit-users").show();
+    }
+    viewMode=function(){
+      $("#main-content #role-edit-users").hide();
+      $("#main-content #role-list-users").show();
     }
   }
 
@@ -212,7 +216,7 @@ $(function() {
       return mapUser(item);
     }):new Array(mapUser(data.otherUsers)):null;
 
-    return new role(data.name, data.description?data.description:"",data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers);
+    return new Role(data.name, data.description?data.description:"",data.assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers);
   }
 
   activateRolesGridTab=function(){

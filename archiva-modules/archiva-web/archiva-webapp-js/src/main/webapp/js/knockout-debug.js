@@ -1021,7 +1021,7 @@ ko.observableArray['fn'] = {
 
 // Populate ko.observableArray.fn with read/write functions from native arrays
 ko.utils.arrayForEach(["pop", "push", "reverse", "shift", "sort", "splice", "unshift"], function (methodName) {
-    ko.observableArray['fn'][methodName] = function () { 
+    ko.observableArray['fn'][methodName] = function () {
         var underlyingArray = this();
         this.valueWillMutate();
         var methodCallResult = underlyingArray[methodName].apply(underlyingArray, arguments);

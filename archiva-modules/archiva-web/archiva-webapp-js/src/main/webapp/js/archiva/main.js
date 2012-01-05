@@ -160,6 +160,8 @@ $(function() {
   hideElementWithKarma();
   checkSecurityLinks();
 
+
+
 })
 });
 
