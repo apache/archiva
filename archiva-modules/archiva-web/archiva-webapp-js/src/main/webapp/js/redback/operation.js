@@ -19,7 +19,7 @@
 $(function() {
 
 
-  operation=function(name) {
+  Operation=function(name) {
     this.name=ko.observable(name);
   }
 
@@ -27,7 +27,7 @@ $(function() {
    * @param data Operation response from redback rest api
    */
   mapOperation=function(data) {
-    return new operation(data.name,null);
+    return new Operation(data.name,null);
   }
 
 

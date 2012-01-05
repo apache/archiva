@@ -33,7 +33,7 @@ $(function() {
    * @param passwordChangeRequired
    * @param ownerViewModel
    */
-  user=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
+  User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
       // Potentially Editable Field.
       this.username = ko.observable(username);
       // Editable Fields.
@@ -206,8 +206,8 @@ $(function() {
   /**
    * view for admin user creation
    */
-  adminUserViewModel=function() {
-    this.user = new user("admin","","", "the administrator");
+  AdminUserViewModel=function() {
+    this.user = new User("admin","","", "the administrator");
   }
 
   /**
@@ -216,7 +216,7 @@ $(function() {
   adminCreateBox=function() {
     window.redbackModel.createUser=true;
     jQuery("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
-    var viewModel = new adminUserViewModel();
+    var viewModel = new AdminUserViewModel();
     ko.applyBindings(viewModel);
     $("#user-create").validate({
       rules: {
@@ -549,7 +549,7 @@ $(function() {
    * @param data User response from redback rest api
    */
   mapUser=function(data) {
-    return new user(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,data.locked,data.passwordChangeRequired,self);
+    return new User(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,data.locked,data.passwordChangeRequired,self);
   }
 
 

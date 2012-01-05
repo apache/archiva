@@ -19,7 +19,7 @@
 $(function() {
 
 
-  resource=function(identifier,pattern) {
+  Resource=function(identifier,pattern) {
     this.identifier=ko.observable(identifier);
     this.pattern=ko.observable(pattern);
   }
@@ -28,7 +28,7 @@ $(function() {
    * @param data Resource response from redback rest api
    */
   mapResource=function(data) {
-    return new resource(data.identifier,data.pattern);
+    return new Resource(data.identifier,data.pattern);
   }
 
 

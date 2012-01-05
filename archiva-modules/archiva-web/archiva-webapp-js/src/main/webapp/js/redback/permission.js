@@ -19,7 +19,7 @@
 $(function() {
 
 
-  permission=function(name,operation,resource) {
+  Permission=function(name,operation,resource) {
     this.name=ko.observable(name);
     this.operation=ko.observable(operation);
     this.resource=ko.observable(resource);
@@ -29,7 +29,7 @@ $(function() {
    * @param data Permission response from redback rest api
    */
   mapPermission=function(data) {
-    return new permission(data.name,
+    return new Permission(data.name,
                           data.operation?mapOperation(data.operation):null,
                           data.resource?mapResource(data.resource):null);
   }
