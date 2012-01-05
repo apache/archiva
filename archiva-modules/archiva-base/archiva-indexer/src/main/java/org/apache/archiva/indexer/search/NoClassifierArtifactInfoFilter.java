@@ -18,15 +18,25 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactInfo;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Olivier Lamy
- * @since 1.4-M1
  */
-public interface ArtifactInfoFiler
+public class NoClassifierArtifactInfoFilter
+    implements ArtifactInfoFilter
 {
-    boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult );
+    public static final NoClassifierArtifactInfoFilter INSTANCE = new NoClassifierArtifactInfoFilter();
+
+    public static final List<? extends ArtifactInfoFilter> LIST = Arrays.asList( INSTANCE );
+
+    public boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult )
+    {
+        return StringUtils.isBlank( artifact.classifier );
+    }
 }

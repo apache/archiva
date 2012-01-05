@@ -124,7 +124,7 @@ public class NexusRepositorySearch
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFiler.LIST, selectedRepos, false );
+        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, false );
 
     }
 
@@ -235,12 +235,12 @@ public class NexusRepositorySearch
             throw new RepositorySearchException( "No search fields set." );
         }
 
-        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFiler>emptyList(),
+        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFilter>emptyList(),
                        searchFields.getRepositories(), searchFields.isIncludePomArtifacts() );
     }
 
     private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
-                                  List<? extends ArtifactInfoFiler> filters,
+                                  List<? extends ArtifactInfoFilter> filters,
                                   List<String> selectedRepos, boolean includePoms)
         throws RepositorySearchException
     {
@@ -448,7 +448,7 @@ public class NexusRepositorySearch
 
 
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
-                                                  List<? extends ArtifactInfoFiler> artifactInfoFilers,
+                                                  List<? extends ArtifactInfoFilter> artifactInfoFilters,
                                                   List<String>selectedRepos, boolean includePoms)
         throws RepositoryAdminException
     {
@@ -465,7 +465,7 @@ public class NexusRepositorySearch
                                              artifactInfo.packaging );
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
 
-            if ( !applyArtifactInfoFilters( artifactInfo, artifactInfoFilers, hitsMap ) )
+            if ( !applyArtifactInfoFilters( artifactInfo, artifactInfoFilters, hitsMap ) )
             {
                 continue;
             }
@@ -620,15 +620,15 @@ public class NexusRepositorySearch
     }
 
     private boolean applyArtifactInfoFilters( ArtifactInfo artifactInfo,
-                                              List<? extends ArtifactInfoFiler> artifactInfoFilers,
+                                              List<? extends ArtifactInfoFilter> artifactInfoFilters,
                                               Map<String, SearchResultHit> currentResult )
     {
-        if ( artifactInfoFilers == null || artifactInfoFilers.isEmpty() )
+        if ( artifactInfoFilters == null || artifactInfoFilters.isEmpty() )
         {
             return true;
         }
 
-        for ( ArtifactInfoFiler filter : artifactInfoFilers )
+        for ( ArtifactInfoFilter filter : artifactInfoFilters )
         {
             if ( !filter.addArtifactInResult( artifactInfo, currentResult ) )
             {
