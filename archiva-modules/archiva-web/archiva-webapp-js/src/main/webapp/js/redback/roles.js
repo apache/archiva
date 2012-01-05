@@ -24,7 +24,7 @@ $(function() {
     this.assignable = ko.observable(assignable);
     this.childRoleNames = ko.observableArray(childRoleNames);//read only
     this.parentRoleNames = ko.observableArray(parentRoleNames);//read only
-    this.users = ko.observableArray(users);
+    this.users = ko.observableArray(users?users:new Array());
     this.parentsRolesUsers = ko.observableArray(parentsRolesUsers);//read only
     this.permissions = ko.observableArray(permissions);//read only
     // when editing a role other users not assign to this role are populated
