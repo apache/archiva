@@ -113,7 +113,7 @@ $(function() {
     this.editRole=function(role){
       $("#main-content #roles-view-tabs-content #role-edit").html(mediumSpinnerImg());
       // load missing attributes
-      $.ajax("restServices/redbackServices/roleManagementService/getRole/"+role.name(),
+      $.ajax("restServices/redbackServices/roleManagementService/getRole/"+encodeURIComponent(role.name()),
         {
          type: "GET",
          dataType: 'json',
@@ -127,6 +127,8 @@ $(function() {
            var viewModel = new RoleViewModel(role);
            ko.applyBindings(viewModel,$("#main-content #roles-view-tabs-content #role-edit").get(0));
            activateRoleEditTab();
+           $("#role-edit-users-tabs").tabs();
+           $("#role-edit-users-tabs-content #role-view-users").addClass("active");
          }
         }
       );
@@ -143,7 +145,7 @@ $(function() {
     window.redbackModel.rolesViewModel.loadRoles();
     $("#main-content").html($("#rolesTabs").tmpl());
     ko.applyBindings(window.redbackModel.rolesViewModel,jQuery("#main-content").get(0));
-    $("#roles-view-tabs").tabs();
+    $("#roles-view-tabs").pills();
     activateRolesGridTab();
     removeMediumSpinnerImg();
   }
