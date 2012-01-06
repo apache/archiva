@@ -408,7 +408,7 @@ $(function() {
    * display modal box for updating current user details
    */
   editUserDetailsBox=function(){
-    screenChange();
+    clearUserMessages();
     $("#modal-user-edit-err-message").hide();
     $("#modal-user-edit-err-message").html("");
     if (window.modalEditUserBox == null) {
