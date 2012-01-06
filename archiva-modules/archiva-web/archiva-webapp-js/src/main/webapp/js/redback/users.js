@@ -61,7 +61,7 @@ $(function() {
       window.redbackModel.createUser=true;
       $("#main-content #user-edit").remove();
       $('#main-content #user-create').show();
-      ko.renderTemplate("redback/user-edit-tmpl", new user(), null, $("#createUserForm").get(0),"replaceChildren");
+      ko.renderTemplate("redback/user-edit-tmpl", new User(), null, $("#createUserForm").get(0),"replaceChildren");
       $("#main-content #createUserForm #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
         activateUsersGridTab();
@@ -146,18 +146,32 @@ $(function() {
         user.update();
       });
 
-      $.ajax("restServices/redbackServices/roleManagementService/getEffectivelyAssignedRoles/"+user.username(), {
+      $("#user-edit-roles").show();
+      $( "#user-edit-roles-view" ).append(smallSpinnerImg());
+      $.ajax("restServices/redbackServices/roleManagementService/getEffectivelyAssignedRoles/"+encodeURIComponent(user.username()), {
           type: "GET",
           async: false,
           dataType: 'json',
           success: function(data) {
-            $( "#user-edit-roles-view" ).append( jQuery("#user_edit_roles_tmpl" ).tmpl( data.role ) );
             $("#user-edit-roles-view").show();
+            var mappedRoles = $.map(data.role, function(item) {
+              return mapRole(item);
+            });
+            //$( "#user-edit-roles-view" ).append( jQuery("#user_edit_roles_tmpl" ).tmpl( data.role ) );
+            viewModel.roles=mappedRoles;
+            $( "#user-edit-roles-view").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
+            ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
+            removeSmallSpinnerImg();
           }
         }
       );
 
     }
+  }
+
+  userViewModel=function(user) {
+    this.user=user;
+    this.roles = ko.observableArray(new Array());
   }
 
   /**
@@ -183,12 +197,6 @@ $(function() {
 
     })
     $("#users-view-tabs-content #users-view").addClass("active");
-  }
-
-
-
-  userViewModel=function(user) {
-      this.user=user;
   }
 
   activateUsersGridTab=function(){
