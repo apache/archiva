@@ -22,12 +22,18 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.redback.rest.api.services.RedbackServiceException;
+import org.codehaus.redback.rest.api.services.UtilServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,6 +46,9 @@ public class DefaultCommonServices
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );
+
+    @Inject
+    private UtilServices utilServices;
 
     public String getI18nResources( String locale )
         throws ArchivaRestServiceException
@@ -58,15 +67,7 @@ public class DefaultCommonServices
             log.warn( "skip error loading properties {}", resourceName.toString() );
         }
 
-        StringBuilder output = new StringBuilder();
-
-        for ( Map.Entry<Object, Object> entry : properties.entrySet() )
-        {
-            output.append( (String) entry.getKey() ).append( '=' ).append( (String) entry.getValue() );
-            output.append( '\n' );
-        }
-
-        return output.toString();
+        return fromProperties( properties );
     }
 
     private void loadResource( Properties properties, StringBuilder resourceName, String locale )
@@ -81,6 +82,19 @@ public class DefaultCommonServices
                           new StringBuilder( resourceName ).append( "_" + locale ).append( ".properties" ).toString() );
         }
 
+    }
+
+    private String fromProperties( Properties properties )
+    {
+        StringBuilder output = new StringBuilder();
+
+        for ( Map.Entry<Object, Object> entry : properties.entrySet() )
+        {
+            output.append( (String) entry.getKey() ).append( '=' ).append( (String) entry.getValue() );
+            output.append( '\n' );
+        }
+
+        return output.toString();
     }
 
     private void loadResource( Properties properties, String resourceName )
@@ -99,6 +113,29 @@ public class DefaultCommonServices
         finally
         {
             IOUtils.closeQuietly( is );
+        }
+    }
+
+    public String getAllI18nResources( String locale )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            String redbackProps = utilServices.getI18nResources( locale );
+            String archivaProps = getI18nResources( locale );
+            Properties properties = new Properties();
+            properties.load( new StringReader( redbackProps ) );
+            properties.load( new StringReader( archivaProps ) );
+            return fromProperties( properties );
+        }
+        catch ( RedbackServiceException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e.getHttpErrorCode() );
+        }
+        catch ( IOException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
     }
 }

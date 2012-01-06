@@ -46,4 +46,17 @@ public interface CommonServices
      */
     String getI18nResources( @QueryParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
+
+    @Path( "getAllI18nResources" )
+    @GET
+    @Produces( { MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true )
+    /**
+     * will return properties available in org/apache/archiva/i18n/default.properties
+     * load default (en) then override with locale used so at least en are returned if no
+     * translation in the locale asked.
+     * This method will add redback resources too. note Archva wins
+     */
+    String getAllI18nResources( @QueryParam( "locale" ) String locale )
+        throws ArchivaRestServiceException;
 }

@@ -19,22 +19,17 @@
 
 $(function() {
   // load i18n resources from rest call
-  // first redback then archiva
-  // -- redback
-  // load default
-  loadAndParseFile("restServices/redbackServices/utilServices/getBundleResources", {cache:false, mode: 'map',encoding:'utf-8'});
-  // load browser locale
+
   var browserLang = $.i18n.browserLang();
   var requestLang = $.urlParam('request_lang');
   if (requestLang) {
     browserLang=requestLang;
   }
   $.log("use browserLang:"+browserLang);
-  loadAndParseFile("restServices/redbackServices/utilServices/getBundleResources?locale="+browserLang, {cache:false, mode: 'map',encoding:'utf-8'});
   // -- archiva
   // load default
-  loadAndParseFile("restServices/archivaServices/commonServices/getI18nResources", {cache:false, mode: 'map',encoding:'utf-8'});
+  loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources", {cache:false, mode: 'map',encoding:'utf-8'});
   // load browser locale
   var browserLang = $.i18n.browserLang();
-  loadAndParseFile("restServices/archivaServices/commonServices/getI18nResources?locale="+browserLang, {cache:false, mode: 'map',encoding:'utf-8'});
+  loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources?locale="+browserLang, {cache:false, mode: 'map',encoding:'utf-8'});
 });
