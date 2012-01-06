@@ -41,10 +41,11 @@ $(function() {
           type: "GET",
           dataType: 'json',
           success: function(data) {
-            $.log("role description updated");
+            clearUserMessages();
             displaySuccessMessage($.i18n.prop("role.updated",roleName));
           },
           error: function(data){
+            clearUserMessages();
             displayErrorMessage("error updating role description");
           }
         }
@@ -60,9 +61,11 @@ $(function() {
           contentType: 'application/json',
           data: "{\"role\": " +  ko.toJSON(self)+"}",
           success: function(data) {
+            clearUserMessages();
             displaySuccessMessage($.i18n.prop("role.users.updated",this.name));
           },
           error: function(data){
+            clearUserMessages();
             displayErrorMessage("error updating users role");
           }
         }
