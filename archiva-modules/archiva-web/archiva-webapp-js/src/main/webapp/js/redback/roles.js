@@ -163,6 +163,7 @@ $(function() {
         currentRole.users.push(removed[i]);
       }
       selectedOtherUsers([]);
+      activateRoleUsersEditTab();
     }
 
     removeUser=function(){
@@ -172,7 +173,7 @@ $(function() {
         currentRole.removedUsers.push(added[i]);
       }
       selectedUsers([]);
-
+      activateRoleUsersEditTab()
     }
     saveRoleDescription=function(){
       $.log("saveRoleDescription:"+currentRole.description());
@@ -236,5 +237,22 @@ $(function() {
     $("#main-content #roles-view-tabs-content #role-edit").addClass("active");
     $("#roles-view-tabs-li-roles-edit").addClass("active");
   }
+
+  activateRoleUsersListTab=function(){
+    $("#main-content #role-edit-users-li").removeClass("active");
+    $("#main-content #role-edit-users").removeClass("active");
+    // activate roles grid tab
+    $("#main-content #role-view-users-li").addClass("active");
+    $("#main-content #role-view-users").addClass("active");
+  }
+
+  activateRoleUsersEditTab=function(){
+    $("#main-content #role-view-users-li").removeClass("active");
+    $("#main-content #role-view-users").removeClass("active");
+    // activate role edit tab
+    $("#main-content #role-edit-users").addClass("active");
+    $("#role-edit-users-li").addClass("active");
+  }
+
 
 });
