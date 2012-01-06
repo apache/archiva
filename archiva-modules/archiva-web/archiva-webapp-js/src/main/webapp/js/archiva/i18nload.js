@@ -29,7 +29,7 @@ $(function() {
   // -- archiva
   // load default
   loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources", {cache:false, mode: 'map',encoding:'utf-8'});
-  // load browser locale
-  var browserLang = $.i18n.browserLang();
-  loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources?locale="+browserLang, {cache:false, mode: 'map',encoding:'utf-8'});
+  if (browserLang!='en'){
+    loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources?locale="+browserLang, {cache:false, mode: 'map',encoding:'utf-8'});
+  }
 });
