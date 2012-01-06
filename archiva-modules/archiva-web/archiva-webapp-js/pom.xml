@@ -382,6 +382,46 @@
     </dependency>
 
     <dependency>
+      <groupId>org.codehaus.redback.components.cache</groupId>
+      <artifactId>spring-cache-ehcache</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.redback.components</groupId>
+      <artifactId>spring-quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>c3p0</groupId>
+          <artifactId>c3p0</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
     </dependency>
