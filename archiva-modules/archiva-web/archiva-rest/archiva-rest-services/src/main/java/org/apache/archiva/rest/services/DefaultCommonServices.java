@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,18 +123,34 @@ public class DefaultCommonServices
             String redbackProps = utilServices.getI18nResources( locale );
             String archivaProps = getI18nResources( locale );
             Properties properties = new Properties();
-            properties.load( new StringReader( redbackProps ) );
-            properties.load( new StringReader( archivaProps ) );
+            loadFromString( redbackProps, properties );
+            loadFromString( archivaProps, properties );
             return fromProperties( properties );
         }
         catch ( RedbackServiceException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e.getHttpErrorCode() );
         }
+    }
+
+    private void loadFromString( String propsStr, Properties properties )
+        throws ArchivaRestServiceException
+    {
+
+        StringReader stringReader = null;
+        try
+        {
+            stringReader = new StringReader( propsStr );
+            properties.load( stringReader );
+        }
         catch ( IOException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( stringReader );
         }
     }
 }
