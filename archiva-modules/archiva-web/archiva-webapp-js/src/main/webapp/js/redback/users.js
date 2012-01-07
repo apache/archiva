@@ -59,6 +59,7 @@ $(function() {
     this.addUser=function() {
       clearUserMessages();
       window.redbackModel.createUser=true;
+      $("#createUserForm").html("");
       $("#main-content #user-edit").remove();
       $('#main-content #user-create').show();
       ko.renderTemplate("redback/user-edit-tmpl", new User(), null, $("#createUserForm").get(0),"replaceChildren");
@@ -79,6 +80,10 @@ $(function() {
       $("#main-content #createUserForm #user-create").delegate("#user-create-form-register-button", "click keydown", function(e) {
         e.preventDefault();
       });
+
+      // desactivate roles pill when adding user
+      $("#edit_user_details_pills_headers").hide();
+
     };
 
     this.lock = function(user){
@@ -112,15 +117,17 @@ $(function() {
     this.editUserBox=function(user) {
       window.redbackModel.createUser=false;
       clearUserMessages();
+      activateUsersEditTab();
+      // if already created before
+      //$("#main-content #createUserForm").accordion("destroy");
+      $("#main-content #createUserForm").html("");
       $("#main-content #createUserForm").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
 
-      var viewModel = new userViewModel(user);
+      var viewModel = new UserViewModel(user);
 
       ko.applyBindings(viewModel,$("#main-content #createUserForm").get(0));
 
-      activateUsersEditTab();
-
-      $("#users-view-tabs-li-user-edit a").html($.i18n.prop("user.edit"));
+      $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("user.edit"));
 
       $("#main-content #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
@@ -146,22 +153,20 @@ $(function() {
         user.update();
       });
 
-      $("#user-edit-roles").show();
-      $( "#user-edit-roles-view" ).append(smallSpinnerImg());
+      $( "#main-content #user-edit-roles-view" ).append(smallSpinnerImg());
       $.ajax("restServices/redbackServices/roleManagementService/getEffectivelyAssignedRoles/"+encodeURIComponent(user.username()), {
           type: "GET",
           async: false,
           dataType: 'json',
           success: function(data) {
-            $("#user-edit-roles-view").show();
+            //$("#user-edit-roles-view").show();
             var mappedRoles = $.map(data.role, function(item) {
               return mapRole(item);
             });
-            //$( "#user-edit-roles-view" ).append( jQuery("#user_edit_roles_tmpl" ).tmpl( data.role ) );
             viewModel.roles=mappedRoles;
-            $( "#user-edit-roles-view").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
+            $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
-            removeSmallSpinnerImg();
+            $("#main-content #edit-user-details-pills-headers").pills();
           }
         }
       );
@@ -169,7 +174,7 @@ $(function() {
     }
   }
 
-  userViewModel=function(user) {
+  UserViewModel=function(user) {
     this.user=user;
     this.roles = ko.observableArray(new Array());
   }
@@ -184,19 +189,19 @@ $(function() {
     window.redbackModel.usersViewModel = new usersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
     ko.applyBindings(window.redbackModel.usersViewModel,jQuery("#main-content").get(0));
-    $("#users-view-tabs").tabs();
-    $("#users-view-tabs").bind('change', function (e) {
+    $("#main-content #users-view-tabs").tabs();
+    $("#main-content #users-view-tabs").bind('change', function (e) {
       //$.log( $(e.target).attr("href") ); // activated tab
       //e.relatedTarget // previous tab
       if ($(e.target).attr("href")=="#createUserForm") {
         window.redbackModel.usersViewModel.addUser();
       }
       if ($(e.target).attr("href")=="#users-view") {
-        $("#users-view-tabs-li-user-edit a").html($.i18n.prop("user.add"));
+        $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("user.add"));
       }
 
     })
-    $("#users-view-tabs-content #users-view").addClass("active");
+    $("#main-content #users-view-tabs-content #users-view").addClass("active");
   }
 
   activateUsersGridTab=function(){

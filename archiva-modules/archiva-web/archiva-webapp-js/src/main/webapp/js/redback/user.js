@@ -17,6 +17,7 @@
  * under the License.
  */
 $(function() {
+
   /**
    * object model for user with some function to create/update/delete users
    * @param username
@@ -227,8 +228,10 @@ $(function() {
       showErrors: function(validator, errorMap, errorList) {
         customShowError(validator,errorMap,errorMap);
       }
-    });
 
+    });
+    // desactivate roles pill when adding user
+    $("#edit_user_details_pills_headers").hide();
   }
 
   /**
