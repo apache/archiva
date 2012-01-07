@@ -166,7 +166,8 @@ $(function() {
             viewModel.roles=mappedRoles;
             $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
-            $("#main-content #edit-user-details-pills-headers").pills();
+            $("#main-content #edit_user_details_pills_headers").pills();
+
           }
         }
       );
