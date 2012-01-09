@@ -27,8 +27,8 @@ import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.security.ArchivaXworkUser;
+import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
 import org.codehaus.plexus.redback.users.User;
@@ -47,7 +47,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * LogEnabled and SessionAware ActionSupport
@@ -73,9 +72,12 @@ public abstract class AbstractActionSupport
 
     private String principal;
 
+    //@Inject
+    //@Named( value = "archivaRuntimeProperties" )
+    //private Properties archivaRuntimeProperties;
+
     @Inject
-    @Named( value = "archivaRuntimeProperties" )
-    private Properties archivaRuntimeProperties;
+    private ArchivaRuntimeInfo archivaRuntimeInfo;
 
     @PostConstruct
     public void initialize()
@@ -200,24 +202,25 @@ public abstract class AbstractActionSupport
 
     public String getArchivaVersion()
     {
-        return (String) archivaRuntimeProperties.get( "archiva.version" );
+        return archivaRuntimeInfo.getVersion(); //(String) archivaRuntimeProperties.get( "archiva.version" );
     }
 
     public String getArchivaBuildNumber()
     {
-        return (String) archivaRuntimeProperties.get( "archiva.buildNumber" );
+        return archivaRuntimeInfo.getBuildNumber();// (String) archivaRuntimeProperties.get( "archiva.buildNumber" );
     }
 
     public String getArchivaBuildTimestamp()
     {
-        return (String) archivaRuntimeProperties.get( "archiva.timestamp" );
+        return Long.toString(
+            archivaRuntimeInfo.getTimestamp() ); //(String) archivaRuntimeProperties.get( "archiva.timestamp" );
     }
 
     public String getArchivaBuildTimestampDateStr()
     {
         SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", getLocale() );
-        return sfd.format(
-            new Date( NumberUtils.createLong( (String) archivaRuntimeProperties.get( "archiva.timestamp" ) ) ) );
+        return sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) );
+        //new Date( NumberUtils.createLong( (String) archivaRuntimeProperties.get( "archiva.timestamp" ) ) ) );
     }
 
     /**

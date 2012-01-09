@@ -33,8 +33,6 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.web"/>
 
-  <util:properties id="archivaRuntimeProperties" location="classpath:application.properties" />
-
   <bean id="jcr-repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown" lazy-init="true">
     <constructor-arg ref="jcr-config"/>
   </bean>
