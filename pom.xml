@@ -414,7 +414,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-webapp-common</artifactId>
+        <artifactId>archiva-web-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

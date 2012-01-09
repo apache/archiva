@@ -348,7 +348,7 @@
 
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-webapp-common</artifactId>
+      <artifactId>archiva-weba-common</artifactId>
     </dependency>
 
     <dependency>

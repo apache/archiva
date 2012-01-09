@@ -48,7 +48,7 @@
     <module>archiva-webdav</module>
     <module>archiva-rss</module>
     <module>archiva-rest</module>
-    <module>archiva-webapp-common</module>
+    <module>archiva-web-common</module>
     <module>archiva-webapp</module>
   </modules>
 
