@@ -32,6 +32,7 @@
     <archiva.baseRestUrl />
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
+    <jettyVersion>7.5.3.v20111011</jettyVersion>
   </properties>
 
   <dependencies>

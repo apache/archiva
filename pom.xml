@@ -85,7 +85,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>3.0.3</lucene.version>
-    <cxfVersion>2.4.4</cxfVersion>
+    <cxfVersion>2.5.1</cxfVersion>
     <derbyVersion>10.8.2.2</derbyVersion>
     <httpclient.version>4.1.2</httpclient.version>
     <javaxMailVersion>1.4</javaxMailVersion>
