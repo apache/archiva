@@ -274,20 +274,6 @@
                   <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
               </execution>
-              <!--execution>
-                <id>prepare-provided-dependencies</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-                <configuration>
-                  <includeGroupIds>org.apache.derby,javax.mail,javax.activation</includeGroupIds>
-                  <overWriteReleases>false</overWriteReleases>
-                  <overWriteSnapshots>true</overWriteSnapshots>
-                  <excludeTransitive>false</excludeTransitive>
-                  <outputDirectory>${project.build.directory}/tomcat6x/webapps/archiva/WEB-INF/lib</outputDirectory>
-                </configuration>
-              </execution-->
             </executions>
           </plugin>
           <plugin>
@@ -340,57 +326,10 @@
               </execution>
             </executions>
           </plugin>
-          <!--
-          <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>start-container</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop-container</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <wait>${cargo.wait}</wait>
-              <container>
-                <containerId>${container.name}</containerId>
-                <zipUrlInstaller>
-                  <url>${container.url}</url>
-                  <downloadDir>${user.home}/.cargo</downloadDir>
-                </zipUrlInstaller>
-                <log>${project.build.directory}/logs/${container.name}.log</log>
-                <output>${project.build.directory}/logs/${container.name}.out</output>
-                <timeout>${cargo.timeout}</timeout>
-                <systemProperties>
-                  <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-                  <appserver.home>${project.build.directory}/appserver-base</appserver.home>
-                  <derby.system.home>${project.build.directory}</derby.system.home>
-                </systemProperties>
-              </container>
-              <configuration>
-                <home>${project.build.directory}/${container.name}conf</home>
-                <type>existing</type>
-                <properties>
-                  <cargo.servlet.port>${container.test.port}</cargo.servlet.port>
-                  <cargo.jvmargs>${cargo.jvm.args}</cargo.jvmargs>
-                </properties>
-              </configuration>
-            </configuration>
-          </plugin>
-          -->
           <plugin>
             <groupId>org.apache.tomcat.maven</groupId>
             <artifactId>tomcat6-maven-plugin</artifactId>
+            <version>2.0-SNAPSHOT</version>
             <dependencies>
               <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -486,21 +425,6 @@
       </build>
     </profile>
     <profile>
-      <id>tomcat6x</id>
-      <activation>
-        <property>
-          <name>!container</name>
-        </property>
-      </activation>
-      <properties>
-        <container.name>tomcat6x</container.name>
-        <tomcat.version>${tomcat6x.version}</tomcat.version>
-        <container.url>
-          ${apache.mirror.url}/tomcat/tomcat-6/v${tomcat6x.version}/bin/apache-tomcat-${tomcat6x.version}.zip
-        </container.url>
-      </properties>
-    </profile>
-    <profile>
       <id>firefox</id>
       <activation>
         <property>
@@ -584,20 +508,7 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>debug</id>
-      <properties>
-        <!-- TODO: review how appropriate the memory settings are - should work with less -->
-        <cargo.jvm.args>
-          -Xdebug -Xnoagent -Djava.compiler=NONE
-          -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=${cargo.debug.port}
-          -Xmx512m -XX:MaxPermSize=256m
-        </cargo.jvm.args>
-        <cargo.debug.port>8000</cargo.debug.port>
-        <!-- wait an unusual amount of time (1hr) to allow debugging to occur -->
-        <maxWaitTimeInMs>3600000</maxWaitTimeInMs>
-      </properties>
-    </profile>
+
     <profile>
       <id>ci-server</id>
       <build>
@@ -623,19 +534,5 @@
       </build>
     </profile>
   </profiles>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>codehaus.snapshots</id>
-      <url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
 
 </project>

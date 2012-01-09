@@ -1735,32 +1735,20 @@
             <enabled>true</enabled>
           </snapshots>
         </pluginRepository>
+        <!-- for selenium snapshots -->
+        <pluginRepository>
+          <id>codehaus.snapshots</id>
+          <url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
       </pluginRepositories>
     </profile>
-    <!--
-    jrebel tests doesn't work very well : too investigate
-    <profile>
-      <id>jrebel</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.zeroturnaround</groupId>
-            <artifactId>jrebel-maven-plugin</artifactId>
-            <version>1.0.7</version>
-            <executions>
-              <execution>
-                <id>generate-rebel-xml</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>generate</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    -->
+
     <profile>
       <!-- olamy profile to test tomcat plugin dev -->
       <id>tdev</id>
