@@ -257,7 +257,7 @@
             <executions>
               <execution>
                 <id>unzip-archiva-webapp</id>
-                <phase>generate-resources</phase>
+                <phase>compile</phase>
                 <goals>
                   <goal>unpack</goal>
                 </goals>
@@ -270,25 +270,24 @@
                       <type>war</type>
                     </artifactItem>
                   </artifactItems>
-                  <outputDirectory>${project.build.directory}/${container.name}conf/webapps/archiva</outputDirectory>
+                  <outputDirectory>${project.build.directory}/tomcat6x/webapps/archiva</outputDirectory>
                   <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
               </execution>
-              <execution>
+              <!--execution>
                 <id>prepare-provided-dependencies</id>
-                <phase>generate-resources</phase>
+                <phase>test</phase>
                 <goals>
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <!-- TODO: this sometimes copies everything, causing problems with the server start up -->
                   <includeGroupIds>org.apache.derby,javax.mail,javax.activation</includeGroupIds>
                   <overWriteReleases>false</overWriteReleases>
                   <overWriteSnapshots>true</overWriteSnapshots>
                   <excludeTransitive>false</excludeTransitive>
-                  <outputDirectory>${project.build.directory}/providedDependencies</outputDirectory>
+                  <outputDirectory>${project.build.directory}/tomcat6x/webapps/archiva/WEB-INF/lib</outputDirectory>
                 </configuration>
-              </execution>
+              </execution-->
             </executions>
           </plugin>
           <plugin>
@@ -320,35 +319,11 @@
                     <copy todir="${project.build.directory}/local-repo">
                       <fileset dir="src/test/resources/local-repo"/>
                     </copy>
-                  </tasks>
-                </configuration>
-              </execution>
-              <execution>
-                <id>copy-container-conf</id>
-                <phase>package</phase>
-                <configuration>
-                  <tasks>
-                    <copy todir="${project.build.directory}/${container.name}conf">
-                      <fileset dir="src/test/${container.name}"/>
-                    </copy>
-                    <copy
-                        todir="${cargo.install.dir}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/common/lib">
-                      <fileset dir="${project.build.directory}/providedDependencies">
-                        <include name="**/*.jar"/>
-                      </fileset>
-                    </copy>
-                    <!-- for tomcat 6 -->
-                    <copy
-                        todir="${cargo.install.dir}/apache-tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/lib">
-                      <fileset dir="${project.build.directory}/providedDependencies">
-                        <include name="**/*.jar"/>
-                      </fileset>
+                    <copy todir="${project.build.directory}/tomcat6x">
+                      <fileset dir="src/test/tomcat6x"/>
                     </copy>
                   </tasks>
                 </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
               </execution>
               <execution>
                 <id>check-archiva-loaded</id>
@@ -365,6 +340,7 @@
               </execution>
             </executions>
           </plugin>
+          <!--
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
@@ -410,6 +386,57 @@
                 </properties>
               </configuration>
             </configuration>
+          </plugin>
+          -->
+          <plugin>
+            <groupId>org.apache.tomcat.maven</groupId>
+            <artifactId>tomcat6-maven-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${derbyVersion}</version>
+              </dependency>
+              <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javaxMailVersion}</version>
+              </dependency>
+            </dependencies>
+            <executions>
+              <execution>
+                <id>tomcat-run</id>
+                <goals>
+                  <goal>run-war-only</goal>
+                </goals>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <additionalConfigFilesDir>${project.build.directory}/tomcat6x/conf</additionalConfigFilesDir>
+                  <configurationDir>${project.build.directory}/tomcat6x</configurationDir>
+                  <path>/archiva</path>
+                  <port>${container.test.port}</port>
+                  <uriEncoding>UTF-8</uriEncoding>
+                  <warDirectory>${project.build.directory}/tomcat6x/webapps/archiva</warDirectory>
+                  <fork>true</fork>
+                  <ignorePackaging>true</ignorePackaging>
+                  <systemProperties>
+                    <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+                    <appserver.home>${project.build.directory}/appserver-base</appserver.home>
+                    <derby.system.home>${project.build.directory}</derby.system.home>
+                  </systemProperties>
+                  <contextFile>src/test/${container.name}/Catalina/localhost/archiva.xml</contextFile>
+                  <useNaming>true</useNaming>
+                  <serverXml>${project.build.directory}/tomcat6x/conf/server.xml</serverXml>
+                </configuration>
+              </execution>
+              <execution>
+                <id>tomcat-shutdown</id>
+                <goals>
+                  <goal>shutdown</goal>
+                </goals>
+                <phase>post-integration-test</phase>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
