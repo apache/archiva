@@ -20,7 +20,6 @@ package org.apache.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork2.Action;
-
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
@@ -31,12 +30,12 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 /**
- * ProxyConnectorsActionTest 
+ * ProxyConnectorsActionTest
  *
  * @version $Id$
  */
@@ -61,7 +60,7 @@ public class ProxyConnectorsActionTest
     {
         super.setUp();
 
-        action = (ProxyConnectorsAction) getActionProxy("/admin/proxyConnectors.action" ).getAction();
+        action = (ProxyConnectorsAction) getActionProxy( "/admin/proxyConnectors.action" ).getAction();
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
@@ -69,13 +68,14 @@ public class ProxyConnectorsActionTest
             archivaConfiguration );
         ( (DefaultRemoteRepositoryAdmin) action.getRemoteRepositoryAdmin() ).setArchivaConfiguration(
             archivaConfiguration );
-        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
+            archivaConfiguration );
     }
 
     public void testSecureActionBundle()
         throws Exception
     {
-        expectConfigurationRequests( 4 );
+        expectConfigurationRequests( 5 );
         archivaConfigurationControl.replay();
 
         action.prepare();
@@ -95,7 +95,7 @@ public class ProxyConnectorsActionTest
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
         assertNoErrors( action );
-        
+
         assertNotNull( action.getProxyConnectorMap() );
         assertNotNull( action.getRepoMap() );
 
@@ -108,11 +108,8 @@ public class ProxyConnectorsActionTest
     {
         Configuration config = createInitialConfiguration();
 
-        for ( int i = 0; i < requestConfigCount; i++ )
-        {
-            archivaConfiguration.getConfiguration();
-            archivaConfigurationControl.setReturnValue( config );
-        }
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( config, requestConfigCount + 1 );
 
         archivaConfiguration.save( config );
     }

@@ -400,13 +400,8 @@ public class AddProxyConnectorActionTest
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration config = createInitialConfiguration();
-
-        for ( int i = 0; i < requestConfigCount; i++ )
-        {
-            archivaConfiguration.getConfiguration();
-            archivaConfigurationControl.setReturnValue( config );
-        }
-
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( config, requestConfigCount, requestConfigCount + 1 );
         archivaConfiguration.save( config );
     }
 

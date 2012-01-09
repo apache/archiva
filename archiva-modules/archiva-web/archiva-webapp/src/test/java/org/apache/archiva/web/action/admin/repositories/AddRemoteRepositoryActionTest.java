@@ -26,7 +26,6 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.web.action.AbstractActionTestCase;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
 import java.util.Collections;
@@ -95,12 +94,12 @@ public class AddRemoteRepositoryActionTest
     {
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 2 );
 
         archivaConfiguration.save( configuration );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 1 );
 
         archivaConfigurationControl.replay();
 

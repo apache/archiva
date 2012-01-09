@@ -73,10 +73,7 @@ public class DeleteRemoteRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 3, 4 );
 
         archivaConfigurationControl.replay();
 
@@ -134,7 +131,7 @@ public class DeleteRemoteRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 2 );
+        archivaConfigurationControl.setReturnValue( configuration, 4 );
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
