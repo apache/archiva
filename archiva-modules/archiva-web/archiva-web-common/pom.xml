@@ -26,9 +26,9 @@
     <version>1.4-M3-SNAPSHOT</version>
   </parent>
 
-  <artifactId>archiva-webapp-common</artifactId>
+  <artifactId>archiva-web-common</artifactId>
   <packaging>bundle</packaging>
-  <name>Archiva Web :: Webapp Common</name>
+  <name>Archiva Web :: Web Common</name>
 
   <dependencies>
     <dependency>
