@@ -259,9 +259,9 @@ public class DefaultArchivaConfiguration
         {
             // Fix Proxy Connector Settings.
 
-            List<ProxyConnectorConfiguration> proxyConnectorList = new ArrayList<ProxyConnectorConfiguration>();
             // Create a copy of the list to read from (to prevent concurrent modification exceptions)
-            proxyConnectorList.addAll( config.getProxyConnectors() );
+            List<ProxyConnectorConfiguration> proxyConnectorList =
+                new ArrayList<ProxyConnectorConfiguration>( config.getProxyConnectors() );
             // Remove the old connector list.
             config.getProxyConnectors().clear();
 
@@ -709,7 +709,8 @@ public class DefaultArchivaConfiguration
         if ( !intersec.isEmpty() )
         {
 
-            List<String> knowContentConsumers = new ArrayList<String>();
+            List<String> knowContentConsumers =
+                new ArrayList<String>( configuration.getRepositoryScanning().getKnownContentConsumers().size() );
             for ( String knowContentConsumer : configuration.getRepositoryScanning().getKnownContentConsumers() )
             {
                 if ( !dbConsumers.contains( knowContentConsumer ) )

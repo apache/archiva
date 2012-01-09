@@ -19,11 +19,6 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.lang.StringUtils;
@@ -31,25 +26,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 /**
  * ChecksumPolicy - a policy applied after the download to see if the file has been downloaded
  * successfully and completely (or not).
  *
  * @version $Id$
  */
-@Service("postDownloadPolicy#checksum")
+@Service( "postDownloadPolicy#checksum" )
 public class ChecksumPolicy
     implements PostDownloadPolicy
 {
     private Logger log = LoggerFactory.getLogger( ChecksumPolicy.class );
-    
+
     /**
      * The IGNORE policy indicates that if the checksum policy is ignored, and
      * the state of, contents of, or validity of the checksum files are not
      * checked.
      */
     public static final String IGNORE = "ignore";
-    
+
     /**
      * The FAIL policy indicates that if the checksum does not match the
      * downloaded file, then remove the downloaded artifact, and checksum
@@ -64,9 +64,9 @@ public class ChecksumPolicy
      */
     public static final String FIX = "fix";
 
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
-    private List<String> options = new ArrayList<String>();
+    private List<String> options = new ArrayList<String>( 3 );
 
     public ChecksumPolicy()
     {
@@ -82,12 +82,13 @@ public class ChecksumPolicy
         {
             return;
         }
-        
+
         if ( !options.contains( policySetting ) )
         {
             // Not a valid code. 
-            throw new PolicyConfigurationException( "Unknown checksum policy setting [" + policySetting
-                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+            throw new PolicyConfigurationException(
+                "Unknown checksum policy setting [" + policySetting + "], valid settings are [" + StringUtils.join(
+                    options.iterator(), "," ) + "]" );
         }
 
         if ( IGNORE.equals( policySetting ) )
@@ -100,8 +101,8 @@ public class ChecksumPolicy
         if ( !localFile.exists() )
         {
             // Local File does not exist.
-            throw new PolicyViolationException( "Checksum policy failure, local file " + localFile.getAbsolutePath()
-                + " does not exist to check." );
+            throw new PolicyViolationException(
+                "Checksum policy failure, local file " + localFile.getAbsolutePath() + " does not exist to check." );
         }
 
         if ( FAIL.equals( policySetting ) )
@@ -120,29 +121,31 @@ public class ChecksumPolicy
                     file.delete();
                 }
             }
-            
+
             localFile.delete();
-            throw new PolicyViolationException( "Checksums do not match, policy set to FAIL, "
-                + "deleting checksum files and local file " + localFile.getAbsolutePath() + "." );
+            throw new PolicyViolationException(
+                "Checksums do not match, policy set to FAIL, " + "deleting checksum files and local file "
+                    + localFile.getAbsolutePath() + "." );
         }
 
         if ( FIX.equals( policySetting ) )
         {
             ChecksummedFile checksum = new ChecksummedFile( localFile );
-            if( checksum.fixChecksums( algorithms ) )
+            if ( checksum.fixChecksums( algorithms ) )
             {
                 log.debug( "Checksum policy set to FIX, checksum files have been updated." );
                 return;
             }
             else
             {
-                throw new PolicyViolationException( "Checksum policy set to FIX, "
-                    + "yet unable to update checksums for local file " + localFile.getAbsolutePath() + "." );
+                throw new PolicyViolationException(
+                    "Checksum policy set to FIX, " + "yet unable to update checksums for local file "
+                        + localFile.getAbsolutePath() + "." );
             }
         }
 
-        throw new PolicyConfigurationException( "Unable to process checksum policy of [" + policySetting
-            + "], please file a bug report." );
+        throw new PolicyConfigurationException(
+            "Unable to process checksum policy of [" + policySetting + "], please file a bug report." );
     }
 
     public String getDefaultOption()

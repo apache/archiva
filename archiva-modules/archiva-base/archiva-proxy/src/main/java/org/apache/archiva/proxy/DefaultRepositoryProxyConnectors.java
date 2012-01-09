@@ -20,13 +20,6 @@ package org.apache.archiva.proxy;
  */
 
 import com.google.common.collect.Lists;
-import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryException;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
@@ -42,6 +35,8 @@ import org.apache.archiva.policies.PostDownloadPolicy;
 import org.apache.archiva.policies.PreDownloadPolicy;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
@@ -49,6 +44,11 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -195,7 +195,7 @@ public class DefaultRepositoryProxyConnectors
                     connector.setDisabled( proxyConfig.isDisabled() );
 
                     // Copy any blacklist patterns.
-                    List<String> blacklist = new ArrayList<String>();
+                    List<String> blacklist = new ArrayList<String>( 0 );
                     if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
                     {
                         blacklist.addAll( proxyConfig.getBlackListPatterns() );
@@ -203,7 +203,7 @@ public class DefaultRepositoryProxyConnectors
                     connector.setBlacklist( blacklist );
 
                     // Copy any whitelist patterns.
-                    List<String> whitelist = new ArrayList<String>();
+                    List<String> whitelist = new ArrayList<String>( 0 );
                     if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
                     {
                         whitelist.addAll( proxyConfig.getWhiteListPatterns() );
@@ -215,7 +215,7 @@ public class DefaultRepositoryProxyConnectors
                     if ( connectors == null )
                     {
                         // Create if we are the first.
-                        connectors = new ArrayList<ProxyConnector>();
+                        connectors = new ArrayList<ProxyConnector>( 1 );
                     }
 
                     // Add the connector.
@@ -959,9 +959,9 @@ public class DefaultRepositoryProxyConnectors
             previousExceptions.remove( content.getId() );
         }
 
-        log.warn( "Transfer error from repository \"" + content.getRepository().getId() + "\" for artifact "
-                      + Keys.toKey( artifact ) + ", continuing to next repository. Error message: "
-                      + exception.getMessage() );
+        log.warn(
+            "Transfer error from repository \"" + content.getRepository().getId() + "\" for artifact " + Keys.toKey(
+                artifact ) + ", continuing to next repository. Error message: " + exception.getMessage() );
         log.debug( "Full stack trace", exception );
     }
 
@@ -1165,10 +1165,9 @@ public class DefaultRepositoryProxyConnectors
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isNetworkProxy( propertyName )
-            || ConfigurationNames.isManagedRepositories( propertyName )
-            || ConfigurationNames.isRemoteRepositories( propertyName ) || ConfigurationNames.isProxyConnector(
-            propertyName ) )
+        if ( ConfigurationNames.isNetworkProxy( propertyName ) || ConfigurationNames.isManagedRepositories(
+            propertyName ) || ConfigurationNames.isRemoteRepositories( propertyName )
+            || ConfigurationNames.isProxyConnector( propertyName ) )
         {
             initConnectorsAndNetworkProxies();
         }

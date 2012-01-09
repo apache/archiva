@@ -77,11 +77,11 @@ public class RepositoryGroup
      *
      * @return List
      */
-    public java.util.List<String> getRepositories()
+    public List<String> getRepositories()
     {
         if ( this.repositories == null )
         {
-            this.repositories = new ArrayList<String>();
+            this.repositories = new ArrayList<String>( 0 );
         }
 
         return this.repositories;

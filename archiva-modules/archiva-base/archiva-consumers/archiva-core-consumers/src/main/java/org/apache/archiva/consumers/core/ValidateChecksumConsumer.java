@@ -88,7 +88,7 @@ public class ValidateChecksumConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes;
 
     public String getId()
     {
@@ -175,6 +175,7 @@ public class ValidateChecksumConsumer
     {
         checksum = plexusSisuBridge.lookup( ChecksumFile.class );
         List<Digester> allDigesters = new ArrayList<Digester>( digesterUtils.getAllDigesters() );
+        includes = new ArrayList<String>( allDigesters.size() );
         for ( Digester digester : allDigesters )
         {
             includes.add( "**/*" + digester.getFilenameExtension() );

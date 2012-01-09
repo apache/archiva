@@ -47,7 +47,8 @@ public class DefaultRepositoryGroupService
     {
         try
         {
-            List<RepositoryGroup> repositoriesGroups = new ArrayList<RepositoryGroup>();
+            List<RepositoryGroup> repositoriesGroups =
+                new ArrayList<RepositoryGroup>( repositoryGroupAdmin.getRepositoriesGroups().size() );
             for ( org.apache.archiva.admin.model.beans.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
             {
                 repositoriesGroups.add(

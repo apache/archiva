@@ -43,8 +43,8 @@ import java.util.List;
  *
  * @version $Id$
  */
-@Service("knownRepositoryContentConsumer#auto-remove")
-@Scope("prototype")
+@Service( "knownRepositoryContentConsumer#auto-remove" )
+@Scope( "prototype" )
 public class AutoRemoveConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
@@ -72,8 +72,8 @@ public class AutoRemoveConsumer
     private FileTypes filetypes;
 
     private File repositoryDir;
-    
-    private List<String> includes = new ArrayList<String>();
+
+    private List<String> includes = new ArrayList<String>( 0 );
 
     public String getId()
     {
@@ -136,11 +136,11 @@ public class AutoRemoveConsumer
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
-        processFile( path );    
+        processFile( path );
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {                
+    {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
             initIncludes();
@@ -154,9 +154,7 @@ public class AutoRemoveConsumer
 
     private void initIncludes()
     {
-        includes.clear();
-
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
+        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 
     @PostConstruct

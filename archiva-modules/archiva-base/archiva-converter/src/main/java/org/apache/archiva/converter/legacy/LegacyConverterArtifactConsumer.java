@@ -81,7 +81,7 @@ public class LegacyConverterArtifactConsumer
     public LegacyConverterArtifactConsumer( PlexusSisuBridge plexusSisuBridge )
         throws PlexusSisuBridgeException
     {
-        includes = new ArrayList<String>();
+        includes = new ArrayList<String>( 3 );
         includes.add( "**/*.jar" );
         includes.add( "**/*.ear" );
         includes.add( "**/*.war" );

@@ -57,14 +57,14 @@ import java.util.List;
  *
  * @version $Id$
  */
-@Service("knownRepositoryContentConsumer#metadata-updater")
-@Scope("prototype")
+@Service( "knownRepositoryContentConsumer#metadata-updater" )
+@Scope( "prototype" )
 public class MetadataUpdaterConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( MetadataUpdaterConsumer.class );
-    
+
     /**
      * default-value="metadata-updater"
      */
@@ -109,7 +109,7 @@ public class MetadataUpdaterConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<String>( 0 );
 
     private long scanStartTimestamp = 0;
 
@@ -222,18 +222,19 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path
-                + "] to an internal project reference: " + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
+                                    "Unable to convert path [" + path + "] to an internal project reference: "
+                                        + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
-            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE, "Unable to write project metadata for artifact [" + path
-                + "]: " + e.getMessage() );
+            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
+                                  "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_IO, "Project metadata not written due to IO warning: "
-                + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_IO,
+                                    "Project metadata not written due to IO warning: " + e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {
@@ -268,18 +269,19 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path
-                + "] to an internal version reference: " + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
+                                    "Unable to convert path [" + path + "] to an internal version reference: "
+                                        + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
-            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE, "Unable to write version metadata for artifact [" + path
-                + "]: " + e.getMessage() );
+            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
+                                  "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_IO, "Version metadata not written due to IO warning: "
-                + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_IO,
+                                    "Version metadata not written due to IO warning: " + e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {
@@ -309,9 +311,7 @@ public class MetadataUpdaterConsumer
 
     private void initIncludes()
     {
-        includes.clear();
-
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct

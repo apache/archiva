@@ -19,26 +19,26 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 /**
  * PropagateErrorsPolicy - a policy applied on error to determine how to treat the error.
  */
-@Service("downloadErrorPolicy#propagate-errors")
+@Service( "downloadErrorPolicy#propagate-errors" )
 public class PropagateErrorsDownloadPolicy
     implements DownloadErrorPolicy
 {
     private Logger log = LoggerFactory.getLogger( PropagateErrorsDownloadPolicy.class );
-    
+
     /**
      * Signifies any error should stop searching for other proxies.
      */
@@ -54,7 +54,7 @@ public class PropagateErrorsDownloadPolicy
      */
     public static final String IGNORE = "ignore";
 
-    private List<String> options = new ArrayList<String>();
+    private List<String> options = new ArrayList<String>( 3 );
 
     public PropagateErrorsDownloadPolicy()
     {
@@ -71,7 +71,8 @@ public class PropagateErrorsDownloadPolicy
         {
             // Not a valid code.
             throw new PolicyConfigurationException( "Unknown error policy setting [" + policySetting +
-                "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+                                                        "], valid settings are [" + StringUtils.join(
+                options.iterator(), "," ) + "]" );
         }
 
         if ( IGNORE.equals( policySetting ) )

@@ -20,6 +20,13 @@ package org.apache.archiva.consumers.metadata;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ConfigurationNames;
+import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -30,13 +37,6 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
-import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationNames;
-import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.consumers.AbstractMonitoredConsumer;
-import org.apache.archiva.consumers.ConsumerException;
-import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
@@ -56,8 +56,8 @@ import java.util.List;
  *
  * @version $Id: ArtifactUpdateDatabaseConsumer.java 718864 2008-11-19 06:33:35Z brett $
  */
-@Service("knownRepositoryContentConsumer#create-archiva-metadata")
-@Scope("prototype")
+@Service( "knownRepositoryContentConsumer#create-archiva-metadata" )
+@Scope( "prototype" )
 public class ArchivaMetadataCreationConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
@@ -84,11 +84,10 @@ public class ArchivaMetadataCreationConsumer
 
     private Date whenGathered;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<String>( 0 );
 
     /**
      * FIXME: can be of other types
-     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -96,10 +95,9 @@ public class ArchivaMetadataCreationConsumer
     /**
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
      * factory.
-     *
      */
     @Inject
-    @Named(value = "repositoryStorage#maven2")
+    @Named( value = "repositoryStorage#maven2" )
     private RepositoryStorage repositoryStorage;
 
     private static final Logger log = LoggerFactory.getLogger( ArchivaMetadataCreationConsumer.class );
@@ -242,9 +240,7 @@ public class ArchivaMetadataCreationConsumer
 
     private void initIncludes()
     {
-        includes.clear();
-
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct

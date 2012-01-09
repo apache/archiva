@@ -28,11 +28,11 @@ import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorOrderComparat
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -148,16 +148,17 @@ public class DefaultProxyConnectorAdmin
 
     protected List<String> unescapePatterns( List<String> patterns )
     {
-        List<String> rawPatterns = new ArrayList<String>();
         if ( patterns != null )
         {
+            List<String> rawPatterns = new ArrayList<String>( patterns.size() );
             for ( String pattern : patterns )
             {
                 rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
             }
+            return rawPatterns;
         }
 
-        return rawPatterns;
+        return Collections.emptyList();
     }
 
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
@@ -174,7 +175,7 @@ public class DefaultProxyConnectorAdmin
             List<ProxyConnector> connectors = proxyConnectorMap.get( key );
             if ( connectors == null )
             {
-                connectors = new ArrayList<ProxyConnector>();
+                connectors = new ArrayList<ProxyConnector>( 1 );
                 proxyConnectorMap.put( key, connectors );
             }
 

@@ -126,7 +126,7 @@ public abstract class AbstractRepositoryConnector
     {
         if ( this.blackListPatterns == null )
         {
-            this.blackListPatterns = new ArrayList<String>();
+            this.blackListPatterns = new ArrayList<String>( 0 );
         }
 
         return this.blackListPatterns;
@@ -201,7 +201,7 @@ public abstract class AbstractRepositoryConnector
     {
         if ( this.whiteListPatterns == null )
         {
-            this.whiteListPatterns = new ArrayList<String>();
+            this.whiteListPatterns = new ArrayList<String>( 0 );
         }
 
         return this.whiteListPatterns;

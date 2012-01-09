@@ -22,10 +22,10 @@ package org.apache.archiva.converter.artifact;
 import org.apache.archiva.common.plexusbridge.DigesterUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.archiva.transaction.FileTransaction;
 import org.apache.archiva.transaction.TransactionException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -75,7 +75,6 @@ public class LegacyToDefaultConverter
 {
     /**
      * {@link List}&lt;{@link Digester}
-     *
      */
     private List<? extends Digester> digesters;
 
@@ -701,7 +700,7 @@ public class LegacyToDefaultConverter
         List<String> messages = warnings.get( artifact );
         if ( messages == null )
         {
-            messages = new ArrayList<String>();
+            messages = new ArrayList<String>( 1 );
         }
         messages.add( message );
         warnings.put( artifact, messages );

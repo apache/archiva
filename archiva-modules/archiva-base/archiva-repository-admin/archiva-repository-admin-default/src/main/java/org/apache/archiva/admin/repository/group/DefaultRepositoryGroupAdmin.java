@@ -26,9 +26,9 @@ import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,8 @@ public class DefaultRepositoryGroupAdmin
     public List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException
     {
-        List<RepositoryGroup> repositoriesGroups = new ArrayList<RepositoryGroup>();
+        List<RepositoryGroup> repositoriesGroups =
+            new ArrayList<RepositoryGroup>( getArchivaConfiguration().getConfiguration().getRepositoryGroups().size() );
 
         for ( RepositoryGroupConfiguration repositoryGroupConfiguration : getArchivaConfiguration().getConfiguration().getRepositoryGroups() )
         {

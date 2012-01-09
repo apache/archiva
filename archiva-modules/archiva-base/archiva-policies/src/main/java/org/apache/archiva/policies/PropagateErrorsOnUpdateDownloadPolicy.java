@@ -19,19 +19,19 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
-
 /**
  * PropagateErrorsPolicy - a policy applied on error to determine how to treat the error.
  */
-@Service("downloadErrorPolicy#propagate-errors-on-update")
+@Service( "downloadErrorPolicy#propagate-errors-on-update" )
 public class PropagateErrorsOnUpdateDownloadPolicy
     implements DownloadErrorPolicy
 {
@@ -45,7 +45,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
      */
     public static final String NOT_PRESENT = "artifact not already present";
 
-    private List<String> options = new ArrayList<String>();
+    private List<String> options = new ArrayList<String>( 2 );
 
     public PropagateErrorsOnUpdateDownloadPolicy()
     {
@@ -54,14 +54,15 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     }
 
     public boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
-                             Map<String,Exception> previousExceptions )
+                                Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
     {
         if ( !options.contains( policySetting ) )
         {
             // Not a valid code.
-            throw new PolicyConfigurationException( "Unknown error policy setting [" + policySetting
-                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+            throw new PolicyConfigurationException(
+                "Unknown error policy setting [" + policySetting + "], valid settings are [" + StringUtils.join(
+                    options.iterator(), "," ) + "]" );
         }
 
         if ( ALWAYS.equals( policySetting ) )
@@ -76,8 +77,8 @@ public class PropagateErrorsOnUpdateDownloadPolicy
             return !localFile.exists();
         }
 
-        throw new PolicyConfigurationException( "Unable to process checksum policy of [" + policySetting
-            + "], please file a bug report." );
+        throw new PolicyConfigurationException(
+            "Unable to process checksum policy of [" + policySetting + "], please file a bug report." );
     }
 
     public String getDefaultOption()

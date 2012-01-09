@@ -25,13 +25,12 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +47,8 @@ public class DefaultNetworkProxyAdmin
     public List<NetworkProxy> getNetworkProxies()
         throws RepositoryAdminException
     {
-        List<NetworkProxy> networkProxies = new ArrayList<NetworkProxy>();
+        List<NetworkProxy> networkProxies =
+            new ArrayList<NetworkProxy>( getArchivaConfiguration().getConfiguration().getNetworkProxies().size() );
         for ( NetworkProxyConfiguration networkProxyConfiguration : getArchivaConfiguration().getConfiguration().getNetworkProxies() )
         {
             networkProxies.add( getNetworkProxy( networkProxyConfiguration ) );
@@ -126,9 +126,9 @@ public class DefaultNetworkProxyAdmin
         NetworkProxyConfiguration networkProxyConfiguration = getNetworkProxyConfiguration( networkProxy );
         configuration.removeNetworkProxy( networkProxyConfiguration );
 
-        for ( RemoteRepositoryConfiguration rrc : configuration.getRemoteRepositories())
+        for ( RemoteRepositoryConfiguration rrc : configuration.getRemoteRepositories() )
         {
-            if (StringUtils.equals( rrc.getRemoteDownloadNetworkProxyId(), networkProxyId ))
+            if ( StringUtils.equals( rrc.getRemoteDownloadNetworkProxyId(), networkProxyId ) )
             {
                 rrc.setRemoteDownloadNetworkProxyId( null );
             }

@@ -76,7 +76,7 @@ public class NexusIndexerConsumer
 
     private NexusIndexer nexusIndexer;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<String>( 0 );
 
     private ManagedRepository repository;
 
@@ -238,11 +238,14 @@ public class NexusIndexerConsumer
 
     private void initIncludes()
     {
-        includes.clear();
+        List<String> indexable = filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT );
+        List<String> artifacts = filetypes.getFileTypePatterns( FileTypes.ARTIFACTS );
 
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT ) );
+        includes = new ArrayList<String>( indexable.size() + artifacts.size() );
 
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes.addAll( indexable );
+
+        includes.addAll( artifacts );
     }
 
     @PostConstruct

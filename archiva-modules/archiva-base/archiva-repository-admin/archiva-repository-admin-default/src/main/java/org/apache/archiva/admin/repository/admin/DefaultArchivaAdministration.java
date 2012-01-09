@@ -64,7 +64,8 @@ public class DefaultArchivaAdministration
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
-        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>();
+        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>(
+            getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths().size() );
         for ( org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
         {
             legacyArtifactPaths.add(
@@ -113,7 +114,8 @@ public class DefaultArchivaAdministration
 
         if ( fileType.getPatterns().contains( pattern ) )
         {
-            throw new RepositoryAdminException( "File type [" + fileTypeId + "] already contains pattern [" + pattern + "]" );
+            throw new RepositoryAdminException(
+                "File type [" + fileTypeId + "] already contains pattern [" + pattern + "]" );
         }
         fileType.addPattern( pattern );
 
@@ -255,7 +257,7 @@ public class DefaultArchivaAdministration
         {
             return Collections.emptyList();
         }
-        List<FileType> fileTypes = new ArrayList<FileType>();
+        List<FileType> fileTypes = new ArrayList<FileType>( configFileTypes.size() );
         for ( org.apache.archiva.configuration.FileType fileType : configFileTypes )
         {
             fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );

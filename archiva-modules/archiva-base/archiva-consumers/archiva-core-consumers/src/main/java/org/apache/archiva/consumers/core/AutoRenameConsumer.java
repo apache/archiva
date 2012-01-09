@@ -20,10 +20,10 @@ package org.apache.archiva.consumers.core;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +41,8 @@ import java.util.Map;
  *
  * @version $Id$
  */
-@Service("knownRepositoryContentConsumer#auto-rename")
-@Scope("prototype")
+@Service( "knownRepositoryContentConsumer#auto-rename" )
+@Scope( "prototype" )
 public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
@@ -61,7 +61,7 @@ public class AutoRenameConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<String>( 3 );
 
     private Map<String, String> extensionRenameMap = new HashMap<String, String>();
 
@@ -159,6 +159,6 @@ public class AutoRenameConsumer
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
-        processFile( path );        
+        processFile( path );
     }
 }

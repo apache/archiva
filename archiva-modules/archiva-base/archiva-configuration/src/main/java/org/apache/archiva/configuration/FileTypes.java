@@ -227,7 +227,7 @@ public class FileTypes
             List<String> patterns = defaultTypeMap.get( filetype.getId() );
             if ( patterns == null )
             {
-                patterns = new ArrayList<String>();
+                patterns = new ArrayList<String>( filetype.getPatterns().size() );
             }
             patterns.addAll( filetype.getPatterns() );
 

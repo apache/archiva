@@ -21,19 +21,19 @@ package org.apache.archiva.consumers.core.repository;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
@@ -237,16 +237,12 @@ public class RepositoryPurgeConsumer
 
     private void initIncludes()
     {
-        includes.clear();
-
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
     public void initialize()
     {
-        //this.listeners =
-        //    new ArrayList<RepositoryListener>( applicationContext.getBeansOfType( RepositoryListener.class ).values() );
         configuration.addChangeListener( this );
 
         initIncludes();

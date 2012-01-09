@@ -114,7 +114,8 @@ public class DefaultRemoteRepositoryAdmin
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
-        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>(
+            getArchivaConfiguration().getConfiguration().getRemoteRepositories().size() );
         for ( RemoteRepositoryConfiguration repositoryConfiguration : getArchivaConfiguration().getConfiguration().getRemoteRepositories() )
         {
             RemoteRepository remoteRepository =

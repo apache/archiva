@@ -22,12 +22,12 @@ package org.apache.archiva.converter.legacy;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.archiva.converter.RepositoryConversionException;
-import org.apache.archiva.repository.scanner.RepositoryScanner;
-import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.converter.RepositoryConversionException;
+import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
@@ -101,12 +101,11 @@ public class DefaultLegacyRepositoryConverter
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
-            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>( 1 );
             knownConsumers.add( legacyConverterConsumer );
 
             List<InvalidRepositoryContentConsumer> invalidConsumers = Collections.emptyList();
-            List<String> ignoredContent = new ArrayList<String>();
-            ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
+            List<String> ignoredContent = new ArrayList<String>( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
             repoScanner.scan( legacyRepository, knownConsumers, invalidConsumers, ignoredContent,
                               RepositoryScanner.FRESH_SCAN );

@@ -19,19 +19,19 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.common.utils.VersionUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * AbstractUpdatePolicy 
+ * AbstractUpdatePolicy
  *
  * @version $Id$
  */
@@ -39,12 +39,12 @@ public abstract class AbstractUpdatePolicy
     implements PreDownloadPolicy
 {
     private Logger log = LoggerFactory.getLogger( AbstractUpdatePolicy.class );
-    
+
     /**
      * The ALWAYS policy setting means that the artifact is always uipdated from the remote repo.
      */
     public static final String ALWAYS = "always";
-    
+
     /**
      * The NEVER policy setting means that the artifact is never updated from the remote repo.
      */
@@ -56,8 +56,8 @@ public abstract class AbstractUpdatePolicy
      * the following conditions are met...
      * </p>
      * <ul>
-     *   <li>The local artifact is not present.</li>
-     *   <li>The local artifact has a last modified timestamp older than (now - 1 day).</li>
+     * <li>The local artifact is not present.</li>
+     * <li>The local artifact has a last modified timestamp older than (now - 1 day).</li>
      * </ul>
      */
     public static final String DAILY = "daily";
@@ -68,8 +68,8 @@ public abstract class AbstractUpdatePolicy
      * the following conditions are met...
      * </p>
      * <ul>
-     *   <li>The local artifact is not present.</li>
-     *   <li>The local artifact has a last modified timestamp older than (now - 1 hour).</li>
+     * <li>The local artifact is not present.</li>
+     * <li>The local artifact has a last modified timestamp older than (now - 1 hour).</li>
      * </ul>
      */
     public static final String HOURLY = "hourly";
@@ -81,7 +81,7 @@ public abstract class AbstractUpdatePolicy
      */
     public static final String ONCE = "once";
 
-    private List<String> options = new ArrayList<String>();
+    private List<String> options = new ArrayList<String>( 5 );
 
     public AbstractUpdatePolicy()
     {
@@ -93,9 +93,9 @@ public abstract class AbstractUpdatePolicy
     }
 
     protected abstract boolean isSnapshotPolicy();
-    
+
     protected abstract String getUpdateMode();
-    
+
     public List<String> getOptions()
     {
         return options;
@@ -109,7 +109,7 @@ public abstract class AbstractUpdatePolicy
             // Only process artifact file types.
             return;
         }
-        
+
         String version = request.getProperty( "version", "" );
         boolean isSnapshotVersion = false;
 
@@ -121,8 +121,9 @@ public abstract class AbstractUpdatePolicy
         if ( !options.contains( policySetting ) )
         {
             // Not a valid code. 
-            throw new PolicyConfigurationException( "Unknown " + getUpdateMode() + " policy setting [" + policySetting
-                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+            throw new PolicyConfigurationException(
+                "Unknown " + getUpdateMode() + " policy setting [" + policySetting + "], valid settings are ["
+                    + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
         if ( ALWAYS.equals( policySetting ) )
@@ -161,7 +162,8 @@ public abstract class AbstractUpdatePolicy
         if ( ONCE.equals( policySetting ) )
         {
             // File exists, but policy is once.
-            throw new PolicyViolationException( "NO to update " + getUpdateMode() + ", policy is ONCE, and local file exist." );
+            throw new PolicyViolationException(
+                "NO to update " + getUpdateMode() + ", policy is ONCE, and local file exist." );
         }
 
         if ( DAILY.equals( policySetting ) )
@@ -171,7 +173,7 @@ public abstract class AbstractUpdatePolicy
             Calendar fileCal = Calendar.getInstance();
             fileCal.setTimeInMillis( localFile.lastModified() );
 
-            if( cal.after( fileCal ) )
+            if ( cal.after( fileCal ) )
             {
                 // Its ok.
                 return;
@@ -179,7 +181,7 @@ public abstract class AbstractUpdatePolicy
             else
             {
                 throw new PolicyViolationException( "NO to update " + getUpdateMode()
-                    + ", policy is DAILY, local file exist, and has been updated within the last day." );
+                                                        + ", policy is DAILY, local file exist, and has been updated within the last day." );
             }
         }
 
@@ -190,7 +192,7 @@ public abstract class AbstractUpdatePolicy
             Calendar fileCal = Calendar.getInstance();
             fileCal.setTimeInMillis( localFile.lastModified() );
 
-            if( cal.after( fileCal ) )
+            if ( cal.after( fileCal ) )
             {
                 // Its ok.
                 return;
@@ -198,11 +200,11 @@ public abstract class AbstractUpdatePolicy
             else
             {
                 throw new PolicyViolationException( "NO to update " + getUpdateMode()
-                    + ", policy is HOURLY, local file exist, and has been updated within the last hour." );
+                                                        + ", policy is HOURLY, local file exist, and has been updated within the last hour." );
             }
         }
 
-        throw new PolicyConfigurationException( "Unable to process " + getUpdateMode()
-                                            + " policy of [" + policySetting + "], please file a bug report." );
+        throw new PolicyConfigurationException(
+            "Unable to process " + getUpdateMode() + " policy of [" + policySetting + "], please file a bug report." );
     }
 }

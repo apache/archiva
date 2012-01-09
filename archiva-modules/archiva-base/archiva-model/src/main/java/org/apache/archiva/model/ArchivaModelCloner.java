@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Utility methods for cloning various Archiva Model objects. 
+ * Utility methods for cloning various Archiva Model objects.
  *
  * @version $Id$
  */
@@ -50,7 +50,7 @@ public class ArchivaModelCloner
         return cloned;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public static Properties clone( Properties properties )
     {
         if ( properties == null )
@@ -109,7 +109,7 @@ public class ArchivaModelCloner
             return null;
         }
 
-        List<ArtifactReference> ret = new ArrayList<ArtifactReference>();
+        List<ArtifactReference> ret = new ArrayList<ArtifactReference>( artifactReferenceList.size() );
 
         for ( ArtifactReference ref : artifactReferenceList )
         {
@@ -126,7 +126,7 @@ public class ArchivaModelCloner
             return null;
         }
 
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<String>( simple.size() );
 
         for ( String txt : simple )
         {

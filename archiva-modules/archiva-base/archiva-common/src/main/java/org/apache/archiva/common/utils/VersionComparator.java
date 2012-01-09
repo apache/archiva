@@ -58,7 +58,7 @@ public class VersionComparator
 
     public VersionComparator()
     {
-        specialWords = new ArrayList<String>();
+        specialWords = new ArrayList<String>( 23 );
 
         // ids that refer to LATEST
         specialWords.add( "final" );

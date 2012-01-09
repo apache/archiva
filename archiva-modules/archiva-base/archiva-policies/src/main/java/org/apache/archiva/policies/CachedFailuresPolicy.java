@@ -19,30 +19,29 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * {@link PreDownloadPolicy} to check if the requested url has failed before.
  *
  * @version $Id$
  */
-@Service("preDownloadPolicy#cache-failures")
+@Service( "preDownloadPolicy#cache-failures" )
 public class CachedFailuresPolicy
     implements PreDownloadPolicy
 {
     private Logger log = LoggerFactory.getLogger( CachedFailuresPolicy.class );
-    
+
     /**
      * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
      * All resource requests are allowed thru to the remote repo.
@@ -61,7 +60,7 @@ public class CachedFailuresPolicy
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private List<String> options = new ArrayList<String>();
+    private List<String> options = new ArrayList<String>( 2 );
 
     public CachedFailuresPolicy()
     {
@@ -76,7 +75,8 @@ public class CachedFailuresPolicy
         {
             // Not a valid code.
             throw new PolicyConfigurationException( "Unknown cache-failues policy setting [" + policySetting +
-                "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+                                                        "], valid settings are [" + StringUtils.join(
+                options.iterator(), "," ) + "]" );
         }
 
         if ( NO.equals( policySetting ) )

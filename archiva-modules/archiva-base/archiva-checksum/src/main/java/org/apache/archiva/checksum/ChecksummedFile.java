@@ -19,6 +19,12 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,24 +33,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * ChecksummedFile
- *
+ * <p/>
  * <dl>
- *   <lh>Terminology:</lh>
- *   <dt>Checksum File</dt>
- *   <dd>The file that contains the previously calculated checksum value for the reference file.
- *       This is a text file with the extension ".sha1" or ".md5", and contains a single entry
- *       consisting of an optional reference filename, and a checksum string.
- *   </dd>
- *   <dt>Reference File</dt>
- *   <dd>The file that is being referenced in the checksum file.</dd>
+ * <lh>Terminology:</lh>
+ * <dt>Checksum File</dt>
+ * <dd>The file that contains the previously calculated checksum value for the reference file.
+ * This is a text file with the extension ".sha1" or ".md5", and contains a single entry
+ * consisting of an optional reference filename, and a checksum string.
+ * </dd>
+ * <dt>Reference File</dt>
+ * <dd>The file that is being referenced in the checksum file.</dd>
  * </dl>
  *
  * @version $Id$
@@ -57,7 +57,7 @@ public class ChecksummedFile
 
     /**
      * Construct a ChecksummedFile object.
-     * 
+     *
      * @param referenceFile
      */
     public ChecksummedFile( final File referenceFile )
@@ -67,7 +67,7 @@ public class ChecksummedFile
 
     /**
      * Calculate the checksum based on a given checksum.
-     * 
+     *
      * @param checksumAlgorithm the algorithm to use.
      * @return the checksum string for the file.
      * @throws IOException if unable to calculate the checksum.
@@ -91,8 +91,8 @@ public class ChecksummedFile
 
     /**
      * Creates a checksum file of the provided referenceFile.
+     *
      * @param checksumAlgorithm the hash to use.
-     * 
      * @return the checksum File that was created.
      * @throws IOException if there was a problem either reading the referenceFile, or writing the checksum file.
      */
@@ -107,7 +107,7 @@ public class ChecksummedFile
 
     /**
      * Get the checksum file for the reference file and hash.
-     * 
+     *
      * @param checksumAlgorithm the hash that we are interested in.
      * @return the checksum file to return
      */
@@ -120,11 +120,11 @@ public class ChecksummedFile
      * <p>
      * Given a checksum file, check to see if the file it represents is valid according to the checksum.
      * </p>
-     * 
+     * <p/>
      * <p>
      * NOTE: Only supports single file checksums of type MD5 or SHA1.
      * </p>
-     * 
+     *
      * @param checksumFile the algorithms to check for.
      * @return true if the checksum is valid for the file it represents. or if the checksum file does not exist.
      * @throws IOException if the reading of the checksumFile or the file it refers to fails.
@@ -132,13 +132,13 @@ public class ChecksummedFile
     public boolean isValidChecksum( ChecksumAlgorithm algorithm )
         throws IOException
     {
-        return isValidChecksums( new ChecksumAlgorithm[] { algorithm } );
+        return isValidChecksums( new ChecksumAlgorithm[]{ algorithm } );
     }
 
     /**
      * Of any checksum files present, validate that the reference file conforms
-     * the to the checksum.   
-     * 
+     * the to the checksum.
+     *
      * @param algorithms the algorithms to check for.
      * @return true if the checksums report that the the reference file is valid, false if invalid.
      */
@@ -147,7 +147,7 @@ public class ChecksummedFile
         FileInputStream fis = null;
         try
         {
-            List<Checksum> checksums = new ArrayList<Checksum>();
+            List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
             // Create checksum object for each algorithm.
             for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
             {
@@ -214,13 +214,13 @@ public class ChecksummedFile
 
     /**
      * Fix or create checksum files for the reference file.
-     * 
+     *
      * @param algorithms the hashes to check for.
      * @return true if checksums were created successfully.
      */
-    public boolean fixChecksums( ChecksumAlgorithm algorithms[] )
+    public boolean fixChecksums( ChecksumAlgorithm[] algorithms )
     {
-        List<Checksum> checksums = new ArrayList<Checksum>();
+        List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
         // Create checksum object for each algorithm.
         for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
         {
@@ -267,7 +267,7 @@ public class ChecksummedFile
                     String rawChecksum = FileUtils.readFileToString( checksumFile );
                     String expectedChecksum = parseChecksum( rawChecksum, checksumAlgorithm, referenceFile.getName() );
 
-                    if ( ! StringUtils.equalsIgnoreCase( expectedChecksum, actualChecksum ) )
+                    if ( !StringUtils.equalsIgnoreCase( expectedChecksum, actualChecksum ) )
                     {
                         // create checksum (again)
                         FileUtils.writeStringToFile( checksumFile, actualChecksum + "  " + referenceFile.getName() );
@@ -294,21 +294,20 @@ public class ChecksummedFile
         // check if it is a remote metadata file
         Pattern pattern = Pattern.compile( "maven-metadata-\\S*.xml" );
         Matcher m = pattern.matcher( path );
-        if( m.matches() )
+        if ( m.matches() )
         {
-            return filename.endsWith( path ) || ( "-".equals( filename ) ) 
-                || filename.endsWith( "maven-metadata.xml" );
+            return filename.endsWith( path ) || ( "-".equals( filename ) ) || filename.endsWith( "maven-metadata.xml" );
         }
-        
+
         return filename.endsWith( path ) || ( "-".equals( filename ) );
     }
 
     /**
      * Parse a checksum string.
-     * 
+     * <p/>
      * Validate the expected path, and expected checksum algorithm, then return
-     * the trimmed checksum hex string. 
-     * 
+     * the trimmed checksum hex string.
+     *
      * @param rawChecksumString
      * @param expectedHash
      * @param expectedPath
@@ -328,8 +327,8 @@ public class ChecksummedFile
             String filename = m.group( 1 );
             if ( !isValidChecksumPattern( filename, expectedPath ) )
             {
-                throw new IOException( "Supplied checksum file '" + filename + "' does not match expected file: '"
-                    + expectedPath + "'" );
+                throw new IOException(
+                    "Supplied checksum file '" + filename + "' does not match expected file: '" + expectedPath + "'" );
             }
             trimmedChecksum = m.group( 2 );
         }
@@ -342,8 +341,9 @@ public class ChecksummedFile
                 String filename = m.group( 2 );
                 if ( !isValidChecksumPattern( filename, expectedPath ) )
                 {
-                    throw new IOException( "Supplied checksum file '" + filename + "' does not match expected file: '"
-                        + expectedPath + "'" );
+                    throw new IOException(
+                        "Supplied checksum file '" + filename + "' does not match expected file: '" + expectedPath
+                            + "'" );
                 }
                 trimmedChecksum = m.group( 1 );
             }
