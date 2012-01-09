@@ -83,7 +83,7 @@ public class DefaultCommonServices
 
     }
 
-    private String fromProperties( Properties properties )
+    private String fromProperties( final Properties properties )
     {
         StringBuilder output = new StringBuilder();
 
@@ -96,17 +96,22 @@ public class DefaultCommonServices
         return output.toString();
     }
 
-    private void loadResource( Properties properties, String resourceName )
+    private void loadResource( final Properties finalProperties, String resourceName )
         throws IOException
     {
         InputStream is = null;
-
+        Properties properties = new Properties();
         try
         {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName.toString() );
             if ( is != null )
             {
                 properties.load( is );
+                finalProperties.putAll( properties );
+            }
+            else
+            {
+                log.info( "cannot load resource {}", resourceName );
             }
         }
         finally
