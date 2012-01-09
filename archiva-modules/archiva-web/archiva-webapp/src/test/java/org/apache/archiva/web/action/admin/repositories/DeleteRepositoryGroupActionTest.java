@@ -81,7 +81,7 @@ public class DeleteRepositoryGroupActionTest
         Configuration configuration = createConfigurationForEditing( origRepoGroup );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 2 );
         archivaConfigurationControl.replay();
 
         action.setRepoGroupId( REPO_GROUP_ID );
@@ -100,7 +100,7 @@ public class DeleteRepositoryGroupActionTest
         Configuration configuration = createConfigurationForEditing( createRepositoryGroup() );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 5 );
+        archivaConfigurationControl.setReturnValue( configuration, 7 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
@@ -125,7 +125,7 @@ public class DeleteRepositoryGroupActionTest
         Configuration configuration = createConfigurationForEditing( origRepoGroup );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 2 );
+        archivaConfigurationControl.setReturnValue( configuration, 4 );
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();

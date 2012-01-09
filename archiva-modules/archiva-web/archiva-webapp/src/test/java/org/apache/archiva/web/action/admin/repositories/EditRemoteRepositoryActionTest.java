@@ -74,9 +74,7 @@ public class EditRemoteRepositoryActionTest
     {
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 4, 6 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
@@ -106,7 +104,7 @@ public class EditRemoteRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( createRepository() );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 2 );
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );

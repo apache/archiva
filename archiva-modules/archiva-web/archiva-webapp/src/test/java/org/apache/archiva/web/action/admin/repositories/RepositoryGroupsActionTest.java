@@ -76,7 +76,7 @@ public class RepositoryGroupsActionTest
         throws SecureActionException, RepositoryAdminException
     {
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( new Configuration(), 3 );
+        archivaConfigurationControl.setReturnValue( new Configuration(), 3, 5 );
         archivaConfigurationControl.replay();
 
         action.prepare();
@@ -90,7 +90,7 @@ public class RepositoryGroupsActionTest
     {
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 6 );
+        archivaConfigurationControl.setReturnValue( configuration, 6, 8 );
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
@@ -113,7 +113,7 @@ public class RepositoryGroupsActionTest
     {
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 5 );
+        archivaConfigurationControl.setReturnValue( configuration, 5, 7 );
 
         archivaConfiguration.save( configuration );
 
@@ -132,7 +132,7 @@ public class RepositoryGroupsActionTest
     {
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 8 );
+        archivaConfigurationControl.setReturnValue( configuration, 10, 12 );
 
         archivaConfiguration.save( configuration );
 
@@ -165,7 +165,7 @@ public class RepositoryGroupsActionTest
         Configuration configuration = createInitialConfiguration();
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 6 );
+        archivaConfigurationControl.setReturnValue( configuration, 6, 8 );
         archivaConfigurationControl.replay();
 
         action.setServletRequest( sc.newInvocation( "http://localhost/admin/repositoryGroups.action" ).getRequest() );
@@ -197,7 +197,7 @@ public class RepositoryGroupsActionTest
         Configuration configuration = createInitialConfiguration();
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 17 );
+        archivaConfigurationControl.setReturnValue( configuration, 20, 24 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
@@ -246,7 +246,7 @@ public class RepositoryGroupsActionTest
         Configuration configuration = createInitialConfiguration();
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 13 );
+        archivaConfigurationControl.setReturnValue( configuration, 19, 22 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
@@ -297,7 +297,7 @@ public class RepositoryGroupsActionTest
         Configuration configuration = createInitialConfiguration();
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 6 );
+        archivaConfigurationControl.setReturnValue( configuration, 6, 10 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
@@ -333,7 +333,7 @@ public class RepositoryGroupsActionTest
         Configuration configuration = createInitialConfiguration();
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration, 6 );
+        archivaConfigurationControl.setReturnValue( configuration, 6, 10 );
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
 
