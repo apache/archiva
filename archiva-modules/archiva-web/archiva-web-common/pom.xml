@@ -157,7 +157,7 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.webapp.common</Bundle-SymbolicName>
+            <Bundle-SymbolicName>org.apache.archiva.web.common</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
               org.apache.archiva.web.spring;version=${project.version},
@@ -176,6 +176,7 @@
               org.apache.archiva.security.common;version=${project.version},
               org.apache.commons.collections;version="[3.2,4)",
               org.apache.commons.lang;version="[2.4,3)",
+              org.apache.commons.lang.math;version="[2.4,3)",
               org.apache.maven.index,
               org.apache.maven.index.context,
               org.codehaus.plexus.redback.rbac,
