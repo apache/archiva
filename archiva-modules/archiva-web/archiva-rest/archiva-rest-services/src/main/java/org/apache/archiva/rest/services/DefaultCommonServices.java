@@ -73,12 +73,13 @@ public class DefaultCommonServices
         throws IOException
     {
         // load default
-        loadResource( properties, new StringBuilder( resourceName ).append( ".properties" ).toString() );
+        loadResource( properties, new StringBuilder( resourceName ).append( ".properties" ).toString(), locale );
         // if locale override with locale content
         if ( StringUtils.isNotEmpty( locale ) )
         {
             loadResource( properties,
-                          new StringBuilder( resourceName ).append( "_" + locale ).append( ".properties" ).toString() );
+                          new StringBuilder( resourceName ).append( "_" + locale ).append( ".properties" ).toString(),
+                          locale );
         }
 
     }
@@ -96,7 +97,7 @@ public class DefaultCommonServices
         return output.toString();
     }
 
-    private void loadResource( final Properties finalProperties, String resourceName )
+    private void loadResource( final Properties finalProperties, String resourceName, String locale )
         throws IOException
     {
         InputStream is = null;
@@ -111,7 +112,10 @@ public class DefaultCommonServices
             }
             else
             {
-                log.info( "cannot load resource {}", resourceName );
+                if ( !StringUtils.equalsIgnoreCase( locale, "en" ) )
+                {
+                    log.info( "cannot load resource {}", resourceName );
+                }
             }
         }
         finally
