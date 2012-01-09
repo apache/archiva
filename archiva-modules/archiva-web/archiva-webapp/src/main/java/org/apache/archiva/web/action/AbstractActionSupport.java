@@ -72,10 +72,6 @@ public abstract class AbstractActionSupport
 
     private String principal;
 
-    //@Inject
-    //@Named( value = "archivaRuntimeProperties" )
-    //private Properties archivaRuntimeProperties;
-
     @Inject
     private ArchivaRuntimeInfo archivaRuntimeInfo;
 
