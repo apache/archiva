@@ -73,6 +73,10 @@ displayWarningMessage=function(text,idToAppend){
   $(textId).focus();
 }
 
+$("#user-messages").ajaxError(function(e, jqxhr, settings, exception) {
+  displayErrorMessage( "ajaxError:"+exception );
+});
+
 /**
  * clear #main-content and call clearUserMessages
   */
