@@ -87,12 +87,12 @@
             <tr>
               <td>${$value.name}</td>
               {{if $value.operation }}
-                <td>${$value.operation.name}</td>
+                <td>${$value.operation().name}</td>
               {{else}}
                 <td></td>
               {{/if}}
               {{if $value.resource }}
-                <td>${$value.resource.identifier}</td>
+                <td>${$value.resource().identifier}</td>
               {{else}}
                 <td></td>
               {{/if}}
