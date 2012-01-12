@@ -84,16 +84,38 @@
 </div>
 </script>
 
-<script id="user_edit_roles_tmpl" type="text/x-jquery-tmpl">
+<script id="user_view_roles_list_tmpl" type="text/x-jquery-tmpl">
   <div class="page-header">
     <h3>${$.i18n.prop('effective.roles')}</h3>
   </div>
   <div>
     <ul>
       {{each $data.user.assignedRoles}}
-        <li>${$value.name}</li>
+        <li>${$value}</li>
       {{/each}}
     </ul>
+  </div>
+</script>
+
+<script id="user_edit_roles_tmpl" type="text/x-jquery-tmpl">
+
+  <div>
+    {{each $data.applicationRoles}}
+      <div class="page-header">
+        <h3>${$value.name}</h3>
+      </div>
+      <blockquote>
+        <p>${$value.description}</p>
+      </blockquote>
+      <ul>
+      {{each $value.globalRoles}}
+        <li><div><input type="checkbox" value="${$value}" data-bind="checked: user.assignedRoles" />&nbsp;${$value}</div></li>
+      {{/each}}
+      </ul>
+    {{/each}}
+
+    <button class="btn" data-bind="click:updateUserRoles">${$.i18n.prop('update')}</button>
+
   </div>
 </script>
 

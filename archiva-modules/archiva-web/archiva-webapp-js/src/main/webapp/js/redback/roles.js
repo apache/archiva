@@ -259,15 +259,15 @@ $(function() {
 
   ApplicationRoles = function(name,description,globalRoles,roleTemplates,resources){
     //private String name;
-    this.name = name;
+    this.name = ko.observable(name);
     //private String description;
-    this.description = description;
+    this.description = description? ko.observable(description):"";
     //private Collection<String> globalRoles;
-    this.globalRoles = globalRoles;
+    this.globalRoles = ko.observableArray(globalRoles);
     //private Collection<RoleTemplate> roleTemplates;
-    this.roleTemplates = roleTemplates;
+    this.roleTemplates = ko.observableArray(roleTemplates);
     //private Collection<String> resources;
-    this.resources = resources;
+    this.resources = ko.observableArray(resources);
   }
 
   mapApplicationRoles=function(data){
@@ -280,17 +280,17 @@ $(function() {
 
   RoleTemplate = function(id,namePrefix,delimiter,description,resource,roles){
     //private String id;
-    this.id = id;
+    this.id = ko.observable(id);
     //private String namePrefix;
-    this.namePrefix = namePrefix;
+    this.namePrefix = ko.observable(namePrefix);
     //private String delimiter = " - ";
-    this.delimiter = delimiter;
+    this.delimiter = ko.observable(delimiter);
     //private String description;
-    this.description = description;
+    this.description = description? ko.observable(description):"";
     //private String resource;
-    this.resource = resource;
+    this.resource = ko.observable(resource);
     //private List<String> roles;
-    this.roles = roles;
+    this.roles = ko.observableArray(roles);
   }
 
   mapRoleTemplate = function(data){

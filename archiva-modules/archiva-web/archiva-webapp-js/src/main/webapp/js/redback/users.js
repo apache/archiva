@@ -118,9 +118,7 @@ $(function() {
       window.redbackModel.createUser=false;
       clearUserMessages();
       activateUsersEditTab();
-      // if already created before
-      //$("#main-content #createUserForm").accordion("destroy");
-      $("#main-content #createUserForm").html("");
+      $("#main-content #createUserForm").html(smallSpinnerImg());
       $("#main-content #createUserForm").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
 
       var viewModel = new UserViewModel(user);
@@ -160,13 +158,11 @@ $(function() {
           dataType: 'json',
           success: function(data) {
             var mappedRoles = $.map(data.role, function(item) {
-              var r = mapRole(item);
-              viewModel.user.assignedRoles.push(r);
-              return r;
+              return item.name;
             });
-            viewModel.roles=mappedRoles;
+            user.assignedRoles = ko.observableArray(mappedRoles);
 
-            $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
+            $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_view_roles_list_tmpl"}');
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
             $("#main-content #edit_user_details_pills_headers").pills();
 
@@ -186,17 +182,20 @@ $(function() {
   }
 
   editUserRoles=function(user){
-    $.log("editUserRoles:"+user.username());
+    var viewModel = new UserViewModel(user);
     $("#user-edit-roles-edit").html(smallSpinnerImg());
     $.ajax("restServices/redbackServices/roleManagementService/getApplicationRoles/"+encodeURIComponent(user.username()), {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          $("#user-edit-roles-edit").html("loaded");
           var mappedApplicationRoles = $.map(data.applicationRole, function(item) {
             return mapApplicationRoles(item);
           });
+          viewModel.applicationRoles=ko.observableArray(mappedApplicationRoles);
           $.log("applicationRoles length:"+mappedApplicationRoles.length);
+          $("#main-content #user-edit-roles-edit").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
+          ko.applyBindings(viewModel,$("#main-content #user-edit-roles-edit").get(0));
+          $.log("assignedRoles:"+user.assignedRoles().length);
         }
       }
     );
@@ -204,7 +203,13 @@ $(function() {
 
   UserViewModel=function(user) {
     this.user=user;
-    this.roles = ko.observableArray(new Array());
+    this.applicationRoles = ko.observableArray(new Array());
+
+    updateUserRoles=function(){
+      $.log("updateUserRoles assigned:"+this.user.assignedRoles().length);
+
+    }
+
   }
 
   /**
