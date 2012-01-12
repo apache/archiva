@@ -202,6 +202,24 @@ $(function() {
         }
       }
 
+      this.updateAssignedRoles=function(){
+        $.log("user#updateAssignedRoles");
+        var curUser = this;
+        $.ajax("restServices/redbackServices/roleManagementService/updateUserRoles", {
+            data: "{\"user\": " +  ko.toJSON(this)+"}",
+            contentType: 'application/json',
+            type: "POST",
+            dataType: 'json',
+            success: function(result) {
+              displaySuccessMessage($.i18n.prop("user.roles.updated",curUser.username()));
+            },
+            error: function(result) {
+              var obj = jQuery.parseJSON(result.responseText);
+              displayRedbackError(obj);
+            }
+          });
+      }
+
       this.i18n = $.i18n.prop;
   }
 

@@ -206,8 +206,7 @@ $(function() {
     this.applicationRoles = ko.observableArray(new Array());
 
     updateUserRoles=function(){
-      $.log("updateUserRoles assigned:"+this.user.assignedRoles().length);
-
+      this.user.updateAssignedRoles();
     }
 
   }
