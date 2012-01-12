@@ -257,5 +257,44 @@ $(function() {
     $("#role-edit-users-li").addClass("active");
   }
 
+  ApplicationRoles = function(name,description,globalRoles,roleTemplates,resources){
+    //private String name;
+    this.name = name;
+    //private String description;
+    this.description = description;
+    //private Collection<String> globalRoles;
+    this.globalRoles = globalRoles;
+    //private Collection<RoleTemplate> roleTemplates;
+    this.roleTemplates = roleTemplates;
+    //private Collection<String> resources;
+    this.resources = resources;
+  }
+
+  mapApplicationRoles=function(data){
+    var roleTemplates = data.roleTemplates ? $.isArray(data.roleTemplates) ? $.map(data.roleTemplates, function(item) {
+      return mapRoleTemplate(item);
+    }):new Array(mapRoleTemplate(data.roleTemplates)):null;
+
+    return new ApplicationRoles(data.name,data.description,mapStringArray(data.globalRoles),roleTemplates,mapStringArray(data.resources));
+  }
+
+  RoleTemplate = function(id,namePrefix,delimiter,description,resource,roles){
+    //private String id;
+    this.id = id;
+    //private String namePrefix;
+    this.namePrefix = namePrefix;
+    //private String delimiter = " - ";
+    this.delimiter = delimiter;
+    //private String description;
+    this.description = description;
+    //private String resource;
+    this.resource = resource;
+    //private List<String> roles;
+    this.roles = roles;
+  }
+
+  mapRoleTemplate = function(data){
+    return new RoleTemplate(data.id,data.namePrefix,data.delimiter,data.description,mapStringArray(data.roles));
+  }
 
 });

@@ -159,7 +159,6 @@ $(function() {
           async: false,
           dataType: 'json',
           success: function(data) {
-            //$("#user-edit-roles-view").show();
             var mappedRoles = $.map(data.role, function(item) {
               return mapRole(item);
             });
@@ -168,11 +167,34 @@ $(function() {
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
             $("#main-content #edit_user_details_pills_headers").pills();
 
+            $("#main-content #edit_user_details_pills_headers").bind('change', function (e) {
+              //$.log( $(e.target).attr("href") ); // activated tab
+              //e.relatedTarget // previous tab
+              if ($(e.target).attr("href")=="#user-edit-roles-edit") {
+                editUserRoles(user);
+              }
+            })
+
           }
         }
       );
 
     }
+  }
+
+  editUserRoles=function(user){
+    $.log("editUserRoles:"+user.username());
+    $("#user-edit-roles-edit").html(smallSpinnerImg());
+    $.ajax("restServices/redbackServices/roleManagementService/getApplicationRoles/"+encodeURIComponent(user.username()), {
+        type: "GET",
+        async: false,
+        dataType: 'json',
+        success: function(data) {
+          $("#user-edit-roles-edit").html("loaded");
+
+        }
+      }
+    );
   }
 
   UserViewModel=function(user) {
