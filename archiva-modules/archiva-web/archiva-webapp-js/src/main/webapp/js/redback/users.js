@@ -160,9 +160,12 @@ $(function() {
           dataType: 'json',
           success: function(data) {
             var mappedRoles = $.map(data.role, function(item) {
-              return mapRole(item);
+              var r = mapRole(item);
+              viewModel.user.assignedRoles.push(r);
+              return r;
             });
             viewModel.roles=mappedRoles;
+
             $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
             $("#main-content #edit_user_details_pills_headers").pills();
@@ -187,11 +190,13 @@ $(function() {
     $("#user-edit-roles-edit").html(smallSpinnerImg());
     $.ajax("restServices/redbackServices/roleManagementService/getApplicationRoles/"+encodeURIComponent(user.username()), {
         type: "GET",
-        async: false,
         dataType: 'json',
         success: function(data) {
           $("#user-edit-roles-edit").html("loaded");
-
+          var mappedApplicationRoles = $.map(data.applicationRole, function(item) {
+            return mapApplicationRoles(item);
+          });
+          $.log("applicationRoles length:"+mappedApplicationRoles.length);
         }
       }
     );

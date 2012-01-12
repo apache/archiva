@@ -51,6 +51,7 @@ $(function() {
       // admin only
       this.locked = ko.observable(locked);
       this.passwordChangeRequired = ko.observable(passwordChangeRequired);
+      this.assignedRoles = ko.observableArray(new Array());
       this.remove = function() {
         if (ownerViewModel) {
           ownerViewModel.users.destroy(this);
