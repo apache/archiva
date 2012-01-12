@@ -109,9 +109,34 @@
       </blockquote>
       <ul>
       {{each $value.globalRoles}}
-        <li><div><input type="checkbox" value="${$value}" data-bind="checked: user.assignedRoles" />&nbsp;${$value}</div></li>
+        <li><input type="checkbox" value="${$value}" data-bind="checked: user.assignedRoles">&nbsp;${$value}</input></li>
       {{/each}}
       </ul>
+
+      {{if roleTemplates}}
+      <table class="bordered-table">
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            {{each roleTemplates}}
+              <th>${$value.namePrefix}</th>
+            {{/each}}
+          </tr>
+        </thead>
+        <tbody>
+          {{each resources}}
+            {{var curResource = $value}}
+            <tr>
+              <td>${curResource}</td>
+              {{each roleTemplates}}
+                <td><input type="checkbox" value="${$value.namePrefix}${$value.delimiter}${curResource}" data-bind="checked: user.assignedRoles"/></td>
+              {{/each}}
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
     {{/each}}
 
     <button class="btn" data-bind="click:updateUserRoles">${$.i18n.prop('update')}</button>
