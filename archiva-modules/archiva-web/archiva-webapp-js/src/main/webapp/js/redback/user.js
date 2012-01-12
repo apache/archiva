@@ -205,6 +205,7 @@ $(function() {
       this.updateAssignedRoles=function(){
         $.log("user#updateAssignedRoles");
         var curUser = this;
+        clearUserMessages();
         $.ajax("restServices/redbackServices/roleManagementService/updateUserRoles", {
             data: "{\"user\": " +  ko.toJSON(this)+"}",
             contentType: 'application/json',
