@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@XmlRootElement( name = "repositoryGroup" )
+@XmlRootElement( name = "remoteRepository" )
 public class RemoteRepository
     extends AbstractRepository
     implements Serializable
