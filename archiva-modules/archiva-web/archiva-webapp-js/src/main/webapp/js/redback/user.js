@@ -137,7 +137,7 @@ $(function() {
 
         var currentUser = this;
         openDialogConfirm(function(){
-          $.ajax("restServices/redbackServices/userService/deleteUser/"+currentUser.username(), {
+          $.ajax("restServices/redbackServices/userService/deleteUser/"+encodeURIComponent(currentUser.username()), {
                 type: "GET",
                 dataType: 'json',
                 success: function(data) {
@@ -221,7 +221,59 @@ $(function() {
           });
       }
 
-      this.i18n = $.i18n.prop;
+      this.lock=function(){
+        this.locked(true);
+        var curUser = this;
+        clearUserMessages();
+        $.ajax("restServices/redbackServices/userService/lockUser/"+encodeURIComponent(curUser.username()), {
+            type: "GET",
+            success: function(result) {
+              displaySuccessMessage($.i18n.prop("user.locked",curUser.username()));
+            },
+            error: function(result) {
+              var obj = jQuery.parseJSON(result.responseText);
+              displayRedbackError(obj);
+            }
+          });
+      }
+
+    this.unlock=function(){
+      this.locked(false);
+      var curUser = this;
+      clearUserMessages();
+      $.ajax("restServices/redbackServices/userService/unlockUser/"+encodeURIComponent(curUser.username()), {
+          type: "GET",
+          success: function(result) {
+            displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
+      });
+    }
+
+    // value is boolean
+    this.changePasswordChangeRequired=function(value){
+      this.passwordChangeRequired(value);
+      var curUser = this;
+      var url = "restServices/redbackServices/userService/passwordChangeRequired/"+encodeURIComponent(curUser.username());
+      if (value==false){
+        url = "restServices/redbackServices/userService/passwordChangeNotRequired/"+encodeURIComponent(curUser.username());
+      }
+      $.ajax(url, {
+          type: "GET",
+          success: function(result) {
+            displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username()));
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
+      });
+    };
+
+    this.i18n = $.i18n.prop;
   }
 
   /**
