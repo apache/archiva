@@ -98,6 +98,7 @@
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>1.0-rc1</plexus-expression-evaluator.version>
     <plexus-utils.version>1.5.5</plexus-utils.version>
+    <asfTomcatMavenPluginVersion>2.0-SNAPSHOT</asfTomcatMavenPluginVersion>
   </properties>
 
   <dependencyManagement>
@@ -1447,6 +1448,14 @@
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat6-maven-plugin</artifactId>
+       </plugin>
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+       </plugin>
       <!-- make sure our code doesn't have 1.6 dependencies -->
       <!--
       TODO check as it currently failed with ".. error in opening zip file ""
@@ -1613,6 +1622,16 @@
           <artifactId>tomcat-maven-plugin</artifactId>
           <version>1.1</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat6-maven-plugin</artifactId>
+          <version>${asfTomcatMavenPluginVersion}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>${asfTomcatMavenPluginVersion}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -1744,32 +1763,6 @@
       <modules>
         <module>archiva-tomcat</module>
       </modules>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.tomcat.maven</groupId>
-              <artifactId>tomcat6-maven-plugin</artifactId>
-              <version>2.0-SNAPSHOT</version>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.tomcat.maven</groupId>
-              <artifactId>tomcat7-maven-plugin</artifactId>
-              <version>2.0-SNAPSHOT</version>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat6-maven-plugin</artifactId>
-           </plugin>
-          <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-           </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>
