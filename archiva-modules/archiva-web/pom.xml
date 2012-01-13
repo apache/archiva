@@ -103,6 +103,11 @@
             </excludes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>selenium-maven-plugin</artifactId>
+          <version>${seleniumPluginVersion}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
