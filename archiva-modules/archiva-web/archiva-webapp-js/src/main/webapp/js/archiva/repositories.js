@@ -65,12 +65,24 @@ $(function() {
     stageRepoNeeded=ko.observable(stageRepoNeeded);
   }
 
-
-  displayRepositoriesGrid=function(){
-    clearUserMessages();
+  RepositoriesViewModel=function(){
 
   }
 
+
+  displayRepositoriesGrid=function(){
+    clearUserMessages();
+    $("#main-content").html(mediumSpinnerImg());
+    $("#main-content").html($("#repositoriesMain").tmpl());
+    $("#repositoriesAccordion").accordion();
+  }
+
+  mapManagedRepositories=function(data){
+    return data ? $.isArray(data) ? $.map(data.managedRepository, function(item) {
+      return mapManagedRepository(item);
+    }):new Array(mapManagedRepository(data.managedRepository)):null;
+
+  }
   mapManagedRepository=function(data){
     return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots,data.releases,
                                  data.blockRedeployments,data.cronExpression,
