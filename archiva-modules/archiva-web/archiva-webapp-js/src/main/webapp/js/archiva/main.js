@@ -21,9 +21,11 @@ function($) {
 
 $(function() {
 
+  // no cache for ajax queries
+  jQuery.ajaxSetup( {
+    cache: false
+  } );
 
-
-  $.log("main karma");
   customShowError=function(validator, errorMap, errorList) {
     $( "div.clearfix" ).removeClass( "error" );
     $( "span.help-inline" ).remove();
@@ -153,7 +155,6 @@ $(function() {
     }
   });
 
-  $.log("main.js dom ready");
   $('#topbar-menu-container').html($("#topbar-menu"));
   $('#sidebar-content').html($("#main-menu"));
   checkCreateAdminLink();

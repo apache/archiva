@@ -17,8 +17,8 @@
  * under the License.
  */
 require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html",
-          "text!archiva/templates/modal.html","text!archiva/templates/grids-generics.html"],
-  function(menu,topbar,message,modal,grids_generics) {
+          "text!archiva/templates/modal.html","text!archiva/templates/grids-generics.html","text!archiva/templates/repositories.html"],
+  function(menu,topbar,message,modal,grids_generics,repositories) {
 
     // template loading
     $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
@@ -26,6 +26,7 @@ require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html"
     $.tmpl( modal, $.i18n.map ).appendTo("#html-fragments");
     $("#html-fragments").append(message);
     $("#html-fragments").append(grids_generics);
+    $("#html-fragments").append(repositories);
     $.log("main-tmpl.js menu loaded");
   }
 );

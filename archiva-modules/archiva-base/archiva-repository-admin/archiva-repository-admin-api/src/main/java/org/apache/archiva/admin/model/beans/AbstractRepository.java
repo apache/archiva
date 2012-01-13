@@ -34,8 +34,6 @@ public class AbstractRepository
 
     private String layout = "default";
 
-
-
     private String indexDirectory;
 
     public AbstractRepository()
