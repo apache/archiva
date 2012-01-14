@@ -68,41 +68,48 @@ $(function() {
   }
 
   decorateMenuWithKarma=function(user) {
-      var username = user.username;
-      // we can receive an observable user so take if it's a function or not
-      if ($.isFunction(username)){
-        username = user.username();
-      }
-      var url = 'restServices/redbackServices/userService/getCurrentUserOperations';
-      $.ajax({
-        url: url,
-        success: function(data){
-          var mappedOperations = $.map(data.operation, function(item) {
-              return mapOperation(item);
-          });
-          window.redbackModel.operatioNames = $.map(mappedOperations, function(item){
-            return item.name();
-          });
-
-          $("[redback-permissions]").each(function(element){
-            var bindingValue = $(this).attr("redback-permissions");
-            $(this).hide();
-            var neededKarmas = $(eval(bindingValue)).toArray();
-            var karmaOk = false;
-            $(neededKarmas).each(function(value){
-              if ($.inArray(neededKarmas[value],window.redbackModel.operatioNames)>=0) {
-                karmaOk = true;
-              }
-            });
-            if (karmaOk == false) {
-              $(this).hide();
-            } else {
-              $(this).show();
-            }
-          });
-        }
-      });
+    var username = user.username;
+    // we can receive an observable user so take if it's a function or not
+    if ($.isFunction(username)){
+      username = user.username();
     }
+    var url = 'restServices/redbackServices/userService/getCurrentUserOperations';
+    $.ajax({
+      url: url,
+      success: function(data){
+        var mappedOperations = $.map(data.operation, function(item) {
+            return mapOperation(item);
+        });
+        window.redbackModel.operatioNames = $.map(mappedOperations, function(item){
+          return item.name();
+        });
+
+        $("#topbar-menu-container [redback-permissions]").each(function(element){
+          checkElementKarma(this);
+        });
+        $("#sidebar-content [redback-permissions]").each(function(element){
+          checkElementKarma(this);
+        });
+      }
+    });
+  }
+
+  checkElementKarma=function(element){
+    var bindingValue = $(element).attr("redback-permissions");
+    $(element).hide();
+    var neededKarmas = $(eval(bindingValue)).toArray();
+    var karmaOk = false;
+    $(neededKarmas).each(function(value){
+      if ($.inArray(neededKarmas[value],window.redbackModel.operatioNames)>=0) {
+        karmaOk = true;
+      }
+    });
+    if (karmaOk == false) {
+      $(element).hide();
+    } else {
+      $(element).show();
+    }
+  }
 
   hideElementWithKarma=function(){
     $("#topbar-menu-container [redback-permissions]").each(function(element){
@@ -165,8 +172,6 @@ $(function() {
   checkCreateAdminLink();
   hideElementWithKarma();
   checkSecurityLinks();
-
-
 
 })
 });
