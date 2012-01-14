@@ -20,6 +20,8 @@ $(function() {
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
                              scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded){
+
+
     //private String id;
     id=ko.observable(id);
 
@@ -65,7 +67,10 @@ $(function() {
     stageRepoNeeded=ko.observable(stageRepoNeeded);
   }
 
-  RepositoriesViewModel=function(){
+  ManagedRepositoriesViewModel=function(){
+    this.managedRepositories=ko.observableArray(new Array());
+
+    this.gridViewModel = null;
 
   }
 
@@ -74,16 +79,52 @@ $(function() {
     clearUserMessages();
     $("#main-content").html(mediumSpinnerImg());
     $("#main-content").html($("#repositoriesMain").tmpl());
-    $("#repositoriesAccordion").accordion();
+    $("#repositories-tabs").tabs();
+
+    $("#main-content #managed-repositories-content").append(mediumSpinnerImg());
+    $("#main-content #remote-repositories-content").append(mediumSpinnerImg());
+
+    var viewModel = new ManagedRepositoriesViewModel();
+
+    $.ajax("restServices/archivaServices/managedRepositoriesService/getManagedRepositories", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          var mappedManagedRepositories = mapManagedRepositories(data);
+          viewModel.managedRepositories=ko.observableArray(mappedManagedRepositories);
+          viewModel.gridViewModel = new ko.simpleGrid.viewModel({
+            data: viewModel.managedRepositories,
+            columns: [
+              {
+                headerText: $.i18n.prop('identifier'),
+                rowText: "id"
+              },
+              {
+                headerText: $.i18n.prop('name'),
+                rowText: "name"
+              }
+            ],
+            pageSize: 10
+          });
+          ko.applyBindings(viewModel,$("#main-content #managed-repositories-view").get(0));
+          $("#main-content #managed-repositories-pills").pills();
+          $("#managed-repositories-view").addClass("active");
+          removeMediumSpinnerImg("#main-content #managed-repositories-content");
+          $.log("ok display managedRepositories");
+        }
+      }
+    );
+
   }
 
   mapManagedRepositories=function(data){
-    return data ? $.isArray(data) ? $.map(data.managedRepository, function(item) {
+    return $.map(data.managedRepository, function(item) {
       return mapManagedRepository(item);
-    }):new Array(mapManagedRepository(data.managedRepository)):null;
+    });
 
   }
   mapManagedRepository=function(data){
+
     return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots,data.releases,
                                  data.blockRedeployments,data.cronExpression,
                                  data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,data.stageRepoNeeded);

@@ -159,7 +159,11 @@ mediumSpinnerImg=function(){
 };
 
 removeMediumSpinnerImg=function(){
-  $("#small-spinner").remove();
+  $("#medium-spinner").remove();
+}
+
+removeMediumSpinnerImg=function(selector){
+  $(selector+" #medium-spinner").remove();
 }
 
 closeDialogConfirm=function(){
