@@ -63,6 +63,8 @@
         {{each(i, columnDefinition) columns}}
           <th>${ columnDefinition.headerText }</th>
         {{/each}}
+        <th>${$.i18n.prop('release.included')}</th>
+        <th>${$.i18n.prop('snapshots.included')}</th>
         <th>${$.i18n.prop('edit')}</th>
 
       </tr>
@@ -70,10 +72,26 @@
   <tbody>
       {{each(i, row) itemsOnCurrentPage()}}
           <tr>
-              {{each(j, columnDefinition) columns}}
+            {{each(j, columnDefinition) columns}}
               <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
-              {{/each}}
-              <td><a href="#" data-bind="click: function(){ alert(row.name) }">Edit</a></td>
+            {{/each}}
+            <td>
+            {{if row.releases() == true}}
+              <img src="images/weather-clear.png"/>
+            {{else}}
+                <img src="images/dialog-error.png"/>
+            {{/if}}
+            </td>
+
+            <td>
+              {{if row.snapshots() == true}}
+                <img src="images/weather-clear.png"/>
+              {{else}}
+                  <img src="images/dialog-error.png"/>
+              {{/if}}
+            </td>
+
+            <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">Edit</a></td>
           </tr>
       {{/each}}
   </tbody>

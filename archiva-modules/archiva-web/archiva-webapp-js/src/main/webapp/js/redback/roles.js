@@ -139,8 +139,6 @@ $(function() {
 
   }
 
-
-
   displayRolesGrid = function(){
     screenChange();
     $("#main-content").html(mediumSpinnerImg());
@@ -148,7 +146,7 @@ $(function() {
     window.redbackModel.rolesViewModel.loadRoles();
     $("#main-content").html($("#rolesTabs").tmpl());
     ko.applyBindings(window.redbackModel.rolesViewModel,jQuery("#main-content").get(0));
-    $("#roles-view-tabs").pills();
+    $("#main-content #roles-view-tabs").pills();
     activateRolesGridTab();
     removeMediumSpinnerImg();
   }

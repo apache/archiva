@@ -23,54 +23,58 @@ $(function() {
 
 
     //private String id;
-    id=ko.observable(id);
+    this.id=ko.observable(id);
 
     //private String name;
-    name=ko.observable(name);
+    this.name=ko.observable(name);
 
     //private String layout = "default";
-    layout=ko.observable(layout);
+    this.layout=ko.observable(layout);
 
     //private String indexDirectory;
-    indexDirectory=ko.observable(indexDirectory);
+    this.indexDirectory=ko.observable(indexDirectory);
 
     //private String location;
-    location=ko.observable(location);
+    this.location=ko.observable(location);
 
     //private boolean snapshots = false;
-    snapshots=ko.observable(snapshots);
+    this.snapshots=ko.observable(snapshots);
 
     //private boolean releases = true;
-    releases=ko.observable(releases);
+    this.releases=ko.observable(releases);
 
     //private boolean blockRedeployments = false;
-    blockRedeployments=ko.observable(blockRedeployments);
+    this.blockRedeployments=ko.observable(blockRedeployments);
 
     //private String cronExpression = "0 0 * * * ?";
-    cronExpression=ko.observable(cronExpression);
+    this.cronExpression=ko.observable(cronExpression);
 
     //private ManagedRepository stagingRepository;
 
     //private boolean scanned = false;
-    scanned=ko.observable(scanned);
+    this.scanned=ko.observable(scanned);
 
     //private int daysOlder = 100;
-    daysOlder=ko.observable(daysOlder);
+    this.daysOlder=ko.observable(daysOlder);
 
     //private int retentionCount = 2;
-    retentionCount=ko.observable(retentionCount);
+    this.retentionCount=ko.observable(retentionCount);
 
     //private boolean deleteReleasedSnapshots;
-    deleteReleasedSnapshots=ko.observable(deleteReleasedSnapshots);
+    this.deleteReleasedSnapshots=ko.observable(deleteReleasedSnapshots);
 
     //private boolean stageRepoNeeded;
-    stageRepoNeeded=ko.observable(stageRepoNeeded);
+    this.stageRepoNeeded=ko.observable(stageRepoNeeded);
   }
 
   ManagedRepositoriesViewModel=function(){
     this.managedRepositories=ko.observableArray(new Array());
 
     this.gridViewModel = null;
+
+    editManagedRepository=function(managedRepository){
+      $.log(managedRepository.name());
+    }
 
   }
 
@@ -84,16 +88,17 @@ $(function() {
     $("#main-content #managed-repositories-content").append(mediumSpinnerImg());
     $("#main-content #remote-repositories-content").append(mediumSpinnerImg());
 
-    var viewModel = new ManagedRepositoriesViewModel();
+
 
     $.ajax("restServices/archivaServices/managedRepositoriesService/getManagedRepositories", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var mappedManagedRepositories = mapManagedRepositories(data);
-          viewModel.managedRepositories=ko.observableArray(mappedManagedRepositories);
-          viewModel.gridViewModel = new ko.simpleGrid.viewModel({
-            data: viewModel.managedRepositories,
+
+          var managedRepositoriesViewModel = new ManagedRepositoriesViewModel();
+          managedRepositoriesViewModel.managedRepositories(mapManagedRepositories(data));
+          managedRepositoriesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
+            data: managedRepositoriesViewModel.managedRepositories,
             columns: [
               {
                 headerText: $.i18n.prop('identifier'),
@@ -102,11 +107,15 @@ $(function() {
               {
                 headerText: $.i18n.prop('name'),
                 rowText: "name"
+              },
+              {
+                headerText: $.i18n.prop('type'),
+                rowText: "layout"
               }
             ],
             pageSize: 10
           });
-          ko.applyBindings(viewModel,$("#main-content #managed-repositories-view").get(0));
+          ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
           $("#main-content #managed-repositories-pills").pills();
           $("#managed-repositories-view").addClass("active");
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
@@ -118,10 +127,10 @@ $(function() {
   }
 
   mapManagedRepositories=function(data){
-    return $.map(data.managedRepository, function(item) {
+    var mappedManagedRepositories = $.map(data.managedRepository, function(item) {
       return mapManagedRepository(item);
     });
-
+    return mappedManagedRepositories;
   }
   mapManagedRepository=function(data){
 
