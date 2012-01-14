@@ -105,9 +105,14 @@ $(function() {
     }
 
   hideElementWithKarma=function(){
-    $("[redback-permissions]").each(function(element){
+    $("#topbar-menu-container [redback-permissions]").each(function(element){
       $(this).hide();
     });
+
+    $("#sidebar-content [redback-permissions]").each(function(element){
+      $(this).hide();
+    });
+
   }
 
 
