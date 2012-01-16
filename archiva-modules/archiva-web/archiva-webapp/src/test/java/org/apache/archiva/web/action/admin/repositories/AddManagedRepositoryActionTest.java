@@ -171,14 +171,9 @@ public class AddManagedRepositoryActionTest
         roleManagerControl.replay();
 
         registry.getString( "appserver.base", "${appserver.base}" );
-        registryControl.setReturnValue( "target/test" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
         registry.getString( "appserver.home", "${appserver.home}" );
-        registryControl.setReturnValue( "target/test" );
-
-        registry.getString( "appserver.base", "${appserver.base}" );
-        registryControl.setReturnValue( "target/test" );
-        registry.getString( "appserver.home", "${appserver.home}" );
-        registryControl.setReturnValue( "target/test" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
 
         registryControl.replay();
 

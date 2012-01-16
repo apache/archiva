@@ -25,18 +25,18 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.RepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditListener;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.archiva.web.validator.utils.ValidatorUtil;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.web.validator.utils.ValidatorUtil;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
@@ -205,14 +205,9 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.replay();
 
         registry.getString( "appserver.base", "${appserver.base}" );
-        registryControl.setReturnValue( "target/test" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
         registry.getString( "appserver.home", "${appserver.home}" );
-        registryControl.setReturnValue( "target/test" );
-
-        registry.getString( "appserver.base", "${appserver.base}" );
-        registryControl.setReturnValue( "target/test" );
-        registry.getString( "appserver.home", "${appserver.home}" );
-        registryControl.setReturnValue( "target/test" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
 
         registryControl.replay();
 
@@ -314,14 +309,9 @@ public class EditManagedRepositoryActionTest
         roleManagerControl.replay();
 
         registry.getString( "appserver.base", "${appserver.base}" );
-        registryControl.setReturnValue( "target/test" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
         registry.getString( "appserver.home", "${appserver.home}" );
-        registryControl.setReturnValue( "target/test" );
-
-        registry.getString( "appserver.base", "${appserver.base}" );
-        registryControl.setReturnValue( "target/test" );
-        registry.getString( "appserver.home", "${appserver.home}" );
-        registryControl.setReturnValue( "target/test" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
 
         registryControl.replay();
 
