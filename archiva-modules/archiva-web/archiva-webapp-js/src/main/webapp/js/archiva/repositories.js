@@ -67,17 +67,65 @@ $(function() {
     this.stageRepoNeeded=ko.observable(stageRepoNeeded);
   }
 
+  ManagedRepositoryViewModel=function(managedRepository, update){
+    this.managedRepository=ko.observable(managedRepository);
+    this.update = update;
+
+    save=function(){
+      $.log("save:"+this.managedRepository().name());
+      clearUserMessages();
+      $.ajax("restServices/archivaServices/managedRepositoriesService/updateManagedRepository",
+        {
+          type: "POST",
+          contentType: 'application/json',
+          data: "{\"managedRepository\": " +  ko.toJSON(this.managedRepository)+"}",
+          dataType: 'json',
+            success: function(data) {
+              displaySuccessMessage($.i18n.prop('managedrepository.updated'));
+            },
+            error: function(data) {
+              displayErrorMessage(data);
+            }
+        }
+      );
+
+    }
+
+    displayGrid=function(){
+      activateManagedRepositoriesGridTab();
+    }
+
+  }
+
   ManagedRepositoriesViewModel=function(){
     this.managedRepositories=ko.observableArray(new Array());
 
     this.gridViewModel = null;
 
     editManagedRepository=function(managedRepository){
-      $.log(managedRepository.name());
+      var viewModel = new ManagedRepositoryViewModel(managedRepository,true);
+      ko.applyBindings(viewModel,$("#main-content #managed-repository-edit").get(0));
+      activateManagedRepositoryEditTab();
+      $("#managed-repository-edit-li a").html($.i18n.prop('edit'));
     }
 
   }
 
+  activateManagedRepositoriesGridTab=function(){
+    $("#main-content #managed-repository-edit-li").removeClass("active");
+    $("#main-content #managed-repository-edit").removeClass("active");
+    // activate roles grid tab
+    $("#main-content #managed-repositories-view-li").addClass("active");
+    $("#main-content #managed-repositories-view").addClass("active");
+  }
+
+  activateManagedRepositoryEditTab=function(){
+    $("#main-content #managed-repositories-view-li").removeClass("active");
+    $("#main-content #managed-repositories-view").removeClass("active");
+    // activate role edit tab
+    $("#main-content #managed-repository-edit-li").addClass("active");
+    $("#main-content #managed-repository-edit").addClass("active");
+  }
 
   displayRepositoriesGrid=function(){
     clearUserMessages();
@@ -111,6 +159,7 @@ $(function() {
               {
                 headerText: $.i18n.prop('type'),
                 rowText: "layout",
+                // FIXME i18n
                 title: "Repository type (default is Maven 2)"
               }
             ],
@@ -121,6 +170,7 @@ $(function() {
           $("#managed-repositories-view").addClass("active");
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
           $("#main-content #managed-repositories-table [title]").twipsy();
+          activateManagedRepositoriesGridTab();
         }
       }
     );

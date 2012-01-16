@@ -218,3 +218,15 @@ $.extend($.tmpl.tag, {
         open: "var $1;"
     }
 });
+
+displayRestError=function(data,idToAppend){
+  if (data.archivaRestError){
+    if (data.archivaRestError.errorKey){
+      displayErrorMessage($.i18n.prop( data.archivaRestError.errorKey ),idToAppend);
+    } else {
+      displayErrorMessage(data.archivaRestError.errorMessage,idToAppend);
+    }
+  } else {
+    // redback ??
+  }
+}
