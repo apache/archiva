@@ -110,7 +110,8 @@ $(function() {
               },
               {
                 headerText: $.i18n.prop('type'),
-                rowText: "layout"
+                rowText: "layout",
+                title: "Repository type (default is Maven 2)"
               }
             ],
             pageSize: 10
@@ -119,7 +120,7 @@ $(function() {
           $("#main-content #managed-repositories-pills").pills();
           $("#managed-repositories-view").addClass("active");
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
-          $.log("ok display managedRepositories");
+          $("#main-content #managed-repositories-table [title]").twipsy();
         }
       }
     );

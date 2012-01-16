@@ -61,7 +61,7 @@
   <thead>
       <tr>
         {{each(i, columnDefinition) columns}}
-          <th>${ columnDefinition.headerText }</th>
+          <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
         {{/each}}
         <th>${$.i18n.prop('release.included')}</th>
         <th>${$.i18n.prop('snapshots.included')}</th>
@@ -90,7 +90,6 @@
                   <img src="images/dialog-error.png"/>
               {{/if}}
             </td>
-
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">Edit</a></td>
           </tr>
       {{/each}}
