@@ -251,3 +251,14 @@ displayRedbackError=function(obj,idToAppend) {
     displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages.errorKey, obj.redbackRestError.errorMessages.args ),idToAppend);
   }
 }
+
+customShowError=function(validator, errorMap, errorList) {
+  $( "div.clearfix" ).removeClass( "error" );
+  $( "span.help-inline" ).remove();
+  for ( var i = 0; errorList[i]; i++ ) {
+    var error = errorList[i];
+    var field = $("#"+error.element.id);
+    field.parents( "div.clearfix" ).addClass( "error" );
+    field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" )
+  }
+}
