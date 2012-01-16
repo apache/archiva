@@ -33,6 +33,9 @@ import java.util.Map;
  */
 public interface ManagedRepositoryAdmin
 {
+
+    String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
+
     List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException;
 

@@ -41,7 +41,6 @@ import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.GenericValidator;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
@@ -49,7 +48,6 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -80,7 +78,6 @@ public class DefaultManagedRepositoryAdmin
     implements ManagedRepositoryAdmin
 {
 
-    public static final String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -215,6 +212,7 @@ public class DefaultManagedRepositoryAdmin
     {
 
         getRepositoryCommonValidator().basicValidation( managedRepository, false );
+        getRepositoryCommonValidator().validateManagedRepository( managedRepository );
         triggerAuditEvent( managedRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
         Boolean res =
             addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
@@ -241,30 +239,6 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
 
-        // FIXME : olamy can be empty to avoid scheduled scan ?
-        if ( StringUtils.isNotBlank( cronExpression ) )
-        {
-            CronExpressionValidator validator = new CronExpressionValidator();
-
-            if ( !validator.validate( cronExpression ) )
-            {
-                throw new RepositoryAdminException( "Invalid cron expression." );
-            }
-        }
-        else
-        {
-            throw new RepositoryAdminException( "Cron expression cannot be empty." );
-        }
-
-        String repoLocation = getRepositoryCommonValidator().removeExpressions( location );
-
-        if ( !GenericValidator.matchRegexp( repoLocation, REPOSITORY_LOCATION_VALID_EXPRESSION ) )
-        {
-            throw new RepositoryAdminException(
-                "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
-                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
-        }
-
         ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
 
         repository.setId( repoId );
@@ -272,7 +246,7 @@ public class DefaultManagedRepositoryAdmin
         repository.setReleases( releasesIncluded );
         repository.setSnapshots( snapshotsIncluded );
         repository.setName( name );
-        repository.setLocation( repoLocation );
+        repository.setLocation( getRepositoryCommonValidator().removeExpressions( location ) );
         repository.setLayout( layout );
         repository.setRefreshCronExpression( cronExpression );
         repository.setIndexDir( indexDir );
@@ -481,6 +455,8 @@ public class DefaultManagedRepositoryAdmin
         // Ensure that the fields are valid.
 
         getRepositoryCommonValidator().basicValidation( managedRepository, true );
+
+        getRepositoryCommonValidator().validateManagedRepository( managedRepository );
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 

@@ -18,13 +18,16 @@ package org.apache.archiva.admin.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.AbstractRepository;
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.validator.GenericValidator;
+import org.apache.archiva.admin.model.beans.AbstractRepository;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.GenericValidator;
 import org.codehaus.plexus.registry.Registry;
+import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -110,7 +113,42 @@ public class RepositoryCommonValidator
                     + "forward-slashes(/), open-parenthesis('('), close-parenthesis(')'),  underscores(_), dots(.), and dashes(-)." );
         }
 
+    }
 
+    /**
+     * validate cronExpression and location format
+     *
+     * @param managedRepository
+     * @since 1.4-M2
+     */
+    public void validateManagedRepository( ManagedRepository managedRepository )
+        throws RepositoryAdminException
+    {
+        String cronExpression = managedRepository.getCronExpression();
+        // FIXME : olamy can be empty to avoid scheduled scan ?
+        if ( StringUtils.isNotBlank( cronExpression ) )
+        {
+            CronExpressionValidator validator = new CronExpressionValidator();
+
+            if ( !validator.validate( cronExpression ) )
+            {
+                throw new RepositoryAdminException( "Invalid cron expression." );
+            }
+        }
+        else
+        {
+            throw new RepositoryAdminException( "Cron expression cannot be empty." );
+        }
+
+        String repoLocation = removeExpressions( managedRepository.getLocation() );
+
+        if ( !GenericValidator.matchRegexp( repoLocation,
+                                            ManagedRepositoryAdmin.REPOSITORY_LOCATION_VALID_EXPRESSION ) )
+        {
+            throw new RepositoryAdminException(
+                "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
+                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+        }
     }
 
     /**
