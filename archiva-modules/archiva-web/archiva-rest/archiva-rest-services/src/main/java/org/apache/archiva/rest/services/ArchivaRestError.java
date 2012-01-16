@@ -34,6 +34,14 @@ public class ArchivaRestError
 
     private String errorMessage;
 
+    /**
+     * can return the field name of bean with issue
+     * can be <code>null</code>
+     *
+     * @since 1.4-M3
+     */
+    private String fieldName;
+
     public ArchivaRestError()
     {
         // no op
@@ -43,6 +51,7 @@ public class ArchivaRestError
     {
         errorKey = e.getErrorKey();
         errorMessage = e.getMessage();
+        fieldName = e.getFieldName();
     }
 
     public String getErrorKey()
@@ -63,5 +72,15 @@ public class ArchivaRestError
     public void setErrorMessage( String errorMessage )
     {
         this.errorMessage = errorMessage;
+    }
+
+    public String getFieldName()
+    {
+        return fieldName;
+    }
+
+    public void setFieldName( String fieldName )
+    {
+        this.fieldName = fieldName;
     }
 }

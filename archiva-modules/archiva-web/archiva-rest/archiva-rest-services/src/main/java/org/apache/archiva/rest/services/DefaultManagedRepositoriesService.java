@@ -89,7 +89,7 @@ public class DefaultManagedRepositoriesService
         catch ( RepositoryAdminException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName() );
         }
     }
 
@@ -105,7 +105,7 @@ public class DefaultManagedRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName() );
         }
     }
 
@@ -123,7 +123,7 @@ public class DefaultManagedRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName() );
         }
     }
 

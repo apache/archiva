@@ -30,16 +30,36 @@ public class ArchivaRestServiceException
 
     private String errorKey;
 
+    /**
+     * can return the field name of bean with issue
+     * can be <code>null</code>
+     *
+     * @since 1.4-M3
+     */
+    private String fieldName;
+
 
     public ArchivaRestServiceException( String message )
     {
         super( message );
     }
 
+    public ArchivaRestServiceException( String message, String fieldName )
+    {
+        this( message );
+        this.fieldName = fieldName;
+    }
+
     public ArchivaRestServiceException( String s, int httpErrorCode )
     {
         super( s );
         this.httpErrorCode = httpErrorCode;
+    }
+
+    public ArchivaRestServiceException( String s, int httpErrorCode, String fieldName )
+    {
+        this( s, httpErrorCode );
+        this.fieldName = fieldName;
     }
 
     public int getHttpErrorCode()
@@ -60,5 +80,15 @@ public class ArchivaRestServiceException
     public void setErrorKey( String errorKey )
     {
         this.errorKey = errorKey;
+    }
+
+    public String getFieldName()
+    {
+        return fieldName;
+    }
+
+    public void setFieldName( String fieldName )
+    {
+        this.fieldName = fieldName;
     }
 }

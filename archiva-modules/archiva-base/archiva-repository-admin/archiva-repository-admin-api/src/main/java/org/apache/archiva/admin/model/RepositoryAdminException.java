@@ -26,13 +26,43 @@ package org.apache.archiva.admin.model;
 public class RepositoryAdminException
     extends Exception
 {
+
+    /**
+     * can return the field name of bean with issue
+     * can be <code>null</code>
+     * @since 1.4-M3
+     */
+    private String fieldName;
+
     public RepositoryAdminException( String s )
     {
         super( s );
     }
 
+    public RepositoryAdminException( String s, String fieldName )
+    {
+        this( s );
+        this.fieldName = fieldName;
+    }
+
     public RepositoryAdminException( String message, Throwable cause )
     {
         super( message, cause );
+    }
+
+    public RepositoryAdminException( String message, Throwable cause,  String fieldName )
+    {
+        super( message, cause );
+        this.fieldName = fieldName;
+    }
+
+    public String getFieldName()
+    {
+        return fieldName;
+    }
+
+    public void setFieldName( String fieldName )
+    {
+        this.fieldName = fieldName;
     }
 }

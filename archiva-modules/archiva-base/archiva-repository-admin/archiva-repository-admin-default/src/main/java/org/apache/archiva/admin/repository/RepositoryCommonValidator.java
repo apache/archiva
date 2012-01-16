@@ -132,7 +132,7 @@ public class RepositoryCommonValidator
 
             if ( !validator.validate( cronExpression ) )
             {
-                throw new RepositoryAdminException( "Invalid cron expression." );
+                throw new RepositoryAdminException( "Invalid cron expression.", "cronExpression" );
             }
         }
         else
@@ -147,7 +147,8 @@ public class RepositoryCommonValidator
         {
             throw new RepositoryAdminException(
                 "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
-                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
+                    + "exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).",
+                "location" );
         }
     }
 
