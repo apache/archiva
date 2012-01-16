@@ -72,7 +72,7 @@ public class NexusIndexerConsumer
 
     private ArchivaTaskScheduler<ArtifactIndexingTask> scheduler;
 
-    private IndexingContext context;
+    private IndexingContext indexingContext;
 
     private NexusIndexer nexusIndexer;
 
@@ -124,7 +124,7 @@ public class NexusIndexerConsumer
         try
         {
             log.info( "Creating indexing context for repo : {}", repository.getId() );
-            context = managedRepositoryAdmin.createIndexContext( repository );
+            indexingContext = managedRepositoryAdmin.createIndexContext( repository );
         }
         catch ( RepositoryAdminException e )
         {
@@ -152,7 +152,7 @@ public class NexusIndexerConsumer
         File artifactFile = new File( managedRepository, path );
 
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context );
+            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, getIndexingContext() );
         try
         {
             log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
@@ -177,7 +177,8 @@ public class NexusIndexerConsumer
 
             // specify in indexing task that this is not a repo scan request!
             ArtifactIndexingTask task =
-                new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, context, false );
+                new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD,
+                                          getIndexingContext(), false );
             // only update index we don't need to scan the full repo here
             task.setOnlyUpdate( true );
             try
@@ -194,6 +195,19 @@ public class NexusIndexerConsumer
 
     public void completeScan()
     {
+        IndexingContext context = this.indexingContext;
+        if ( context == null )
+        {
+            try
+            {
+                context = getIndexingContext();
+            }
+            catch ( ConsumerException e )
+            {
+                log.warn( "failed to get an IndexingContext:{}", e.getMessage() );
+                return;
+            }
+        }
         ArtifactIndexingTask task =
             new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
         try
@@ -205,7 +219,6 @@ public class NexusIndexerConsumer
         {
             log.error( "Error queueing task: " + task + ": " + e.getMessage(), e );
         }
-        context = null;
     }
 
     public void completeScan( boolean executeOnEntireRepo )
@@ -259,5 +272,24 @@ public class NexusIndexerConsumer
     public List<String> getIncludes()
     {
         return includes;
+    }
+
+
+    private IndexingContext getIndexingContext()
+        throws ConsumerException
+    {
+
+        if ( this.indexingContext == null )
+        {
+            try
+            {
+                indexingContext = managedRepositoryAdmin.createIndexContext( repository );
+            }
+            catch ( RepositoryAdminException e )
+            {
+                throw new ConsumerException( e.getMessage(), e );
+            }
+        }
+        return indexingContext;
     }
 }

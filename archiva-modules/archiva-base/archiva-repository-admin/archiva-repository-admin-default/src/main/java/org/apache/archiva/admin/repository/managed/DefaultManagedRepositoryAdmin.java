@@ -576,12 +576,17 @@ public class DefaultManagedRepositoryAdmin
                 indexDirectory.mkdirs();
             }
 
-            context =
-                indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository, indexDirectory,
-                                            managedRepository.toURI().toURL().toExternalForm(),
-                                            indexDirectory.toURI().toURL().toString(), indexCreators );
+            context = indexer.getIndexingContexts().get( repository.getId() );
 
-            context.setSearchable( repository.isScanned() );
+            if ( context == null )
+            {
+                context = indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository,
+                                                      indexDirectory,
+                                                      managedRepository.toURI().toURL().toExternalForm(),
+                                                      indexDirectory.toURI().toURL().toString(), indexCreators );
+
+                context.setSearchable( repository.isScanned() );
+            }
             return context;
         }
         catch ( MalformedURLException e )
