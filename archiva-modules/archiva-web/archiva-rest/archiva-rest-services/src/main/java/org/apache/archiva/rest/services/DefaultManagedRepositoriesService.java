@@ -93,15 +93,20 @@ public class DefaultManagedRepositoriesService
         }
     }
 
-    public Boolean addManagedRepository( ManagedRepository managedRepository )
+    public ManagedRepository addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
 
         try
         {
-            return managedRepositoryAdmin.addManagedRepository( managedRepository,
-                                                                managedRepository.isStageRepoNeeded(),
-                                                                getAuditInformation() );
+            boolean res =
+                managedRepositoryAdmin.addManagedRepository( managedRepository, managedRepository.isStageRepoNeeded(),
+                                                             getAuditInformation() );
+            if ( res )
+            {
+                return getManagedRepository( managedRepository.getId() );
+            }
+            throw new ArchivaRestServiceException( "fail to created managed Repository" );
         }
         catch ( RepositoryAdminException e )
         {
