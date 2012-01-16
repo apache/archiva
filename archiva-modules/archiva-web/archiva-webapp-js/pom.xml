@@ -543,6 +543,7 @@
             <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+            <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -574,6 +575,7 @@
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
             </redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+            <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -603,6 +605,7 @@
             <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+            <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
           </systemProperties>
         </configuration>
         <dependencies>
