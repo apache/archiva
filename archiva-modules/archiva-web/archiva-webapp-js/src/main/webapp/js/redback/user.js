@@ -569,7 +569,7 @@ $(function() {
    */
   changePassword=function(previousPassword,registration,user){
     var valid = $("#password-change-form").valid();
-    if (!valid) {
+    if (valid==false) {
         return;
     }
     $('#modal-password-change-footer').append(smallSpinnerImg());

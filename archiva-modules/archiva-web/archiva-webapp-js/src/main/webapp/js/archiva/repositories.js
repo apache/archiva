@@ -72,6 +72,10 @@ $(function() {
     this.update = update;
 
     save=function(){
+      var valid = $("#main-content #managed-repository-edit-form").valid();
+      if (valid==false) {
+          return;
+      }
       $.log("save:"+this.managedRepository().name());
       clearUserMessages();
       $.ajax("restServices/archivaServices/managedRepositoriesService/updateManagedRepository",
@@ -108,6 +112,19 @@ $(function() {
       ko.applyBindings(viewModel,$("#main-content #managed-repository-edit").get(0));
       activateManagedRepositoryEditTab();
       $("#managed-repository-edit-li a").html($.i18n.prop('edit'));
+      $("#main-content #managed-repository-edit-form").validate({
+        rules: {
+          daysOlder : {
+            digits: true
+          },
+          retentionCount : {
+            digits: true
+          }
+        },
+        showErrors: function(validator, errorMap, errorList) {
+          customShowError(validator,errorMap,errorMap);
+        }
+      });
     }
 
   }

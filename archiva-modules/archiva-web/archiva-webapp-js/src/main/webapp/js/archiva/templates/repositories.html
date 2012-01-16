@@ -108,7 +108,7 @@
             {{if update}}
               <span class="uneditable-input">${$data.managedRepository().id}</span>
             {{else}}
-              <input type="text" class="xlarge" id="id" name="id" size="50" class="required"
+              <input type="text" class="xlarge required" id="id" name="id" size="50"
                      data-bind="value: managedRepository().id,css:{'uneditable-input': update},readonly:update"/>
             {{/if}}
           </div>
@@ -116,14 +116,14 @@
         <div class="clearfix">
           <label for="name">${$.i18n.prop('name')}</label>
           <div class="input">
-            <input type="text" class="xlarge" id="name" name="name" size="50" class="required"
+            <input type="text" class="xlarge required" id="name" name="name" size="50"
                    data-bind="value: managedRepository().name"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="location">${$.i18n.prop('directory')}</label>
           <div class="input">
-            <input type="text" class="xlarge" id="location" name="location" size="50" class="required" data-bind="value: managedRepository().location"/>
+            <input type="text" class="xlarge required" id="location" name="location" size="50" data-bind="value: managedRepository().location"/>
           </div>
         </div>
         <div class="clearfix">
@@ -135,13 +135,13 @@
         <div class="clearfix">
           <label for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="input">
-            <input type="text" id="cronExpression" name="daysOlder" size="40" data-bind="value: managedRepository().cronExpression"/>
+            <input type="text" id="cronExpression" class="required" name="cronExpression" size="40" data-bind="value: managedRepository().cronExpression"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="daysOlder">${$.i18n.prop('daysOlder')}</label>
           <div class="input">
-            <input type="text" id="daysOlder" name="daysOlder" size="5" data-bind="value: managedRepository().daysOlder"/>
+            <input type="text" id="daysOlder" class="digits" name="daysOlder" size="5" data-bind="value: managedRepository().daysOlder"/>
           </div>
         </div>
         <div class="clearfix">
