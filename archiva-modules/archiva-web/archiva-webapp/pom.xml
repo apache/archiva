@@ -875,7 +875,7 @@
             </goals>
             <configuration>
               <tasks>
-                <copy todir="${basedir}/appserver-base">
+                <copy todir="${project.build.directory}/appserver-base">
                   <fileset dir="src/appserver-base"/>
                 </copy>
               </tasks>
@@ -1039,10 +1039,10 @@
           <path>/archiva</path>
           <contextFile>${tomcatContextXml}</contextFile>
           <systemProperties>
-            <plexus.home>${basedir}/appserver-base</plexus.home>
-            <appserver.base>${basedir}/appserver-base</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-            <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
+            <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
           </systemProperties>
@@ -1090,11 +1090,11 @@
           <systemProperties>
             <systemProperty>
               <name>plexus.home</name>
-              <value>${basedir}/appserver-base</value>
+              <value>${project.build.directory}/appserver-base</value>
             </systemProperty>
             <systemProperty>
               <name>appserver.base</name>
-              <value>${basedir}/appserver-base</value>
+              <value>${project.build.directory}/appserver-base</value>
             </systemProperty>
             <systemProperty>
               <name>appserver.home</name>
@@ -1102,7 +1102,7 @@
             </systemProperty>
             <systemProperty>
               <name>derby.system.home</name>
-              <value>${basedir}/appserver-base/logs</value>
+              <value>${project.build.directory}/appserver-base/logs</value>
             </systemProperty>
           </systemProperties>
         </configuration>
@@ -1225,36 +1225,6 @@
             <configuration>
               <jettyEnvXml>src/jetty-env-postgres.xml</jettyEnvXml>
             </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>cleanJetty</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-clean-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>cleanJetty</id>
-                <phase>clean</phase>
-                <configuration>
-                  <filesets>
-                    <fileset>
-                      <directory>${basedir}/appserver-base</directory>
-                      <includes>
-                        <include>**/**</include>
-                      </includes>
-                    </fileset>
-                  </filesets>
-                </configuration>
-                <goals>
-                  <goal>clean</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>
@@ -1419,10 +1389,10 @@
               <path>/archiva</path>
               <contextFile>${tomcatContextXml}</contextFile>
               <systemProperties>
-                <plexus.home>${basedir}/appserver-base</plexus.home>
-                <appserver.base>${basedir}/appserver-base</appserver.base>
+                <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+                <appserver.base>${project.build.directory}/appserver-base</appserver.base>
                 <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-                <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
+                <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
                 <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
                 </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
@@ -1449,10 +1419,10 @@
               <path>/archiva</path>
               <contextFile>${tomcatContextXml}</contextFile>
               <systemProperties>
-                <plexus.home>${basedir}/appserver-base</plexus.home>
-                <appserver.base>${basedir}/appserver-base</appserver.base>
+                <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+                <appserver.base>${project.build.directory}/appserver-base</appserver.base>
                 <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-                <derby.system.home>${basedir}/appserver-base/logs</derby.system.home>
+                <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
                 <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
                 </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
