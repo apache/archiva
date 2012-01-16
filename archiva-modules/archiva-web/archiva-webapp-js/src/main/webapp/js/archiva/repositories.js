@@ -65,6 +65,8 @@ $(function() {
 
     //private boolean stageRepoNeeded;
     this.stageRepoNeeded=ko.observable(stageRepoNeeded);
+
+
   }
 
   ManagedRepositoryViewModel=function(managedRepository, update, managedRepositoriesViewModel){
@@ -150,6 +152,40 @@ $(function() {
       $("#managed-repository-edit-li a").html($.i18n.prop('edit'));
       activateManagedRepositoryFormValidation();
     }
+
+    removeManagedRepository=function(managedRepository){
+      clearUserMessages();
+      openDialogConfirm(
+          function(){
+            var url = "restServices/archivaServices/managedRepositoriesService/deleteManagedRepository?";
+            url += "repositoryId="+encodeURIComponent(managedRepository.id());
+            url += "&deleteContent=false";
+            $.ajax(url,
+              {
+                type: "GET",
+                  success: function(data) {
+                    self.managedRepositories.remove(managedRepository);
+                    displaySuccessMessage($.i18n.prop("managedrepository.deleted",managedRepository.name()));
+
+                  },
+                  error: function(data) {
+                    var res = $.parseJSON(data.responseText);
+                    displayRestError(res);
+                  },
+                  complete: function(){
+                    closeDialogConfirm();
+                  }
+              }
+            );
+
+          },
+          $.i18n.prop("ok"),
+          $.i18n.prop("cancel"),
+          $.i18n.prop("managedrepository.delete.confirm",managedRepository.name()),
+          $("#managed-repository-delete-warning-tmpl").tmpl(managedRepository));
+    }
+
+
 
   }
 

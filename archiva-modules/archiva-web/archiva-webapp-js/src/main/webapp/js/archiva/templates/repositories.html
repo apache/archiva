@@ -68,7 +68,7 @@
         <th>${$.i18n.prop('release.included')}</th>
         <th>${$.i18n.prop('snapshots.included')}</th>
         <th>${$.i18n.prop('edit')}</th>
-
+        <th>${$.i18n.prop('delete')}</th>
       </tr>
   </thead>
   <tbody>
@@ -92,7 +92,8 @@
                   <img src="images/dialog-error.png"/>
               {{/if}}
             </td>
-            <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">Edit</a></td>
+            <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
+            <td><a href="#" data-bind="click: function(){ removeManagedRepository(row) }">${$.i18n.prop('delete')}</a></td>
           </tr>
       {{/each}}
   </tbody>
@@ -190,4 +191,20 @@
       <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
       <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
     </form>
+</script>
+
+<script id="managed-repository-delete-warning-tmpl" type='text/x-jquery-tmpl'>
+  <div>
+    <a class="close" href="#">×</a>
+    <div class="alert-message warning">
+      <p>
+        <strong>${$.i18n.prop('warning.not.undone.operation')}</strong>
+      </p>
+    </div>
+    <div>
+      <span><strong>${$.i18n.prop('managedrepository.delete.warning.message')}</strong>.</span>
+      <div>${$.i18n.prop('id')}: ${id()}</div>
+      <div>${$.i18n.prop('name')}: ${name()}</div>
+    </div>
+  </div>
 </script>
