@@ -26,6 +26,9 @@ $(function() {
     cache: false
   } );
 
+  // define a container object with various datas
+  window.archivaModel = {};
+
   /**
    * reccord a cookie for session with the logged user
    * @param user see user.js

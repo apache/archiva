@@ -93,7 +93,11 @@
               {{/if}}
             </td>
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
-            <td><a href="#" data-bind="click: function(){ removeManagedRepository(row) }">${$.i18n.prop('delete')}</a></td>
+            <td>
+              <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
+                <img src="images/delete.png" title="${$.i18n.prop('delete')}"/>
+              </a>
+            </td>
           </tr>
       {{/each}}
   </tbody>
@@ -107,10 +111,10 @@
           <label for="name">${$.i18n.prop('id')}</label>
           <div class="input">
             {{if update}}
-              <span class="uneditable-input">${$data.managedRepository().id}</span>
+              <span class="uneditable-input">${$data.managedRepository.id}</span>
             {{else}}
               <input type="text" class="xlarge required" id="id" name="id" size="50"
-                     data-bind="value: managedRepository().id,css:{'uneditable-input': update},readonly:update"/>
+                     data-bind="value: managedRepository.id,css:{'uneditable-input': update},readonly:update"/>
             {{/if}}
           </div>
         </div>
@@ -118,73 +122,75 @@
           <label for="name">${$.i18n.prop('name')}</label>
           <div class="input">
             <input type="text" class="xlarge required" id="name" name="name" size="50"
-                   data-bind="value: managedRepository().name"/>
+                   data-bind="value: managedRepository.name"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="location">${$.i18n.prop('directory')}</label>
           <div class="input">
-            <input type="text" class="xlarge required" id="location" name="location" size="50" data-bind="value: managedRepository().location"/>
+            <input type="text" class="xlarge required" id="location" name="location" size="50" data-bind="value: managedRepository.location"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="indexDirectory">${$.i18n.prop('index.directory')}</label>
           <div class="input">
-            <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository().indexDirectory"/>
+            <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository.indexDirectory"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="input">
-            <input type="text" id="cronExpression" class="required" name="cronExpression" size="40" data-bind="value: managedRepository().cronExpression"/>
+            <input type="text" id="cronExpression" class="required" name="cronExpression" size="40" data-bind="value: managedRepository.cronExpression"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="daysOlder">${$.i18n.prop('daysOlder')}</label>
           <div class="input">
-            <input type="text" id="daysOlder" class="digits" name="daysOlder" size="5" data-bind="value: managedRepository().daysOlder"/>
+            <input type="text" id="daysOlder" class="digits" name="daysOlder" size="5" data-bind="value: managedRepository.daysOlder"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="retentionCount">${$.i18n.prop('retentionCount')}</label>
           <div class="input">
-            <input type="text" id="retentionCount" name="retentionCount" size="5" data-bind="value: managedRepository().retentionCount"/>
+            <input type="text" id="retentionCount" name="retentionCount" size="5" data-bind="value: managedRepository.retentionCount"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="releases">${$.i18n.prop('releases')}</label>
           <div class="input">
-            <input type="checkbox" id="releases" name="releases" size="5" data-bind="checked: managedRepository().releases"/>
+            <input type="checkbox" id="releases" name="releases" size="5" data-bind="checked: managedRepository.releases"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="snapshots">${$.i18n.prop('snapshots')}</label>
           <div class="input">
-            <input type="checkbox" id="snapshots" name="snapshots" size="5" data-bind="checked: managedRepository().snapshots"/>
+            <input type="checkbox" id="snapshots" name="snapshots" size="5" data-bind="checked: managedRepository.snapshots"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="blockRedeployments">${$.i18n.prop('blockRedeployments')}</label>
           <div class="input">
-            <input type="checkbox" id="blockRedeployments" name="blockRedeployments" size="5" data-bind="checked: managedRepository().blockRedeployments"/>
+            <input type="checkbox" id="blockRedeployments" name="blockRedeployments" size="5" data-bind="checked: managedRepository.blockRedeployments"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="scanned">${$.i18n.prop('scanned')}</label>
           <div class="input">
-            <input type="checkbox" id="scanned" name="scanned" size="5" data-bind="checked: managedRepository().scanned"/>
+            <input type="checkbox" id="scanned" name="scanned" size="5" data-bind="checked: managedRepository.scanned"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="deleteReleasedSnapshots">${$.i18n.prop('deleteReleasedSnapshots')}</label>
           <div class="input">
-            <input type="checkbox" id="deleteReleasedSnapshots" name="deleteReleasedSnapshots" size="5" data-bind="checked: managedRepository().deleteReleasedSnapshots"/>
+            <input type="checkbox" id="deleteReleasedSnapshots" name="deleteReleasedSnapshots" size="5"
+                   data-bind="checked: managedRepository.deleteReleasedSnapshots"/>
           </div>
         </div>
         <div class="clearfix">
           <label for="stageRepoNeeded">${$.i18n.prop('stageRepoNeeded')}</label>
           <div class="input">
-            <input type="checkbox" id="stageRepoNeeded" name="stageRepoNeeded" size="5" data-bind="checked: managedRepository().stageRepoNeeded"/>
+            <input type="checkbox" id="stageRepoNeeded" name="stageRepoNeeded" size="5"
+                   data-bind="checked: managedRepository.stageRepoNeeded"/>
           </div>
         </div>
       </fieldset>
