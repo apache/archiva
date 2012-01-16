@@ -73,6 +73,7 @@ $(function() {
     this.managedRepository=ko.observable(managedRepository);
     this.managedRepositoriesViewModel = managedRepositoriesViewModel;
     this.update = update;
+    var self = this;
     save=function(){
       var valid = $("#main-content #managed-repository-edit-form").valid();
       if (valid==false) {
@@ -105,7 +106,7 @@ $(function() {
             data: "{\"managedRepository\": " +  ko.toJSON(this.managedRepository)+"}",
             dataType: 'json',
               success: function(data) {
-                this.managedRepositoriesViewModel.managedRepositories.push(mapManagedRepository(data));
+                self.managedRepositoriesViewModel.managedRepositories.push(mapManagedRepository(data));
                 displaySuccessMessage($.i18n.prop('managedrepository.added'));
               },
               error: function(data) {
@@ -159,7 +160,10 @@ $(function() {
           function(){
             var url = "restServices/archivaServices/managedRepositoriesService/deleteManagedRepository?";
             url += "repositoryId="+encodeURIComponent(managedRepository.id());
-            url += "&deleteContent=false";
+
+            var checked = $("#managedrepository-deletecontent").get(0).checked;
+
+            url += "&deleteContent="+(checked==true?"true":"false");
             $.ajax(url,
               {
                 type: "GET",
