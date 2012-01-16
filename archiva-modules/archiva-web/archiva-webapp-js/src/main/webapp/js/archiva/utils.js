@@ -215,22 +215,6 @@ $.extend($.tmpl.tag, {
     }
 });
 
-displayRestError=function(data,idToAppend){
-
-  if (data.redbackRestError){
-    displayRedbackError(archivaRestError,idToAppend)
-  }
-
-  if (data.archivaRestError && data.archivaRestError.errorKey && data.archivaRestError.errorKey.length>0){
-      $.log("with errorKey:"+dataarchivaRestError.errorKey);
-      displayErrorMessage($.i18n.prop( data.archivaRestError.errorKey ),idToAppend);
-    } else {
-      $.log("data.errorMessage:"+data.archivaRestError.errorMessage);
-      displayErrorMessage(data.archivaRestError.errorMessage,idToAppend);
-  }
-
-}
-
 /**
  * display redback error from redback json error response
  * {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
@@ -252,13 +236,57 @@ displayRedbackError=function(obj,idToAppend) {
   }
 }
 
+/*
+ * generic function to display error return by rest service
+ * if fieldName is here the function will try to find a field with this name and add a span on it
+ * if not error is displayed in #user-messages div
+ */
+displayRestError=function(data,idToAppend){
+
+  if (data.redbackRestError){
+    displayRedbackError(archivaRestError,idToAppend)
+  }
+  // if we have the fieldName display error on it
+  if (data.archivaRestError && data.archivaRestError.fieldName){
+    if ($("#main-content #"+data.archivaRestError.fieldName)){
+      var message=null;
+      if (data.archivaRestError.errorKey) {
+        message=$.i18n.prop('data.archivaRestError.errorKey');
+      } else {
+        message=data.archivaRestError.errorMessage;
+      }
+      $( "#main-content div.clearfix" ).removeClass( "error" );
+      $( "#main-content span.help-inline" ).remove();
+      $("#main-content #"+data.archivaRestError.fieldName).parents( "div.clearfix" ).addClass( "error" );
+      $("#main-content #"+data.archivaRestError.fieldName).parent().append( "<span class=\"help-inline\">" + message + "</span>" );
+      return;
+    }
+    // we don't have any id with this fieldName so continue
+  }
+
+  if (data.archivaRestError && data.archivaRestError.errorKey && data.archivaRestError.errorKey.length>0){
+      $.log("with errorKey:"+dataarchivaRestError.errorKey);
+      displayErrorMessage($.i18n.prop( data.archivaRestError.errorKey ),idToAppend);
+    } else {
+      $.log("data.errorMessage:"+data.archivaRestError.errorMessage);
+      displayErrorMessage(data.archivaRestError.errorMessage,idToAppend);
+  }
+
+}
+
+/**
+ * used by validation error to customize error display in the ui
+ * @param validator
+ * @param errorMap
+ * @param errorList
+ */
 customShowError=function(validator, errorMap, errorList) {
-  $( "div.clearfix" ).removeClass( "error" );
-  $( "span.help-inline" ).remove();
+  $( "#main-content div.clearfix" ).removeClass( "error" );
+  $( "#main-content span.help-inline" ).remove();
   for ( var i = 0; errorList[i]; i++ ) {
     var error = errorList[i];
     var field = $("#"+error.element.id);
     field.parents( "div.clearfix" ).addClass( "error" );
-    field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" )
+    field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
   }
 }
