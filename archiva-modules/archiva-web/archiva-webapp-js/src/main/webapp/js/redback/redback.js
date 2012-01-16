@@ -21,27 +21,6 @@ $(function() {
   // define a container object with various datas
   window.redbackModel = {usersViewModel:null,userOperationNames:null,key:null,userCreate:false,i18n:$.i18n.map,rolesViewModel:null};
 
-  /**
-   * display redback error from redback json error response
-   * {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
-   * @param obj
-   * @param idToAppend
-   */
-  displayRedbackError=function(obj,idToAppend) {
-    if ($.isArray(obj.redbackRestError.errorMessages)) {
-      $.log("displayRedbackError with array");
-      for(var i=0; i<obj.redbackRestError.errorMessages.length; i++ ) {
-        if(obj.redbackRestError.errorMessages[i].errorKey) {
-          $.log("displayRedbackError with array loop");
-          displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages[i].errorKey, obj.redbackRestError.errorMessages[i].args ),idToAppend);
-        }
-      }
-    } else {
-      $.log("displayRedbackError no array");
-      displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages.errorKey, obj.redbackRestError.errorMessages.args ),idToAppend);
-    }
-  }
-
   // unbinding
   $("#user-create-form-cancel-button").on("click", function(){
     $('#user-create').hide();

@@ -84,7 +84,8 @@ $(function() {
               displaySuccessMessage($.i18n.prop('managedrepository.updated'));
             },
             error: function(data) {
-              displayErrorMessage(data);
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
             }
         }
       );

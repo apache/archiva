@@ -216,13 +216,38 @@ $.extend($.tmpl.tag, {
 });
 
 displayRestError=function(data,idToAppend){
-  if (data.archivaRestError){
-    if (data.archivaRestError.errorKey){
+
+  if (data.redbackRestError){
+    displayRedbackError(archivaRestError,idToAppend)
+  }
+
+  if (data.archivaRestError && data.archivaRestError.errorKey && data.archivaRestError.errorKey.length>0){
+      $.log("with errorKey:"+dataarchivaRestError.errorKey);
       displayErrorMessage($.i18n.prop( data.archivaRestError.errorKey ),idToAppend);
     } else {
+      $.log("data.errorMessage:"+data.archivaRestError.errorMessage);
       displayErrorMessage(data.archivaRestError.errorMessage,idToAppend);
+  }
+
+}
+
+/**
+ * display redback error from redback json error response
+ * {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
+ * @param obj
+ * @param idToAppend
+ */
+displayRedbackError=function(obj,idToAppend) {
+  if ($.isArray(obj.redbackRestError.errorMessages)) {
+    $.log("displayRedbackError with array");
+    for(var i=0; i<obj.redbackRestError.errorMessages.length; i++ ) {
+      if(obj.redbackRestError.errorMessages[i].errorKey) {
+        $.log("displayRedbackError with array loop");
+        displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages[i].errorKey, obj.redbackRestError.errorMessages[i].args ),idToAppend);
+      }
     }
   } else {
-    // redback ??
+    $.log("displayRedbackError no array");
+    displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages.errorKey, obj.redbackRestError.errorMessages.args ),idToAppend);
   }
 }
