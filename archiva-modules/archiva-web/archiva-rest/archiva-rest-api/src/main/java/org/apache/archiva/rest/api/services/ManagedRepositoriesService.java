@@ -80,11 +80,11 @@ public interface ManagedRepositoriesService
     Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
 
-    @Path( "fileLocationExists/{fileLocation}" )
+    @Path( "fileLocationExists" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean fileLocationExists( @PathParam( "fileLocation" ) String fileLocation )
+    Boolean fileLocationExists( @QueryParam( "fileLocation" ) String fileLocation )
         throws ArchivaRestServiceException;
 
 
