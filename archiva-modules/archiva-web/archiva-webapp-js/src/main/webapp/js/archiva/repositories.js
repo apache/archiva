@@ -133,10 +133,13 @@ $(function() {
     $("#main-content #managed-repository-edit-form").validate({
       rules: {
         daysOlder : {
-          digits: true
+          digits: true,
+          min: 1
         },
         retentionCount : {
-          digits: true
+          digits: true,
+          min: 1,
+          max: 100
         }
       },
       showErrors: function(validator, errorMap, errorList) {
