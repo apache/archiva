@@ -74,7 +74,6 @@ $(function() {
     this.managedRepositoriesViewModel = managedRepositoriesViewModel;
     this.update = update;
     var self = this;
-    var currentManagedRepository = this.managedRepository;
     save=function(){
       var valid = $("#main-content #managed-repository-edit-form").valid();
       if (valid==false) {
@@ -106,12 +105,12 @@ $(function() {
           {
             type: "POST",
             contentType: 'application/json',
-            data: "{\"managedRepository\": " + ko.toJSON(currentManagedRepository)+"}",
+            data: "{\"managedRepository\": " + ko.toJSON(self.managedRepository)+"}",
             dataType: 'json',
             success: function(data) {
               //var repo = mapManagedRepository(data);
-              //$.log("data:"+repo.name);
-              self.managedRepositoriesViewModel.managedRepositories.push(currentManagedRepository);
+              //$.log("data:"+data.responseText);
+              self.managedRepositoriesViewModel.managedRepositories.push(self.managedRepository);
               displaySuccessMessage($.i18n.prop('managedrepository.added'));
               activateManagedRepositoriesGridTab();
             },

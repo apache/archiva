@@ -219,20 +219,11 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <systemProperties>
-                <property>
-                  <name>browser</name>
-                  <value>${selenium.browser}</value>
-                </property>
-                <property>
-                  <name>baseUrl</name>
-                  <value>${baseUrl}</value>
-                </property>
-                <property>
-                  <name>maxWaitTimeInMs</name>
-                  <value>${maxWaitTimeInMs}</value>
-                </property>
-              </systemProperties>
+              <systemPropertyVariables>
+                <browser>${selenium.browser}</browser>
+                <baseUrl>${baseUrl}</baseUrl>
+                <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
+              </systemPropertyVariables>
             </configuration>
           </execution>
         </executions>

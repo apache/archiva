@@ -102,6 +102,7 @@ public abstract class AbstractArchivaTest
     public void goToLoginPage()
     {
         getSelenium().open( baseUrl );
+        waitPage();
         // are we already logged in ?
         if ( isElementVisible( "logout-link" ) ) //isElementPresent( "logoutLink" ) )
         {
