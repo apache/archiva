@@ -20,6 +20,7 @@ package org.apache.archiva.admin.repository;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;

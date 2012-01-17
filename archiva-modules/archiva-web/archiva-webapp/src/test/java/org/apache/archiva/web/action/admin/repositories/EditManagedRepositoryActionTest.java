@@ -22,7 +22,7 @@ package org.apache.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.repository.RepositoryCommonValidator;
+import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -121,14 +121,14 @@ public class EditManagedRepositoryActionTest
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setAuditListeners(
             new ArrayList<AuditListener>( 0 ) );
 
-        RepositoryCommonValidator repositoryCommonValidator = new RepositoryCommonValidator();
-        repositoryCommonValidator.setArchivaConfiguration( archivaConfiguration );
-        repositoryCommonValidator.setRegistry( registry );
+        DefaultRepositoryCommonValidator defaultRepositoryCommonValidator = new DefaultRepositoryCommonValidator();
+        defaultRepositoryCommonValidator.setArchivaConfiguration( archivaConfiguration );
+        defaultRepositoryCommonValidator.setRegistry( registry );
 
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryCommonValidator(
-            repositoryCommonValidator );
+            defaultRepositoryCommonValidator );
 
-        action.setRepositoryCommonValidator( repositoryCommonValidator );
+        action.setRepositoryCommonValidator( defaultRepositoryCommonValidator );
 
         action.setManagedRepositoryAdmin( getManagedRepositoryAdmin() );
 

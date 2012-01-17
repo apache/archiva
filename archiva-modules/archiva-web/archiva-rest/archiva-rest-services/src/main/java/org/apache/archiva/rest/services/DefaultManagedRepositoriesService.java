@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
@@ -28,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +48,9 @@ public class DefaultManagedRepositoriesService
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
+
+    @Inject
+    private RepositoryCommonValidator repositoryCommonValidator;
 
 
     public List<ManagedRepository> getManagedRepositories()
@@ -132,4 +137,10 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    public Boolean fileLocationExists( String fileLocation )
+        throws ArchivaRestServiceException
+    {
+        String location = repositoryCommonValidator.removeExpressions( fileLocation );
+        return new File( location ).exists();
+    }
 }

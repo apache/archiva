@@ -19,8 +19,9 @@ package org.apache.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.RepositoryCommonValidator;
+import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.action.AbstractActionSupport;

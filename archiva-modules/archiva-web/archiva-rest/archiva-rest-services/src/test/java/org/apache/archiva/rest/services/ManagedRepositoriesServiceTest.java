@@ -23,6 +23,8 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.junit.Test;
 
+import java.io.File;
+
 /**
  * @author Olivier Lamy
  */
@@ -77,6 +79,20 @@ public class ManagedRepositoriesServiceTest
 
         service.deleteManagedRepository( repo.getId(), true );
         assertNull( service.getManagedRepository( repo.getId() ) );
+
+    }
+
+    //@Test
+    public void fileLocationExists()
+        throws Exception
+    {
+        ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
+        File target = new File( "target" );
+
+        assertTrue( service.fileLocationExists( target.getCanonicalPath() ) );
+
+        // normally should not exists :-)
+        assertFalse( service.fileLocationExists( "/fooofofof/foddfdofd/dedede/kdeo" ) );
 
     }
 

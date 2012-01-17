@@ -19,6 +19,7 @@ package org.apache.archiva.admin.repository;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.AbstractRepository;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
@@ -41,13 +42,9 @@ import javax.inject.Named;
  * @since 1.4-M1
  */
 @Service
-public class RepositoryCommonValidator
+public class DefaultRepositoryCommonValidator
+    implements RepositoryCommonValidator
 {
-
-    public static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
-
-    public static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
-
 
     @Inject
     private ArchivaConfiguration archivaConfiguration;
