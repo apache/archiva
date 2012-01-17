@@ -217,3 +217,18 @@
     </div>
   </div>
 </script>
+<script id="managed-repository-location-warning-tmpl" type='text/x-jquery-tmpl'>
+  <div>
+    <a class="close" href="#">&#215;</a>
+    <div class="alert-message warning">
+      <p>
+        <strong>${$.i18n.prop('managedrepository.location.already.exists')}</strong>
+      </p>
+    </div>
+    <div>
+      <span><strong>${$.i18n.prop('managedrepository.location.already.exists.warning.message')}</strong>.</span>
+      <div>${$.i18n.prop('id')}: ${id()}</div>
+      <div>${$.i18n.prop('name')}: ${name()}</div>
+    </div>
+  </div>
+</script>

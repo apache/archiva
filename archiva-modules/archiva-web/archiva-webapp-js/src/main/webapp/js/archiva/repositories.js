@@ -74,6 +74,7 @@ $(function() {
     this.managedRepositoriesViewModel = managedRepositoriesViewModel;
     this.update = update;
     var self = this;
+
     save=function(){
       var valid = $("#main-content #managed-repository-edit-form").valid();
       if (valid==false) {
@@ -85,33 +86,11 @@ $(function() {
         $.ajax("restServices/archivaServices/managedRepositoriesService/updateManagedRepository",
           {
             type: "POST",
+            data: "{\"managedRepository\": " + ko.toJSON(this.managedRepository)+"}",
             contentType: 'application/json',
-            data: "{\"managedRepository\": " +  ko.toJSON(this.managedRepository)+"}",
-            dataType: 'json',
-              success: function(data) {
-                displaySuccessMessage($.i18n.prop('managedrepository.updated'));
-                activateManagedRepositoriesGridTab();
-              },
-              error: function(data) {
-                var res = $.parseJSON(data.responseText);
-                displayRestError(res);
-              }
-          }
-        );
-      } else {
-        $.log("add managedRepo");
-
-        $.ajax("restServices/archivaServices/managedRepositoriesService/addManagedRepository",
-          {
-            type: "POST",
-            contentType: 'application/json',
-            data: "{\"managedRepository\": " + ko.toJSON(self.managedRepository)+"}",
             dataType: 'json',
             success: function(data) {
-              //var repo = mapManagedRepository(data);
-              //$.log("data:"+data.responseText);
-              self.managedRepositoriesViewModel.managedRepositories.push(self.managedRepository);
-              displaySuccessMessage($.i18n.prop('managedrepository.added'));
+              displaySuccessMessage($.i18n.prop('managedrepository.updated'));
               activateManagedRepositoriesGridTab();
             },
             error: function(data) {
@@ -120,7 +99,55 @@ $(function() {
             }
           }
         );
+      } else {
+        var url="restServices/archivaServices/managedRepositoriesService/fileLocationExists";
+        url+="?fileLocation="+encodeURIComponent(self.managedRepository.location());
+        $.ajax(url,
+        {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            if (data){
+              openDialogConfirm(
+                  function(){addManagedRepository(self.managedRepository),function(){window.modalConfirmDialog.modal('hide')}},
+                  $.i18n.prop('ok'), $.i18n.prop('cancel'),
+                  $.i18n.prop('managedrepository.add.title'),
+                  $("#managed-repository-location-warning-tmpl").tmpl(self.managedRepository));
+            }else{
+              addManagedRepository(self.managedRepository);
+            }
+          }
+        });
+        //addManagedRepository(self.managedRepository);
       }
+    }
+
+    addManagedRepository=function(managedRepository,completeCallbackFn){
+      $.log("add managedRepo");
+      var curManagedRepository=managedRepository;
+      var callbackFn = completeCallbackFn;
+      $.ajax("restServices/archivaServices/managedRepositoriesService/addManagedRepository",
+        {
+          type: "POST",
+          contentType: 'application/json',
+          data: "{\"managedRepository\": " + ko.toJSON(managedRepository)+"}",
+          dataType: 'json',
+          success: function(data) {
+            self.managedRepositoriesViewModel.managedRepositories.push(curManagedRepository);
+            displaySuccessMessage($.i18n.prop('managedrepository.added'));
+            activateManagedRepositoriesGridTab();
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete:function(data){
+            if(callbackFn){
+              callbackFn();
+            }
+          }
+        }
+      );
     }
 
     displayGrid=function(){
@@ -237,7 +264,7 @@ $(function() {
                 title: "Repository type (default is Maven 2)"
               }
             ],
-            pageSize: 10
+            pageSize: 5
           });
           ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
           $("#main-content #managed-repositories-pills").pills();
