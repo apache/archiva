@@ -7,3 +7,4 @@ documentation:
 * page to describe general architecture (jquery, knockout, jquery tmpl etc)
 * page for rest services (redback karma)
 * page for template loading (i18n etc...)
+* page for simpleGrid binding and various options

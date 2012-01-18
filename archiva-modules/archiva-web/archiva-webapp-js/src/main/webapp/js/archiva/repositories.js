@@ -301,7 +301,6 @@ $(function() {
             ],
             pageSize: 5,
             gridUpdateCallBack: function(){
-              $.log("gridUpdateCallBack");
               $("#main-content #managed-repositories-table [title]").twipsy();
             }
           });

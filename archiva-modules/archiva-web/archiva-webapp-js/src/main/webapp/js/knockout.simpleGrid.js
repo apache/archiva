@@ -59,10 +59,13 @@
           ko.renderTemplate(gridTemplateName, viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode")
               .subscribe(viewModel.gridUpdateCallBack?viewModel.gridUpdateCallBack:function(){});
 
+          if (viewModel.gridUpdateCallBack) viewModel.gridUpdateCallBack();
+
           // Render the page links
           var pageLinksContainer = $("#"+allBindings.pageLinksId).get(0);
           ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode")
               .subscribe(viewModel.pageLinksUpdateCallBack?viewModel.pageLinksUpdateCallBack:function(){});
+          if (viewModel.pageLinksUpdateCallBack) viewModel.pageLinksUpdateCallBack();
         }
     };
 })();
