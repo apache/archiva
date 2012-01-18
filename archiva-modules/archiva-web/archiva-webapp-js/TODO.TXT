@@ -1,3 +1,5 @@
+redback:
+* reset password link
 ui pages to do in js:
 * too much todo for archiva :-) see parent issue http://jira.codehaus.org/browse/MRM-1497
 
