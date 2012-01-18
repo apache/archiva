@@ -42,12 +42,11 @@
             <div id="managed-repositories-tabs-content" class="pill-content">
               <div id="managed-repositories-view" class="active">
                   <table class="bordered-table zebra-striped" id="managed-repositories-table"
-                         data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination'">
+                         data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination',data:'managedRepositories'">
                   </table>
                   <div id="managed-repositoriesPagination"></div>
               </div>
               <div id="managed-repository-edit" data-bind='template: {name:"managed-repository-edit-tmpl"}'>
-
               </div>
             </div>
     	</div>

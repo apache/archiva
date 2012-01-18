@@ -15,7 +15,7 @@
     ko.simpleGrid = {
       // Defines a view model class you can use to populate a grid
       viewModel: function (configuration) {
-        this.data = configuration.data;
+        this.data = ko.observableArray(configuration.data);
         this.currentPageIndex = ko.observable(0);
         this.pageSize = configuration.pageSize || 5;
         this.columns = configuration.columns;
@@ -31,6 +31,8 @@
         this.i18n=function(key){
           return $.i18n.prop(key);
         };
+        this.gridUpdateCallBack = configuration.gridUpdateCallBack;
+        this.pageLinksUpdateCallBack = configuration.pageLinksUpdateCallBack;
       }
     };
 
@@ -54,11 +56,13 @@
 
           // Render the main grid
           var gridContainer = element.appendChild(document.createElement("DIV"));
-          ko.renderTemplate(gridTemplateName, viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode");
+          ko.renderTemplate(gridTemplateName, viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode")
+              .subscribe(viewModel.gridUpdateCallBack?viewModel.gridUpdateCallBack:function(){});
 
           // Render the page links
           var pageLinksContainer = $("#"+allBindings.pageLinksId).get(0);
-          ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode");
+          ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode")
+              .subscribe(viewModel.pageLinksUpdateCallBack?viewModel.pageLinksUpdateCallBack:function(){});
         }
     };
 })();

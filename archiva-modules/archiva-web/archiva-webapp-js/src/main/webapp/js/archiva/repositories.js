@@ -299,13 +299,16 @@ $(function() {
               title: "Repository type (default is Maven 2)"
               }
             ],
-            pageSize: 5
+            pageSize: 5,
+            gridUpdateCallBack: function(){
+              $.log("gridUpdateCallBack");
+              $("#main-content #managed-repositories-table [title]").twipsy();
+            }
           });
           ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
           $("#main-content #managed-repositories-pills").pills();
           $("#managed-repositories-view").addClass("active");
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
-          $("#main-content #managed-repositories-table [title]").twipsy();
           activateManagedRepositoriesGridTab();
         }
       }

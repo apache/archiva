@@ -2743,6 +2743,7 @@ ko.exportSymbol('templateRewriting.applyMemoizedBindingsToNextSibling', ko.templ
     }
 
     function executeTemplate(targetNodeOrNodeArray, renderMode, template, bindingContext, options) {
+
         options = options || {};
         var templateEngineToUse = (options['templateEngine'] || _templateEngine);
         ko.templateRewriting.ensureTemplateIsRewritten(template, templateEngineToUse);
@@ -2797,7 +2798,6 @@ ko.exportSymbol('templateRewriting.applyMemoizedBindingsToNextSibling', ko.templ
 
                     // Support selecting template as a function of the data being rendered
                     var templateName = typeof(template) == 'function' ? template(bindingContext['$data']) : template; 
-
                     var renderedNodesArray = executeTemplate(targetNodeOrNodeArray, renderMode, templateName, bindingContext, options);
                     if (renderMode == "replaceNode") {
                         targetNodeOrNodeArray = renderedNodesArray;
