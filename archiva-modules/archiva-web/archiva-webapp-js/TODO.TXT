@@ -1,8 +1,7 @@
 ui pages to do in js:
+* too much todo for archiva :-) see parent issue http://jira.codehaus.org/browse/MRM-1497
 
-* Redback:
-  ** user roles list/edition/assignment (Repository Manager and Repository Observer: per repo for user)
-  ** roles list
-  ** single roles read (parent, childs, permissions, users with a parent role, users with this role)
-
-* too much todo for archiva :-)
+documentation:
+* page to describe general architecture (jquery, knockout, jquery tmpl etc)
+* page for rest services (redback karma)
+* page for template loading (i18n etc...)
