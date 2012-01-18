@@ -137,6 +137,12 @@
             <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository.indexDirectory"/>
           </div>
         </div>
+          <div class="clearfix">
+            <label for="layout">${$.i18n.prop('type')}</label>
+            <div class="input">
+              <select id="layout" data-bind="options: availableLayouts,optionsText: 'label',optionsValue:'type',value: managedRepository.layout"/>
+            </div>
+          </div>
         <div class="clearfix">
           <label for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="input">

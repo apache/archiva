@@ -18,6 +18,19 @@
  */
 $(function() {
 
+  // FIXME this must be dynamic if we do a plugin mechanism with dynamic repositories types
+  // FIXME i18n
+
+  ManagedRepositoryType=function(type,label){
+    this.type=type;
+    this.label=label;
+  }
+
+  window.managedRepositoryTypes = [
+            new ManagedRepositoryType("default","Maven 2.x Repository"),
+            new ManagedRepositoryType("legacy", "Maven 1.x Repository")
+            ];
+
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
                              scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded){
 
@@ -66,6 +79,16 @@ $(function() {
     //private boolean blockRedeployments = false;
     this.blockRedeployments=ko.observable(blockRedeployments);
 
+    var self=this;
+
+    this.getTypeLabel=function(){
+      for(i=0;i<window.managedRepositoryTypes.length;i++){
+        if (window.managedRepositoryTypes[i].type==self.layout()){
+          return window.managedRepositoryTypes[i].label;
+        }
+      }
+      return "no label";
+    }
 
   }
 
@@ -73,7 +96,19 @@ $(function() {
     this.managedRepository=managedRepository;
     this.managedRepositoriesViewModel = managedRepositoriesViewModel;
     this.update = update;
+
     var self = this;
+
+    this.availableLayouts = window.managedRepositoryTypes;
+
+    /*getAvailableLayouts=function(){
+      var layouts = new Array(window.managedRepositoryTypes.length);
+      for(var i=0;i<window.managedRepositoryTypes.length;i++){
+        layouts[i]=window.managedRepositoryTypes[i].label;
+      }
+      $.log("layouts.length:"+layouts.length)
+      return layouts;
+    }*/
 
     save=function(){
       var valid = $("#main-content #managed-repository-edit-form").valid();
@@ -258,10 +293,10 @@ $(function() {
                 rowText: "name"
               },
               {
-                headerText: $.i18n.prop('type'),
-                rowText: "layout",
-                // FIXME i18n
-                title: "Repository type (default is Maven 2)"
+              headerText: $.i18n.prop('type'),
+              rowText: "getTypeLabel",
+              // FIXME i18n
+              title: "Repository type (default is Maven 2)"
               }
             ],
             pageSize: 5
