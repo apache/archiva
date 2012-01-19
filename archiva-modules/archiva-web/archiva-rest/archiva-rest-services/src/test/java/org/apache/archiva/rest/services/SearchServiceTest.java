@@ -92,9 +92,18 @@ public class SearchServiceTest
         // END SNIPPET: searchservice-artifact-versions
 
         assertNotNull( artifacts );
-        assertTrue( " not 3 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
+        assertTrue( " not 13 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
                     artifacts.size() == 13 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
+
+        for ( Artifact artifact : artifacts )
+        {
+            log.info( "url:" + artifact.getUrl() );
+            String version = artifact.getVersion();
+            assertTrue( artifact.getUrl().contains( version ) );
+
+
+        }
 
         deleteTestRepo( testRepoId );
     }
