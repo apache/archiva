@@ -64,9 +64,9 @@
         {{each(i, columnDefinition) columns}}
           <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
         {{/each}}
-        <th>${$.i18n.prop('release.included')}</th>
-        <th>${$.i18n.prop('snapshots.included')}</th>
-        <th>${$.i18n.prop('managedrepository.scan.now')}</th>
+        <th>Releases</th>
+        <th>Snapshots</th>
+        <th>Scan</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
       </tr>
@@ -79,20 +79,24 @@
             {{/each}}
             <td>
             {{if row.releases() == true}}
-              <img src="images/weather-clear.png"/>
+              <img src="images/weather-clear.png" title="${$.i18n.prop('release.included')}"/>
             {{else}}
-                <img src="images/dialog-error.png"/>
+              <img src="images/dialog-error.png" title="${$.i18n.prop('release.notincluded')}"/>
             {{/if}}
             </td>
 
             <td>
               {{if row.snapshots() == true}}
-                <img src="images/weather-clear.png"/>
+                <img src="images/weather-clear.png" title="${$.i18n.prop('snapshots.included')}"/>
               {{else}}
-                  <img src="images/dialog-error.png"/>
+                  <img src="images/dialog-error.png" title="${$.i18n.prop('snapshots.notincluded')}"/>
               {{/if}}
             </td>
-            <td><a href="#" data-bind="click: function(){ scanNow(row) }">${$.i18n.prop('managedrepository.scan.now')}</a></td>
+            <td>
+              <a href="#" data-bind="click: function(){ scanNow(row) }">
+                <img src="images/view-refresh.png" title="${$.i18n.prop('managedrepository.scan.now')}"/>
+              </a>
+            </td>
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
             <td>
               <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
