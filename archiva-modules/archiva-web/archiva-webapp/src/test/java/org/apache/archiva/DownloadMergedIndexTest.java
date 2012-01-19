@@ -31,9 +31,7 @@ import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.services.FakeCreateAdminService;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,7 +75,7 @@ public class DownloadMergedIndexTest
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( "src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( "target/tmpIndex/" + id );
+        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/target/tmpIndex/" + id );
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 
@@ -114,7 +112,7 @@ public class DownloadMergedIndexTest
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( "src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( "target/tmpIndex/" + id );
+        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/target/tmpIndex/" + id );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
         {
@@ -153,10 +151,10 @@ public class DownloadMergedIndexTest
 
         SearchService searchService = getSearchService();
 
-        SearchRequest request = new SearchRequest(  );
+        SearchRequest request = new SearchRequest();
         request.setRepositories( Arrays.asList( id ) );
         request.setGroupId( "org.apache.felix" );
-        
+
         List<Artifact> artifacts = searchService.searchArtifacts( request );
         assertFalse( artifacts.isEmpty() );
         assertEquals( 1, artifacts.size() );
