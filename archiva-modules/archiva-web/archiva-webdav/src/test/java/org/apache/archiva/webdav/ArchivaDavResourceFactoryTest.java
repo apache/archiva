@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
@@ -136,7 +137,8 @@ public class ArchivaDavResourceFactoryTest
         archivaConfigurationControl.replay();
 
         defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfiguration );
-        defaultManagedRepositoryAdmin.getRepositoryCommonValidator().setArchivaConfiguration( archivaConfiguration );
+        ( (DefaultRepositoryCommonValidator) defaultManagedRepositoryAdmin.getRepositoryCommonValidator() ).setArchivaConfiguration(
+            archivaConfiguration );
         if ( defaultManagedRepositoryAdmin.getManagedRepository( RELEASES_REPO ) == null )
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
