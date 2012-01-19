@@ -66,6 +66,7 @@
         {{/each}}
         <th>${$.i18n.prop('release.included')}</th>
         <th>${$.i18n.prop('snapshots.included')}</th>
+        <th>${$.i18n.prop('managedrepository.scan.now')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
       </tr>
@@ -91,6 +92,7 @@
                   <img src="images/dialog-error.png"/>
               {{/if}}
             </td>
+            <td><a href="#" data-bind="click: function(){ scanNow(row) }">${$.i18n.prop('managedrepository.scan.now')}</a></td>
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
             <td>
               <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
@@ -236,4 +238,10 @@
       <div>${$.i18n.prop('name')}: ${name()}</div>
     </div>
   </div>
+</script>
+<script id="managed-repository-scan-now-modal-tmpl" type='text/x-jquery-tmpl'>
+      <div>
+        ${$.i18n.prop('managedrepository.scan.all')}: <input type="checkbox" id="managed-repository-scan-now-all">
+      </div>
+
 </script>

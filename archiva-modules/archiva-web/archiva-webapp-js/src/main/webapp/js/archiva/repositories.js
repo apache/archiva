@@ -224,6 +224,41 @@ $(function() {
       activateManagedRepositoryFormValidation();
     }
 
+    scanNow=function(managedRepository){
+      clearUserMessages();
+      openDialogConfirm(
+          function(){
+            $("#dialog-confirm-modal #modal-login-footer").append(smallSpinnerImg());
+            var checked = $("#managed-repository-scan-now-all").get(0).checked;
+            var url = "restServices/archivaServices/repositoriesService/scanRepositoryNow?";
+            url += "repositoryId="+encodeURIComponent(managedRepository.id());
+            url += "&fullScan="+(checked==true?"true":"false");
+            $.ajax(url,
+              {
+                type: "GET",
+                  success: function(data) {
+                    self.managedRepositories.remove(managedRepository);
+                    displaySuccessMessage($.i18n.prop("managedrepository.scanned",managedRepository.name()));
+
+                  },
+                  error: function(data) {
+                    var res = $.parseJSON(data.responseText);
+                    displayRestError(res);
+                  },
+                  complete: function(){
+                    removeSmallSpinnerImg();
+                    closeDialogConfirm();
+                  }
+              }
+            );
+          },
+          $.i18n.prop("ok"),
+          $.i18n.prop("cancel"),
+          $.i18n.prop("managedrepository.scan.now"),
+          $("#managed-repository-scan-now-modal-tmpl").tmpl(managedRepository));
+
+    }
+
     removeManagedRepository=function(managedRepository){
       clearUserMessages();
       openDialogConfirm(
