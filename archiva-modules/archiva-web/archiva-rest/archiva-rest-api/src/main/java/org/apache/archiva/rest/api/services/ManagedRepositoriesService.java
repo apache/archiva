@@ -85,6 +85,9 @@ public interface ManagedRepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    /**
+     * @since 1.4-M3
+     */
     Boolean fileLocationExists( @QueryParam( "fileLocation" ) String fileLocation )
         throws ArchivaRestServiceException;
 
@@ -92,6 +95,9 @@ public interface ManagedRepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    /**
+     * @since 1.4-M3
+     */
     ArchivaRepositoryStatistics getManagedRepositoryStatistics( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
