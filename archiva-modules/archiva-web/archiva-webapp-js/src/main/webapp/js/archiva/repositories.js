@@ -267,10 +267,11 @@ $(function() {
             $.ajax(url,
               {
                 type: "GET",
+                  beforeSend:function(){
+                    displayInfoMessage($.i18n.prop("managedrepository.scan.started"));
+                  },
                   success: function(data) {
-                    self.managedRepositories.remove(managedRepository);
                     displaySuccessMessage($.i18n.prop("managedrepository.scanned",managedRepository.name()));
-
                   },
                   error: function(data) {
                     var res = $.parseJSON(data.responseText);

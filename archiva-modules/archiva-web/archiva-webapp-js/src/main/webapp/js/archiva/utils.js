@@ -73,6 +73,12 @@ displayWarningMessage=function(text,idToAppend){
   $(textId).focus();
 }
 
+displayInfoMessage=function(text,idToAppend){
+  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+  $.tmpl($("#alert-message-info").html(), { "message" : text }).appendTo( textId );
+  $(textId).focus();
+}
+
 /**
  * clear #main-content and call clearUserMessages
   */
