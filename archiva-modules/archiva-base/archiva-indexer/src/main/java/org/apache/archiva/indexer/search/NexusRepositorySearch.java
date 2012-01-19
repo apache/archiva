@@ -240,8 +240,8 @@ public class NexusRepositorySearch
     }
 
     private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
-                                  List<? extends ArtifactInfoFilter> filters,
-                                  List<String> selectedRepos, boolean includePoms)
+                                  List<? extends ArtifactInfoFilter> filters, List<String> selectedRepos,
+                                  boolean includePoms )
         throws RepositorySearchException
     {
 
@@ -449,7 +449,7 @@ public class NexusRepositorySearch
 
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
                                                   List<? extends ArtifactInfoFilter> artifactInfoFilters,
-                                                  List<String>selectedRepos, boolean includePoms)
+                                                  List<String> selectedRepos, boolean includePoms )
         throws RepositoryAdminException
     {
         SearchResults results = new SearchResults();
@@ -541,6 +541,7 @@ public class NexusRepositorySearch
             if ( managedRepoId != null )
             {
                 sb.append( '/' ).append( managedRepoId );
+                artifactInfo.context = managedRepoId;
             }
         }
         else

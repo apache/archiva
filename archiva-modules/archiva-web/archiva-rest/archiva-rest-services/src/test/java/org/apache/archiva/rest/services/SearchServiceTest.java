@@ -189,6 +189,17 @@ public class SearchServiceTest
             " not 2 results for Bundle Symbolic Name org.apache.karaf.features.core but " + artifacts.size() + ":"
                 + artifacts, artifacts.size() == 2 );
 
+        for ( Artifact artifact : artifacts )
+        {
+            log.info( "url:" + artifact.getUrl() );
+            String version = artifact.getVersion();
+            assertEquals( "http://localhost:" + port
+                              + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
+                              + version + "/org.apache.karaf.features.core-" + version + ".bundle", artifact.getUrl() );
+
+
+        }
+
         deleteTestRepo( testRepoId );
     }
 

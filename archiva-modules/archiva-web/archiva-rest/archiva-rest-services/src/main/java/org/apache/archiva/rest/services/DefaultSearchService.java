@@ -237,7 +237,7 @@ public class DefaultSearchService
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
-                        versionned.setUrl( getArtifactUrl( versionned ) );
+                        versionned.setUrl( getArtifactUrl( versionned, version ) );
 
                         artifacts.add( versionned );
 
@@ -250,10 +250,11 @@ public class DefaultSearchService
 
     /**
      * TODO add a configuration mechanism to have configured the base archiva url
+     *
      * @param artifact
      * @return
      */
-    private String getArtifactUrl( Artifact artifact )
+    private String getArtifactUrl( Artifact artifact, String version )
     {
 
         if ( httpServletRequest == null )
@@ -267,11 +268,28 @@ public class DefaultSearchService
         StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
 
         sb.append( "/repository" );
-        if ( !StringUtils.startsWith( artifact.getUrl(), "/" ) )
+
+        sb.append( '/' ).append( artifact.getContext() );
+
+        sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
+        sb.append( '/' ).append( artifact.getArtifactId() );
+        sb.append( '/' ).append( artifact.getVersion() );
+        sb.append( '/' ).append( artifact.getArtifactId() );
+        sb.append( '-' ).append( artifact.getVersion() );
+        if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
         {
-            sb.append( '/' );
+            sb.append( '-' ).append( artifact.getClassifier() );
         }
-        sb.append( artifact.getUrl() );
+        // maven-plugin packaging is a jar
+        if ( StringUtils.equals( "maven-plugin", artifact.getPackaging() ) )
+        {
+            sb.append( "jar" );
+        }
+        else
+        {
+            sb.append( '.' ).append( artifact.getPackaging() );
+        }
+
         return sb.toString();
     }
 
