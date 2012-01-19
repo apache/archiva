@@ -67,7 +67,7 @@
         <th>Releases</th>
         <th>Snapshots</th>
         <th>Scan</th>
-        <th>Stats</th>
+        <th title="${$.i18n.prop('managedrepository.stats')}">Stats</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
       </tr>
@@ -99,7 +99,7 @@
               </a>
             </td>
             <td id="managedrepository-stats-${row.id()}">
-              <img src="images/utilities-system-monitor.png" title="${$.i18n.prop('managedrepository.stats')}"
+              <img src="images/utilities-system-monitor.png" popover-title="${$.i18n.prop('managedrepository.stats')}"
                    data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
                    id="managedrepository-stats-img-${row.id()}"/>
             </td>

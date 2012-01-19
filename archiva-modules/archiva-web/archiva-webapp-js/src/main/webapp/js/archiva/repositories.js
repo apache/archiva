@@ -350,7 +350,8 @@ $(function() {
             $("#managedrepository-stats-img-"+curRepo.id()).popover(
                 {
                   placement: "left",
-                  html: true
+                  html: true,
+                  title: "popover-title"
                 }
             );
             //$(calculatePopoverId(managedRepository)).show();
