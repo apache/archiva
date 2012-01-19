@@ -199,11 +199,12 @@ public class DefaultRepositoriesService
             ManagedRepository repository = managedRepositoryAdmin.getManagedRepository( repositoryId );
 
             IndexingContext context = managedRepositoryAdmin.createIndexContext( repository );
+
             ArtifactIndexingTask task =
                 new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
 
-            task.setExecuteOnEntireRepo( fullScan );
-            task.setOnlyUpdate( false );
+            task.setExecuteOnEntireRepo( true );
+            task.setOnlyUpdate( !fullScan );
 
             archivaIndexingTaskExecutor.executeTask( task );
             return Boolean.TRUE;
