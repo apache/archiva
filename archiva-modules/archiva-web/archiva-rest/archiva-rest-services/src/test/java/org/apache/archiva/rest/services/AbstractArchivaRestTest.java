@@ -298,6 +298,12 @@ public abstract class AbstractArchivaRestTest
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 
+        File badContent = new File( repoPath, "target" );
+        if ( badContent.exists() )
+        {
+            FileUtils.deleteDirectory( badContent );
+        }
+
         managedRepository.setLocation( new File( repoPath ).getPath() );
         managedRepository.setIndexDirectory(
             System.getProperty( "java.io.tmpdir" ) + "/target/.index-" + Long.toString( new Date().getTime() ) );
