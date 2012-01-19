@@ -67,6 +67,7 @@
         <th>Releases</th>
         <th>Snapshots</th>
         <th>Scan</th>
+        <th>Stats</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
       </tr>
@@ -96,6 +97,11 @@
               <a href="#" data-bind="click: function(){ scanNow(row) }">
                 <img src="images/view-refresh.png" title="${$.i18n.prop('managedrepository.scan.now')}"/>
               </a>
+            </td>
+            <td id="managedrepository-stats-${row.id()}">
+              <img src="images/utilities-system-monitor.png" title="${$.i18n.prop('managedrepository.stats')}"
+                   data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
+                   id="managedrepository-stats-img-${row.id()}"/>
             </td>
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
             <td>
@@ -244,8 +250,15 @@
   </div>
 </script>
 <script id="managed-repository-scan-now-modal-tmpl" type='text/x-jquery-tmpl'>
-      <div>
-        ${$.i18n.prop('managedrepository.scan.all')}: <input type="checkbox" id="managed-repository-scan-now-all">
-      </div>
-
+  <div>
+    ${$.i18n.prop('managedrepository.scan.all')}: <input type="checkbox" id="managed-repository-scan-now-all">
+  </div>
+</script>
+<script id="managed-repository-stats-tmpl" type='text/x-jquery-tmpl'>
+  <div id="managedrepository-stats-${managedRepository.id()}-popover" style="display:none">
+    <div>${$.i18n.prop('managedrepository.stats.endTime')}: ${scanEndTime()}</div>
+    <div>${$.i18n.prop('managedrepository.stats.duration')}: ${duration()}</div>
+    <div>${$.i18n.prop('managedrepository.stats.totalFileCount')}: ${totalFileCount()}</div>
+    <div>${$.i18n.prop('managedrepository.stats.newFileCount')}: ${newFileCount()}</div>
+  </div>
 </script>

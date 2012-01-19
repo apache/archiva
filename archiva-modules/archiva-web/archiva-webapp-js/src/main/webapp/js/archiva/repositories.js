@@ -92,6 +92,37 @@ $(function() {
 
   }
 
+  ArchivaRepositoryStatistics=function(scanEndTime,scanStartTime,totalArtifactCount,totalArtifactFileSize,totalFileCount,
+                                       totalGroupCount,totalProjectCount,newFileCount,duration,managedRepository){
+    //private Date scanEndTime;
+    this.scanEndTime = ko.observable(scanEndTime);
+
+    //private Date scanStartTime;
+    this.scanStartTime = ko.observable(scanStartTime);
+
+    //private long totalArtifactCount;
+    this.totalArtifactCount = ko.observable(totalArtifactCount);
+
+    //private long totalArtifactFileSize;
+    this.totalArtifactFileSize = ko.observable(totalArtifactFileSize);
+
+    //private long totalFileCount;
+    this.totalFileCount = ko.observable(totalFileCount);
+
+    //private long totalGroupCount;
+    this.totalGroupCount = ko.observable(totalGroupCount);
+
+    //private long totalProjectCount;
+    this.totalProjectCount = ko.observable(totalProjectCount);
+
+    //private long newFileCount;
+    this.newFileCount = ko.observable(newFileCount);
+
+    this.duration = ko.observable(duration);
+
+    this.managedRepository = managedRepository;
+  }
+
   ManagedRepositoryViewModel=function(managedRepository, update, managedRepositoriesViewModel){
     this.managedRepository=managedRepository;
     this.managedRepositoriesViewModel = managedRepositoriesViewModel;
@@ -296,7 +327,53 @@ $(function() {
           $("#managed-repository-delete-warning-tmpl").tmpl(managedRepository));
     }
 
+    showStats=function(managedRepository){
+      if ($(calculatePopoverId(managedRepository)).html()){
+        // we ask stats all the time ? if yes uncomment return
+        return;
+        //$(calculatePopoverId(managedRepository)).html("");
+      }
+      var curRepo=managedRepository;
+      var url = "restServices/archivaServices/managedRepositoriesService/getManagedRepositoryStatistics/"+managedRepository.id();
+      $.ajax(url,
+        {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            if (data.archivaRepositoryStatistics==null){
+              return;
+            }
+            var archivaRepositoryStatistics=mapArchivaRepositoryStatistics(data.archivaRepositoryStatistics);
+            archivaRepositoryStatistics.managedRepository=curRepo;
+            $("#managedrepository-stats-"+curRepo.id()).append($("#managed-repository-stats-tmpl").tmpl(archivaRepositoryStatistics));
+            $("#managedrepository-stats-img-"+curRepo.id()).attr("data-content",$(calculatePopoverId(curRepo)).html());
+            $("#managedrepository-stats-img-"+curRepo.id()).popover(
+                {
+                  placement: "left",
+                  html: true
+                }
+            );
+            //$(calculatePopoverId(managedRepository)).show();
+            $("#managedrepository-stats-img-"+curRepo.id()).popover('show')
 
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete: function(){
+           }
+        }
+      );
+    }
+
+    hideStats=function(managedRepository){
+
+    }
+
+    calculatePopoverId=function(managedRepository){
+      return "#managedrepository-stats-"+managedRepository.id() + " #managedrepository-stats-"+managedRepository.id()+"-popover";
+    }
 
   }
 
@@ -369,10 +446,21 @@ $(function() {
     return mappedManagedRepositories;
   }
   mapManagedRepository=function(data){
-
+    if (data==null){
+      return null;
+    }
     return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots,data.releases,
                                  data.blockRedeployments,data.cronExpression,
                                  data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,data.stageRepoNeeded);
+  }
+
+  mapArchivaRepositoryStatistics=function(data){
+    if (data==null){
+      return null;
+    }
+    return new ArchivaRepositoryStatistics(data.scanEndTime,data.scanStartTime,data.totalArtifactCount,data.totalArtifactFileSize,
+                                           data.totalFileCount,data.totalGroupCount,data.totalProjectCount,data.newFileCount,
+                                           data.duration,data.managedRepository)
   }
 
   activateManagedRepositoriesGridTab=function(){

@@ -44,6 +44,8 @@ public class ArchivaRepositoryStatistics
 
     private long newFileCount;
 
+    private long duration;
+
     public ArchivaRepositoryStatistics()
     {
         // no op
@@ -127,6 +129,16 @@ public class ArchivaRepositoryStatistics
     public void setNewFileCount( long newFileCount )
     {
         this.newFileCount = newFileCount;
+    }
+
+    public void setDuration( long duration )
+    {
+        this.duration = duration;
+    }
+
+    public long getDuration()
+    {
+        return duration;
     }
 
     @Override

@@ -181,7 +181,8 @@ public class DefaultManagedRepositoriesService
             {
                 ArchivaRepositoryStatistics archivaRepositoryStatistics =
                     new BeanReplicator().replicateBean( stats, ArchivaRepositoryStatistics.class );
-
+                archivaRepositoryStatistics.setDuration( archivaRepositoryStatistics.getScanEndTime().getTime()
+                                                             - archivaRepositoryStatistics.getScanStartTime().getTime() );
                 return archivaRepositoryStatistics;
             }
 
