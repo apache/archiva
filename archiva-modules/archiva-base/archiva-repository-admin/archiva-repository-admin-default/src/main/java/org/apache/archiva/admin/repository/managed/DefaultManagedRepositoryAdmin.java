@@ -550,7 +550,7 @@ public class DefaultManagedRepositoryAdmin
 
             if ( context != null )
             {
-                log.debug( "skip adding repository with id {} as already exists", repository.getId() );
+                log.debug( "skip adding repository indexingContent with id {} as already exists", repository.getId() );
                 return context;
             }
 

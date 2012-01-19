@@ -202,7 +202,7 @@ public class DefaultRepositoriesService
             ArtifactIndexingTask task =
                 new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
 
-            task.setExecuteOnEntireRepo( true );
+            task.setExecuteOnEntireRepo( fullScan );
             task.setOnlyUpdate( false );
 
             archivaIndexingTaskExecutor.executeTask( task );
