@@ -18,17 +18,26 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +60,13 @@ public class DefaultManagedRepositoriesService
 
     @Inject
     private RepositoryCommonValidator repositoryCommonValidator;
+
+    @Inject
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    @Inject
+    @Named( value = "repositorySessionFactory" )
+    protected RepositorySessionFactory repositorySessionFactory;
 
 
     public List<ManagedRepository> getManagedRepositories()
@@ -142,5 +158,38 @@ public class DefaultManagedRepositoriesService
     {
         String location = repositoryCommonValidator.removeExpressions( fileLocation );
         return new File( location ).exists();
+    }
+
+    public ArchivaRepositoryStatistics getManagedRepositoryStatistics( String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            RepositoryStatistics stats = null;
+            try
+            {
+                stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, repositoryId );
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                log.warn( "Error retrieving repository statistics: " + e.getMessage(), e );
+            }
+            if ( stats != null )
+            {
+                ArchivaRepositoryStatistics archivaRepositoryStatistics =
+                    new BeanReplicator().replicateBean( stats, ArchivaRepositoryStatistics.class );
+
+                return archivaRepositoryStatistics;
+            }
+
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+        return null;
     }
 }

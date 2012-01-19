@@ -358,42 +358,6 @@ public class SearchServiceTest
         deleteTestRepo( testRepoId );
     }
 
-    private void createAndIndexRepo( String testRepoId, String repoPath )
-        throws Exception
-    {
-        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
-        {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, false );
-        }
-
-        ManagedRepository managedRepository = new ManagedRepository();
-        managedRepository.setId( testRepoId );
-        managedRepository.setName( "test repo" );
-
-        managedRepository.setLocation( new File( repoPath ).getPath() );
-        managedRepository.setIndexDirectory( "target/.index-" + Long.toString( new Date().getTime() ) );
-
-        ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
-        service.addManagedRepository( managedRepository );
-
-        getRoleManagementService( authorizationHeader ).assignTemplatedRole(
-            ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "admin" );
-
-        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
-
-    }
-
-    private void deleteTestRepo( String id )
-        throws Exception
-    {
-        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )
-        {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, false );
-        }
-
-    }
-
-
 }
 
 

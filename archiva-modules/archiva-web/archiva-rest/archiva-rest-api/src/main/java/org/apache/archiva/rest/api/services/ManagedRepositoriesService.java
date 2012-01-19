@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -85,6 +86,13 @@ public interface ManagedRepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean fileLocationExists( @QueryParam( "fileLocation" ) String fileLocation )
+        throws ArchivaRestServiceException;
+
+    @Path( "getManagedRepositoryStatistics/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    ArchivaRepositoryStatistics getManagedRepositoryStatistics( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
 

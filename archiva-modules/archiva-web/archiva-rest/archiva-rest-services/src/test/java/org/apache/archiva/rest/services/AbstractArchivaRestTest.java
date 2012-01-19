@@ -30,14 +30,17 @@ import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
+import org.junit.Before;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.util.Date;
 
 /**
  * @author Olivier Lamy
@@ -56,6 +59,24 @@ public abstract class AbstractArchivaRestTest
     //    "Basic " + org.apache.cxf.common.util.Base64Utility.encode( ( "login" + ":password" ).getBytes() );
 
     // END SNIPPET: authz-header
+
+
+    @Override
+    @Before
+    public void startServer()
+        throws Exception
+    {
+        File appServerBase = new File( System.getProperty( "appserver.base" ) );
+
+        File jcrDirectory = new File( appServerBase, "jcr" );
+
+        if ( jcrDirectory.exists() )
+        {
+            FileUtils.deleteDirectory( jcrDirectory );
+        }
+
+        super.startServer();
+    }
 
     @Override
     protected String getSpringConfigLocation()
@@ -261,6 +282,42 @@ public abstract class AbstractArchivaRestTest
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
             assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+        }
+
+    }
+
+    protected void createAndIndexRepo( String testRepoId, String repoPath )
+        throws Exception
+    {
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, false );
+        }
+
+        ManagedRepository managedRepository = new ManagedRepository();
+        managedRepository.setId( testRepoId );
+        managedRepository.setName( "test repo" );
+
+        managedRepository.setLocation( new File( repoPath ).getPath() );
+        managedRepository.setIndexDirectory(
+            System.getProperty( "java.io.tmpdir" ) + "/target/.index-" + Long.toString( new Date().getTime() ) );
+
+        ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
+        service.addManagedRepository( managedRepository );
+
+        getRoleManagementService( authorizationHeader ).assignTemplatedRole(
+            ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "admin" );
+
+        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
+
+    }
+
+    protected void deleteTestRepo( String id )
+        throws Exception
+    {
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, false );
         }
 
     }

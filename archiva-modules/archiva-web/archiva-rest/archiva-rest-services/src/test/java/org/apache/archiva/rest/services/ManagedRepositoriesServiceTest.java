@@ -20,7 +20,9 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
+import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.junit.Test;
 
 import java.io.File;
@@ -96,5 +98,33 @@ public class ManagedRepositoriesServiceTest
 
     }
 
+    @Test
+    public void getManagedRepositoryStatistics()
+        throws Exception
+    {
 
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
+
+        ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
+
+        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+        ArchivaRepositoryStatistics archivaRepositoryStatistics = service.getManagedRepositoryStatistics( testRepoId );
+
+        assertNotNull( archivaRepositoryStatistics );
+
+        log.info( "archivaRepositoryStatistics:" + archivaRepositoryStatistics.toString() );
+
+        assertEquals( 92, archivaRepositoryStatistics.getNewFileCount() );
+        assertEquals( 92, archivaRepositoryStatistics.getTotalFileCount() );
+
+        deleteTestRepo( testRepoId );
+    }
 }
