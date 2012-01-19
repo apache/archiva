@@ -50,6 +50,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
@@ -104,7 +105,12 @@ public class ArchivaIndexingTaskExecutor
         {
             try
             {
+                long start = System.currentTimeMillis();
                 nexusIndexer.scan( context, null, indexingTask.isOnlyUpdate() );
+                long end = System.currentTimeMillis();
+                log.info( "indexed maven repository: {}, onlyUpdate: {}, time {} ms",
+                          Arrays.asList( repository.getId(), indexingTask.isOnlyUpdate(), ( end - start ) ).toArray(
+                              new Object[3] ) );
             }
             catch ( IOException e )
             {
