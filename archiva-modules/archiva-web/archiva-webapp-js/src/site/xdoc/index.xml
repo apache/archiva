@@ -5,6 +5,11 @@
     <author>Olivier Lamy</author>
   </properties>
   <body>
+
+    <script src="js/jquery-1.7.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/fancy-box-activation.js"></script>
+    <script src="js/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
     <section name="Archiva Javascript Web Application">
       <subsection name="General design">
       <p>
@@ -45,6 +50,12 @@
           The main page will load javascript files, load <a href="./i18n.html">i18n</a>, <a href="./template-loading.html">load templates</a> and insert menu.
           <br/>
           This main page is divided in 3 parts:
+          <p>
+          <a href="images/start-screen.png" class="single_image" title="Start Page">
+            <img src="images/start-screen.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+            Start Page
+          </a>
+          </p>
         </p>
       </subsection>
     </section>
