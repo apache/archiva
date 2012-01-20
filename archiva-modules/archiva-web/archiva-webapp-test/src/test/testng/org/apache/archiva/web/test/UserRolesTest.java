@@ -27,7 +27,7 @@ public class UserRolesTest
     extends AbstractArchivaTest
 {
 
-    private static final String EDIT_ROLES = "Edit Roles";
+    private static final String EDIT_ROLES = "Roles";
 
     public void testBasicAddDeleteUser()
     {
