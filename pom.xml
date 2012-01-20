@@ -231,6 +231,16 @@
       </roles>
       <timezone>+8</timezone>
     </developer>
+    <developer>
+      <id>jbonofre</id>
+      <name>Jean-Baptiste Onofré</name>
+      <email>jbonofre@apache.org</email>
+      <organization>Talend</organization>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
     <!-- Emeritus Committers -->
     <developer>
       <id>jvanzyl</id>
