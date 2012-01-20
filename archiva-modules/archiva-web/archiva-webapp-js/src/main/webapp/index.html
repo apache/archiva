@@ -43,7 +43,8 @@
     require.config({
         baseUrl: "js/"
       });
-    $LAB.setGlobalDefaults({AlwaysPreserveOrder:true,BasePath:"js/",explicit_preloading:false});
+    // CacheBust is for dev purpose use false in prod env !
+    $LAB.setGlobalDefaults({AlwaysPreserveOrder:true,BasePath:"js/",explicit_preloading:false,CacheBust:true});
     $LAB
        .script("jquery.tmpl.js").wait()
        .script("archiva/utils.js").wait()

@@ -190,6 +190,7 @@ $(function() {
           data: "{\"managedRepository\": " + ko.toJSON(managedRepository)+"}",
           dataType: 'json',
           success: function(data) {
+            curManagedRepository.location(data.managedRepository.location);
             self.managedRepositoriesViewModel.managedRepositories.push(curManagedRepository);
             displaySuccessMessage($.i18n.prop('managedrepository.added'));
             activateManagedRepositoriesGridTab();
