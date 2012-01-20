@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,9 @@ public abstract class AbstractRestService
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
+    @Context
+    protected HttpServletRequest httpServletRequest;
+
     protected AuditInformation getAuditInformation()
     {
         RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
@@ -60,5 +65,12 @@ public abstract class AbstractRestService
     public void setAuditListeners( List<AuditListener> auditListeners )
     {
         this.auditListeners = auditListeners;
+    }
+
+    protected String getBaseUrl( HttpServletRequest req )
+    {
+        return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
+            ? ""
+            : ":" + req.getServerPort() ) + req.getContextPath();
     }
 }

@@ -57,6 +57,7 @@ import java.util.List;
  */
 @Service( "searchService#rest" )
 public class DefaultSearchService
+    extends AbstractRestService
     implements SearchService
 {
 
@@ -67,9 +68,6 @@ public class DefaultSearchService
 
     @Inject
     private UserRepositories userRepositories;
-
-    @Context
-    private HttpServletRequest httpServletRequest;
 
     public List<Artifact> quickSearch( String queryString )
         throws ArchivaRestServiceException
@@ -293,10 +291,5 @@ public class DefaultSearchService
         return sb.toString();
     }
 
-    protected String getBaseUrl( HttpServletRequest req )
-    {
-        return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
-            ? ""
-            : ":" + req.getServerPort() ) + req.getContextPath();
-    }
+
 }

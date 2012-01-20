@@ -132,15 +132,6 @@ $(function() {
 
     this.availableLayouts = window.managedRepositoryTypes;
 
-    /*getAvailableLayouts=function(){
-      var layouts = new Array(window.managedRepositoryTypes.length);
-      for(var i=0;i<window.managedRepositoryTypes.length;i++){
-        layouts[i]=window.managedRepositoryTypes[i].label;
-      }
-      $.log("layouts.length:"+layouts.length)
-      return layouts;
-    }*/
-
     save=function(){
       var valid = $("#main-content #managed-repository-edit-form").valid();
       if (valid==false) {
@@ -370,6 +361,31 @@ $(function() {
     }
 
     hideStats=function(managedRepository){
+
+    }
+
+    showPomSnippet=function(managedRepository){
+
+
+      var url = "restServices/archivaServices/managedRepositoriesService/getPomSnippet/"+managedRepository.id();
+      $.ajax(url,
+        {
+          type: "GET",
+          dataType: 'text',
+          success: function(data) {
+            //var snippet='<div class="page-header">';
+            //snippet +="<h2>POM Snippet</h2></div>";
+            //$("#managed-repositories-pom-snippet").html(snippet+"<pre>"+data+"</pre>");
+            $("#managed-repositories-pom-snippet").html($("#pom-snippet-tmpl").tmpl(data));
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete: function(){
+           }
+        }
+      );
 
     }
 

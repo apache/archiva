@@ -45,6 +45,7 @@
                          data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination',data:'managedRepositories'">
                   </table>
                   <div id="managed-repositoriesPagination"></div>
+                  <div id="managed-repositories-pom-snippet"></div>
               </div>
               <div id="managed-repository-edit" data-bind='template: {name:"managed-repository-edit-tmpl"}'>
               </div>
@@ -67,9 +68,10 @@
         <th>Releases</th>
         <th>Snapshots</th>
         <th>Scan</th>
-        <th title="${$.i18n.prop('managedrepository.stats')}">Stats</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('managedrepository.pomsnippet')}</th>
+        <th title="${$.i18n.prop('managedrepository.stats')}">Stats</th>
       </tr>
   </thead>
   <tbody>
@@ -98,16 +100,17 @@
                 <img src="images/view-refresh.png" title="${$.i18n.prop('managedrepository.scan.now')}"/>
               </a>
             </td>
-            <td id="managedrepository-stats-${row.id()}">
-              <img src="images/utilities-system-monitor.png" popover-title="${$.i18n.prop('managedrepository.stats')}"
-                   data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
-                   id="managedrepository-stats-img-${row.id()}"/>
-            </td>
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
             <td>
               <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
                 <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
               </a>
+            </td>
+            <td><a href="#" data-bind="click: function(){ showPomSnippet(row) }">${$.i18n.prop('managedrepository.pomsnippet')}</a></td>
+            <td id="managedrepository-stats-${row.id()}">
+              <img src="images/utilities-system-monitor.png" popover-title="${$.i18n.prop('managedrepository.stats')}"
+                   data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
+                   id="managedrepository-stats-img-${row.id()}"/>
             </td>
           </tr>
       {{/each}}
@@ -261,4 +264,9 @@
     <div>${$.i18n.prop('managedrepository.stats.totalFileCount')}: ${totalFileCount()}</div>
     <div>${$.i18n.prop('managedrepository.stats.newFileCount')}: ${newFileCount()}</div>
   </div>
+</script>
+<script id="pom-snippet-tmpl" type='text/x-jquery-tmpl'>
+    <div class="page-header">
+    <h2>POM Snippet</h2></div>
+    <pre>${$data}</pre>
 </script>

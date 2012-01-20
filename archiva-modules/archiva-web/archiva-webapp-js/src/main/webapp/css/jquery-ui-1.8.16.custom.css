@@ -1,8 +1,13 @@
-/*
- * jQuery UI Bootstrap
- * Portions copyright Addy Osmani, jQuery UI & Twitter Bootstrap
- * Released under MIT/GPL.
+/*!
+ * jQuery UI Bootstrap (0.22)
+ * http://addyosmani.github.com/jquery-ui-bootstrap
+ *
+ * Copyright 2012, Addy Osmani
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ * Portions copyright jQuery UI & Twitter Bootstrap
  */
+
 
 /* Layout helpers
 ----------------------------------*/
@@ -69,8 +74,6 @@
 /* Interaction states
 ----------------------------------*/
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
-/*
-border: 1px solid #d3d3d3; background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #555555;*/
 
   background-color: #e6e6e6;
   background-repeat: no-repeat;
@@ -601,20 +604,7 @@ border: 1px solid #d3d3d3; background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_
 }
 
 .ui-button-icon-only { width: 2.2em; } /* to make room for the icon, a width needs to be set here */
-button.ui-button-icon-only { 
-  /*
-    width: 2.4em;
-    margin-right: -.3em;
-    display: inline-block;
-position: relative;
-margin-right: .1em;
-text-decoration: none !important;
-cursor: pointer;
-text-align: center;
-zoom: 1;
-overflow: visible;
-*/
-   } /* button elements seem to need a little more width */
+button.ui-button-icon-only { } /* button elements seem to need a little more width */
 .ui-button-icons-only { width: 3.4em; }
 button.ui-button-icons-only { width: 3.7em; }
 
@@ -698,7 +688,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 .ui-dialog .ui-dialog-title {
   float: left;
-  /*margin: .1em 16px .1em 0; */
   color:#404040;
   font-weight:bold;
   margin-top:5px;
@@ -707,28 +696,36 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 }
 .ui-dialog .ui-dialog-titlebar-close {
-position: absolute;
-right: .3em;
-top: 50%;
-width: 19px;
-margin: -10px 0 0 0;
-padding: 1px;
-height: 18px;
-font-size: 20px;
-font-weight: bold;
-line-height: 13.5px;
-text-shadow: 0 1px 0 #ffffff;
-filter: alpha(opacity=25);
--khtml-opacity: 0.25;
--moz-opacity: 0.25;
-opacity: 0.25;
+  position: absolute;
+  right: .3em;
+  top: 50%;
+  width: 19px;
+  margin: -10px 0 0 0;
+  padding: 1px;
+  height: 18px;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 13.5px;
+  text-shadow: 0 1px 0 #ffffff;
+  filter: alpha(opacity=25);
+  -khtml-opacity: 0.25;
+  -moz-opacity: 0.25;
+  opacity: 0.25;
 }
-.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+
+.ui-dialog .ui-dialog-titlebar-close span { 
+  display: block; 
+  margin: 1px;
+  text-indent: 9999px;
+}
+
 .ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0;   filter: alpha(opacity=90);
   -khtml-opacity: 0.90;
   -moz-opacity: 0.90;
   opacity: 0.90;   }
+
 .ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+
 .ui-dialog .ui-dialog-buttonpane {
   text-align: left;
   border-width: 1px 0 0 0;
@@ -753,7 +750,7 @@ opacity: 0.25;
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 
 .ui-dialog-buttonpane .ui-dialog-buttonset .ui-button{
-      color: #ffffff;
+  color: #ffffff;
   background-color: #0064cd;
   background-repeat: repeat-x;
   background-image: -khtml-gradient(linear, left top, left bottom, from(#049cdb), to(#0064cd));
@@ -781,9 +778,7 @@ opacity: 0.25;
 .ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default; }
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; font-size: .7em; display: block; border: 0; background-position: 0 0;
 
-
-/*this can be removed if ui-widget-header is blue*/
-    color: #ffffff;
+  color: #ffffff;
   background-color: #0064cd;
   background-repeat: repeat-x;
   background-image: -khtml-gradient(linear, left top, left bottom, from(#049cdb), to(#0064cd));
@@ -823,15 +818,18 @@ opacity: 0.25;
   border-style: solid;
   border-width: 0 0 1px;}
 .ui-tabs { position: relative; padding: .2em; zoom: 1; border:0px;} /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-.ui-tabs .ui-tabs-nav li:hover{
-  text-decoration: none;
+
+
+.ui-tabs .ui-tabs-nav li:hover, .ui-tabs .ui-tabs-nav li a:hover{
+  background:whiteSmoke;
+  border-bottom:1px solid #ddd;
+  padding-bottom:0px;
+   color:#00438A;
 }
 
 
 .ui-tabs .ui-tabs-nav { margin: 0; padding: .2em .2em 0; border-bottom:1px solid #DDD; }
-.ui-tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; top: 1px;   padding: 0; white-space: nowrap; background:none; border:0px;
-
-
+.ui-tabs .ui-tabs-nav li {  text-decoration: none; list-style: none; float: left; position: relative; top: 1px; padding: 0px 0px 1px 0px; white-space: nowrap; background:none; border:0px; 
 
 }
 
@@ -855,7 +853,7 @@ opacity: 0.25;
 
 
  }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 0px; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 0px; outline:none;}
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a {
 
@@ -864,18 +862,17 @@ opacity: 0.25;
   border-bottom-color: #ffffff;
   cursor: default;
   color:gray;
-
-
+  outline:none;
 }
-.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a {
-cursor: pointer;
-color:#0069D6;
-background:none;
-font-weight:normal;
-margin-bottom:-1px;
 
 
-} /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected:hover{
+  background:#ffffff;
+  outline:none;
+}
+
+.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; color:#0069D6; background:none; font-weight:normal; margin-bottom:-1px;} 
+/* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
 .ui-tabs-panel .ui-button{text-decoration:none;}
 .ui-tabs .ui-tabs-hide { display: none !important; }
@@ -885,6 +882,7 @@ margin-bottom:-1px;
 .ui-tabs .ui-tabs-nav li{
   filter:none;
 }
+
 
 
 /*
@@ -897,16 +895,7 @@ margin-bottom:-1px;
  * http://docs.jquery.com/UI/Datepicker#theming
  */
 .ui-datepicker { width: 17em; padding: .2em .2em 0; display: none; }
-.ui-datepicker .ui-datepicker-header { position:relative; padding:.2em 0; border:0px;
-
- font-weight: bold;
-  width: 100%;
-  padding: 4px 0;
-  background-color: #f5f5f5;
-  color: #808080;
-
-  
-   }
+.ui-datepicker .ui-datepicker-header { position:relative; padding:.2em 0; border:0px; font-weight: bold; width: 100%; padding: 4px 0; background-color: #f5f5f5; color: #808080; }
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { position:absolute; top: 2px; width: 1.8em; height: 1.8em; }
 
 .ui-datepicker .ui-datepicker-prev-hover, .ui-datepicker .ui-datepicker-next-hover { /*top: 1px;*/ }
@@ -957,15 +946,15 @@ margin-bottom:-1px;
 
 /* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
 .ui-datepicker-cover {
-    display: none; /*sorry for IE5*/
-    display/**/: block; /*sorry for IE5*/
-    position: absolute; /*must have*/
-    z-index: -1; /*must have*/
-    filter: mask(); /*must have*/
-    top: -4px; /*must have*/
-    left: -4px; /*must have*/
-    width: 200px; /*must have*/
-    height: 200px; /*must have*/
+  display: none; /*sorry for IE5*/
+  display/**/: block; /*sorry for IE5*/
+  position: absolute; /*must have*/
+  z-index: -1; /*must have*/
+  filter: mask(); /*must have*/
+  top: -4px; /*must have*/
+  left: -4px; /*must have*/
+  width: 200px; /*must have*/
+  height: 200px; /*must have*/
 }
 
 .ui-datepicker th{
@@ -1089,8 +1078,6 @@ input[type="password"],
 textarea,
 .uneditable-input {
   display: inline-block;
-  width: 210px;
-  height: 18px;
   padding: 4px;
   font-size: 13px;
   line-height: 18px;
@@ -1102,10 +1089,11 @@ textarea,
 }
 
 
+
 /**Toolbar**/
 
 .ui-toolbar{
-    padding: 7px 14px;
+  padding: 7px 14px;
   margin: 0 0 18px;
   background-color: #f5f5f5;
   background-repeat: repeat-x;
@@ -1160,5 +1148,173 @@ textarea,
   -o-transition: 0.1s linear all;
   transition: 0.1s linear all;
    overflow: visible;
+}
+
+
+
+/***Wijmo Theming**/
+
+div.wijmo-wijmenu{
+  padding:0 20px;
+  background-color: #222;
+  background-color: #222222;
+  background-repeat: repeat-x;
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#333333), to(#222222));
+  background-image: -moz-linear-gradient(top, #333333, #222222);
+  background-image: -ms-linear-gradient(top, #333333, #222222);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #333333), color-stop(100%, #222222));
+  background-image: -webkit-linear-gradient(top, #333333, #222222);
+  background-image: -o-linear-gradient(top, #333333, #222222);
+  background-image: linear-gradient(top, #333333, #222222);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#333333', endColorstr='#222222', GradientType=0);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.wijmo-wijmenu .ui-state-default{
+  box-shadow: none;
+  color:#BFBFBF;
+}
+
+.wijmo-wijmenu .ui-state-default .wijmo-wijmenu-text{    
+  color:#BFBFBF;
+}
+
+.wijmo-wijmenu .ui-state-hover{
+  background: #444;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.wijmo-wijmenu .ui-state-hover .wijmo-wijmenu-text{
+  color:#ffffff;
+}
+
+div.wijmo-wijmenu .ui-widget-header h3{
+  position: relative;
+  margin-top:1px;
+  padding:0;
+}
+
+.wijmo-wijmenu h3 a{
+  color: #FFFFFF;
+  display: block;
+  float: left;
+  font-size: 20px;
+  font-weight: 200;
+  line-height: 1;
+  margin-left: -20px;
+  margin-top:1px;
+  padding: 8px 20px 12px;
+}
+
+.wijmo-wijmenu h3 a:hover{
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.wijmo-wijmenu .ui-widget-header{
+  border:0px;
+}
+
+.wijmo-wijmenu .wijmo-wijmenu-parent .wijmo-wijmenu-child{
+  padding: 0.3em 0;
+}
+
+div.wijmo-wijmenu .wijmo-wijmenu-item .wijmo-wijmenu-child{
+  background: #333;
+  border:0;
+  margin:0;
+  padding: 6px 0;
+  width:160px;
+  -webkit-border-radius: 0 0 6px 6px;
+  -moz-border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px;
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+div.wijmo-wijmenu .wijmo-wijmenu-item{
+  margin:0;
+  border:0;
+}
+
+.wijmo-wijmenu a.wijmo-wijmenu-link{
+  margin:0;
+  line-height: 19px;
+  padding: 10px 10px 11px;
+  border:0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius:0;
+}
+
+div.wijmo-wijmenu .wijmo-wijmenu-child .wijmo-wijmenu-link{
+  display:block;
+  float:none;
+  padding: 4px 15px;
+  width:auto;
+}
+
+div.wijmo-wijmenu .wijmo-wijmenu-child .wijmo-wijmenu-text
+{
+  float:none;
+}
+
+.wijmo-wijmenu .wijmo-wijmenu-item .wijmo-wijmenu-child .ui-state-hover {
+  background: #191919;
+}
+
+.wijmo-wijmenu .wijmo-wijmenu-item .wijmo-wijmenu-separator{
+  padding: 5px 0;
+  background-image: none;
+  background-color: #222;
+  border-top: 1px solid #444;
+  border-bottom:0;
+  border-left:0;
+  border-right:0;
+}
+
+.wijmo-wijmenu .wijmo-wijmenu-item input {
+  -moz-transition: none 0s ease 0s;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid #111111;
+  border-radius: 4px 4px 4px 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  line-height: 1;
+  margin: 5px 10px 0 10px;
+  padding: 4px 9px;
+  width:100px;
+}
+
+.wijmo-wijmenu .wijmo-wijmenu-item input:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #FFFFFF;
+}
+
+.wijmo-wijmenu .wijmo-wijmenu-item input:focus {
+  background-color: #FFFFFF;
+  border: 0 none;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+  color: #404040;
+  outline: 0 none;
+  padding: 5px 10px;
+  text-shadow: 0 1px 0 #FFFFFF;
+}
+
+
+.wijmo-wijmenu .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+  text-shadow:none;
+}
+
+
+.wijmo-wijmenu .ui-state-default{
+  box-shadow: none;
+  color:#BFBFBF;
+  filter: none;
 }
 

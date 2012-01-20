@@ -101,5 +101,16 @@ public interface ManagedRepositoriesService
     ArchivaRepositoryStatistics getManagedRepositoryStatistics( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
+    @Path( "getPomSnippet/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.TEXT_PLAIN} )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    /**
+     * return a pom snippet to use this repository with entities escaped (< > )
+     * @since 1.4-M3
+     */
+    String getPomSnippet( @PathParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
 
 }
