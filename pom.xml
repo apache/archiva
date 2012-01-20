@@ -1330,6 +1330,7 @@
         </exclusions>
       </dependency>
 
+      <!-- 2.5.0 upgrade cause NPE with jpox 2nd level cache -->
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-core</artifactId>
