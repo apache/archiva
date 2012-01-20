@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Archiva Javascript application General design</title>
+    <author>Olivier Lamy</author>
+  </properties>
+  <body>
+    <section name="Archiva Javascript Web Application">
+      <subsection name="General design">
+      <p>
+        The goal is to have a "one page loading" javascript application.
+        <br/>
+        For this the only html page will contains a div with id "main-content" this div will be populated
+        by jquery template execution (see <a href="./template-loading.html">template loading</a>).
+        <br/>
+        The server will be contacted only for REST request/response (see <a href="./rest.html">details</a>).
+        <br/>
+        <b>All UI rendering will be done only on client side.</b>
+        <br/>
+        As we are not designer :-), the application will use the <a href="http://twitter.github.com/bootstrap" target="_blank">twitter bootstrap css</a>.
+      </p>
+      </subsection>
+      <subsection name="Used Javascript frameworks">
+        <p>
+        We use some well known javascript framework librairies :
+        <ul>
+          <li><a target="_blank" href="http://jquery.com/">jquery</a>.</li>
+
+          <li><a target="_blank" href="http://labjs.com">labjs</a> for javascript loading.</li>
+
+          <li><a target="_blank" href="http://requirejs.org">requirejs</a> for template loading (see <a href="./template-loading.html">details</a>.</li>
+
+          <li><a target="_blank" href="http://code.google.com/p/jquery-i18n-properties">jquery-i18n-properties</a> for i18n loading (see <a href="./i18n.html">details</a>.</li>
+
+          <li><a target="_blank" href="http://knockoutjs.com">knockoutjs</a> as we use a MVVM pattern (see <a href="./knockout-binding.html">knockout binding</a>).</li>
+
+          <li><a target="_blank" href="http://twitter.github.com/bootstrap/javascript.html">twitter bootstrap js</a> to magnify the ui.</li>
+
+          <li><a target="_blank" href="http://bassistance.de/jquery-plugins/jquery-plugin-validation">jquery validate</a> for form validation.</li>
+        </ul>
+        </p>
+      </subsection>
+      <subsection name="Start page">
+        <p>
+          The main page will load javascript files, load <a href="./i18n.html">i18n</a>, <a href="./template-loading.html">load templates</a> and insert menu.
+          <br/>
+          This main page is divided in 3 parts:
+        </p>
+      </subsection>
+    </section>
+  </body>
+</document>
+
+
