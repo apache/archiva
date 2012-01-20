@@ -366,16 +366,14 @@ $(function() {
 
     showPomSnippet=function(managedRepository){
 
-
+      $("#managed-repositories-pom-snippet").html(mediumSpinnerImg());
+      $('#managed-repositories-pom-snippet').show();
       var url = "restServices/archivaServices/managedRepositoriesService/getPomSnippet/"+managedRepository.id();
       $.ajax(url,
         {
           type: "GET",
           dataType: 'text',
           success: function(data) {
-            //var snippet='<div class="page-header">';
-            //snippet +="<h2>POM Snippet</h2></div>";
-            //$("#managed-repositories-pom-snippet").html(snippet+"<pre>"+data+"</pre>");
             $("#managed-repositories-pom-snippet").html($("#pom-snippet-tmpl").tmpl(data));
           },
           error: function(data) {
@@ -383,7 +381,7 @@ $(function() {
             displayRestError(res);
           },
           complete: function(){
-           }
+          }
         }
       );
 
