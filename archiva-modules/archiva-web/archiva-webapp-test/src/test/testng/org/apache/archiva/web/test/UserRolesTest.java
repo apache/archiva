@@ -22,10 +22,12 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "userroles" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = {"userroles"}, dependsOnMethods = {"testWithCorrectUsernamePassword"} )
 public class UserRolesTest
     extends AbstractArchivaTest
 {
+
+    private static final String EDIT_ROLES = "Edit Roles";
 
     public void testBasicAddDeleteUser()
     {
@@ -38,7 +40,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testBasicAddDeleteUser" } )
+    @Test( dependsOnMethods = {"testBasicAddDeleteUser"} )
     public void testUserWithGuestRole()
     {
         username = getProperty( "GUEST_USERNAME" );
@@ -46,7 +48,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkUserRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -59,7 +61,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testUserWithGuestRole" } )
+    @Test( dependsOnMethods = {"testUserWithGuestRole"} )
     public void testUserWithRegisteredUserRole()
     {
         username = getProperty( "REGISTERED_USERNAME" );
@@ -67,7 +69,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkUserRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -80,7 +82,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testUserWithRegisteredUserRole" } )
+    @Test( dependsOnMethods = {"testUserWithRegisteredUserRole"} )
     public void testUserWithSysAdminUserRole()
     {
         username = getProperty( "SYSAD_USERNAME" );
@@ -88,7 +90,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkUserRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -101,7 +103,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testUserWithSysAdminUserRole" } )
+    @Test( dependsOnMethods = {"testUserWithSysAdminUserRole"} )
     public void testUserWithUserAdminUserRole()
     {
         username = getProperty( "USERADMIN_USERNAME" );
@@ -109,7 +111,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkUserRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -122,7 +124,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testUserWithUserAdminUserRole" } )
+    @Test( dependsOnMethods = {"testUserWithUserAdminUserRole"} )
     public void testUserWithGlobalRepoManagerRole()
     {
         username = getProperty( "GLOBALREPOMANAGER_USERNAME" );
@@ -130,7 +132,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkUserRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -143,7 +145,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testUserWithGlobalRepoManagerRole" } )
+    @Test( dependsOnMethods = {"testUserWithGlobalRepoManagerRole"} )
     public void testUserWithGlobalRepoObserverRole()
     {
         username = getProperty( "GLOBALREPOOBSERVER_USERNAME" );
@@ -151,7 +153,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkUserRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -164,7 +166,7 @@ public class UserRolesTest
         login( getAdminUsername(), getAdminPassword() );
     }
 
-    @Test( dependsOnMethods = { "testUserWithGlobalRepoObserverRole" } )
+    @Test( dependsOnMethods = {"testUserWithGlobalRepoObserverRole"} )
     public void testUserWithRepoManagerInternalRole()
     {
         username = getProperty( "REPOMANAGER_INTERNAL_USERNAME" );
@@ -172,7 +174,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkResourceRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
@@ -198,7 +200,7 @@ public class UserRolesTest
      * getAdminUsername() , getAdminPassword() ); }
      */
 
-    @Test( dependsOnMethods = { "testUserWithRepoManagerInternalRole" } )
+    @Test( dependsOnMethods = {"testUserWithRepoManagerInternalRole"} )
     public void testUserWithRepoObserverInternalRole()
     {
         username = getProperty( "REPOOBSERVER_INTERNAL_USERNAME" );
@@ -206,7 +208,7 @@ public class UserRolesTest
 
         createUser( username, fullname, getUserEmail(), getUserRolePassword(), true );
         clickLinkWithText( username );
-        clickLinkWithText( "Edit Roles" );
+        clickLinkWithText( EDIT_ROLES );
         checkResourceRoleWithValue( fullname );
         clickButtonWithValue( "Submit" );
 
