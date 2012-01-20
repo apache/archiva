@@ -43,7 +43,8 @@
       <item name="General Design"        href="/index.html" />
       <item name="Rest service"          href="/rest.html"/>
       <item name="JS Template loading"   href="/template-loading.html"/>
-      <item name="Knockout Grid Binding" href="/knockout-simple-grid-binding"/>
+      <item name="Knockout Binding"      href="/knockout-binding.html"/>
+      <item name="i18n"                  href="/i18n.html"/>
     </menu>
 
   </body>

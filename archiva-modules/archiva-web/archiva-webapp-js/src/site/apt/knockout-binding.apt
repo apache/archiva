@@ -1,5 +1,5 @@
  -----
- Knockout Simple Grid binding
+ Knockout binding
  -----
  Olivier Lamy
  -----
@@ -26,4 +26,4 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
-  How javascript are loaded on application loading
+Knockout binding

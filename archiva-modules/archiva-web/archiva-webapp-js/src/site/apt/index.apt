@@ -26,4 +26,49 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
-  Archiva Javascript webapplication General design
+Archiva Javascript Web Application
+
+* General design
+
+  The goal is to have a "one page loading" javascript application.
+
+  For this the only html page will contains a div with id "main-content" this div will be populated
+  by jquery template execution (see {{{./template-loading.html}template loading}}).
+
+  The server will be contacted only for REST request/response (see {{{./rest.html}details}}).
+
+  <<All UI rendering will be done only on client side.>>
+
+  As we are not designer :-), the application will use the {{{http://twitter.github.com/bootstrap/}twitter bootstrap css}}.
+
+* Used Javascript frameworks
+
+  We use some well known javascript framework librairies :
+
+  * {{{http://jquery.com/}jquery}}
+
+  * {{{http://labjs.com}labjs}} for javascript loading
+
+  * {{{http://requirejs.org}requirejs}} for template loading (see {{{./template-loading.html}details}}
+
+  * {{{http://code.google.com/p/jquery-i18n-properties}jquery-i18n-properties}} for i18n loading (see {{{./i18n.html}details}}
+
+  * {{{http://knockoutjs.com/}knockoutjs}} as we use a MVVM pattern (see {{{./knockout-binding.html}knockout binding}})
+
+  * {{{http://twitter.github.com/bootstrap/javascript.html}twitter bootstrap js}} to magnify the ui
+
+  * {{{http://bassistance.de/jquery-plugins/jquery-plugin-validation/}jquery validate}} for form validation
+
+  []
+
+* Start page
+
+  The main page will load javascript and ask for {{{./template-loading.html}template loading}}.
+
+  This main page is divided in 3 parts:
+
+
+
+
+
+
