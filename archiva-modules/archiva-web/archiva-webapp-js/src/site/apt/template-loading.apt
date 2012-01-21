@@ -28,7 +28,7 @@
 
 Html/Javascript templates loading
 
-  Templates are loaded on application loaded and added in the hidden div #html-fragments.
+  Templates are loaded on application loaded and added in the hidden div <<#html-fragments>>.
 
   They are loaded using requirejs and the text plugin.
 
@@ -50,4 +50,21 @@ require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html"
 );
 +-------------------------
 
-  Note some templates which are only simple html which only need i18n are executed immediatly the others are only inserted in #html-fragments.
+* i18n in templates
+
+** static templates
+
+  Some templates which are only simple html which only need i18n are executed immediatly.
+
+  Simply use:
+
++-------------------------
+  $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
+  to get i18n values in your template you can use
+  ${register} or ${$.i18n.prop('register')}
++-------------------------
+
+
+** dynamic templates
+
+   The others are only inserted in #html-fragments.
