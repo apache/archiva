@@ -41,14 +41,14 @@ public interface RepositoryGroupService
 {
     @Path( "getRepositoriesGroups" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<RepositoryGroup> getRepositoriesGroups()
         throws ArchivaRestServiceException;
 
     @Path( "getRepositoryGroup/{repositoryGroupId}" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     RepositoryGroup getRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
         throws ArchivaRestServiceException;
