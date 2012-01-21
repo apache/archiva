@@ -26,4 +26,101 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
-Expose Rest Services (sample with redback annotations)
+Expose Rest Services
+
+  The {{http://cxf.apache.org}Apache CXF}} is used to expose some classes/methods as REST Services.
+
+  Services use the standard interface/implementation pattern:
+
+  * interfaces and beans are located in archiva-rest-api maven module
+
+  * implementation are located in archiva-rest-services maven module
+
+  []
+
+* Annotations
+
+** Beans
+
+  As we want to be able to expose result as json or xml type, all beans use javax.xml.bind.annotation root element :
+
++---------------------
+@XmlRootElement( name = "artifact" )
+public class Artifact
+    implements Serializable
++---------------------
+
+** JAXRS annotations
+
+  As we use interfaces/implementations pattern jaxrs annotations are only in interfaces level.
+
++---------------------
+@Path( "/managedRepositoriesService/" )
+public interface ManagedRepositoriesService
+{
+    @Path( "getManagedRepositories" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    List<ManagedRepository> getManagedRepositories()
+        throws ArchivaRestServiceException;
++---------------------
+
+** CXF/Spring configuration
+
+  REST services implementations are marked with the Spring annotation @Service
+
++---------------------
+@Service( "managedRepositoriesService#rest" )
+public class DefaultManagedRepositoriesService
+    extends AbstractRestService
+    implements ManagedRepositoriesService
++---------------------
+
+  Spring beans are declared as REST/CXF services in the Spring configuration
+
++---------------------
+  <jaxrs:server id="archivaServices" address="/archivaServices">
+    .....
+    <jaxrs:serviceBeans>
+      <ref bean="managedRepositoriesService#rest"/>
+    </jaxrs:serviceBeans>
+    .....
+  </jaxrs:server>
++---------------------
+
+  CXF servlet is declared as:
+
++---------------------
+  <servlet>
+    <servlet-name>CXFServlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>CXFServlet</servlet-name>
+    <url-pattern>/restServices/*</url-pattern>
+  </servlet-mapping>
++---------------------
+
+  So as it, REST services are availble in the following url <<restServices/archivaServices/>>.
+
+** Redback security annotation
+
+  Some REST methods need some karma, so to prevent anonymous access methods can be marked as it:
+
++---------------------
+
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    ManagedRepository addManagedRepository( ManagedRepository managedRepository )
+        throws ArchivaRestServiceException;
++---------------------
+
+  This method will need the current user to have the operation manage-configuration level.
+
+  For more details, have a look at {{{http://redback.codehaus.org/integration/rest.html}Redback REST}}.
+
+
+
+
+
