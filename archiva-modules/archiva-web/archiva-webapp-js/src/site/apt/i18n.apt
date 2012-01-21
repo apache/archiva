@@ -27,3 +27,27 @@
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
 i18n management
+
+  The js library {{{http://code.google.com/p/jquery-i18n-properties}jquery-i18n-properties}} is used for i18n.
+
+  On application loading, i18n properties are loaded by calling a REST services with the browser lang
+  or with the requested language specified by the request parameter : ?request_lang=en.
+
+  This service will load properties in this order:
+
+  * redback properties in en then in specified language
+
+  * archiva properties (from org/apache/archiva/i18n/default.properties) in en then in specified language
+
+* Javascript method
+
+   You can use the "interpolation" mechanism in javascript too (sample for property managedrepository.deleted=Managed Repository " {0} " deleted. )
+
++-----------------------
+Javascript code :
+$.i18n.prop("managedrepository.deleted",managedRepository.name())
++-----------------------
+
+* Missing properties
+
+  In case of missing property, the key is returned.
