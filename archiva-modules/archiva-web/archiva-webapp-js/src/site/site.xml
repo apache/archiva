@@ -45,6 +45,7 @@
       <item name="JS Template loading"   href="/template-loading.html"/>
       <item name="Knockout Binding"      href="/knockout-binding.html"/>
       <item name="i18n"                  href="/i18n.html"/>
+      <item name="Generic Javascipts"    href="/generics-js"/>
     </menu>
 
   </body>
