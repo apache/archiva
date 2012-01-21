@@ -51,12 +51,55 @@
           <br/>
           This main page is divided in 3 parts:
           <p>
-          <a href="images/start-screen.png" class="single_image" title="Start Page">
-            <img src="images/start-screen.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-            Start Page
-          </a>
+            <a href="images/start-screen.png" class="single_image" title="Start Page">
+              <img src="images/start-screen.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+              Start Page
+            </a>
+          </p>
+          <p>
+            <ul>
+              <li>#topbar-menu-container is populated with the template js/archiva/templates/topbar.html.</li>
+              <li>#sidebar-content is populated with the template js/archiva/templates/menu.html.</li>
+              <li>#main-content is the place where screen will appear.</li>
+              <li>hidden #html-fragments will contains loaded templates.</li>
+            </ul>
+          </p>
+          <p>
+            Link are visible/hide depending on needed redback karmas.
+            You can configure redback operations needed for a link using the attribute redback-permissions in your html element
+            (by default element needed karma must be marked display: none):
+            <source>
+<![CDATA[
+Support array: at least one operation is needed:
+<div .... redback-permissions="{permissions: ['archiva-manage-users','archiva-manage-configuration']}" style="display: none">
+Support single value:
+<li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
+]]>
+            </source>
+
           </p>
         </p>
+      </subsection>
+      <subsection name="Sources organisation">
+        <p>
+          Sources are located in src/main/webapp :
+          <ul>
+            <li>css</li>
+            <li>images</li>
+            <li>js</li>
+          </ul>
+        </p>
+        <subsection name="js directory">
+          <p>
+            Root directory contains external libraries.
+          </p>
+          <p>
+            archiva directory contains archiva js files with a subdirectory templates which contains templates
+          </p>
+          <p>
+            redback directory contains redback js files with a subdirectory templates which contains templates
+          </p>
+        </subsection>
       </subsection>
     </section>
   </body>

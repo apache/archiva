@@ -26,4 +26,28 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
-How javascript templates are loaded on application loading
+Html/Javascript templates loading
+
+  Templates are loaded on application loaded and added in the hidden div #html-fragments.
+
+  They are loaded using requirejs and the text plugin.
+
+  archiva tamplates are loaded as it:
+
++-------------------------
+require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html",
+          "text!archiva/templates/modal.html","text!archiva/templates/grids-generics.html","text!archiva/templates/repositories.html"],
+  function(menu,topbar,message,modal,grids_generics,repositories) {
+
+    // template loading
+    $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
+    $.tmpl( topbar, $.i18n.map ).appendTo("#html-fragments");
+    $.tmpl( modal, $.i18n.map ).appendTo("#html-fragments");
+    $("#html-fragments").append(message);
+    $("#html-fragments").append(grids_generics);
+    $("#html-fragments").append(repositories);
+  }
+);
++-------------------------
+
+  Note some templates which are only simple html which only need i18n are executed immediatly the others are only inserted in #html-fragments.
