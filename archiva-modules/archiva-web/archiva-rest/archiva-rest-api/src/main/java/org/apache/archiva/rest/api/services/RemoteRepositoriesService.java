@@ -41,14 +41,14 @@ public interface RemoteRepositoriesService
 {
     @Path( "getRemoteRepositories" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<RemoteRepository> getRemoteRepositories()
         throws ArchivaRestServiceException;
 
     @Path( "getRemoteRepository/{repositoryId}" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     RemoteRepository getRemoteRepository( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;

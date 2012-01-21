@@ -47,7 +47,7 @@ public interface SearchService
 
     @Path( "quickSearch" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
      * <b>search will be apply on all repositories the current user has karma</b>
@@ -57,7 +57,7 @@ public interface SearchService
 
     @Path( "getArtifactVersions" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
      * <b>search will be apply on all repositories the current user has karma</b>
@@ -69,7 +69,7 @@ public interface SearchService
 
     @Path( "searchArtifacts" )
     @POST
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
      * If searchRequest contains repositories, the search will be done only on those repositories.
@@ -80,7 +80,7 @@ public interface SearchService
 
     @Path( "getAllGroupIds" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
     /**
      * <b>this method applies on Maven Indexer lucene index, so datas not yet indexed won't be available</b>

@@ -43,14 +43,14 @@ public interface ManagedRepositoriesService
 {
     @Path( "getManagedRepositories" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<ManagedRepository> getManagedRepositories()
         throws ArchivaRestServiceException;
 
     @Path( "getManagedRepository/{repositoryId}" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
@@ -67,7 +67,7 @@ public interface ManagedRepositoriesService
     @Path( "addManagedRepository" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     ManagedRepository addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
