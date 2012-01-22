@@ -22,6 +22,7 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringInputStream;
 import org.codehaus.redback.rest.api.services.RedbackServiceException;
 import org.codehaus.redback.rest.api.services.UtilServices;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -145,12 +147,11 @@ public class DefaultCommonServices
     private void loadFromString( String propsStr, Properties properties )
         throws ArchivaRestServiceException
     {
-
-        StringReader stringReader = null;
+        InputStream inputStream = null;
         try
         {
-            stringReader = new StringReader( propsStr );
-            properties.load( stringReader );
+            inputStream = new ByteArrayInputStream( propsStr.getBytes() );
+            properties.load( inputStream );
         }
         catch ( IOException e )
         {
@@ -159,7 +160,7 @@ public class DefaultCommonServices
         }
         finally
         {
-            IOUtils.closeQuietly( stringReader );
+            IOUtils.closeQuietly( inputStream );
         }
     }
 }
