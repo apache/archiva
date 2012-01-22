@@ -1461,6 +1461,7 @@
       <!--
       TODO check as it currently failed with ".. error in opening zip file ""
       in module archiva-modules/metadata/test-repository/
+      see https://gist.github.com/1659445
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
