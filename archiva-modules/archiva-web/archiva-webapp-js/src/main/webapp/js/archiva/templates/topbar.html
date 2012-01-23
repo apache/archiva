@@ -24,7 +24,9 @@
       <h4 class="brand"><a href="index.html">Archiva</a></h4>
       <ul class="nav secondary-nav">
         <li id="create-admin-link" style="display: none">
-          <a href="#" onclick="adminCreateBox();" id="create-admin-link-a">${$.i18n.prop('create.admin.page.link')}</a>
+          <a href="#" onclick="adminCreateBox();" id="create-admin-link-a">
+            <span class="label important">${$.i18n.prop('create.admin.page.link')}</span>
+          </a>
         </li>
         <li id="login-link" style="display: none">
           <a href="#" onclick="loginBox();" id="login-link-a">
