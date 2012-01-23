@@ -160,14 +160,16 @@ $(function() {
     }
   });
 
-  $('#topbar-menu-container').html($("#topbar-menu"));
-  $('#sidebar-content').html($("#main-menu"));
+  startArchivaApplication = function(){
+    $.log("startArchivaApplication");
+    $('#topbar-menu-container').html($("#topbar-menu"));
+    $('#sidebar-content').html($("#main-menu"));
 
-
-  checkCreateAdminLink();
-  hideElementWithKarma();
-  checkSecurityLinks();
-
+    checkCreateAdminLink();
+    hideElementWithKarma();
+    checkSecurityLinks();
+  }
+  startArchivaApplication();
 })
 });
 

@@ -74,7 +74,9 @@
        .script("redback/permission.js").wait()
        .script("redback/resource.js").wait()
        .script("redback/roles.js").wait()
-       .script("archiva/main.js");
+       .script("archiva/main.js").wait(function(){
+        //startArchivaApplication();
+       });
 
 </script>
 

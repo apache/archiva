@@ -242,13 +242,14 @@ $.i18n.browserLang = function() {
 loadAndParseFile = function (filename, settings) {
 	$.ajax({
         url:        filename,
-        async:      false,
+        async:      true,
         cache:		settings.cache,
         contentType:'text/plain;charset='+ settings.encoding,
         dataType:   'text',
         success:    function(data, status) {
-        				parseData(data, settings.mode); 
-					}
+          parseData(data, settings.mode);
+          if(settings.callback){ settings.callback(); }
+			  }
     });
 }
 

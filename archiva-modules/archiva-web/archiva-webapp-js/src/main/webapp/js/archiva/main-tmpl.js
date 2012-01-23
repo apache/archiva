@@ -21,10 +21,10 @@ require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html"
   function(menu,topbar,message,modal,grids_generics,repositories) {
 
     // template loading
-    $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
-    $.tmpl( topbar, $.i18n.map ).appendTo("#html-fragments");
-    $.tmpl( modal, $.i18n.map ).appendTo("#html-fragments");
+    $.tmpl( menu ).appendTo("#html-fragments");
+    $.tmpl( topbar ).appendTo("#html-fragments");
     $("#html-fragments").append(message);
+    $.tmpl( modal ).appendTo("#html-fragments");
     $("#html-fragments").append(grids_generics);
     $("#html-fragments").append(repositories);
     $.log("main-tmpl.js menu loaded");

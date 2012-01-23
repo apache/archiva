@@ -26,7 +26,7 @@
         <div id="modal-register-err-message" class="alert-message error" style="display:none"></div>
         <fieldset>
           <div class="clearfix">
-            <label for="user-register-form-username">${username}</label>
+            <label for="user-register-form-username">${$.i18n.prop('username')}</label>
             <div class="input">
               <input type="text" id="user-register-form-username" name="user-register-form-username" class="required" />
             </div>
@@ -38,7 +38,7 @@
             </div>
           </div>
           <div class="clearfix">
-            <label for="user-register-form-email">${email}</label>
+            <label for="user-register-form-email">${$.i18n.prop('email')}</label>
             <div class="input">
               <input type="text" id="user-register-form-email" name="user-register-form-email" class="required email" />
             </div>

@@ -26,13 +26,13 @@
         <div id="modal-login-err-message" class="alert-message error" style="display:none"></div>
         <fieldset>
           <div class="clearfix">
-            <label for="user-login-form-username">${username}</label>
+            <label for="user-login-form-username">${$.i18n.prop('username')}</label>
             <div class="input">
               <input type="text" id="user-login-form-username" name="user-login-form-username" class="required" />
             </div>
           </div>
           <div class="clearfix">
-            <label for="user-login-form-password">${password}</label>
+            <label for="user-login-form-password">${$.i18n.prop('password')}</label>
             <div class="input">
               <input type="password" id="user-login-form-password" name="user-login-form-password" class="required" />
             </div>
@@ -41,7 +41,7 @@
       </form>
   </div>
   <div class="modal-footer" id="modal-login-footer">
-    <button class="btn primary" onclick="login();" id="modal-login-ok">${$.i18n.prop('login)}</button>
+    <button class="btn primary" onclick="return login();" id="modal-login-ok">${$.i18n.prop('login')}</button>
   </div>
 </div>
 

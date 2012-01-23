@@ -19,17 +19,25 @@
 require(["text!redback/templates/user-edit.html", "text!redback/templates/user-grids.html", "text!redback/templates/login.html"
           , "text!redback/templates/register-form.html","text!redback/templates/password-change-form.html"
           ,"text!redback/templates/user-edit-form.html","text!redback/templates/roles-tmpl.html"],
-    function(usercreate, usergrids, login,register,passwordchange,useredit,roles_tmpl) {
+    function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
 
 
-      $.tmpl( login, $.i18n.map ).appendTo("#html-fragments");
-      $.tmpl( register, $.i18n.map ).appendTo("#html-fragments");
-      $.tmpl( passwordchange, $.i18n.map ).appendTo("#html-fragments");
-      $.tmpl( useredit, $.i18n.map ).appendTo("#html-fragments");
       // template loading
-      $("#html-fragments").append(usercreate);
-      $("#html-fragments").append(usergrids);
-      $("#html-fragments").append(roles_tmpl);
 
+      $("#html-fragments").append(useredit);
+
+      $("#html-fragments").append(usergrids);
+
+      $.tmpl(login).appendTo("#html-fragments");
+
+      $.tmpl(register).appendTo("#html-fragments");
+
+      $.tmpl(passwordchange).appendTo("#html-fragments");
+
+      $.tmpl(usereditform).appendTo("#html-fragments");
+
+      $("#html-fragments").append(roles);
+
+      $.log("redback-tmpl.js loaded");
     }
 );
