@@ -39,6 +39,8 @@ public class ArchivaRuntimeInfo
 
     private long timestamp;
 
+    private boolean devMode;
+
 
     @Inject
     public ArchivaRuntimeInfo( @Named( value = "archivaRuntimeProperties" ) Properties archivaRuntimeProperties )
@@ -46,6 +48,7 @@ public class ArchivaRuntimeInfo
         this.version = (String) archivaRuntimeProperties.get( "archiva.version" );
         this.buildNumber = (String) archivaRuntimeProperties.get( "archiva.buildNumber" );
         this.timestamp = NumberUtils.createLong( (String) archivaRuntimeProperties.get( "archiva.timestamp" ) );
+        this.devMode = Boolean.getBoolean( "archiva.devMode" );
     }
 
     public String getVersion()
@@ -78,6 +81,16 @@ public class ArchivaRuntimeInfo
         this.timestamp = timestamp;
     }
 
+    public boolean isDevMode()
+    {
+        return devMode;
+    }
+
+    public void setDevMode( boolean devMode )
+    {
+        this.devMode = devMode;
+    }
+
     @Override
     public String toString()
     {
@@ -86,6 +99,7 @@ public class ArchivaRuntimeInfo
         sb.append( "{version='" ).append( version ).append( '\'' );
         sb.append( ", buildNumber='" ).append( buildNumber ).append( '\'' );
         sb.append( ", timestamp=" ).append( timestamp );
+        sb.append( ", devMode=" ).append( devMode );
         sb.append( '}' );
         return sb.toString();
     }

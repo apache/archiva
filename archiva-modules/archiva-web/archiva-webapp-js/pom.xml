@@ -34,6 +34,7 @@
     <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context.xml</tomcatContextXml>
     <tomcatRunPort>9091</tomcatRunPort>
     <tomcatRunPath>/archiva</tomcatRunPath>
+    <archiva.devMode>true</archiva.devMode>
   </properties>
 
   <dependencies>
@@ -544,6 +545,7 @@
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
+            <archiva.devMode>${archiva.devMode}</archiva.devMode>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -576,6 +578,7 @@
             </redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
+            <archiva.devMode>${archiva.devMode}</archiva.devMode>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -606,6 +609,7 @@
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
+            <archiva.devMode>${archiva.devMode}</archiva.devMode>
           </systemProperties>
         </configuration>
         <dependencies>

@@ -40,48 +40,53 @@
 </div>
 
 <script type="text/javascript">
-    require.config({
-        baseUrl: "js/"
-      });
-    // CacheBust is for dev purpose use false in prod env !
-    var options = {
-        AlwaysPreserveOrder:true,
-        BasePath:"js/",
-        explicit_preloading:false,
-        CacheBust:true
-    };
-    $LAB.setGlobalDefaults(options);
-    $LAB
-       .script("jquery.tmpl.js").wait()
-       .script("archiva/utils.js").wait()
-       .script("jquery.i18n.properties-1.0.9.js").wait()
-       .script("archiva/i18nload.js").wait()
-       .script("jquery.cookie.1.0.0.js").wait()
-       .script("knockout-debug.js").wait()
-       .script("jquery-ui-1.8.16.custom.min.js").wait()
-       .script("jquery.validate.js").wait()
-       .script("jquery.json-2.3.min.js").wait()
-       .script("archiva/main-tmpl.js").wait()
-       .script("archiva/repositories.js").wait()
-       .script("redback/operation.js").wait()
-       .script("redback/redback-tmpl.js").wait()
-       .script("bootstrap-tabs.js")
-       .script("bootstrap-modal.js")
-       .script("bootstrap-alerts.js")
-       .script("bootstrap-dropdown.js")
-       .script("bootstrap-twipsy.js")
-       .script("bootstrap-popover.js")
-       .script("knockout.simpleGrid.js")
-       .script("knockout.mapping-latest.debug.js")
-       .script("redback/user.js").wait()
-       .script("redback/users.js").wait()
-       .script("redback/redback.js").wait()
-       .script("redback/register.js").wait()
-       .script("redback/permission.js").wait()
-       .script("redback/resource.js").wait()
-       .script("redback/roles.js").wait()
-       .script("archiva/main.js");
-
+$.ajax(
+  {
+    url: "restServices/archivaServices/commonServices/devMode",
+    success:function(data){
+        require.config({
+            baseUrl: "js/"
+          });
+        // CacheBust is for dev purpose use false in prod env !
+        var options = {
+            AlwaysPreserveOrder:true,
+            BasePath:"js/",
+            explicit_preloading:false,
+            CacheBust:data=='true'
+        };
+        $LAB.setGlobalDefaults(options);
+        $LAB
+           .script("jquery.tmpl.js").wait()
+           .script("archiva/utils.js").wait()
+           .script("jquery.i18n.properties-1.0.9.js").wait()
+           .script("archiva/i18nload.js").wait()
+           .script("jquery.cookie.1.0.0.js").wait()
+           .script("knockout-debug.js").wait()
+           .script("jquery-ui-1.8.16.custom.min.js").wait()
+           .script("jquery.validate.js").wait()
+           .script("jquery.json-2.3.min.js").wait()
+           .script("archiva/main-tmpl.js").wait()
+           .script("archiva/repositories.js").wait()
+           .script("redback/operation.js").wait()
+           .script("redback/redback-tmpl.js").wait()
+           .script("bootstrap-tabs.js")
+           .script("bootstrap-modal.js")
+           .script("bootstrap-alerts.js")
+           .script("bootstrap-dropdown.js")
+           .script("bootstrap-twipsy.js")
+           .script("bootstrap-popover.js")
+           .script("knockout.simpleGrid.js")
+           .script("knockout.mapping-latest.debug.js")
+           .script("redback/user.js").wait()
+           .script("redback/users.js").wait()
+           .script("redback/redback.js").wait()
+           .script("redback/register.js").wait()
+           .script("redback/permission.js").wait()
+           .script("redback/resource.js").wait()
+           .script("redback/roles.js").wait()
+           .script("archiva/main.js");
+    }
+  })
 </script>
 
 </html>

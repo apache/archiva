@@ -59,4 +59,10 @@ public interface CommonServices
      */
     String getAllI18nResources( @QueryParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
+
+    @Path( "devMode" )
+    @GET
+    @Produces( { MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true )
+    Boolean devMode();
 }

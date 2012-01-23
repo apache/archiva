@@ -351,6 +351,7 @@
                     <appserver.base>${project.build.directory}/appserver-base</appserver.base>
                     <appserver.home>${project.build.directory}/appserver-base</appserver.home>
                     <derby.system.home>${project.build.directory}</derby.system.home>
+                    <archiva.devMode>true</archiva.devMode>
                   </systemProperties>
                   <contextFile>src/test/${container.name}/Catalina/localhost/archiva.xml</contextFile>
                   <useNaming>true</useNaming>

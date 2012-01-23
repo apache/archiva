@@ -168,4 +168,9 @@ public class DefaultCommonServices
             IOUtils.closeQuietly( inputStream );
         }
     }
+
+    public Boolean devMode()
+    {
+        return Boolean.getBoolean( "archiva.devMode" );
+    }
 }
