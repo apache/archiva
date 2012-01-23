@@ -1458,15 +1458,10 @@
         <artifactId>tomcat7-maven-plugin</artifactId>
        </plugin>
       <!-- make sure our code doesn't have 1.6 dependencies -->
-      <!--
-      TODO check as it currently failed with ".. error in opening zip file ""
-      in module archiva-modules/metadata/test-repository/
-      see https://gist.github.com/1659445
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.8-SNAPSHOT</version>
+        <version>1.7</version>
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
@@ -1484,7 +1479,6 @@
           </execution>
         </executions>
       </plugin>
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
