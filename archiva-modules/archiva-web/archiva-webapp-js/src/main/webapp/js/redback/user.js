@@ -97,6 +97,7 @@ $(function() {
       };
 
       this.createAdmin = function() {
+        $.log("user.js#createAdmin");
         var valid = $("#user-create").valid();
         $.log("create admin");
         if (!valid) {
@@ -310,6 +311,7 @@ $(function() {
    * open a modal box for login
    */
   loginBox=function(){
+    $.log("loginBox");
     screenChange();
     if (window.modalLoginWindow==null) {
       window.modalLoginWindow = $("#modal-login").modal({backdrop:'static',show:false});
@@ -325,6 +327,7 @@ $(function() {
     });
     $("#modal-login").delegate("#modal-login-ok", "click keydown keypress", function(e) {
       e.preventDefault();
+      $.log("loginBox before login");
       login();
     });
     $("#modal-login").focus();
@@ -398,6 +401,7 @@ $(function() {
    * validate login box before ajax call
    */
   login=function(){
+    $.log("user.js#login");
     $("#modal-login-err-message").html("");
     screenChange();
     var valid = $("#user-login-form").valid();
@@ -493,6 +497,7 @@ $(function() {
       })
       $("#modal-user-edit #modal-user-edit-ok").on( "click keydown keypress", function(e) {
         e.preventDefault();
+        $.log("user.js#editUserDetailsBox");
         var valid = $("#user-edit-form").valid();
         if (!valid) {
             return;
@@ -568,6 +573,7 @@ $(function() {
    * @param registration are we in registration mode ? if yes the user will be logged
    */
   changePassword=function(previousPassword,registration,user){
+    $.log("user.js#changePassword");
     var valid = $("#password-change-form").valid();
     if (valid==false) {
         return;

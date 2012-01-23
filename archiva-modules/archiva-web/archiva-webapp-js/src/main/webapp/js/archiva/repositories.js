@@ -133,6 +133,7 @@ $(function() {
     this.availableLayouts = window.managedRepositoryTypes;
 
     save=function(){
+      $.log("repositories.js#save");
       var valid = $("#main-content #managed-repository-edit-form").valid();
       if (valid==false) {
           return;

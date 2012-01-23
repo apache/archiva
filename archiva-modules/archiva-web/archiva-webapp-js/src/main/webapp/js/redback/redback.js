@@ -37,6 +37,7 @@ $(function() {
   userLogged=function() {
     // call restServices/redbackServices/loginService/isLogged to know
     // if a session exists and check the cookie
+    $.log("userLogged");
     var userLogged = true;
     $.ajax("restServices/redbackServices/loginService/isLogged", {
       type: "GET",

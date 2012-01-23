@@ -45,6 +45,7 @@ $(function() {
    * validate the register form and call REST service
    */
   register=function(){
+    $.log("register.js#register");
     var valid = $("#user-register-form").valid();
     if (!valid) {
         return;

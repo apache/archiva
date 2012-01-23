@@ -138,6 +138,7 @@ $(function() {
       });
       $("#main-content #user-create").delegate("#user-create-form-save-button", "click keydown", function(e) {
         e.preventDefault();
+        $.log("users.js#editUserBox");
         var valid = $("#user-create").valid();
         if (!valid) {
             return;

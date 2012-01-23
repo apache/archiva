@@ -111,11 +111,12 @@ $(function() {
     $("#sidebar-content [redback-permissions]").each(function(element){
       $(this).hide();
     });
-
+    $.log("hideElementWithKarma");
   }
 
 
   checkSecurityLinks=function(){
+    $.log("checkSecurityLinks");
     var user = userLogged();
     $.log("checkSecurityLinks, user:"+user);
 
@@ -136,6 +137,7 @@ $(function() {
     $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
       type: "GET",
       dataType: 'json',
+      async: false,
       success: function(data) {
         var adminExists = JSON.parse(data);
         if (adminExists == false) {
@@ -145,6 +147,7 @@ $(function() {
         } else {
           $("#create-admin-link").hide();
         }
+        $.log("adminExists:"+adminExists);
       }
     });
   }
@@ -159,6 +162,8 @@ $(function() {
 
   $('#topbar-menu-container').html($("#topbar-menu"));
   $('#sidebar-content').html($("#main-menu"));
+
+
   checkCreateAdminLink();
   hideElementWithKarma();
   checkSecurityLinks();
