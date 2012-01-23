@@ -111,6 +111,8 @@
           <pattern>**/*.sh</pattern>
           <pattern>**/.svn/**</pattern>
           <pattern>**/.DAV/**</pattern>
+          <pattern>.index/**</pattern>
+          <pattern>.indexer/**</pattern>
         </patterns>
       </fileType>
     </fileTypes>
