@@ -20,6 +20,7 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
@@ -63,6 +64,8 @@ public class ArchivaAdminTest
         // if not admin user created create one
         if ( isElementVisible( "create-admin-link" ) )
         {
+            Assert.assertFalse( getSelenium().isVisible( "login-link-a" ) );
+            Assert.assertFalse( getSelenium().isVisible( "register-link-a" ) );
             clickLinkWithLocator( "create-admin-link-a", false );
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
@@ -75,6 +78,8 @@ public class ArchivaAdminTest
         }
         else
         {
+            Assert.assertTrue( getSelenium().isVisible( "login-link-a" ) );
+            Assert.assertTrue( getSelenium().isVisible( "register-link-a" ) );
             login( getAdminUsername(), getAdminPassword() );
         }
 
