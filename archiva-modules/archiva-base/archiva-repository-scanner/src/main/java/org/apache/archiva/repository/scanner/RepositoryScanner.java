@@ -55,7 +55,7 @@ public interface RepositoryScanner
     public static final String[] IGNORABLE_CONTENT =
         { "bin/**", "reports/**", ".index", ".reports/**", ".maven/**", "**/.svn/**", "**/*snapshot-version",
             "*/website/**", "*/licences/**", "**/.htaccess", "**/*.html", "**/*.txt", "**/README*", "**/CHANGELOG*",
-            "**/KEYS*" };
+            "**/KEYS*", ".indexer" };
 
     /**
      * Scan the repository for content changes.
