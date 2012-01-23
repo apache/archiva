@@ -22,7 +22,6 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.util.StringInputStream;
 import org.codehaus.redback.rest.api.services.RedbackServiceException;
 import org.codehaus.redback.rest.api.services.UtilServices;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,6 +44,8 @@ public class DefaultCommonServices
     implements CommonServices
 {
 
+    private static final String RESOURCE_NAME = "org/apache/archiva/i18n/default";
+
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
@@ -56,7 +56,7 @@ public class DefaultCommonServices
     {
         Properties properties = new Properties();
 
-        StringBuilder resourceName = new StringBuilder( "org/apache/archiva/i18n/default" );
+        StringBuilder resourceName = new StringBuilder( RESOURCE_NAME );
         try
         {
 
@@ -131,12 +131,17 @@ public class DefaultCommonServices
     {
         try
         {
-            String redbackProps = utilServices.getI18nResources( locale );
-            String archivaProps = getI18nResources( locale );
-            Properties properties = new Properties();
-            loadFromString( redbackProps, properties );
-            loadFromString( archivaProps, properties );
-            return fromProperties( properties );
+
+            Properties all = utilServices.getI18nProperties( locale );
+            StringBuilder resourceName = new StringBuilder( RESOURCE_NAME );
+            loadResource( all, resourceName, locale );
+
+            return fromProperties( all );
+        }
+        catch ( IOException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
         catch ( RedbackServiceException e )
         {
