@@ -106,6 +106,27 @@ Support single value:
         </p>
       </subsection>
 
+      <subsection name="Grid/edit model">
+        <p>We use a tab/pill models to display grid of datas and edit/add form:
+          <ul>
+            <li>
+              One tab/pill display the grid
+              <a href="images/repo-grids.png" class="single_image" title="Start Page">
+                <img src="images/repo-grids.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+                Repositories Grid
+              </a>
+            </li>
+            <li>
+              One tab/pill display the edit/add form. <b>As we use knockout framework grid will be updated with new value from add/edit form automatically.</b>
+              <a href="images/repo-edit.png" class="single_image" title="Start Page">
+                <img src="images/repo-edit.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+                Repositories Edit/Add
+              </a>
+            </li>
+          </ul>
+        </p>
+      </subsection>
+
     </section>
   </body>
 </document>
