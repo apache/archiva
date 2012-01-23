@@ -115,23 +115,6 @@ $(function() {
   }
 
 
-
-
-  checkCreateAdminLink=function(){
-    $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
-      type: "GET",
-      dataType: 'json',
-      success: function(data) {
-        var adminExists = JSON.parse(data);
-        if (adminExists == false) {
-          $("#create-admin-link").show();
-        } else {
-          $("#create-admin-link").hide();
-        }
-      }
-    });
-  }
-
   checkSecurityLinks=function(){
     var user = userLogged();
     $.log("checkSecurityLinks, user:"+user);
@@ -149,7 +132,22 @@ $(function() {
     }
   }
 
-
+  checkCreateAdminLink=function(){
+    $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        var adminExists = JSON.parse(data);
+        if (adminExists == false) {
+          $("#create-admin-link").show();
+          $("#login-link").hide();
+          $("#register-link").hide();
+        } else {
+          $("#create-admin-link").hide();
+        }
+      }
+    });
+  }
 
   // handle url with registration link
   $(document).ready(function() {
