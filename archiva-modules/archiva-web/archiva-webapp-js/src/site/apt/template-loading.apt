@@ -62,6 +62,9 @@ require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html"
   $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
   to get i18n values in your template you can use
   ${register} or ${$.i18n.prop('register')}
+
+  Note if you use the simple form ${register} and the property is not available, the template system will try to use if exists the function register
+
 +-------------------------
 
 
