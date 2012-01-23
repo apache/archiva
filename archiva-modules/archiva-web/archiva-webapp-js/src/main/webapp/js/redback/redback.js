@@ -32,25 +32,22 @@ $(function() {
   });
 
   /**
-   * return a user see user.js if user logged otherwise null
+   * call successFn on success with passing user object coming from cookie
    */
-  userLogged=function() {
+  userLogged=function(successFn) {
     // call restServices/redbackServices/loginService/isLogged to know
     // if a session exists and check the cookie
     $.log("userLogged");
     var userLogged = true;
     $.ajax("restServices/redbackServices/loginService/isLogged", {
       type: "GET",
-      async: false,
       success: function(data) {
         userLogged = JSON.parse(data);
+        if (successFn){
+          successFn(userLogged == false ? null : jQuery.parseJSON($.cookie('redback_login')));
+        }
       }
     });
-    if (userLogged == false)
-    {
-      return null;
-    }
-    return jQuery.parseJSON($.cookie('redback_login'));
   }
 
 });

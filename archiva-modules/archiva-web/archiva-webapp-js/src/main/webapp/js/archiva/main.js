@@ -114,11 +114,8 @@ $(function() {
     $.log("hideElementWithKarma");
   }
 
-
-  checkSecurityLinks=function(){
-    $.log("checkSecurityLinks");
-    var user = userLogged();
-    $.log("checkSecurityLinks, user:"+user);
+  userLoggedCallbackFn=function(user){
+    $.log("userLoggedCallbackFn:"+ (user?user.username:null));
 
     if (!user) {
       $("#login-link").show();
@@ -133,11 +130,14 @@ $(function() {
     }
   }
 
+  checkSecurityLinks=function(){
+    userLogged(userLoggedCallbackFn);
+  }
+
   checkCreateAdminLink=function(){
     $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
       type: "GET",
       dataType: 'json',
-      async: false,
       success: function(data) {
         var adminExists = JSON.parse(data);
         if (adminExists == false) {
@@ -165,9 +165,9 @@ $(function() {
     $('#topbar-menu-container').html($("#topbar-menu"));
     $('#sidebar-content').html($("#main-menu"));
 
-    checkCreateAdminLink();
     hideElementWithKarma();
     checkSecurityLinks();
+    checkCreateAdminLink();
   }
   startArchivaApplication();
 })
