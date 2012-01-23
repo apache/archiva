@@ -1,5 +1,5 @@
  -----
- REST call
+ REST Services
  -----
  Olivier Lamy
  -----
@@ -28,7 +28,8 @@
 
 Expose Rest Services
 
-  The {{http://cxf.apache.org}Apache CXF}} is used to expose some classes/methods as REST Services.
+
+  The {{{http://cxf.apache.org}Apache CXF}} is used to expose some classes/methods as REST Services.
 
   Services use the standard interface/implementation pattern:
 
@@ -38,9 +39,23 @@ Expose Rest Services
 
   []
 
-* Annotations
+%{toc}
 
-** Beans
+* Steps to expose your class as a REST Service.
+
+  Here all the steps to expose a new class as a REST service.
+
+** Interface and data beans
+
+  All interfaces and data beans are added in the module archiva-rest-api:
+
+  * interface in the package: org.apache.archiva.rest.api.services .
+
+  * data beans in the package: org.apache.archiva.rest.api.model .
+
+  []
+
+*** Beans
 
   As we want to be able to expose result as json or xml type, all beans use javax.xml.bind.annotation root element :
 
@@ -48,9 +63,12 @@ Expose Rest Services
 @XmlRootElement( name = "artifact" )
 public class Artifact
     implements Serializable
+
+All services will be able to return json or xml
+@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
 +---------------------
 
-** JAXRS annotations
+*** JAXRS annotations
 
   As we use interfaces/implementations pattern jaxrs annotations are only in interfaces level.
 
@@ -58,10 +76,28 @@ public class Artifact
 @Path( "/managedRepositoriesService/" )
 public interface ManagedRepositoriesService
 {
+    // simple GET method no parameter
     @Path( "getManagedRepositories" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     List<ManagedRepository> getManagedRepositories()
+        throws ArchivaRestServiceException;
+
+    // GET method with a path parameter
+    @Path( "getManagedRepository/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    ManagedRepository getManagedRepository( @PathParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
+    // POST  method to pass a data bean
+    @Path( "addManagedRepository" )
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    ManagedRepository addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
 +---------------------
 
@@ -119,6 +155,8 @@ public class DefaultManagedRepositoriesService
   This method will need the current user to have the operation manage-configuration level.
 
   For more details, have a look at {{{http://redback.codehaus.org/integration/rest.html}Redback REST}}.
+
+
 
 
 
