@@ -41,11 +41,21 @@ i18n management
 
 * Javascript method
 
-   You can use the "interpolation" mechanism in javascript too (sample for property managedrepository.deleted=Managed Repository " {0} " deleted. )
+   Simple i18n value without any value
+
++-----------------------
+Javascript code :
+$.i18n.prop("save")  will return the value for key save
++-----------------------
+
+
+   You can pass some values too (sample for property managedrepository.deleted=Managed Repository " {0} " deleted. )
 
 +-----------------------
 Javascript code :
 $.i18n.prop("managedrepository.deleted",managedRepository.name())
+if  managedRepository.name() is "foo"
+response will be Managed Repository " foo " deleted.
 +-----------------------
 
 * Missing properties
