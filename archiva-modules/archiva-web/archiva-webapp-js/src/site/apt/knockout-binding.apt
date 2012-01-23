@@ -27,3 +27,195 @@
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
 Knockout binding
+
+  Explanation on the managed repositories list/edit/add screen.
+
+%{toc}
+
+* Javascript Beans
+
+  First you must map the json response on a Javascript bean (a bit borying task :-) )
+
++-------------------
+Java class with fields
+
+public class ManagedRepository
+  //private String id;
+
+  //private String name;
+  ....
+
+Javascript
+ManagedRepository=function(id,name,.....){
+
+  this.id=ko.observable(id);
+
+  this.name=ko.observable(name);
+
+mapping function (to map the json result to your javascript beans)
+
+  mapManagedRepositories=function(data){
+    var mappedManagedRepositories = $.map(data.managedRepository, function(item) {
+      return mapManagedRepository(item);
+    });
+    return mappedManagedRepositories;
+  }
+  mapManagedRepository=function(data){
+    if (data==null){
+      return null;
+    }
+    return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots,data.releases,
+                                 data.blockRedeployments,data.cronExpression,
+                                 data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,data.stageRepoNeeded);
+  }
+
++-------------------
+
+   <<<NOTE to have access to field values you must now managedRepository.name() >>>
+
+* View Model
+
+** First you must insert your template in the #main-content div
+
++---------------
+// it's a jquery template as we do some i18n transformations
+$("#main-content").html($("#repositoriesMain").tmpl());
++---------------
+
+** You can now create your view model.
+
++---------------
+ManagedRepositoriesViewModel=function(){
+  //field which will receive values
+  this.managedRepositories=ko.observableArray([]);
+  // method which will edit an entry: an other view model is created
+  editManagedRepository=function(managedRepository){
+    var viewModel = new ManagedRepositoryViewModel(managedRepository,true,self);
+    ...
+    ko.applyBindings(viewModel,$("#main-content #managed-repository-edit").get(0));
+    ..
+  }
+  // method which will delete an entry
+  removeManagedRepository=function(managedRepository){
+    ......
+  }
+}
++---------------
+
+** Grid binding
+
+  The ManagedRepositoriesViewModel is used as it with a custom grid binding (knockout has a feature to create own binding
+  so we use one called <<<simpleGrid>>> which will display grids.
+
+  Grid view initialisation code (some details omitted) :
+
++----------------
+    var managedRepositoriesViewModel = new ManagedRepositoriesViewModel();
+
+    $.ajax("restServices/archivaServices/managedRepositoriesService/getManagedRepositories", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          // data mapping json -> javascript
+          managedRepositoriesViewModel.managedRepositories(mapManagedRepositories(data));
+          // we define here our grid view model for fields only displayed
+          managedRepositoriesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
+            data: managedRepositoriesViewModel.managedRepositories,
+            columns: [
+              {
+                headerText: $.i18n.prop('identifier'),
+                rowText: "id"
+              },
+              {
+                headerText: $.i18n.prop('name'),
+                rowText: "name"
+              },
+              {
+              headerText: $.i18n.prop('type'),
+              rowText: "getTypeLabel",
+              // FIXME i18n
+              title: "Repository type (default is Maven 2)"
+              }
+            ],
+            // max items per size, the binding has a pagination feature
+            pageSize: 5,
+            // we can define here a callback function which be called on all grid change (adding/updating/removing values from the array)
+            gridUpdateCallBack: function(){
+              $("#main-content #managed-repositories-table [title]").twipsy();
+            }
+          });
+          // apply the binding on the specified node
+          ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
+        }
+      }
+    );
++----------------
+
+* View definition
+
+** Binding definition
+
+  We have applyed binding on the node with id "#managed-repositories-table". The binding definition is:
+
++----------------
+  <table class="bordered-table zebra-striped" id="managed-repositories-table"
+         data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination',data:'managedRepositories'">
+  </table>
++----------------
+
+  * simpleGrid: gridViewModel = field name for the view model (see sample above)
+
+  * simpleGridTemplate:'ko_managed-repositoriesGrid' = name of the template to use (see below)
+
+  * pageLinksId:'managed-repositoriesPagination' = name of the template to use for pagination.
+
+  * data:'managedRepositories' = fields which contains data to pass to pass to the template
+
+** Template content
+
+  Template used for grid display (some details omitted).
+
++----------------
+<script id='ko_managed-repositoriesGrid' type='text/x-jquery-tmpl'>
+  <thead>
+      <tr>
+        // display read only fields defined in ko.simpleGrid.viewModel.columns (see above)
+        {{each(i, columnDefinition) columns}}
+          <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>Releases</th>
+        .....
+        // custom columns
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+      </tr>
+  </thead>
+  <tbody>
+      {{each(i, row) itemsOnCurrentPage()}}
+          <tr>
+            // display read only fields defined in ko.simpleGrid.viewModel.columns (see above)
+            {{each(j, columnDefinition) columns}}
+              <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+            {{/each}}
+            // custom columns which images depending on a value
+            <td>
+            {{if row.releases() == true}}
+              <img src="images/weather-clear.png" title="${$.i18n.prop('release.included')}"/>
+            {{else}}
+              <img src="images/dialog-error.png" title="${$.i18n.prop('release.notincluded')}"/>
+            {{/if}}
+            </td>
+            .....
+            // custom columns with binding mapped to ManagedRepositoriesViewModel methods
+            <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
+            <td>
+              <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
+                <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+              </a>
+            </td>
+            .....
+          </tr>
+      {{/each}}
+  </tbody>
+
++----------------

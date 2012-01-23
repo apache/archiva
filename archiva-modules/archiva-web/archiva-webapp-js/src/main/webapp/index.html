@@ -44,7 +44,13 @@
         baseUrl: "js/"
       });
     // CacheBust is for dev purpose use false in prod env !
-    $LAB.setGlobalDefaults({AlwaysPreserveOrder:true,BasePath:"js/",explicit_preloading:false,CacheBust:true});
+    var options = {
+        AlwaysPreserveOrder:true,
+        BasePath:"js/",
+        explicit_preloading:false,
+        CacheBust:true
+    };
+    $LAB.setGlobalDefaults(options);
     $LAB
        .script("jquery.tmpl.js").wait()
        .script("archiva/utils.js").wait()
@@ -62,11 +68,11 @@
        .script("bootstrap-tabs.js")
        .script("bootstrap-modal.js")
        .script("bootstrap-alerts.js")
-       .script("bootstrap-dropdown.js").wait()
-       .script("bootstrap-twipsy.js").wait()
+       .script("bootstrap-dropdown.js")
+       .script("bootstrap-twipsy.js")
        .script("bootstrap-popover.js")
-       .script("knockout.simpleGrid.js").wait()
-       .script("knockout.mapping-latest.debug.js").wait()
+       .script("knockout.simpleGrid.js")
+       .script("knockout.mapping-latest.debug.js")
        .script("redback/user.js").wait()
        .script("redback/users.js").wait()
        .script("redback/redback.js").wait()
@@ -74,9 +80,7 @@
        .script("redback/permission.js").wait()
        .script("redback/resource.js").wait()
        .script("redback/roles.js").wait()
-       .script("archiva/main.js").wait(function(){
-        //startArchivaApplication();
-       });
+       .script("archiva/main.js");
 
 </script>
 

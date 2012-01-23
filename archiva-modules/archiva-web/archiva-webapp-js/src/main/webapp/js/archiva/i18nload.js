@@ -29,12 +29,12 @@ $(function() {
   // -- archiva
   // load default
   //loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources", {cache:false, mode: 'map',encoding:'utf-8'});
-  //if (browserLang!='en'){
+
     var options = {
       cache:false,
       mode: 'map',
       encoding:'utf-8'
     };
     loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources?locale="+browserLang,options );
-  //}
+
 });

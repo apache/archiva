@@ -111,19 +111,20 @@ Support single value:
           <ul>
             <li>
               One tab/pill display the grid
-              <a href="images/repo-grids.png" class="single_image" title="Start Page">
+              <a href="images/repo-grids.png" class="single_image" title="Repositories Grid">
                 <img src="images/repo-grids.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
                 Repositories Grid
               </a>
             </li>
             <li>
               One tab/pill display the edit/add form. <b>As we use knockout framework grid will be updated with new value from add/edit form automatically.</b>
-              <a href="images/repo-edit.png" class="single_image" title="Start Page">
+              <a href="images/repo-edit.png" class="single_image" title="Repositories Edit/Add">
                 <img src="images/repo-edit.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
                 Repositories Edit/Add
               </a>
             </li>
           </ul>
+          Have a look at the page <a href="./knockout-binding.html">knockout-binding</a> for more explanation.
         </p>
       </subsection>
 
