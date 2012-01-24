@@ -31,7 +31,7 @@
     <remoteRepository>
       <id>central</id>
       <name>Central Repository</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://repo.maven.apache.org/maven2</url>
       <layout>default</layout>
     </remoteRepository>
   </remoteRepositories>
