@@ -535,8 +535,8 @@ $(function() {
       $.log("removeRemoteRepository");
     }
 
-    downloadRemoteIndex=function(remoteRepository){
-      $.log("downloadRemoteIndex");
+    scheduleDownloadRemoteIndex=function(remoteRepository){
+      $.log("scheduleDownloadRemoteIndex");
     }
   }
 
@@ -610,6 +610,10 @@ $(function() {
                 rowText: "name"
               },
               {
+                headerText: $.i18n.prop('url'),
+                rowText: "url"
+              },
+              {
               headerText: $.i18n.prop('type'),
               rowText: "getTypeLabel",
               // FIXME i18n
@@ -625,7 +629,6 @@ $(function() {
           $("#main-content #remote-repositories-pills").pills();
           $("#remote-repositories-view").addClass("active");
           removeMediumSpinnerImg("#main-content #remote-repositories-content");
-          //activateManagedRepositoriesGridTab();
         }
       }
     );
