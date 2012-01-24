@@ -200,7 +200,6 @@ $(function() {
             }
           }
         });
-        //addManagedRepository(self.managedRepository);
       }
     }
 
@@ -520,6 +519,23 @@ $(function() {
     return mappedRemoteRepositories;
   }
 
+  RemoteRepositoryViewModel=function(remoteRepository, update, remoteRepositoriesViewModel){
+    this.remoteRepository=remoteRepository;
+    this.remoteRepositoriesViewModel = remoteRepositoriesViewModel;
+    this.update = update;
+
+    var self = this;
+
+    this.availableLayouts = window.managedRepositoryTypes;
+
+    save=function(){
+
+    }
+
+    displayGrid=function(){
+      activateRemoteRepositoriesGridTab();
+    }
+  }
 
   RemoteRepositoriesViewModel=function(){
     this.remoteRepositories=ko.observableArray([]);
@@ -529,6 +545,11 @@ $(function() {
 
     editRemoteRepository=function(remoteRepository){
       $.log("editRemoteRepository");
+      var viewModel = new RemoteRepositoryViewModel(remoteRepository,true,self);
+      ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
+      activateRemoteRepositoryEditTab();
+      $("#remote-repository-edit-li a").html($.i18n.prop('edit'));
+      activateRemoteRepositoryFormValidation();
     }
 
     removeRemoteRepository=function(remoteRepository){
@@ -538,6 +559,42 @@ $(function() {
     scheduleDownloadRemoteIndex=function(remoteRepository){
       $.log("scheduleDownloadRemoteIndex");
     }
+  }
+
+  activateRemoteRepositoryFormValidation=function(){
+    $("#main-content #remote-repository-edit-form").validate({
+      /*rules: {
+        daysOlder : {
+          digits: true,
+          min: 1
+        },
+        retentionCount : {
+          digits: true,
+          min: 1,
+          max: 100
+        }
+      },*/
+      showErrors: function(validator, errorMap, errorList) {
+        customShowError(validator,errorMap,errorMap);
+      }
+    });
+  }
+
+  activateRemoteRepositoriesGridTab=function(){
+    $("#main-content #remote-repository-edit-li").removeClass("active");
+    $("#main-content #remote-repository-edit").removeClass("active");
+    // activate roles grid tab
+    $("#main-content #remote-repositories-view-li").addClass("active");
+    $("#main-content #remote-repositories-view").addClass("active");
+    $("#main-content #remote-repository-edit-li a").html($.i18n.prop("add"));
+  }
+
+  activateRemoteRepositoryEditTab=function(){
+    $("#main-content #remote-repositories-view-li").removeClass("active");
+    $("#main-content #remote-repositories-view").removeClass("active");
+    // activate role edit tab
+    $("#main-content #remote-repository-edit-li").addClass("active");
+    $("#main-content #remote-repository-edit").addClass("active");
   }
 
   //---------------------------
@@ -642,6 +699,18 @@ $(function() {
       }
       if ($(e.target).attr("href")=="#managed-repositories-view") {
         $("#main-content #managed-repository-edit-li a").html($.i18n.prop("add"));
+      }
+
+    });
+
+    $("#main-content #remote-repositories-pills").bind('change', function (e) {
+      if ($(e.target).attr("href")=="#remote-repository-edit") {
+        var viewModel = new RemoteRepositoryViewModel(new RemoteRepository(),false,remoteRepositoriesViewModel);
+        ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
+        activateRemoteRepositoryFormValidation();
+      }
+      if ($(e.target).attr("href")=="#remote-repositories-view") {
+        $("#main-content #remote-repository-edit-li a").html($.i18n.prop("add"));
       }
 
     });

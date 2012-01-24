@@ -168,12 +168,12 @@
             <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository.indexDirectory"/>
           </div>
         </div>
-          <div class="clearfix">
-            <label for="layout">${$.i18n.prop('type')}</label>
-            <div class="input">
-              <select id="layout" data-bind="options: availableLayouts,optionsText: 'label',optionsValue:'type',value: managedRepository.layout"/>
-            </div>
+        <div class="clearfix">
+          <label for="layout">${$.i18n.prop('type')}</label>
+          <div class="input">
+            <select id="layout" data-bind="options: availableLayouts,optionsText: 'label',optionsValue:'type',value: managedRepository.layout"/>
           </div>
+        </div>
         <div class="clearfix">
           <label for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="input">
@@ -326,4 +326,108 @@
       {{/each}}
   </tbody>
 
+</script>
+
+
+<script id="remote-repository-edit-tmpl" type='text/x-jquery-tmpl'>
+    <form id="remote-repository-edit-form">
+      <fieldset id="remote-repository-edit-fieldset">
+        <div class="clearfix">
+          <label for="name">${$.i18n.prop('id')}</label>
+          <div class="input">
+            {{if update}}
+              <span class="uneditable-input">${$data.remoteRepository.id}</span>
+            {{else}}
+              <input type="text" class="xlarge required" id="id" name="id" size="50"
+                     data-bind="value: remoteRepository.id,css:{'uneditable-input': update},readonly:update"/>
+            {{/if}}
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="name">${$.i18n.prop('name')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="name" name="name" size="50"
+                   data-bind="value: remoteRepository.name"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="url">${$.i18n.prop('url')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="url" name="location" size="50" data-bind="value: remoteRepository.url"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="userName">${$.i18n.prop('username')}</label>
+          <div class="input">
+            <input type="text" class="xlarge" id="userName" name="userName" size="50" data-bind="value: remoteRepository.indexDirectory"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="password">${$.i18n.prop('password')}</label>
+           <div class="input">
+             <input type="password" class="xlarge" id="password" name="password" size="50" data-bind="value: remoteRepository.password"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="timeout">${$.i18n.prop('timeout')}</label>
+          <div class="input">
+            <input type="text" id="timeout" class="digits" name="daysOlder" size="5" data-bind="value: remoteRepository.timeout"/>
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="layout">${$.i18n.prop('type')}</label>
+          <div class="input">
+            <select id="layout" data-bind="options: availableLayouts,optionsText: 'label',optionsValue:'type',value: remoteRepository.layout"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="downloadRemoteIndex">${$.i18n.prop('downloadRemoteIndex')}</label>
+          <div class="input">
+            <input type="checkbox" id="downloadRemoteIndex" name="downloadRemoteIndex" size="5" data-bind="checked: remoteRepository.downloadRemoteIndex"/>
+          </div>
+        </div>
+
+        <div class="clearfix">
+          <label for="remoteIndexUrl">${$.i18n.prop('remoteIndexUrl')}</label>
+          <div class="input">
+            <input type="text" id="remoteIndexUrl" name="remoteIndexUrl" size="5" data-bind="value: remoteRepository.remoteIndexUrl"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="cronExpression">${$.i18n.prop('cronExpression')}</label>
+          <div class="input">
+            <input type="text" id="cronExpression" class="required" name="cronExpression" size="40" data-bind="value: remoteRepository.cronExpression"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="indexDirectory">${$.i18n.prop('index.directory')}</label>
+          <div class="input">
+            <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: remoteRepository.indexDirectory"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="remoteDownloadTimeout">${$.i18n.prop('remoteDownloadTimeout')}</label>
+          <div class="input">
+            <input type="text" id="remoteDownloadTimeout" class="digits" name="remoteDownloadTimeout" size="5"
+                   data-bind="value: remoteRepository.remoteDownloadTimeout"/>
+          </div>
+        </div>
+
+
+        <!-- proxy id to use -->
+
+
+        <div class="clearfix">
+          <label for="downloadRemoteIndexOnStartup">${$.i18n.prop('downloadRemoteIndexOnStartup')}</label>
+          <div class="input">
+            <input type="checkbox" id="downloadRemoteIndexOnStartup" name="downloadRemoteIndexOnStartup"
+                   data-bind="checked: remoteRepository.downloadRemoteIndexOnStartup"/>
+          </div>
+        </div>
+
+      </fieldset>
+      <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
+    </form>
 </script>
