@@ -50,7 +50,7 @@
       </subsection>
       <subsection name="Sources organisation">
         <p>
-          Sources are located in src/main/webapp :
+          Sources are located in <a target="_blank" href="http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp-js/src/main/webapp/">src/main/webapp</a> :
           <ul>
             <li>css</li>
             <li>images</li>
