@@ -20,7 +20,6 @@ package org.apache.archiva.proxy.common;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.Wagon;
 import org.springframework.beans.BeansException;
