@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -140,7 +141,7 @@ public class DefaultRepositoryProxyConnectors
 
     private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
 
-    private Map<String, ProxyInfo> networkProxyMap = new HashMap<String, ProxyInfo>();
+    private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<String, ProxyInfo>();
 
     /**
      *
@@ -168,98 +169,93 @@ public class DefaultRepositoryProxyConnectors
     @SuppressWarnings( "unchecked" )
     private void initConnectorsAndNetworkProxies()
     {
-        synchronized ( this.proxyConnectorMap )
+
+        ProxyConnectorOrderComparator proxyOrderSorter = new ProxyConnectorOrderComparator();
+        this.proxyConnectorMap.clear();
+
+        List<ProxyConnectorConfiguration> proxyConfigs = archivaConfiguration.getConfiguration().getProxyConnectors();
+        for ( ProxyConnectorConfiguration proxyConfig : proxyConfigs )
         {
-            ProxyConnectorOrderComparator proxyOrderSorter = new ProxyConnectorOrderComparator();
-            this.proxyConnectorMap.clear();
+            String key = proxyConfig.getSourceRepoId();
 
-            List<ProxyConnectorConfiguration> proxyConfigs =
-                archivaConfiguration.getConfiguration().getProxyConnectors();
-            for ( ProxyConnectorConfiguration proxyConfig : proxyConfigs )
+            try
             {
-                String key = proxyConfig.getSourceRepoId();
+                // Create connector object.
+                ProxyConnector connector = new ProxyConnector();
 
-                try
+                connector.setSourceRepository(
+                    repositoryFactory.getManagedRepositoryContent( proxyConfig.getSourceRepoId() ) );
+                connector.setTargetRepository(
+                    repositoryFactory.getRemoteRepositoryContent( proxyConfig.getTargetRepoId() ) );
+
+                connector.setProxyId( proxyConfig.getProxyId() );
+                connector.setPolicies( proxyConfig.getPolicies() );
+                connector.setOrder( proxyConfig.getOrder() );
+                connector.setDisabled( proxyConfig.isDisabled() );
+
+                // Copy any blacklist patterns.
+                List<String> blacklist = new ArrayList<String>( 0 );
+                if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
                 {
-                    // Create connector object.
-                    ProxyConnector connector = new ProxyConnector();
-
-                    connector.setSourceRepository(
-                        repositoryFactory.getManagedRepositoryContent( proxyConfig.getSourceRepoId() ) );
-                    connector.setTargetRepository(
-                        repositoryFactory.getRemoteRepositoryContent( proxyConfig.getTargetRepoId() ) );
-
-                    connector.setProxyId( proxyConfig.getProxyId() );
-                    connector.setPolicies( proxyConfig.getPolicies() );
-                    connector.setOrder( proxyConfig.getOrder() );
-                    connector.setDisabled( proxyConfig.isDisabled() );
-
-                    // Copy any blacklist patterns.
-                    List<String> blacklist = new ArrayList<String>( 0 );
-                    if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
-                    {
-                        blacklist.addAll( proxyConfig.getBlackListPatterns() );
-                    }
-                    connector.setBlacklist( blacklist );
-
-                    // Copy any whitelist patterns.
-                    List<String> whitelist = new ArrayList<String>( 0 );
-                    if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
-                    {
-                        whitelist.addAll( proxyConfig.getWhiteListPatterns() );
-                    }
-                    connector.setWhitelist( whitelist );
-
-                    // Get other connectors
-                    List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
-                    if ( connectors == null )
-                    {
-                        // Create if we are the first.
-                        connectors = new ArrayList<ProxyConnector>( 1 );
-                    }
-
-                    // Add the connector.
-                    connectors.add( connector );
-
-                    // Ensure the list is sorted.
-                    Collections.sort( connectors, proxyOrderSorter );
-
-                    // Set the key to the list of connectors.
-                    this.proxyConnectorMap.put( key, connectors );
+                    blacklist.addAll( proxyConfig.getBlackListPatterns() );
                 }
-                catch ( RepositoryNotFoundException e )
+                connector.setBlacklist( blacklist );
+
+                // Copy any whitelist patterns.
+                List<String> whitelist = new ArrayList<String>( 0 );
+                if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
                 {
-                    log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                    whitelist.addAll( proxyConfig.getWhiteListPatterns() );
                 }
-                catch ( RepositoryException e )
+                connector.setWhitelist( whitelist );
+
+                // Get other connectors
+                List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
+                if ( connectors == null )
                 {
-                    log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                    // Create if we are the first.
+                    connectors = new ArrayList<ProxyConnector>( 1 );
                 }
+
+                // Add the connector.
+                connectors.add( connector );
+
+                // Ensure the list is sorted.
+                Collections.sort( connectors, proxyOrderSorter );
+
+                // Set the key to the list of connectors.
+                this.proxyConnectorMap.put( key, connectors );
             }
+            catch ( RepositoryNotFoundException e )
+            {
+                log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+            }
+            catch ( RepositoryException e )
+            {
+                log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+            }
+
 
         }
 
-        synchronized ( this.networkProxyMap )
+        this.networkProxyMap.clear();
+
+        List<NetworkProxyConfiguration> networkProxies = archivaConfiguration.getConfiguration().getNetworkProxies();
+        for ( NetworkProxyConfiguration networkProxyConfig : networkProxies )
         {
-            this.networkProxyMap.clear();
+            String key = networkProxyConfig.getId();
 
-            List<NetworkProxyConfiguration> networkProxies =
-                archivaConfiguration.getConfiguration().getNetworkProxies();
-            for ( NetworkProxyConfiguration networkProxyConfig : networkProxies )
-            {
-                String key = networkProxyConfig.getId();
+            ProxyInfo proxy = new ProxyInfo();
 
-                ProxyInfo proxy = new ProxyInfo();
+            proxy.setType( networkProxyConfig.getProtocol() );
+            proxy.setHost( networkProxyConfig.getHost() );
+            proxy.setPort( networkProxyConfig.getPort() );
+            proxy.setUserName( networkProxyConfig.getUsername() );
+            proxy.setPassword( networkProxyConfig.getPassword() );
 
-                proxy.setType( networkProxyConfig.getProtocol() );
-                proxy.setHost( networkProxyConfig.getHost() );
-                proxy.setPort( networkProxyConfig.getPort() );
-                proxy.setUserName( networkProxyConfig.getUsername() );
-                proxy.setPassword( networkProxyConfig.getPassword() );
-
-                this.networkProxyMap.put( key, proxy );
-            }
+            this.networkProxyMap.put( key, proxy );
         }
+
     }
 
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
@@ -1046,11 +1042,8 @@ public class DefaultRepositoryProxyConnectors
     {
         boolean connected = false;
 
-        final ProxyInfo networkProxy;
-        synchronized ( this.networkProxyMap )
-        {
-            networkProxy = (ProxyInfo) this.networkProxyMap.get( connector.getProxyId() );
-        }
+        final ProxyInfo networkProxy = this.networkProxyMap.get( connector.getProxyId() );
+
 
         if ( log.isDebugEnabled() )
         {
