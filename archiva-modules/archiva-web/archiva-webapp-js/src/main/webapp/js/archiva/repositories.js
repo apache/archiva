@@ -529,7 +529,47 @@ $(function() {
     this.availableLayouts = window.managedRepositoryTypes;
 
     save=function(){
-
+      var valid = $("#main-content #remote-repository-edit-form").valid();
+      if (valid==false) {
+        return;
+      }
+      clearUserMessages();
+      if (update){
+        $.ajax("restServices/archivaServices/remoteRepositoriesService/updateRemoteRepository",
+          {
+            type: "POST",
+            data: "{\"remoteRepository\": " + ko.toJSON(this.remoteRepository)+"}",
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(data) {
+              displaySuccessMessage($.i18n.prop('remoterepository.updated'));
+              activateRemoteRepositoriesGridTab();
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
+      }else {
+        $.ajax("restServices/archivaServices/remoteRepositoriesService/addRemoteRepository",
+          {
+            type: "POST",
+            data: "{\"remoteRepository\": " + ko.toJSON(this.remoteRepository)+"}",
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(data) {
+              self.remoteRepositoriesViewModel.remoteRepositories.push(self.remoteRepository);
+              displaySuccessMessage($.i18n.prop('remoterepository.added'));
+              activateRemoteRepositoriesGridTab();
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
+      }
     }
 
     displayGrid=function(){
@@ -553,7 +593,19 @@ $(function() {
     }
 
     removeRemoteRepository=function(remoteRepository){
-      $.log("removeRemoteRepository");
+      $.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+remoteRepository.id(),
+        {
+          type: "GET",
+          success: function(data) {
+            self.remoteRepositories.remove(remoteRepository);
+            displaySuccessMessage($.i18n.prop('remoterepository.deleted'));
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          }
+        }
+      );
     }
 
     scheduleDownloadRemoteIndex=function(remoteRepository){

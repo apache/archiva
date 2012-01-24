@@ -397,7 +397,7 @@
         <div class="clearfix">
           <label for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="input">
-            <input type="text" id="cronExpression" class="required" name="cronExpression" size="40" data-bind="value: remoteRepository.cronExpression"/>
+            <input type="text" id="cronExpression" name="cronExpression" size="40" data-bind="value: remoteRepository.cronExpression"/>
           </div>
         </div>
         <div class="clearfix">
@@ -414,9 +414,7 @@
           </div>
         </div>
 
-
-        <!-- proxy id to use -->
-
+        <!-- FIXME proxy id to use -->
 
         <div class="clearfix">
           <label for="downloadRemoteIndexOnStartup">${$.i18n.prop('downloadRemoteIndexOnStartup')}</label>
