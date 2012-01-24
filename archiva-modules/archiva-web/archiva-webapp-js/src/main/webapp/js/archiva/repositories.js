@@ -323,9 +323,9 @@ $(function() {
 
     showStats=function(managedRepository){
       if ($(calculatePopoverId(managedRepository)).html()){
-        // we ask stats all the time ? if yes uncomment return
-        return;
-        //$(calculatePopoverId(managedRepository)).html("");
+        // we ask stats all the time ? if no uncomment return
+        //return;
+        $("#managedrepository-stats-"+managedRepository.id()).append(smallSpinnerImg());
       }
       var curRepo=managedRepository;
       var url = "restServices/archivaServices/managedRepositoriesService/getManagedRepositoryStatistics/"+managedRepository.id();
@@ -339,6 +339,7 @@ $(function() {
             }
             var archivaRepositoryStatistics=mapArchivaRepositoryStatistics(data.archivaRepositoryStatistics);
             archivaRepositoryStatistics.managedRepository=curRepo;
+
             $("#managedrepository-stats-"+curRepo.id()).append($("#managed-repository-stats-tmpl").tmpl(archivaRepositoryStatistics));
             $("#managedrepository-stats-img-"+curRepo.id()).attr("data-content",$(calculatePopoverId(curRepo)).html());
             $("#managedrepository-stats-img-"+curRepo.id()).popover(
@@ -348,9 +349,9 @@ $(function() {
                   title: "popover-title"
                 }
             );
-            //$(calculatePopoverId(managedRepository)).show();
-            $("#managedrepository-stats-img-"+curRepo.id()).popover('show')
 
+            $("#managedrepository-stats-img-"+curRepo.id()).popover('show');
+            removeSmallSpinnerImg();
           },
           error: function(data) {
             var res = $.parseJSON(data.responseText);
@@ -360,6 +361,10 @@ $(function() {
            }
         }
       );
+    }
+
+    calculatePopoverId=function(managedRepository){
+      return "#managedrepository-stats-"+managedRepository.id() + " #managedrepository-stats-"+managedRepository.id()+"-popover";
     }
 
     hideStats=function(managedRepository){
@@ -389,9 +394,7 @@ $(function() {
 
     }
 
-    calculatePopoverId=function(managedRepository){
-      return "#managedrepository-stats-"+managedRepository.id() + " #managedrepository-stats-"+managedRepository.id()+"-popover";
-    }
+
 
   }
 
@@ -497,5 +500,11 @@ $(function() {
     $("#main-content #managed-repository-edit-li").addClass("active");
     $("#main-content #managed-repository-edit").addClass("active");
   }
+
+  //---------------------------
+  // Remote repositories part
+  //---------------------------
+
+
 
 });
