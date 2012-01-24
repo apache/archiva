@@ -54,7 +54,24 @@
 
 
     	<div id="remote-repositories-content">
-    		grid to view edit remote repositories
+            <ul id="remote-repositories-pills" class="pills">
+              <li class="active" id="remote-repositories-view-li">
+                <a href="#remote-repositories-view">${$.i18n.prop('remoterepositories.grid.tab.title')}</a>
+              </li>
+              <li id="remote-repository-edit-li">
+                <a href="#remote-repository-edit">${$.i18n.prop('add')}</a>
+              </li>
+            </ul>
+            <div id="remote-repositories-tabs-content" class="pill-content">
+              <div id="remote-repositories-view" class="active">
+                  <table class="bordered-table zebra-striped" id="remote-repositories-table"
+                         data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_remote-repositoriesGrid',pageLinksId:'remote-repositoriesPagination',data:'remoteRepositories'">
+                  </table>
+                  <div id="remote-repositoriesPagination"></div>
+              </div>
+              <div id="remote-repository-edit" data-bind='template: {name:"remote-repository-edit-tmpl"}'>
+              </div>
+            </div>
     	</div>
       </div>
 </script>
@@ -271,4 +288,41 @@
   </div>
   <div><a href="#" onclick="$('#managed-repositories-pom-snippet').effect('blind')">${$.i18n.prop('hide')}</a></div>
   <pre>${$data}</pre>
+</script>
+
+<!-- remote part -->
+
+<script id='ko_remote-repositoriesGrid' type='text/x-jquery-tmpl'>
+  <thead>
+      <tr>
+        {{each(i, columnDefinition) columns}}
+          <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('remoterepository.downloadremoteindex')}</th>
+      </tr>
+  </thead>
+  <tbody>
+      {{each(i, row) itemsOnCurrentPage()}}
+          <tr>
+            {{each(j, columnDefinition) columns}}
+              <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+            {{/each}}
+            <td><a href="#" data-bind="click: function(){ editRemoteRepository(row) }">${$.i18n.prop('edit')}</a></td>
+            <td>
+              <a href="#" data-bind="click: function(){ removeRemoteRepository(row) }">
+                <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+              </a>
+            </td>
+            <td>
+              <a href="#" data-bind="click: function(){ downloadRemoteIndex(row) }">
+                <img src="images/view-refresh.png" data-bind="click: function(){ downloadRemoteIndex(row) }"
+                     title="${$.i18n.prop('remoterepository.downloadremoteindex.now')}"/>
+              </a>
+            </td>
+          </tr>
+      {{/each}}
+  </tbody>
+
 </script>
