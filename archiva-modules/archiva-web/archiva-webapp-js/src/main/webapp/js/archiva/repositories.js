@@ -507,4 +507,67 @@ $(function() {
 
 
 
+  RemoteRepository=function(id,name,layout,indexDirectory,url,userName,password,timeout,downloadRemoteIndex,remoteIndexUrl,
+                            remoteDownloadNetworkProxyId,cronExpression,remoteDownloadTimeout,downloadRemoteIndexOnStartup){
+
+
+    //private String id;
+    this.id=ko.observable(id);
+
+    //private String name;
+    this.name=ko.observable(name);
+
+    //private String layout = "default";
+    this.layout=ko.observable(layout);
+
+    //private String indexDirectory;
+    this.indexDirectory=ko.observable(indexDirectory);
+
+    //private String url;
+    this.url=ko.observable(url);
+
+    //private String userName;
+    this.userName=ko.observable(userName);
+
+    //private String password;
+    this.password=ko.observable(password);
+
+    //private int timeout = 60;
+    this.timeout=ko.observable(timeout);
+
+    //private boolean downloadRemoteIndex = false;
+    this.downloadRemoteIndex=ko.observable(downloadRemoteIndex);
+
+    //private String remoteIndexUrl = ".index";
+    this.remoteIndexUrl=ko.observable(remoteIndexUrl);
+
+    //private String remoteDownloadNetworkProxyId;
+    this.remoteDownloadNetworkProxyId=ko.observable(remoteDownloadNetworkProxyId);
+
+    //private String cronExpression = "0 0 08 ? * SUN";
+    this.cronExpression=ko.observable(cronExpression);
+
+    //private int remoteDownloadTimeout = 300;
+    this.remoteDownloadTimeout=ko.observable(remoteDownloadTimeout);
+
+    //private boolean downloadRemoteIndexOnStartup = false;
+    this.downloadRemoteIndexOnStartup=ko.observable(downloadRemoteIndexOnStartup);
+  }
+
+  mapRemoteRepository=function(data){
+    if (data==null){
+      return null;
+    }
+    return new RemoteRepository(data.id,data.name,data.layout,data.indexDirectory,data.url,data.userName,data.password,
+                                data.timeout,data.downloadRemoteIndex,data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
+                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup);
+  }
+
+  mapRemoteRepositories=function(data){
+    var mappedRemoteRepositories = $.map(data.remoteRepository, function(item) {
+      return mapRemoteRepository(item);
+    });
+    return mappedRemoteRepositories;
+  }
+
 });
