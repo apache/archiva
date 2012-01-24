@@ -609,7 +609,40 @@ $(function() {
     }
 
     scheduleDownloadRemoteIndex=function(remoteRepository){
-      $.log("scheduleDownloadRemoteIndex");
+      openDialogConfirm(
+        function(){
+
+          var url = "restServices/archivaServices/repositoriesService/scheduleDownloadRemoteIndex?";
+          url += "repositoryId="+encodeURIComponent(remoteRepository.id());
+
+          var now = $("#remoterepository-scan-now").get(0).checked;
+
+          var full = $("#remoterepository-scan-full").get(0).checked;
+
+          url += "&now="+(now==true?"true":"false");
+          url += "&fullDownload="+(full==true?"true":"false");
+          $.ajax(url,
+            {
+              type: "GET",
+                success: function(data) {
+                  displaySuccessMessage($.i18n.prop("remoterepository.scanned.scheduled",remoteRepository.name()));
+
+                },
+                error: function(data) {
+                  var res = $.parseJSON(data.responseText);
+                  displayRestError(res);
+                },
+                complete: function(){
+                  closeDialogConfirm();
+                }
+            }
+          );
+
+        },
+        $.i18n.prop("ok"),
+        $.i18n.prop("cancel"),
+        $.i18n.prop("remoterepository.scan.confirm",remoteRepository.name()),
+        $("#remote-repository-scan-modal-tmpl").tmpl(remoteRepository));
     }
   }
 

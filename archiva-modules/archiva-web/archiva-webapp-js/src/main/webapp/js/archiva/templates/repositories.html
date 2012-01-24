@@ -254,6 +254,7 @@
     </div>
   </div>
 </script>
+
 <script id="managed-repository-location-warning-tmpl" type='text/x-jquery-tmpl'>
   <div>
     <a class="close" href="#">&#215;</a>
@@ -428,4 +429,13 @@
       <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
       <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
     </form>
+</script>
+
+<script id="remote-repository-scan-modal-tmpl" type='text/x-jquery-tmpl'>
+    <div>
+      ${$.i18n.prop('remoterepository.scan.now')}: <input type="checkbox" id="remoterepository-scan-now">
+    </div>
+    <div>
+      ${$.i18n.prop('remoterepository.scan.full')}: <input type="checkbox" id="remoterepository-scan-full">
+    </div>
 </script>
