@@ -35,6 +35,7 @@
     <tomcatRunPort>9091</tomcatRunPort>
     <tomcatRunPath>/archiva</tomcatRunPath>
     <archiva.devMode>true</archiva.devMode>
+    <archiva.javascriptLog>true</archiva.javascriptLog>
   </properties>
 
   <dependencies>
@@ -546,6 +547,7 @@
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
+            <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -579,6 +581,7 @@
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
+            <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
           </systemProperties>
         </configuration>
         <dependencies>
@@ -610,6 +613,7 @@
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
+            <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
           </systemProperties>
         </configuration>
         <dependencies>

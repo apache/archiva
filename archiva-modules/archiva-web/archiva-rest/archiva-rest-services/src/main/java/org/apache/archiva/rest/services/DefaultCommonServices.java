@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.ArchivaRuntimeInfo;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
@@ -169,8 +170,8 @@ public class DefaultCommonServices
         }
     }
 
-    public Boolean devMode()
+    public ArchivaRuntimeInfo archivaRuntimeInfo()
     {
-        return Boolean.getBoolean( "archiva.devMode" );
+        return new ArchivaRuntimeInfo();
     }
 }

@@ -26,9 +26,9 @@ $(function() {
 
   $.log("devMode:"+window.archivaDevMode);
 
-  // no cache for ajax queries
+  // no cache for ajax queries as we get datas from servers so preventing caching !!
   jQuery.ajaxSetup( {
-    cache: !window.archivaDevMode
+    cache: false//!window.archivaDevMode
   } );
 
 

@@ -42,9 +42,11 @@
 <script type="text/javascript">
 $.ajax(
   {
-    url: "restServices/archivaServices/commonServices/devMode",
+    url: "restServices/archivaServices/commonServices/archivaRuntimeInfo",
+    dataType: 'json',
     success:function(data){
-        window.archivaDevMode=data=='true';
+        window.archivaDevMode=data.archivaRuntimeInfo.devMode;
+        window.archivaJavascriptLog=data.archivaRuntimeInfo.javascriptLog;
         require.config({
             baseUrl: "js/"
           });

@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.ArchivaRuntimeInfo;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
@@ -60,9 +61,9 @@ public interface CommonServices
     String getAllI18nResources( @QueryParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
 
-    @Path( "devMode" )
+    @Path( "archivaRuntimeInfo" )
     @GET
-    @Produces( { MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    Boolean devMode();
+    ArchivaRuntimeInfo archivaRuntimeInfo();
 }
