@@ -32,20 +32,23 @@ Html/Javascript templates loading
 
   They are loaded using requirejs and the text plugin.
 
-  archiva tamplates are loaded as it:
+  archiva templates are loaded as it <<<NOTE: the no cache is activated only on dev mode>>>
 
 +-------------------------
-require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html",
-          "text!archiva/templates/modal.html","text!archiva/templates/grids-generics.html","text!archiva/templates/repositories.html"],
+require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/templates/topbar.html?"+timestampNoCache(),
+          "text!archiva/templates/message.html?"+timestampNoCache(),"text!archiva/templates/modal.html?"+timestampNoCache(),
+          "text!archiva/templates/grids-generics.html?"+timestampNoCache(),
+          "text!archiva/templates/repositories.html?"+timestampNoCache()],
   function(menu,topbar,message,modal,grids_generics,repositories) {
 
     // template loading
-    $.tmpl( menu, $.i18n.map ).appendTo("#html-fragments");
-    $.tmpl( topbar, $.i18n.map ).appendTo("#html-fragments");
-    $.tmpl( modal, $.i18n.map ).appendTo("#html-fragments");
+    $.tmpl( menu ).appendTo("#html-fragments");
+    $.tmpl( topbar ).appendTo("#html-fragments");
     $("#html-fragments").append(message);
+    $.tmpl( modal ).appendTo("#html-fragments");
     $("#html-fragments").append(grids_generics);
     $("#html-fragments").append(repositories);
+    $.log("main-tmpl.js menu loaded");
   }
 );
 +-------------------------
