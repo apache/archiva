@@ -80,5 +80,7 @@
     <property name="timeToLiveSeconds" value="1800"/>
   </bean>
 
+  <bean name="wagon#test" class="org.apache.archiva.proxy.WagonDelegate" scope="singleton"/>
+  <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
 
 </beans>

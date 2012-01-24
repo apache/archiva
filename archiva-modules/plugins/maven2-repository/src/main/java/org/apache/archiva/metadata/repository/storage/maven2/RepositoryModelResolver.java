@@ -19,20 +19,15 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.xml.XMLException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelSource;
@@ -49,6 +44,11 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class RepositoryModelResolver
     implements ModelResolver
@@ -77,9 +77,10 @@ public class RepositoryModelResolver
         this.pathTranslator = pathTranslator;
     }
 
-    public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator,
-                                    WagonFactory wagonFactory, List<RemoteRepositoryConfiguration> remoteRepositories,
-                                    Map<String, ProxyInfo> networkProxiesMap, ManagedRepositoryConfiguration targetRepository )
+    public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator, WagonFactory wagonFactory,
+                                    List<RemoteRepositoryConfiguration> remoteRepositories,
+                                    Map<String, ProxyInfo> networkProxiesMap,
+                                    ManagedRepositoryConfiguration targetRepository )
     {
         this( basedir, pathTranslator );
 
@@ -100,24 +101,25 @@ public class RepositoryModelResolver
 
         File model = pathTranslator.toFile( basedir, groupId, artifactId, version, filename );
 
-        if( !model.exists() )
+        if ( !model.exists() )
         {
-            for( RemoteRepositoryConfiguration remoteRepository : remoteRepositories )
+            for ( RemoteRepositoryConfiguration remoteRepository : remoteRepositories )
             {
                 try
                 {
                     boolean success = getModelFromProxy( remoteRepository, groupId, artifactId, version, filename );
-                    if( success && model.exists() )
+                    if ( success && model.exists() )
                     {
-                        log.info( "Model '" + model.getAbsolutePath() + "' successfully retrieved from remote repository '"
-                            + remoteRepository.getId() + "'" );
+                        log.info(
+                            "Model '" + model.getAbsolutePath() + "' successfully retrieved from remote repository '"
+                                + remoteRepository.getId() + "'" );
                         break;
                     }
                 }
-                catch( Exception e )
+                catch ( Exception e )
                 {
                     log.warn( "An exception was caught while attempting to retrieve model '" + model.getAbsolutePath()
-                        + "' from remote repository '" + remoteRepository.getId() + "'.", e );
+                                  + "' from remote repository '" + remoteRepository.getId() + "'.", e );
                     continue;
                 }
             }
@@ -142,7 +144,7 @@ public class RepositoryModelResolver
     // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
     // because it's causing a cyclic dependency
     private boolean getModelFromProxy( RemoteRepositoryConfiguration remoteRepository, String groupId,
-                                    String artifactId, String version, String filename )
+                                       String artifactId, String version, String filename )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException,
         XMLException
     {
@@ -177,7 +179,8 @@ public class RepositoryModelResolver
                         // get the metadata first!
                         File tmpMetadataResource = new File( workingDirectory, METADATA_FILENAME );
 
-                        String metadataPath = StringUtils.substringBeforeLast( artifactPath, "/" ) + "/" + METADATA_FILENAME;
+                        String metadataPath =
+                            StringUtils.substringBeforeLast( artifactPath, "/" ) + "/" + METADATA_FILENAME;
 
                         wagon.get( metadataPath, tmpMetadataResource );
 
@@ -190,10 +193,10 @@ public class RepositoryModelResolver
                         String timestampVersion = version;
                         if ( snapshotVersion != null )
                         {
-                            timestampVersion =
-                                timestampVersion.substring( 0, timestampVersion.length() - 8 ); // remove SNAPSHOT from end
-                            timestampVersion =
-                                timestampVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+                            timestampVersion = timestampVersion.substring( 0, timestampVersion.length()
+                                - 8 ); // remove SNAPSHOT from end
+                            timestampVersion = timestampVersion + snapshotVersion.getTimestamp() + "-"
+                                + snapshotVersion.getBuildNumber();
 
                             filename = artifactId + "-" + timestampVersion + ".pom";
 
@@ -209,10 +212,10 @@ public class RepositoryModelResolver
 
                     log.debug( "Downloaded successfully." );
 
-                    tmpSha1 =
-                        transferChecksum( wagon, remoteRepository, artifactPath, tmpResource, workingDirectory, ".sha1" );
-                    tmpMd5 =
-                        transferChecksum( wagon, remoteRepository, artifactPath, tmpResource, workingDirectory, ".md5" );
+                    tmpSha1 = transferChecksum( wagon, remoteRepository, artifactPath, tmpResource, workingDirectory,
+                                                ".sha1" );
+                    tmpMd5 = transferChecksum( wagon, remoteRepository, artifactPath, tmpResource, workingDirectory,
+                                               ".md5" );
                 }
             }
             finally
@@ -267,9 +270,8 @@ public class RepositoryModelResolver
 
         if ( networkProxy != null )
         {
-            String msg =
-                "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
-                    + " to connect to remote repository " + remoteRepository.getUrl();
+            String msg = "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
+                + " to connect to remote repository " + remoteRepository.getUrl();
             if ( networkProxy.getNonProxyHosts() != null )
             {
                 msg += "; excluding hosts: " + networkProxy.getNonProxyHosts();
@@ -289,7 +291,7 @@ public class RepositoryModelResolver
 
         if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
         {
-            log.debug( "Using username " + username + " to connect to remote repository " + remoteRepository.getUrl() );
+            log.debug( "Using username {} to connect to remote repository {}", username, remoteRepository.getUrl() );
             authInfo = new AuthenticationInfo();
             authInfo.setUserName( username );
             authInfo.setPassword( password );
@@ -366,7 +368,8 @@ public class RepositoryModelResolver
             File newLocation = new File( directory, fileToMove.getName() );
             if ( newLocation.exists() && !newLocation.delete() )
             {
-                throw new RuntimeException( "Unable to overwrite existing target file: " + newLocation.getAbsolutePath() );
+                throw new RuntimeException(
+                    "Unable to overwrite existing target file: " + newLocation.getAbsolutePath() );
             }
 
             newLocation.getParentFile().mkdirs();
@@ -383,12 +386,12 @@ public class RepositoryModelResolver
                     if ( newLocation.exists() )
                     {
                         log.error( "Tried to copy file " + fileToMove.getName() + " to " + newLocation.getAbsolutePath()
-                            + " but file with this name already exists." );
+                                       + " but file with this name already exists." );
                     }
                     else
                     {
-                        throw new RuntimeException( "Cannot copy tmp file " + fileToMove.getAbsolutePath()
-                            + " to its final location", e );
+                        throw new RuntimeException(
+                            "Cannot copy tmp file " + fileToMove.getAbsolutePath() + " to its final location", e );
                     }
                 }
                 finally

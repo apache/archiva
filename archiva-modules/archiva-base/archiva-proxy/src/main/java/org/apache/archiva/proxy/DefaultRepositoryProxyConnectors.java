@@ -1042,8 +1042,8 @@ public class DefaultRepositoryProxyConnectors
     {
         boolean connected = false;
 
-        final ProxyInfo networkProxy = this.networkProxyMap.get( connector.getProxyId() );
-
+        final ProxyInfo networkProxy =
+            connector.getProxyId() == null ? null : this.networkProxyMap.get( connector.getProxyId() );
 
         if ( log.isDebugEnabled() )
         {

@@ -19,10 +19,6 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -40,16 +36,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 /**
  * A dummy wagon implementation
- *
  */
-@Service("wagon#test")
+@Service( "wagon#test" )
 public class WagonDelegate
     implements Wagon
 {
     private Logger log = LoggerFactory.getLogger( WagonDelegate.class );
-    
+
     private Wagon delegate;
 
     private String contentToGet;
@@ -90,7 +91,7 @@ public class WagonDelegate
         return delegate.resourceExists( resourceName );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public List<String> getFileList( String destinationDirectory )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
@@ -102,15 +103,15 @@ public class WagonDelegate
         return delegate.supportsDirectoryCopy();
     }
 
-     public void setTimeout(int val)
-     {
-         // ignore
-     }
- 
-     public int getTimeout()
-     {
-         return 0;
-     }
+    public void setTimeout( int val )
+    {
+        // ignore
+    }
+
+    public int getTimeout()
+    {
+        return 0;
+    }
 
     public Repository getRepository()
     {
@@ -153,7 +154,7 @@ public class WagonDelegate
         delegate.connect( source, authenticationInfo, proxyInfoProvider );
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings( "deprecation" )
     public void openConnection()
         throws ConnectionException, AuthenticationException
     {

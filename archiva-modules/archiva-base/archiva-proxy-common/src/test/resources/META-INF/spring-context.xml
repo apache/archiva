@@ -27,4 +27,6 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
+  <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
+
 </beans>

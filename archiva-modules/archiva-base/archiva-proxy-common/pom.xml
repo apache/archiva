@@ -38,6 +38,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-file</artifactId>
       <scope>test</scope>
     </dependency>
@@ -79,6 +84,8 @@
               org.apache.archiva.common.plexusbridge;version=${project.version},
               org.apache.commons.lang;version="[2.4,3)",
               org.springframework.stereotype;version="[3,4)",
+              org.springframework.context;version="[3,4)",
+              org.springframework.beans;version="[3,4)",
               org.apache.maven.wagon*,
               org.slf4j;resolution:=optional
             </Import-Package>

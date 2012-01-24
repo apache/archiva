@@ -135,7 +135,7 @@ public abstract class AbstractProxyTestCase
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
-    PlexusSisuBridge plexusSisuBridge;
+    protected PlexusSisuBridge plexusSisuBridge;
 
     @Before
     public void setUp()
@@ -208,7 +208,7 @@ public abstract class AbstractProxyTestCase
         wagonMockControl = MockControl.createNiceControl( Wagon.class );
         wagonMock = (Wagon) wagonMockControl.getMock();
 
-        delegate = (WagonDelegate) plexusSisuBridge.lookup( Wagon.class, "test" );
+        delegate = (WagonDelegate) applicationContext.getBean( "wagon#test", Wagon.class );
 
         delegate.setDelegate( wagonMock );
 
@@ -221,7 +221,7 @@ public abstract class AbstractProxyTestCase
     public void shutdown()
         throws Exception
     {
-       removeMavenIndexes();
+        removeMavenIndexes();
     }
 
 

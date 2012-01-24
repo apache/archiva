@@ -30,5 +30,8 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.proxy.common"/>
 
+  <bean name="wagon#http" scope="prototype" class="org.apache.maven.wagon.providers.http.HttpWagon"/>
+
+  <bean name="wagon#https" scope="prototype" class="org.apache.maven.wagon.providers.http.HttpWagon"/>
 
 </beans>

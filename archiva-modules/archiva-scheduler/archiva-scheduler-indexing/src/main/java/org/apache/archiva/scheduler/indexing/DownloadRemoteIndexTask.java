@@ -130,7 +130,6 @@ public class DownloadRemoteIndexTask
             final Wagon wagon = wagonFactory.getWagon( new URL( this.remoteRepository.getUrl() ).getProtocol() );
             setupWagonReadTimeout( wagon );
 
-            // TODO transferListener
             wagon.addTransferListener( new DownloadListener() );
             ProxyInfo proxyInfo = null;
             if ( this.networkProxy != null )

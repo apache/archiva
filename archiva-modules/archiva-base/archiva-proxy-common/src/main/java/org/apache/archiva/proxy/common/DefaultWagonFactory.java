@@ -23,6 +23,8 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.Wagon;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -38,12 +40,15 @@ public class DefaultWagonFactory
 
     private PlexusSisuBridge plexusSisuBridge;
 
+    private ApplicationContext applicationContext;
+
     private DebugTransferListener debugTransferListener = new DebugTransferListener();
 
     @Inject
-    public DefaultWagonFactory( PlexusSisuBridge plexusSisuBridge )
+    public DefaultWagonFactory( PlexusSisuBridge plexusSisuBridge, ApplicationContext applicationContext )
     {
         this.plexusSisuBridge = plexusSisuBridge;
+        this.applicationContext = applicationContext;
     }
 
     public Wagon getWagon( String protocol )
@@ -53,12 +58,17 @@ public class DefaultWagonFactory
         {
             // with sisu inject bridge hint is file or http
             // so remove wagon#
-            protocol = StringUtils.remove( protocol, "wagon#" );
-            Wagon wagon = plexusSisuBridge.lookup( Wagon.class, protocol );
+            //protocol = StringUtils.remove( protocol, "wagon#" );
+            // spring beans will be named wagon#protocol (http, https, file )
+            protocol = StringUtils.startsWith( protocol, "wagon#" ) ? protocol : "wagon#" + protocol;
+            //Wagon wagon = plexusSisuBridge.lookup( Wagon.class, protocol );
+
+            Wagon wagon = applicationContext.getBean( protocol, Wagon.class );
             wagon.addTransferListener( debugTransferListener );
             return wagon;
         }
-        catch ( PlexusSisuBridgeException e )
+        //catch ( PlexusSisuBridgeException e )
+        catch ( BeansException e )
         {
             throw new WagonFactoryException( e.getMessage(), e );
         }
