@@ -296,3 +296,10 @@ customShowError=function(validator, errorMap, errorList) {
     field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
   }
 }
+
+timestampNoCache=function(){
+  if (!window.archivaDevMode){
+    return "";
+  }
+  return "_="+jQuery.now();
+}

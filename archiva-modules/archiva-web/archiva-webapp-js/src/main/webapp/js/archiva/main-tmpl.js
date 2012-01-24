@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(["text!archiva/templates/menu.html","text!archiva/templates/topbar.html","text!archiva/templates/message.html",
-          "text!archiva/templates/modal.html","text!archiva/templates/grids-generics.html","text!archiva/templates/repositories.html"],
+require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/templates/topbar.html?"+timestampNoCache(),
+          "text!archiva/templates/message.html?"+timestampNoCache(),"text!archiva/templates/modal.html?"+timestampNoCache(),
+          "text!archiva/templates/grids-generics.html?"+timestampNoCache(),
+          "text!archiva/templates/repositories.html?"+timestampNoCache()],
   function(menu,topbar,message,modal,grids_generics,repositories) {
 
     // template loading

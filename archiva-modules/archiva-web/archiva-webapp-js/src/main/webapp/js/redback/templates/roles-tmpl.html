@@ -190,14 +190,16 @@
           <th>${ columnDefinition.headerText }</th>
         {{/each}}
         <th>${$.i18n.prop('edit')}</th>
-
       </tr>
   </thead>
   <tbody>
       {{each(i, row) itemsOnCurrentPage()}}
           <tr>
               {{each(j, columnDefinition) columns}}
-              <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+              {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
+              <td id="role-description-${val}">
+                ${val}
+              </td>
               {{/each}}
               <td><a href="#" data-bind="click: function(){ window.redbackModel.rolesViewModel.editRole(row) }">Edit</a></td>
           </tr>

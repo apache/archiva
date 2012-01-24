@@ -44,6 +44,7 @@ $.ajax(
   {
     url: "restServices/archivaServices/commonServices/devMode",
     success:function(data){
+        window.archivaDevMode=data=='true';
         require.config({
             baseUrl: "js/"
           });
@@ -52,7 +53,7 @@ $.ajax(
             AlwaysPreserveOrder:true,
             BasePath:"js/",
             explicit_preloading:false,
-            CacheBust:data=='true'
+            CacheBust:window.archivaDevMode
         };
         $LAB.setGlobalDefaults(options);
         $LAB

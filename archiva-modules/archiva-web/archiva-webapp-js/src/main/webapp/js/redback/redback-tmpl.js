@@ -16,9 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(["text!redback/templates/user-edit.html", "text!redback/templates/user-grids.html", "text!redback/templates/login.html"
-          , "text!redback/templates/register-form.html","text!redback/templates/password-change-form.html"
-          ,"text!redback/templates/user-edit-form.html","text!redback/templates/roles-tmpl.html"],
+require(["text!redback/templates/user-edit.html?"+timestampNoCache(), "text!redback/templates/user-grids.html?"+timestampNoCache(),
+          "text!redback/templates/login.html?"+timestampNoCache(), "text!redback/templates/register-form.html?"+timestampNoCache(),
+          "text!redback/templates/password-change-form.html?"+timestampNoCache(),
+          "text!redback/templates/user-edit-form.html?"+timestampNoCache(),
+          "text!redback/templates/roles-tmpl.html?"+timestampNoCache()],
     function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
 
 

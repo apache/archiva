@@ -21,13 +21,17 @@ function($) {
 
 $(function() {
 
-  // no cache for ajax queries
-  jQuery.ajaxSetup( {
-    cache: false
-  } );
-
   // define a container object with various datas
   window.archivaModel = {};
+
+  $.log("devMode:"+window.archivaDevMode);
+
+  // no cache for ajax queries
+  jQuery.ajaxSetup( {
+    cache: !window.archivaDevMode
+  } );
+
+
 
   /**
    * reccord a cookie for session with the logged user
