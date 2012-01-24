@@ -15,18 +15,27 @@
 
     <section name="Archiva Javascript Web Application">
       <subsection name="General design">
-      <p>
-        The goal is to have a "one page loading" javascript application.
-        <br/>
-        For this the only html page will contains a div with id "main-content" this div will be populated
-        by jquery template execution (see <a href="./template-loading.html">template loading</a>).
-        <br/>
-        The server will be contacted only for REST request/response (see <a href="./rest.html">details</a>).
-        <br/>
-        <b>All UI rendering will be done only on client side.</b>
-        <br/>
-        As we are not designer :-), the application will use the <a href="http://twitter.github.com/bootstrap" target="_blank">twitter bootstrap css</a>.
-      </p>
+        <p>
+          The goal is to have a "one page loading" javascript application.
+          <br/>
+          For this the only html page will contains a div with id "main-content" this div will be populated
+          by jquery template execution (see <a href="./template-loading.html">template loading</a>).
+          <br/>
+          The server will be contacted only for REST request/response (see <a href="./rest.html">details</a>).
+          <br/>
+          <b>All UI rendering will be done only on client side.</b>
+          <br/>
+          As we are not designer :-), the application will use the <a href="http://twitter.github.com/bootstrap" target="_blank">twitter bootstrap css</a>.
+        </p>
+      </subsection>
+      <subsection name="Runtime Properties">
+        <p>The application is designed to use http cache mechanism for css, javascript. Except REST call to get datas which will never use cache as a query timestamp parameter is used.
+          But as this can cause issue in developpement phase, two system properties (disabled by default) prevent can prevent caching and/or help debuging
+          <ul>
+            <li>archiva.devMode= true/false: if true will add a timestamp query parameter for loading js and html templates.</li>
+            <li>archiva.javascriptLog= true/false: will activate javascript log, method available with $.log(msg)</li>
+          </ul>
+        </p>
       </subsection>
       <subsection name="Used Javascript frameworks">
         <p>
