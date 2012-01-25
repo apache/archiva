@@ -249,6 +249,13 @@ $(function() {
           digits: true,
           min: 1,
           max: 100
+        },
+        cronExpression: {
+          required: true,
+          remote: {
+            url: "restServices/archivaServices/commonServices/validateCronExpression", // ?cronExpression="+$("#managed-repository-edit-form #cronExpression").val(),
+            type: "get"
+          }
         }
       },
       showErrors: function(validator, errorMap, errorList) {
