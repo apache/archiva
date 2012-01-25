@@ -66,4 +66,13 @@ public interface CommonServices
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
     ArchivaRuntimeInfo archivaRuntimeInfo();
+
+
+    @Path( "validateCronExpression" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true )
+    Boolean validateCronExpression( @QueryParam( "cronExpression" ) String cronExpression )
+        throws ArchivaRestServiceException;
+
 }

@@ -23,6 +23,7 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.codehaus.redback.rest.api.services.RedbackServiceException;
 import org.codehaus.redback.rest.api.services.UtilServices;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,6 +53,9 @@ public class DefaultCommonServices
 
     @Inject
     private UtilServices utilServices;
+
+    @Inject
+    protected CronExpressionValidator cronExpressionValidator;
 
     public String getI18nResources( String locale )
         throws ArchivaRestServiceException
@@ -173,5 +178,11 @@ public class DefaultCommonServices
     public ArchivaRuntimeInfo archivaRuntimeInfo()
     {
         return new ArchivaRuntimeInfo();
+    }
+
+    public Boolean validateCronExpression( @QueryParam( "cronExpression" ) String cronExpression )
+        throws ArchivaRestServiceException
+    {
+        return cronExpressionValidator.validate( cronExpression );
     }
 }

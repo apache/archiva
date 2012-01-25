@@ -78,11 +78,9 @@ public class DefaultManagedRepositoryAdmin
     implements ManagedRepositoryAdmin
 {
 
-
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String STAGE_REPO_ID_END = "-stage";
-
 
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
