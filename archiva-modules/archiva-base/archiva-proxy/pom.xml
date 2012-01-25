@@ -75,11 +75,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-file</artifactId>
       <scope>test</scope>
     </dependency>
