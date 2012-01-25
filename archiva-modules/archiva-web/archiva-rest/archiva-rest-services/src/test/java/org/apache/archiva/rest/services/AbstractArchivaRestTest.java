@@ -22,6 +22,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
+import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
 import org.apache.archiva.rest.api.services.PingService;
@@ -196,6 +197,20 @@ public abstract class AbstractArchivaRestTest
         return service;
         // END SNIPPET: cxf-searchservice-creation
 
+    }
+
+    protected CommonServices getCommonServices( String authzHeader )
+    {
+        CommonServices service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       CommonServices.class );
+
+        if ( authzHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authzHeader );
+        }
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        return service;
     }
 
     protected ManagedRepository getTestManagedRepository()

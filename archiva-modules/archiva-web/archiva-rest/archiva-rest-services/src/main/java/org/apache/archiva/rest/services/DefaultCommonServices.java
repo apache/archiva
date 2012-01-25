@@ -180,7 +180,7 @@ public class DefaultCommonServices
         return new ArchivaRuntimeInfo();
     }
 
-    public Boolean validateCronExpression( @QueryParam( "cronExpression" ) String cronExpression )
+    public Boolean validateCronExpression( String cronExpression )
         throws ArchivaRestServiceException
     {
         return cronExpressionValidator.validate( cronExpression );
