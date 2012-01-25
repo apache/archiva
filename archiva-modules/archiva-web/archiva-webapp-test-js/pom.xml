@@ -29,6 +29,10 @@
   <packaging>pom</packaging>
   <name>Archiva Web :: Javascript Application Tests</name>
 
+  <properties>
+    <webappDirectory>${project.build.directory}/tomcat6x/webapps/archiva</webappDirectory>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -107,6 +111,10 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
 
@@ -260,7 +268,7 @@
                       <type>war</type>
                     </artifactItem>
                   </artifactItems>
-                  <outputDirectory>${project.build.directory}/tomcat6x/webapps/archiva</outputDirectory>
+                  <outputDirectory>${webappDirectory}</outputDirectory>
                   <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
               </execution>
@@ -344,7 +352,7 @@
                   <path>/archiva</path>
                   <port>${container.test.port}</port>
                   <uriEncoding>UTF-8</uriEncoding>
-                  <warDirectory>${project.build.directory}/tomcat6x/webapps/archiva</warDirectory>
+                  <warDirectory>${webappDirectory}</warDirectory>
                   <fork>true</fork>
                   <ignorePackaging>true</ignorePackaging>
                   <systemProperties>

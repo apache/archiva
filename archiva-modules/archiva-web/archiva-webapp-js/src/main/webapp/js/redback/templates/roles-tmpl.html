@@ -23,7 +23,7 @@
 
   <ul id="roles-view-tabs" class="tabs">
     <li class="active" id="roles-view-tabs-li-roles-grid">
-      <a href="#roles-view">${$.i18n.prop('roles.grid.tab.title')}</a>
+      <a href="#roles-view" id="roles-view-tabs-a-roles-grid">${$.i18n.prop('roles.grid.tab.title')}</a>
     </li>
     <li id="roles-view-tabs-li-roles-edit">
       <a href="#role-edit">${$.i18n.prop('edit')}</a>
@@ -58,7 +58,7 @@
       <tr>
         <td colspan="2">
           <div class="pull-left">
-            <button class="btn" data-bind="click: saveRoleDescription">${$.i18n.prop('save')}</button>
+            <button class="btn" id="role-edit-description-save" data-bind="click: saveRoleDescription">${$.i18n.prop('save')}</button>
           </div>
         </td>
       </tr>
@@ -197,11 +197,13 @@
           <tr>
               {{each(j, columnDefinition) columns}}
               {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
-              <td id="role-description-${val}">
+              <td id="role-${columnDefinition.rowText}-${row.name()}">
                 ${val}
               </td>
               {{/each}}
-              <td><a href="#" data-bind="click: function(){ window.redbackModel.rolesViewModel.editRole(row) }">Edit</a></td>
+              <td>
+                <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ window.redbackModel.rolesViewModel.editRole(row) }">${$.i18n.prop('edit')}</a>
+              </td>
           </tr>
       {{/each}}
   </tbody>

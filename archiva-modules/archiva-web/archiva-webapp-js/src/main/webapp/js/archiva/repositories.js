@@ -654,6 +654,7 @@ $(function() {
   }
 
   activateRemoteRepositoryFormValidation=function(){
+    // FIXME find a way to activate cronExpression validation only if downloadRemote is activated !
     $("#main-content #remote-repository-edit-form").validate({
       /*rules: {
         daysOlder : {
