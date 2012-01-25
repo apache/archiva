@@ -116,7 +116,6 @@
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
-      <version>${wagon.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
