@@ -29,14 +29,17 @@ import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.services.FakeCreateAdminService;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,16 +69,34 @@ public class DownloadMergedIndexTest
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-merge-index-download.xml";
     }
 
+    @After
+    public void cleanup()
+        throws Exception
+    {
+        super.tearDown();
+        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
+        if ( tmpIndexDir.exists() )
+        {
+            FileUtils.deleteDirectory( tmpIndexDir );
+        }
+    }
+
+
     @Test
     public void downloadMergedIndex()
         throws Exception
     {
+        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
+        if ( tmpIndexDir.exists() )
+        {
+            FileUtils.deleteDirectory( tmpIndexDir );
+        }
         String id = Long.toString( System.currentTimeMillis() );
         ManagedRepository managedRepository = new ManagedRepository();
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( "src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/target/tmpIndex/" + id );
+        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 
@@ -112,7 +133,7 @@ public class DownloadMergedIndexTest
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( "src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/target/tmpIndex/" + id );
+        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
         {
