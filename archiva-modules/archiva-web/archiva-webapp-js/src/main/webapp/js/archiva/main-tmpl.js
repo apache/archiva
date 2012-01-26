@@ -19,8 +19,9 @@
 require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/templates/topbar.html?"+timestampNoCache(),
           "text!archiva/templates/message.html?"+timestampNoCache(),"text!archiva/templates/modal.html?"+timestampNoCache(),
           "text!archiva/templates/grids-generics.html?"+timestampNoCache(),
-          "text!archiva/templates/repositories.html?"+timestampNoCache()],
-  function(menu,topbar,message,modal,grids_generics,repositories) {
+          "text!archiva/templates/repositories.html?"+timestampNoCache(),
+          "text!archiva/templates/network-proxies.html?"+timestampNoCache()],
+  function(menu,topbar,message,modal,grids_generics,repositories,network_proxies) {
 
     // template loading
     $.tmpl( menu ).appendTo("#html-fragments");
@@ -29,6 +30,7 @@ require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/te
     $.tmpl( modal ).appendTo("#html-fragments");
     $("#html-fragments").append(grids_generics);
     $("#html-fragments").append(repositories);
+    $("#html-fragments").append(network_proxies);
     $.log("main-tmpl.js menu loaded");
   }
 );
