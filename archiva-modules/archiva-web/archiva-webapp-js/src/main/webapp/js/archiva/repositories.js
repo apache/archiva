@@ -431,7 +431,7 @@ $(function() {
   activateManagedRepositoriesGridTab=function(){
     $("#main-content #managed-repository-edit-li").removeClass("active");
     $("#main-content #managed-repository-edit").removeClass("active");
-    // activate roles grid tab
+
     $("#main-content #managed-repositories-view-li").addClass("active");
     $("#main-content #managed-repositories-view").addClass("active");
     $("#main-content #managed-repository-edit-li a").html($.i18n.prop("add"));
@@ -440,7 +440,7 @@ $(function() {
   activateManagedRepositoryEditTab=function(){
     $("#main-content #managed-repositories-view-li").removeClass("active");
     $("#main-content #managed-repositories-view").removeClass("active");
-    // activate role edit tab
+
     $("#main-content #managed-repository-edit-li").addClass("active");
     $("#main-content #managed-repository-edit").addClass("active");
   }
@@ -676,7 +676,7 @@ $(function() {
   activateRemoteRepositoriesGridTab=function(){
     $("#main-content #remote-repository-edit-li").removeClass("active");
     $("#main-content #remote-repository-edit").removeClass("active");
-    // activate roles grid tab
+
     $("#main-content #remote-repositories-view-li").addClass("active");
     $("#main-content #remote-repositories-view").addClass("active");
     $("#main-content #remote-repository-edit-li a").html($.i18n.prop("add"));
@@ -685,7 +685,7 @@ $(function() {
   activateRemoteRepositoryEditTab=function(){
     $("#main-content #remote-repositories-view-li").removeClass("active");
     $("#main-content #remote-repositories-view").removeClass("active");
-    // activate role edit tab
+
     $("#main-content #remote-repository-edit-li").addClass("active");
     $("#main-content #remote-repository-edit").addClass("active");
   }

@@ -50,7 +50,48 @@ $(function() {
     var self=this;
 
     save=function(){
+      if (!$("#main-content #network-proxy-edit-form").valid()){
+        return;
+      }
+      clearUserMessages();
+      if (update){
+        $.ajax("restServices/archivaServices/networkProxyService/updateNetworkProxy",
+          {
+            type: "POST",
+            contentType: 'application/json',
+            data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
+            dataType: 'json',
+            success: function(data) {
+              displaySuccessMessage($.i18n.prop('networkproxy.updated'));
+              activateNetworkProxiesGridTab();
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
+      } else {
 
+        $.ajax("restServices/archivaServices/networkProxyService/addNetworkProxy",
+          {
+            type: "POST",
+            contentType: 'application/json',
+            data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
+            dataType: 'json',
+            success: function(data) {
+              self.networkProxiesViewModel.networkProxies.push(self.networkProxy);
+              displaySuccessMessage($.i18n.prop('networkproxy.added'));
+              activateNetworkProxiesGridTab();
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
+
+      }
     }
 
     displayGrid=function(){
@@ -66,7 +107,12 @@ $(function() {
     this.gridViewModel = null;
 
     editNetworkProxy=function(networkProxy){
+      $.log("editNetworkProxy");
       $("#main-content #network-proxies-edit a").html($.i18n.prop("edit"));
+      var viewModel = new NetworkProxyViewModel(networkProxy,true,self);
+      ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
+      activateNetworkProxyFormValidation();
+      activateNetworkProxyEditTab();
     }
 
     removeNetworkProxy=function(networkProxy){
@@ -87,7 +133,7 @@ $(function() {
       if ($(e.target).attr("href")=="#network-proxies-edit") {
         var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
         ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
-        //activateManagedRepositoryFormValidation();
+        activateNetworkProxyFormValidation();
       }
       if ($(e.target).attr("href")=="#network-proxies-view") {
         $("#main-content #network-proxies-edit a").html($.i18n.prop("add"));
@@ -141,21 +187,26 @@ $(function() {
     );
   }
 
+  activateNetworkProxyFormValidation=function(){
+    $("#main-content #network-proxy-edit-form").validate();
+  }
+
   activateNetworkProxiesGridTab=function(){
     $("#main-content #network-proxies-view-tabs-li-edit").removeClass("active");
     $("#main-content #network-proxies-edit").removeClass("active");
-    // activate roles grid tab
+
     $("#main-content #network-proxies-view-tabs-li-grid").addClass("active");
     $("#main-content #network-proxies-view").addClass("active");
     $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
   }
 
   activateNetworkProxyEditTab=function(){
-    $("#main-content #remote-repositories-view-li").removeClass("active");
-    $("#main-content #remote-repositories-view").removeClass("active");
-    // activate role edit tab
-    $("#main-content #remote-repository-edit-li").addClass("active");
-    $("#main-content #remote-repository-edit").addClass("active");
+    $("#main-content #network-proxies-view-tabs-li-grid").removeClass("active");
+    $("#main-content #network-proxies-view").removeClass("active");
+
+    $("#main-content #network-proxies-view-tabs-li-edit").addClass("active");
+    $("#main-content #network-proxies-edit").addClass("active");
+
   }
 
   mapNetworkProxy=function(data){

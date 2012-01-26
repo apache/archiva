@@ -34,7 +34,8 @@ $(function() {
    * @param passwordChangeRequired
    * @param ownerViewModel
    */
-  User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
+  User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,
+                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
       // Potentially Editable Field.
       this.username = ko.observable(username);
       // Editable Fields.
@@ -630,7 +631,9 @@ $(function() {
    * @param data User response from redback rest api
    */
   mapUser=function(data) {
-    return new User(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,data.locked,data.passwordChangeRequired,self);
+    return new User(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,
+                    data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,
+                    data.locked,data.passwordChangeRequired,self);
   }
 
 
