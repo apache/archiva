@@ -415,7 +415,12 @@
           </div>
         </div>
 
-        <!-- FIXME proxy id to use -->
+        <div class="clearfix">
+          <div class="input">
+            <select data-bind="options: networkProxies, optionsText: 'id',optionsValue:'id', value: remoteRepository.remoteDownloadNetworkProxyId, optionsCaption: 'Choose...'"></select>
+          </div>
+        </div>
+
 
         <div class="clearfix">
           <label for="downloadRemoteIndexOnStartup">${$.i18n.prop('downloadRemoteIndexOnStartup')}</label>

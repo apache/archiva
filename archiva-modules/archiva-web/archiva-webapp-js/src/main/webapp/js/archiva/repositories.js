@@ -529,6 +529,7 @@ $(function() {
   RemoteRepositoryViewModel=function(remoteRepository, update, remoteRepositoriesViewModel){
     this.remoteRepository=remoteRepository;
     this.remoteRepositoriesViewModel = remoteRepositoriesViewModel;
+    this.networkProxies=ko.observableArray([]);
     this.update = update;
 
     var self = this;
@@ -586,17 +587,24 @@ $(function() {
 
   RemoteRepositoriesViewModel=function(){
     this.remoteRepositories=ko.observableArray([]);
-
     this.gridViewModel = null;
     var self = this;
 
     editRemoteRepository=function(remoteRepository){
       $.log("editRemoteRepository");
-      var viewModel = new RemoteRepositoryViewModel(remoteRepository,true,self);
-      ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
-      activateRemoteRepositoryEditTab();
-      $("#remote-repository-edit-li a").html($.i18n.prop('edit'));
-      activateRemoteRepositoryFormValidation();
+      $.ajax("restServices/archivaServices/networkProxyService/getNetworkProxies", {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            var viewModel = new RemoteRepositoryViewModel(remoteRepository,true,self);
+            viewModel.networkProxies(mapNetworkProxies(data));
+            ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
+            activateRemoteRepositoryEditTab();
+            $("#remote-repository-edit-li a").html($.i18n.prop('edit'));
+            activateRemoteRepositoryFormValidation();
+          }
+      })
+
     }
 
     removeRemoteRepository=function(remoteRepository){
@@ -784,6 +792,7 @@ $(function() {
     );
 
 
+
     $("#main-content #managed-repositories-pills").bind('change', function (e) {
       if ($(e.target).attr("href")=="#managed-repository-edit") {
         var viewModel = new ManagedRepositoryViewModel(new ManagedRepository(),false,managedRepositoriesViewModel);
@@ -798,9 +807,16 @@ $(function() {
 
     $("#main-content #remote-repositories-pills").bind('change', function (e) {
       if ($(e.target).attr("href")=="#remote-repository-edit") {
-        var viewModel = new RemoteRepositoryViewModel(new RemoteRepository(),false,remoteRepositoriesViewModel);
-        ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
-        activateRemoteRepositoryFormValidation();
+        $.ajax("restServices/archivaServices/networkProxyService/getNetworkProxies", {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              var viewModel = new RemoteRepositoryViewModel(new RemoteRepository(),false,remoteRepositoriesViewModel);
+              viewModel.networkProxies(mapNetworkProxies(data));
+              ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
+              activateRemoteRepositoryFormValidation();
+            }
+        })
       }
       if ($(e.target).attr("href")=="#remote-repositories-view") {
         $("#main-content #remote-repository-edit-li a").html($.i18n.prop("add"));
