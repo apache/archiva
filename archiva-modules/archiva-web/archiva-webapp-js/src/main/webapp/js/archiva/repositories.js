@@ -608,19 +608,27 @@ $(function() {
     }
 
     removeRemoteRepository=function(remoteRepository){
-      $.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+remoteRepository.id(),
-        {
-          type: "GET",
-          success: function(data) {
-            self.remoteRepositories.remove(remoteRepository);
-            displaySuccessMessage($.i18n.prop('remoterepository.deleted'));
-          },
-          error: function(data) {
-            var res = $.parseJSON(data.responseText);
-            displayRestError(res);
-          }
-        }
-      );
+      clearUserMessages();
+      openDialogConfirm(
+          function(){$.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+remoteRepository.id(),
+                  {
+                    type: "GET",
+                    success: function(data) {
+                      self.remoteRepositories.remove(remoteRepository);
+                      displaySuccessMessage($.i18n.prop('remoterepository.deleted'));
+                    },
+                    error: function(data) {
+                      var res = $.parseJSON(data.responseText);
+                      displayRestError(res);
+                    },
+                    complete:function(){
+                      closeDialogConfirm();
+                    }
+                  }
+                )}, $.i18n.prop('ok'),
+                $.i18n.prop('cancel'),
+                $.i18n.prop('remoterepository.delete.confirm',remoteRepository.id()),null);
+
     }
 
     scheduleDownloadRemoteIndex=function(remoteRepository){
