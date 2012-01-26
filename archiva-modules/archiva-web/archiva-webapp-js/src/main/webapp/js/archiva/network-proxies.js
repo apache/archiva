@@ -54,7 +54,7 @@ $(function() {
     }
 
     displayGrid=function(){
-
+      activateNetworkProxiesGridTab();
     }
   }
 
@@ -63,8 +63,10 @@ $(function() {
 
     var self=this;
 
-    editNetworkProxy=function(networkProxy){
+    this.gridViewModel = null;
 
+    editNetworkProxy=function(networkProxy){
+      $("#main-content #network-proxies-edit a").html($.i18n.prop("edit"));
     }
 
     removeNetworkProxy=function(networkProxy){
@@ -74,7 +76,86 @@ $(function() {
 
 
   displayNetworkProxies=function(){
+    clearUserMessages();
+    $("#main-content").html(mediumSpinnerImg());
+    $("#main-content").html($("#networkProxiesMain").tmpl());
+    $("#main-content #network-proxies-view-tabs").tabs();
+
     var networkProxiesViewModel = new NetworkProxiesViewModel();
+
+    $("#main-content #network-proxies-view-tabs").bind('change', function (e) {
+      if ($(e.target).attr("href")=="#network-proxies-edit") {
+        var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
+        ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
+        //activateManagedRepositoryFormValidation();
+      }
+      if ($(e.target).attr("href")=="#network-proxies-view") {
+        $("#main-content #network-proxies-edit a").html($.i18n.prop("add"));
+      }
+
+    });
+
+
+
+    $.ajax("restServices/archivaServices/networkProxyService/getNetworkProxies", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          networkProxiesViewModel.networkProxies(mapNetworkProxies(data));
+          networkProxiesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
+            data: networkProxiesViewModel.networkProxies,
+            columns: [
+              {
+                headerText: $.i18n.prop('identifier'),
+                rowText: "id"
+              },
+              {
+                headerText: $.i18n.prop('protocol'),
+                rowText: "protocol"
+              },
+              {
+              headerText: $.i18n.prop('host'),
+              rowText: "host"
+              },
+              {
+              headerText: $.i18n.prop('port'),
+              rowText: "port"
+              },
+              {
+              headerText: $.i18n.prop('username'),
+              rowText: "username"
+              },
+              {
+              headerText: $.i18n.prop('password'),
+              rowText: "password"
+              }
+            ],
+            pageSize: 5,
+            gridUpdateCallBack: function(){
+              $("#main-content #networkProxiesTable [title]").twipsy();
+            }
+          });
+          ko.applyBindings(networkProxiesViewModel,$("#main-content #networkProxiesTable").get(0));
+        }
+      }
+    );
+  }
+
+  activateNetworkProxiesGridTab=function(){
+    $("#main-content #network-proxies-view-tabs-li-edit").removeClass("active");
+    $("#main-content #network-proxies-edit").removeClass("active");
+    // activate roles grid tab
+    $("#main-content #network-proxies-view-tabs-li-grid").addClass("active");
+    $("#main-content #network-proxies-view").addClass("active");
+    $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
+  }
+
+  activateNetworkProxyEditTab=function(){
+    $("#main-content #remote-repositories-view-li").removeClass("active");
+    $("#main-content #remote-repositories-view").removeClass("active");
+    // activate role edit tab
+    $("#main-content #remote-repository-edit-li").addClass("active");
+    $("#main-content #remote-repository-edit").addClass("active");
   }
 
   mapNetworkProxy=function(data){

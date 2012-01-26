@@ -1,0 +1,112 @@
+<script id="networkProxiesMain" type="text/x-jquery-tmpl">
+  <div class="page-header">
+    <h2>${$.i18n.prop('network-proxies.list')}</h2>
+  </div>
+
+  <ul id="network-proxies-view-tabs" class="tabs">
+    <li id="network-proxies-view-tabs-li-grid" class="active">
+      <a href="#network-proxies-view" id="network-proxies-view-tabs-a-network-proxies-grid">${$.i18n.prop('network-proxies.grid.tab.title')}</a>
+    </li>
+    <li id="network-proxies-view-tabs-li-edit">
+      <a href="#network-proxies-edit">${$.i18n.prop('add')}</a>
+    </li>
+  </ul>
+  <div id="network-proxies-view-tabs-content" class="tab-content">
+    <div id="network-proxies-view" class="active">
+        <table class="bordered-table zebra-striped" id="networkProxiesTable"
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-network-proxies-grid',pageLinksId:'network-proxiesPagination'">
+        </table>
+        <div id="network-proxiesPagination"></div>
+    </div>
+    <div id="network-proxies-edit" data-bind='template: {name:"network-proxy-edit-tmpl"}'></div>
+  </div>
+
+</script>
+
+<script id='ko-network-proxies-grid' type='text/x-jquery-tmpl'>
+    <thead>
+    <tr>
+        {{each(i, columnDefinition) columns}}
+        <th>${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{each(i, row) itemsOnCurrentPage()}}
+    <tr>
+        {{each(j, columnDefinition) columns}}
+        {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) :
+        row[columnDefinition.rowText])}}
+        <td>
+            ${val}
+        </td>
+        {{/each}}
+        <td>
+            <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
+        </td>
+        <td>
+            <a href="#" data-bind="click: function(){ removeNetworkProxy(row) }">${$.i18n.prop('delete')}</a>
+        </td>
+    </tr>
+    {{/each}}
+    </tbody>
+
+</script>
+
+<script id="network-proxy-edit-tmpl" type='text/x-jquery-tmpl'>
+    <form id="network-proxy-edit-form">
+      <fieldset id="network-proxy-edit-fieldset">
+        <div class="clearfix">
+          <label for="id">${$.i18n.prop('id')}</label>
+          <div class="input">
+            {{if update}}
+              <span class="uneditable-input">${$data.networkProxy.id}</span>
+            {{else}}
+              <input type="text" class="xlarge required" id="id" name="id" size="10"
+                     data-bind="value: networkProxy.id,css:{'uneditable-input': update},readonly:update"/>
+            {{/if}}
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="protocol">${$.i18n.prop('protocol')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="protocol" name="protocol" size="8"
+                   data-bind="value: networkProxy.protocol"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="host">${$.i18n.prop('host')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="host" name="host" size="15"
+                   data-bind="value: networkProxy.host"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="port">${$.i18n.prop('port')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="port" name="port" size="6"
+                   data-bind="value: networkProxy.port"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="username">${$.i18n.prop('username')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="username" name="username" size="50"
+                   data-bind="value: networkProxy.username"/>
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="password">${$.i18n.prop('password')}</label>
+          <div class="input">
+            <input type="text" class="xlarge required" id="password" name="password" size="50"
+                   data-bind="value: networkProxy.password"/>
+          </div>
+        </div>
+
+      </fieldset>
+      <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
+    </form>
+</script>
