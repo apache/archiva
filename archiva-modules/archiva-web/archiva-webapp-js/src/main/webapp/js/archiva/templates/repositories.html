@@ -416,8 +416,9 @@
         </div>
 
         <div class="clearfix">
+          <label for="remoteDownloadNetworkProxyId">${$.i18n.prop('remoteDownloadNetworkProxyId')}</label>
           <div class="input">
-            <select data-bind="options: networkProxies, optionsText: 'id',optionsValue:'id', value: remoteRepository.remoteDownloadNetworkProxyId, optionsCaption: 'Choose...'"></select>
+            <select id="remoteDownloadNetworkProxyId" data-bind="options: networkProxies, optionsText: 'id',optionsValue:'id', value: remoteRepository.remoteDownloadNetworkProxyId, optionsCaption: 'Choose...'"></select>
           </div>
         </div>
 
