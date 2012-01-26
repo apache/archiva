@@ -116,7 +116,25 @@ $(function() {
     }
 
     removeNetworkProxy=function(networkProxy){
-
+      openDialogConfirm(
+          function(){$.ajax("restServices/archivaServices/networkProxyService/deleteNetworkProxy/"+encodeURIComponent(networkProxy.id()),
+              {
+                type: "get",
+                success: function(data) {
+                  self.networkProxies.remove(networkProxy);
+                  clearUserMessages();
+                  displaySuccessMessage($.i18n.prop('networkproxy.deleted'));
+                  activateNetworkProxiesGridTab();
+                },
+                error: function(data) {
+                  var res = $.parseJSON(data.responseText);
+                  displayRestError(res);
+                },
+                complete: function(){
+                  closeDialogConfirm();
+                }
+              }
+            )}, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('networkproxy.delete.confirm',networkProxy.id()),null);
     }
   }
 

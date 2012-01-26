@@ -47,7 +47,9 @@
             <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
         </td>
         <td>
-            <a href="#" data-bind="click: function(){ removeNetworkProxy(row) }">${$.i18n.prop('delete')}</a>
+            <a href="#" data-bind="click: function(){ removeNetworkProxy(row) }">
+              <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+            </a>
         </td>
     </tr>
     {{/each}}
