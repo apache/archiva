@@ -37,10 +37,10 @@ $(function() {
     this.port=ko.observable(port);
 
     //private String username;
-    this.username=ko.observable(username);
+    this.username=ko.observable(username?username:"");
 
     //private String password;
-    this.password=ko.observable(password);
+    this.password=ko.observable(password?password:"");
   }
 
   NetworkProxyViewModel=function(networkProxy, update, networkProxiesViewModel){
@@ -188,7 +188,11 @@ $(function() {
   }
 
   activateNetworkProxyFormValidation=function(){
-    $("#main-content #network-proxy-edit-form").validate();
+    $("#main-content #network-proxy-edit-form").validate({
+               showErrors: function(validator, errorMap, errorList) {
+                 customShowError(validator,errorMap,errorMap);
+               }
+              });
   }
 
   activateNetworkProxiesGridTab=function(){
