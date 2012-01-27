@@ -253,7 +253,14 @@ $(function() {
         cronExpression: {
           required: true,
           remote: {
-            url: "restServices/archivaServices/commonServices/validateCronExpression", // ?cronExpression="+$("#managed-repository-edit-form #cronExpression").val(),
+            url: "restServices/archivaServices/commonServices/validateCronExpression",
+            type: "get"
+          }
+        },
+        id: {
+          required: true,
+          remote: {
+            url: "restServices/archivaUiServices/dataValidatorService/managedRepositoryIdNotExists",
             type: "get"
           }
         }
@@ -263,6 +270,7 @@ $(function() {
       }
     });
     validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
+    validator.settings.messages["id"]=$.i18n.prop("id.required.or.alreadyexists");
   }
 
   ManagedRepositoriesViewModel=function(){
