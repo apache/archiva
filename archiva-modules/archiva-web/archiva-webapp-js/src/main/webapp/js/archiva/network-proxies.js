@@ -108,7 +108,7 @@ $(function() {
 
     editNetworkProxy=function(networkProxy){
       $.log("editNetworkProxy");
-      $("#main-content #network-proxies-edit a").html($.i18n.prop("edit"));
+      $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("edit"));
       var viewModel = new NetworkProxyViewModel(networkProxy,true,self);
       ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
       activateNetworkProxyFormValidation();
@@ -154,7 +154,7 @@ $(function() {
         activateNetworkProxyFormValidation();
       }
       if ($(e.target).attr("href")=="#network-proxies-view") {
-        $("#main-content #network-proxies-edit a").html($.i18n.prop("add"));
+        $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
       }
 
     });
@@ -202,11 +202,19 @@ $(function() {
   }
 
   activateNetworkProxyFormValidation=function(){
-    $("#main-content #network-proxy-edit-form").validate({
-               showErrors: function(validator, errorMap, errorList) {
-                 customShowError(validator,errorMap,errorMap);
-               }
-              });
+    var validator = $("#main-content #network-proxy-edit-form").validate({
+      rules: {id: {
+       required: true,
+       remote: {
+         url: "restServices/archivaUiServices/dataValidatorService/networkProxyIdNotExists",
+         type: "get"
+       }
+      }},
+      showErrors: function(validator, errorMap, errorList) {
+       customShowError(validator,errorMap,errorMap);
+      }
+    });
+    validator.settings.messages["id"]=$.i18n.prop("id.required.or.alreadyexists");
   }
 
   activateNetworkProxiesGridTab=function(){

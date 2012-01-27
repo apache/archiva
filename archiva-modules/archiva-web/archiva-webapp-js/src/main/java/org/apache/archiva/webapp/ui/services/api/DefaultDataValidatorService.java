@@ -20,6 +20,7 @@ package org.apache.archiva.webapp.ui.services.api;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,9 @@ public class DefaultDataValidatorService
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Inject
+    private NetworkProxyAdmin networkProxyAdmin;
+
 
     public Boolean managedRepositoryIdNotExists( String id )
         throws ArchivaRestServiceException
@@ -61,6 +65,19 @@ public class DefaultDataValidatorService
         try
         {
             return remoteRepositoryAdmin.getRemoteRepository( id ) == null;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public Boolean networkProxyIdNotExists( String id )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            return networkProxyAdmin.getNetworkProxy( id ) == null;
         }
         catch ( RepositoryAdminException e )
         {

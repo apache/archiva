@@ -47,4 +47,11 @@ public interface DataValidatorService
     @RedbackAuthorization( noRestriction = true )
     Boolean remoteRepositoryIdNotExists( @QueryParam( "id" ) String id )
         throws ArchivaRestServiceException;
+
+    @Path( "networkProxyIdNotExists" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true )
+    Boolean networkProxyIdNotExists( @QueryParam( "id" ) String id )
+        throws ArchivaRestServiceException;
 }
