@@ -188,10 +188,6 @@ $(function() {
               {
               headerText: $.i18n.prop('username'),
               rowText: "username"
-              },
-              {
-              headerText: $.i18n.prop('password'),
-              rowText: "password"
               }
             ],
             pageSize: 5,

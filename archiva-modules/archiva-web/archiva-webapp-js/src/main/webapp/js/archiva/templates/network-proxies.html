@@ -29,6 +29,7 @@
         {{each(i, columnDefinition) columns}}
         <th>${ columnDefinition.headerText }</th>
         {{/each}}
+        <th>${$.i18n.prop('password')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
     </tr>
@@ -43,6 +44,11 @@
             ${val}
         </td>
         {{/each}}
+        {{if row.password()}}
+          <td>*****</td>
+        {{else}}
+          <td></td>
+        {{/if}}
         <td>
             <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
         </td>
