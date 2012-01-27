@@ -239,7 +239,7 @@ $(function() {
   }
 
   activateManagedRepositoryFormValidation=function(){
-    $("#main-content #managed-repository-edit-form").validate({
+    var validator = $("#main-content #managed-repository-edit-form").validate({
       rules: {
         daysOlder : {
           digits: true,
@@ -262,6 +262,7 @@ $(function() {
         customShowError(validator,errorMap,errorMap);
       }
     });
+    validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
   }
 
   ManagedRepositoriesViewModel=function(){
@@ -671,7 +672,7 @@ $(function() {
 
   activateRemoteRepositoryFormValidation=function(){
     // FIXME find a way to activate cronExpression validation only if downloadRemote is activated !
-    $("#main-content #remote-repository-edit-form").validate({
+    var validator = $("#main-content #remote-repository-edit-form").validate({
       /*rules: {
         daysOlder : {
           digits: true,
@@ -687,6 +688,7 @@ $(function() {
         customShowError(validator,errorMap,errorMap);
       }
     });
+    validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
   }
 
   activateRemoteRepositoriesGridTab=function(){
