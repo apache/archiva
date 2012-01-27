@@ -18,8 +18,11 @@ package org.apache.archiva.webapp.ui.services.api;
  * under the License.
  */
 
+import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.archiva.webapp.ui.services.model.ApplicationRuntimeInfo;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * @author Olivier Lamy
@@ -28,9 +31,22 @@ import org.springframework.stereotype.Service;
 public class DefaultRuntimeInfoService
     implements RuntimeInfoService
 {
-    public ApplicationRuntimeInfo archivaRuntimeInfo()
+
+    private ArchivaRuntimeInfo archivaRuntimeInfo;
+
+    @Inject
+    public DefaultRuntimeInfoService( ArchivaRuntimeInfo archivaRuntimeInfo )
     {
-        ApplicationRuntimeInfo archivaRuntimeInfo = new ApplicationRuntimeInfo();
-        return archivaRuntimeInfo;
+        this.archivaRuntimeInfo = archivaRuntimeInfo;
+    }
+
+    @Inject
+    public ApplicationRuntimeInfo getApplicationRuntimeInfo()
+    {
+        ApplicationRuntimeInfo applicationRuntimeInfo = new ApplicationRuntimeInfo();
+        applicationRuntimeInfo.setBuildNumber( this.archivaRuntimeInfo.getBuildNumber() );
+        applicationRuntimeInfo.setTimestamp( this.archivaRuntimeInfo.getTimestamp() );
+        applicationRuntimeInfo.setVersion( this.archivaRuntimeInfo.getVersion() );
+        return applicationRuntimeInfo;
     }
 }

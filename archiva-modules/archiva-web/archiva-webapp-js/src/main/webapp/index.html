@@ -53,6 +53,7 @@ $.ajax(
     success:function(data){
         window.archivaDevMode=data.applicationRuntimeInfo.devMode;
         window.archivaJavascriptLog=data.applicationRuntimeInfo.javascriptLog;
+        window.archivaRuntimeInfo=data.applicationRuntimeInfo;
         require.config({
             baseUrl: "js/"
           });

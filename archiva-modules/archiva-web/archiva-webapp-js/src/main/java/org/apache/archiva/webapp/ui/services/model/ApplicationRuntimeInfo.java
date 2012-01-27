@@ -19,6 +19,7 @@ package org.apache.archiva.webapp.ui.services.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Calendar;
 
 /**
  * @author Olivier Lamy
@@ -31,11 +32,22 @@ public class ApplicationRuntimeInfo
 
     private boolean javascriptLog = false;
 
+    private String version;
+
+    private String buildNumber;
+
+    private long timestamp;
+
+    private String copyrightRange;
+
+
     public ApplicationRuntimeInfo()
     {
         this.devMode = Boolean.getBoolean( "archiva.devMode" );
 
         this.javascriptLog = Boolean.getBoolean( "archiva.javascriptLog" );
+
+        this.copyrightRange = "2005 - " + Calendar.getInstance().get( Calendar.YEAR );
     }
 
     public boolean isDevMode()
@@ -58,6 +70,46 @@ public class ApplicationRuntimeInfo
         this.javascriptLog = javascriptLog;
     }
 
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( String version )
+    {
+        this.version = version;
+    }
+
+    public String getBuildNumber()
+    {
+        return buildNumber;
+    }
+
+    public void setBuildNumber( String buildNumber )
+    {
+        this.buildNumber = buildNumber;
+    }
+
+    public long getTimestamp()
+    {
+        return timestamp;
+    }
+
+    public void setTimestamp( long timestamp )
+    {
+        this.timestamp = timestamp;
+    }
+
+    public String getCopyrightRange()
+    {
+        return copyrightRange;
+    }
+
+    public void setCopyrightRange( String copyrightRange )
+    {
+        this.copyrightRange = copyrightRange;
+    }
+
     @Override
     public String toString()
     {
@@ -65,6 +117,10 @@ public class ApplicationRuntimeInfo
         sb.append( "ApplicationRuntimeInfo" );
         sb.append( "{devMode=" ).append( devMode );
         sb.append( ", javascriptLog=" ).append( javascriptLog );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( ", buildNumber='" ).append( buildNumber ).append( '\'' );
+        sb.append( ", timestamp=" ).append( timestamp );
+        sb.append( ", copyrightRange='" ).append( copyrightRange ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

@@ -172,7 +172,7 @@ $(function() {
     hideElementWithKarma();
     checkSecurityLinks();
     checkCreateAdminLink();
-    $('#footer-content').html($('#footer-tmpl').tmpl());
+    $('#footer-content').html($('#footer-tmpl').tmpl(window.archivaRuntimeInfo));
   }
   startArchivaApplication();
 })

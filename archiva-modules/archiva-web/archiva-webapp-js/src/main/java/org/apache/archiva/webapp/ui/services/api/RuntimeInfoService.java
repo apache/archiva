@@ -37,5 +37,5 @@ public interface RuntimeInfoService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    ApplicationRuntimeInfo archivaRuntimeInfo();
+    ApplicationRuntimeInfo getApplicationRuntimeInfo();
 }
