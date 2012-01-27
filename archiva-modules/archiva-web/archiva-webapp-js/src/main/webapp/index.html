@@ -48,11 +48,11 @@
 <script type="text/javascript">
 $.ajax(
   {
-    url: "restServices/archivaServices/commonServices/archivaRuntimeInfo",
+    url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo",
     dataType: 'json',
     success:function(data){
-        window.archivaDevMode=data.archivaRuntimeInfo.devMode;
-        window.archivaJavascriptLog=data.archivaRuntimeInfo.javascriptLog;
+        window.archivaDevMode=data.applicationRuntimeInfo.devMode;
+        window.archivaJavascriptLog=data.applicationRuntimeInfo.javascriptLog;
         require.config({
             baseUrl: "js/"
           });

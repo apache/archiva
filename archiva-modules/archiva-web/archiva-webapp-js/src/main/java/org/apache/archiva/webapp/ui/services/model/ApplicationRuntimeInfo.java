@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.api.model;
+package org.apache.archiva.webapp.ui.services.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,14 +24,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@XmlRootElement( name = "archivaRuntimeInfo" )
-public class ArchivaRuntimeInfo
+@XmlRootElement( name = "applicationRuntimeInfo" )
+public class ApplicationRuntimeInfo
 {
     private boolean devMode = false;
 
     private boolean javascriptLog = false;
 
-    public ArchivaRuntimeInfo()
+    public ApplicationRuntimeInfo()
     {
         this.devMode = Boolean.getBoolean( "archiva.devMode" );
 
@@ -62,7 +62,7 @@ public class ArchivaRuntimeInfo
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append( "ArchivaRuntimeInfo" );
+        sb.append( "ApplicationRuntimeInfo" );
         sb.append( "{devMode=" ).append( devMode );
         sb.append( ", javascriptLog=" ).append( javascriptLog );
         sb.append( '}' );

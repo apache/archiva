@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.ArchivaRuntimeInfo;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
@@ -31,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -175,10 +173,6 @@ public class DefaultCommonServices
         }
     }
 
-    public ArchivaRuntimeInfo archivaRuntimeInfo()
-    {
-        return new ArchivaRuntimeInfo();
-    }
 
     public Boolean validateCronExpression( String cronExpression )
         throws ArchivaRestServiceException
