@@ -172,6 +172,7 @@ $(function() {
     hideElementWithKarma();
     checkSecurityLinks();
     checkCreateAdminLink();
+    $('#footer-content').html($('#footer-tmpl').tmpl());
   }
   startArchivaApplication();
 })
