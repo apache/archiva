@@ -20,21 +20,43 @@
   <div class="page-header">
     <h2>${$.i18n.prop('proxy-connectors.list')}</h2>
   </div>
-  <ul id="proxy-connector-view-tabs" class="tabs">
-    <li id="network-proxies-view-tabs-li-grid" class="active">
-      <a href="#network-proxies-view" id="network-proxies-view-tabs-a-network-proxies-grid">${$.i18n.prop('network-proxies.grid.tab.title')}</a>
+
+  <ul id="proxy-connectors-view-tabs" class="tabs">
+    <li id="proxy-connectors-view-tabs-li-grid" class="active">
+      <a href="#proxy-connectors-view" id="proxy-connectors-view-tabs-a-network-proxies-grid">${$.i18n.prop('proxy-connectors.grid.tab.title')}</a>
     </li>
-    <li id="network-proxies-view-tabs-li-edit">
-      <a href="#network-proxies-edit">${$.i18n.prop('add')}</a>
+    <li id="proxy-connectors-view-tabs-li-edit">
+      <a href="#proxy-connectors-edit">${$.i18n.prop('add')}</a>
     </li>
   </ul>
-  <div id="network-proxies-view-tabs-content" class="tab-content">
-    <div id="network-proxies-view" class="active">
-        <table class="bordered-table zebra-striped" id="networkProxiesTable"
-               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-network-proxies-grid',pageLinksId:'network-proxiesPagination'">
-        </table>
-        <div id="network-proxiesPagination"></div>
+  <div id="proxy-connectors-view-tabs-content" class="tab-content">
+    <div id="proxy-connectors-view" class="active">
+      <table class="bordered-table zebra-striped" id="proxyConnectorsTable"
+             data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-proxy-connectors-grid',pageLinksId:'proxy-connectorsPagination'">
+      </table>
+      <div id="proxy-connectorsPagination"></div>
     </div>
-    <div id="network-proxies-edit" data-bind='template: {name:"network-proxy-edit-tmpl"}'></div>
+    <div id="proxy-connectors-edit" data-bind='template: {name:"proxy-connectors-edit-tmpl"}'></div>
   </div>
+
+</script>
+
+<script id='ko-proxy-connectors-grid' type='text/x-jquery-tmpl'>
+  <thead>
+    <tr>
+      <th>${$.i18n.prop('proxy-connectors.grid.managedrepo.title')}</th>
+      <th>${$.i18n.prop('proxy-connectors.grid.remoterepo.title')}</th>
+    </tr>
+  </thead>
+
+  {{each(i, row) itemsOnCurrentPage()}}
+    <tr>
+      <td>${row.source()}</td>
+      <td>
+          {{each(j, targetRepo) row.targetRepos()}}
+            <div>${targetRepo}</div>
+          {{/each}}
+      </td>
+    </tr>
+  {{/each}}
 </script>

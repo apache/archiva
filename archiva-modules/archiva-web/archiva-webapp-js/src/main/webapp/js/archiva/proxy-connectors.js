@@ -51,25 +51,30 @@ $(function() {
     this.name=ko.observable(name);
   }
 
+  ManagedRepositoryConnectorView=function(source,targetRepos){
+    this.source=ko.observable(source);
+    this.targetRepos=ko.observableArray(targetRepos);
+  }
+
   ProxyConnectorsViewModel=function(){
     this.proxyConnectors=ko.observableArray([]);
     var self=this;
+    this.uniqueManagedRepos=ko.observableArray([]);
 
     editProxyConnector=function(proxyConnector){
 
     }
 
-    this.displayGrid=function(){
+    this.findUniqueManagedRepos=function(){
       var sourcesRepos=[];
       //sourceRepoId
       for(i=0;i<self.proxyConnectors().length;i++){
         var curSrcRepo=self.proxyConnectors()[i].sourceRepoId();
-
         var curTarget=self.proxyConnectors()[i].targetRepoId();
         var sourceRepo = $.grep(sourcesRepos,
                                 function(srcRepo,idx){
                                   for (j=0;j<sourcesRepos.length;j++){
-                                    if (srcRepo.source==sourcesRepos[j].source){
+                                    if (srcRepo.source()==curSrcRepo){
                                       return true;
                                     }
                                   }
@@ -79,15 +84,25 @@ $(function() {
         if (sourceRepo.length>0){
           sourceRepo[0].targetRepos.push(curTarget);
         } else {
-          $.log("sourceRepo==null:"+curSrcRepo);
-          sourcesRepos.push({source:curSrcRepo,targetRepos:[curTarget]});
-        if (sourceRepo!=null){
-          $.log("sourceRepoId:"+curSrcRepo);
-          sourcesRepos.push({source:curSrcRepo,targetRepos:[curTarget]});
-        } else {
-          sourceRepo.targetRepos.push(curTarget);
+          sourcesRepos.push(new ManagedRepositoryConnectorView(curSrcRepo,[curTarget]));
         }
       }
+      return sourcesRepos;
+    }
+
+    this.displayGrid=function(){
+      self.uniqueManagedRepos(this.findUniqueManagedRepos());
+      $.log("uniqueManagedRepos:"+self.uniqueManagedRepos().length);
+      this.gridViewModel = new ko.simpleGrid.viewModel({
+        data: self.uniqueManagedRepos,
+        pageSize: 5,
+        gridUpdateCallBack: function(){
+          $("#main-content #proxyConnectorsTable [title]").twipsy();
+        }
+      });
+      ko.applyBindings(this,$("#main-content #proxyConnectorsTable").get(0));
+      removeSmallSpinnerImg("#main-content");
+      $("#main-content #proxy-connectors-view-tabs").tabs();
     }
   }
 
@@ -144,8 +159,8 @@ $(function() {
 
   mapPolicyInformations=function(data){
     return $.map(data.policyInformation, function(item) {
-          return mapPolicyInformation(item);
-        });
+              return mapPolicyInformation(item);
+           });
   }
 
 });
