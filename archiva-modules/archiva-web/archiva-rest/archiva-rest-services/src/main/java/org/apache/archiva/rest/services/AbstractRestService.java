@@ -20,17 +20,21 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.audit.AuditListener;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * abstract class with common utilities methods
@@ -72,5 +76,22 @@ public abstract class AbstractRestService
         return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
             ? ""
             : ":" + req.getServerPort() ) + req.getContextPath();
+    }
+
+    protected <T> Map<String, T> getBeansOfType( ApplicationContext applicationContext, Class<T> clazz )
+    {
+        //TODO do some caching here !!!
+        // olamy : with plexus we get only roleHint
+        // as per convention we named spring bean role#hint remove role# if exists
+        Map<String, T> springBeans = applicationContext.getBeansOfType( clazz );
+
+        Map<String, T> beans = new HashMap<String, T>( springBeans.size() );
+
+        for ( Map.Entry<String, T> entry : springBeans.entrySet() )
+        {
+            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
+            beans.put( key, entry.getValue() );
+        }
+        return beans;
     }
 }

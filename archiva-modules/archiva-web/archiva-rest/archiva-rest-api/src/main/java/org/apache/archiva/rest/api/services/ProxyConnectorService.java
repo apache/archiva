@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.services;
  */
 
 import org.apache.archiva.admin.model.beans.ProxyConnector;
+import org.apache.archiva.rest.api.model.PolicyInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -83,6 +84,14 @@ public interface ProxyConnectorService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateProxyConnector( ProxyConnector proxyConnector )
+        throws ArchivaRestServiceException;
+
+    @Path( "allPolicies" )
+    @GET
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    List<PolicyInformation> getAllPolicyInformations()
         throws ArchivaRestServiceException;
 
 

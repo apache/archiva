@@ -21,11 +21,15 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.policies.Policy;
+import org.apache.archiva.rest.api.model.PolicyInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,6 +43,14 @@ public class DefaultProxyConnectorService
 {
     @Inject
     private ProxyConnectorAdmin proxyConnectorAdmin;
+
+    private List<Policy> allPolicies;
+
+    @Inject
+    public DefaultProxyConnectorService( ApplicationContext applicationContext )
+    {
+        allPolicies = new ArrayList<Policy>( getBeansOfType( applicationContext, Policy.class ).values() );
+    }
 
     public List<ProxyConnector> getProxyConnectors()
         throws ArchivaRestServiceException
@@ -116,6 +128,21 @@ public class DefaultProxyConnectorService
         {
             throw new ArchivaRestServiceException( e.getMessage() );
         }
+    }
+
+    public List<PolicyInformation> getAllPolicyInformations()
+        throws ArchivaRestServiceException
+    {
+        List<PolicyInformation> policyInformations = new ArrayList<PolicyInformation>( allPolicies.size() );
+
+        for ( Policy policy : allPolicies )
+        {
+            policyInformations.add(
+                new PolicyInformation( policy.getOptions(), policy.getDefaultOption(), policy.getId(),
+                                       policy.getName() ) );
+        }
+
+        return policyInformations;
     }
 
     public ProxyConnectorAdmin getProxyConnectorAdmin()
