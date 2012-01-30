@@ -59,7 +59,7 @@ $(function() {
   ProxyConnectorsViewModel=function(){
     this.proxyConnectors=ko.observableArray([]);
     var self=this;
-    this.uniqueManagedRepos=ko.observableArray([]);
+    this.managedRepositoryConnectorViews=ko.observableArray([]);
 
     editProxyConnector=function(proxyConnector){
 
@@ -91,10 +91,10 @@ $(function() {
     }
 
     this.displayGrid=function(){
-      self.uniqueManagedRepos(this.findUniqueManagedRepos());
-      $.log("uniqueManagedRepos:"+self.uniqueManagedRepos().length);
+      self.managedRepositoryConnectorViews(this.findUniqueManagedRepos());
+      $.log("uniqueManagedRepos:"+self.managedRepositoryConnectorViews().length);
       this.gridViewModel = new ko.simpleGrid.viewModel({
-        data: self.uniqueManagedRepos,
+        data: self.managedRepositoryConnectorViews,
         pageSize: 5,
         gridUpdateCallBack: function(){
           $("#main-content #proxyConnectorsTable [title]").twipsy();
