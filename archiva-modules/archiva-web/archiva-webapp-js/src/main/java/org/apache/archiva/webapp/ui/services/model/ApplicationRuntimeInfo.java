@@ -40,12 +40,16 @@ public class ApplicationRuntimeInfo
 
     private String copyrightRange;
 
+    private boolean logMissingI18n;
+
 
     public ApplicationRuntimeInfo()
     {
         this.devMode = Boolean.getBoolean( "archiva.devMode" );
 
         this.javascriptLog = Boolean.getBoolean( "archiva.javascriptLog" );
+
+        this.logMissingI18n = Boolean.getBoolean( "archiva.logMissingI18n" );
 
         this.copyrightRange = "2005 - " + Calendar.getInstance().get( Calendar.YEAR );
     }
@@ -110,6 +114,16 @@ public class ApplicationRuntimeInfo
         this.copyrightRange = copyrightRange;
     }
 
+    public boolean isLogMissingI18n()
+    {
+        return logMissingI18n;
+    }
+
+    public void setLogMissingI18n( boolean logMissingI18n )
+    {
+        this.logMissingI18n = logMissingI18n;
+    }
+
     @Override
     public String toString()
     {
@@ -121,6 +135,7 @@ public class ApplicationRuntimeInfo
         sb.append( ", buildNumber='" ).append( buildNumber ).append( '\'' );
         sb.append( ", timestamp=" ).append( timestamp );
         sb.append( ", copyrightRange='" ).append( copyrightRange ).append( '\'' );
+        sb.append( ", logMissingI18n=" ).append( logMissingI18n );
         sb.append( '}' );
         return sb.toString();
     }

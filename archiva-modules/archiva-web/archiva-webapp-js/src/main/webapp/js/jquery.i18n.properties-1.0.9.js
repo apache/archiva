@@ -52,7 +52,7 @@ $.i18n.properties = function(settings) {
         language:       '',
         path:           '',  
         mode:           'vars',
-        cache:			false,
+        cache:			    false,
         encoding:       'UTF-8',
         callback:       null
     };
@@ -88,8 +88,12 @@ $.i18n.properties = function(settings) {
  */
 $.i18n.prop = function(key /* Add parameters as function arguments as necessary  */) {
 	var value = $.i18n.map[key];
-	if (value == null)
+	if (value == null) {
+    if (window.archivaRuntimeInfo.logMissingI18n){
+      $.get('restServices/archivaUiServices/runtimeInfoService/logMissingI18n?key='+encodeURIComponent(key));
+    }
 		return '[' + key + ']';
+  }
 	
 //	if(arguments.length < 2) // No arguments.
 //    //if(key == 'spv.lbl.modified') {alert(value);}

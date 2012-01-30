@@ -20,6 +20,8 @@ package org.apache.archiva.webapp.ui.services.api;
 
 import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.archiva.webapp.ui.services.model.ApplicationRuntimeInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -31,6 +33,8 @@ import javax.inject.Inject;
 public class DefaultRuntimeInfoService
     implements RuntimeInfoService
 {
+
+    private Logger i18nLogger = LoggerFactory.getLogger( "archivaMissingi18n.logger" );
 
     private ArchivaRuntimeInfo archivaRuntimeInfo;
 
@@ -48,5 +52,11 @@ public class DefaultRuntimeInfoService
         applicationRuntimeInfo.setTimestamp( this.archivaRuntimeInfo.getTimestamp() );
         applicationRuntimeInfo.setVersion( this.archivaRuntimeInfo.getVersion() );
         return applicationRuntimeInfo;
+    }
+
+    public Boolean logMissingI18n( String key )
+    {
+        i18nLogger.info( "missing i18n key : '{}'", key );
+        return Boolean.TRUE;
     }
 }

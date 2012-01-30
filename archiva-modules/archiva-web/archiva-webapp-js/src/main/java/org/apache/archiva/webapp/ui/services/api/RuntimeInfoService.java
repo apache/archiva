@@ -24,6 +24,7 @@ import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -38,4 +39,11 @@ public interface RuntimeInfoService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
     ApplicationRuntimeInfo getApplicationRuntimeInfo();
+
+
+    @Path( "logMissingI18n" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true )
+    Boolean logMissingI18n( @QueryParam( "key" ) String key );
 }
