@@ -69,7 +69,7 @@ public class DefaultProxyConnectorAdmin
         {
             proxyConnectors.add( getProxyConnector( configuration ) );
         }
-
+        Collections.sort( proxyConnectors, ProxyConnectorOrderComparator.getInstance() );
         return proxyConnectors;
     }
 
