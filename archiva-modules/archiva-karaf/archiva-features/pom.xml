@@ -34,7 +34,6 @@
     <beanlib.bundle.version>5.0.2beta_1-SNAPSHOT</beanlib.bundle.version>
     <cglib.bundle.version>2.2_2</cglib.bundle.version>
     <commons-beanutils.bundle.version>1.8.2_2</commons-beanutils.bundle.version>
-    <commons-collections.bundle.version>3.2.1_2</commons-collections.bundle.version>
     <commons-configuration.bundle.version>1.4_3</commons-configuration.bundle.version>
     <commons-digester.bundle.version>1.8_3</commons-digester.bundle.version>
     <commons-httpclient.bundle.version>3.1_6</commons-httpclient.bundle.version>
