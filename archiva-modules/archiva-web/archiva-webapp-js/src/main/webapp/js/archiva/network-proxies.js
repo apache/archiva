@@ -187,7 +187,7 @@ $(function() {
               }
             ],
             pageSize: 5,
-            gridUpdateCallBack: function(){
+            gridUpdateCallBack: function(networkProxy){
               $("#main-content #networkProxiesTable [title]").twipsy();
             }
           });
