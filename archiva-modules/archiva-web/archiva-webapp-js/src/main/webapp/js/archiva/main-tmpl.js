@@ -16,12 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/templates/topbar.html?"+timestampNoCache(),
-          "text!archiva/templates/message.html?"+timestampNoCache(),"text!archiva/templates/modal.html?"+timestampNoCache(),
-          "text!archiva/templates/grids-generics.html?"+timestampNoCache(),
-          "text!archiva/templates/repositories.html?"+timestampNoCache(),
-          "text!archiva/templates/network-proxies.html?"+timestampNoCache(),
-          "text!archiva/templates//proxy-connectors.html?"+timestampNoCache()],
+require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
+          "text!js/archiva/templates/topbar.html"+appendTemplateUrl(),
+          "text!js/archiva/templates/message.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates/modal.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates/grids-generics.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates/repositories.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates/network-proxies.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates//proxy-connectors.html?"+appendTemplateUrl()],
   function(menu,topbar,message,modal,grids_generics,repositories,network_proxies,proxies_connectors) {
 
     // template loading

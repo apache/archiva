@@ -304,5 +304,9 @@ timestampNoCache=function(){
   if (!window.archivaDevMode){
     return "";
   }
-  return "_="+jQuery.now();
+  return "&_="+jQuery.now();
+}
+
+appendTemplateUrl=function(){
+  return "?"+appendArchivaVersion()+timestampNoCache();
 }

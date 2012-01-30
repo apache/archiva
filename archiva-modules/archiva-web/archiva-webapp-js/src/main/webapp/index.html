@@ -46,6 +46,12 @@
 
 
 <script type="text/javascript">
+appendArchivaVersion=function(){
+  return "_archivaVersion="+window.archivaRuntimeInfo.version;
+}
+buildLoadJsUrl=function(srcScript){
+  return srcScript+"?"+appendArchivaVersion();
+}
 $.ajax(
   {
     url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo",
@@ -66,37 +72,37 @@ $.ajax(
         };
         $LAB.setGlobalDefaults(options);
         $LAB
-           .script("jquery.tmpl.js").wait()
-           .script("archiva/utils.js").wait()
+           .script(buildLoadJsUrl("jquery.tmpl.js")).wait()
+           .script(buildLoadJsUrl("archiva/utils.js")).wait()
            .script("jquery.i18n.properties-1.0.9.js").wait()
-           .script("archiva/i18nload.js").wait()
+           .script(buildLoadJsUrl("archiva/i18nload.js")).wait()
            .script("jquery.cookie.1.0.0.js").wait()
-           .script("knockout-debug.js").wait()
+           .script(buildLoadJsUrl("knockout-debug.js")).wait()
            .script("jquery-ui-1.8.16.custom.min.js").wait()
-           .script("jquery.validate.js").wait()
+           .script(buildLoadJsUrl("jquery.validate.js")).wait()
            .script("jquery.json-2.3.min.js").wait()
-           .script("archiva/main-tmpl.js").wait()
-           .script("archiva/repositories.js").wait()
-           .script("archiva/network-proxies.js").wait()
-           .script("archiva/proxy-connectors.js").wait()
-           .script("redback/operation.js").wait()
-           .script("redback/redback-tmpl.js").wait()
-           .script("bootstrap-tabs.js")
-           .script("bootstrap-modal.js")
-           .script("bootstrap-alerts.js")
-           .script("bootstrap-dropdown.js")
-           .script("bootstrap-twipsy.js")
-           .script("bootstrap-popover.js")
-           .script("knockout.simpleGrid.js")
-           .script("knockout.mapping-latest.debug.js")
-           .script("redback/user.js").wait()
-           .script("redback/users.js").wait()
-           .script("redback/redback.js").wait()
-           .script("redback/register.js").wait()
-           .script("redback/permission.js").wait()
-           .script("redback/resource.js").wait()
-           .script("redback/roles.js").wait()
-           .script("archiva/main.js");
+           .script(buildLoadJsUrl("archiva/main-tmpl.js")).wait()
+           .script(buildLoadJsUrl("archiva/repositories.js")).wait()
+           .script(buildLoadJsUrl("archiva/network-proxies.js")).wait()
+           .script(buildLoadJsUrl("archiva/proxy-connectors.js")).wait()
+           .script(buildLoadJsUrl("redback/operation.js")).wait()
+           .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
+           .script(buildLoadJsUrl("bootstrap-tabs.js"))
+           .script(buildLoadJsUrl("bootstrap-modal.js"))
+           .script(buildLoadJsUrl("bootstrap-alerts.js"))
+           .script(buildLoadJsUrl("bootstrap-dropdown.js"))
+           .script(buildLoadJsUrl("bootstrap-twipsy.js"))
+           .script(buildLoadJsUrl("bootstrap-popover.js"))
+           .script(buildLoadJsUrl("knockout.simpleGrid.js"))
+           //.script("knockout.mapping-latest.debug.js")
+           .script(buildLoadJsUrl("redback/user.js")).wait()
+           .script(buildLoadJsUrl("redback/users.js")).wait()
+           .script(buildLoadJsUrl("redback/redback.js")).wait()
+           .script(buildLoadJsUrl("redback/register.js")).wait()
+           .script(buildLoadJsUrl("redback/permission.js")).wait()
+           .script(buildLoadJsUrl("redback/resource.js")).wait()
+           .script(buildLoadJsUrl("redback/roles.js")).wait()
+           .script(buildLoadJsUrl("archiva/main.js"));
     }
   })
 </script>
