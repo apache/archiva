@@ -37,8 +37,6 @@
     <commons-configuration.bundle.version>1.4_3</commons-configuration.bundle.version>
     <commons-digester.bundle.version>1.8_3</commons-digester.bundle.version>
     <commons-httpclient.bundle.version>3.1_6</commons-httpclient.bundle.version>
-    <commons-io.2.version>2.0.1</commons-io.2.version>
-    <commons-io.bundle.version>1.4_2</commons-io.bundle.version>
     <commons-jxpath.bundle.version>1.2_5</commons-jxpath.bundle.version>
     <commons-validator.bundle.version>1.3.1_1-SNAPSHOT</commons-validator.bundle.version>
     <dom4j.bundle.version>1.6.1_4</dom4j.bundle.version>

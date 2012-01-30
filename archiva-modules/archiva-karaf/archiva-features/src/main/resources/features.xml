@@ -33,7 +33,7 @@
 
   <feature name="archiva-checksum" description="Archiva Checksum module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-common</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-checksum/${project.version}</bundle>
   </feature>
 
@@ -78,7 +78,7 @@
 
   <feature name="archiva-repository-admin-api" description="Archiva Repository Admin API module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-common</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.redback/redback-users-api/${redback.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.redback/redback-configuration/${redback.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.redback/redback-policy/${redback.version}</bundle>
@@ -100,8 +100,8 @@
 
   <feature name="archiva-xml-tools" description="Archiva XML Tools module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-common</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/${dom4j.bundle.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-xml-tools/${project.version}</bundle>
@@ -129,7 +129,7 @@
     <bundle dependency="true">wrap:mvn:org.apache.maven.indexer/indexer-core/${maven.indexer.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.indexer/indexer-artifact/${maven.indexer.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/${oro.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.velocity/${velocity.bundle.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-velocity/${plexus-velocity.version}</bundle>
     <bundle dependency="true">wrap:mvn:net.sourceforge.jchardet/jchardet/${jcharset.version}</bundle>
@@ -140,8 +140,8 @@
 
   <feature name="archiva-consumers-api" description="Archiva Consumers API module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-repository-admin-api</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-consumer-api/${project.version}</bundle>
   </feature>
 
@@ -170,8 +170,8 @@
     <feature version="${project.version}">archiva-repository-admin-api</feature>
     <feature version="${project.version}">archiva-maven2-repository</feature>
     <feature version="${project.version}">archiva-model</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/${dom4j.bundle.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-repository-layer/${project.version}</bundle>
@@ -179,8 +179,8 @@
 
   <feature name="archiva-proxy-common" description="Archiva Proxy Common module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-plexus-bridge</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.wagon/wagon-provider-api/${wagon.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.wagon/wagon-file/${wagon.version}</bundle>
     <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/${httpclient.version}</bundle>
@@ -251,13 +251,13 @@
 
   <feature name="archiva-transaction" description="Archiva Transaction module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-plexus-bridge</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-transaction/${project.version}</bundle>
   </feature>
 
   <feature name="archiva-artifact-converter" description="Archiva Artifact Converter module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-transaction</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven/maven-model-v3/${maven-model-v3.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven/maven-model/${maven3x.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.shared/maven-model-converter/${maven-model-converter.version}</bundle>
@@ -270,7 +270,7 @@
     <feature version="${project.version}">archiva-consumers</feature>
     <feature version="${project.version}">archiva-scheduler</feature>
     <feature version="${project.version}">archiva-transaction</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven/maven-model-v3/${maven-model-v3.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven/maven-model/${maven3x.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.shared/maven-model-converter/${maven-model-converter.version}</bundle>
@@ -281,7 +281,7 @@
   <feature name="archiva-indexer" description="Archiva Indexer module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-repository-admin-api</feature>
     <feature version="${project.version}">archiva-plexus-bridge</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/${lucene.bundle.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.indexer/indexer-core/${maven.indexer.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-indexer/${project.version}</bundle>
@@ -338,7 +338,7 @@
     <feature version="${project.version}">archiva-proxy</feature>
     <feature version="${project.version}">archiva-security</feature>
     <feature>http</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">mvn:org.apache.jackrabbit/jackrabbit-webdav/${jackrabbit.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.joda-time/${joda-time.bundle.version}</bundle>
     <bundle dependency="true">mvn:commons-codec/commons-codec/${commons-codec.version}</bundle>
@@ -349,7 +349,7 @@
 
   <feature name="archiva-stage-repository-merge" description="Archiva Stage Repository Merge module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-repository-layer</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle>mvn:org.apache.archiva/stage-repository-merge/${project.version}</bundle>
   </feature>
 
@@ -361,7 +361,7 @@
   <feature name="archiva-metadata-store-file" description="Archiva Metadata Store File module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-configuration</feature>
     <feature version="${project.version}">archiva-metadata</feature>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle>mvn:org.apache.archiva/metadata-store-file/${project.version}</bundle>
   </feature>
 
@@ -417,13 +417,13 @@
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.freemarker/${freemarker.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.oro/${oro.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.bundle.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-collections/${commons-collections.bundle.version}</bundle>
+    <bundle dependency="true">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-digester/${commons-digester.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.velocity/${velocity.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.rome/${rome.bundle.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.velocity.tools/velocity-tools/${velocity-tools.version}</bundle>
     <bundle dependency="true">mvn:org.testng/testng/${testng.version}</bundle>
-    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.2.version}</bundle>
+    <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">mvn:commons-fileupload/commons-fileupload/${commons-fileupload.version}</bundle>
     <bundle dependency="true">mvn:org.apache.struts/struts2-core/${struts.version}</bundle>
     <bundle dependency="true">mvn:org.apache.struts.xwork/xwork-core/${struts.version}</bundle>
