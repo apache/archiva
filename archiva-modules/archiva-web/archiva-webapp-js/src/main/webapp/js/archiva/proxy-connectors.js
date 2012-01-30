@@ -110,6 +110,10 @@ $(function() {
       return ($.isArray(remoteRepository) && remoteRepository.length>0) ?remoteRepository[0]:new RemoteRepository();
     }
 
+    getProxyConnector=function(sourceRepoId,targetRepoId){
+      ici
+    }
+
     this.displayGrid=function(){
       self.managedRepositoryConnectorViews(this.findUniqueManagedRepos());
       $.log("uniqueManagedRepos:"+self.managedRepositoryConnectorViews().length);
