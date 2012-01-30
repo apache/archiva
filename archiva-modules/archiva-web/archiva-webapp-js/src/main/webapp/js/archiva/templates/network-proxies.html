@@ -50,6 +50,7 @@
         <th>${$.i18n.prop('password')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('modified')}</th>
     </tr>
     </thead>
     <tbody>
@@ -75,6 +76,12 @@
               <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
             </a>
         </td>
+        {{if row.modified()}}
+          <td><a href="#" data-bind="click: function(){ updateNetworkProxy(row) }">${$.i18n.prop('save')}</a></td>
+        {{else}}
+          <td></td>
+        {{/if}}
+
     </tr>
     {{/each}}
     </tbody>

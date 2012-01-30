@@ -20,23 +20,32 @@ $(function() {
 
 
   NetworkProxy=function(id,protocol,host,port,username,password){
+    var self=this;
     //private String id;
     this.id = ko.observable(id);
+    this.id.subscribe(function(newValue){self.modified(true)});
 
     //private String protocol = "http";
     this.protocol=ko.observable(protocol);
+    this.protocol.subscribe(function(newValue){self.modified(true)});;
 
     //private String host;
     this.host=ko.observable(host);
+    this.host.subscribe(function(newValue){self.modified(true)});;
 
     //private int port = 8080;
     this.port=ko.observable(port);
+    this.port.subscribe(function(newValue){self.modified(true)});;
 
     //private String username;
     this.username=ko.observable(username?username:"");
+    this.username.subscribe(function(newValue){self.modified(true)});;
 
     //private String password;
     this.password=ko.observable(password?password:"");
+    this.password.subscribe(function(newValue){self.modified(true)});;
+
+    this.modified=ko.observable(false);
   }
 
   NetworkProxyViewModel=function(networkProxy, update, networkProxiesViewModel){
@@ -45,7 +54,7 @@ $(function() {
     this.networkProxiesViewModel=networkProxiesViewModel;
     var self=this;
 
-    save=function(){
+    this.save=function(){
       if (!$("#main-content #network-proxy-edit-form").valid()){
         return;
       }
@@ -59,6 +68,7 @@ $(function() {
             dataType: 'json',
             success: function(data) {
               displaySuccessMessage($.i18n.prop('networkproxy.updated'));
+              self.networkProxy.modified(false);
               activateNetworkProxiesGridTab();
             },
             error: function(data) {
@@ -96,7 +106,7 @@ $(function() {
   }
 
   NetworkProxiesViewModel=function(){
-    this.networkProxies=ko.observableArray([]);
+    this.networkProxies=ko.observableArray([]);//.subscribe(function(val){$.log('subscribe')});
 
     var self=this;
 
@@ -109,6 +119,11 @@ $(function() {
       ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
       activateNetworkProxyFormValidation();
       activateNetworkProxyEditTab();
+    }
+
+    updateNetworkProxy=function(networkProxy){
+      var viewModel = new NetworkProxyViewModel(networkProxy,true,self);
+      viewModel.save();
     }
 
     removeNetworkProxy=function(networkProxy){
@@ -162,6 +177,7 @@ $(function() {
         dataType: 'json',
         success: function(data) {
           networkProxiesViewModel.networkProxies(mapNetworkProxies(data));
+          //networkProxiesViewModel.networkProxies.subscribe(function(){$.log("change in networkProxies")});
           networkProxiesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
             data: networkProxiesViewModel.networkProxies,
             columns: [
