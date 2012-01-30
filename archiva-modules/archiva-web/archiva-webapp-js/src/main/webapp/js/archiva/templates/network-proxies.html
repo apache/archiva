@@ -55,12 +55,12 @@
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
-    <tr>
+      <tr>
         {{each(j, columnDefinition) columns}}
         {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) :
         row[columnDefinition.rowText])}}
         <td>
-            ${val}
+          <div data-bind="style: { color: modified() ? '#ee5f5b' : '' }">${val}</div>
         </td>
         {{/each}}
         {{if row.password()}}
