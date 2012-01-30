@@ -38,8 +38,13 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-api</artifactId>
-
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-policies</artifactId>
+    </dependency>
+
 
     <dependency>
       <groupId>org.codehaus.redback</groupId>
