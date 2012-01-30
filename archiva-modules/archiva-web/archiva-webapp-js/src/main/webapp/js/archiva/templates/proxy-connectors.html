@@ -44,8 +44,12 @@
 <script id='ko-proxy-connectors-grid' type='text/x-jquery-tmpl'>
   <thead>
     <tr>
-      <th>${$.i18n.prop('proxy-connectors.grid.managedrepo.title')}</th>
-      <th>${$.i18n.prop('proxy-connectors.grid.remoterepo.title')}</th>
+      <th title="${$.i18n.prop('proxy-connectors.grid.managedrepo.title')}">
+        ${$.i18n.prop('proxy-connectors.grid.remoterepo.grid.header')}
+      </th>
+      <th title="${$.i18n.prop('proxy-connectors.grid.remoterepo.title')}">
+        ${$.i18n.prop('proxy-connectors.grid.remoterepo.grid.header')}
+      </th>
     </tr>
   </thead>
 
