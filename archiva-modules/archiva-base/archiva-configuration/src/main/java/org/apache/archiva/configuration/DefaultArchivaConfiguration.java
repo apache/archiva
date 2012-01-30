@@ -25,6 +25,7 @@ import org.apache.archiva.configuration.io.registry.ConfigurationRegistryWriter;
 import org.apache.archiva.policies.AbstractUpdatePolicy;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
+import org.apache.archiva.policies.DownloadErrorPolicy;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PostDownloadPolicy;
 import org.apache.archiva.policies.PreDownloadPolicy;
@@ -122,6 +123,14 @@ public class DefaultArchivaConfiguration
      * @todo these don't strictly belong in here
      */
     private Map<String, PostDownloadPolicy> postPolicies;
+
+    /**
+     * see #initialize
+     *
+     * @todo these don't strictly belong in here
+     */
+    private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
+
 
     /**
      * see #initialize
@@ -386,6 +395,12 @@ public class DefaultArchivaConfiguration
             return policy;
         }
 
+        policy = downloadErrorPolicies.get( policyId );
+        if ( policy != null )
+        {
+            return policy;
+        }
+
         return null;
     }
 
@@ -403,7 +418,8 @@ public class DefaultArchivaConfiguration
             return false;
         }
 
-        return ( prePolicies.containsKey( policyId ) || postPolicies.containsKey( policyId ) );
+        return ( prePolicies.containsKey( policyId ) || postPolicies.containsKey( policyId )
+            || downloadErrorPolicies.containsKey( policyId ) );
     }
 
     private Registry readDefaultConfiguration()
@@ -659,6 +675,7 @@ public class DefaultArchivaConfiguration
 
         this.postPolicies = componentContainer.buildMapWithRole( PostDownloadPolicy.class );
         this.prePolicies = componentContainer.buildMapWithRole( PreDownloadPolicy.class );
+        this.downloadErrorPolicies = componentContainer.buildMapWithRole( DownloadErrorPolicy.class );
         // Resolve expressions in the userConfigFilename and altConfigFilename
         try
         {
