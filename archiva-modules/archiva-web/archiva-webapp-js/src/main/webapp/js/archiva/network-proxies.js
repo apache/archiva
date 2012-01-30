@@ -19,10 +19,6 @@
 $(function() {
 
 
-  displayNetworkProxies=function(){
-
-  }
-
   NetworkProxy=function(id,protocol,host,port,username,password){
     //private String id;
     this.id = ko.observable(id);

@@ -20,8 +20,9 @@ require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/te
           "text!archiva/templates/message.html?"+timestampNoCache(),"text!archiva/templates/modal.html?"+timestampNoCache(),
           "text!archiva/templates/grids-generics.html?"+timestampNoCache(),
           "text!archiva/templates/repositories.html?"+timestampNoCache(),
-          "text!archiva/templates/network-proxies.html?"+timestampNoCache()],
-  function(menu,topbar,message,modal,grids_generics,repositories,network_proxies) {
+          "text!archiva/templates/network-proxies.html?"+timestampNoCache(),
+          "text!archiva/templates//proxy-connectors.html?"+timestampNoCache()],
+  function(menu,topbar,message,modal,grids_generics,repositories,network_proxies,proxies_connectors) {
 
     // template loading
     $.tmpl( menu ).appendTo("#html-fragments");
@@ -31,6 +32,7 @@ require(["text!archiva/templates/menu.html?"+timestampNoCache(),"text!archiva/te
     $("#html-fragments").append(grids_generics);
     $("#html-fragments").append(repositories);
     $("#html-fragments").append(network_proxies);
+    $("#html-fragments").append(proxies_connectors);
     $.log("main-tmpl.js menu loaded");
   }
 );
