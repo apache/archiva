@@ -60,7 +60,9 @@ $(function() {
     this.proxyConnectors=ko.observableArray([]);
     var self=this;
     this.managedRepositoryConnectorViews=ko.observableArray([]);
-
+    this.policyInformations=ko.observableArray([]);
+    this.managedRepositories=ko.observableArray([]);
+    this.remoteRepositories=ko.observableArray([]);
     editProxyConnector=function(proxyConnector){
 
     }
@@ -70,7 +72,7 @@ $(function() {
       //sourceRepoId
       for(i=0;i<self.proxyConnectors().length;i++){
         var curSrcRepo=self.proxyConnectors()[i].sourceRepoId();
-        var curTarget=self.proxyConnectors()[i].targetRepoId();
+        var curTarget=self.proxyConnectors()[i];
         var sourceRepo = $.grep(sourcesRepos,
                                 function(srcRepo,idx){
                                   for (j=0;j<sourcesRepos.length;j++){
@@ -90,6 +92,24 @@ $(function() {
       return sourcesRepos;
     }
 
+    getManagedRepository=function(id){
+      var managedRepository=$.grep(self.managedRepositories(),
+                                      function(repo,idx){
+                                        return repo.id()==id;
+                                      }
+                            );
+      return ($.isArray(managedRepository) && managedRepository.length>0) ?managedRepository[0]:new ManagedRepository();
+    }
+
+    getRemoteRepository=function(id){
+      var remoteRepository=$.grep(self.remoteRepositories(),
+                                      function(repo,idx){
+                                        return repo.id()==id;
+                                      }
+                            );
+      return ($.isArray(remoteRepository) && remoteRepository.length>0) ?remoteRepository[0]:new RemoteRepository();
+    }
+
     this.displayGrid=function(){
       self.managedRepositoryConnectorViews(this.findUniqueManagedRepos());
       $.log("uniqueManagedRepos:"+self.managedRepositoryConnectorViews().length);
@@ -100,37 +120,60 @@ $(function() {
           $("#main-content #proxyConnectorsTable [title]").twipsy();
         }
       });
+      this.gridViewModel.getManagedRepository=getManagedRepository;
       ko.applyBindings(this,$("#main-content #proxyConnectorsTable").get(0));
       removeSmallSpinnerImg("#main-content");
       $("#main-content #proxy-connectors-view-tabs").tabs();
     }
+
   }
+
+  // FIXME use various callback to prevent async false !!
 
   displayProxyConnectors=function(){
     $("#main-content").html($("#proxyConnectorsMain").tmpl());
     $("#main-content").append(smallSpinnerImg());
 
-    var proxyConnectorsViewModel = new ProxyConnectorsViewModel();
+    this.proxyConnectorsViewModel = new ProxyConnectorsViewModel();
+    var self=this;
+
+    $.ajax("restServices/archivaServices/managedRepositoriesService/getManagedRepositories", {
+        type: "GET",
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          self.proxyConnectorsViewModel.managedRepositories(mapManagedRepositories(data));
+        }
+    });
+
+    $.ajax("restServices/archivaServices/remoteRepositoriesService/getRemoteRepositories", {
+        type: "GET",
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          self.proxyConnectorsViewModel.remoteRepositories(mapRemoteRepositories(data));
+        }
+    });
+
+    $.ajax("restServices/archivaServices/proxyConnectorService/allPolicies", {
+        type: "GET",
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+          self.proxyConnectorsViewModel.policyInformations(mapPolicyInformations(data));
+        }
+      }
+    );
 
     $.ajax("restServices/archivaServices/proxyConnectorService/getProxyConnectors", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          proxyConnectorsViewModel.proxyConnectors(mapProxyConnectors(data));
-          proxyConnectorsViewModel.displayGrid();
+          self.proxyConnectorsViewModel.proxyConnectors(mapProxyConnectors(data));
+          self.proxyConnectorsViewModel.displayGrid();
         }
       }
     );
-
-    $.ajax("restServices/archivaServices/proxyConnectorService/allPolicies", {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
-          mapPolicyInformations(data);
-        }
-      }
-    );
-
 
   }
 

@@ -51,10 +51,12 @@
 
   {{each(i, row) itemsOnCurrentPage()}}
     <tr>
-      <td>${row.source()}</td>
+        {{var val = row.source()}}
+      <td>${val}-${getManagedRepository(val).name()}</td>
       <td>
           {{each(j, targetRepo) row.targetRepos()}}
-            <div>${targetRepo}</div>
+          {{var targetRepoId = targetRepo.targetRepoId()}}
+            <div>${targetRepoId}-${getRemoteRepository(targetRepoId).name()}</div>
           {{/each}}
       </td>
     </tr>

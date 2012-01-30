@@ -414,7 +414,7 @@ $(function() {
 
       $("#managed-repositories-pom-snippet").html(mediumSpinnerImg());
       $('#managed-repositories-pom-snippet').show();
-      var url = "restServices/archivaServices/managedRepositoriesService/getPomSnippet/"+managedRepository.id();
+      var url = "restServices/archivaServices/managedRepositoriesService/getPomSnippet/"+encodeURIComponent(managedRepository.id());
       $.ajax(url,
         {
           type: "GET",
