@@ -61,7 +61,7 @@
   <properties>
     <!-- Note: when upgrading to 2.3.1+, template/xhtml can be removed from the
          webapp resources -->
-    <commons-codec.version>1.5</commons-codec.version>
+    <commons-codec.version>1.6</commons-codec.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <commons-lang.version>2.6</commons-lang.version>
     <struts.version>2.2.3.1</struts.version>
