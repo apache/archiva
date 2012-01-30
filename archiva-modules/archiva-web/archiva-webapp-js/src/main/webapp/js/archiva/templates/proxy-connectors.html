@@ -68,9 +68,40 @@
             <p>${targetRepoId}</p>
             <p>${getRemoteRepository(targetRepoId).name()}</p>
             <p>${getRemoteRepository(targetRepoId).url()}</p>
+            <p>
+              <a popover-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
+                 data-bind="event: { mouseover: function(){ showSettings(val,targetRepoId)},}"
+                 id="proxy-connectors-grid-remoterepo-settings-edit-${val}-${targetRepoId}" href="#">
+                  ${$.i18n.prop('edit')}
+                 </a>
+              <div id="proxy-connectors-grid-remoterepo-settings-content-${val}-${targetRepoId}" style="display:none"></div>
+            </p>
           </blockquote>
           {{/each}}
       </td>
     </tr>
   {{/each}}
+</script>
+
+<script id='proxy-connectors-remote-settings-popover-tmpl' type='text/x-jquery-tmpl'>
+  <div>
+    {{if proxyId()}}
+      ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${proxyId()}
+    {{else}}
+      ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${$.i18n.prop('none')}
+    {{/if}}
+    <table>
+      <thead>
+        <th colspan="2">Policies</th>
+      </thead>
+      <tbody>
+        {{each policies().entry}}
+        <tr>
+          <td>${$value.key}</td>
+          <td>${$value.value}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
 </script>

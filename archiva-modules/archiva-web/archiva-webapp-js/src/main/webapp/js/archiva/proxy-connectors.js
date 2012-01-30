@@ -98,7 +98,7 @@ $(function() {
                                         return repo.id()==id;
                                       }
                             );
-      return ($.isArray(managedRepository) && managedRepository.length>0) ?managedRepository[0]:new ManagedRepository();
+      return ($.isArray(managedRepository) && managedRepository.length>0) ? managedRepository[0]:new ManagedRepository();
     }
 
     getRemoteRepository=function(id){
@@ -107,11 +107,37 @@ $(function() {
                                         return repo.id()==id;
                                       }
                             );
-      return ($.isArray(remoteRepository) && remoteRepository.length>0) ?remoteRepository[0]:new RemoteRepository();
+      return ($.isArray(remoteRepository) && remoteRepository.length>0) ? remoteRepository[0]:new RemoteRepository();
     }
 
-    getProxyConnector=function(sourceRepoId,targetRepoId){
-      ici
+    this.getProxyConnector=function(sourceRepoId,targetRepoId){
+      var proxyConnector=$.grep(self.proxyConnectors(),
+                                      function(proxyConnector,idx){
+                                        return proxyConnector.sourceRepoId()==sourceRepoId
+                                            && proxyConnector.targetRepoId==targetRepoId;
+                                      }
+                                  );
+      return ($.isArray(proxyConnector) && proxyConnector.length>0) ? proxyConnector[0]:new ProxyConnector();
+    }
+
+    showSettings=function(sourceRepoId,targetRepoId){
+      //proxy-connectors-grid-remoterepo-settings-edit-internal-central
+      var targetImgId="#proxy-connectors-grid-remoterepo-settings-edit-"+sourceRepoId+"-"+targetRepoId;
+      //proxy-connectors.grid-remoterepo-settings-content-internal-central
+      var targetContentId="#proxy-connectors-grid-remoterepo-settings-content-"+sourceRepoId+"-"+targetRepoId;
+      $(targetContentId).html("");
+      $(targetContentId).append($("#proxy-connectors-remote-settings-popover-tmpl").tmpl(self.getProxyConnector(sourceRepoId,targetRepoId)));
+      $(targetImgId).attr("data-content",$(targetContentId).html());
+      $(targetImgId).popover(
+          {
+            placement: "left",
+            html: true,
+            title: "popover-title"
+          }
+      );
+
+      $(targetImgId).popover('show');
+
     }
 
     this.displayGrid=function(){
