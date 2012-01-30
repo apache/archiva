@@ -20,4 +20,23 @@
   <div class="page-header">
     <h2>${$.i18n.prop('proxy-connectors.list')}</h2>
   </div>
+
+  <ul id="proxy-connector-view-tabs" class="tabs">
+    <li id="network-proxies-view-tabs-li-grid" class="active">
+      <a href="#network-proxies-view" id="network-proxies-view-tabs-a-network-proxies-grid">${$.i18n.prop('network-proxies.grid.tab.title')}</a>
+    </li>
+    <li id="network-proxies-view-tabs-li-edit">
+      <a href="#network-proxies-edit">${$.i18n.prop('add')}</a>
+    </li>
+  </ul>
+  <div id="network-proxies-view-tabs-content" class="tab-content">
+    <div id="network-proxies-view" class="active">
+        <table class="bordered-table zebra-striped" id="networkProxiesTable>
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-network-proxies-grid',pageLinksId:'network-proxiesPagination'">
+        </table>
+        <div id="network-proxiesPagination"></div>
+    </div>
+    <div id="network-proxies-edit" data-bind='template: {name:"network-proxy-edit-tmpl"}'></div>
+  </div>
+
 </script>

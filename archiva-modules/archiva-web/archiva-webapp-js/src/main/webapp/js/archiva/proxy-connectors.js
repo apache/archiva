@@ -64,30 +64,33 @@ $(function() {
       //sourceRepoId
       for(i=0;i<self.proxyConnectors().length;i++){
         var curSrcRepo=self.proxyConnectors()[i].sourceRepoId();
-        var curTarget=self.proxyConnectors()[i].targetRepoId;
+        var curTarget=self.proxyConnectors()[i].targetRepoId();
+        $.log("curSrcRepo:"+curSrcRepo+",curTarget:"+curTarget);
         var sourceRepo = $.grep(sourcesRepos,
                                 function(srcRepo,idx){
                                   $.log("grep:"+srcRepo.source);
                                   $.log("sourcesRepos.length:"+sourcesRepos.length);
-                                  for (i=0;i<sourcesRepos.length;i++){
-                                    if (srcRepo.source==sourcesRepos[i].source){
+                                  for (j=0;j<sourcesRepos.length;j++){
+                                    if (srcRepo.source==curSrcRepo){
                                       return true;
                                     }
                                   }
                                   return false;
                                 }
         );
-        if (sourceRepo!=null){
-          $.log("sourceRepoId:"+curSrcRepo);
-          sourcesRepos.push({source:curSrcRepo,targetRepos:[curTarget]});
+        $.log("isArray:"+$.isArray(sourceRepo)+",length:"+sourceRepo.length);
+        if (sourceRepo.length>0){
+          $.log("sourceRepo!=null:"+sourceRepo[0]);
+          sourceRepo[0].targetRepos.push(curTarget);
         } else {
-          sourceRepo.targetRepos.push(curTarget);
+          $.log("sourceRepo==null:"+curSrcRepo);
+          sourcesRepos.push({source:curSrcRepo,targetRepos:[curTarget]});
         }
       }
 
       $.log("sourcesRepo.length:"+sourcesRepos.length);
       for(i=0;i<sourcesRepos.length;i++){
-        $.log(sourcesRepos.targetRepos.length);
+        $.log("sourcesRepos[i]:"+sourcesRepos[i].source+"="+sourcesRepos[i].targetRepos.join(":"));
       }
     }
   }

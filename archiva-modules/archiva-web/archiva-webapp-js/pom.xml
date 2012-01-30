@@ -31,7 +31,7 @@
   <name>Archiva Web :: Javascript Application</name>
 
   <properties>
-    <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context.xml</tomcatContextXml>
+    <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
     <tomcatRunPort>9091</tomcatRunPort>
     <tomcatRunPath>/archiva</tomcatRunPath>
     <archiva.devMode>true</archiva.devMode>
