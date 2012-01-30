@@ -31,7 +31,7 @@ $(function() {
     //private List<String> whiteListPatterns;
     this.whiteListPatterns=ko.observableArray(whiteListPatterns);
     //private Map<String, String> policies;
-   this.policies=ko.observable(policies);
+    this.policies=ko.observable(policies);
     //private Map<String, String> properties;
     this.properties=ko.observable(properties);
     //private boolean disabled = false;
@@ -40,9 +40,6 @@ $(function() {
     this.order=ko.observable(order);
   }
 
-  displayProxyConnectors=function(){
-    $("#main-content").html($("#proxyConnectorsMain").tmpl());
-    $("#main-content").append(smallSpinnerImg());
   PolicyInformation=function(options,defaultOption,id,name){
     //private List<String> options;
     this.options=ko.observableArray(options);
