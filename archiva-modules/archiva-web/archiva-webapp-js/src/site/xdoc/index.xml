@@ -34,8 +34,9 @@
         <p>The application is designed to use http cache mechanism for css, javascript. Except REST call to get datas which will never use cache as a query timestamp parameter is used.
           But as this can cause issue in developpement phase, two system properties (disabled by default) prevent can prevent caching and/or help debuging
           <ul>
-            <li>archiva.devMode= true/false: if true will add a timestamp query parameter for loading js and html templates.</li>
-            <li>archiva.javascriptLog= true/false: will activate javascript log, method available with $.log(msg)</li>
+            <li>archiva.devMode=true/false: if true will add a timestamp query parameter for loading js and html templates.</li>
+            <li>archiva.javascriptLog=true/false: will activate javascript log, method available with $.log(msg)</li>
+            <li>archiva.logMissingI18n=true/false: will activate remote logging of missing i18n key in the servlet container log:  INFO  archivaMissingi18n.logger  - missing i18n key : 'proxy-connectors.grid.managedrepo.title'</li>
           </ul>
         </p>
       </subsection>
