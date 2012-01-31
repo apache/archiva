@@ -93,8 +93,9 @@ $(function() {
             data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
             dataType: 'json',
             success: function(data) {
+              self.networkProxy.modified(false);
               self.networkProxiesViewModel.networkProxies.push(self.networkProxy);
-              displaySuccessMessage($.i18n.prop('networkproxy.added'));
+              displaySuccessMessage($.i18n.prop('networkproxy.added',self.networkProxy.id()));
               activateNetworkProxiesGridTab();
             },
             error: function(data) {
@@ -163,7 +164,7 @@ $(function() {
                 success: function(data) {
                   self.networkProxies.remove(networkProxy);
                   clearUserMessages();
-                  displaySuccessMessage($.i18n.prop('networkproxy.deleted'));
+                  displaySuccessMessage($.i18n.prop('networkproxy.deleted',networkProxy.id()));
                   activateNetworkProxiesGridTab();
                 },
                 error: function(data) {
