@@ -70,7 +70,9 @@ $(function() {
             data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
             dataType: 'json',
             success: function(data) {
-              displaySuccessMessage($.i18n.prop('networkproxy.updated',self.networkProxy.id()));
+              $.log("update proxy id:"+self.networkProxy.id());
+              var message=$.i18n.prop('networkproxy.updated',self.networkProxy.id());
+              displaySuccessMessage(message);
               self.networkProxy.modified(false);
               if (!this.bulkMode){
                 activateNetworkProxiesGridTab();
@@ -118,6 +120,7 @@ $(function() {
     this.gridViewModel = null;
 
     editNetworkProxy=function(networkProxy){
+      clearUserMessages();
       $.log("editNetworkProxy");
       $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("edit"));
       var viewModel = new NetworkProxyViewModel(networkProxy,true,self);
