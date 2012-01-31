@@ -119,7 +119,7 @@ $(function() {
 
       ko.applyBindings(viewModel,$("#main-content #createUserForm").get(0));
 
-      $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("user.edit"));
+      $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("edit"));
 
       $("#main-content #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
         e.preventDefault();
@@ -224,7 +224,7 @@ $(function() {
         window.redbackModel.usersViewModel.addUser();
       }
       if ($(e.target).attr("href")=="#users-view") {
-        $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("user.add"));
+        $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
       }
 
     })

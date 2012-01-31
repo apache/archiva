@@ -172,7 +172,7 @@ $(function() {
               var updated = JSON.parse(result);
               if (updated == true) {
                 displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
-                $("#users-view-tabs-li-user-edit a").html($.i18n.prop("user.add"));
+                $("#users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
                 clearForm("#main-content #user-create");
                 activateUsersGridTab();
                 return this;
