@@ -42,3 +42,7 @@
 .ar-multiselect-right {
     margin-left: 2em
 }
+
+.modified {
+    border:2px solid #fbc7c6;
+}
