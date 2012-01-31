@@ -48,17 +48,20 @@ $(function() {
     this.modified=ko.observable(false);
   }
 
-  NetworkProxyViewModel=function(networkProxy, update, networkProxiesViewModel){
+  NetworkProxyViewModel=function(networkProxy, update, networkProxiesViewModel,bulkMode){
     this.update=update;
     this.networkProxy=networkProxy;
     this.networkProxiesViewModel=networkProxiesViewModel;
     var self=this;
+    this.bulkMode=false || bulkMode;
 
     this.save=function(){
       if (!$("#main-content #network-proxy-edit-form").valid()){
         return;
       }
-      clearUserMessages();
+      if (!this.bulkMode){
+        clearUserMessages();
+      }
       if (update){
         $.ajax("restServices/archivaServices/networkProxyService/updateNetworkProxy",
           {
@@ -69,7 +72,9 @@ $(function() {
             success: function(data) {
               displaySuccessMessage($.i18n.prop('networkproxy.updated',self.networkProxy.id()));
               self.networkProxy.modified(false);
-              activateNetworkProxiesGridTab();
+              if (!this.bulkMode){
+                activateNetworkProxiesGridTab();
+              }
             },
             error: function(data) {
               var res = $.parseJSON(data.responseText);
@@ -121,8 +126,29 @@ $(function() {
       activateNetworkProxyEditTab();
     }
 
+    this.bulkSave=function(){
+      return getModifiedNetworkProxies().length>0;
+    }
+
+    getModifiedNetworkProxies=function(){
+      var prx = $.grep(self.networkProxies(),
+          function (networkProxy,i) {
+            $.log("networkProxy.modified():"+networkProxy.modified())
+            return networkProxy.modified();
+          });
+      return prx;
+    }
+
+    updateNetworkProxies=function(){
+      var modifiedNetworkProxies = getModifiedNetworkProxies();
+      for(i=0;i<modifiedNetworkProxies.length;i++){
+        var viewModel = new NetworkProxyViewModel(modifiedNetworkProxies[i],true,self,false);
+        viewModel.save();
+      }
+    }
+
     updateNetworkProxy=function(networkProxy){
-      var viewModel = new NetworkProxyViewModel(networkProxy,true,self);
+      var viewModel = new NetworkProxyViewModel(networkProxy,true,self,false);
       viewModel.save();
     }
 
@@ -210,6 +236,7 @@ $(function() {
             }
           });
           ko.applyBindings(networkProxiesViewModel,$("#main-content #networkProxiesTable").get(0));
+          ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-bulk-save-btn").get(0));
         }
       }
     );

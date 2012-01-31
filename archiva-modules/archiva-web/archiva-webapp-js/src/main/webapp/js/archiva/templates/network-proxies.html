@@ -31,6 +31,7 @@
   </ul>
   <div id="network-proxies-view-tabs-content" class="tab-content">
     <div id="network-proxies-view" class="active">
+        <div id="network-proxies-bulk-save-btn" data-bind='template:{name:"network-proxies-bulk-save-tmpl"}'></div>
         <table class="bordered-table zebra-striped" id="networkProxiesTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-network-proxies-grid',pageLinksId:'network-proxiesPagination'">
         </table>
@@ -143,4 +144,10 @@
       <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
       <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
     </form>
+</script>
+
+<script id="network-proxies-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+  {{if bulkSave()}}
+    <button data-bind="click: updateNetworkProxies" class="btn">${$.i18n.prop('save.all')}</button>
+  {{/if}}
 </script>
