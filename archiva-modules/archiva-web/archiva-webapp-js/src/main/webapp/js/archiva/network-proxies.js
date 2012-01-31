@@ -67,7 +67,7 @@ $(function() {
             data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
             dataType: 'json',
             success: function(data) {
-              displaySuccessMessage($.i18n.prop('networkproxy.updated'));
+              displaySuccessMessage($.i18n.prop('networkproxy.updated',self.networkProxy.id()));
               self.networkProxy.modified(false);
               activateNetworkProxiesGridTab();
             },
@@ -163,9 +163,11 @@ $(function() {
         var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
         ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
         activateNetworkProxyFormValidation();
+        clearUserMessages();
       }
       if ($(e.target).attr("href")=="#network-proxies-view") {
         $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
+        clearUserMessages();
       }
 
     });
@@ -236,6 +238,7 @@ $(function() {
     $("#main-content #network-proxies-view-tabs-li-grid").addClass("active");
     $("#main-content #network-proxies-view").addClass("active");
     $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
+
   }
 
   activateNetworkProxyEditTab=function(){
@@ -244,7 +247,6 @@ $(function() {
 
     $("#main-content #network-proxies-view-tabs-li-edit").addClass("active");
     $("#main-content #network-proxies-edit").addClass("active");
-
   }
 
   mapNetworkProxy=function(data){
