@@ -289,13 +289,13 @@ displayRestError=function(data,idToAppend){
  * @param errorMap
  * @param errorList
  */
-customShowError=function(validator, errorMap, errorList) {
-  $( "#main-content div.clearfix" ).removeClass( "error" );
-  $( "#main-content span.help-inline" ).remove();
+customShowError=function(formId, validator, errorMap, errorList) {
+  $( "#"+formId+" div.control-group" ).removeClass( "error" );
+  $( "#"+formId+" span.help-inline" ).remove();
   for ( var i = 0; errorList[i]; i++ ) {
     var error = errorList[i];
     var field = $("#"+error.element.id);
-    field.parents( "div.clearfix" ).addClass( "error" );
+    field.parents( "div.control-group" ).addClass( "error" );
     field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
   }
 }

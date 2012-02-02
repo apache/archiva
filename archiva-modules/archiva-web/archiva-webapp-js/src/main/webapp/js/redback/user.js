@@ -314,8 +314,10 @@ $(function() {
   loginBox=function(){
 
     screenChange();
+    if (window.modalLoginWindow!=null){
+      window.modalLoginWindow=null;
+    }
     if (window.modalLoginWindow==null) {
-      $.log("window.modalLoginWindow==null");
       window.modalLoginWindow = $("#modal-login").modal();
       window.modalLoginWindow.bind('hidden', function () {
         $("#modal-login-err-message").hide();
@@ -324,18 +326,14 @@ $(function() {
 
     $("#user-login-form").validate({
       showErrors: function(validator, errorMap, errorList) {
-        customShowError(validator,errorMap,errorMap);
+        customShowError("user-login-form",validator,errorMap,errorMap);
       }
     });
     $("#modal-login").delegate("#modal-login-ok", "click keydown keypress", function(e) {
       e.preventDefault();
-      $.log("loginBox before login");
       login();
     });
-    $("#modal-login").show();
-    window.modalLoginWindow.modal('show');
-    $.log("window.modalLoginWindow= modal show");
-    $("#modal-login").focus();
+
   }
 
   /**

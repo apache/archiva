@@ -18,22 +18,22 @@
 -->
 <div id="modal-login" class="modal hide fade">
   <div class="modal-header">
-    <a href="#" class="close">&times;</a>
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
     <h3>${$.i18n.prop('login.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-login-content">
-      <form id="user-login-form">
-        <div id="modal-login-err-message" class="alert-message error" style="display:none"></div>
+      <form id="user-login-form" class="form-horizontal">
+        <div id="modal-login-err-message" class="alert alert-error" style="display:none"></div>
         <fieldset>
-          <div class="clearfix">
-            <label for="user-login-form-username">${$.i18n.prop('username')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="user-login-form-username">${$.i18n.prop('username')}</label>
+            <div class="controls">
               <input type="text" id="user-login-form-username" name="user-login-form-username" class="required" />
             </div>
           </div>
-          <div class="clearfix">
-            <label for="user-login-form-password">${$.i18n.prop('password')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="user-login-form-password">${$.i18n.prop('password')}</label>
+            <div class="controls">
               <input type="password" id="user-login-form-password" name="user-login-form-password" class="required" />
             </div>
           </div>
@@ -41,7 +41,7 @@
       </form>
   </div>
   <div class="modal-footer" id="modal-login-footer">
-    <button class="btn primary" onclick="return login();" id="modal-login-ok">${$.i18n.prop('login')}</button>
+    <button class="btn primary" id="modal-login-ok">${$.i18n.prop('login')}</button>
   </div>
 </div>
 
