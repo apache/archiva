@@ -478,7 +478,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError(validator,errorMap,errorMap);
+        customShowError("password-change-form",validator,errorMap,errorMap);
       }
     });
 
