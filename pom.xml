@@ -68,24 +68,6 @@
       <timezone>+8</timezone>
     </developer>
     <developer>
-      <id>aheritier</id>
-      <name>Arnaud Heritier</name>
-      <email>aheritier@apache.org</email>
-      <organization>OCTO Technology</organization>
-      <organizationUrl>http://www.octo.com</organizationUrl>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <id>bellingard</id>
-      <name>Fabrice Bellingard</name>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-    </developer>
-    <developer>
       <id>brett</id>
       <name>Brett Porter</name>
       <email>brett@apache.org</email>
@@ -124,16 +106,7 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-    <developer>
-      <id>jdumay</id>
-      <name>James William Dumay</name>
-      <email>james@atlassian.com</email>
-      <organization>Atlassian</organization>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>+11</timezone>
-    </developer>
+
     <developer>
       <id>joakime</id>
       <name>Joakim Erdfelt</name>
@@ -153,16 +126,6 @@
         <role>PMC Member</role>
       </roles>
       <timezone>+8</timezone>
-    </developer>
-    <developer>
-      <id>jmcconnell</id>
-      <name>Jesse McConnell</name>
-      <email>jmcconnell@apache.org</email>
-      <organization>ASF</organization>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>-6</timezone>
     </developer>
     <developer>
       <id>nicolas</id>
@@ -259,6 +222,34 @@
     <developer>
       <id>kenney</id>
       <name>Kenney Westerhof</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>aheritier</id>
+      <name>Arnaud Heritier</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>bellingard</id>
+      <name>Fabrice Bellingard</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jdumay</id>
+      <name>James William Dumay</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jmcconnell</id>
+      <name>Jesse McConnell</name>
       <roles>
         <role>Emeritus</role>
       </roles>
