@@ -300,7 +300,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError(validator,errorMap,errorMap);
+        customShowError("user-create",validator,errorMap,errorMap);
       }
 
     });

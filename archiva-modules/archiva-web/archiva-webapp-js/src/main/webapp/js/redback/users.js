@@ -74,7 +74,7 @@ $(function() {
           }
         },
         showErrors: function(validator, errorMap, errorList) {
-          customShowError(validator,errorMap,errorMap);
+          customShowError("user-create",validator,errorMap,errorMap);
         }
       });
       $("#main-content #createUserForm #user-create").delegate("#user-create-form-register-button", "click keydown", function(e) {
@@ -133,7 +133,7 @@ $(function() {
           }
         },
         showErrors: function(validator, errorMap, errorList) {
-          customShowError(validator,errorMap,errorMap);
+          customShowError("user-create",validator,errorMap,errorMap);
         }
       });
       $("#main-content #user-create").delegate("#user-create-form-save-button", "click keydown", function(e) {
@@ -159,7 +159,7 @@ $(function() {
 
             $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_view_roles_list_tmpl"}');
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
-            $("#main-content #edit_user_details_pills_headers").pills();
+            $("#main-content #edit_user_details_pills_headers").tabs();
 
             $("#main-content #edit_user_details_pills_headers").bind('change', function (e) {
               //$.log( $(e.target).attr("href") ); // activated tab
