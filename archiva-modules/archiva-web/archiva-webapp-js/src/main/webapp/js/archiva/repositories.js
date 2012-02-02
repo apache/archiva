@@ -724,7 +724,7 @@ $(function() {
     clearUserMessages();
     $("#main-content").html(mediumSpinnerImg());
     $("#main-content").html($("#repositoriesMain").tmpl());
-    $("#main-content #repositories-tabs").tabs();
+    $("#main-content #repositories-tabs a:first").tab("show");
 
     $("#main-content #managed-repositories-content").append(mediumSpinnerImg());
     $("#main-content #remote-repositories-content").append(mediumSpinnerImg());
@@ -761,8 +761,7 @@ $(function() {
             }
           });
           ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
-          $("#main-content #managed-repositories-pills").pills();
-          $("#managed-repositories-view").addClass("active");
+          $("#main-content #managed-repositories-pills a:first").tab('show');
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
           activateManagedRepositoriesGridTab();
         }
@@ -802,8 +801,7 @@ $(function() {
             }
           });
           ko.applyBindings(remoteRepositoriesViewModel,$("#main-content #remote-repositories-table").get(0));
-          $("#main-content #remote-repositories-pills").pills();
-          $("#remote-repositories-view").addClass("active");
+          $("#main-content #remote-repositories-pills a:first").tab('show')
           removeMediumSpinnerImg("#main-content #remote-repositories-content");
         }
       }
@@ -811,7 +809,7 @@ $(function() {
 
 
 
-    $("#main-content #managed-repositories-pills").bind('change', function (e) {
+    $("#main-content #managed-repositories-pills").on('show', function (e) {
       if ($(e.target).attr("href")=="#managed-repository-edit") {
         var viewModel = new ManagedRepositoryViewModel(new ManagedRepository(),false,managedRepositoriesViewModel);
         ko.applyBindings(viewModel,$("#main-content #managed-repository-edit").get(0));
@@ -823,7 +821,7 @@ $(function() {
 
     });
 
-    $("#main-content #remote-repositories-pills").bind('change', function (e) {
+    $("#main-content #remote-repositories-pills").on('show', function (e) {
       if ($(e.target).attr("href")=="#remote-repository-edit") {
         $.ajax("restServices/archivaServices/networkProxyService/getNetworkProxies", {
             type: "GET",
