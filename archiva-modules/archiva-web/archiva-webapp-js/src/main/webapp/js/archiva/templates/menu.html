@@ -16,8 +16,9 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-  <div class='well' id="main-menu" redback-permissions="{permissions: ['archiva-manage-users','archiva-manage-configuration']}" style="display: none">
-    <ul class="navigation">
+  <div id="main-menu" redback-permissions="{permissions: ['archiva-manage-users','archiva-manage-configuration']}" style="display: none">
+
+    <ul class="nav nav-list">
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
         <a href="#" id="menu-users-list-a" onclick="displayUsersGrid()">${$.i18n.prop('menu.users')}</a>
       </li>
