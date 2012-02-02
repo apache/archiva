@@ -167,7 +167,7 @@ $(function() {
             // user roles binding
             $("#main-content #user-edit-roles-view").attr("data-bind",'template: {name:"user_view_roles_list_tmpl"}');
             ko.applyBindings(viewModel,$("#user-edit-roles-view").get(0));
-            $("#main-content #edit_user_details_pills_headers").tabs();
+            $("#main-content #edit_user_details_pills_headers a:first").tab('show');
 
             $("#main-content #edit_user_details_pills_headers").bind('change', function (e) {
               if ($(e.target).attr("href")=="#user-edit-roles-edit") {

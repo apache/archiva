@@ -18,18 +18,18 @@
 -->
 <script id='redback/user-edit-tmpl' type='text/x-jquery-tmpl'>
 <div id="edit-user-details-pills">
-  <ul id="edit_user_details_pills_headers" class="pills">
+  <ul id="edit_user_details_pills_headers" class="nav nav-pills" data-target="#edit-user-details-pills-content">
     <li class="active" id="user-view-detail-li">
-      <a href="#user-create-div">${$.i18n.prop('edit')}</a>
+      <a data-toggle="tab" href="#user-create-div">${$.i18n.prop('edit')}</a>
     </li>
     <li id="user-edit-roles-edit-li">
-      <a href="#user-edit-roles-edit">${$.i18n.prop('effective.roles.edit')}</a>
+      <a data-toggle="tab" href="#user-edit-roles-edit">${$.i18n.prop('effective.roles.edit')}</a>
     </li>
   </ul>
   <div class="pill-content" id="edit-user-details-pills-content">
-    <div id="user-create-div" class="active">
-      <div class="row">
-        <div class="span6 columns">
+    <div id="user-create-div" class="active pill-pane">
+      <div class="row-fluid">
+        <div class="span8 columns">
           <form id="user-create" class="form-horizontal" data-bind="submit: save">
             <fieldset id="user-create-fieldset">
               <div class="control-group">
@@ -89,13 +89,13 @@
             <button class="btn" id="user-create-form-cancel-button">${$.i18n.prop('cancel')}</button>
           </form>
         </div>
-        <div class="span6 columns" id="user-edit-roles">
+        <div class="span4 columns" id="user-edit-roles">
           <div id="user-edit-roles-view"></div>
         </div>
       </div>
     </div>
 
-    <div id="user-edit-roles-edit">
+    <div id="user-edit-roles-edit" class="pill-pane">
       roles edit
     </div>
   </div>
