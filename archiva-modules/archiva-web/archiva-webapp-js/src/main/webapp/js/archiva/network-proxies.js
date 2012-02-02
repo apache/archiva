@@ -236,7 +236,7 @@ $(function() {
             ],
             pageSize: 5,
             gridUpdateCallBack: function(networkProxy){
-              $("#main-content #networkProxiesTable [title]").twipsy();
+              $("#main-content #networkProxiesTable [title]").tooltip();
             }
           });
           ko.applyBindings(networkProxiesViewModel,$("#main-content #networkProxiesTable").get(0));

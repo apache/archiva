@@ -147,7 +147,7 @@ $(function() {
         data: self.managedRepositoryConnectorViews,
         pageSize: 5,
         gridUpdateCallBack: function(){
-          $("#main-content #proxyConnectorsTable [title]").twipsy();
+          $("#main-content #proxyConnectorsTable [title]").tooltip();
         }
       });
       this.gridViewModel.getManagedRepository=getManagedRepository;

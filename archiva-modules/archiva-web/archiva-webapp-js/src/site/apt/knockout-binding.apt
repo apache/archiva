@@ -141,7 +141,7 @@ ManagedRepositoriesViewModel=function(){
             pageSize: 5,
             // we can define here a callback function which be called on all grid change (adding/updating/removing values from the array)
             gridUpdateCallBack: function(){
-              $("#main-content #managed-repositories-table [title]").twipsy();
+              $("#main-content #managed-repositories-table [title]").tooltip();
             }
           });
           // apply the binding on the specified node

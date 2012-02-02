@@ -757,7 +757,7 @@ $(function() {
             ],
             pageSize: 5,
             gridUpdateCallBack: function(){
-              $("#main-content #managed-repositories-table [title]").twipsy();
+              $("#main-content #managed-repositories-table [title]").tooltip();
             }
           });
           ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
@@ -798,7 +798,7 @@ $(function() {
             ],
             pageSize: 5,
             gridUpdateCallBack: function(){
-              $("#main-content #remote-repositories-table [title]").twipsy();
+              $("#main-content #remote-repositories-table [title]").tooltip();
             }
           });
           ko.applyBindings(remoteRepositoriesViewModel,$("#main-content #remote-repositories-table").get(0));
