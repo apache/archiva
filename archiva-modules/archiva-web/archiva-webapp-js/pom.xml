@@ -615,6 +615,9 @@
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
           </systemProperties>
+          <additionalClasspathDirs>
+            <additionalClasspathDir>src/test/tomcat</additionalClasspathDir>
+          </additionalClasspathDirs>
         </configuration>
         <dependencies>
           <dependency>

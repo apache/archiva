@@ -18,48 +18,48 @@
 -->
 <div id="modal-user-edit" class="modal hide fade">
   <div class="modal-header">
-    <a href="#" class="close">&times;</a>
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
     <h3>${$.i18n.prop('password.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-user-edit-content">
-      <form id="user-edit-form">
+      <form id="user-edit-form" class="form-horizontal">
         <div id="modal-user-edit-err-message" class="alert-message error" style="display:none"></div>
         <fieldset>
-          <div class="clearfix">
-            <label for="username">${$.i18n.prop('username')}</label>
-            <div class="input" id="username-div">
+          <div class="control-group">
+            <label class="control-label" for="username">${$.i18n.prop('username')}</label>
+            <div class="controls" id="username-div">
               <span class="uneditable-input" id="username"></span>
             </div>
           </div>
-          <div class="clearfix">
-            <label for="fullname">${$.i18n.prop('full.name')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="fullname">${$.i18n.prop('full.name')}</label>
+            <div class="controls">
               <input type="text" id="fullname" name="fullname" size="30" class="required"/>
             </div>
           </div>
-          <div class="clearfix">
-            <label for="email">${$.i18n.prop('email.address')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="email">${$.i18n.prop('email.address')}</label>
+            <div class="controls">
               <input type="text" id="email" name="email" size="30" class="required email"/>
             </div>
           </div>
-          <div class="clearfix" id="user-edit-form-current-password-div">
-            <label for="userEditFormCurrentPassword">${$.i18n.prop('password.existing')}</label>
-            <div class="input">
+          <div class="control-group" id="user-edit-form-current-password-div">
+            <label class="control-label" for="userEditFormCurrentPassword">${$.i18n.prop('password.existing')}</label>
+            <div class="controls">
               <input type="password" id="userEditFormCurrentPassword" name="userEditFormCurrentPassword" class="required" value=""/>
             </div>
           </div>
 
-          <div class="clearfix">
-            <label for="userEditFormNewPassword">${$.i18n.prop('password.new')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="userEditFormNewPassword">${$.i18n.prop('password.new')}</label>
+            <div class="controls">
               <input type="password" id="userEditFormNewPassword" name="userEditFormNewPassword" class="" value=""/>
             </div>
           </div>
 
-          <div class="clearfix">
-            <label for="userEditFormNewPasswordConfirm">${$.i18n.prop('password.new.confirm')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="userEditFormNewPasswordConfirm">${$.i18n.prop('password.new.confirm')}</label>
+            <div class="controls">
               <input type="password" id="userEditFormNewPasswordConfirm" name="userEditFormNewPasswordConfirm" class="" value=""/>
             </div>
           </div>

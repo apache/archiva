@@ -528,7 +528,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError(validator,errorMap,errorMap);
+        customShowError("user-edit-form",validator,errorMap,errorMap);
       }
     });
 
