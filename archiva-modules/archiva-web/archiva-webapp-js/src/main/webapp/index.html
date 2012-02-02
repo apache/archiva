@@ -2,7 +2,7 @@
 <html>
 <head>
   <link rel="stylesheet" href="css/jquery-ui-1.8.16.custom.css"/>
-  <link rel="stylesheet" href="css/bootstrap.min.1.4.0.css">
+  <link rel="stylesheet" href="css/bootstrap.min.2.0.0.css">
   <link rel="stylesheet" href="css/archiva.css">
 
 
@@ -14,7 +14,7 @@
 
 </head>
 
-<body style="padding-top: 40px;">
+<body style="padding-top: 20px;">
 
 <div id="topbar-menu-container"></div>
 
@@ -87,12 +87,7 @@ $.ajax(
            .script(buildLoadJsUrl("archiva/proxy-connectors.js")).wait()
            .script(buildLoadJsUrl("redback/operation.js")).wait()
            .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
-           .script(buildLoadJsUrl("bootstrap-tabs.js"))
-           .script(buildLoadJsUrl("bootstrap-modal.js"))
-           .script(buildLoadJsUrl("bootstrap-alerts.js"))
-           .script(buildLoadJsUrl("bootstrap-dropdown.js"))
-           .script(buildLoadJsUrl("bootstrap-twipsy.js"))
-           .script(buildLoadJsUrl("bootstrap-popover.js"))
+           .script(buildLoadJsUrl("bootstrap.js"))
            .script(buildLoadJsUrl("knockout.simpleGrid.js"))
            //.script("knockout.mapping-latest.debug.js")
            .script(buildLoadJsUrl("redback/user.js")).wait()
