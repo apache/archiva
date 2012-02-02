@@ -21,22 +21,22 @@
     <h2>${$.i18n.prop('roles.management.header')}</h2>
   </div>
 
-  <ul id="roles-view-tabs" class="tabs">
+  <ul id="roles-view-tabs" class="nav nav-tabs" data-target="roles-view-tabs-content">
     <li class="active" id="roles-view-tabs-li-roles-grid">
-      <a href="#roles-view" id="roles-view-tabs-a-roles-grid">${$.i18n.prop('roles.grid.tab.title')}</a>
+      <a data-toggle="tab" href="#roles-view" id="roles-view-tabs-a-roles-grid">${$.i18n.prop('roles.grid.tab.title')}</a>
     </li>
     <li id="roles-view-tabs-li-roles-edit">
-      <a href="#role-edit">${$.i18n.prop('edit')}</a>
+      <a data-toggle="tab" href="#role-edit">${$.i18n.prop('edit')}</a>
     </li>
   </ul>
-  <div id="roles-view-tabs-content" class="tab-content">
-    <div id="roles-view">
+  <div id="roles-view-tabs-content" class="pill-content">
+    <div id="roles-view" class="pill-pane">
         <table class="table table-striped table-bordered" id="usersTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_rolesGrid',pageLinksId:'rolesPagination'">
         </table>
         <div id="rolesPagination"></div>
     </div>
-    <div id="role-edit"></div>
+    <div id="role-edit" class="pill-pane"></div>
   </div>
 
 </script>
@@ -45,7 +45,7 @@
   <div class="page-header">
     <h3>${$.i18n.prop('role')}</h3>
   </div>
-  <table class="bordered-table" id="editRoleTable">
+  <table class="table table-bordered" id="editRoleTable">
     <tbody>
       <tr>
         <td>${$.i18n.prop('name')}:</td>

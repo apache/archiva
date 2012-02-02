@@ -146,7 +146,7 @@ $(function() {
     window.redbackModel.rolesViewModel.loadRoles();
     $("#main-content").html($("#rolesTabs").tmpl());
     ko.applyBindings(window.redbackModel.rolesViewModel,jQuery("#main-content").get(0));
-    $("#main-content #roles-view-tabs").pills();
+    $("#main-content #roles-view-tabs a:first").tab("show");
     activateRolesGridTab();
     removeMediumSpinnerImg();
   }
