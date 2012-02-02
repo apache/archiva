@@ -106,7 +106,7 @@
         <button data-bind='click: sortByName'  class="btn">
             ${$.i18n.prop('users.sort.byname')}
         </button>
-        <table class="bordered-table zebra-striped" id="usersTable"
+        <table class="table table-striped table-bordered" id="usersTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',pageLinksId:'usersPagination'">
         </table>
         <div id="usersPagination"></div>

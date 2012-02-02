@@ -31,7 +31,7 @@
   </ul>
   <div id="roles-view-tabs-content" class="tab-content">
     <div id="roles-view">
-        <table class="bordered-table zebra-striped" id="usersTable"
+        <table class="table table-striped table-bordered" id="usersTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_rolesGrid',pageLinksId:'rolesPagination'">
         </table>
         <div id="rolesPagination"></div>
@@ -92,7 +92,7 @@
     <h3>${$.i18n.prop('permissions')}</h3>
   </div>
   {{if $data.permissions}}
-    <table class="bordered-table zebra-striped" id="rolePermissionsTable">
+    <table class="table table-striped table-bordered" id="rolePermissionsTable">
       <thead>
         <tr>
           <th>${$.i18n.prop('name')}</th>
