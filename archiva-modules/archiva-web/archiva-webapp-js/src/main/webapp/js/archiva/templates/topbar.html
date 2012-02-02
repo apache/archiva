@@ -17,40 +17,43 @@
   ~ under the License.
 -->
 <div id="topbar-menu">
-<div class="navbar navbar-fixed-top" style="z-index: 5;">
+<div class="navbar navbar-fixed-top">
 
-  <div class="navbar-inner">
+  <div style="max-height: 40px" class="navbar-inner">
     <div class="container-fluid">
-      <a class="brand" href="index.html">Archiva</a>
+      <a class="brand pull-left" href="index.html">Archiva</a>
       <div class="nav-collapse">
-      <ul class="nav secondary-nav">
-        <li id="create-admin-link" style="display: none">
+      <ul class="nav pull-right">
+        <li id="create-admin-link" class="pull-right" style="display: none">
           <a href="#" onclick="adminCreateBox();" id="create-admin-link-a">
-            <span class="label important">${$.i18n.prop('create.admin.page.link')}</span>
+            <span class="label label-important">${$.i18n.prop('create.admin.page.link')}</span>
           </a>
         </li>
-        <li id="login-link" style="display: none">
+        <li id="login-link" class="pull-right" style="display: none">
           <a href="#" onclick="loginBox();" id="login-link-a">
-            <span class="label success">${$.i18n.prop('login')}</span>
+            <span class="label label-success">${$.i18n.prop('login')}</span>
           </a>
         </li>
-        <li id="change-password-link" style="">
+        <li id="change-password-link" class="pull-right" style="">
           <a href="#" onclick="editUserDetailsBox();">${$.i18n.prop('edit.details')}</a>
         </li>
-        <li id="logout-link" style="display: none">
+        <li id="logout-link" class="pull-right" style="display: none">
           <a href="#" onclick="logout();" id="logout-link-a">
-            <span class="label important">${$.i18n.prop('logout')}</span>
+            <span class="label label-important">${$.i18n.prop('logout')}</span>
           </a>
         </li>
-        <li id="register-link" style="display: none">
+        <li id="register-link" class="pull-right" style="display: none">
           <a href="#" onclick="registerBox();" id="register-link-a">
-            <span class="label notice">${$.i18n.prop('register')}</span>
+            <span class="label label-info">${$.i18n.prop('register')}</span>
           </a>
+        </li>
+        <li class="pull-right">
+            <form class="pull-right" action="">
+              <input type="text" placeholder="Search" />
+            </form>
         </li>
       </ul>
-      <form class="pull-right" action="">
-        <input type="text" placeholder="Search" />
-      </form>
+
       </div>
     </div>
   </div>
