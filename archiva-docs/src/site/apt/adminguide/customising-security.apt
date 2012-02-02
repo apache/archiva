@@ -20,7 +20,10 @@
 ~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                          
 ~~ KIND, either express or implied.  See the License for the                       
 ~~ specific language governing permissions and limitations                         
-~~ under the License.                                                              
+~~ under the License.
+
+~~ NOTE: For help with the syntax of this file, see:
+~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
 Archiva Security Configuration
 
@@ -65,7 +68,13 @@ security.policy.password.rule.reuse.enabled=true
 security.policy.password.rule.nowhitespace.enabled=true
 +-----+
  
- <<Note:>> If installed standalone, Archiva's list of configuration files is <itself> configurable, and
- can be found in:
- <<<apps/archiva/WEB-INF/applicationContext.xml>>>
+  <<Note:>> If installed standalone, Archiva's list of configuration files is <itself> configurable, and
+  can be found in:
+  <<<apps/archiva/WEB-INF/applicationContext.xml>>>
+
+  Values from sources
+
+  %{snippet|id=configuration-files-list|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/applicationContext.xml}
+
+
 
