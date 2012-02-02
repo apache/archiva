@@ -18,28 +18,28 @@
 -->
 <div id="modal-register" class="modal hide fade">
   <div class="modal-header">
-    <a href="#" class="close">&times;</a>
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
     <h3>${$.i18n.prop('register.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-register-content">
-      <form id="user-register-form">
+      <form id="user-register-form" class="form-horizontal">
         <div id="modal-register-err-message" class="alert-message error" style="display:none"></div>
         <fieldset>
-          <div class="clearfix">
-            <label for="user-register-form-username">${$.i18n.prop('username')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="user-register-form-username">${$.i18n.prop('username')}</label>
+            <div class="controls">
               <input type="text" id="user-register-form-username" name="user-register-form-username" class="required" />
             </div>
           </div>
-          <div class="clearfix">
-            <label for="user-register-form-fullname">${$.i18n.prop('full.name')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="user-register-form-fullname">${$.i18n.prop('full.name')}</label>
+            <div class="controls">
               <input type="text" id="user-register-form-fullname" name="user-register-form-fullname" class="required" />
             </div>
           </div>
-          <div class="clearfix">
-            <label for="user-register-form-email">${$.i18n.prop('email')}</label>
-            <div class="input">
+          <div class="control-group">
+            <label class="control-label" for="user-register-form-email">${$.i18n.prop('email')}</label>
+            <div class="controls">
               <input type="text" id="user-register-form-email" name="user-register-form-email" class="required email" />
             </div>
           </div>
@@ -48,6 +48,6 @@
       </form>
   </div>
   <div class="modal-footer" id="modal-register-footer">
-      <button class="btn primary" onclick="return register();" id="modal-register-ok">${$.i18n.prop('register')}</button>
+      <button class="btn primary" id="modal-register-ok">${$.i18n.prop('register')}</button>
   </div>
 </div>
