@@ -39,7 +39,7 @@
                 <td></td>
               {{else}}
                 <td>
-                  <a href="#" data-bind="click: function(){ row.deleteUser() }" id="users-grid-delete-${row.username()}">
+                  <a href="#" data-bind="click: function(){ deleteUser(row) }" id="users-grid-delete-${row.username()}">
                     <img src="images/edit-cut.png" alt="${$.i18n.prop('delete')}"/>
                   </a>
                 </td>

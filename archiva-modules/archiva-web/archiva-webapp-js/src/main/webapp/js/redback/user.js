@@ -137,32 +137,6 @@ $(function() {
           });
       };
 
-      this.deleteUser=function() {
-        clearUserMessages();
-
-        var currentUser = this;
-        openDialogConfirm(function(){
-          $.ajax("restServices/redbackServices/userService/deleteUser/"+encodeURIComponent(currentUser.username()), {
-                type: "GET",
-                dataType: 'json',
-                success: function(data) {
-                  // FIXME i18n
-                  window.redbackModel.usersViewModel.users.remove(currentUser);
-                  displaySuccessMessage("user " + currentUser.username() + " deleted");
-                },
-                error: function(result) {
-                 var obj = jQuery.parseJSON(result.responseText);
-                 displayRedbackError(obj);
-                },
-                complete: function() {
-                  closeDialogConfirm();
-                }
-              }
-            );
-          }
-          ,"Ok", $.i18n.prop("cancel"), $.i18n.prop("user.delete.message") + ": " + currentUser.username());
-
-      };
 
       this.update=function(){
         var currentUser = this;
