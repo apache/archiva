@@ -74,7 +74,7 @@ security.policy.password.rule.nowhitespace.enabled=true
 
   Values from sources
 
-  %{snippet|id=configuration-files-list|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/applicationContext.xml}
+%{snippet|id=configuration-files-list|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/applicationContext.xml}
 
 
 
