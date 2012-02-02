@@ -216,7 +216,19 @@ $(function() {
     window.redbackModel.usersViewModel = new UsersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
     ko.applyBindings(window.redbackModel.usersViewModel,jQuery("#main-content").get(0));
-    $("#main-content #users-view-tabs a:first").tab('show');//
+    $("#main-content #users-view-tabs a:first").tab('show');
+    $("#main-content #users-view-tabs a[data-toggle='tab']").on('show', function (e) {
+      //$.log( $(e.target).attr("href") ); // activated tab
+      //e.relatedTarget // previous tab
+      $.log("tabs shown");
+      if ($(e.target).attr("href")=="#createUserForm") {
+        window.redbackModel.usersViewModel.addUser();
+      }
+      if ($(e.target).attr("href")=="#users-view") {
+        $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
+      }
+
+    })
     $("#main-content #users-view-tabs-content #users-view").addClass("active");
   }
 
