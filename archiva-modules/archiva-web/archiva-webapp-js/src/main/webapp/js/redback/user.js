@@ -312,15 +312,16 @@ $(function() {
    * open a modal box for login
    */
   loginBox=function(){
-    $.log("loginBox");
+
     screenChange();
     if (window.modalLoginWindow==null) {
-      window.modalLoginWindow = $("#modal-login").modal({backdrop:'static',show:false});
+      $.log("window.modalLoginWindow==null");
+      window.modalLoginWindow = $("#modal-login").modal();
       window.modalLoginWindow.bind('hidden', function () {
         $("#modal-login-err-message").hide();
       })
     }
-    window.modalLoginWindow.modal('show');
+
     $("#user-login-form").validate({
       showErrors: function(validator, errorMap, errorList) {
         customShowError(validator,errorMap,errorMap);
@@ -331,6 +332,9 @@ $(function() {
       $.log("loginBox before login");
       login();
     });
+    $("#modal-login").show();
+    window.modalLoginWindow.modal('show');
+    $.log("window.modalLoginWindow= modal show");
     $("#modal-login").focus();
   }
 

@@ -123,7 +123,7 @@ clearForm=function(selectorStr){
  */
 openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
   if (window.modalConfirmDialog==null) {
-    window.modalConfirmDialog = $("#dialog-confirm-modal").modal({backdrop:'static',show:false});
+    window.modalConfirmDialog = $("#dialog-confirm-modal").modal();//{backdrop:'static',show:false}
     window.modalConfirmDialog.bind('hidden', function () {
       $("#dialog-confirm-modal-header-title").html("");
       $("#dialog-confirm-modal-body-text").html("");
