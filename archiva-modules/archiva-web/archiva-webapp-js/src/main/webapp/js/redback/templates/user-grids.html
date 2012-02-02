@@ -93,16 +93,16 @@
     <div class="page-header">
       <h2>${$.i18n.prop('users.list')}</h2>
     </div>
-    <ul id="users-view-tabs" class="tabs">
+    <ul id="users-view-tabs" class="nav nav-tabs" data-target="#users-view-tabs-content">
       <li class="active" id="users-view-tabs-li-users-grid">
-        <a href="#users-view">${$.i18n.prop('users.grid.tab.title')}</a>
+        <a data-toggle="tab" href="#users-view">${$.i18n.prop('users.grid.tab.title')}</a>
       </li>
       <li id="users-view-tabs-li-user-edit">
-        <a href="#createUserForm" id="users-view-tabs-li-user-edit-a">${$.i18n.prop('add')}</a>
+        <a data-toggle="tab" href="#createUserForm" id="users-view-tabs-li-user-edit-a">${$.i18n.prop('add')}</a>
       </li>
     </ul>
     <div id="users-view-tabs-content" class="tab-content">
-      <div id="users-view">
+      <div id="users-view" class="tab-pane">
         <button data-bind='click: sortByName'  class="btn">
             ${$.i18n.prop('users.sort.byname')}
         </button>
@@ -111,7 +111,7 @@
         </table>
         <div id="usersPagination"></div>
       </div>
-      <div id="createUserForm"></div>
+      <div id="createUserForm" class="tab-pane"></div>
     </div>
 </script>
 

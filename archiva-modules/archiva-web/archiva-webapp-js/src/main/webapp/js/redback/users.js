@@ -216,8 +216,8 @@ $(function() {
     window.redbackModel.usersViewModel = new usersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
     ko.applyBindings(window.redbackModel.usersViewModel,jQuery("#main-content").get(0));
-    $("#main-content #users-view-tabs").tabs();
-    $("#main-content #users-view-tabs").bind('change', function (e) {
+    $("#main-content").tab('show');//#users-view-tabs
+    $("#main-content a[data-toggle='tab']").on('show', function (e) {
       //$.log( $(e.target).attr("href") ); // activated tab
       //e.relatedTarget // previous tab
       if ($(e.target).attr("href")=="#createUserForm") {
