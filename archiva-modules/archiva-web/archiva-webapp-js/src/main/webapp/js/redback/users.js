@@ -21,7 +21,7 @@ $(function() {
   /**
    * view model used for users grid
    */
-  usersViewModel=function() {
+  UsersViewModel=function() {
     this.users = ko.observableArray([]);
     var self = this;
 
@@ -63,7 +63,7 @@ $(function() {
       $("#main-content #user-edit").remove();
       $('#main-content #user-create').show();
       ko.renderTemplate("redback/user-edit-tmpl", new User(), null, $("#createUserForm").get(0),"replaceChildren");
-      $("#main-content #createUserForm #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
+      $("#main-content #createUserForm #user-create-form-cancel-button").on( "click", function(e) {
         e.preventDefault();
         activateUsersGridTab();
       });
@@ -74,7 +74,7 @@ $(function() {
           }
         },
         showErrors: function(validator, errorMap, errorList) {
-          customShowError("user-create",validator,errorMap,errorMap);
+          customShowError("#main-content #user-create",validator,errorMap,errorMap);
         }
       });
       $("#main-content #createUserForm #user-create").delegate("#user-create-form-register-button", "click keydown", function(e) {
@@ -121,7 +121,7 @@ $(function() {
 
       $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("edit"));
 
-      $("#main-content #user-create").delegate("#user-create-form-cancel-button", "click keydown", function(e) {
+      $("#main-content #user-create #user-create-form-cancel-button").on("click", function(e) {
         e.preventDefault();
         activateUsersGridTab();
       });
@@ -133,7 +133,7 @@ $(function() {
           }
         },
         showErrors: function(validator, errorMap, errorList) {
-          customShowError("user-create",validator,errorMap,errorMap);
+          customShowError("#main-content #user-create",validator,errorMap,errorMap);
         }
       });
       $("#main-content #user-create").delegate("#user-create-form-save-button", "click keydown", function(e) {
@@ -213,11 +213,11 @@ $(function() {
     screenChange();
     $("#main-content").html(mediumSpinnerImg());
     jQuery("#main-content").attr("data-bind",'template: {name:"usersGrid"}');
-    window.redbackModel.usersViewModel = new usersViewModel();
+    window.redbackModel.usersViewModel = new UsersViewModel();
     window.redbackModel.usersViewModel.loadUsers();
     ko.applyBindings(window.redbackModel.usersViewModel,jQuery("#main-content").get(0));
     $("#main-content").tab('show');//#users-view-tabs
-    $("#main-content a[data-toggle='tab']").on('show', function (e) {
+    $("#main-content #users-view-tabs a[data-toggle='tab']").on('show', function (e) {
       //$.log( $(e.target).attr("href") ); // activated tab
       //e.relatedTarget // previous tab
       if ($(e.target).attr("href")=="#createUserForm") {

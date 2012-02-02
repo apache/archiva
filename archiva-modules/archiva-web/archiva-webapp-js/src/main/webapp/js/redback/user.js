@@ -300,7 +300,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError("user-create",validator,errorMap,errorMap);
+        customShowError("#main-content #user-create",validator,errorMap,errorMap);
       }
 
     });
@@ -326,7 +326,7 @@ $(function() {
 
     $("#user-login-form").validate({
       showErrors: function(validator, errorMap, errorList) {
-        customShowError("user-login-form",validator,errorMap,errorMap);
+        customShowError("#user-login-form",validator,errorMap,errorMap);
       }
     });
     $("#modal-login").delegate("#modal-login-ok", "click keydown keypress", function(e) {
@@ -478,7 +478,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError("password-change-form",validator,errorMap,errorMap);
+        customShowError("#password-change-form",validator,errorMap,errorMap);
       }
     });
 
@@ -528,7 +528,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError("user-edit-form",validator,errorMap,errorMap);
+        customShowError("#user-edit-form",validator,errorMap,errorMap);
       }
     });
 

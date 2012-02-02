@@ -266,7 +266,7 @@ $(function() {
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError(validator,errorMap,errorMap);
+        customShowError("#main-content #managed-repository-edit-form",validator,errorMap,errorMap);
       }
     });
     validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
@@ -693,7 +693,7 @@ $(function() {
         }
       },*/
       showErrors: function(validator, errorMap, errorList) {
-        customShowError(validator,errorMap,errorMap);
+        customShowError("#main-content #remote-repository-edit-form",validator,errorMap,errorMap);
       }
     });
     validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");

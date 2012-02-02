@@ -285,13 +285,14 @@ displayRestError=function(data,idToAppend){
 
 /**
  * used by validation error to customize error display in the ui
+ * @param selector
  * @param validator
  * @param errorMap
  * @param errorList
  */
-customShowError=function(formId, validator, errorMap, errorList) {
-  $( "#"+formId+" div.control-group" ).removeClass( "error" );
-  $( "#"+formId+" span.help-inline" ).remove();
+customShowError=function(selector, validator, errorMap, errorList) {
+  $( selector+" div.control-group" ).removeClass( "error" );
+  $( selector+" span.help-inline" ).remove();
   for ( var i = 0; errorList[i]; i++ ) {
     var error = errorList[i];
     var field = $("#"+error.element.id);

@@ -256,7 +256,7 @@ $(function() {
        }
       }},
       showErrors: function(validator, errorMap, errorList) {
-       customShowError(validator,errorMap,errorMap);
+       customShowError("#main-content #network-proxy-edit-form",validator,errorMap,errorMap);
       }
     });
     validator.settings.messages["id"]=$.i18n.prop("id.required.or.alreadyexists");

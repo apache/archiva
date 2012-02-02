@@ -31,7 +31,7 @@ $(function() {
     window.modalRegisterWindow.modal('show');
     $("#user-register-form").validate({
       showErrors: function(validator, errorMap, errorList) {
-        customShowError("user-register-form",validator,errorMap,errorMap);
+        customShowError("#user-register-form",validator,errorMap,errorMap);
       }
     });
     $("#modal-register").delegate("#modal-register-ok", "click keydown keypress", function(e) {
