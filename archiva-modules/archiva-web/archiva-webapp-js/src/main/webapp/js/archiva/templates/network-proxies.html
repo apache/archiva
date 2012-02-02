@@ -21,23 +21,23 @@
     <h2>${$.i18n.prop('network-proxies.list')}</h2>
   </div>
 
-  <ul id="network-proxies-view-tabs" class="tabs">
-    <li id="network-proxies-view-tabs-li-grid" class="active">
-      <a href="#network-proxies-view" id="network-proxies-view-tabs-a-network-proxies-grid">${$.i18n.prop('network-proxies.grid.tab.title')}</a>
+  <ul id="network-proxies-view-tabs" class="nav nav-tabs">
+    <li id="network-proxies-view-tabs-li-grid">
+      <a data-toggle="tab" href="#network-proxies-view" id="network-proxies-view-tabs-a-network-proxies-grid">${$.i18n.prop('network-proxies.grid.tab.title')}</a>
     </li>
     <li id="network-proxies-view-tabs-li-edit">
-      <a href="#network-proxies-edit">${$.i18n.prop('add')}</a>
+      <a data-toggle="tab" href="#network-proxies-edit">${$.i18n.prop('add')}</a>
     </li>
   </ul>
   <div id="network-proxies-view-tabs-content" class="tab-content">
-    <div id="network-proxies-view" class="active">
+    <div id="network-proxies-view" class="tab-pane">
         <div id="network-proxies-bulk-save-btn" data-bind='template:{name:"network-proxies-bulk-save-tmpl"}'></div>
         <table class="table table-striped table-bordered" id="networkProxiesTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-network-proxies-grid',pageLinksId:'network-proxiesPagination'">
         </table>
         <div id="network-proxiesPagination"></div>
     </div>
-    <div id="network-proxies-edit" data-bind='template: {name:"network-proxy-edit-tmpl"}'></div>
+    <div id="network-proxies-edit" class="tab-pane" data-bind='template: {name:"network-proxy-edit-tmpl"}'></div>
   </div>
 
 </script>
@@ -91,11 +91,11 @@
 </script>
 
 <script id="network-proxy-edit-tmpl" type='text/x-jquery-tmpl'>
-    <form id="network-proxy-edit-form">
+    <form id="network-proxy-edit-form" class="form-horizontal">
       <fieldset id="network-proxy-edit-fieldset">
-        <div class="clearfix">
-          <label for="id">${$.i18n.prop('id')}</label>
-          <div class="input">
+        <div class="control-group">
+          <label class="control-label"  for="id">${$.i18n.prop('id')}</label>
+          <div class="controls">
             {{if update}}
               <span class="uneditable-input">${$data.networkProxy.id}</span>
             {{else}}
@@ -104,37 +104,37 @@
             {{/if}}
           </div>
         </div>
-        <div class="clearfix">
-          <label for="protocol">${$.i18n.prop('protocol')}</label>
-          <div class="input">
+        <div class="control-group">
+          <label class="control-label"  for="protocol">${$.i18n.prop('protocol')}</label>
+          <div class="controls">
             <input type="text" class="xlarge required" id="protocol" name="protocol" size="8"
                    data-bind="value: networkProxy.protocol"/>
           </div>
         </div>
-        <div class="clearfix">
-          <label for="host">${$.i18n.prop('host')}</label>
-          <div class="input">
+        <div class="control-group">
+          <label class="control-label"  for="host">${$.i18n.prop('host')}</label>
+          <div class="controls">
             <input type="text" class="xlarge required" id="host" name="host" size="15"
                    data-bind="value: networkProxy.host"/>
           </div>
         </div>
-        <div class="clearfix">
-          <label for="port">${$.i18n.prop('port')}</label>
-          <div class="input">
+        <div class="control-group">
+          <label class="control-label"  for="port">${$.i18n.prop('port')}</label>
+          <div class="controls">
             <input type="text" class="xlarge required digits" id="port" name="port" size="6"
                    data-bind="value: networkProxy.port"/>
           </div>
         </div>
-        <div class="clearfix">
-          <label for="username">${$.i18n.prop('username')}</label>
-          <div class="input">
+        <div class="control-group">
+          <label class="control-label"  for="username">${$.i18n.prop('username')}</label>
+          <div class="controls">
             <input type="text" class="xlarge" id="username" name="username" size="50"
                    data-bind="value: networkProxy.username"/>
           </div>
         </div>
-        <div class="clearfix">
-          <label for="password">${$.i18n.prop('password')}</label>
-          <div class="input">
+        <div class="control-group">
+          <label class="control-label"  for="password">${$.i18n.prop('password')}</label>
+          <div class="controls">
             <input type="password" class="xlarge" id="password" name="password" size="50"
                    data-bind="value: networkProxy.password"/>
           </div>

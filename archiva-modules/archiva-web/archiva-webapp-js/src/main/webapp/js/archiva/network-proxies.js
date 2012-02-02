@@ -184,11 +184,11 @@ $(function() {
     clearUserMessages();
     $("#main-content").html(mediumSpinnerImg());
     $("#main-content").html($("#networkProxiesMain").tmpl());
-    $("#main-content #network-proxies-view-tabs").tabs();
+    $("#main-content #network-proxies-view-tabs a:first").tab('show');
 
     var networkProxiesViewModel = new NetworkProxiesViewModel();
 
-    $("#main-content #network-proxies-view-tabs").bind('change', function (e) {
+    $("#main-content #network-proxies-view-tabs").on('show', function (e) {
       if ($(e.target).attr("href")=="#network-proxies-edit") {
         var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
         ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
