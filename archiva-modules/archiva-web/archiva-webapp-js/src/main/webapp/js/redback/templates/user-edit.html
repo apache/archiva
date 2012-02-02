@@ -29,8 +29,8 @@
   <div class="pill-content" id="edit-user-details-pills-content">
     <div id="user-create-div" class="active">
       <div class="row">
-        <div class="span8 columns">
-          <form id="user-create" class="form-horizontal">
+        <div class="span6 columns">
+          <form id="user-create" class="form-horizontal" data-bind="submit: save">
             <fieldset id="user-create-fieldset">
               <div class="control-group">
                 <label class="control-label" for="username">${$.i18n.prop('username')}</label>
@@ -85,11 +85,11 @@
                 </div>
               </div>
             </fieldset>
-            <button data-bind="click: save" class="btn" id="user-create-form-register-button">${$.i18n.prop('save')}</button>
+            <button data-bind="click: saveUser" class="btn" id="user-create-form-register-button">${$.i18n.prop('save')}</button>
             <button class="btn" id="user-create-form-cancel-button">${$.i18n.prop('cancel')}</button>
           </form>
         </div>
-        <div class="span8 columns" id="user-edit-roles">
+        <div class="span6 columns" id="user-edit-roles">
           <div id="user-edit-roles-view"></div>
         </div>
       </div>

@@ -53,19 +53,20 @@ $(function() {
       this.locked = ko.observable(locked);
       this.passwordChangeRequired = ko.observable(passwordChangeRequired);
       this.assignedRoles = ko.observableArray(new Array());
+
       this.remove = function() {
         if (ownerViewModel) {
           ownerViewModel.users.destroy(this);
         }
       };
-      this.create = function() {
+      this.create = function(successFnCallback) {
         if (username == 'admin') {
           this.createAdmin();
         } else {
-          this.createUser();
+          this.createUser(successFnCallback);
         }
       };
-      this.createUser = function() {
+      this.createUser = function(successFnCallback) {
         $.log("user#createUser");
         var valid = $("#user-create").valid();
         if (!valid) {
@@ -81,7 +82,9 @@ $(function() {
               var created = JSON.parse(result);
               if (created == true) {
                 displaySuccessMessage("user created:"+currentUser.username());
-                window.redbackModel.usersViewModel.users.push(currentUser);
+                if (successFnCallback){
+                  successFnCallback(currentUser);
+                }
                 clearForm("#main-content #user-create");
                 $("#main-content #user-create").hide();
                 activateUsersGridTab();
@@ -239,43 +242,43 @@ $(function() {
           });
       }
 
-    this.unlock=function(){
-      this.locked(false);
-      var curUser = this;
-      clearUserMessages();
-      $.ajax("restServices/redbackServices/userService/unlockUser/"+encodeURIComponent(curUser.username()), {
-          type: "GET",
-          success: function(result) {
-            displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
-          }
-      });
-    }
-
-    // value is boolean
-    this.changePasswordChangeRequired=function(value){
-      this.passwordChangeRequired(value);
-      var curUser = this;
-      var url = "restServices/redbackServices/userService/passwordChangeRequired/"+encodeURIComponent(curUser.username());
-      if (value==false){
-        url = "restServices/redbackServices/userService/passwordChangeNotRequired/"+encodeURIComponent(curUser.username());
+      this.unlock=function(){
+        this.locked(false);
+        var curUser = this;
+        clearUserMessages();
+        $.ajax("restServices/redbackServices/userService/unlockUser/"+encodeURIComponent(curUser.username()), {
+            type: "GET",
+            success: function(result) {
+              displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
+            },
+            error: function(result) {
+              var obj = jQuery.parseJSON(result.responseText);
+              displayRedbackError(obj);
+            }
+        });
       }
-      $.ajax(url, {
-          type: "GET",
-          success: function(result) {
-            displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username()));
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
-          }
-      });
-    };
 
-    this.i18n = $.i18n.prop;
+      // value is boolean
+      this.changePasswordChangeRequired=function(value){
+        this.passwordChangeRequired(value);
+        var curUser = this;
+        var url = "restServices/redbackServices/userService/passwordChangeRequired/"+encodeURIComponent(curUser.username());
+        if (value==false){
+          url = "restServices/redbackServices/userService/passwordChangeNotRequired/"+encodeURIComponent(curUser.username());
+        }
+        $.ajax(url, {
+            type: "GET",
+            success: function(result) {
+              displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username()));
+            },
+            error: function(result) {
+              var obj = jQuery.parseJSON(result.responseText);
+              displayRedbackError(obj);
+            }
+        });
+      };
+
+      this.i18n = $.i18n.prop;
   }
 
   /**

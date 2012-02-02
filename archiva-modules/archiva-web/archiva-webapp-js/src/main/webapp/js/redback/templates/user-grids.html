@@ -34,7 +34,7 @@
               {{each(j, columnDefinition) columns}}
               <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
               {{/each}}
-              <td><a href="#" data-bind="click: function(){ window.redbackModel.usersViewModel.editUserBox(row) }">Edit</a></td>
+              <td><a href="#" data-bind="click: function(){ editUserBox(row) }">Edit</a></td>
               {{if row.username()=="admin" || row.username()=="guest"}}
                 <td></td>
               {{else}}
@@ -49,7 +49,7 @@
                     {{if row.username()=="admin" || row.username()=="guest"}}
                       <img src="images/system-lock-screen.png"/>
                     {{else}}
-                      <a href="#" data-bind="click: function(){ window.redbackModel.usersViewModel.unlock(row) }"><img src="images/system-lock-screen.png"/></a>
+                      <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen.png"/></a>
                     {{/if}}
                 </td>
               {{else}}
@@ -57,7 +57,7 @@
                     {{if row.username()=="admin" || row.username()=="guest"}}
                       <img src="images/weather-clear.png"/>
                     {{else}}
-                      <a href="#" data-bind="click: function(){ window.redbackModel.usersViewModel.lock(row) }"><img src="images/weather-clear.png"/></a>
+                      <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear.png"/></a>
                     {{/if}}
                 </td>
               {{/if}}
@@ -67,7 +67,7 @@
                     {{if row.username()=="admin" || row.username()=="guest"}}
                       <img src="images/dialog-error.png"/>
                     {{else}}
-                      <a href="#" data-bind="click: function(){ window.redbackModel.usersViewModel.passwordChangeRequire(row,false) }">
+                      <a href="#" data-bind="click: function(){ passwordChangeRequire(row,false) }">
                           <img src="images/dialog-error.png"/>
                       </a>
                     {{/if}}
@@ -77,7 +77,7 @@
                   {{if row.username()=="admin" || row.username()=="guest"}}
                     <img src="images/weather-clear.png"/>
                   {{else}}
-                    <a href="#" data-bind="click: function(){ window.redbackModel.usersViewModel.passwordChangeRequire(row,true) }">
+                    <a href="#" data-bind="click: function(){ passwordChangeRequire(row,true) }">
                         <img src="images/weather-clear.png"/>
                     </a>
                   {{/if}}
