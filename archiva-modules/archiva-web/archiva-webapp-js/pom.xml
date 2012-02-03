@@ -529,40 +529,6 @@
     <plugins>
 
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>tomcat-maven-plugin</artifactId>
-        <configuration>
-          <port>${tomcatRunPort}</port>
-          <path>${tomcatRunPath}</path>
-          <contextFile>${tomcatContextXml}</contextFile>
-          <systemProperties>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-            <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
-            <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
-            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-            <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
-            <archiva.devMode>${archiva.devMode}</archiva.devMode>
-            <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
-            <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
-          </systemProperties>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derbyVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>${javaxMailVersion}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat6-maven-plugin</artifactId>
         <configuration>
@@ -582,6 +548,9 @@
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
           </systemProperties>
+          <additionalClasspathDirs>
+            <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
+          </additionalClasspathDirs>
         </configuration>
         <dependencies>
           <dependency>
@@ -616,7 +585,7 @@
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
           </systemProperties>
           <additionalClasspathDirs>
-            <additionalClasspathDir>src/test/tomcat</additionalClasspathDir>
+            <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
           </additionalClasspathDirs>
         </configuration>
         <dependencies>
@@ -671,8 +640,6 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml"
-                          todir="${basedir}/src/main/webapp/WEB-INF/classes"/>
                     <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties"
                           todir="${basedir}/target/"/>
                   </tasks>

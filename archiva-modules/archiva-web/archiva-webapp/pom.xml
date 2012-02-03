@@ -1032,35 +1032,7 @@
           </supportedProjectTypes>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>tomcat-maven-plugin</artifactId>
-        <configuration>
-          <port>9091</port>
-          <path>/archiva</path>
-          <contextFile>${tomcatContextXml}</contextFile>
-          <systemProperties>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-            <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
-            <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
-            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-          </systemProperties>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derbyVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>${javaxMailVersion}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
+
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
@@ -1328,8 +1300,7 @@
     </profile>
 
     <profile>
-      <!-- olamy profile to test tomcat plugin dev -->
-      <id>tdev</id>
+      <id>tomcat</id>
       <build>
         <plugins>
           <plugin>

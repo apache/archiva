@@ -9,7 +9,7 @@ Running from Source Code
 With maven 3 and the tomcat-maven-plugin, you will be able to run the webapp from the top
 and include all the other modules in the webapp classloader.
 No more need to install everything to run the jetty plugin.
-So just use : mvn tomcat:run -Pdev
+So just use : mvn tomcat6:run -Pdev -Ptomcat or mvn tomcat7:run -Pdev -Ptomcat
 and hit in your browser : http://localhost:9091/archiva
 
 note with dev profile admin account is automatically created with password admin123
@@ -22,7 +22,9 @@ export MAVEN_OPTS="-Xmx768m -Xms768m -XX:MaxPermSize=256m"
 Running webapp full js
 ========================
 As webapp js is in dev and won't probably be released soon, the module is not activated by default and it's included only in a profile
-mvn tomcat:run -pl :archiva-webapp-js -Pjs -am -Pdev
+mvn tomcat7:run -pl :archiva-webapp-js -Pjs -am -Pdev
+or
+mvn tomcat6:run -pl :archiva-webapp-js -Pjs -am -Pdev
 
 Test Registration email
 ========================
