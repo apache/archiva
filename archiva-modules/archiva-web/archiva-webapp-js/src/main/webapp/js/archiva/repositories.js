@@ -681,22 +681,21 @@ $(function() {
   activateRemoteRepositoryFormValidation=function(){
     // FIXME find a way to activate cronExpression validation only if downloadRemote is activated !
     var validator = $("#main-content #remote-repository-edit-form").validate({
-      /*rules: {
-        daysOlder : {
-          digits: true,
-          min: 1
-        },
-        retentionCount : {
-          digits: true,
-          min: 1,
-          max: 100
+      rules: {
+        id: {
+          required: true,
+          remote: {
+            url: "restServices/archivaUiServices/dataValidatorService/remoteRepositoryIdNotExists",
+            type: "get"
+          }
         }
-      },*/
+      },
       showErrors: function(validator, errorMap, errorList) {
         customShowError("#main-content #remote-repository-edit-form",validator,errorMap,errorMap);
       }
     });
     validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
+    validator.settings.messages["id"]=$.i18n.prop("id.required.or.alreadyexists");
   }
 
   activateRemoteRepositoriesGridTab=function(){
