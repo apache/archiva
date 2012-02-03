@@ -281,12 +281,15 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <phase>generate-resources</phase>
+                <phase>process-classes</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>
                 <configuration>
                   <tasks>
+                    <copy todir="${webappDirectory}/WEB-INF/classes">
+                      <fileset dir="src/test/resources/logging"/>
+                    </copy>
                     <copy todir="${project.build.directory}/appserver-base">
                       <fileset dir="src/test/resources/appserver-base"/>
                     </copy>
