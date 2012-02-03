@@ -236,6 +236,7 @@ public abstract class AbstractArchivaTest
         clickLinkWithLocator( "user-create-form-register-button", true );
 
         assertTextPresent( "user created:"+userName );
+        assertElementPresent( "users-grid-user-id-"+userName );
 
         if ( valid )
         {
@@ -268,7 +269,7 @@ public abstract class AbstractArchivaTest
 
         clickLinkWithLocator( "alert-message-success-close-a" );
 
-        assertTextNotPresent( userName );
+        assertElementNotPresent( "users-grid-user-id-"+userName );
         assertTextNotPresent( fullName );
 
 
