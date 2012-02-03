@@ -105,10 +105,10 @@ clearUserMessages=function(idToAppend){
  * @param selectorStr
  */
 clearForm=function(selectorStr){
-  $(selectorStr+" input[type='text']").each(function(ele){
+  $(selectorStr).find("input[type='text']").each(function(ele){
     $(this).val("");
   });
-  $(selectorStr+" input[type='password']").each(function(ele){
+  $(selectorStr).find("input[type='password']").each(function(ele){
     $(this).val("");
   });
 
@@ -217,13 +217,6 @@ mapStringArray=function(data){
   return null;
 }
 
-// extends jquery tmpl to support var def
-$.extend($.tmpl.tag, {
-    "var": {
-        open: "var $1;"
-    }
-});
-
 /**
  * display redback error from redback json error response
  * {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
@@ -291,8 +284,8 @@ displayRestError=function(data,idToAppend){
  * @param errorList
  */
 customShowError=function(selector, validator, errorMap, errorList) {
-  $( selector+" div.control-group" ).removeClass( "error" );
-  $( selector+" span.help-inline" ).remove();
+  $(selector ).find("div.control-group" ).removeClass( "error" );
+  $(selector).find("span.help-inline").remove();
   for ( var i = 0; errorList[i]; i++ ) {
     var error = errorList[i];
     var field = $("#"+error.element.id);
@@ -311,3 +304,11 @@ timestampNoCache=function(){
 appendTemplateUrl=function(){
   return "?"+appendArchivaVersion()+timestampNoCache();
 }
+
+
+// extends jquery tmpl to support var def
+$.extend($.tmpl.tag, {
+    "var": {
+        open: "var $1;"
+    }
+});
