@@ -56,28 +56,28 @@
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
-      <tr>
+      <tr data-bind="css:{ 'modified': row.modified()}">
         {{each(j, columnDefinition) columns}}
         {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
-          <td data-bind="css:{ 'modified': row.modified()}">
+          <td>
               ${val}
           </td>
         {{/each}}
         {{if row.password()}}
-          <td data-bind="css:{ 'modified': row.modified()}">*****</td>
+          <td>*****</td>
         {{else}}
-          <td data-bind="css:{ 'modified': row.modified()}"></td>
+          <td></td>
         {{/if}}
-        <td data-bind="css:{ 'modified': row.modified()}">
+        <td>
             <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
         </td>
-        <td data-bind="css:{ 'modified': row.modified()}">
+        <td>
             <a href="#" data-bind="click: function(){ removeNetworkProxy(row) }">
               <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
             </a>
         </td>
         {{if row.modified()}}
-          <td data-bind="css:{ 'modified': row.modified()}">
+          <td>
             <a href="#" data-bind="click: function(){ updateNetworkProxy(row) }">${$.i18n.prop('save')}</a>
           </td>
         {{else}}

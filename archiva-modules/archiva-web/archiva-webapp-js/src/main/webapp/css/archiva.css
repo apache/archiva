@@ -44,3 +44,8 @@
 .modified {
     border:2px solid #fbc7c6;
 }
+
+.modified td{
+    border-top:2px solid #fbc7c6;
+    border:2px solid #fbc7c6;
+}
