@@ -143,12 +143,22 @@ $(function() {
       return prx;
     }
 
-    updateNetworkProxies=function(){
+    updateModifiedNetworkProxy=function(){
       var modifiedNetworkProxies = getModifiedNetworkProxies();
-      for(i=0;i<modifiedNetworkProxies.length;i++){
-        var viewModel = new NetworkProxyViewModel(modifiedNetworkProxies[i],true,self,false);
-        viewModel.save();
-      }
+
+      openDialogConfirm(function(){
+                          for(i=0;i<modifiedNetworkProxies.length;i++){
+                            var viewModel = new NetworkProxyViewModel(modifiedNetworkProxies[i],true,self,false);
+                            viewModel.save();
+                          }
+                          closeDialogConfirm();
+                        },
+                        $.i18n.prop('ok'),
+                        $.i18n.prop('cancel'),
+                        $.i18n.prop('bulk.save.confirm.title'),
+                        $.i18n.prop('networkproxy.bulk.save.confirm',modifiedNetworkProxies.length));
+
+
     }
 
     updateNetworkProxy=function(networkProxy){
