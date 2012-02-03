@@ -209,6 +209,8 @@
               <value>${excluded.groups}</value>
             </property>
           </properties>
+          <!-- see https://jira.codehaus.org/browse/SUREFIRE-828 -->
+          <excludedGroups>foonotatestsurefireissue</excludedGroups>
           <runOrder>alphabetical</runOrder>
         </configuration>
         <executions>
