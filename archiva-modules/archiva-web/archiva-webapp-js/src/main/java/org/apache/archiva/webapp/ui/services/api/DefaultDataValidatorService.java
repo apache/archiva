@@ -19,6 +19,7 @@ package org.apache.archiva.webapp.ui.services.api;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
@@ -45,13 +46,16 @@ public class DefaultDataValidatorService
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
+    @Inject
+    private RepositoryGroupAdmin repositoryGroupAdmin;
+
 
     public Boolean managedRepositoryIdNotExists( String id )
         throws ArchivaRestServiceException
     {
         try
         {
-            return managedRepositoryAdmin.getManagedRepository( id ) == null;
+            return !idExist( id );
         }
         catch ( RepositoryAdminException e )
         {
@@ -64,7 +68,7 @@ public class DefaultDataValidatorService
     {
         try
         {
-            return remoteRepositoryAdmin.getRemoteRepository( id ) == null;
+            return !idExist( id );
         }
         catch ( RepositoryAdminException e )
         {
@@ -83,5 +87,19 @@ public class DefaultDataValidatorService
         {
             throw new ArchivaRestServiceException( e.getMessage() );
         }
+    }
+
+    /**
+     * check if managedRepo, remoteRepo ou group exists with this id
+     *
+     * @param id
+     * @return true if something exists with this id.
+     */
+    private Boolean idExist( String id )
+        throws RepositoryAdminException
+    {
+        return ( managedRepositoryAdmin.getManagedRepository( id ) != null ) || (
+            remoteRepositoryAdmin.getRemoteRepository( id ) != null ) || ( repositoryGroupAdmin.getRepositoryGroup( id )
+            != null );
     }
 }
