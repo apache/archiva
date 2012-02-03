@@ -153,7 +153,7 @@ $(function() {
       this.gridViewModel.getManagedRepository=getManagedRepository;
       ko.applyBindings(this,$("#main-content #proxyConnectorsTable").get(0));
       removeSmallSpinnerImg("#main-content");
-      $("#main-content #proxy-connectors-view-tabs").tabs();
+      $("#main-content #proxy-connectors-view-tabs a:first").tab('show');
     }
 
   }

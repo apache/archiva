@@ -21,22 +21,22 @@
     <h2>${$.i18n.prop('proxy-connectors.list')}</h2>
   </div>
 
-  <ul id="proxy-connectors-view-tabs" class="tabs">
+  <ul id="proxy-connectors-view-tabs" class="nav nav-tabs">
     <li id="proxy-connectors-view-tabs-li-grid" class="active">
-      <a href="#proxy-connectors-view" id="proxy-connectors-view-tabs-a-network-proxies-grid">${$.i18n.prop('proxy-connectors.grid.tab.title')}</a>
+      <a data-toggle="tab" href="#proxy-connectors-view" id="proxy-connectors-view-tabs-a-network-proxies-grid">${$.i18n.prop('proxy-connectors.grid.tab.title')}</a>
     </li>
     <li id="proxy-connectors-view-tabs-li-edit">
-      <a href="#proxy-connectors-edit">${$.i18n.prop('add')}</a>
+      <a data-toggle="tab" href="#proxy-connectors-edit">${$.i18n.prop('add')}</a>
     </li>
   </ul>
   <div id="proxy-connectors-view-tabs-content" class="tab-content">
-    <div id="proxy-connectors-view" class="active">
+    <div id="proxy-connectors-view" class="tab-pane active">
       <table class="table table-striped table-bordered" id="proxyConnectorsTable"
              data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-proxy-connectors-grid',pageLinksId:'proxy-connectorsPagination'">
       </table>
       <div id="proxy-connectorsPagination"></div>
     </div>
-    <div id="proxy-connectors-edit" data-bind='template: {name:"proxy-connectors-edit-tmpl"}'></div>
+    <div id="proxy-connectors-edit" class="tab-pane" data-bind='template: {name:"proxy-connectors-edit-tmpl"}'></div>
   </div>
 
 </script>
