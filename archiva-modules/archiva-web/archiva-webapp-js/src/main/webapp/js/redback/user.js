@@ -36,223 +36,243 @@ $(function() {
    */
   User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,
                 timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
-      // Potentially Editable Field.
-      this.username = ko.observable(username);
-      // Editable Fields.
-      this.password = ko.observable(password);
-      this.confirmPassword = ko.observable(confirmPassword);
-      this.fullName = ko.observable(fullName);
-      this.email = ko.observable(email);
-      this.permanent = ko.observable(permanent);
-      this.validated = ko.observable(validated);
-      // Display Only Fields.
-      this.timestampAccountCreation = ko.observable(timestampAccountCreation);
-      this.timestampLastLogin = ko.observable(timestampLastLogin);
-      this.timestampLastPasswordChange = ko.observable(timestampLastPasswordChange);
-      // admin only
-      this.locked = ko.observable(locked);
-      this.passwordChangeRequired = ko.observable(passwordChangeRequired);
-      this.assignedRoles = ko.observableArray(new Array());
+    var self=this;
+    // Potentially Editable Field.
+    this.username = ko.observable(username);
+    this.username.subscribe(function(newValue){self.modified(true)});
+    // Editable Fields.
+    this.password = ko.observable(password);
+    this.password.subscribe(function(newValue){self.modified(true)});
 
-      this.remove = function() {
-        if (ownerViewModel) {
-          ownerViewModel.users.destroy(this);
-        }
-      };
-      this.create = function(successFnCallback) {
-        if (username == 'admin') {
-          this.createAdmin();
-        } else {
-          this.createUser(successFnCallback);
-        }
-      };
-      this.createUser = function(successFnCallback) {
-        $.log("user#createUser");
-        var valid = $("#user-create").valid();
-        if (!valid) {
-            return;
-        }
-        var currentUser = this;
-        $.ajax("restServices/redbackServices/userService/createUser", {
-            data: "{\"user\": " +  ko.toJSON(this)+"}",
-            contentType: 'application/json',
-            type: "POST",
-            dataType: 'json',
-            success: function(result) {
-              var created = JSON.parse(result);
-              if (created == true) {
-                displaySuccessMessage("user created:"+currentUser.username());
-                if (successFnCallback){
-                  successFnCallback(currentUser);
-                }
-                clearForm("#main-content #user-create");
-                $("#main-content #user-create").hide();
-                activateUsersGridTab();
-                return this;
-              } else {
-                displayErrorMessage("user cannot created");
-              }
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
-          });
-      };
+    this.confirmPassword = ko.observable(confirmPassword);
+    this.confirmPassword.subscribe(function(newValue){self.modified(true)});
 
-      this.createAdmin = function() {
-        $.log("user.js#createAdmin");
-        var valid = $("#user-create").valid();
-        $.log("create admin");
-        if (!valid) {
-            return;
-        }
-        var currentAdminUser = this;
-        $.ajax("restServices/redbackServices/userService/createAdminUser", {
-            data: "{\"user\": " +  ko.toJSON(this)+"}",
-            contentType: 'application/json',
-            type: "POST",
-            dataType: 'json',
-            success: function(result) {
-              var created = JSON.parse(result);
-              if (created == true) {
-                displaySuccessMessage("admin user created");
-                var onSuccessCall=function(){
-                  $.log("onSuccessCall after admin creation");
-                  reccordLoginCookie(currentAdminUser);
-                  screenChange();
-                  checkCreateAdminLink();
-                  checkSecurityLinks();
-                }
-                loginCall(currentAdminUser.username(), currentAdminUser.password(),onSuccessCall);
-                return this;
-              } else {
-                displayErrorMessage("admin user not created");
-              }
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
-          });
-      };
+    this.fullName = ko.observable(fullName);
+    this.fullName.subscribe(function(newValue){self.modified(true)});
 
+    this.email = ko.observable(email);
+    this.email.subscribe(function(newValue){self.modified(true)});
 
-      this.update=function(){
-        var currentUser = this;
-        $.ajax("restServices/redbackServices/userService/updateUser", {
-            data: "{\"user\": " +  ko.toJSON(this)+"}",
-            contentType: 'application/json',
-            type: "POST",
-            dataType: 'json',
-            success: function(result) {
-              var updated = JSON.parse(result);
-              if (updated == true) {
-                displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
-                $("#users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
-                clearForm("#main-content #user-create");
-                activateUsersGridTab();
-                return this;
-              } else {
-                displayErrorMessage("user cannot be updated");
-              }
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
-          });
+    this.permanent = ko.observable(permanent);
+    this.permanent.subscribe(function(newValue){self.modified(true)});
+
+    this.validated = ko.observable(validated);
+    this.validated.subscribe(function(newValue){self.modified(true)});
+
+    // Display Only Fields.
+    this.timestampAccountCreation = ko.observable(timestampAccountCreation);
+    this.timestampLastLogin = ko.observable(timestampLastLogin);
+    this.timestampLastPasswordChange = ko.observable(timestampLastPasswordChange);
+    // admin only
+    this.locked = ko.observable(locked);
+    this.locked.subscribe(function(newValue){self.modified(true)});
+
+    this.passwordChangeRequired = ko.observable(passwordChangeRequired);
+    this.passwordChangeRequired.subscribe(function(newValue){self.modified(true)});
+
+    this.assignedRoles = ko.observableArray(new Array());
+    this.assignedRoles.subscribe(function(newValue){self.modified(true)});
+
+    this.modified=ko.observable(false);
+
+    this.remove = function() {
+      if (ownerViewModel) {
+        ownerViewModel.users.destroy(this);
       }
-
-      this.save=function(){
-        $.log("user.save create:"+window.redbackModel.createUser);
-        if (window.redbackModel.createUser==true){
-          var valid = $("#main-content #user-create").valid();
-
-          if (valid==false) {
-            $.log("user#save valid:false");
-            return;
-          } else {
-            $.log("user#save valid:true");
-            return this.create();
+    };
+    this.create = function(successFnCallback) {
+      if (username == 'admin') {
+        this.createAdmin();
+      } else {
+        this.createUser(successFnCallback);
+      }
+    };
+    this.createUser = function(successFnCallback) {
+      $.log("user#createUser");
+      var valid = $("#user-create").valid();
+      if (!valid) {
+          return;
+      }
+      var currentUser = this;
+      $.ajax("restServices/redbackServices/userService/createUser", {
+          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          contentType: 'application/json',
+          type: "POST",
+          dataType: 'json',
+          success: function(result) {
+            var created = JSON.parse(result);
+            if (created == true) {
+              displaySuccessMessage("user created:"+currentUser.username());
+              if (successFnCallback){
+                successFnCallback(currentUser);
+              }
+              clearForm("#main-content #user-create");
+              $("#main-content #user-create").hide();
+              activateUsersGridTab();
+              return this;
+            } else {
+              displayErrorMessage("user cannot created");
+            }
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
           }
+        });
+    };
+
+    this.createAdmin = function() {
+      $.log("user.js#createAdmin");
+      var valid = $("#user-create").valid();
+      $.log("create admin");
+      if (!valid) {
+          return;
+      }
+      var currentAdminUser = this;
+      $.ajax("restServices/redbackServices/userService/createAdminUser", {
+          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          contentType: 'application/json',
+          type: "POST",
+          dataType: 'json',
+          success: function(result) {
+            var created = JSON.parse(result);
+            if (created == true) {
+              displaySuccessMessage("admin user created");
+              var onSuccessCall=function(){
+                $.log("onSuccessCall after admin creation");
+                reccordLoginCookie(currentAdminUser);
+                screenChange();
+                checkCreateAdminLink();
+                checkSecurityLinks();
+              }
+              loginCall(currentAdminUser.username(), currentAdminUser.password(),onSuccessCall);
+              return this;
+            } else {
+              displayErrorMessage("admin user not created");
+            }
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
+        });
+    };
+
+
+    this.update=function(){
+      var currentUser = this;
+      $.ajax("restServices/redbackServices/userService/updateUser", {
+          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          contentType: 'application/json',
+          type: "POST",
+          dataType: 'json',
+          success: function(result) {
+            var updated = JSON.parse(result);
+            if (updated == true) {
+              displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
+              $("#users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
+              clearForm("#main-content #user-create");
+              activateUsersGridTab();
+              return this;
+            } else {
+              displayErrorMessage("user cannot be updated");
+            }
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
+        });
+    }
+
+    this.save=function(){
+      $.log("user.save create:"+window.redbackModel.createUser);
+      if (window.redbackModel.createUser==true){
+        var valid = $("#main-content #user-create").valid();
+
+        if (valid==false) {
+          $.log("user#save valid:false");
+          return;
         } else {
-          return this.update();
+          $.log("user#save valid:true");
+          return this.create();
         }
+      } else {
+        return this.update();
       }
+    }
 
-      this.updateAssignedRoles=function(){
-        $.log("user#updateAssignedRoles");
-        var curUser = this;
-        clearUserMessages();
-        $.ajax("restServices/redbackServices/roleManagementService/updateUserRoles", {
-            data: "{\"user\": " +  ko.toJSON(this)+"}",
-            contentType: 'application/json',
-            type: "POST",
-            dataType: 'json',
-            success: function(result) {
-              displaySuccessMessage($.i18n.prop("user.roles.updated",curUser.username()));
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
-          });
-      }
-
-      this.lock=function(){
-        this.locked(true);
-        var curUser = this;
-        clearUserMessages();
-        $.ajax("restServices/redbackServices/userService/lockUser/"+encodeURIComponent(curUser.username()), {
-            type: "GET",
-            success: function(result) {
-              displaySuccessMessage($.i18n.prop("user.locked",curUser.username()));
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
-          });
-      }
-
-      this.unlock=function(){
-        this.locked(false);
-        var curUser = this;
-        clearUserMessages();
-        $.ajax("restServices/redbackServices/userService/unlockUser/"+encodeURIComponent(curUser.username()), {
-            type: "GET",
-            success: function(result) {
-              displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
+    this.updateAssignedRoles=function(){
+      $.log("user#updateAssignedRoles");
+      var curUser = this;
+      clearUserMessages();
+      $.ajax("restServices/redbackServices/roleManagementService/updateUserRoles", {
+          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          contentType: 'application/json',
+          type: "POST",
+          dataType: 'json',
+          success: function(result) {
+            displaySuccessMessage($.i18n.prop("user.roles.updated",curUser.username()));
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
         });
-      }
+    }
 
-      // value is boolean
-      this.changePasswordChangeRequired=function(value){
-        this.passwordChangeRequired(value);
-        var curUser = this;
-        var url = "restServices/redbackServices/userService/passwordChangeRequired/"+encodeURIComponent(curUser.username());
-        if (value==false){
-          url = "restServices/redbackServices/userService/passwordChangeNotRequired/"+encodeURIComponent(curUser.username());
-        }
-        $.ajax(url, {
-            type: "GET",
-            success: function(result) {
-              displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username()));
-            },
-            error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
-            }
+    this.lock=function(){
+      this.locked(true);
+      var curUser = this;
+      clearUserMessages();
+      $.ajax("restServices/redbackServices/userService/lockUser/"+encodeURIComponent(curUser.username()), {
+          type: "GET",
+          success: function(result) {
+            displaySuccessMessage($.i18n.prop("user.locked",curUser.username()));
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
         });
-      };
+    }
 
-      this.i18n = $.i18n.prop;
+    this.unlock=function(){
+      this.locked(false);
+      var curUser = this;
+      clearUserMessages();
+      $.ajax("restServices/redbackServices/userService/unlockUser/"+encodeURIComponent(curUser.username()), {
+          type: "GET",
+          success: function(result) {
+            displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
+      });
+    }
+
+    // value is boolean
+    this.changePasswordChangeRequired=function(value){
+      this.passwordChangeRequired(value);
+      var curUser = this;
+      var url = "restServices/redbackServices/userService/passwordChangeRequired/"+encodeURIComponent(curUser.username());
+      if (value==false){
+        url = "restServices/redbackServices/userService/passwordChangeNotRequired/"+encodeURIComponent(curUser.username());
+      }
+      $.ajax(url, {
+          type: "GET",
+          success: function(result) {
+            displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username()));
+          },
+          error: function(result) {
+            var obj = jQuery.parseJSON(result.responseText);
+            displayRedbackError(obj);
+          }
+      });
+    };
+
   }
 
   /**
