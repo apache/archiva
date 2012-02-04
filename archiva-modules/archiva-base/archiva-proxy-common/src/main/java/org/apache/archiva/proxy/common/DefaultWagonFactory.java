@@ -37,16 +37,13 @@ public class DefaultWagonFactory
     implements WagonFactory
 {
 
-    private PlexusSisuBridge plexusSisuBridge;
-
     private ApplicationContext applicationContext;
 
     private DebugTransferListener debugTransferListener = new DebugTransferListener();
 
     @Inject
-    public DefaultWagonFactory( PlexusSisuBridge plexusSisuBridge, ApplicationContext applicationContext )
+    public DefaultWagonFactory( ApplicationContext applicationContext )
     {
-        this.plexusSisuBridge = plexusSisuBridge;
         this.applicationContext = applicationContext;
     }
 
@@ -55,18 +52,12 @@ public class DefaultWagonFactory
     {
         try
         {
-            // with sisu inject bridge hint is file or http
-            // so remove wagon#
-            //protocol = StringUtils.remove( protocol, "wagon#" );
-            // spring beans will be named wagon#protocol (http, https, file )
             protocol = StringUtils.startsWith( protocol, "wagon#" ) ? protocol : "wagon#" + protocol;
-            //Wagon wagon = plexusSisuBridge.lookup( Wagon.class, protocol );
 
             Wagon wagon = applicationContext.getBean( protocol, Wagon.class );
             wagon.addTransferListener( debugTransferListener );
             return wagon;
         }
-        //catch ( PlexusSisuBridgeException e )
         catch ( BeansException e )
         {
             throw new WagonFactoryException( e.getMessage(), e );

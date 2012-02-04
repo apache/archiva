@@ -19,8 +19,10 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.proxy.common.WagonFactory;
@@ -59,16 +61,16 @@ public class RepositoryModelResolver
 
     private WagonFactory wagonFactory;
 
-    private List<RemoteRepositoryConfiguration> remoteRepositories;
+    private List<RemoteRepository> remoteRepositories;
 
-    private ManagedRepositoryConfiguration targetRepository;
+    private ManagedRepository targetRepository;
 
     private static final Logger log = LoggerFactory.getLogger( RepositoryModelResolver.class );
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
 
     // key/value: remote repo ID/network proxy
-    Map<String, ProxyInfo> networkProxyMap;
+    Map<String, NetworkProxy> networkProxyMap;
 
     public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator )
     {
@@ -78,9 +80,8 @@ public class RepositoryModelResolver
     }
 
     public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator, WagonFactory wagonFactory,
-                                    List<RemoteRepositoryConfiguration> remoteRepositories,
-                                    Map<String, ProxyInfo> networkProxiesMap,
-                                    ManagedRepositoryConfiguration targetRepository )
+                                    List<RemoteRepository> remoteRepositories,
+                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository )
     {
         this( basedir, pathTranslator );
 
@@ -103,7 +104,7 @@ public class RepositoryModelResolver
 
         if ( !model.exists() )
         {
-            for ( RemoteRepositoryConfiguration remoteRepository : remoteRepositories )
+            for ( RemoteRepository remoteRepository : remoteRepositories )
             {
                 try
                 {
@@ -143,8 +144,8 @@ public class RepositoryModelResolver
 
     // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
     // because it's causing a cyclic dependency
-    private boolean getModelFromProxy( RemoteRepositoryConfiguration remoteRepository, String groupId,
-                                       String artifactId, String version, String filename )
+    private boolean getModelFromProxy( RemoteRepository remoteRepository, String groupId, String artifactId,
+                                       String version, String filename )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException,
         XMLException
     {
@@ -162,7 +163,10 @@ public class RepositoryModelResolver
             try
             {
                 String protocol = getProtocol( remoteRepository.getUrl() );
+                final NetworkProxy networkProxy = this.networkProxyMap.get( remoteRepository.getId() );
 
+                wagon = ( networkProxy != null && networkProxy.isUseNtlm() ) ? wagonFactory.getWagon(
+                    "wagon#" + protocol + "-ntlm" ) : wagonFactory.getWagon( "wagon#" + protocol );
                 wagon = wagonFactory.getWagon( "wagon#" + protocol );
                 if ( wagon == null )
                 {
@@ -261,15 +265,21 @@ public class RepositoryModelResolver
      * @param wagon the wagon instance to establish the connection on.
      * @return true if the connection was successful. false if not connected.
      */
-    private boolean connectToRepository( Wagon wagon, RemoteRepositoryConfiguration remoteRepository )
+    private boolean connectToRepository( Wagon wagon, RemoteRepository remoteRepository )
     {
         boolean connected;
 
-        final ProxyInfo networkProxy;
-        networkProxy = this.networkProxyMap.get( remoteRepository.getId() );
-
-        if ( networkProxy != null )
+        final NetworkProxy proxyConnector = this.networkProxyMap.get( remoteRepository.getId() );
+        ProxyInfo networkProxy = null;
+        if ( proxyConnector != null )
         {
+            networkProxy = new ProxyInfo();
+            networkProxy.setType( proxyConnector.getProtocol() );
+            networkProxy.setHost( proxyConnector.getHost() );
+            networkProxy.setPort( proxyConnector.getPort() );
+            networkProxy.setUserName( proxyConnector.getUsername() );
+            networkProxy.setPassword( proxyConnector.getPassword() );
+
             String msg = "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
                 + " to connect to remote repository " + remoteRepository.getUrl();
             if ( networkProxy.getNonProxyHosts() != null )
@@ -286,7 +296,7 @@ public class RepositoryModelResolver
         }
 
         AuthenticationInfo authInfo = null;
-        String username = remoteRepository.getUsername();
+        String username = remoteRepository.getUserName();
         String password = remoteRepository.getPassword();
 
         if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
@@ -307,7 +317,14 @@ public class RepositoryModelResolver
         {
             org.apache.maven.wagon.repository.Repository wagonRepository =
                 new org.apache.maven.wagon.repository.Repository( remoteRepository.getId(), remoteRepository.getUrl() );
-            wagon.connect( wagonRepository, authInfo, networkProxy );
+            if ( networkProxy != null )
+            {
+                wagon.connect( wagonRepository, authInfo, networkProxy );
+            }
+            else
+            {
+                wagon.connect( wagonRepository, authInfo );
+            }
             connected = true;
         }
         catch ( ConnectionException e )
@@ -324,8 +341,8 @@ public class RepositoryModelResolver
         return connected;
     }
 
-    private File transferChecksum( Wagon wagon, RemoteRepositoryConfiguration remoteRepository, String remotePath,
-                                   File resource, File tmpDirectory, String ext )
+    private File transferChecksum( Wagon wagon, RemoteRepository remoteRepository, String remotePath, File resource,
+                                   File tmpDirectory, String ext )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException
     {
         File destFile = new File( tmpDirectory, resource.getName() + ext );

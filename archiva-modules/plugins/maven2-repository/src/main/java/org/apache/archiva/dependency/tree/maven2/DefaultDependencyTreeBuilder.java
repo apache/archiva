@@ -19,8 +19,18 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.common.utils.Slf4JPlexusLogger;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -29,12 +39,6 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.RepositoryModelResolver;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.common.utils.Slf4JPlexusLogger;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
@@ -71,11 +75,13 @@ import org.apache.maven.shared.dependency.tree.traversal.BuildingDependencyNodeV
 import org.apache.maven.shared.dependency.tree.traversal.CollectingDependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.apache.maven.shared.dependency.tree.traversal.FilteringDependencyNodeVisitor;
-import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,9 +92,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Default implementation of <code>DependencyTreeBuilder</code>. Customized wrapper for maven-dependency-tree to use
@@ -119,7 +122,6 @@ public class DefaultDependencyTreeBuilder
 
     /**
      * TODO: can have other types, and this might eventually come through from the main request
-     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -131,12 +133,17 @@ public class DefaultDependencyTreeBuilder
     @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
-    /**
-     *
-     */
     @Inject
-    @Named( value = "archivaConfiguration#default" )
-    private ArchivaConfiguration archivaConfiguration;
+    private ProxyConnectorAdmin proxyConnectorAdmin;
+
+    @Inject
+    private NetworkProxyAdmin networkProxyAdmin;
+
+    @Inject
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
@@ -148,9 +155,8 @@ public class DefaultDependencyTreeBuilder
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        factory = plexusSisuBridge.lookup( ArtifactFactory.class , "default" );
-        collector = plexusSisuBridge.lookup( ArtifactCollector.class , "default" );
-
+        factory = plexusSisuBridge.lookup( ArtifactFactory.class, "default" );
+        collector = plexusSisuBridge.lookup( ArtifactCollector.class, "default" );
 
         DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
         builder = defaultModelBuilderFactory.newInstance();
@@ -164,7 +170,15 @@ public class DefaultDependencyTreeBuilder
             new DependencyTreeResolutionListener( new Slf4JPlexusLogger( getClass() ) );
 
         Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
-        ManagedRepositoryConfiguration repository = findArtifactInRepositories( repositoryIds, projectArtifact );
+        ManagedRepository repository = null;
+        try
+        {
+            repository = findArtifactInRepositories( repositoryIds, projectArtifact );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new DependencyTreeBuilderException( "Cannot build project dependency tree " + e.getMessage(), e );
+        }
 
         if ( repository == null )
         {
@@ -179,37 +193,31 @@ public class DefaultDependencyTreeBuilder
             // MRM-1411
             // TODO: this is a workaround for a lack of proxy capability in the resolvers - replace when it can all be
             //       handled there. It doesn't cache anything locally!
-            List< RemoteRepositoryConfiguration > remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>();
-            Map<String, ProxyInfo > networkProxies = new HashMap<String, ProxyInfo>();
+            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+            Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
-            Map<String, List< ProxyConnectorConfiguration >> proxyConnectorsMap = archivaConfiguration.getConfiguration().getProxyConnectorAsMap();
-            List<ProxyConnectorConfiguration> proxyConnectors = proxyConnectorsMap.get( repository.getId() );
-            if( proxyConnectors != null )
+            Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
+            List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repository.getId() );
+            if ( proxyConnectors != null )
             {
-                for( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+                for ( ProxyConnector proxyConnector : proxyConnectors )
                 {
-                    remoteRepositories.add( archivaConfiguration.getConfiguration().findRemoteRepositoryById( proxyConnector.getTargetRepoId() ) );
+                    remoteRepositories.add(
+                        remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() ) );
 
-                    NetworkProxyConfiguration networkProxyConfig = archivaConfiguration.getConfiguration().getNetworkProxiesAsMap().get(
-                        proxyConnector.getProxyId() );
+                    NetworkProxy networkProxyConfig = networkProxyAdmin.getNetworkProxy( proxyConnector.getProxyId() );
 
-                    if( networkProxyConfig != null )
+                    if ( networkProxyConfig != null )
                     {
-                        ProxyInfo proxy = new ProxyInfo();
-                        proxy.setType( networkProxyConfig.getProtocol() );
-                        proxy.setHost( networkProxyConfig.getHost() );
-                        proxy.setPort( networkProxyConfig.getPort() );
-                        proxy.setUserName( networkProxyConfig.getUsername() );
-                        proxy.setPassword( networkProxyConfig.getPassword() );
-
                         // key/value: remote repo ID/proxy info
-                        networkProxies.put( proxyConnector.getTargetRepoId(), proxy );
+                        networkProxies.put( proxyConnector.getTargetRepoId(), networkProxyConfig );
                     }
                 }
             }
 
-            Model model = buildProject( new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories,
-                                         networkProxies, repository ), groupId, artifactId, version );
+            Model model = buildProject(
+                new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
+                                             repository ), groupId, artifactId, version );
 
             Map managedVersions = createManagedVersionMap( model );
 
@@ -273,16 +281,20 @@ public class DefaultDependencyTreeBuilder
         {
             throw new DependencyTreeBuilderException( "Cannot build project dependency tree " + e.getMessage(), e );
         }
+        catch ( RepositoryAdminException e )
+        {
+            throw new DependencyTreeBuilderException( "Cannot build project dependency tree " + e.getMessage(), e );
+        }
     }
 
-    private ManagedRepositoryConfiguration findArtifactInRepositories( List<String> repositoryIds, Artifact projectArtifact )
+    private ManagedRepository findArtifactInRepositories( List<String> repositoryIds, Artifact projectArtifact )
+        throws RepositoryAdminException
     {
         for ( String repoId : repositoryIds )
         {
-            ManagedRepositoryConfiguration repositoryConfiguration =
-                archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+            ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
 
-            File repoDir = new File( repositoryConfiguration.getLocation() );
+            File repoDir = new File( managedRepository.getLocation() );
             File file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),
                                                projectArtifact.getArtifactId() + "-" + projectArtifact.getVersion()
@@ -290,7 +302,7 @@ public class DefaultDependencyTreeBuilder
 
             if ( file.exists() )
             {
-                return repositoryConfiguration;
+                return managedRepository;
             }
         }
         return null;
@@ -464,15 +476,23 @@ public class DefaultDependencyTreeBuilder
                 factory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                                                artifact.getScope() );
 
-            ManagedRepositoryConfiguration repository = findArtifactInRepositories( repositoryIds, pomArtifact );
-
+            ManagedRepository repository = null;
+            try
+            {
+                repository = findArtifactInRepositories( repositoryIds, pomArtifact );
+            }
+            catch ( RepositoryAdminException e )
+            {
+                throw new ArtifactMetadataRetrievalException( e.getMessage(), e, artifact );
+            }
             Model project = null;
             if ( !Artifact.SCOPE_SYSTEM.equals( artifact.getScope() ) && repository != null )
             {
-                File basedir = new File( repository.getLocation() );
 
                 try
                 {
+
+                    File basedir = new File( repository.getLocation() );
                     project =
                         buildProject( new RepositoryModelResolver( basedir, pathTranslator ), artifact.getGroupId(),
                                       artifact.getArtifactId(), artifact.getVersion() );
@@ -485,6 +505,7 @@ public class DefaultDependencyTreeBuilder
                 {
                     throw new ArtifactMetadataRetrievalException( e.getMessage(), e, artifact );
                 }
+
             }
 
             ResolutionGroup result;
@@ -496,7 +517,8 @@ public class DefaultDependencyTreeBuilder
                 // if the project is null, we encountered an invalid model (read: m1 POM)
                 // we'll just return an empty resolution group.
                 // or used the inherited scope (should that be passed to the buildFromRepository method above?)
-                result = new ResolutionGroup( pomArtifact, Collections.<Artifact>emptySet(), Collections.<ArtifactRepository>emptyList() );
+                result = new ResolutionGroup( pomArtifact, Collections.<Artifact>emptySet(),
+                                              Collections.<ArtifactRepository>emptyList() );
             }
             else
             {

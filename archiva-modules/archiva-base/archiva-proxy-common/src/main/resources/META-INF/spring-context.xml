@@ -34,4 +34,8 @@
 
   <bean name="wagon#https" scope="prototype" class="org.apache.maven.wagon.providers.http.HttpWagon"/>
 
+  <bean name="wagon#http-ntlm" scope="prototype" class="org.apache.maven.wagon.providers.http.LightweightHttpWagon"/>
+
+  <bean name="wagon#https-ntlm" scope="prototype" class="org.apache.maven.wagon.providers.http.LightweightHttpsWagon"/>
+
 </beans>

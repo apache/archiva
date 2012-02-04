@@ -30,7 +30,7 @@ public interface WagonFactory
      * Create a new Wagon instance for the given protocol.
      *
      * @param protocol the protocol to find the Wagon for, which must be prefixed with <code>wagon#</code>, for example
-     *                 <code>wagon#http</code>.
+     *                 <code>wagon#http</code>. <b>to have a wagon supporting ntlm add -ntlm</b>
      * @return the Wagon instance
      */
     Wagon getWagon( String protocol )

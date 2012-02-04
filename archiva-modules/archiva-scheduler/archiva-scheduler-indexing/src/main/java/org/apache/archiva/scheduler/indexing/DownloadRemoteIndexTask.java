@@ -127,7 +127,11 @@ public class DownloadRemoteIndexTask
             tempIndexDirectory.deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
 
-            final Wagon wagon = wagonFactory.getWagon( new URL( this.remoteRepository.getUrl() ).getProtocol() );
+            String wagonProtocol =
+                new URL( this.remoteRepository.getUrl() ).getProtocol() + ( ( this.networkProxy != null
+                    && this.networkProxy.isUseNtlm() ) ? "-ntlm" : "" );
+
+            final Wagon wagon = wagonFactory.getWagon( wagonProtocol );
             setupWagonReadTimeout( wagon );
 
             wagon.addTransferListener( new DownloadListener() );

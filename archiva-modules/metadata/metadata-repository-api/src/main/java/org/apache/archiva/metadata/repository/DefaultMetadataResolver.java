@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -30,10 +31,8 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataN
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -71,8 +70,6 @@ public class DefaultMetadataResolver
      * TODO: Also need to accommodate availability of proxy module
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
-     *
-     *
      */
     @Inject
     @Named( value = "repositoryStorage#maven2" )
@@ -103,10 +100,8 @@ public class DefaultMetadataResolver
             {
                 metadata = repositoryStorage.readProjectVersionMetadata( repoId, namespace, projectId, projectVersion );
 
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Resolved project version metadata from storage: " + metadata );
-                }
+                log.debug( "Resolved project version metadata from storage: {}", metadata );
+
                 // FIXME: make this a more generic post-processing that plugins can take advantage of
                 //       eg. maven projects should be able to process parent here
                 if ( !metadata.getDependencies().isEmpty() )
@@ -133,6 +128,14 @@ public class DefaultMetadataResolver
                 session.markDirty();
             }
             catch ( RepositoryStorageMetadataInvalidException e )
+            {
+                for ( RepositoryListener listener : listeners )
+                {
+                    listener.addArtifactProblem( session, repoId, namespace, projectId, projectVersion, e );
+                }
+                throw new MetadataResolutionException( e.getMessage(), e );
+            }
+            catch ( RepositoryAdminException e )
             {
                 for ( RepositoryListener listener : listeners )
                 {

@@ -19,8 +19,18 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -31,12 +41,6 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataI
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.xml.XMLException;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
@@ -52,11 +56,13 @@ import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelProblem;
-import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -69,9 +75,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
@@ -96,8 +99,16 @@ public class Maven2RepositoryStorage
      *
      */
     @Inject
-    @Named( value = "archivaConfiguration#default" )
-    private ArchivaConfiguration archivaConfiguration;
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private ProxyConnectorAdmin proxyConnectorAdmin;
+
+    @Inject
+    private NetworkProxyAdmin networkProxyAdmin;
 
     /**
      *
@@ -129,10 +140,11 @@ public class Maven2RepositoryStorage
 
     public ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
                                                               String projectVersion )
-        throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException
+        throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException,
+        RepositoryAdminException
     {
-        ManagedRepositoryConfiguration repositoryConfiguration =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+
+        ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
 
         String artifactVersion = projectVersion;
 
@@ -175,36 +187,28 @@ public class Maven2RepositoryStorage
 
         // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
         //       anything locally!
-        List<RemoteRepositoryConfiguration> remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>();
-        Map<String, ProxyInfo> networkProxies = new HashMap<String, ProxyInfo>();
+        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+        Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
-        Map<String, List<ProxyConnectorConfiguration>> proxyConnectorsMap = archivaConfiguration.getConfiguration().getProxyConnectorAsMap();
-        List<ProxyConnectorConfiguration> proxyConnectors = proxyConnectorsMap.get( repoId );
-        if( proxyConnectors != null )
+        Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
+        List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repoId );
+        if ( proxyConnectors != null )
         {
-            for( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+            for ( ProxyConnector proxyConnector : proxyConnectors )
             {
-                RemoteRepositoryConfiguration remoteRepoConfig = archivaConfiguration.getConfiguration().findRemoteRepositoryById(
-                    proxyConnector.getTargetRepoId() );
+                RemoteRepository remoteRepoConfig =
+                    remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() );
 
-                if( remoteRepoConfig != null )
+                if ( remoteRepoConfig != null )
                 {
                     remoteRepositories.add( remoteRepoConfig );
 
-                    NetworkProxyConfiguration networkProxyConfig = archivaConfiguration.getConfiguration().getNetworkProxiesAsMap().get(
-                        proxyConnector.getProxyId() );
+                    NetworkProxy networkProxyConfig = networkProxyAdmin.getNetworkProxy( proxyConnector.getProxyId() );
 
-                    if( networkProxyConfig != null )
+                    if ( networkProxyConfig != null )
                     {
-                        ProxyInfo proxy = new ProxyInfo();
-                        proxy.setType( networkProxyConfig.getProtocol() );
-                        proxy.setHost( networkProxyConfig.getHost() );
-                        proxy.setPort( networkProxyConfig.getPort() );
-                        proxy.setUserName( networkProxyConfig.getUsername() );
-                        proxy.setPassword( networkProxyConfig.getPassword() );
-
                         // key/value: remote repo ID/proxy info
-                        networkProxies.put( proxyConnector.getTargetRepoId(), proxy );
+                        networkProxies.put( proxyConnector.getTargetRepoId(), networkProxyConfig );
                     }
                 }
             }
@@ -215,8 +219,9 @@ public class Maven2RepositoryStorage
         req.setPomFile( file );
 
         // MRM-1411
-        req.setModelResolver( new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories,
-                                                           networkProxies, repositoryConfiguration ) );
+        req.setModelResolver(
+            new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
+                                         repositoryConfiguration ) );
         req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
         Model model;
@@ -229,15 +234,15 @@ public class Maven2RepositoryStorage
             String msg = "The artifact's POM file '" + file + "' was invalid: " + e.getMessage();
 
             List<ModelProblem> modelProblems = e.getProblems();
-            for( ModelProblem problem : modelProblems )
+            for ( ModelProblem problem : modelProblems )
             {
                 // MRM-1411, related to MRM-1335
                 // this means that the problem was that the parent wasn't resolved!
-                if( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
+                if ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
                     !e.getModelId().equals( problem.getModelId() ) )
                 {
                     log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
-                        "Using defaults for project version metadata.." );
+                                  "Using defaults for project version metadata.." );
 
                     ProjectVersionMetadata metadata = new ProjectVersionMetadata();
                     metadata.setId( projectVersion );
@@ -248,7 +253,8 @@ public class Maven2RepositoryStorage
                     facet.setPackaging( "jar" );
                     metadata.addFacet( facet );
 
-                    String errMsg = "Error in resolving artifact's parent POM file. " + problem.getException().getMessage();
+                    String errMsg =
+                        "Error in resolving artifact's parent POM file. " + problem.getException().getMessage();
                     RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
                     repoProblemFacet.setRepositoryId( repoId );
                     repoProblemFacet.setId( repoId );
@@ -257,9 +263,9 @@ public class Maven2RepositoryStorage
                     repoProblemFacet.setProject( projectId );
                     repoProblemFacet.setVersion( projectVersion );
                     repoProblemFacet.setNamespace( namespace );
-                    
+
                     metadata.addFacet( repoProblemFacet );
-                    
+
                     return metadata;
                 }
             }
@@ -318,6 +324,7 @@ public class Maven2RepositoryStorage
         metadata.addFacet( facet );
 
         return metadata;
+
     }
 
     public void setWagonFactory( WagonFactory wagonFactory )
@@ -428,6 +435,7 @@ public class Maven2RepositoryStorage
     }
 
     public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
+        throws RepositoryAdminException
     {
         File dir = getRepositoryBasedir( repoId );
 
@@ -451,14 +459,15 @@ public class Maven2RepositoryStorage
     }
 
     private File getRepositoryBasedir( String repoId )
+        throws RepositoryAdminException
     {
-        ManagedRepositoryConfiguration repositoryConfiguration =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+        ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
 
         return new File( repositoryConfiguration.getLocation() );
     }
 
     public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
+        throws RepositoryAdminException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
@@ -480,6 +489,7 @@ public class Maven2RepositoryStorage
     }
 
     public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
+        throws RepositoryAdminException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
@@ -502,6 +512,7 @@ public class Maven2RepositoryStorage
 
     public Collection<String> listProjectVersions( String repoId, String namespace, String projectId,
                                                    Filter<String> filter )
+        throws RepositoryAdminException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
 
@@ -511,6 +522,7 @@ public class Maven2RepositoryStorage
 
     public Collection<ArtifactMetadata> readArtifactsMetadata( String repoId, String namespace, String projectId,
                                                                String projectVersion, Filter<String> filter )
+        throws RepositoryAdminException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId, projectVersion );
 
@@ -530,6 +542,7 @@ public class Maven2RepositoryStorage
     }
 
     public ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
+        throws RepositoryAdminException
     {
         ArtifactMetadata metadata = pathTranslator.getArtifactForPath( repoId, path );
 

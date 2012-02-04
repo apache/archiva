@@ -20,6 +20,9 @@ package org.apache.archiva.proxy;
  */
 
 import com.google.common.collect.Lists;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
@@ -156,14 +159,15 @@ public class DefaultRepositoryProxyConnectors
     @Named( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
 
+    @Inject
+    private NetworkProxyAdmin networkProxyAdmin;
+
     @PostConstruct
     public void initialize()
     {
         initConnectorsAndNetworkProxies();
         archivaConfiguration.addChangeListener( this );
-        //this.postDownloadPolicies = applicationContext.getBeansOfType( PostDownloadPolicy.class );
-        //his.preDownloadPolicies = applicationContext.getBeansOfType( PreDownloadPolicy.class );
-        //this.downloadErrorPolicies = applicationContext.getBeansOfType( DownloadErrorPolicy.class );
+
     }
 
     @SuppressWarnings( "unchecked" )
@@ -309,6 +313,11 @@ public class DefaultRepositoryProxyConnectors
                 validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
                                   targetRepository, localFile, e, previousExceptions );
             }
+            catch ( RepositoryAdminException e )
+            {
+                validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
+                                  targetRepository, localFile, e, previousExceptions );
+            }
         }
 
         if ( !previousExceptions.isEmpty() )
@@ -378,6 +387,13 @@ public class DefaultRepositoryProxyConnectors
                         + path + ", continuing to next repository. Error message: " + e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
+            catch ( RepositoryAdminException e )
+            {
+                log.warn(
+                    "Transfer error from repository \"" + targetRepository.getRepository().getId() + "\" for resource "
+                        + path + ", continuing to next repository. Error message: " + e.getMessage() );
+                log.debug( "Full stack trace", e );
+            }
         }
 
         log.debug( "Exhausted all target repositories, resource {} not found.", path );
@@ -434,6 +450,13 @@ public class DefaultRepositoryProxyConnectors
                 }
             }
             catch ( ProxyException e )
+            {
+                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
+                              + "\" for versioned Metadata " + logicalPath
+                              + ", continuing to next repository. Error message: " + e.getMessage() );
+                log.debug( "Full stack trace", e );
+            }
+            catch ( RepositoryAdminException e )
             {
                 log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
                               + "\" for versioned Metadata " + logicalPath
@@ -556,7 +579,7 @@ public class DefaultRepositoryProxyConnectors
     private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
                                ManagedRepositoryContent repository, File resource, Properties requestProperties,
                                boolean executeConsumers )
-        throws ProxyException, NotModifiedException
+        throws ProxyException, NotModifiedException, RepositoryAdminException
     {
         String url = remoteRepository.getURL().getUrl();
         if ( !url.endsWith( "/" ) )
@@ -616,7 +639,14 @@ public class DefaultRepositoryProxyConnectors
             {
                 RepositoryURL repoUrl = remoteRepository.getURL();
                 String protocol = repoUrl.getProtocol();
-                wagon = wagonFactory.getWagon( "wagon#" + protocol );
+                NetworkProxy networkProxy = null;
+                if ( StringUtils.isNotBlank( connector.getProxyId() ) )
+                {
+                    networkProxy = networkProxyAdmin.getNetworkProxy( connector.getProxyId() );
+                }
+
+                wagon = ( networkProxy != null && networkProxy.isUseNtlm() ) ? wagonFactory.getWagon(
+                    "wagon#" + protocol + "-ntlm" ) : wagonFactory.getWagon( "wagon#" + protocol );
                 if ( wagon == null )
                 {
                     throw new ProxyException( "Unsupported target repository protocol: " + protocol );
@@ -909,7 +939,7 @@ public class DefaultRepositoryProxyConnectors
 
     private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<String, String> settings,
                                    Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
-                                   File localFile, ProxyException exception, Map<String, Exception> previousExceptions )
+                                   File localFile, Exception exception, Map<String, Exception> previousExceptions )
         throws ProxyDownloadException
     {
         boolean process = true;
