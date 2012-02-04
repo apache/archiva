@@ -118,6 +118,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>

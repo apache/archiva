@@ -120,6 +120,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
@@ -172,6 +177,8 @@
               org.apache.archiva.proxy.common;version=${project.version},
               org.apache.archiva.repository*;version=${project.version},
               org.apache.archiva.scheduler*;version=${project.version},
+              org.apache.archiva.admin.model;version=${project.version},
+              org.apache.archiva.admin.model.networkproxy;version=${project.version},
               org.apache.commons.collections;version="[3.2,4)",
               org.apache.commons.io;version="[1.4,2)",
               org.apache.commons.lang;version="[2.4,3)",
