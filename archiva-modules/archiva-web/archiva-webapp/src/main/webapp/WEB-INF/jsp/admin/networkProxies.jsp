@@ -132,6 +132,10 @@
             </tr>
           </c:if>
         </c:if>
+        <tr>
+          <th>Use NTLM</th>
+          <td><c:out value="${proxy.useNtlm}" /></td>
+        </tr>
       </table>
 
       </div>

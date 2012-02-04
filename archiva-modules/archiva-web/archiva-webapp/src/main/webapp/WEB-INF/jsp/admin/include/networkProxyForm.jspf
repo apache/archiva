@@ -25,3 +25,4 @@
 <s:textfield name="proxy.port" label="Port" size="5" required="true" />
 <s:textfield name="proxy.username" label="Username" size="25" required="false" />
 <s:password name="proxy.password" label="Password" size="25" required="false" />
+<s:checkbox name="proxy.useNtlm" label="Use ntlm"/>

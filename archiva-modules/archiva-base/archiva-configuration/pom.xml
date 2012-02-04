@@ -139,7 +139,7 @@
           </execution>
         </executions>
         <configuration>
-          <version>1.4.0</version>
+          <version>1.4.1</version>
           <models>
             <model>src/main/mdo/configuration.mdo</model>
           </models>

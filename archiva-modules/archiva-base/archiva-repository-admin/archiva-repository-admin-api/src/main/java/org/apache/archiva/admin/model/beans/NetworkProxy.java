@@ -57,6 +57,13 @@ public class NetworkProxy
      */
     private String password;
 
+    /**
+     * @since 1.4-M3
+     *
+     * use NTLM proxy
+     */
+    private boolean useNtlm;
+
     public NetworkProxy()
     {
         // no op
@@ -132,6 +139,16 @@ public class NetworkProxy
         this.password = password;
     }
 
+    public boolean isUseNtlm()
+    {
+        return useNtlm;
+    }
+
+    public void setUseNtlm( boolean useNtlm )
+    {
+        this.useNtlm = useNtlm;
+    }
+
     @Override
     public boolean equals( Object o )
     {
@@ -173,6 +190,7 @@ public class NetworkProxy
         sb.append( ", port=" ).append( port );
         sb.append( ", username='" ).append( username ).append( '\'' );
         sb.append( ", password='" ).append( password ).append( '\'' );
+        sb.append( ", useNtlm=" ).append( useNtlm );
         sb.append( '}' );
         return sb.toString();
     }

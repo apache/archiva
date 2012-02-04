@@ -1060,6 +1060,15 @@
           </description>
           <type>String</type>
         </field>
+        <field>
+          <name>useNtlm</name>
+          <version>1.0.0+</version>
+          <description>
+            Use ntlm authentification.
+          </description>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
