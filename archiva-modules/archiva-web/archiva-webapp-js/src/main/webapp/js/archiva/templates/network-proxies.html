@@ -49,6 +49,7 @@
         <th>${ columnDefinition.headerText }</th>
         {{/each}}
         <th>${$.i18n.prop('password')}</th>
+        <th>${$.i18n.prop('network.proxy.useNtlm')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
@@ -68,6 +69,7 @@
         {{else}}
           <td></td>
         {{/if}}
+        <td>${row.useNtlm()}</td>
         <td>
             <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
         </td>
@@ -139,6 +141,12 @@
                    data-bind="value: networkProxy.password"/>
           </div>
         </div>
+          <div class="control-group">
+            <label class="control-label"  for="password">${$.i18n.prop('network.proxy.useNtlm')}</label>
+            <div class="controls">
+              <input type="checkbox" id="useNtlm" name="useNtlm" data-bind="checked: networkProxy.useNtlm"/>
+            </div>
+          </div>
 
       </fieldset>
       <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>

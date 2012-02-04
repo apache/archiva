@@ -19,7 +19,7 @@
 $(function() {
 
 
-  NetworkProxy=function(id,protocol,host,port,username,password){
+  NetworkProxy=function(id,protocol,host,port,username,password,useNtlm){
     var self=this;
     //private String id;
     this.id = ko.observable(id);
@@ -27,23 +27,27 @@ $(function() {
 
     //private String protocol = "http";
     this.protocol=ko.observable(protocol);
-    this.protocol.subscribe(function(newValue){self.modified(true)});;
+    this.protocol.subscribe(function(newValue){self.modified(true)});
 
     //private String host;
     this.host=ko.observable(host);
-    this.host.subscribe(function(newValue){self.modified(true)});;
+    this.host.subscribe(function(newValue){self.modified(true)});
 
     //private int port = 8080;
     this.port=ko.observable(port);
-    this.port.subscribe(function(newValue){self.modified(true)});;
+    this.port.subscribe(function(newValue){self.modified(true)});
 
     //private String username;
     this.username=ko.observable(username?username:"");
-    this.username.subscribe(function(newValue){self.modified(true)});;
+    this.username.subscribe(function(newValue){self.modified(true)});
 
     //private String password;
     this.password=ko.observable(password?password:"");
-    this.password.subscribe(function(newValue){self.modified(true)});;
+    this.password.subscribe(function(newValue){self.modified(true)});
+
+    //use NTLM proxy
+    this.useNtlm=ko.observable(useNtlm);
+    this.useNtlm.subscribe(function(newValue){self.modified(true)});
 
     this.modified=ko.observable(false);
   }
@@ -294,7 +298,7 @@ $(function() {
     if (data==null){
       return null;
     }
-    return new NetworkProxy(data.id,data.protocol,data.host,data.port,data.username,data.password);
+    return new NetworkProxy(data.id,data.protocol,data.host,data.port,data.username,data.password,data.useNtlm);
   }
 
   mapNetworkProxies=function(data){
