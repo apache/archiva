@@ -39,6 +39,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.xml.XMLException;
@@ -141,190 +142,196 @@ public class Maven2RepositoryStorage
     public ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
                                                               String projectVersion )
         throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException,
-        RepositoryAdminException
+        RepositoryStorageRuntimeException
     {
-
-        ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
-
-        String artifactVersion = projectVersion;
-
-        File basedir = new File( repositoryConfiguration.getLocation() );
-        if ( VersionUtil.isSnapshot( projectVersion ) )
+        try
         {
-            File metadataFile =
-                pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
-            try
-            {
-                MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
+            ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
 
-                // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
-                MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
-                if ( snapshotVersion != null )
+            String artifactVersion = projectVersion;
+
+            File basedir = new File( repositoryConfiguration.getLocation() );
+            if ( VersionUtil.isSnapshot( projectVersion ) )
+            {
+                File metadataFile =
+                    pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
+                try
                 {
-                    artifactVersion =
-                        artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
-                    artifactVersion =
-                        artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+                    MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
+
+                    // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
+                    MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
+                    if ( snapshotVersion != null )
+                    {
+                        artifactVersion =
+                            artifactVersion.substring( 0, artifactVersion.length() - 8 ); // remove SNAPSHOT from end
+                        artifactVersion =
+                            artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
+                    }
+                }
+                catch ( XMLException e )
+                {
+                    // unable to parse metadata - log it, and continue with the version as the original SNAPSHOT version
+                    log.warn( "Invalid metadata: " + metadataFile + " - " + e.getMessage() );
                 }
             }
-            catch ( XMLException e )
+
+            // TODO: won't work well with some other layouts, might need to convert artifact parts to ID by path translator
+            String id = projectId + "-" + artifactVersion + ".pom";
+            File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, id );
+
+            if ( !file.exists() )
             {
-                // unable to parse metadata - log it, and continue with the version as the original SNAPSHOT version
-                log.warn( "Invalid metadata: " + metadataFile + " - " + e.getMessage() );
+                // metadata could not be resolved
+                throw new RepositoryStorageMetadataNotFoundException(
+                    "The artifact's POM file '" + file.getAbsolutePath() + "' was missing" );
             }
-        }
 
-        // TODO: won't work well with some other layouts, might need to convert artifact parts to ID by path translator
-        String id = projectId + "-" + artifactVersion + ".pom";
-        File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, id );
+            // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
+            //       anything locally!
+            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+            Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
-        if ( !file.exists() )
-        {
-            // metadata could not be resolved
-            throw new RepositoryStorageMetadataNotFoundException(
-                "The artifact's POM file '" + file.getAbsolutePath() + "' was missing" );
-        }
-
-        // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
-        //       anything locally!
-        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-        Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
-
-        Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
-        List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repoId );
-        if ( proxyConnectors != null )
-        {
-            for ( ProxyConnector proxyConnector : proxyConnectors )
+            Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
+            List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repoId );
+            if ( proxyConnectors != null )
             {
-                RemoteRepository remoteRepoConfig =
-                    remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() );
-
-                if ( remoteRepoConfig != null )
+                for ( ProxyConnector proxyConnector : proxyConnectors )
                 {
-                    remoteRepositories.add( remoteRepoConfig );
+                    RemoteRepository remoteRepoConfig =
+                        remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() );
 
-                    NetworkProxy networkProxyConfig = networkProxyAdmin.getNetworkProxy( proxyConnector.getProxyId() );
-
-                    if ( networkProxyConfig != null )
+                    if ( remoteRepoConfig != null )
                     {
-                        // key/value: remote repo ID/proxy info
-                        networkProxies.put( proxyConnector.getTargetRepoId(), networkProxyConfig );
+                        remoteRepositories.add( remoteRepoConfig );
+
+                        NetworkProxy networkProxyConfig =
+                            networkProxyAdmin.getNetworkProxy( proxyConnector.getProxyId() );
+
+                        if ( networkProxyConfig != null )
+                        {
+                            // key/value: remote repo ID/proxy info
+                            networkProxies.put( proxyConnector.getTargetRepoId(), networkProxyConfig );
+                        }
                     }
                 }
             }
-        }
 
-        ModelBuildingRequest req = new DefaultModelBuildingRequest();
-        req.setProcessPlugins( false );
-        req.setPomFile( file );
+            ModelBuildingRequest req = new DefaultModelBuildingRequest();
+            req.setProcessPlugins( false );
+            req.setPomFile( file );
 
-        // MRM-1411
-        req.setModelResolver(
-            new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
-                                         repositoryConfiguration ) );
-        req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
+            // MRM-1411
+            req.setModelResolver(
+                new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
+                                             repositoryConfiguration ) );
+            req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
-        Model model;
-        try
-        {
-            model = builder.build( req ).getEffectiveModel();
-        }
-        catch ( ModelBuildingException e )
-        {
-            String msg = "The artifact's POM file '" + file + "' was invalid: " + e.getMessage();
-
-            List<ModelProblem> modelProblems = e.getProblems();
-            for ( ModelProblem problem : modelProblems )
+            Model model;
+            try
             {
-                // MRM-1411, related to MRM-1335
-                // this means that the problem was that the parent wasn't resolved!
-                if ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
-                    !e.getModelId().equals( problem.getModelId() ) )
+                model = builder.build( req ).getEffectiveModel();
+            }
+            catch ( ModelBuildingException e )
+            {
+                String msg = "The artifact's POM file '" + file + "' was invalid: " + e.getMessage();
+
+                List<ModelProblem> modelProblems = e.getProblems();
+                for ( ModelProblem problem : modelProblems )
                 {
-                    log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
-                                  "Using defaults for project version metadata.." );
+                    // MRM-1411, related to MRM-1335
+                    // this means that the problem was that the parent wasn't resolved!
+                    if ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
+                        !e.getModelId().equals( problem.getModelId() ) )
+                    {
+                        log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
+                                      "Using defaults for project version metadata.." );
 
-                    ProjectVersionMetadata metadata = new ProjectVersionMetadata();
-                    metadata.setId( projectVersion );
+                        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+                        metadata.setId( projectVersion );
 
-                    MavenProjectFacet facet = new MavenProjectFacet();
-                    facet.setGroupId( namespace );
-                    facet.setArtifactId( projectId );
-                    facet.setPackaging( "jar" );
-                    metadata.addFacet( facet );
+                        MavenProjectFacet facet = new MavenProjectFacet();
+                        facet.setGroupId( namespace );
+                        facet.setArtifactId( projectId );
+                        facet.setPackaging( "jar" );
+                        metadata.addFacet( facet );
 
-                    String errMsg =
-                        "Error in resolving artifact's parent POM file. " + problem.getException().getMessage();
-                    RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
-                    repoProblemFacet.setRepositoryId( repoId );
-                    repoProblemFacet.setId( repoId );
-                    repoProblemFacet.setMessage( errMsg );
-                    repoProblemFacet.setProblem( errMsg );
-                    repoProblemFacet.setProject( projectId );
-                    repoProblemFacet.setVersion( projectVersion );
-                    repoProblemFacet.setNamespace( namespace );
+                        String errMsg =
+                            "Error in resolving artifact's parent POM file. " + problem.getException().getMessage();
+                        RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
+                        repoProblemFacet.setRepositoryId( repoId );
+                        repoProblemFacet.setId( repoId );
+                        repoProblemFacet.setMessage( errMsg );
+                        repoProblemFacet.setProblem( errMsg );
+                        repoProblemFacet.setProject( projectId );
+                        repoProblemFacet.setVersion( projectVersion );
+                        repoProblemFacet.setNamespace( namespace );
 
-                    metadata.addFacet( repoProblemFacet );
+                        metadata.addFacet( repoProblemFacet );
 
-                    return metadata;
+                        return metadata;
+                    }
                 }
+
+                throw new RepositoryStorageMetadataInvalidException( "invalid-pom", msg, e );
             }
 
-            throw new RepositoryStorageMetadataInvalidException( "invalid-pom", msg, e );
-        }
+            // Check if the POM is in the correct location
+            boolean correctGroupId = namespace.equals( model.getGroupId() );
+            boolean correctArtifactId = projectId.equals( model.getArtifactId() );
+            boolean correctVersion = projectVersion.equals( model.getVersion() );
+            if ( !correctGroupId || !correctArtifactId || !correctVersion )
+            {
+                StringBuilder message = new StringBuilder( "Incorrect POM coordinates in '" + file + "':" );
+                if ( !correctGroupId )
+                {
+                    message.append( "\nIncorrect group ID: " ).append( model.getGroupId() );
+                }
+                if ( !correctArtifactId )
+                {
+                    message.append( "\nIncorrect artifact ID: " ).append( model.getArtifactId() );
+                }
+                if ( !correctVersion )
+                {
+                    message.append( "\nIncorrect version: " ).append( model.getVersion() );
+                }
 
-        // Check if the POM is in the correct location
-        boolean correctGroupId = namespace.equals( model.getGroupId() );
-        boolean correctArtifactId = projectId.equals( model.getArtifactId() );
-        boolean correctVersion = projectVersion.equals( model.getVersion() );
-        if ( !correctGroupId || !correctArtifactId || !correctVersion )
+                throw new RepositoryStorageMetadataInvalidException( "mislocated-pom", message.toString() );
+            }
+
+            ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+            metadata.setCiManagement( convertCiManagement( model.getCiManagement() ) );
+            metadata.setDescription( model.getDescription() );
+            metadata.setId( projectVersion );
+            metadata.setIssueManagement( convertIssueManagement( model.getIssueManagement() ) );
+            metadata.setLicenses( convertLicenses( model.getLicenses() ) );
+            metadata.setMailingLists( convertMailingLists( model.getMailingLists() ) );
+            metadata.setDependencies( convertDependencies( model.getDependencies() ) );
+            metadata.setName( model.getName() );
+            metadata.setOrganization( convertOrganization( model.getOrganization() ) );
+            metadata.setScm( convertScm( model.getScm() ) );
+            metadata.setUrl( model.getUrl() );
+
+            MavenProjectFacet facet = new MavenProjectFacet();
+            facet.setGroupId( model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId() );
+            facet.setArtifactId( model.getArtifactId() );
+            facet.setPackaging( model.getPackaging() );
+            if ( model.getParent() != null )
+            {
+                MavenProjectParent parent = new MavenProjectParent();
+                parent.setGroupId( model.getParent().getGroupId() );
+                parent.setArtifactId( model.getParent().getArtifactId() );
+                parent.setVersion( model.getParent().getVersion() );
+                facet.setParent( parent );
+            }
+            metadata.addFacet( facet );
+
+            return metadata;
+        }
+        catch ( RepositoryAdminException e )
         {
-            StringBuilder message = new StringBuilder( "Incorrect POM coordinates in '" + file + "':" );
-            if ( !correctGroupId )
-            {
-                message.append( "\nIncorrect group ID: " ).append( model.getGroupId() );
-            }
-            if ( !correctArtifactId )
-            {
-                message.append( "\nIncorrect artifact ID: " ).append( model.getArtifactId() );
-            }
-            if ( !correctVersion )
-            {
-                message.append( "\nIncorrect version: " ).append( model.getVersion() );
-            }
-
-            throw new RepositoryStorageMetadataInvalidException( "mislocated-pom", message.toString() );
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage() );
         }
-
-        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
-        metadata.setCiManagement( convertCiManagement( model.getCiManagement() ) );
-        metadata.setDescription( model.getDescription() );
-        metadata.setId( projectVersion );
-        metadata.setIssueManagement( convertIssueManagement( model.getIssueManagement() ) );
-        metadata.setLicenses( convertLicenses( model.getLicenses() ) );
-        metadata.setMailingLists( convertMailingLists( model.getMailingLists() ) );
-        metadata.setDependencies( convertDependencies( model.getDependencies() ) );
-        metadata.setName( model.getName() );
-        metadata.setOrganization( convertOrganization( model.getOrganization() ) );
-        metadata.setScm( convertScm( model.getScm() ) );
-        metadata.setUrl( model.getUrl() );
-
-        MavenProjectFacet facet = new MavenProjectFacet();
-        facet.setGroupId( model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId() );
-        facet.setArtifactId( model.getArtifactId() );
-        facet.setPackaging( model.getPackaging() );
-        if ( model.getParent() != null )
-        {
-            MavenProjectParent parent = new MavenProjectParent();
-            parent.setGroupId( model.getParent().getGroupId() );
-            parent.setArtifactId( model.getParent().getArtifactId() );
-            parent.setVersion( model.getParent().getVersion() );
-            facet.setParent( parent );
-        }
-        metadata.addFacet( facet );
-
-        return metadata;
-
     }
 
     public void setWagonFactory( WagonFactory wagonFactory )
@@ -435,7 +442,7 @@ public class Maven2RepositoryStorage
     }
 
     public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
         File dir = getRepositoryBasedir( repoId );
 
@@ -459,15 +466,22 @@ public class Maven2RepositoryStorage
     }
 
     private File getRepositoryBasedir( String repoId )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
-        ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
+        try
+        {
+            ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
 
-        return new File( repositoryConfiguration.getLocation() );
+            return new File( repositoryConfiguration.getLocation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage() );
+        }
     }
 
     public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
@@ -489,7 +503,7 @@ public class Maven2RepositoryStorage
     }
 
     public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
@@ -512,7 +526,7 @@ public class Maven2RepositoryStorage
 
     public Collection<String> listProjectVersions( String repoId, String namespace, String projectId,
                                                    Filter<String> filter )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
 
@@ -522,7 +536,7 @@ public class Maven2RepositoryStorage
 
     public Collection<ArtifactMetadata> readArtifactsMetadata( String repoId, String namespace, String projectId,
                                                                String projectVersion, Filter<String> filter )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId, projectVersion );
 
@@ -542,7 +556,7 @@ public class Maven2RepositoryStorage
     }
 
     public ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
-        throws RepositoryAdminException
+        throws RepositoryStorageRuntimeException
     {
         ArtifactMetadata metadata = pathTranslator.getArtifactForPath( repoId, path );
 

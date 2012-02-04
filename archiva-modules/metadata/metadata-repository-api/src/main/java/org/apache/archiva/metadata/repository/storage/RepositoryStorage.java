@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.storage;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -35,25 +34,25 @@ public interface RepositoryStorage
     ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
                                                        String projectVersion )
         throws RepositoryStorageMetadataInvalidException, RepositoryStorageMetadataNotFoundException,
-        RepositoryAdminException;
+        RepositoryStorageRuntimeException;
 
     Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
-        throws RepositoryAdminException;
+        throws RepositoryStorageRuntimeException;
 
     Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
-        throws RepositoryAdminException;
+        throws RepositoryStorageRuntimeException;
 
     Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
-        throws RepositoryAdminException;
+        throws RepositoryStorageRuntimeException;
 
     Collection<String> listProjectVersions( String repoId, String namespace, String projectId, Filter<String> filter )
-        throws RepositoryAdminException;
+        throws RepositoryStorageRuntimeException;
 
     Collection<ArtifactMetadata> readArtifactsMetadata( String repoId, String namespace, String projectId,
                                                         String projectVersion, Filter<String> filter )
-        throws RepositoryAdminException;
+        throws RepositoryStorageRuntimeException;
 
     // FIXME: reconsider this API, do we want to expose storage format in the form of a path?
     ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
-        throws RepositoryAdminException;
+        throws RepositoryStorageRuntimeException;
 }

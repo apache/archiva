@@ -37,6 +37,7 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
@@ -145,21 +146,22 @@ public class ArchivaMetadataCreationConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        // note that we do minimal processing including checksums and POM information for performance of
-        // the initial scan. Any request for this information will be intercepted and populated on-demand
-        // or picked up by subsequent scans
-
-        ArtifactMetadata artifact = repositoryStorage.readArtifactMetadataFromPath( repoId, path );
-
-        ProjectMetadata project = new ProjectMetadata();
-        project.setNamespace( artifact.getNamespace() );
-        project.setId( artifact.getProject() );
-
-        String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
+            // note that we do minimal processing including checksums and POM information for performance of
+            // the initial scan. Any request for this information will be intercepted and populated on-demand
+            // or picked up by subsequent scans
+
+            ArtifactMetadata artifact = repositoryStorage.readArtifactMetadataFromPath( repoId, path );
+
+            ProjectMetadata project = new ProjectMetadata();
+            project.setNamespace( artifact.getNamespace() );
+            project.setId( artifact.getProject() );
+
+            String projectVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
+
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
             boolean createVersionMetadata = false;
@@ -199,6 +201,11 @@ public class ArchivaMetadataCreationConsumer
             repositorySession.save();
         }
         catch ( MetadataRepositoryException e )
+        {
+            log.warn( "Error occurred persisting metadata for artifact: " + path + "; message: " + e.getMessage(), e );
+            repositorySession.revert();
+        }
+        catch ( RepositoryStorageRuntimeException e )
         {
             log.warn( "Error occurred persisting metadata for artifact: " + path + "; message: " + e.getMessage(), e );
             repositorySession.revert();

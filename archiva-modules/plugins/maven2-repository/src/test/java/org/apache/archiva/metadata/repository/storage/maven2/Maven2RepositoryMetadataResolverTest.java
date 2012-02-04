@@ -20,6 +20,12 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
@@ -32,21 +38,12 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataI
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.common.utils.FileUtil;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.wagon.Wagon;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -59,15 +56,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverTest
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named(value = "repositoryStorage#maven2")
+    @Named( value = "repositoryStorage#maven2" )
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -135,8 +135,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadata()
         throws Exception
     {
-        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.archiva",
-                                                                              "archiva-common", "1.2.1" );
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
         assertEquals( "http://archiva.apache.org/ref/1.2.1/archiva-base/archiva-common", metadata.getUrl() );
@@ -190,9 +190,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactMetadata()
         throws Exception
     {
-        Collection<ArtifactMetadata> springArtifacts = storage.readArtifactsMetadata( TEST_REPO_ID,
-                                                                                      "org.codehaus.plexus",
-                                                                                      "plexus-spring", "1.2", ALL );
+        Collection<ArtifactMetadata> springArtifacts =
+            storage.readArtifactsMetadata( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( springArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -233,9 +232,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactMetadataSnapshots()
         throws Exception
     {
-        Collection<ArtifactMetadata> testArtifacts = storage.readArtifactsMetadata( TEST_REPO_ID, "com.example.test",
-                                                                                    "test-artifact", "1.0-SNAPSHOT",
-                                                                                    ALL );
+        Collection<ArtifactMetadata> testArtifacts =
+            storage.readArtifactsMetadata( TEST_REPO_ID, "com.example.test", "test-artifact", "1.0-SNAPSHOT", ALL );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( testArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -317,8 +315,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
         throws Exception
     {
-        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache", "apache",
-                                                                              "5-SNAPSHOT" );
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "pom", facet.getPackaging() );
         assertEquals( "http://www.apache.org/", metadata.getUrl() );
@@ -451,8 +449,8 @@ public class Maven2RepositoryMetadataResolverTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
-        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
-                                                                               "test-artifact-module-a", "1.0" );
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
@@ -489,7 +487,7 @@ public class Maven2RepositoryMetadataResolverTest
 
     @Test
     public void testGetProjectVersionMetadataWithParentNoRemoteReposConfigured()
-         throws Exception
+        throws Exception
     {
         // remove configuration
         Configuration config = configuration.getConfiguration();
@@ -501,11 +499,11 @@ public class Maven2RepositoryMetadataResolverTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
-        ProjectVersionMetadata metadata =  storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
-                                                                "test-artifact-module-a", "1.0" );
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" );
         assertEquals( "1.0", metadata.getId() );
 
-        MavenProjectFacet facet = ( MavenProjectFacet ) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertNotNull( facet );
         assertEquals( "com.example.test", facet.getGroupId() );
         assertEquals( "test-artifact-module-a", facet.getArtifactId() );
@@ -521,16 +519,17 @@ public class Maven2RepositoryMetadataResolverTest
 
     @Test
     public void testGetProjectVersionMetadataWithParentNotInAnyRemoteRepo()
-         throws Exception
+        throws Exception
     {
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
-        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-parent", "1.1" );
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-parent", "1.1" );
 
         assertEquals( "1.1", metadata.getId() );
 
-        MavenProjectFacet facet = ( MavenProjectFacet ) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertNotNull( facet );
         assertEquals( "com.example.test", facet.getGroupId() );
         assertEquals( "missing-parent", facet.getArtifactId() );
@@ -551,8 +550,9 @@ public class Maven2RepositoryMetadataResolverTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
                                     "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
 
-        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test",
-                                                                               "test-snapshot-artifact-module-a", "1.1-SNAPSHOT" );
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
+                                                "1.1-SNAPSHOT" );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
@@ -589,95 +589,94 @@ public class Maven2RepositoryMetadataResolverTest
 
     @Test
     public void testGetRootNamespaces()
+        throws Exception
     {
         assertEquals( Arrays.asList( "com", "org" ), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
     }
 
     @Test
     public void testGetNamespaces()
+        throws Exception
     {
         assertEquals( Arrays.asList( "example" ), storage.listNamespaces( TEST_REPO_ID, "com", ALL ) );
         assertEquals( Arrays.asList( "test" ), storage.listNamespaces( TEST_REPO_ID, "com.example", ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "com.example.test",
-                                                                               ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listNamespaces( TEST_REPO_ID, "com.example.test", ALL ) );
 
         assertEquals( Arrays.asList( "apache", "codehaus" ), storage.listNamespaces( TEST_REPO_ID, "org", ALL ) );
         assertEquals( Arrays.asList( "archiva", "maven" ), storage.listNamespaces( TEST_REPO_ID, "org.apache", ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.apache.archiva",
-                                                                               ALL ) );
-        assertEquals( Arrays.asList( "plugins", "shared" ), storage.listNamespaces( TEST_REPO_ID, "org.apache.maven",
-                                                                                    ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.apache.maven.plugins",
-                                                                               ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.apache.maven.shared",
-                                                                               ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listNamespaces( TEST_REPO_ID, "org.apache.archiva", ALL ) );
+        assertEquals( Arrays.asList( "plugins", "shared" ),
+                      storage.listNamespaces( TEST_REPO_ID, "org.apache.maven", ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listNamespaces( TEST_REPO_ID, "org.apache.maven.plugins", ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listNamespaces( TEST_REPO_ID, "org.apache.maven.shared", ALL ) );
 
         assertEquals( Arrays.asList( "plexus" ), storage.listNamespaces( TEST_REPO_ID, "org.codehaus", ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listNamespaces( TEST_REPO_ID, "org.codehaus.plexus",
-                                                                               ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listNamespaces( TEST_REPO_ID, "org.codehaus.plexus", ALL ) );
     }
 
     @Test
     public void testGetProjects()
+        throws Exception
     {
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com", ALL ) );
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "com.example", ALL ) );
         assertEquals( Arrays.asList( "incomplete-metadata", "invalid-pom", "malformed-metadata", "mislocated-pom",
-                                     "missing-metadata", "missing-parent", "test-artifact" ), storage.listProjects( TEST_REPO_ID,
-                                                                                                  "com.example.test",
-                                                                                                  ALL ) );
+                                     "missing-metadata", "missing-parent", "test-artifact" ),
+                      storage.listProjects( TEST_REPO_ID, "com.example.test", ALL ) );
 
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org", ALL ) );
         assertEquals( Arrays.asList( "apache" ), storage.listProjects( TEST_REPO_ID, "org.apache", ALL ) );
         assertEquals( Arrays.asList( "archiva", "archiva-base", "archiva-common", "archiva-modules", "archiva-parent" ),
                       storage.listProjects( TEST_REPO_ID, "org.apache.archiva", ALL ) );
         assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org.apache.maven", ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org.apache.maven.plugins",
-                                                                             ALL ) );
-        assertEquals( Arrays.asList( "maven-downloader" ), storage.listProjects( TEST_REPO_ID,
-                                                                                 "org.apache.maven.shared", ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listProjects( TEST_REPO_ID, "org.apache.maven.plugins", ALL ) );
+        assertEquals( Arrays.asList( "maven-downloader" ),
+                      storage.listProjects( TEST_REPO_ID, "org.apache.maven.shared", ALL ) );
     }
 
     @Test
     public void testGetProjectVersions()
+        throws Exception
     {
-        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                                    "incomplete-metadata", ALL ) );
-        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                                    "malformed-metadata", ALL ) );
-        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                                    "missing-metadata", ALL ) );
-        assertEquals( Arrays.asList( "1.0" ), storage.listProjectVersions( TEST_REPO_ID, "com.example.test",
-                                                                           "invalid-pom", ALL ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "com.example.test", "incomplete-metadata", ALL ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "com.example.test", "malformed-metadata", ALL ) );
+        assertEquals( Arrays.asList( "1.0-SNAPSHOT" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "com.example.test", "missing-metadata", ALL ) );
+        assertEquals( Arrays.asList( "1.0" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "com.example.test", "invalid-pom", ALL ) );
 
-        assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache",
-                                                                                       "apache", ALL ) );
+        assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache", "apache", ALL ) );
 
-        assertEquals( Arrays.asList( "1.2.1", "1.2.2" ), storage.listProjectVersions( TEST_REPO_ID,
-                                                                                      "org.apache.archiva", "archiva",
-                                                                                      ALL ) );
-        assertEquals( Arrays.asList( "1.2.1" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                             "archiva-base", ALL ) );
-        assertEquals( Arrays.asList( "1.2.1" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                             "archiva-common", ALL ) );
-        assertEquals( Arrays.asList( "1.2.1" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                             "archiva-modules", ALL ) );
-        assertEquals( Arrays.asList( "3" ), storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva",
-                                                                         "archiva-parent", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1", "1.2.2" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-base", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-common", ALL ) );
+        assertEquals( Arrays.asList( "1.2.1" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-modules", ALL ) );
+        assertEquals( Arrays.asList( "3" ),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache.archiva", "archiva-parent", ALL ) );
 
-        assertEquals( Collections.<String>emptyList(), storage.listProjectVersions( TEST_REPO_ID,
-                                                                                    "org.apache.maven.shared",
-                                                                                    "maven-downloader", ALL ) );
+        assertEquals( Collections.<String>emptyList(),
+                      storage.listProjectVersions( TEST_REPO_ID, "org.apache.maven.shared", "maven-downloader", ALL ) );
     }
 
     @Test
     public void testGetArtifacts()
+        throws Exception
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
-                                                                                                           "org.codehaus.plexus",
-                                                                                                           "plexus-spring",
-                                                                                                           "1.2",
-                                                                                                           ALL ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+            storage.readArtifactsMetadata( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) );
         assertEquals( 3, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -695,14 +694,12 @@ public class Maven2RepositoryMetadataResolverTest
 
     @Test
     public void testGetArtifactsFiltered()
+        throws Exception
     {
-        ExcludesFilter<String> filter = new ExcludesFilter<String>( Collections.singletonList(
-            "plexus-spring-1.2.pom" ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
-                                                                                                           "org.codehaus.plexus",
-                                                                                                           "plexus-spring",
-                                                                                                           "1.2",
-                                                                                                           filter ) );
+        ExcludesFilter<String> filter =
+            new ExcludesFilter<String>( Collections.singletonList( "plexus-spring-1.2.pom" ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+            storage.readArtifactsMetadata( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) );
         assertEquals( 2, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -718,12 +715,11 @@ public class Maven2RepositoryMetadataResolverTest
 
     @Test
     public void testGetArtifactsTimestampedSnapshots()
+        throws Exception
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata( TEST_REPO_ID,
-                                                                                                           "com.example.test",
-                                                                                                           "missing-metadata",
-                                                                                                           "1.0-SNAPSHOT",
-                                                                                                           ALL ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+            storage.readArtifactsMetadata( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT",
+                                           ALL ) );
         assertEquals( 1, artifacts.size() );
 
         ArtifactMetadata artifact = artifacts.get( 0 );
@@ -793,17 +789,18 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     private void deleteTestArtifactWithParent( List<String> pathsToBeDeleted )
-         throws IOException
+        throws IOException
     {
-        for( String path : pathsToBeDeleted )
+        for ( String path : pathsToBeDeleted )
         {
-            File dir =  new File( FileUtil.getBasedir(), path );
+            File dir = new File( FileUtil.getBasedir(), path );
             FileUtils.deleteDirectory( dir );
 
             assertFalse( dir.exists() );
         }
         File dest = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
-        File parentPom = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
+        File parentPom =
+            new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
         File rootPom = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-root" );
 
         FileUtils.deleteDirectory( dest );
@@ -816,7 +813,7 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     private File copyTestArtifactWithParent( String srcPath, String destPath )
-         throws IOException
+        throws IOException
     {
         File src = new File( FileUtil.getBasedir(), srcPath );
         File dest = new File( FileUtil.getBasedir(), destPath );
