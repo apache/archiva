@@ -14,6 +14,7 @@
   </description>
   <properties>
     <archiva.version>${archivaVersion}</archiva.version>
+    <wagonVersion>${wagon.version}</wagonVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -154,11 +155,13 @@
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
+      <version>${wagonVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
+      <version>${wagonVersion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
