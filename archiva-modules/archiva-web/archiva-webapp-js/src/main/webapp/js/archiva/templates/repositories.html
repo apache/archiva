@@ -40,13 +40,13 @@
               </li>
             </ul>
             <div id="managed-repositories-tabs-content" class="pill-content">
-              <div id="managed-repositories-bulk-save-btn" data-bind='template:{name:"managed-repositories-bulk-save-tmpl"}'></div>
               <div id="managed-repositories-view" class="pill-pane active">
-                  <table class="table table-striped table-bordered" id="managed-repositories-table"
-                         data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination',data:'managedRepositories'">
-                  </table>
-                  <div id="managed-repositoriesPagination"></div>
-                  <div id="managed-repositories-pom-snippet"></div>
+                <div id="managed-repositories-bulk-save-btn" data-bind='template:{name:"managed-repositories-bulk-save-tmpl"}'></div>
+                <table class="table table-striped table-bordered" id="managed-repositories-table"
+                       data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination',data:'managedRepositories'">
+                </table>
+                <div id="managed-repositoriesPagination"></div>
+                <div id="managed-repositories-pom-snippet"></div>
               </div>
               <div id="managed-repository-edit" class="pill-pane" data-bind='template: {name:"managed-repository-edit-tmpl"}'>
               </div>

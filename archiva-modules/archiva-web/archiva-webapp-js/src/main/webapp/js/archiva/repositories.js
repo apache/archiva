@@ -815,8 +815,8 @@ $(function() {
               $("#main-content #managed-repositories-table [title]").tooltip();
             }
           });
-          ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
-          ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-bulk-save-btn").get(0));
+          ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-view").get(0));
+
           $("#main-content #managed-repositories-pills a:first").tab('show');
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
           activateManagedRepositoriesGridTab();
