@@ -40,6 +40,7 @@
               </li>
             </ul>
             <div id="managed-repositories-tabs-content" class="pill-content">
+              <div id="managed-repositories-bulk-save-btn" data-bind='template:{name:"managed-repositories-bulk-save-tmpl"}'></div>
               <div id="managed-repositories-view" class="pill-pane active">
                   <table class="table table-striped table-bordered" id="managed-repositories-table"
                          data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_managed-repositoriesGrid',pageLinksId:'managed-repositoriesPagination',data:'managedRepositories'">
@@ -87,13 +88,14 @@
         <th>Scan</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('modified')}</th>
         <th>${$.i18n.prop('managedrepository.pomsnippet')}</th>
         <th title="${$.i18n.prop('managedrepository.stats')}">Stats</th>
       </tr>
   </thead>
   <tbody>
       {{each(i, row) itemsOnCurrentPage()}}
-          <tr>
+          <tr data-bind="css:{ 'modified': row.modified()}">
             {{each(j, columnDefinition) columns}}
               <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
             {{/each}}
@@ -123,6 +125,13 @@
                 <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
               </a>
             </td>
+            {{if row.modified()}}
+              <td>
+                <a href="#" data-bind="click: function(){ updateManagedRepository(row) }">${$.i18n.prop('save')}</a>
+              </td>
+            {{else}}
+              <td></td>
+            {{/if}}
             <td><a href="#" data-bind="click: function(){ showPomSnippet(row) }">${$.i18n.prop('managedrepository.pomsnippet')}</a></td>
             <td id="managedrepository-stats-${row.id()}">
               <img src="images/utilities-system-monitor.png" popover-title="${$.i18n.prop('managedrepository.stats')}"
@@ -444,4 +453,10 @@
     <div>
       ${$.i18n.prop('remoterepository.scan.full')}: <input type="checkbox" id="remoterepository-scan-full">
     </div>
+</script>
+
+<script id="managed-repositories-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+  {{if bulkSave()}}
+    <button data-bind="click: updateModifiedManagedRepositories" class="btn">${$.i18n.prop('save.all')}</button>
+  {{/if}}
 </script>

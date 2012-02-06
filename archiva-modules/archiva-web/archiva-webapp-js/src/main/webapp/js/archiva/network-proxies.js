@@ -141,10 +141,12 @@ $(function() {
     getModifiedNetworkProxies=function(){
       var prx = $.grep(self.networkProxies(),
           function (networkProxy,i) {
-            $.log("networkProxy.modified():"+networkProxy.modified())
             return networkProxy.modified();
           });
       return prx;
+    }
+    updateModifiedManagedRepositories=function(){
+
     }
 
     updateModifiedNetworkProxy=function(){

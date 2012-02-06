@@ -34,52 +34,67 @@ $(function() {
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
                              scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded){
 
+    var self=this;
 
     //private String id;
     this.id=ko.observable(id);
+    this.id.subscribe(function(newValue){self.modified(true)});
 
     //private String name;
     this.name=ko.observable(name);
+    this.name.subscribe(function(newValue){self.modified(true)});
 
     //private String layout = "default";
     this.layout=ko.observable(layout);
+    this.layout.subscribe(function(newValue){self.modified(true)});
 
     //private String indexDirectory;
     this.indexDirectory=ko.observable(indexDirectory);
+    this.indexDirectory.subscribe(function(newValue){self.modified(true)});
 
     //private String location;
     this.location=ko.observable(location);
+    this.location.subscribe(function(newValue){self.modified(true)});
 
     //private String cronExpression = "0 0 * * * ?";
     this.cronExpression=ko.observable(cronExpression);
+    this.cronExpression.subscribe(function(newValue){self.modified(true)});
 
     //private ManagedRepository stagingRepository;
 
     //private int daysOlder = 100;
     this.daysOlder=ko.observable(daysOlder);
+    this.daysOlder.subscribe(function(newValue){self.modified(true)});
 
     //private int retentionCount = 2;
     this.retentionCount=ko.observable(retentionCount);
+    this.retentionCount.subscribe(function(newValue){self.modified(true)});
 
     //private boolean scanned = false;
     this.scanned=ko.observable(scanned);
+    this.scanned.subscribe(function(newValue){self.modified(true)});
 
     //private boolean deleteReleasedSnapshots;
     this.deleteReleasedSnapshots=ko.observable(deleteReleasedSnapshots);
+    this.deleteReleasedSnapshots.subscribe(function(newValue){self.modified(true)});
 
     //private boolean stageRepoNeeded;
     this.stageRepoNeeded=ko.observable(stageRepoNeeded);
+    this.stageRepoNeeded.subscribe(function(newValue){self.modified(true)});
 
     //private boolean snapshots = false;
     this.snapshots=ko.observable(snapshots);
+    this.snapshots.subscribe(function(newValue){self.modified(true)});
 
     //private boolean releases = true;
     this.releases=ko.observable(releases);
+    this.releases.subscribe(function(newValue){self.modified(true)});
 
     //private boolean blockRedeployments = false;
     this.blockRedeployments=ko.observable(blockRedeployments);
+    this.blockRedeployments.subscribe(function(newValue){self.modified(true)});
 
-    var self=this;
+
 
     this.getTypeLabel=function(){
       for(i=0;i<window.managedRepositoryTypes.length;i++){
@@ -90,6 +105,7 @@ $(function() {
       return "no label";
     }
 
+    this.modified=ko.observable(false);
   }
 
   ArchivaRepositoryStatistics=function(scanEndTime,scanStartTime,totalArtifactCount,totalArtifactFileSize,totalFileCount,
@@ -156,7 +172,7 @@ $(function() {
 
     this.availableLayouts = window.managedRepositoryTypes;
 
-    save=function(){
+    this.save=function(){
       $.log("repositories.js#save");
       var valid = $("#main-content #managed-repository-edit-form").valid();
       if (valid==false) {
@@ -172,8 +188,9 @@ $(function() {
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
-              displaySuccessMessage($.i18n.prop('managedrepository.updated'));
+              displaySuccessMessage($.i18n.prop('managedrepository.updated',self.managedRepository.id()));
               activateManagedRepositoriesGridTab();
+              self.managedRepository.modified(false);
             },
             error: function(data) {
               var res = $.parseJSON(data.responseText);
@@ -360,6 +377,30 @@ $(function() {
           $("#managed-repository-delete-warning-tmpl").tmpl(managedRepository));
     }
 
+    updateManagedRepository=function(managedRepository){
+      var managedRepositoryViewModel = new ManagedRepositoryViewModel(managedRepository,true,this);
+      managedRepositoryViewModel.save();
+    }
+
+    this.bulkSave=function(){
+      $.log("bulkSave");
+      return getModifiedManagedRepositories().length>0;
+    }
+
+    getModifiedManagedRepositories=function(){
+      var prx = $.grep(self.managedRepositories(),
+          function (managedRepository,i) {
+            return managedRepository.modified();
+          });
+      return prx;
+    }
+    updateModifiedManagedRepositories=function(){
+      var repos = getModifiedManagedRepositories();
+      for (i=0;i<repos.length;i++){
+        updateManagedRepository(repos[i]);
+      }
+    }
+
     showStats=function(managedRepository){
       if ($(calculatePopoverId(managedRepository)).html()){
         // we ask stats all the time ? if no uncomment return
@@ -464,50 +505,63 @@ $(function() {
   RemoteRepository=function(id,name,layout,indexDirectory,url,userName,password,timeout,downloadRemoteIndex,remoteIndexUrl,
                             remoteDownloadNetworkProxyId,cronExpression,remoteDownloadTimeout,downloadRemoteIndexOnStartup){
 
+    var self=this;
 
     //private String id;
     this.id=ko.observable(id);
+    this.id.subscribe(function(newValue){self.modified(true)});
 
     //private String name;
     this.name=ko.observable(name);
+    this.name.subscribe(function(newValue){self.modified(true)});
 
     //private String layout = "default";
     this.layout=ko.observable(layout);
+    this.layout.subscribe(function(newValue){self.modified(true)});
 
     //private String indexDirectory;
     this.indexDirectory=ko.observable(indexDirectory);
+    this.indexDirectory.subscribe(function(newValue){self.modified(true)});
 
     //private String url;
     this.url=ko.observable(url);
+    this.url.subscribe(function(newValue){self.modified(true)});
 
     //private String userName;
     this.userName=ko.observable(userName);
+    this.userName.subscribe(function(newValue){self.modified(true)});
 
     //private String password;
     this.password=ko.observable(password);
+    this.password.subscribe(function(newValue){self.modified(true)});
 
     //private int timeout = 60;
     this.timeout=ko.observable(timeout);
+    this.timeout.subscribe(function(newValue){self.modified(true)});
 
     //private boolean downloadRemoteIndex = false;
     this.downloadRemoteIndex=ko.observable(downloadRemoteIndex);
+    this.downloadRemoteIndex.subscribe(function(newValue){self.modified(true)});
 
     //private String remoteIndexUrl = ".index";
     this.remoteIndexUrl=ko.observable(remoteIndexUrl);
+    this.remoteIndexUrl.subscribe(function(newValue){self.modified(true)});
 
     //private String remoteDownloadNetworkProxyId;
     this.remoteDownloadNetworkProxyId=ko.observable(remoteDownloadNetworkProxyId);
+    this.remoteDownloadNetworkProxyId.subscribe(function(newValue){self.modified(true)});
 
     //private String cronExpression = "0 0 08 ? * SUN";
     this.cronExpression=ko.observable(cronExpression);
+    this.cronExpression.subscribe(function(newValue){self.modified(true)});
 
     //private int remoteDownloadTimeout = 300;
     this.remoteDownloadTimeout=ko.observable(remoteDownloadTimeout);
+    this.remoteDownloadTimeout.subscribe(function(newValue){self.modified(true)});
 
     //private boolean downloadRemoteIndexOnStartup = false;
     this.downloadRemoteIndexOnStartup=ko.observable(downloadRemoteIndexOnStartup);
-
-    var self=this;
+    this.downloadRemoteIndexOnStartup.subscribe(function(newValue){self.modified(true)});
 
     this.getTypeLabel=function(){
       for(i=0;i<window.managedRepositoryTypes.length;i++){
@@ -517,6 +571,8 @@ $(function() {
       }
       return "no label";
     }
+
+    this.modified=ko.observable(false);
   }
 
   mapRemoteRepository=function(data){
@@ -760,6 +816,7 @@ $(function() {
             }
           });
           ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-table").get(0));
+          ko.applyBindings(managedRepositoriesViewModel,$("#main-content #managed-repositories-bulk-save-btn").get(0));
           $("#main-content #managed-repositories-pills a:first").tab('show');
           removeMediumSpinnerImg("#main-content #managed-repositories-content");
           activateManagedRepositoriesGridTab();
