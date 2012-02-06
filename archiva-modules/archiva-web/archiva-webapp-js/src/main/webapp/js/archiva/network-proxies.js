@@ -145,11 +145,9 @@ $(function() {
           });
       return prx;
     }
-    updateModifiedManagedRepositories=function(){
 
-    }
 
-    updateModifiedNetworkProxy=function(){
+    updateModifiedNetworkProxies=function(){
       var modifiedNetworkProxies = getModifiedNetworkProxies();
 
       openDialogConfirm(function(){

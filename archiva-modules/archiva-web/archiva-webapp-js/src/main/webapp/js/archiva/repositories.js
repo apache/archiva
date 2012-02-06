@@ -396,9 +396,17 @@ $(function() {
     }
     updateModifiedManagedRepositories=function(){
       var repos = getModifiedManagedRepositories();
-      for (i=0;i<repos.length;i++){
-        updateManagedRepository(repos[i]);
-      }
+
+      openDialogConfirm(function(){
+                          for (i=0;i<repos.length;i++){
+                            updateManagedRepository(repos[i]);
+                          }
+                          closeDialogConfirm();
+                        },
+                        $.i18n.prop('ok'),
+                        $.i18n.prop('cancel'),
+                        $.i18n.prop('bulk.save.confirm.title'),
+                        $.i18n.prop('managed.repository.bulk.save.confirm',repos.length));
     }
 
     showStats=function(managedRepository){
