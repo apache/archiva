@@ -255,8 +255,7 @@ $(function() {
               $("#main-content #networkProxiesTable [title]").tooltip();
             }
           });
-          ko.applyBindings(networkProxiesViewModel,$("#main-content #networkProxiesTable").get(0));
-          ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-bulk-save-btn").get(0));
+          ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-view").get(0));
         }
       }
     );
