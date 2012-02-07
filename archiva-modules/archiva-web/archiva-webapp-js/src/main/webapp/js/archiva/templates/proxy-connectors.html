@@ -154,22 +154,3 @@
     </fieldset>
   </form>
 </script>
-
-<script id="proxy-connector-edit-form-policies-tmpl" type='text/x-jquery-tmpl'>
-   <tr>
-     <td>${policyInformation.name()}</td>
-     <td>
-       <select id="policy-${policyInformation.id()}">
-         {{each(i, curOption) policyInformation.options()}}
-           {{if isSelectedOption(curOption)}}
-             <option selected value="${curOption}">${curOption}</option>
-           {{else}}
-             <option value="${curOption}">${curOption}</option>
-           {{/if}}
-         {{/each}}
-       </select>
-     </td>
-   </tr>
-
-   <br/>
-</script>
