@@ -92,6 +92,13 @@ $(function() {
     this.targetRepos=ko.observableArray(targetRepos);
   }
 
+  ProxyConnectorViewModel=function(proxyConnector,update,proxyConnectorsViewModel){
+    var self=this;
+    this.proxyConnector=ko.observable();
+    this.proxyConnectorsViewModel=proxyConnectorsViewModel;
+    //mappe policies avec policyInformations pour avoir object + plus complexe
+  }
+
   ProxyConnectorsViewModel=function(){
     var self=this;
     this.proxyConnectors=ko.observableArray([]);
@@ -99,6 +106,8 @@ $(function() {
     this.policyInformations=ko.observableArray([]);
     this.managedRepositories=ko.observableArray([]);
     this.remoteRepositories=ko.observableArray([]);
+    this.networkProxies=ko.observableArray([]);
+
     editProxyConnector=function(proxyConnector){
 
     }
@@ -186,15 +195,28 @@ $(function() {
           $("#main-content #proxyConnectorsTable [title]").tooltip();
         }
       });
+      var mainContent = $("#main-content");
       this.gridViewModel.getManagedRepository=getManagedRepository;
-      ko.applyBindings(this,$("#main-content #proxyConnectorsTable").get(0));
+      ko.applyBindings(this,mainContent.find("#proxyConnectorsTable").get(0));
       removeSmallSpinnerImg("#main-content");
-      $("#main-content #proxy-connectors-view-tabs a:first").tab('show');
+      this,mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
+
+      mainContent.find("#proxy-connectors-view-tabs").on('show', function (e) {
+
+        if ($(e.target).attr("href")=="#proxy-connectors-edit") {
+          var proxyConnectorViewModel=new ProxyConnectorViewModel(new ProxyConnector(),false,self);
+          ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
+
+        }
+        if ($(e.target).attr("href")=="#proxy-connectors-view") {
+          $("#proxy-connectors-view-tabs-a-network-proxies-grid").html($.i18n.prop("add"));
+
+        }
+
+      });
     }
 
   }
-
-  // FIXME use various callback to prevent async false !!
 
   displayProxyConnectors=function(){
     var mainContent = $("#main-content");
@@ -204,44 +226,50 @@ $(function() {
     this.proxyConnectorsViewModel = new ProxyConnectorsViewModel();
     var self=this;
 
-    $.ajax("restServices/archivaServices/managedRepositoriesService/getManagedRepositories", {
-        type: "GET",
-        dataType: 'json',
-        async: false,
-        success: function(data) {
-          self.proxyConnectorsViewModel.managedRepositories(mapManagedRepositories(data));
-        }
+    loadManagedRepositories(function(data) {
+      self.proxyConnectorsViewModel.managedRepositories(mapManagedRepositories(data));
+
+      loadRemoteRepositories(function(data) {
+        self.proxyConnectorsViewModel.remoteRepositories(mapRemoteRepositories(data));
+
+        loadNetworkProxies(function(data) {
+          self.proxyConnectorsViewModel.networkProxies(mapNetworkProxies(data));
+
+          loadAllPolicies( function(data) {
+            self.proxyConnectorsViewModel.policyInformations(mapPolicyInformations(data));
+
+            loadAllProxyConnectors( function(data) {
+              self.proxyConnectorsViewModel.proxyConnectors(mapProxyConnectors(data));
+              self.proxyConnectorsViewModel.displayGrid();
+            });
+
+          });
+
+        });
+
+      });
+
     });
 
-    $.ajax("restServices/archivaServices/remoteRepositoriesService/getRemoteRepositories", {
-        type: "GET",
-        dataType: 'json',
-        async: false,
-        success: function(data) {
-          self.proxyConnectorsViewModel.remoteRepositories(mapRemoteRepositories(data));
-        }
-    });
+  }
 
+  loadAllPolicies=function(successCallBackFn,errorCallBackFn){
     $.ajax("restServices/archivaServices/proxyConnectorService/allPolicies", {
         type: "GET",
         dataType: 'json',
-        async: false,
-        success: function(data) {
-          self.proxyConnectorsViewModel.policyInformations(mapPolicyInformations(data));
-        }
+        success: successCallBackFn,
+        error: errorCallBackFn
       }
     );
+  }
 
+  loadAllProxyConnectors=function(successCallBackFn,errorCallBackFn){
     $.ajax("restServices/archivaServices/proxyConnectorService/getProxyConnectors", {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
-          self.proxyConnectorsViewModel.proxyConnectors(mapProxyConnectors(data));
-          self.proxyConnectorsViewModel.displayGrid();
-        }
-      }
-    );
-
+      type: "GET",
+      dataType: 'json',
+      success: successCallBackFn,
+      error: errorCallBackFn
+     });
   }
 
   mapProxyConnector=function(data){
@@ -251,8 +279,11 @@ $(function() {
     var policies = data.policies == null ? null: $.each(data.policies,function(item){
       return new Entry(item.key, item.value);
     });
+    var properties = data.properties == null ? null: $.each(data.properties,function(item){
+          return new Entry(item.key, item.value);
+        });
     return new ProxyConnector(data.sourceRepoId,data.targetRepoId,data.proxyId,mapStringArray(data.blackListPatterns),
-                              mapStringArray(data.whiteListPatterns),policies,data.properties,
+                              mapStringArray(data.whiteListPatterns),policies,properties,
                               data.disabled,data.order);
   }
 

@@ -118,7 +118,7 @@ $(function() {
   }
 
   NetworkProxiesViewModel=function(){
-    this.networkProxies=ko.observableArray([]);//.subscribe(function(val){$.log('subscribe')});
+    this.networkProxies=ko.observableArray([]);
 
     var self=this;
 
@@ -220,12 +220,8 @@ $(function() {
 
 
 
-    $.ajax("restServices/archivaServices/networkProxyService/getNetworkProxies", {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
+    loadNetworkProxies( function(data) {
           networkProxiesViewModel.networkProxies(mapNetworkProxies(data));
-          //networkProxiesViewModel.networkProxies.subscribe(function(){$.log("change in networkProxies")});
           networkProxiesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
             data: networkProxiesViewModel.networkProxies,
             columns: [
@@ -257,8 +253,16 @@ $(function() {
           });
           ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-view").get(0));
         }
-      }
-    );
+    )
+  }
+
+  loadNetworkProxies=function(successCallbackFn, errorCallbackFn){
+    $.ajax("restServices/archivaServices/networkProxyService/getNetworkProxies", {
+        type: "GET",
+        dataType: 'json',
+        success: successCallbackFn,
+        error: errorCallbackFn
+    });
   }
 
   activateNetworkProxyFormValidation=function(){

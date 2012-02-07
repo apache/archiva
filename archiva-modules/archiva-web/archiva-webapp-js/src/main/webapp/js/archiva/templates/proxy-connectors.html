@@ -26,7 +26,7 @@
       <a data-toggle="tab" href="#proxy-connectors-view" id="proxy-connectors-view-tabs-a-network-proxies-grid">${$.i18n.prop('proxy-connectors.grid.tab.title')}</a>
     </li>
     <li id="proxy-connectors-view-tabs-li-edit">
-      <a data-toggle="tab" href="#proxy-connectors-edit">${$.i18n.prop('add')}</a>
+      <a data-toggle="tab" href="#proxy-connectors-edit" id="proxy-connectors-view-tabs-a-edit">${$.i18n.prop('add')}</a>
     </li>
   </ul>
   <div id="proxy-connectors-view-tabs-content" class="tab-content">
@@ -36,7 +36,7 @@
       </table>
       <div id="proxy-connectorsPagination"></div>
     </div>
-    <div id="proxy-connectors-edit" class="tab-pane" data-bind='template: {name:"proxy-connectors-edit-tmpl"}'></div>
+    <div id="proxy-connectors-edit" class="tab-pane" data-bind='template: {name:"proxy-connector-edit-form-tmpl"}'></div>
   </div>
 
 </script>
@@ -92,7 +92,7 @@
     {{/if}}
     <table class="table">
       <thead>
-        <th colspan="2">Policies</th>
+        <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
       </thead>
       <tbody>
         {{each policies().entry}}
@@ -104,4 +104,51 @@
       </tbody>
     </table>
   </div>
+</script>
+
+<script id="proxy-connector-edit-form-tmpl" type='text/x-jquery-tmpl'>
+  <form id="proxy-connector-edit-form" class="form-horizontal">
+    <fieldset id="remote-repository-edit-fieldset">
+      <div class="control-group">
+        <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.network-proxy.id')}</label>
+        <div class="controls">
+          <select id="proxyId"
+                  data-bind="options: proxyConnectorsViewModel.networkProxies, optionsText: 'id',optionsValue:'id',
+                   value: proxyConnector.proxyId, optionsCaption: 'direct connection'"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.managed.repository.id')}</label>
+        <div class="controls">
+          <select id="sourceRepoId"
+                  data-bind="options: proxyConnectorsViewModel.managedRepositories, optionsText: 'id',optionsValue:'id',
+                   value: proxyConnector.sourceRepoId"></select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.remote.repository.id')}</label>
+        <div class="controls">
+          <select id="targetRepoId"
+                  data-bind="options: proxyConnectorsViewModel.remoteRepositories, optionsText: 'id',optionsValue:'id',
+                   value: proxyConnector.targetRepoId"></select>
+        </div>
+      </div>
+      <div class="control-group span5">
+          <table class="table">
+            <thead>
+              <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
+            </thead>
+            <tbody>
+              {{each proxyConnector.policies}}
+
+              <tr>
+                <td>${$value.key}</td>
+                <td>${$value.value}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+      </div>
+    </fieldset>
+  </form>
 </script>
