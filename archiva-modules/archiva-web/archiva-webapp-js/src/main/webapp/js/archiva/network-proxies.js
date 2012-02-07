@@ -127,9 +127,10 @@ $(function() {
     editNetworkProxy=function(networkProxy){
       clearUserMessages();
       $.log("editNetworkProxy");
-      $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("edit"));
+      var mainContent = $("#main-content");
+      mainContent.find("#network-proxies-view-tabs-li-edit a").html($.i18n.prop("edit"));
       var viewModel = new NetworkProxyViewModel(networkProxy,true,self);
-      ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
+      ko.applyBindings(viewModel,mainContent.find("#network-proxies-edit").get(0));
       activateNetworkProxyFormValidation();
       activateNetworkProxyEditTab();
     }
@@ -196,13 +197,14 @@ $(function() {
 
   displayNetworkProxies=function(){
     clearUserMessages();
-    $("#main-content").html(mediumSpinnerImg());
-    $("#main-content").html($("#networkProxiesMain").tmpl());
-    $("#main-content #network-proxies-view-tabs a:first").tab('show');
+    var mainContent = $("#main-content");
+    mainContent.html(mediumSpinnerImg());
+    mainContent.html($("#networkProxiesMain").tmpl());
+    mainContent.find("#network-proxies-view-tabs a:first").tab('show');
 
     var networkProxiesViewModel = new NetworkProxiesViewModel();
 
-    $("#main-content #network-proxies-view-tabs").on('show', function (e) {
+    mainContent.find("#network-proxies-view-tabs").on('show', function (e) {
       if ($(e.target).attr("href")=="#network-proxies-edit") {
         var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
         ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
@@ -276,21 +278,23 @@ $(function() {
   }
 
   activateNetworkProxiesGridTab=function(){
-    $("#main-content #network-proxies-view-tabs-li-edit").removeClass("active");
-    $("#main-content #network-proxies-edit").removeClass("active");
+    var mainContent = $("#main-content");
+    mainContent.find("#network-proxies-view-tabs-li-edit").removeClass("active");
+    mainContent.find("#network-proxies-edit").removeClass("active");
 
-    $("#main-content #network-proxies-view-tabs-li-grid").addClass("active");
-    $("#main-content #network-proxies-view").addClass("active");
-    $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
+    mainContent.find("#network-proxies-view-tabs-li-grid").addClass("active");
+    mainContent.find("#network-proxies-view").addClass("active");
+    mainContent.find("#network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
 
   }
 
   activateNetworkProxyEditTab=function(){
-    $("#main-content #network-proxies-view-tabs-li-grid").removeClass("active");
-    $("#main-content #network-proxies-view").removeClass("active");
+    var mainContent = $("#main-content");
+    mainContent.find("#network-proxies-view-tabs-li-grid").removeClass("active");
+    mainContent.find("#network-proxies-view").removeClass("active");
 
-    $("#main-content #network-proxies-view-tabs-li-edit").addClass("active");
-    $("#main-content #network-proxies-edit").addClass("active");
+    mainContent.find("#network-proxies-view-tabs-li-edit").addClass("active");
+    mainContent.find("#network-proxies-edit").addClass("active");
   }
 
   mapNetworkProxy=function(data){

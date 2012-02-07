@@ -20,45 +20,81 @@ $(function() {
 
   ProxyConnector=function(sourceRepoId,targetRepoId,proxyId,blackListPatterns,whiteListPatterns,policies,properties,
                           disabled,order){
+    var self=this;
+    this.modified=ko.observable(false);
+
     //private String sourceRepoId;
     this.sourceRepoId=ko.observable(sourceRepoId);
+    this.sourceRepoId.subscribe(function(newValue){self.modified(true)});
+
     //private String targetRepoId;
     this.targetRepoId=ko.observable(targetRepoId);
+    this.targetRepoId.subscribe(function(newValue){self.modified(true)});
+
     //private String proxyId;
     this.proxyId=ko.observable(proxyId);
+    this.proxyId.subscribe(function(newValue){self.modified(true)});
+
     //private List<String> blackListPatterns;
     this.blackListPatterns=ko.observableArray(blackListPatterns);
+    this.blackListPatterns.subscribe(function(newValue){self.modified(true)});
+
     //private List<String> whiteListPatterns;
     this.whiteListPatterns=ko.observableArray(whiteListPatterns);
+    this.whiteListPatterns.subscribe(function(newValue){self.modified(true)});
+
     //private Map<String, String> policies;
     this.policies=ko.observable(policies);
+    this.policies.subscribe(function(newValue){self.modified(true)});
+
     //private Map<String, String> properties;
     this.properties=ko.observable(properties);
+    this.properties.subscribe(function(newValue){self.modified(true)});
+
     //private boolean disabled = false;
     this.disabled=ko.observable(disabled);
+    this.disabled.subscribe(function(newValue){self.modified(true)});
+
     //private int order = 0;
     this.order=ko.observable(order);
+    this.order.subscribe(function(newValue){self.modified(true)});
+
+    this.modified=ko.observable(false);
   }
 
   PolicyInformation=function(options,defaultOption,id,name){
+
+    var self=this;
+    this.modified=ko.observable(false);
+
     //private List<String> options;
     this.options=ko.observableArray(options);
+    this.options.subscribe(function(newValue){self.modified(true)});
+
     //private String defaultOption;
     this.defaultOption=ko.observable(defaultOption);
+    this.defaultOption.subscribe(function(newValue){self.modified(true)});
+
     //private String id;
     this.id=ko.observable(id);
+    this.id.subscribe(function(newValue){self.modified(true)});
+
     //private String name;
     this.name=ko.observable(name);
+    this.name.subscribe(function(newValue){self.modified(true)});
   }
 
   ManagedRepositoryConnectorView=function(source,targetRepos){
+    var self=this;
+    this.modified=ko.observable(false);
+
     this.source=ko.observable(source);
     this.targetRepos=ko.observableArray(targetRepos);
   }
 
   ProxyConnectorsViewModel=function(){
-    this.proxyConnectors=ko.observableArray([]);
     var self=this;
+    this.proxyConnectors=ko.observableArray([]);
     this.managedRepositoryConnectorViews=ko.observableArray([]);
     this.policyInformations=ko.observableArray([]);
     this.managedRepositories=ko.observableArray([]);
@@ -121,14 +157,14 @@ $(function() {
     }
 
     showSettings=function(sourceRepoId,targetRepoId){
-      //proxy-connectors-grid-remoterepo-settings-edit-internal-central
-      var targetImgId="#proxy-connectors-grid-remoterepo-settings-edit-"+sourceRepoId+"-"+targetRepoId;
-      //proxy-connectors.grid-remoterepo-settings-content-internal-central
-      var targetContentId="#proxy-connectors-grid-remoterepo-settings-content-"+sourceRepoId+"-"+targetRepoId;
-      $(targetContentId).html("");
-      $(targetContentId).append($("#proxy-connectors-remote-settings-popover-tmpl").tmpl(self.getProxyConnector(sourceRepoId,targetRepoId)));
-      $(targetImgId).attr("data-content",$(targetContentId).html());
-      $(targetImgId).popover(
+      var targetContent = $("#proxy-connectors-grid-remoterepo-settings-content-"+sourceRepoId+"-"+targetRepoId);
+      targetContent.html("");
+      targetContent.append($("#proxy-connectors-remote-settings-popover-tmpl")
+                               .tmpl(self.getProxyConnector(sourceRepoId,targetRepoId)));
+
+      var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+sourceRepoId+"-"+targetRepoId);
+      targetImg.attr("data-content",targetContent.html());
+      targetImg.popover(
           {
             placement: "left",
             html: true,
@@ -136,7 +172,7 @@ $(function() {
           }
       );
 
-      $(targetImgId).popover('show');
+      targetImg.popover('show');
 
     }
 
@@ -161,8 +197,9 @@ $(function() {
   // FIXME use various callback to prevent async false !!
 
   displayProxyConnectors=function(){
-    $("#main-content").html($("#proxyConnectorsMain").tmpl());
-    $("#main-content").append(smallSpinnerImg());
+    var mainContent = $("#main-content");
+    mainContent.html($("#proxyConnectorsMain").tmpl());
+    mainContent.append(smallSpinnerImg());
 
     this.proxyConnectorsViewModel = new ProxyConnectorsViewModel();
     var self=this;
@@ -211,8 +248,11 @@ $(function() {
     if (data==null){
       return null;
     }
+    var policies = data.policies == null ? null: $.each(data.policies,function(item){
+      return new Entry(item.key, item.value);
+    });
     return new ProxyConnector(data.sourceRepoId,data.targetRepoId,data.proxyId,mapStringArray(data.blackListPatterns),
-                              mapStringArray(data.whiteListPatterns),data.policies,data.properties,
+                              mapStringArray(data.whiteListPatterns),policies,data.properties,
                               data.disabled,data.order);
   }
 
