@@ -54,7 +54,7 @@
   </thead>
 
   {{each(i, row) itemsOnCurrentPage()}}
-    <tr>
+    <tr data-bind="css:{ 'modified': row.modified()}">
         {{var val = row.source()}}
       <td>
         <blockquote>
@@ -133,22 +133,43 @@
                    value: proxyConnector.targetRepoId"></select>
         </div>
       </div>
-      <div class="control-group span5">
+      <div class="control-group span6">
           <table class="table">
             <thead>
               <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
             </thead>
             <tbody>
-              {{each proxyConnector.policies}}
-
-              <tr>
-                <td>${$value.key}</td>
-                <td>${$value.value}</td>
-              </tr>
+              {{each proxyConnectorsViewModel.policyInformations()}}
+              {{var policyId=$value.id()}}
+                <tr>
+                  <td>${$value.name()}</td>
+                  <td>
+                    <select id="policy-${policyId}" data-bind="options: getPolicyOptions(policyId),value:getSelectedPolicyOption(policyId)"></select>
+                  </td>
+                </tr>
               {{/each}}
             </tbody>
           </table>
       </div>
     </fieldset>
   </form>
+</script>
+
+<script id="proxy-connector-edit-form-policies-tmpl" type='text/x-jquery-tmpl'>
+   <tr>
+     <td>${policyInformation.name()}</td>
+     <td>
+       <select id="policy-${policyInformation.id()}">
+         {{each(i, curOption) policyInformation.options()}}
+           {{if isSelectedOption(curOption)}}
+             <option selected value="${curOption}">${curOption}</option>
+           {{else}}
+             <option value="${curOption}">${curOption}</option>
+           {{/if}}
+         {{/each}}
+       </select>
+     </td>
+   </tr>
+
+   <br/>
 </script>

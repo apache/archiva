@@ -59,7 +59,8 @@ $(function() {
     this.order=ko.observable(order);
     this.order.subscribe(function(newValue){self.modified(true)});
 
-    this.modified=ko.observable(false);
+    this.modified=ko.observable(true);
+    this.modified.subscribe(function(newValue){$.log("ProxyConnector modified")});
   }
 
   PolicyInformation=function(options,defaultOption,id,name){
@@ -82,11 +83,13 @@ $(function() {
     //private String name;
     this.name=ko.observable(name);
     this.name.subscribe(function(newValue){self.modified(true)});
+
   }
 
   ManagedRepositoryConnectorView=function(source,targetRepos){
     var self=this;
     this.modified=ko.observable(false);
+
 
     this.source=ko.observable(source);
     this.targetRepos=ko.observableArray(targetRepos);
@@ -94,9 +97,27 @@ $(function() {
 
   ProxyConnectorViewModel=function(proxyConnector,update,proxyConnectorsViewModel){
     var self=this;
-    this.proxyConnector=ko.observable();
+    this.proxyConnector=ko.observable(proxyConnector);
     this.proxyConnectorsViewModel=proxyConnectorsViewModel;
-    //mappe policies avec policyInformations pour avoir object + plus complexe
+    this.update=update;
+    getSelectedPolicyOption=function(id){
+      var policies=self.proxyConnector().policies();
+      for (i=0;i<policies().length;i++){
+        if (id==policies()[i].key()){
+          return policies()[i].value();
+        }
+      }
+      return "";
+    }
+    getPolicyOptions=function(id){
+      var policyInformations=self.proxyConnectorsViewModel.policyInformations();
+      for(i=0;i<policyInformations.length;i++){
+        $.log("getPolicyOptions:"+id+",cur:"+policyInformations[i].id());
+        if (policyInformations[i].id()==id){
+          return policyInformations[i].options();
+        }
+      }
+    }
   }
 
   ProxyConnectorsViewModel=function(){
@@ -187,7 +208,6 @@ $(function() {
 
     this.displayGrid=function(){
       self.managedRepositoryConnectorViews(this.findUniqueManagedRepos());
-      $.log("uniqueManagedRepos:"+self.managedRepositoryConnectorViews().length);
       this.gridViewModel = new ko.simpleGrid.viewModel({
         data: self.managedRepositoryConnectorViews,
         pageSize: 5,
@@ -204,8 +224,13 @@ $(function() {
       mainContent.find("#proxy-connectors-view-tabs").on('show', function (e) {
 
         if ($(e.target).attr("href")=="#proxy-connectors-edit") {
-          var proxyConnectorViewModel=new ProxyConnectorViewModel(new ProxyConnector(),false,self);
+          var proxyConnector=new ProxyConnector();
+          for (i=0;i<self.policyInformations.length;i++){
+            //proxyConnector[]
+          }
+          var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,false,self);
           ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
+          //ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connector-policies-binding").get(0));
 
         }
         if ($(e.target).attr("href")=="#proxy-connectors-view") {
@@ -308,3 +333,49 @@ $(function() {
   }
 
 });
+
+(function () {
+
+
+  // Templates used for rendering
+  var templateEngine = new ko.jqueryTmplTemplateEngine();
+  TemporaryViewModel=function(currentPolicyInformation,selectedOption){
+    var self=this;
+    this.policyInformation=currentPolicyInformation;
+    this.selectedValue=selectedOption;
+    isSelectedOption=function(id){
+      return (id==self.selectedValue);
+    }
+  }
+  ko.bindingHandlers.proxyConnectorPolicies = {
+      update: function(element, valueAccessor, allBindingsAccessor, proxyConnectorViewModel) {
+        // This will be called once when the binding is first applied to an element,
+        // and again whenever the associated observable changes value.
+        // Update the DOM element based on the supplied values here.
+        var jqueryElement=$(element);
+        $.log("update:"+proxyConnectorViewModel.proxyConnectorsViewModel.managedRepositories().length);
+        // Empty the element
+        while(element.firstChild) {
+            ko.removeNode(element.firstChild);
+        }
+        var policyInformations = proxyConnectorViewModel.proxyConnectorsViewModel.policyInformations();
+        for (i=0;i<policyInformations.length;i++){
+          var currentPolicyInformation=policyInformations[i];
+          var gridContainer = element.appendChild(document.createElement("DIV"));
+          var selectedOption =
+              proxyConnectorViewModel.update ?
+                  proxyConnectorViewModel.getSelectedOptionForPolicy(currentPolicyInformation.id()):currentPolicyInformation.defaultOption();
+
+          var tmpViewModel = new TemporaryViewModel(currentPolicyInformation,selectedOption);
+          ko.renderTemplate("proxy-connector-edit-form-policies-tmpl", tmpViewModel
+                            , { templateEngine: templateEngine }, gridContainer, "replaceNode");
+          ko.utils.registerEventHandler($("#policy-"+currentPolicyInformation.id()).get(0), "change", function () {
+            $.log("change policy:"+$(this).attr('value')+" for policy " + tmpViewModel.currentPolicyInformation.id());
+          });
+          /*.change(function(event){
+            $.log("change policy:"+$(this).attr('value')+" for policy " + tmpViewModel.currentPolicyInformation.id());
+          });*/
+        }
+      }
+  };
+})();
