@@ -172,12 +172,33 @@ $(function() {
       var mainContent=$("#main-content");
       var key=mainContent.find("#property-key").val();
       var value=mainContent.find("#property-value").val();
-      $.log("add property:"+key+":"+value+",size:"+self.proxyConnector.properties().length);
-      var oldTab = proxyConnector.properties();
+      var oldTab = self.proxyConnector.properties();
       oldTab.push(new Entry(key,value));
       self.proxyConnector.properties(oldTab);
-      $.log("add property:"+key+":"+value+",size:"+self.proxyConnector.properties().length);
-      self.proxyConnector.modified(true);
+    }
+
+    addBlacklistPattern=function(){
+      var pattern = $("#main-content #blacklist-value").val();
+      var tab =  self.proxyConnector.blackListPatterns();
+      tab.push(pattern);
+      self.proxyConnector.blackListPatterns(tab);
+
+    }
+
+    removeBlacklistPattern=function(pattern){
+      self.proxyConnector.blackListPatterns.remove(pattern);
+    }
+
+    addWhitelistPattern=function(){
+      var pattern = $("#main-content #whitelist-value").val();
+      var tab =  self.proxyConnector.whiteListPatterns();
+      tab.push(pattern);
+      self.proxyConnector.whiteListPatterns(tab);
+
+    }
+
+    removeWhitelistPattern=function(pattern){
+      self.proxyConnector.whiteListPatterns.remove(pattern);
     }
   }
 

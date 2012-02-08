@@ -163,7 +163,6 @@
             </table>
 
             <table class="table">
-
               <tbody data-bind="foreach: proxyConnector.properties">
                 <tr>
                   <td data-bind="text: key"></td>
@@ -172,8 +171,51 @@
                 </tr>
               </tbody>
             </table>
-
         </div>
+
+        <div class="control-group span6">
+            <table>
+                <thead>
+                  <th colspan="2" class="pull-left">${$.i18n.prop('proxy-connector.blacklist')}</th>
+                </thead>
+                <tr>
+                  <td><input type="text" id="blacklist-value"/></td>
+                  <td><a href="#" data-bind="click: function(){ addBlacklistPattern() }">${$.i18n.prop('add')}</a></td>
+                </tr>
+            </table>
+
+            <table class="table">
+              <tbody data-bind="foreach: proxyConnector.blackListPatterns">
+                <tr>
+                  <td data-bind="text: $data"></td>
+                  <td><a href="#" data-bind="click: function(){removeBlacklistPattern($data)}">${$.i18n.prop('delete')}</a></td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+
+
+          <div class="control-group span6">
+            <table>
+                <thead>
+                  <th colspan="2" class="pull-left">${$.i18n.prop('proxy-connector.whitelist')}</th>
+                </thead>
+                <tr>
+                  <td><input type="text" id="whitelist-value"/></td>
+                  <td><a href="#" data-bind="click: function(){ addWhitelistPattern() }">${$.i18n.prop('add')}</a></td>
+                </tr>
+            </table>
+
+            <table class="table">
+              <tbody data-bind="foreach: proxyConnector.whiteListPatterns">
+                <tr>
+                  <td data-bind="text: $data"></td>
+                  <td><a href="#" data-bind="click: function(){removeWhitelistPattern($data)}">${$.i18n.prop('delete')}</a></td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+
       </fieldset>
     </form>
 
