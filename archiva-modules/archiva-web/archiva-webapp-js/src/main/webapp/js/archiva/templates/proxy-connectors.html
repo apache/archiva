@@ -36,7 +36,7 @@
       </table>
       <div id="proxy-connectorsPagination"></div>
     </div>
-    <div id="proxy-connectors-edit" class="tab-pane" data-bind='template: {name:"proxy-connector-edit-form-tmpl"}'></div>
+    <div id="proxy-connectors-edit" class="tab-pane" data-bind='template: {name:"proxy-connector-edit-form-tmpl",data: proxyConnector}'></div>
   </div>
 
 </script>
@@ -114,7 +114,7 @@
         <div class="controls">
           <select id="proxyId"
                   data-bind="options: proxyConnectorsViewModel.networkProxies, optionsText: 'id',optionsValue:'id',
-                   value: proxyConnector.proxyId, optionsCaption: 'direct connection'"></select>
+                   value: proxyId, optionsCaption: 'direct connection'"></select>
         </div>
       </div>
       <div class="control-group">
@@ -122,7 +122,7 @@
         <div class="controls">
           <select id="sourceRepoId"
                   data-bind="options: proxyConnectorsViewModel.managedRepositories, optionsText: 'id',optionsValue:'id',
-                   value: proxyConnector.sourceRepoId"></select>
+                   value: sourceRepoId"></select>
         </div>
       </div>
       <div class="control-group">
@@ -130,7 +130,7 @@
         <div class="controls">
           <select id="targetRepoId"
                   data-bind="options: proxyConnectorsViewModel.remoteRepositories, optionsText: 'id',optionsValue:'id',
-                   value: proxyConnector.targetRepoId"></select>
+                   value: targetRepoId"></select>
         </div>
       </div>
       <div class="control-group span6">
@@ -144,10 +144,33 @@
                 <tr>
                   <td>${$value.name()}</td>
                   <td>
-                    <select id="policy-${policyId}" data-bind="options: getPolicyOptions(policyId),value:getSelectedPolicyOption(policyId)"></select>
+                    <select id="policy-${policyId}"
+                            data-bind="options: getPolicyOptions(policyId),value:getSelectedPolicyOption(policyId)"></select>
                   </td>
                 </tr>
               {{/each}}
+            </tbody>
+          </table>
+      </div>
+      <div class="control-group span6">
+          <table class="table">
+            <thead>
+              <th colspan="3">${$.i18n.prop('proxy-connector.properties')}</th>
+            </thead>
+            <tbody>
+              {{each properties()}}
+              {{var key=$value.key()}}
+                <tr>
+                  <td>${key}</td>
+                  <td>${$value.value()}</td>
+                  <td><a href="#" data-bind="click: function(){ deleteProperty(key)}">${$.i18n.prop('delete')}</a></td>
+                </tr>
+              {{/each}}
+              <tr>
+                <td><input type="text" id="property-key"/></td>
+                <td><input type="text" id="property-value"/></td>
+                <td><a href="#" data-bind="click: function(){ addProperty() }">${$.i18n.prop('add')}</a></td>
+              </tr>
             </tbody>
           </table>
       </div>

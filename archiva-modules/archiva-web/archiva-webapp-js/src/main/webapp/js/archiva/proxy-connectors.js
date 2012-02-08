@@ -36,20 +36,23 @@ $(function() {
     this.proxyId.subscribe(function(newValue){self.modified(true)});
 
     //private List<String> blackListPatterns;
-    this.blackListPatterns=ko.observableArray(blackListPatterns);
+    this.blackListPatterns=ko.observableArray(blackListPatterns==null?[]:blackListPatterns);
     this.blackListPatterns.subscribe(function(newValue){self.modified(true)});
 
     //private List<String> whiteListPatterns;
-    this.whiteListPatterns=ko.observableArray(whiteListPatterns);
+    this.whiteListPatterns=ko.observableArray(whiteListPatterns==null?[]:whiteListPatterns);
     this.whiteListPatterns.subscribe(function(newValue){self.modified(true)});
 
     //private Map<String, String> policies;
-    this.policies=ko.observable(policies);
+    this.policies=ko.observableArray(policies==null?[]:policies);
     this.policies.subscribe(function(newValue){self.modified(true)});
 
     //private Map<String, String> properties;
-    this.properties=ko.observable(properties);
-    this.properties.subscribe(function(newValue){self.modified(true)});
+    this.properties=ko.observableArray(properties==null?[]:properties);
+    this.properties.subscribe(function(newValue){
+      $.log("properties modified");
+      self.modified(true);
+    });
 
     //private boolean disabled = false;
     this.disabled=ko.observable(disabled);
@@ -97,9 +100,10 @@ $(function() {
 
   ProxyConnectorViewModel=function(proxyConnector,update,proxyConnectorsViewModel){
     var self=this;
-    this.proxyConnector=ko.observable(proxyConnector);
+    this.proxyConnector=proxyConnector;
     this.proxyConnectorsViewModel=proxyConnectorsViewModel;
     this.update=update;
+    this.modified=ko.observable(false);
     getSelectedPolicyOption=function(id){
       if (!update){
         // we are on add mode so use default option
@@ -123,11 +127,23 @@ $(function() {
     getPolicyOptions=function(id){
       var policyInformations=self.proxyConnectorsViewModel.policyInformations();
       for(i=0;i<policyInformations.length;i++){
-        $.log("getPolicyOptions:"+id+",cur:"+policyInformations[i].id());
         if (policyInformations[i].id()==id){
           return policyInformations[i].options();
         }
       }
+    }
+
+    deleteProperty=function(key){
+      $.log("delete property key:"+key);
+    }
+
+    addProperty=function(){
+      var mainContent=$("#main-content");
+      var key=mainContent.find("#property-key").val();
+      var value=mainContent.find("#property-value").val();
+      $.log("add property:"+key+":"+value+",size:"+self.proxyConnector.properties().length);
+      self.proxyConnector.properties().push(new Entry(key,value));
+      $.log("add property:"+key+":"+value+",size:"+self.proxyConnector.properties().length);
     }
   }
 
@@ -227,22 +243,16 @@ $(function() {
         }
       });
       var mainContent = $("#main-content");
-      this.gridViewModel.getManagedRepository=getManagedRepository;
+
       ko.applyBindings(this,mainContent.find("#proxyConnectorsTable").get(0));
       removeSmallSpinnerImg("#main-content");
-      this,mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
+      mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
 
       mainContent.find("#proxy-connectors-view-tabs").on('show', function (e) {
 
         if ($(e.target).attr("href")=="#proxy-connectors-edit") {
-          var proxyConnector=new ProxyConnector();
-          for (i=0;i<self.policyInformations.length;i++){
-            //proxyConnector[]
-          }
-          var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,false,self);
+          var proxyConnectorViewModel=new ProxyConnectorViewModel(new ProxyConnector(),false,self);
           ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
-          //ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connector-policies-binding").get(0));
-
         }
         if ($(e.target).attr("href")=="#proxy-connectors-view") {
           $("#proxy-connectors-view-tabs-a-network-proxies-grid").html($.i18n.prop("add"));
@@ -312,12 +322,18 @@ $(function() {
     if (data==null){
       return null;
     }
-    var policies = data.policies == null ? null: $.each(data.policies,function(item){
+    var policies = data.policies == null ? []: $.each(data.policies,function(item){
       return new Entry(item.key, item.value);
     });
-    var properties = data.properties == null ? null: $.each(data.properties,function(item){
+    if (!$.isArray(policies)){
+      policies=[];
+    }
+    var properties = data.properties == null ? []: $.each(data.properties,function(item){
           return new Entry(item.key, item.value);
         });
+    if (!$.isArray(properties)){
+      properties=[];
+    }
     return new ProxyConnector(data.sourceRepoId,data.targetRepoId,data.proxyId,mapStringArray(data.blackListPatterns),
                               mapStringArray(data.whiteListPatterns),policies,properties,
                               data.disabled,data.order);
