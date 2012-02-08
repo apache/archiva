@@ -101,10 +101,21 @@ $(function() {
     this.proxyConnectorsViewModel=proxyConnectorsViewModel;
     this.update=update;
     getSelectedPolicyOption=function(id){
+      if (!update){
+        // we are on add mode so use default option
+        var policyInformations=self.proxyConnectorsViewModel.policyInformations();
+        for (i=0;i<policyInformations.length;i++){
+          if (policyInformations[i].id()==id) {
+            return policyInformations[i].defaultOption;
+          }
+        }
+      }
       var policies=self.proxyConnector().policies();
-      for (i=0;i<policies().length;i++){
-        if (id==policies()[i].key()){
-          return policies()[i].value();
+      if (policies!=null){
+        for (i=0;i<policies().length;i++){
+          if (id==policies()[i].key()){
+            return policies()[i].value();
+          }
         }
       }
       return "";
