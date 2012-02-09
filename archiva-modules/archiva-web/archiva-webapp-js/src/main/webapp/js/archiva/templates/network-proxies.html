@@ -69,15 +69,15 @@
         {{else}}
           <td></td>
         {{/if}}
-        <td>${row.useNtlm()}</td>
-        <td>
+          <td>${row.useNtlm()}</td>
+          <td>
             <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
-        </td>
-        <td>
+          </td>
+          <td>
             <a href="#" data-bind="click: function(){ removeNetworkProxy(row) }">
               <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
             </a>
-        </td>
+          </td>
         {{if row.modified()}}
           <td>
             <a href="#" data-bind="click: function(){ updateNetworkProxy(row) }">${$.i18n.prop('save')}</a>

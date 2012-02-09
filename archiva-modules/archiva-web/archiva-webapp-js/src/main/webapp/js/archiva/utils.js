@@ -312,11 +312,10 @@ appendTemplateUrl=function(){
  */
 Entry=function(key,value){
   var self=this;
-  this.modified=ko.observable(false);
   this.key=ko.observable(key);
-  this.key.subscribe(function(newValue){self.modified(true)});
+  //this.key.subscribe(function(newValue){self.modified(true)});
   this.value=ko.observable(value);
-  this.value.subscribe(function(newValue){self.modified(true)});
+  //this.value.subscribe(function(newValue){self.modified(true)});
 }
 
 // extends jquery tmpl to support var def

@@ -42,48 +42,45 @@
 </script>
 
 <script id='ko-proxy-connectors-grid' type='text/x-jquery-tmpl'>
-  <thead>
+    <thead>
+      <tr>
+        <th title="${$.i18n.prop('proxy-connectors.grid.managedrepo.title')}">
+          ${$.i18n.prop('proxy-connectors.grid.managedrepo.grid.header')}
+        </th>
+        <th title="${$.i18n.prop('proxy-connectors.grid.remoterepo.title')}">
+          ${$.i18n.prop('proxy-connectors.grid.remoterepo.grid.header')}
+        </th>
+        <th>
+          ${$.i18n.prop('edit')}
+        </th>
+        <th>
+          ${$.i18n.prop('delete')}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+    {{each(i, row) itemsOnCurrentPage()}}
     <tr>
-      <th title="${$.i18n.prop('proxy-connectors.grid.managedrepo.title')}">
-        ${$.i18n.prop('proxy-connectors.grid.managedrepo.grid.header')}
-      </th>
-      <th title="${$.i18n.prop('proxy-connectors.grid.remoterepo.title')}">
-        ${$.i18n.prop('proxy-connectors.grid.remoterepo.grid.header')}
-      </th>
-    </tr>
-  </thead>
-
-  {{each(i, row) itemsOnCurrentPage()}}
-    <tr>
+      <td>${row.sourceRepoId()}</td>
+      <td>${row.targetRepoId()}</td>
       <td>
-        <blockquote>
-          <p>${getManagedRepository(row).id()}</p>
-          <p>${getManagedRepository(row).name()}</p>
-        </blockquote>
+        <a popover-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
+           data-bind="event: { mouseover: function(){ showSettings(row)},},click: function(){ editProxyConnector(row)}"
+           id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}" href="#">
+           ${$.i18n.prop('edit')}
+        </a>
+        <div id="proxy-connectors-grid-remoterepo-settings-content-${row.sourceRepoId()}-${row.targetRepoId()}"
+             style="display:none"></div>
       </td>
       <td>
-        {{each(j, targetRepo) getRemoteRepositories(row)}}
-          {{var targetRepoId = targetRepo.id()}}
-          <blockquote>
-            <p>${targetRepoId}</p>
-            <p>${getRemoteRepository(targetRepoId).name()}</p>
-            <p>${getRemoteRepository(targetRepoId).url()}</p>
-            <p>
-              <a popover-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
-                 data-bind="event: { mouseover: function(){ showSettings(row,targetRepoId)},},click: function(){ editProxyConnector(row)}"
-                 id="proxy-connectors-grid-remoterepo-settings-edit-${row}-${targetRepoId}" href="#">
-                  ${$.i18n.prop('edit')}
-              </a>
-                <a href="#" data-bind="click: function(){ removeProxyConnector(row,targetRepo)}">
-                  <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
-                </a>
-              <div id="proxy-connectors-grid-remoterepo-settings-content-${val}-${targetRepoId}" style="display:none"></div>
-            </p>
-          </blockquote>
-        {{/each}}
+        <a href="#" data-bind="click: function(){ deleteProxyConnector(row)}">
+          <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+        </a>
       </td>
     </tr>
-  {{/each}}
+    {{/each}}
+    </tbody>
+    <div id="proxy-connectors-grid-remoterepo-settings-content-${val}-${targetRepoId}" style="display:none"></div>
 </script>
 
 <script id='proxy-connectors-remote-settings-popover-tmpl' type='text/x-jquery-tmpl'>
@@ -98,7 +95,7 @@
         <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
       </thead>
       <tbody>
-        {{each policies().entry}}
+        {{each policies()}}
         <tr>
           <td>${$value.key}</td>
           <td>${$value.value}</td>
@@ -159,7 +156,7 @@
               <thead>
                 <th><input type="text" id="property-key"/></th>
                 <th><input type="text" id="property-value"/></th>
-                <th><a href="#" data-bind="click: function(){ addProperty() }">${$.i18n.prop('add')}</a></th>
+                <th><a href="#" data-bind="click: function(){ proxyConnector.addProperty() }">${$.i18n.prop('add')}</a></th>
               </thead>
               <tbody data-bind="foreach: proxyConnector.properties">
                 <tr>

@@ -66,7 +66,7 @@
           var pageLinksContainer = $("#"+allBindings.pageLinksId).get(0);
           if (viewModel.pageLinksUpdateCallBack){
             ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode")
-              .subscribe(viewModel.pageLinksUpdateCallBack?viewModel.pageLinksUpdateCallBack:function(){});
+              .subscribe(viewModel.pageLinksUpdateCallBack);
           } else {
             ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode");
           }

@@ -87,6 +87,29 @@ $(function() {
 
     this.modified=ko.observable(false);
     this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
+
+    this.policiesEntries=[];
+    this.propertiesEntries=[];
+
+    this.deleteProperty=function(key){
+      $.log("delete property key:"+key());
+      for(i=0;i<self.properties().length;i++){
+        var entry=self.properties()[i];
+        if (entry.key()==key()){
+          self.properties.remove(entry);
+        }
+      }
+
+    }
+
+    this.addProperty=function(){
+      var mainContent=$("#main-content");
+      var key=mainContent.find("#property-key").val();
+      var value=mainContent.find("#property-value").val();
+      var oldTab = self.properties();
+      oldTab.push(new Entry(key,value));
+      self.properties(oldTab);
+    }
   }
 
   PolicyInformation=function(options,defaultOption,id,name){
@@ -111,18 +134,6 @@ $(function() {
     this.name.subscribe(function(newValue){self.modified(true)});
 
   }
-
-  ManagedRepositoryConnectorView=function(source,sourceName,targetRepos){
-    var self=this;
-    this.modified=ko.observable(false);
-    //this.proxyConnector=ko.observable(proxyConnector);
-    //$.log("new ManagedRepositoryConnectorView:"+proxyConnector.id);
-    this.source=ko.observable(source);
-    this.sourceName=ko.observable(sourceName);
-    //$.log("new ManagedRepositoryConnectorView source id:"+this.source.id);
-    this.targetRepos=ko.observableArray(targetRepos);
-  }
-
   ProxyConnectorViewModel=function(proxyConnector,update,proxyConnectorsViewModel){
     var self=this;
     this.proxyConnector=proxyConnector;
@@ -152,25 +163,7 @@ $(function() {
       }
     }
 
-    deleteProperty=function(key){
-      $.log("delete property key:"+key());
-      for(i=0;i<self.proxyConnector.properties().length;i++){
-        var entry=self.proxyConnector.properties()[i];
-        if (entry.key()==key()){
-          self.proxyConnector.properties.remove(entry);
-        }
-      }
 
-    }
-
-    addProperty=function(){
-      var mainContent=$("#main-content");
-      var key=mainContent.find("#property-key").val();
-      var value=mainContent.find("#property-value").val();
-      var oldTab = self.proxyConnector.properties();
-      oldTab.push(new Entry(key,value));
-      self.proxyConnector.properties(oldTab);
-    }
 
     addBlacklistPattern=function(){
       var pattern = $("#main-content #blacklist-value").val();
@@ -198,10 +191,15 @@ $(function() {
 
     save=function(){
       //FIXME data controls !!!
-
+      clearUserMessages();
       if (this.update){
 
       } else {
+        self.proxyConnector.policiesEntries=self.proxyConnector.policies();
+        self.proxyConnector.propertiesEntries=self.proxyConnector.properties();
+        var json = $.toJSON(ko.toJS(self.proxyConnector));
+        $.log("toJSON:"+json);
+
         $.ajax("restServices/archivaServices/proxyConnectorService/addProxyConnector",
           {
             type: "POST",
@@ -212,6 +210,7 @@ $(function() {
               displaySuccessMessage($.i18n.prop('proxyconnector.added'));
               activateProxyConnectorsGridTab();
               self.proxyConnector.modified(false);
+              self.proxyConnectorsViewModel.proxyConnectors.push(self.proxyConnector);
             },
             error: function(data) {
               var res = $.parseJSON(data.responseText);
@@ -231,7 +230,6 @@ $(function() {
   ProxyConnectorsViewModel=function(){
     var self=this;
     this.proxyConnectors=ko.observableArray([]);
-    this.managedRepositoryConnectorViews=ko.observableArray([]);
     this.policyInformations=ko.observableArray([]);
     this.managedRepositories=ko.observableArray([]);
     this.remoteRepositories=ko.observableArray([]);
@@ -240,10 +238,9 @@ $(function() {
     editProxyConnector=function(managedRepositoryConnectorView){
       $.log("editProxyConnector");
     }
-
-    removeProxyConnector=function(sourceRepoId,targetRepoId){
-      proxyConnector=getProxyConnector(sourceRepoId, targetRepoId);
-      /*var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
+    deleteProxyConnector=function(proxyConnector){
+      clearUserMessages();
+      var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
       url += "sourceRepoId="+encodeURIComponent(proxyConnector.sourceRepoId());
       url += "&targetRepoId="+encodeURIComponent(proxyConnector.targetRepoId());
       $.ajax(url,
@@ -251,9 +248,8 @@ $(function() {
           type: "GET",
           contentType: 'application/json',
           success: function(data) {
-            clearUserMessages();
             displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
-            //self.proxyConnectors.remove ProxyConnector=function(sourceRepoId,targetRepoId
+            self.proxyConnectors.remove(proxyConnector);
             self.displayGrid();
           },
           error: function(data) {
@@ -261,23 +257,10 @@ $(function() {
             displayRestError(res);
           }
         }
-      );*/
-      self.proxyConnectors.remove(proxyConnector);
-      self.displayGrid();
+      );
+
     }
 
-    this.findUniqueManagedRepos=function(){
-      var managedRepositoriesIds=[];
-      //sourceRepoId
-      for(i=0;i<self.proxyConnectors().length;i++){
-        var curSrcRepoId=self.proxyConnectors()[i].sourceRepoId();
-        if ($.inArray(curSrcRepoId,managedRepositoriesIds)<0){
-          managedRepositoriesIds.push(curSrcRepoId)
-        }
-      }
-      $.log("managedRepositoriesIds:"+managedRepositoriesIds);
-      return managedRepositoriesIds;
-    }
 
     getManagedRepository=function(id){
       var managedRepository=$.grep(self.managedRepositories(),
@@ -298,22 +281,6 @@ $(function() {
       return ($.isArray(remoteRepository) && remoteRepository.length>0) ? remoteRepository[0]:new RemoteRepository();
     }
 
-    // return remote repositories proxied for a managed repository
-    getRemoteRepositories=function(id){
-      $.log("getRemoteRepositories:"+id);
-      var remoteRepositoryIds=$.grep(self.proxyConnectors(),
-                                   function(repo,idx){
-                                     return repo.sourceRepoId()==id;
-                                   }
-      );
-      $.log("remoteRepositoryIds.length:"+remoteRepositoryIds.length);
-      var remoteRepositories=[];
-      for (i=0;i<remoteRepositoryIds.length;i++){
-        remoteRepositories.push(getRemoteRepository(remoteRepositoryIds[i].targetRepoId()));
-      }
-      return remoteRepositories;
-    }
-
     getProxyConnector=function(sourceRepoId,targetRepoId){
       $.log("getProxyConnector:"+sourceRepoId+":"+targetRepoId);
       var proxyConnector=$.grep(self.proxyConnectors(),
@@ -327,13 +294,16 @@ $(function() {
       return res;
     }
 
-    showSettings=function(sourceRepoId,targetRepoId){
-      var targetContent = $("#proxy-connectors-grid-remoterepo-settings-content-"+sourceRepoId+"-"+targetRepoId);
+    showSettings=function(proxyConnector){
+      //proxyConnector=getProxyConnector(proxyConnector.sourceRepoId(),proxyConnector.targetRepoId());
+      var targetContent = $("#proxy-connectors-grid-remoterepo-settings-content-"
+                                +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId());
       targetContent.html("");
       targetContent.append($("#proxy-connectors-remote-settings-popover-tmpl")
-                               .tmpl(getProxyConnector(sourceRepoId,targetRepoId)));
+                               .tmpl(proxyConnector));
 
-      var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+sourceRepoId+"-"+targetRepoId);
+      var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+proxyConnector.sourceRepoId()
+                            +"-"+proxyConnector.targetRepoId());
       targetImg.attr("data-content",targetContent.html());
       targetImg.popover(
           {
@@ -345,12 +315,13 @@ $(function() {
 
       targetImg.popover('show');
 
+      $.log("showSettings:"+proxyConnector.policies().length);
+
     }
 
     this.displayGrid=function(){
-      self.managedRepositoryConnectorViews(this.findUniqueManagedRepos());
       this.gridViewModel = new ko.simpleGrid.viewModel({
-        data: self.managedRepositoryConnectorViews,
+        data: self.proxyConnectors,
         pageSize: 5,
         gridUpdateCallBack: function(){
           $("#main-content #proxyConnectorsTable [title]").tooltip();
@@ -465,7 +436,8 @@ $(function() {
     if (data==null){
       return null;
     }
-    var policies = data.policies == null ? []: $.each(data.policies,function(item){
+    var policies = (data.policies == null || data.policies.entry == null ) ? []: $.each(data.policies.entry,function(item){
+      $.log("each policies:");
       return new Entry(item.key, item.value);
     });
     if (!$.isArray(policies)){
