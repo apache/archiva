@@ -72,6 +72,17 @@ public interface ProxyConnectorService
     Boolean deleteProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException;
 
+    @Path( "removeProxyConnector" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    /**
+     * @since 1.4-M3
+     */
+    Boolean removeProxyConnector( @QueryParam( "sourceRepoId" ) String sourceRepoId,
+                                  @QueryParam( "targetRepoId" ) String targetRepoId )
+        throws ArchivaRestServiceException;
+
     /**
      * <b>only for enabled/disable or changing bean values except target/source</b>
      *

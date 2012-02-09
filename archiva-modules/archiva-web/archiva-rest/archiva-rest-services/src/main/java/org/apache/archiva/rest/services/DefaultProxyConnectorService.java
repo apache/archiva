@@ -113,6 +113,19 @@ public class DefaultProxyConnectorService
         }
     }
 
+    public Boolean removeProxyConnector( String sourceRepoId, String targetRepoId )
+        throws ArchivaRestServiceException
+    {
+        ProxyConnector proxyConnector = getProxyConnector( sourceRepoId, targetRepoId );
+        if ( proxyConnector == null )
+        {
+            throw new ArchivaRestServiceException(
+                "proxyConnector with sourceRepoId:" + sourceRepoId + " and targetRepoId:" + targetRepoId
+                    + " not exists" );
+        }
+        return deleteProxyConnector( proxyConnector );
+    }
+
     public Boolean updateProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
