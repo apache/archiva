@@ -112,12 +112,14 @@ $(function() {
 
   }
 
-  ManagedRepositoryConnectorView=function(source,targetRepos){
+  ManagedRepositoryConnectorView=function(source,sourceName,targetRepos){
     var self=this;
     this.modified=ko.observable(false);
-
-
+    //this.proxyConnector=ko.observable(proxyConnector);
+    //$.log("new ManagedRepositoryConnectorView:"+proxyConnector.id);
     this.source=ko.observable(source);
+    this.sourceName=ko.observable(sourceName);
+    //$.log("new ManagedRepositoryConnectorView source id:"+this.source.id);
     this.targetRepos=ko.observableArray(targetRepos);
   }
 
@@ -235,20 +237,44 @@ $(function() {
     this.remoteRepositories=ko.observableArray([]);
     this.networkProxies=ko.observableArray([]);
 
-    editProxyConnector=function(proxyConnector){
+    editProxyConnector=function(managedRepositoryConnectorView){
+      $.log("editProxyConnector");
+    }
 
+    removeProxyConnector=function(managedRepositoryConnectorView,targetRepoId){
+      $.log("removeProxyConnector:"+managedRepositoryConnectorView.source()+","+targetRepoId);
+      var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
+      url += "sourceRepoId="+encodeURIComponent(managedRepositoryConnectorView.source());
+      url += "&targetRepoId="+encodeURIComponent(targetRepoId);
+      $.ajax(url,
+        {
+          type: "GET",
+          contentType: 'application/json',
+          success: function(data) {
+            clearUserMessages();
+            displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
+            //self.proxyConnectors.remove ProxyConnector=function(sourceRepoId,targetRepoId
+            self.displayGrid();
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          }
+        }
+      );
     }
 
     this.findUniqueManagedRepos=function(){
       var sourcesRepos=[];
       //sourceRepoId
       for(i=0;i<self.proxyConnectors().length;i++){
-        var curSrcRepo=self.proxyConnectors()[i].sourceRepoId();
+        var curSrcRepo=self.proxyConnectors()[i];
+        var curSrcRepoId=curSrcRepo.sourceRepoId();
         var curTarget=self.proxyConnectors()[i];
         var sourceRepo = $.grep(sourcesRepos,
                                 function(srcRepo,idx){
                                   for (j=0;j<sourcesRepos.length;j++){
-                                    if (srcRepo.source()==curSrcRepo){
+                                    if (srcRepo.source()==curSrcRepoId){
                                       return true;
                                     }
                                   }
@@ -258,7 +284,7 @@ $(function() {
         if (sourceRepo.length>0){
           sourceRepo[0].targetRepos.push(curTarget);
         } else {
-          sourcesRepos.push(new ManagedRepositoryConnectorView(curSrcRepo,[curTarget]));
+          sourcesRepos.push(new ManagedRepositoryConnectorView(curSrcRepoId,getManagedRepository(curSrcRepoId).name(),[curTarget]));
         }
       }
       return sourcesRepos;
