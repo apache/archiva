@@ -127,22 +127,15 @@ $(function() {
     this.proxyConnectorsViewModel=proxyConnectorsViewModel;
     this.update=update;
     this.modified=ko.observable(false);
-    getSelectedPolicyOption=function(id,updateVal){
-      $.log("getSelectedPolicyOption:"+id+","+updateVal);
-      if (!update){
-        // we are on add mode so use default option
-        var policyInformations=self.proxyConnectorsViewModel.policyInformations();
-        for (i=0;i<policyInformations.length;i++){
-          if (policyInformations[i].id()==id) {
-            return policyInformations[i].defaultOption;
-          }
-        }
-      }
-      var policies=self.proxyConnector().policies();
+    getSelectedPolicyOption=function(id){
+      $.log("getSelectedPolicyOption:"+id);
+
+      var policies=self.proxyConnector.policies();
+      $.log("getSelectedPolicyOption policies.length:"+policies.length);
       if (policies!=null){
-        for (i=0;i<policies().length;i++){
-          if (id==policies()[i].key()){
-            return policies()[i].value();
+        for (i=0;i<policies.length;i++){
+          if (id==policies[i].key()){
+            return policies[i].value();
           }
         }
       }
@@ -199,6 +192,37 @@ $(function() {
 
     removeWhitelistPattern=function(pattern){
       self.proxyConnector.whiteListPatterns.remove(pattern);
+    }
+
+    save=function(){
+      //FIXME data controls !!!
+
+      if (this.update){
+
+      } else {
+        $.ajax("restServices/archivaServices/proxyConnectorService/addProxyConnector",
+          {
+            type: "POST",
+            data: "{\"proxyConnector\": " + ko.toJSON(self.proxyConnector)+"}",
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(data) {
+              displaySuccessMessage($.i18n.prop('proxyconnector.added'));
+              activateProxyConnectorsGridTab();
+              self.proxyConnector.modified(false);
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
+
+      }
+    }
+
+    displayGrid=function(){
+      activateProxyConnectorsGridTab();
     }
   }
 
@@ -307,6 +331,13 @@ $(function() {
 
         if ($(e.target).attr("href")=="#proxy-connectors-edit") {
           var proxyConnector=new ProxyConnector();
+          var defaultPolicies=new Array();
+          // populate with defaut policies options
+          for (i=0;i<self.policyInformations().length;i++){
+            defaultPolicies.push(new Entry(self.policyInformations()[i].id(),self.policyInformations()[i].defaultOption));
+          }
+          proxyConnector.policies(defaultPolicies);
+          $.log("proxyConnector.policies().length:"+proxyConnector.policies().length);
           var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,false,self);
           mainContent.find("#proxy-connectors-edit").html($("#proxy-connector-edit-form-tmpl").tmpl());
           ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
@@ -373,6 +404,26 @@ $(function() {
       success: successCallBackFn,
       error: errorCallBackFn
      });
+  }
+
+  activateProxyConnectorsGridTab=function(){
+    var mainContent = $("#main-content");
+    mainContent.find("#proxy-connectors-edit").removeClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-li-edit").removeClass("active");
+
+    mainContent.find("#proxy-connectors-view").addClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-li-grid").addClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-li-edit a").html($.i18n.prop("add"));
+
+  }
+
+  activateProxyConnectorsEditTab=function(){
+    var mainContent = $("#main-content");
+    mainContent.find("#proxy-connectors-edit").addClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-li-edit").addClass("active");
+
+    mainContent.find("#proxy-connectors-view").removeClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-li-grid").removeClass("active");
   }
 
   mapProxyConnector=function(data){

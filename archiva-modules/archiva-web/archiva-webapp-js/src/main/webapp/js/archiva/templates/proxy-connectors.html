@@ -143,8 +143,7 @@
                   <tr>
                     <td data-bind="text: name"></td>
                     <td>
-                      <select id="policy-${policyId}"
-                              data-bind="options: getPolicyOptions(id()),value:getSelectedPolicyOption(id())"></select>
+                      <select data-bind="options: getPolicyOptions(id()),value:getSelectedPolicyOption(id()),attr: { id: 'policy-'+id() }"></select>
                     </td>
                   </tr>
               </tbody>
@@ -203,6 +202,13 @@
         </div>
 
       </fieldset>
+
+      <button id="proxy-connector-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      {{if modified()}}
+       ${("#network-proxy-btn-save").button('reset')}
+      {{/if}}
+      <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
+
     </form>
 
 </script>
