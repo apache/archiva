@@ -18,6 +18,8 @@ package org.apache.archiva.admin.model;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.PropertyEntry;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,9 +64,23 @@ public abstract class AbstractRepositoryConnector
     private Map<String, String> policies;
 
     /**
+     * field to ease json mapping wrapper on <code>policies</code> field
+     *
+     * @since 1.4-M3
+     */
+    private List<PropertyEntry> policiesEntries;
+
+    /**
      * Field properties.
      */
     private Map<String, String> properties;
+
+    /**
+     * field to ease json mapping wrapper on <code>properties</code> field
+     *
+     * @since 1.4-M3
+     */
+    private List<PropertyEntry> propertiesEntries;
 
     /**
      * If the the repository proxy connector is disabled or not
@@ -345,6 +361,42 @@ public abstract class AbstractRepositoryConnector
         }
 
         return value;
+    }
+
+    public List<PropertyEntry> getPoliciesEntries()
+    {
+        policiesEntries = new ArrayList<PropertyEntry>( getPolicies().size() );
+        for ( Map.Entry<String, String> entry : getPolicies().entrySet() )
+        {
+            policiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
+        }
+        return policiesEntries;
+    }
+
+    public void setPoliciesEntries( List<PropertyEntry> policiesEntries )
+    {
+        for ( PropertyEntry propertyEntry : policiesEntries )
+        {
+            addPolicy( propertyEntry.getKey(), propertyEntry.getValue() );
+        }
+    }
+
+    public List<PropertyEntry> getPropertiesEntries()
+    {
+        propertiesEntries = new ArrayList<PropertyEntry>( getProperties().size() );
+        for ( Map.Entry<String, String> entry : getProperties().entrySet() )
+        {
+            propertiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
+        }
+        return propertiesEntries;
+    }
+
+    public void setPropertiesEntries( List<PropertyEntry> propertiesEntries )
+    {
+        for ( PropertyEntry propertyEntry : policiesEntries )
+        {
+            addProperty( propertyEntry.getKey(), propertyEntry.getValue() );
+        }
     }
 
     @Override
