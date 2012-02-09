@@ -133,6 +133,8 @@ $(function() {
       ko.applyBindings(viewModel,mainContent.find("#network-proxies-edit").get(0));
       activateNetworkProxyFormValidation();
       activateNetworkProxyEditTab();
+      mainContent.find("#network-proxy-btn-save").attr("disabled","true");
+      mainContent.find("#network-proxy-btn-save").button('toggle');
     }
 
     this.bulkSave=function(){

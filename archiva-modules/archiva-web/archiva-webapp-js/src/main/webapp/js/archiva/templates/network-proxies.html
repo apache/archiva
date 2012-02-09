@@ -149,7 +149,10 @@
           </div>
 
       </fieldset>
-      <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      <button id="network-proxy-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      {{if networkProxy.modified()}}
+       ${("#network-proxy-btn-save").button('reset')}
+      {{/if}}
       <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
     </form>
 </script>
