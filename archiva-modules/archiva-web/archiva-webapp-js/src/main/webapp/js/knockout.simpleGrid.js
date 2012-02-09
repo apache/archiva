@@ -64,8 +64,12 @@
 
           // Render the page links
           var pageLinksContainer = $("#"+allBindings.pageLinksId).get(0);
-          ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode")
+          if (viewModel.pageLinksUpdateCallBack){
+            ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode")
               .subscribe(viewModel.pageLinksUpdateCallBack?viewModel.pageLinksUpdateCallBack:function(){});
+          } else {
+            ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode");
+          }
           if (viewModel.pageLinksUpdateCallBack) viewModel.pageLinksUpdateCallBack();
         }
     };

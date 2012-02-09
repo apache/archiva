@@ -54,33 +54,33 @@
   </thead>
 
   {{each(i, row) itemsOnCurrentPage()}}
-    {{var sourceId = row.source()}}
-    <tr data-bind="css:{ 'modified': row.modified()}">
+    <tr>
       <td>
         <blockquote>
-          <p>${row.source()}</p>
-          <p>${row.sourceName()}</p>
+          <p>${getManagedRepository(row).id()}</p>
+          <p>${getManagedRepository(row).name()}</p>
         </blockquote>
+      </td>
       <td>
-          {{each(j, targetRepo) row.targetRepos()}}
-          {{var targetRepoId = targetRepo.targetRepoId()}}
+        {{each(j, targetRepo) getRemoteRepositories(row)}}
+          {{var targetRepoId = targetRepo.id()}}
           <blockquote>
             <p>${targetRepoId}</p>
             <p>${getRemoteRepository(targetRepoId).name()}</p>
             <p>${getRemoteRepository(targetRepoId).url()}</p>
             <p>
               <a popover-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
-                 data-bind="event: { mouseover: function(){ showSettings(sourceId,targetRepoId)},},click: function(){ editProxyConnector(row)}"
-                 id="proxy-connectors-grid-remoterepo-settings-edit-${sourceId}-${targetRepoId}" href="#">
+                 data-bind="event: { mouseover: function(){ showSettings(row,targetRepoId)},},click: function(){ editProxyConnector(row)}"
+                 id="proxy-connectors-grid-remoterepo-settings-edit-${row}-${targetRepoId}" href="#">
                   ${$.i18n.prop('edit')}
               </a>
-                <a href="#" data-bind="click: function(){ removeProxyConnector(row,targetRepoId) }">
+                <a href="#" data-bind="click: function(){ removeProxyConnector(row,targetRepo)}">
                   <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
                 </a>
               <div id="proxy-connectors-grid-remoterepo-settings-content-${val}-${targetRepoId}" style="display:none"></div>
             </p>
           </blockquote>
-          {{/each}}
+        {{/each}}
       </td>
     </tr>
   {{/each}}

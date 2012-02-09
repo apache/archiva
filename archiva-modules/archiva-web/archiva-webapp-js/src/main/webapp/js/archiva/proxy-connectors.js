@@ -241,11 +241,11 @@ $(function() {
       $.log("editProxyConnector");
     }
 
-    removeProxyConnector=function(managedRepositoryConnectorView,targetRepoId){
-      $.log("removeProxyConnector:"+managedRepositoryConnectorView.source()+","+targetRepoId);
-      var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
-      url += "sourceRepoId="+encodeURIComponent(managedRepositoryConnectorView.source());
-      url += "&targetRepoId="+encodeURIComponent(targetRepoId);
+    removeProxyConnector=function(sourceRepoId,targetRepoId){
+      proxyConnector=getProxyConnector(sourceRepoId, targetRepoId);
+      /*var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
+      url += "sourceRepoId="+encodeURIComponent(proxyConnector.sourceRepoId());
+      url += "&targetRepoId="+encodeURIComponent(proxyConnector.targetRepoId());
       $.ajax(url,
         {
           type: "GET",
@@ -261,33 +261,22 @@ $(function() {
             displayRestError(res);
           }
         }
-      );
+      );*/
+      self.proxyConnectors.remove(proxyConnector);
+      self.displayGrid();
     }
 
     this.findUniqueManagedRepos=function(){
-      var sourcesRepos=[];
+      var managedRepositoriesIds=[];
       //sourceRepoId
       for(i=0;i<self.proxyConnectors().length;i++){
-        var curSrcRepo=self.proxyConnectors()[i];
-        var curSrcRepoId=curSrcRepo.sourceRepoId();
-        var curTarget=self.proxyConnectors()[i];
-        var sourceRepo = $.grep(sourcesRepos,
-                                function(srcRepo,idx){
-                                  for (j=0;j<sourcesRepos.length;j++){
-                                    if (srcRepo.source()==curSrcRepoId){
-                                      return true;
-                                    }
-                                  }
-                                  return false;
-                                }
-        );
-        if (sourceRepo.length>0){
-          sourceRepo[0].targetRepos.push(curTarget);
-        } else {
-          sourcesRepos.push(new ManagedRepositoryConnectorView(curSrcRepoId,getManagedRepository(curSrcRepoId).name(),[curTarget]));
+        var curSrcRepoId=self.proxyConnectors()[i].sourceRepoId();
+        if ($.inArray(curSrcRepoId,managedRepositoriesIds)<0){
+          managedRepositoriesIds.push(curSrcRepoId)
         }
       }
-      return sourcesRepos;
+      $.log("managedRepositoriesIds:"+managedRepositoriesIds);
+      return managedRepositoriesIds;
     }
 
     getManagedRepository=function(id){
@@ -305,24 +294,44 @@ $(function() {
                                         return repo.id()==id;
                                       }
                             );
+      $.log("getRemoteRepository:"+id+":"+remoteRepository);
       return ($.isArray(remoteRepository) && remoteRepository.length>0) ? remoteRepository[0]:new RemoteRepository();
     }
 
-    this.getProxyConnector=function(sourceRepoId,targetRepoId){
+    // return remote repositories proxied for a managed repository
+    getRemoteRepositories=function(id){
+      $.log("getRemoteRepositories:"+id);
+      var remoteRepositoryIds=$.grep(self.proxyConnectors(),
+                                   function(repo,idx){
+                                     return repo.sourceRepoId()==id;
+                                   }
+      );
+      $.log("remoteRepositoryIds.length:"+remoteRepositoryIds.length);
+      var remoteRepositories=[];
+      for (i=0;i<remoteRepositoryIds.length;i++){
+        remoteRepositories.push(getRemoteRepository(remoteRepositoryIds[i].targetRepoId()));
+      }
+      return remoteRepositories;
+    }
+
+    getProxyConnector=function(sourceRepoId,targetRepoId){
+      $.log("getProxyConnector:"+sourceRepoId+":"+targetRepoId);
       var proxyConnector=$.grep(self.proxyConnectors(),
                                       function(proxyConnector,idx){
                                         return proxyConnector.sourceRepoId()==sourceRepoId
                                             && proxyConnector.targetRepoId==targetRepoId;
                                       }
                                   );
-      return ($.isArray(proxyConnector) && proxyConnector.length>0) ? proxyConnector[0]:new ProxyConnector();
+      var res = ($.isArray(proxyConnector) && proxyConnector.length>0) ? proxyConnector[0]:new ProxyConnector();
+      $.log("getProxyConnector res:"+res);
+      return res;
     }
 
     showSettings=function(sourceRepoId,targetRepoId){
       var targetContent = $("#proxy-connectors-grid-remoterepo-settings-content-"+sourceRepoId+"-"+targetRepoId);
       targetContent.html("");
       targetContent.append($("#proxy-connectors-remote-settings-popover-tmpl")
-                               .tmpl(self.getProxyConnector(sourceRepoId,targetRepoId)));
+                               .tmpl(getProxyConnector(sourceRepoId,targetRepoId)));
 
       var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+sourceRepoId+"-"+targetRepoId);
       targetImg.attr("data-content",targetContent.html());
