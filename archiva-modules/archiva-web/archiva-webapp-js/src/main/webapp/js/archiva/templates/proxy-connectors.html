@@ -31,6 +31,7 @@
   </ul>
   <div id="proxy-connectors-view-tabs-content" class="tab-content">
     <div id="proxy-connectors-view" class="tab-pane active">
+      <div id="proxy-connectors-bulk-save-btn" data-bind='template:{name:"proxy-connectors-bulk-save-tmpl"}'></div>
       <table class="table table-striped table-bordered" id="proxyConnectorsTable"
              data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-proxy-connectors-grid',pageLinksId:'proxy-connectorsPagination'">
       </table>
@@ -218,4 +219,9 @@
 
     </form>
 
+</script>
+<script id="proxy-connectors-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+  {{if bulkSave()}}
+    <button data-bind="click: updateModifiedProxyConnectors" class="btn">${$.i18n.prop('save.all')}</button>
+  {{/if}}
 </script>

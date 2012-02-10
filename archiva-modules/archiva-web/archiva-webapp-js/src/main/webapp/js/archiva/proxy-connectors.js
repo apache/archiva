@@ -92,6 +92,7 @@ $(function() {
       for(i=0;i<policiesEntries.length;i++){
         if (policiesEntries[i].key==key){
           policiesEntries[i].value=value;
+          self.modified(true);
         }
       }
     }
@@ -169,11 +170,12 @@ $(function() {
       var tab =  self.proxyConnector.blackListPatterns();
       tab.push(pattern);
       self.proxyConnector.blackListPatterns(tab);
-
+      self.proxyConnector.modified(true);
     }
 
     removeBlacklistPattern=function(pattern){
       self.proxyConnector.blackListPatterns.remove(pattern);
+      self.proxyConnector.modified(true);
     }
 
     addWhitelistPattern=function(){
@@ -181,14 +183,16 @@ $(function() {
       var tab =  self.proxyConnector.whiteListPatterns();
       tab.push(pattern);
       self.proxyConnector.whiteListPatterns(tab);
+      self.proxyConnector.modified(true);
 
     }
 
     removeWhitelistPattern=function(pattern){
       self.proxyConnector.whiteListPatterns.remove(pattern);
+      self.proxyConnector.modified(true);
     }
 
-    save=function(){
+    this.save=function(){
       //FIXME data controls !!!
       clearUserMessages();
       // update is delete then add
@@ -239,6 +243,7 @@ $(function() {
         var entry=self.proxyConnector.propertiesEntries()[i];
         if (entry.key()==key()){
           self.proxyConnector.propertiesEntries.remove(entry);
+          self.proxyConnector.modified(true);
         }
       }
 
@@ -253,6 +258,7 @@ $(function() {
       self.proxyConnector.propertiesEntries(oldTab);
       mainContent.find("#property-key").val("");
       mainContent.find("#property-value").val("");
+      self.proxyConnector.modified(true);
     }
 
     displayGrid=function(){
@@ -267,6 +273,34 @@ $(function() {
     this.managedRepositories=ko.observableArray([]);
     this.remoteRepositories=ko.observableArray([]);
     this.networkProxies=ko.observableArray([]);
+
+    this.bulkSave=function(){
+      return getModifiedProxyConnectors().length>0;
+    }
+
+    getModifiedProxyConnectors=function(){
+      var prx = $.grep(self.proxyConnectors(),
+          function (proxyConnector,i) {
+            return proxyConnector.modified();
+          });
+      return prx;
+    }
+
+    updateModifiedProxyConnectors=function(){
+      var modifiedProxyConnectors = getModifiedProxyConnectors();
+
+      openDialogConfirm(function(){
+                          for(i=0;i<modifiedProxyConnectors.length;i++){
+                            var viewModel = new ProxyConnectorViewModel(modifiedProxyConnectors[i],true,self,false);
+                            viewModel.save();
+                          }
+                          closeDialogConfirm();
+                        },
+                        $.i18n.prop('ok'),
+                        $.i18n.prop('cancel'),
+                        $.i18n.prop('bulk.save.confirm.title'),
+                        $.i18n.prop('proxy.connector.bulk.save.confirm',modifiedProxyConnectors.length));
+    }
 
     editProxyConnector=function(proxyConnector){
       var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,true,self);
@@ -349,7 +383,7 @@ $(function() {
       });
       var mainContent = $("#main-content");
 
-      ko.applyBindings(this,mainContent.find("#proxyConnectorsTable").get(0));
+      ko.applyBindings(this,mainContent.find("#proxy-connectors-view").get(0));
       removeSmallSpinnerImg("#main-content");
       mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
 
