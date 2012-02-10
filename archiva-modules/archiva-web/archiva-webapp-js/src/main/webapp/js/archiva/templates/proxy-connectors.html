@@ -163,13 +163,13 @@
               <thead>
                 <th><input type="text" id="property-key"/></th>
                 <th><input type="text" id="property-value"/></th>
-                <th><a href="#" data-bind="click: function(){ proxyConnector.addProperty() }">${$.i18n.prop('add')}</a></th>
+                <th><a href="#" data-bind="click: function(){ addProperty() }">${$.i18n.prop('add')}</a></th>
               </thead>
               <tbody data-bind="foreach: proxyConnector.propertiesEntries">
                 <tr>
                   <td data-bind="text: key"></td>
                   <td data-bind="text: value"></td>
-                  <td><a href="#" data-bind="click: function(){$data.deleteProperty(key)}">${$.i18n.prop('delete')}</a></td>
+                  <td><a href="#" data-bind="click: function(){ $parent.deleteProperty(key)}">${$.i18n.prop('delete')}</a></td>
                 </tr>
               </tbody>
             </table>

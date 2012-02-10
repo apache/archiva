@@ -88,27 +88,6 @@ $(function() {
     this.modified=ko.observable(false);
     this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
 
-
-    this.deleteProperty=function(key){
-      $.log("delete property key:"+key());
-      for(i=0;i<self.propertiesEntries().length;i++){
-        var entry=self.propertiesEntries()[i];
-        if (entry.key()==key()){
-          self.propertiesEntries.remove(entry);
-        }
-      }
-
-    }
-
-    this.addProperty=function(){
-      var mainContent=$("#main-content");
-      var key=mainContent.find("#property-key").val();
-      var value=mainContent.find("#property-value").val();
-      var oldTab = self.propertiesEntries();
-      oldTab.push(new Entry(key,value));
-      self.propertiesEntries(oldTab);
-    }
-
     this.updatePolicyEntry=function(key,value){
       for(i=0;i<policiesEntries.length;i++){
         if (policiesEntries[i].key==key){
@@ -116,6 +95,7 @@ $(function() {
         }
       }
     }
+
   }
 
   PolicyInformation=function(options,defaultOption,id,name){
@@ -247,6 +227,28 @@ $(function() {
           }
         );
       }
+    }
+
+    this.deleteProperty=function(key){
+      $.log("delete property key:"+key());
+      for(i=0;i<self.proxyConnector.propertiesEntries().length;i++){
+        var entry=self.proxyConnector.propertiesEntries()[i];
+        if (entry.key()==key()){
+          self.proxyConnector.propertiesEntries.remove(entry);
+        }
+      }
+
+    }
+
+    this.addProperty=function(){
+      var mainContent=$("#main-content");
+      var key=mainContent.find("#property-key").val();
+      var value=mainContent.find("#property-value").val();
+      var oldTab = self.proxyConnector.propertiesEntries();
+      oldTab.push(new Entry(key,value));
+      self.proxyConnector.propertiesEntries(oldTab);
+      mainContent.find("#property-key").val("");
+      mainContent.find("#property-value").val("");
     }
 
     displayGrid=function(){

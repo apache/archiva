@@ -393,7 +393,7 @@ public abstract class AbstractRepositoryConnector
 
     public void setPropertiesEntries( List<PropertyEntry> propertiesEntries )
     {
-        for ( PropertyEntry propertyEntry : policiesEntries )
+        for ( PropertyEntry propertyEntry : propertiesEntries )
         {
             addProperty( propertyEntry.getKey(), propertyEntry.getValue() );
         }
