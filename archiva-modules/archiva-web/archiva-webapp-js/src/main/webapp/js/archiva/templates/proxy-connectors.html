@@ -51,6 +51,9 @@
           ${$.i18n.prop('proxy-connectors.grid.remoterepo.grid.header')}
         </th>
         <th>
+            ${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}
+        </th>          
+        <th>
           ${$.i18n.prop('edit')}
         </th>
         <th>
@@ -63,10 +66,11 @@
     <tr>
       <td>${row.sourceRepoId()}</td>
       <td>${row.targetRepoId()}-${row.order()}</td>
+      <td><img src="images/utilities-system-monitor.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
+               data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
+               data-bind="event: { mouseover: function(){ showSettings(row)},}"></td>
       <td>
-        <a data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
-           data-bind="event: { mouseover: function(){ showSettings(row)},},click: function(){ editProxyConnector(row)}"
-           id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}" href="#">
+        <a data-bind="click: function(){ editProxyConnector(row)}" href="#">
            ${$.i18n.prop('edit')}
         </a>
         <div id="proxy-connectors-grid-remoterepo-settings-content-${row.sourceRepoId()}-${row.targetRepoId()}"
@@ -143,7 +147,10 @@
                   <tr>
                     <td data-bind="text: name"></td>
                     <td>
-                      <select data-bind="options: getPolicyOptions(id()),value:getSelectedPolicyOption(id()),attr: { id: 'policy-'+id() }"></select>
+                      <select
+                              data-bind="options: getPolicyOptions(id()),value:getSelectedPolicyOption(id()),
+                              attr: { id: 'policy-'+id() },event: { change: function(){ changePolicyOption(id())},}"
+                              ></select>
                     </td>
                   </tr>
               </tbody>

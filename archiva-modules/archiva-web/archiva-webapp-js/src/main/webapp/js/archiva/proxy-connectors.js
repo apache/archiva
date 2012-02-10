@@ -108,6 +108,14 @@ $(function() {
       oldTab.push(new Entry(key,value));
       self.propertiesEntries(oldTab);
     }
+
+    this.updatePolicyEntry=function(key,value){
+      for(i=0;i<policiesEntries.length;i++){
+        if (policiesEntries[i].key==key){
+          policiesEntries[i].value=value;
+        }
+      }
+    }
   }
 
   PolicyInformation=function(options,defaultOption,id,name){
@@ -154,6 +162,13 @@ $(function() {
       }
       return "";
     }
+
+    changePolicyOption=function(id){
+      var value = $("#main-content #policy-"+id + " option:selected").val();
+      self.proxyConnector.updatePolicyEntry(id,value);
+    }
+
+
     getPolicyOptions=function(id){
       var policyInformations=self.proxyConnectorsViewModel.policyInformations();
       for(i=0;i<policyInformations.length;i++){
