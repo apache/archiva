@@ -173,6 +173,16 @@ $(function() {
     checkSecurityLinks();
     checkCreateAdminLink();
     $('#footer-content').html($('#footer-tmpl').tmpl(window.archivaRuntimeInfo));
+
+    // create handlers on menu entries to add class active on click
+    var alinkNodes=$("#sidebar-content #main-menu").find("li a");
+    $.log("alinkNodes:"+alinkNodes.length);
+    alinkNodes.on("click",function(){
+      $.log("click");
+      alinkNodes.parent("li").removeClass("active");
+      $(this).parent("li").addClass("active");
+    })
+
   }
   startArchivaApplication();
 })
