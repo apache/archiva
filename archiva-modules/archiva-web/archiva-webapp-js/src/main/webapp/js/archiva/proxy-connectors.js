@@ -311,12 +311,15 @@ $(function() {
       mainContent.find("#proxy-connectors-view-tabs-li-edit a").html($.i18n.prop("edit"));
     }
     deleteProxyConnector=function(proxyConnector){
-      clearUserMessages();
-      removeProxyConnector(proxyConnector,function(){
-        displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
-        self.proxyConnectors.remove(proxyConnector);
-        //self.displayGrid();
-      });
+
+      openDialogConfirm(
+          function(){
+            clearUserMessages();
+            removeProxyConnector(proxyConnector,function(){
+            displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
+            self.proxyConnectors.remove(proxyConnector);
+            closeDialogConfirm();
+          })}, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('proxyconnector.delete.confirm'),null);
 
 
     }

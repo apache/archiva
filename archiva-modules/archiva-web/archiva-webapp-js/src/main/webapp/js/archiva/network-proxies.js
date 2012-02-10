@@ -175,7 +175,8 @@ $(function() {
 
     removeNetworkProxy=function(networkProxy){
       openDialogConfirm(
-          function(){$.ajax("restServices/archivaServices/networkProxyService/deleteNetworkProxy/"+encodeURIComponent(networkProxy.id()),
+          function(){
+            $.ajax("restServices/archivaServices/networkProxyService/deleteNetworkProxy/"+encodeURIComponent(networkProxy.id()),
               {
                 type: "get",
                 success: function(data) {
