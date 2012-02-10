@@ -178,7 +178,6 @@ $(function() {
     var alinkNodes=$("#sidebar-content #main-menu").find("li a");
     $.log("alinkNodes:"+alinkNodes.length);
     alinkNodes.on("click",function(){
-      $.log("click");
       alinkNodes.parent("li").removeClass("active");
       $(this).parent("li").addClass("active");
     })

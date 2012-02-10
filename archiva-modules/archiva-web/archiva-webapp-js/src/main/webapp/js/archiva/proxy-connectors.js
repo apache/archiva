@@ -25,68 +25,59 @@ $(function() {
     //private String sourceRepoId;
     this.sourceRepoId=ko.observable(sourceRepoId);
     this.sourceRepoId.subscribe(function(newValue){
-      $.log("modify sourceRepo:"+newValue);
       self.modified(true);
     });
 
     //private String targetRepoId;
     this.targetRepoId=ko.observable(targetRepoId);
     this.targetRepoId.subscribe(function(newValue){
-      $.log("modify targetRepo:"+newValue);
       self.modified(true);
     });
 
     //private String proxyId;
     this.proxyId=ko.observable(proxyId);
     this.proxyId.subscribe(function(newValue){
-      $.log("modify proxyId");
       self.modified(true);
     });
 
     //private List<String> blackListPatterns;
     this.blackListPatterns=ko.observableArray(blackListPatterns==null?[]:blackListPatterns);
     this.blackListPatterns.subscribe(function(newValue){
-      $.log("modify blackListPatterns");
       self.modified(true);
     });
 
     //private List<String> whiteListPatterns;
     this.whiteListPatterns=ko.observableArray(whiteListPatterns==null?[]:whiteListPatterns);
     this.whiteListPatterns.subscribe(function(newValue){
-      $.log("modify whiteListPatterns");
       self.modified(true);
     });
 
     //private List<PropertyEntry> policiesEntries;
     this.policiesEntries=ko.observableArray(policiesEntries==null?new Array():policiesEntries);
     this.policiesEntries.subscribe(function(newValue){
-      $.log("policiesEntries policies");
       self.modified(true);
     });
 
     //private List<PropertyEntry> properties;
     this.propertiesEntries=ko.observableArray(propertiesEntries==null?new Array():propertiesEntries);
     this.propertiesEntries.subscribe(function(newValue){
-      $.log("propertiesEntries modified");
       self.modified(true);
     });
 
     //private boolean disabled = false;
     this.disabled=ko.observable(disabled);
     this.disabled.subscribe(function(newValue){
-      $.log("modify disabled");
       self.modified(true);
     });
 
     //private int order = 0;
     this.order=ko.observable(order?order:0);
     this.order.subscribe(function(newValue){
-      $.log("modify order");
       self.modified(true);
     });
 
     this.modified=ko.observable(false);
-    this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
+    //this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
 
     this.updatePolicyEntry=function(key,value){
       for(i=0;i<policiesEntries.length;i++){
@@ -133,10 +124,7 @@ $(function() {
     }
 
     getSelectedPolicyOption=function(id){
-      $.log("getSelectedPolicyOption:"+id);
-
       var policiesEntries=self.proxyConnector.policiesEntries();
-      $.log("getSelectedPolicyOption policies.length:"+policiesEntries.length);
       if (policiesEntries!=null){
         for (i=0;i<policiesEntries.length;i++){
           var curKey = $.isFunction(policiesEntries[i].key)? policiesEntries[i].key():policiesEntries[i].key;
@@ -238,7 +226,6 @@ $(function() {
     }
 
     this.deleteProperty=function(key){
-      $.log("delete property key:"+key());
       for(i=0;i<self.proxyConnector.propertiesEntries().length;i++){
         var entry=self.proxyConnector.propertiesEntries()[i];
         if (entry.key()==key()){
