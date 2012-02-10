@@ -64,7 +64,7 @@
       <td>${row.sourceRepoId()}</td>
       <td>${row.targetRepoId()}-${row.order()}</td>
       <td>
-        <a popover-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
+        <a data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
            data-bind="event: { mouseover: function(){ showSettings(row)},},click: function(){ editProxyConnector(row)}"
            id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}" href="#">
            ${$.i18n.prop('edit')}

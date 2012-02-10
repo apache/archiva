@@ -301,8 +301,7 @@ $(function() {
       targetImg.popover(
           {
             placement: "left",
-            html: true,
-            title: "popover-title"
+            html: true
           }
       );
 

@@ -134,7 +134,7 @@
             {{/if}}
             <td><a href="#" data-bind="click: function(){ showPomSnippet(row) }">${$.i18n.prop('managedrepository.pomsnippet')}</a></td>
             <td id="managedrepository-stats-${row.id()}">
-              <img src="images/utilities-system-monitor.png" popover-title="${$.i18n.prop('managedrepository.stats')}"
+              <img src="images/utilities-system-monitor.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
                    data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
                    id="managedrepository-stats-img-${row.id()}"/>
             </td>

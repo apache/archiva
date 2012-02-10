@@ -433,8 +433,7 @@ $(function() {
             mainContent.find("#managedrepository-stats-img-"+curRepo.id()).popover(
                 {
                   placement: "left",
-                  html: true,
-                  title: "popover-title"
+                  html: true
                 }
             );
 
