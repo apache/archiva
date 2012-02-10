@@ -234,7 +234,8 @@ $(function() {
   /**
    * called from the menu to display tabs with users grid
     */
-  displayUsersGrid=function() {
+  displayUsersGrid=function(menuEntry) {
+    $(menuEntry).parent().addClass("active");
     screenChange();
     $("#main-content").html(mediumSpinnerImg());
     jQuery("#main-content").attr("data-bind",'template: {name:"usersGrid"}');
