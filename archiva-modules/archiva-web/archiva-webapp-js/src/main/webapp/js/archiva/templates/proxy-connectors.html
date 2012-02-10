@@ -63,7 +63,7 @@
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
-    <tr>
+    <tr data-bind="css:{ 'modified': row.modified()}">
       <td>${row.sourceRepoId()}</td>
       <td>${row.targetRepoId()}-${row.order()}</td>
       <td><img src="images/utilities-system-monitor.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
@@ -125,9 +125,9 @@
         <div class="control-group">
           <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.managed.repository.id')}</label>
           <div class="controls">
-            <select id="sourceRepoId"
-                    data-bind="options: proxyConnectorsViewModel.managedRepositories, optionsText: 'id',optionsValue:'id',
-                     value: proxyConnector.sourceRepoId"></select>
+              <select id="sourceRepoId"
+                      data-bind="options: proxyConnectorsViewModel.managedRepositories, optionsText: 'id',optionsValue:'id',
+                      value: proxyConnector.sourceRepoId,attr: {disabled: isUpdate() }"></select>
           </div>
         </div>
         <div class="control-group">
@@ -135,7 +135,7 @@
           <div class="controls">
             <select id="targetRepoId"
                     data-bind="options: proxyConnectorsViewModel.remoteRepositories, optionsText: 'id',optionsValue:'id',
-                     value: proxyConnector.targetRepoId"></select>
+                     value: proxyConnector.targetRepoId,attr: {disabled: isUpdate() }"></select>
           </div>
         </div>
         <div class="control-group span6">

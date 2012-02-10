@@ -127,6 +127,10 @@ $(function() {
     this.update=update;
     this.modified=ko.observable(false);
 
+    isUpdate=function(){
+      return self.update;
+    }
+
     getSelectedPolicyOption=function(id){
       $.log("getSelectedPolicyOption:"+id);
 
@@ -270,6 +274,7 @@ $(function() {
       mainContent.find("#proxy-connectors-edit").html($("#proxy-connector-edit-form-tmpl").tmpl());
       ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
       activateProxyConnectorsEditTab();
+      mainContent.find("#proxy-connectors-view-tabs-li-edit a").html($.i18n.prop("edit"));
     }
     deleteProxyConnector=function(proxyConnector){
       clearUserMessages();
@@ -364,7 +369,7 @@ $(function() {
         }
         if ($(e.target).attr("href")=="#proxy-connectors-view") {
           $("#proxy-connectors-view-tabs-a-network-proxies-grid").html($.i18n.prop("proxy-connectors.grid.tab.title"));
-
+          mainContent.find("#proxy-connectors-view-tabs-li-edit a").html($.i18n.prop("add"));
         }
 
       });
