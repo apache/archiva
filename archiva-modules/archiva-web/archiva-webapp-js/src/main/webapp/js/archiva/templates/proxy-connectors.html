@@ -62,7 +62,7 @@
     {{each(i, row) itemsOnCurrentPage()}}
     <tr>
       <td>${row.sourceRepoId()}</td>
-      <td>${row.targetRepoId()}</td>
+      <td>${row.targetRepoId()}-${row.order()}</td>
       <td>
         <a popover-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
            data-bind="event: { mouseover: function(){ showSettings(row)},},click: function(){ editProxyConnector(row)}"
@@ -85,8 +85,8 @@
 
 <script id='proxy-connectors-remote-settings-popover-tmpl' type='text/x-jquery-tmpl'>
   <div>
-    {{if proxyId()}}
-      ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${proxyId()}
+    {{if proxyId}}
+      ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${proxyId}
     {{else}}
       ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${$.i18n.prop('none')}
     {{/if}}
@@ -95,10 +95,14 @@
         <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
       </thead>
       <tbody>
-        {{each policies()}}
+        {{each(i, entry) policiesEntries}}
         <tr>
-          <td>${$value.key}</td>
-          <td>${$value.value}</td>
+          <td>${entry.key}</td>
+          {{if $.isFunction( entry.value ) }}
+            <td>function=====${entry.value()}</td>
+          {{else}}
+            <td>${entry.value}</td>
+          {{/if}}
         </tr>
         {{/each}}
       </tbody>
@@ -158,11 +162,11 @@
                 <th><input type="text" id="property-value"/></th>
                 <th><a href="#" data-bind="click: function(){ proxyConnector.addProperty() }">${$.i18n.prop('add')}</a></th>
               </thead>
-              <tbody data-bind="foreach: proxyConnector.properties">
+              <tbody data-bind="foreach: proxyConnector.propertiesEntries">
                 <tr>
                   <td data-bind="text: key"></td>
                   <td data-bind="text: value"></td>
-                  <td><a href="#" data-bind="click: function(){deleteProperty(key)}">${$.i18n.prop('delete')}</a></td>
+                  <td><a href="#" data-bind="click: function(){$data.deleteProperty(key)}">${$.i18n.prop('delete')}</a></td>
                 </tr>
               </tbody>
             </table>

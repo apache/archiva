@@ -18,7 +18,7 @@
  */
 $(function() {
 
-  ProxyConnector=function(sourceRepoId,targetRepoId,proxyId,blackListPatterns,whiteListPatterns,policies,properties,
+  ProxyConnector=function(sourceRepoId,targetRepoId,proxyId,blackListPatterns,whiteListPatterns,policiesEntries,propertiesEntries,
                           disabled,order){
     var self=this;
 
@@ -57,17 +57,17 @@ $(function() {
       self.modified(true);
     });
 
-    //private Map<String, String> policies;
-    this.policies=ko.observableArray(policies==null?[]:policies);
-    this.policies.subscribe(function(newValue){
-      $.log("modify policies");
+    //private List<PropertyEntry> policiesEntries;
+    this.policiesEntries=ko.observableArray(policiesEntries==null?new Array():policiesEntries);
+    this.policiesEntries.subscribe(function(newValue){
+      $.log("policiesEntries policies");
       self.modified(true);
     });
 
-    //private Map<String, String> properties;
-    this.properties=ko.observableArray(properties==null?new Array():properties);
-    this.properties.subscribe(function(newValue){
-      $.log("properties modified");
+    //private List<PropertyEntry> properties;
+    this.propertiesEntries=ko.observableArray(propertiesEntries==null?new Array():propertiesEntries);
+    this.propertiesEntries.subscribe(function(newValue){
+      $.log("propertiesEntries modified");
       self.modified(true);
     });
 
@@ -79,7 +79,7 @@ $(function() {
     });
 
     //private int order = 0;
-    this.order=ko.observable(order);
+    this.order=ko.observable(order?order:0);
     this.order.subscribe(function(newValue){
       $.log("modify order");
       self.modified(true);
@@ -88,15 +88,13 @@ $(function() {
     this.modified=ko.observable(false);
     this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
 
-    this.policiesEntries=[];
-    this.propertiesEntries=[];
 
     this.deleteProperty=function(key){
       $.log("delete property key:"+key());
-      for(i=0;i<self.properties().length;i++){
-        var entry=self.properties()[i];
+      for(i=0;i<self.propertiesEntries().length;i++){
+        var entry=self.propertiesEntries()[i];
         if (entry.key()==key()){
-          self.properties.remove(entry);
+          self.propertiesEntries.remove(entry);
         }
       }
 
@@ -106,9 +104,9 @@ $(function() {
       var mainContent=$("#main-content");
       var key=mainContent.find("#property-key").val();
       var value=mainContent.find("#property-value").val();
-      var oldTab = self.properties();
+      var oldTab = self.propertiesEntries();
       oldTab.push(new Entry(key,value));
-      self.properties(oldTab);
+      self.propertiesEntries(oldTab);
     }
   }
 
@@ -143,12 +141,12 @@ $(function() {
     getSelectedPolicyOption=function(id){
       $.log("getSelectedPolicyOption:"+id);
 
-      var policies=self.proxyConnector.policies();
-      $.log("getSelectedPolicyOption policies.length:"+policies.length);
-      if (policies!=null){
-        for (i=0;i<policies.length;i++){
-          if (id==policies[i].key()){
-            return policies[i].value();
+      var policiesEntries=self.proxyConnector.policiesEntries();
+      $.log("getSelectedPolicyOption policies.length:"+policiesEntries.length);
+      if (policiesEntries!=null){
+        for (i=0;i<policiesEntries.length;i++){
+          if (id==policiesEntries[i].key()){
+            return policiesEntries[i].value();
           }
         }
       }
@@ -195,8 +193,6 @@ $(function() {
       if (this.update){
 
       } else {
-        self.proxyConnector.policiesEntries=self.proxyConnector.policies();
-        self.proxyConnector.propertiesEntries=self.proxyConnector.properties();
         var json = $.toJSON(ko.toJS(self.proxyConnector));
         $.log("toJSON:"+json);
 
@@ -277,12 +273,10 @@ $(function() {
                                         return repo.id()==id;
                                       }
                             );
-      $.log("getRemoteRepository:"+id+":"+remoteRepository);
       return ($.isArray(remoteRepository) && remoteRepository.length>0) ? remoteRepository[0]:new RemoteRepository();
     }
 
     getProxyConnector=function(sourceRepoId,targetRepoId){
-      $.log("getProxyConnector:"+sourceRepoId+":"+targetRepoId);
       var proxyConnector=$.grep(self.proxyConnectors(),
                                       function(proxyConnector,idx){
                                         return proxyConnector.sourceRepoId()==sourceRepoId
@@ -290,7 +284,6 @@ $(function() {
                                       }
                                   );
       var res = ($.isArray(proxyConnector) && proxyConnector.length>0) ? proxyConnector[0]:new ProxyConnector();
-      $.log("getProxyConnector res:"+res);
       return res;
     }
 
@@ -300,7 +293,7 @@ $(function() {
                                 +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId());
       targetContent.html("");
       targetContent.append($("#proxy-connectors-remote-settings-popover-tmpl")
-                               .tmpl(proxyConnector));
+                               .tmpl(ko.toJS(proxyConnector)));
 
       var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+proxyConnector.sourceRepoId()
                             +"-"+proxyConnector.targetRepoId());
@@ -314,8 +307,6 @@ $(function() {
       );
 
       targetImg.popover('show');
-
-      $.log("showSettings:"+proxyConnector.policies().length);
 
     }
 
@@ -342,8 +333,7 @@ $(function() {
           for (i=0;i<self.policyInformations().length;i++){
             defaultPolicies.push(new Entry(self.policyInformations()[i].id(),self.policyInformations()[i].defaultOption));
           }
-          proxyConnector.policies(defaultPolicies);
-          $.log("proxyConnector.policies().length:"+proxyConnector.policies().length);
+          proxyConnector.policiesEntries(defaultPolicies);
           var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,false,self);
           mainContent.find("#proxy-connectors-edit").html($("#proxy-connector-edit-form-tmpl").tmpl());
           ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
@@ -359,6 +349,7 @@ $(function() {
   }
 
   displayProxyConnectors=function(){
+    clearUserMessages();
     var mainContent = $("#main-content");
     mainContent.html($("#proxyConnectorsMain").tmpl());
     mainContent.append(smallSpinnerImg());
@@ -436,21 +427,20 @@ $(function() {
     if (data==null){
       return null;
     }
-    var policies = (data.policies == null || data.policies.entry == null ) ? []: $.each(data.policies.entry,function(item){
-      $.log("each policies:");
+    var policiesEntries = data.policiesEntries == null ? []: $.each(data.policiesEntries,function(item){
       return new Entry(item.key, item.value);
     });
-    if (!$.isArray(policies)){
-      policies=[];
+    if (!$.isArray(policiesEntries)){
+      policiesEntries=[];
     }
-    var properties = data.properties == null ? []: $.each(data.properties,function(item){
+    var propertiesEntries = data.propertiesEntries == null ? []: $.each(data.propertiesEntries,function(item){
           return new Entry(item.key, item.value);
         });
-    if (!$.isArray(properties)){
-      properties=[];
+    if (!$.isArray(propertiesEntries)){
+      propertiesEntries=[];
     }
     return new ProxyConnector(data.sourceRepoId,data.targetRepoId,data.proxyId,mapStringArray(data.blackListPatterns),
-                              mapStringArray(data.whiteListPatterns),policies,properties,
+                              mapStringArray(data.whiteListPatterns),policiesEntries,propertiesEntries,
                               data.disabled,data.order);
   }
 
