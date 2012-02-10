@@ -138,6 +138,7 @@ $(function() {
     this.proxyConnectorsViewModel=proxyConnectorsViewModel;
     this.update=update;
     this.modified=ko.observable(false);
+
     getSelectedPolicyOption=function(id){
       $.log("getSelectedPolicyOption:"+id);
 
@@ -145,8 +146,9 @@ $(function() {
       $.log("getSelectedPolicyOption policies.length:"+policiesEntries.length);
       if (policiesEntries!=null){
         for (i=0;i<policiesEntries.length;i++){
-          if (id==policiesEntries[i].key()){
-            return policiesEntries[i].value();
+          var curKey = $.isFunction(policiesEntries[i].key)? policiesEntries[i].key():policiesEntries[i].key;
+          if (id==curKey){
+            return $.isFunction(policiesEntries[i].value)? policiesEntries[i].value():policiesEntries[i].value;
           }
         }
       }
@@ -190,11 +192,26 @@ $(function() {
     save=function(){
       //FIXME data controls !!!
       clearUserMessages();
+      // update is delete then add
       if (this.update){
-
+        $.ajax("restServices/archivaServices/proxyConnectorService/updateProxyConnector",
+          {
+            type: "POST",
+            data: "{\"proxyConnector\": " + ko.toJSON(self.proxyConnector)+"}",
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function(data) {
+              displaySuccessMessage($.i18n.prop('proxyconnector.updated'));
+              activateProxyConnectorsGridTab();
+              self.proxyConnector.modified(false);
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
       } else {
-        var json = $.toJSON(ko.toJS(self.proxyConnector));
-        $.log("toJSON:"+json);
 
         $.ajax("restServices/archivaServices/proxyConnectorService/addProxyConnector",
           {
@@ -214,7 +231,6 @@ $(function() {
             }
           }
         );
-
       }
     }
 
@@ -231,29 +247,21 @@ $(function() {
     this.remoteRepositories=ko.observableArray([]);
     this.networkProxies=ko.observableArray([]);
 
-    editProxyConnector=function(managedRepositoryConnectorView){
-      $.log("editProxyConnector");
+    editProxyConnector=function(proxyConnector){
+      var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,true,self);
+      var mainContent = $("#main-content");
+      mainContent.find("#proxy-connectors-edit").html($("#proxy-connector-edit-form-tmpl").tmpl());
+      ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
+      activateProxyConnectorsEditTab();
     }
     deleteProxyConnector=function(proxyConnector){
       clearUserMessages();
-      var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
-      url += "sourceRepoId="+encodeURIComponent(proxyConnector.sourceRepoId());
-      url += "&targetRepoId="+encodeURIComponent(proxyConnector.targetRepoId());
-      $.ajax(url,
-        {
-          type: "GET",
-          contentType: 'application/json',
-          success: function(data) {
-            displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
-            self.proxyConnectors.remove(proxyConnector);
-            self.displayGrid();
-          },
-          error: function(data) {
-            var res = $.parseJSON(data.responseText);
-            displayRestError(res);
-          }
-        }
-      );
+      removeProxyConnector(proxyConnector,function(){
+        displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
+        self.proxyConnectors.remove(proxyConnector);
+        //self.displayGrid();
+      });
+
 
     }
 
@@ -461,6 +469,27 @@ $(function() {
     return $.map(data.policyInformation, function(item) {
               return mapPolicyInformation(item);
            });
+  }
+
+  removeProxyConnector=function(proxyConnector,fnSuccessCallback){
+    clearUserMessages();
+    var url="restServices/archivaServices/proxyConnectorService/removeProxyConnector?";
+    url += "sourceRepoId="+encodeURIComponent(proxyConnector.sourceRepoId());
+    url += "&targetRepoId="+encodeURIComponent(proxyConnector.targetRepoId());
+    $.ajax(url,
+      {
+        type: "GET",
+        contentType: 'application/json',
+        success: function(data) {
+          fnSuccessCallback();
+        },
+        error: function(data) {
+          var res = $.parseJSON(data.responseText);
+          displayRestError(res);
+        }
+      }
+    );
+
   }
 
 });

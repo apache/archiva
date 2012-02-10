@@ -98,11 +98,7 @@
         {{each(i, entry) policiesEntries}}
         <tr>
           <td>${entry.key}</td>
-          {{if $.isFunction( entry.value ) }}
-            <td>function=====${entry.value()}</td>
-          {{else}}
-            <td>${entry.value}</td>
-          {{/if}}
+          <td>${entry.value}</td>
         </tr>
         {{/each}}
       </tbody>
