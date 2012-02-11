@@ -29,14 +29,14 @@
       <a data-toggle="tab" href="#role-edit">${$.i18n.prop('edit')}</a>
     </li>
   </ul>
-  <div id="roles-view-tabs-content" class="pill-content">
-    <div id="roles-view" class="pill-pane">
-        <table class="table table-striped table-bordered" id="usersTable"
+  <div id="roles-view-tabs-content" class="tab-content">
+    <div id="roles-view" class="tab-pane">
+        <table class="table table-striped table-bordered" id="rolesTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_rolesGrid',pageLinksId:'rolesPagination'">
         </table>
         <div id="rolesPagination"></div>
     </div>
-    <div id="role-edit" class="pill-pane"></div>
+    <div id="role-edit" class="tab-pane" data-bind="template: {name:'editRoleTab',data: currentRole}"></div>
   </div>
 
 </script>
@@ -134,17 +134,17 @@
       </ul>
   {{/if}}
 
-  <ul id="role-edit-users-tabs" class="pills">
+  <ul id="role-edit-users-tabs" class="nav nav-tabs">
     <li class="active" id="role-view-users-li">
-      <a href="#role-view-users">${$.i18n.prop('role.edit.users.list')}</a>
+      <a data-toggle="tab" href="#role-view-users">${$.i18n.prop('role.edit.users.list')}</a>
     </li>
     <li id="role-edit-users-li">
-      <a href="#role-edit-users">${$.i18n.prop('edit')}</a>
+      <a data-toggle="tab" href="#role-edit-users">${$.i18n.prop('edit')}</a>
     </li>
   </ul>  
 
   <div class="pill-content" id="role-edit-users-tabs-content">
-      <div id="role-view-users" class="active">
+      <div id="role-view-users" class="active pill-pane">
         <div class="page-header">
           <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
         </div>
@@ -161,7 +161,7 @@
         </div>
       </div>
 
-      <div id="role-edit-users" class="clearfix ar-multiselect">
+      <div id="role-edit-users" class="clearfix ar-multiselect pill-pane">
 
         <div class="ar-multiselect-column ar-multiselect-left">
         <select data-bind="options: otherUsers ,optionsText: 'username',selectedOptions:selectedOtherUsers" multiple="true" id="role-edit-available-users"></select>
@@ -191,7 +191,7 @@
   </thead>
   <tbody>
       {{each(i, row) itemsOnCurrentPage()}}
-          <tr>
+          <tr data-bind="css:{ 'modified': row.modified()}">
               {{each(j, columnDefinition) columns}}
               {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
               <td id="role-${columnDefinition.rowText}-${row.name()}">
@@ -199,7 +199,7 @@
               </td>
               {{/each}}
               <td>
-                <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ window.redbackModel.rolesViewModel.editRole(row) }">${$.i18n.prop('edit')}</a>
+                <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ editRole(row) }">${$.i18n.prop('edit')}</a>
               </td>
           </tr>
       {{/each}}

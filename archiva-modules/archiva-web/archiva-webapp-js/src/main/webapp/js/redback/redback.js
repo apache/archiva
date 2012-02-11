@@ -19,7 +19,7 @@
 $(function() {
 
   // define a container object with various datas
-  window.redbackModel = {userOperationNames:null,key:null,i18n:$.i18n.map,rolesViewModel:null};
+  window.redbackModel = {userOperationNames:null,key:null,i18n:$.i18n.map};
 
   // unbinding
   $("#user-create-form-cancel-button").on("click", function(){

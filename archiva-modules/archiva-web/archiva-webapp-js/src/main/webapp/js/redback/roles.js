@@ -20,16 +20,37 @@ $(function() {
 
   Role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
     this.name = ko.observable(name);
+    this.name.subscribe(function(newValue){self.modified(true)});
+
     this.description = ko.observable(description);
+    this.description.subscribe(function(newValue){self.modified(true)});
+
     this.assignable = ko.observable(assignable);
+    this.assignable.subscribe(function(newValue){self.modified(true)});
+
     this.childRoleNames = ko.observableArray(childRoleNames);//read only
+    this.childRoleNames.subscribe(function(newValue){self.modified(true)});
+
     this.parentRoleNames = ko.observableArray(parentRoleNames);//read only
+    this.parentRoleNames.subscribe(function(newValue){self.modified(true)});
+
     this.users = ko.observableArray(users?users:new Array());
+    this.users.subscribe(function(newValue){self.modified(true)});
+
     this.parentsRolesUsers = ko.observableArray(parentsRolesUsers);//read only
+    this.parentsRolesUsers.subscribe(function(newValue){self.modified(true)});
+
     this.permissions = ko.observableArray(permissions);//read only
+    this.permissions.subscribe(function(newValue){self.modified(true)});
+
     // when editing a role other users not assign to this role are populated
     this.otherUsers = ko.observableArray(otherUsers?otherUsers:new Array());
+    this.otherUsers.subscribe(function(newValue){self.modified(true)});
+
     this.removedUsers= ko.observableArray(new Array());
+    this.removedUsers.subscribe(function(newValue){self.modified(true)});
+
+    this.modified=ko.observable(false);
 
     this.updateDescription=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
@@ -81,20 +102,6 @@ $(function() {
     this.roles = ko.observableArray([]);
 
     var self = this;
-    this.loadRoles = function() {
-      $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
-          type: "GET",
-          async: false,
-          dataType: 'json',
-          success: function(data) {
-            var mappedRoles = $.map(data.role, function(item) {
-              return mapRole(item);
-            });
-            self.roles(mappedRoles);
-          }
-        }
-      );
-    };
 
 
     this.gridViewModel = new ko.simpleGrid.viewModel({
@@ -113,8 +120,9 @@ $(function() {
       pageSize: 10
     });
 
-    this.editRole=function(role){
-      $("#main-content #roles-view-tabs-content #role-edit").html(mediumSpinnerImg());
+    editRole=function(role){
+      var mainContent = $("#main-content");
+      mainContent.find("#roles-view-tabs-content #role-edit").html(mediumSpinnerImg());
       // load missing attributes
       $.ajax("restServices/redbackServices/roleManagementService/getRole/"+encodeURIComponent(role.name()),
         {
@@ -122,16 +130,15 @@ $(function() {
          dataType: 'json',
          success: function(data) {
            var mappedRole = mapRole(data.role);
-           $("#main-content #roles-view-tabs-content #role-edit").attr("data-bind",'template: {name:"editRoleTab",data: currentRole}');
            role.parentRoleNames=mappedRole.parentRoleNames;
            role.parentsRolesUsers=mappedRole.parentsRolesUsers;
            role.users=mappedRole.users;
            role.otherUsers=mappedRole.otherUsers;
            var viewModel = new RoleViewModel(role);
-           ko.applyBindings(viewModel,$("#main-content #roles-view-tabs-content #role-edit").get(0));
+           ko.applyBindings(viewModel,mainContent.find("#roles-view-tabs-content #role-edit").get(0));
            activateRoleEditTab();
-           $("#role-edit-users-tabs").tabs();
-           $("#role-edit-users-tabs-content #role-view-users").addClass("active");
+           mainContent.find("#role-view-users ").tabs("show");
+           mainContent.find("#role-edit-users-tabs-content #role-view-users").addClass("active");
          }
         }
       );
@@ -141,14 +148,29 @@ $(function() {
 
   displayRolesGrid = function(){
     screenChange();
-    $("#main-content").html(mediumSpinnerImg());
-    window.redbackModel.rolesViewModel = new RolesViewModel();
-    window.redbackModel.rolesViewModel.loadRoles();
-    $("#main-content").html($("#rolesTabs").tmpl());
-    ko.applyBindings(window.redbackModel.rolesViewModel,jQuery("#main-content").get(0));
-    $("#main-content #roles-view-tabs a:first").tab("show");
-    activateRolesGridTab();
-    removeMediumSpinnerImg();
+    var mainContent = $("#main-content");
+    mainContent.html(mediumSpinnerImg());
+
+    $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          var mappedRoles = $.map(data.role, function(item) {
+            return mapRole(item);
+          });
+          var rolesViewModel = new RolesViewModel();
+          rolesViewModel.roles(mappedRoles);
+          mainContent.html($("#rolesTabs").tmpl());
+          ko.applyBindings(rolesViewModel,mainContent.find("#rolesTable").get(0));
+          mainContent.find("#roles-view-tabs #roles-view-tabs-a-roles-grid").tab("show");
+          activateRolesGridTab();
+          removeMediumSpinnerImg();
+
+        }
+      }
+    );
+
+
   }
 
   RoleViewModel=function(role){
@@ -162,6 +184,7 @@ $(function() {
       for (var i = 0; i < removed.length; i++) {
         $.log("add user:"+removed[i].username());
         currentRole.users.push(removed[i]);
+        role.modified(true);
       }
       selectedOtherUsers([]);
       activateRoleUsersEditTab();
@@ -172,6 +195,7 @@ $(function() {
       for (var i = 0; i < added.length; i++) {
         currentRole.otherUsers.push(added[i]);
         currentRole.removedUsers.push(added[i]);
+        role.modified(true);
       }
       selectedUsers([]);
       activateRoleUsersEditTab()
@@ -185,12 +209,14 @@ $(function() {
     }
 
     updateMode=function(){
-      $("#main-content #role-list-users").hide();
-      $("#main-content #role-edit-users").show();
+      var mainContent = $("#main-content");
+      mainContent.find("#role-list-users").hide();
+      mainContent.find("#role-edit-users").show();
     }
     viewMode=function(){
-      $("#main-content #role-edit-users").hide();
-      $("#main-content #role-list-users").show();
+      var mainContent = $("#main-content");
+      mainContent.find("#role-edit-users").hide();
+      mainContent.find("#role-list-users").show();
     }
   }
 

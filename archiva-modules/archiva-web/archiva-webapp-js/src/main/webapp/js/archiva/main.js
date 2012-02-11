@@ -176,7 +176,6 @@ $(function() {
 
     // create handlers on menu entries to add class active on click
     var alinkNodes=$("#sidebar-content #main-menu").find("li a");
-    $.log("alinkNodes:"+alinkNodes.length);
     alinkNodes.on("click",function(){
       alinkNodes.parent("li").removeClass("active");
       $(this).parent("li").addClass("active");
