@@ -19,6 +19,9 @@
 $(function() {
 
   Role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
+
+    var self=this;
+
     this.name = ko.observable(name);
     this.name.subscribe(function(newValue){self.modified(true)});
 
@@ -52,6 +55,8 @@ $(function() {
 
     this.modified=ko.observable(false);
 
+    this.usersModified=ko.observable(false);
+
     this.updateDescription=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleDescription?";
       var roleName = this.name();
@@ -72,7 +77,7 @@ $(function() {
         }
       );
     }
-    var self=this;
+
     this.updateUsers=function(){
       var url = "restServices/redbackServices/roleManagementService/updateRoleUsers";
       $.ajax(url,
@@ -130,18 +135,48 @@ $(function() {
          dataType: 'json',
          success: function(data) {
            var mappedRole = mapRole(data.role);
-           role.parentRoleNames=mappedRole.parentRoleNames;
-           role.parentsRolesUsers=mappedRole.parentsRolesUsers;
-           role.users=mappedRole.users;
-           role.otherUsers=mappedRole.otherUsers;
+           role.parentRoleNames(mappedRole.parentRoleNames());
+           role.parentsRolesUsers(mappedRole.parentsRolesUsers());
+           role.users(mappedRole.users());
+           role.otherUsers(mappedRole.otherUsers());
+           role.modified(false);
            var viewModel = new RoleViewModel(role);
            ko.applyBindings(viewModel,mainContent.find("#roles-view-tabs-content #role-edit").get(0));
            activateRoleEditTab();
-           mainContent.find("#role-view-users ").tabs("show");
+           mainContent.find("#role-view-users").tabs("show");
            mainContent.find("#role-edit-users-tabs-content #role-view-users").addClass("active");
          }
         }
       );
+    }
+
+    this.bulkSave=function(){
+      $.log("bulkSave");
+      return getModifiedRoles().length>0;
+    }
+
+    getModifiedRoles=function(){
+      var prx = $.grep(self.roles(),
+          function (role,i) {
+            return role.modified()||role.usersModified();
+          });
+      return prx;
+    }
+
+    updateModifiedRoles=function(){
+      var modifiedRoles = getModifiedRoles();
+      $.log("modifiedRoles:"+modifiedRoles);
+      for(i=0;i<modifiedRoles.length;i++){
+        var modifiedRole=modifiedRoles[i];
+        if (modifiedRole.modified()){
+          modifiedRole.updateDescription();
+          modifiedRole.modified(false);
+        }
+        if (modifiedRole.usersModified()){
+          modifiedRole.updateUsers();
+          modifiedRole.usersModified(false);
+        }
+      }
     }
 
   }
@@ -161,7 +196,7 @@ $(function() {
           var rolesViewModel = new RolesViewModel();
           rolesViewModel.roles(mappedRoles);
           mainContent.html($("#rolesTabs").tmpl());
-          ko.applyBindings(rolesViewModel,mainContent.find("#rolesTable").get(0));
+          ko.applyBindings(rolesViewModel,mainContent.find("#roles-view").get(0));
           mainContent.find("#roles-view-tabs #roles-view-tabs-a-roles-grid").tab("show");
           activateRolesGridTab();
           removeMediumSpinnerImg();
@@ -184,7 +219,8 @@ $(function() {
       for (var i = 0; i < removed.length; i++) {
         $.log("add user:"+removed[i].username());
         currentRole.users.push(removed[i]);
-        role.modified(true);
+        //role.modified(true);
+        role.usersModified(true);
       }
       selectedOtherUsers([]);
       activateRoleUsersEditTab();
@@ -195,7 +231,8 @@ $(function() {
       for (var i = 0; i < added.length; i++) {
         currentRole.otherUsers.push(added[i]);
         currentRole.removedUsers.push(added[i]);
-        role.modified(true);
+        //role.modified(true);
+        role.usersModified(true);
       }
       selectedUsers([]);
       activateRoleUsersEditTab()
