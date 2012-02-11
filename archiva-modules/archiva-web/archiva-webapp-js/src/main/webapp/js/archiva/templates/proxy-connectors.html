@@ -91,7 +91,7 @@
 <script id='proxy-connectors-remote-settings-popover-tmpl' type='text/x-jquery-tmpl'>
   <div>
     {{if proxyId}}
-      ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${proxyId}
+      ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${proxyConnector.proxyId}
     {{else}}
       ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${$.i18n.prop('none')}
     {{/if}}
@@ -100,9 +100,10 @@
         <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
       </thead>
       <tbody>
-        {{each(i, entry) policiesEntries}}
+        {{each(i, entry) proxyConnector.policiesEntries}}
+        {{var name = proxyConnectorsViewModel.findPolicyInformationName(entry.key)}}
         <tr>
-          <td>${entry.key}</td>
+          <td>${name}</td>
           <td>${entry.value}</td>
         </tr>
         {{/each}}

@@ -112,6 +112,7 @@ $(function() {
     this.name.subscribe(function(newValue){self.modified(true)});
 
   }
+
   ProxyConnectorViewModel=function(proxyConnector,update,proxyConnectorsViewModel){
     var self=this;
     this.proxyConnector=proxyConnector;
@@ -256,6 +257,13 @@ $(function() {
   ProxyConnectorsViewModel=function(){
     var self=this;
     this.proxyConnectors=ko.observableArray([]);
+    this.proxyConnectors.subscribe(function(newValue){
+      $.log("ProxyConnectorsViewModel#proxyConnectors modified")
+      self.proxyConnectors().sort(function(a,b){
+        if ( a.sourceRepoId()== b.sourceRepoId()) return a.order() - b.order();
+        return (a.sourceRepoId() > b.sourceRepoId())? -1:1;
+      });
+    });
     this.policyInformations=ko.observableArray([]);
     this.managedRepositories=ko.observableArray([]);
     this.remoteRepositories=ko.observableArray([]);
@@ -347,7 +355,10 @@ $(function() {
                                 +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId());
       targetContent.html("");
       targetContent.append($("#proxy-connectors-remote-settings-popover-tmpl")
-                               .tmpl(ko.toJS(proxyConnector)));
+                               .tmpl({
+                                    proxyConnectorsViewModel: self,
+                                    proxyConnector:ko.toJS(proxyConnector)
+                                    }));
 
       var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+proxyConnector.sourceRepoId()
                             +"-"+proxyConnector.targetRepoId());
@@ -362,6 +373,16 @@ $(function() {
       targetImg.popover('show');
 
     }
+
+    this.findPolicyInformationName=function(id){
+      for(i=0;i<self.policyInformations().length;i++){
+        if (id==self.policyInformations()[i].id()){
+          return self.policyInformations()[i].name();
+        }
+      }
+      return null;
+    }
+
 
     this.displayGrid=function(){
       this.gridViewModel = new ko.simpleGrid.viewModel({
