@@ -50,6 +50,15 @@ public class ManagedRepositoriesServiceTest
         service.addManagedRepository( repo );
         assertNotNull( service.getManagedRepository( repo.getId() ) );
 
+        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+        int timeout = 20000;
+        while ( timeout > 0 && repositoriesService.alreadyScanning( repo.getId() ) )
+        {
+            Thread.sleep( 500 );
+            timeout -= 500;
+        }
+
         service.deleteManagedRepository( repo.getId(), true );
         assertNull( service.getManagedRepository( repo.getId() ) );
     }
@@ -67,6 +76,16 @@ public class ManagedRepositoriesServiceTest
             assertNull( service.getManagedRepository( repo.getId() ) );
         }
         service.addManagedRepository( repo );
+
+        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+        int timeout = 20000;
+        while ( timeout > 0 && repositoriesService.alreadyScanning( repo.getId() ) )
+        {
+            Thread.sleep( 500 );
+            timeout -= 500;
+        }
+
         repo = service.getManagedRepository( repo.getId() );
         assertNotNull( repo );
         assertEquals( "test", repo.getName() );
@@ -78,6 +97,13 @@ public class ManagedRepositoriesServiceTest
         repo = service.getManagedRepository( repo.getId() );
         assertNotNull( repo );
         assertEquals( "toto", repo.getName() );
+
+        timeout = 20000;
+        while ( timeout > 0 && repositoriesService.alreadyScanning( repo.getId() ) )
+        {
+            Thread.sleep( 500 );
+            timeout -= 500;
+        }
 
         service.deleteManagedRepository( repo.getId(), true );
         assertNull( service.getManagedRepository( repo.getId() ) );
