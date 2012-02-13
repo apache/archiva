@@ -254,6 +254,13 @@
     <div class="row-fluid">
       <div class="span1">
         <img src="images/system-software-update-32-32.png"/>
+          <br/>
+          <img src="images/utilities-system-monitor-22-22.png"
+               id="proxy-connectors-order-remoterepo-settings-edit-${sourceRepoId()}-${targetRepoId()}"
+               data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
+               data-bind="event: { mouseover: function(){ displaySettings(sourceRepoId(),targetRepoId())},}">
+          <div id="proxy-connectors-order-remoterepo-settings-content-${sourceRepoId()}-${targetRepoId()}"
+               style="display:none"></div>
       </div>
       <div class="span6 pull-left">
         <blockquote>
