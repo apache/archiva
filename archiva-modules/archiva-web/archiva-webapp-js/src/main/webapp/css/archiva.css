@@ -49,3 +49,15 @@
     border-top:2px solid #fbc7c6;
     border:2px solid #fbc7c6;
 }
+
+.draggable-item {
+    cursor: move;
+}
+
+.network-proxy-remote-item{
+  margin-bottom: 12px;
+  min-height: 2px;
+  padding: 12px;
+  border: 2px dotted #ddd;
+  margin-left: 2em
+}

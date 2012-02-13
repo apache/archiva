@@ -41,10 +41,11 @@
       <div id="proxy-connectorsPagination"></div>
     </div>
     <div id="proxy-connectors-edit" class="tab-pane"></div>
-    <div id="proxy-connector-edit-order" class="tab-pane">
-      <ul id="proxy-connector-edit-order-div"
+    <div id="proxy-connector-edit-order" class="tab-pane span8">
+      <div id="proxy-connector-edit-order-managed-repository-div" data-bind='template:{name:"proxy-connector-edit-order-managed-repository-tmpl"}'></div>
+      <div id="proxy-connector-edit-order-div"
          data-bind="sortable: { template: 'proxy-connector-edit-order-tmpl', data: proxyConnectors,afterMove: proxyConnectorMoved}">
-      </ul>
+      </div>
     </div>
   </div>
 
@@ -246,9 +247,34 @@
 </script>
 
 <script id="proxy-connector-edit-order-tmpl" type='text/html'>
-    <li>
-      <a href="#">
-        ${sourceRepoId}-${targetRepoId}-${order}
-      </a>
-    </li>
+  <div class="well draggable-item network-proxy-remote-item">
+    {{var remoteRepository=$parent.findRemoteRepository(targetRepoId)}}
+    <div class="row-fluid">
+      <div class="span1">
+        <img src="images/internet-web-browser.png"/>
+      </div>
+      <div class="span6 pull-left">
+        <p>${targetRepoId}</p>
+        <p>${remoteRepository.name()}&nbsp;(<a href="${remoteRepository.url()}" target="_blank">${remoteRepository.url()}</a>)</p>
+        <!--<p>${order}</p>-->
+      </div>
+    </div>
+  </div>
 </script>
+
+<script id="proxy-connector-edit-order-managed-repository-tmpl" type="text/html">
+  <div class="well row-fluid">
+    <div class="span6">
+    <p>${managedRepository.id}</p>
+    <p>${managedRepository.name}</p>
+    </div>
+    <div class="span2">
+      {{if proxyConnectorsViewModel.bulkSave()}}
+        <p>
+           <a data-bind="click: function(){updateModifiedProxyConnectors()}"
+              href="#" class="btn btn-warning">${$.i18n.prop('save.all')}</a></p>
+      {{/if}}
+    </div>
+  </div>
+</script>
+

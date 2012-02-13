@@ -282,7 +282,7 @@ $(function() {
       return prx;
     }
 
-    updateModifiedProxyConnectors=function(){
+    this.updateModifiedProxyConnectors=function(){
       var modifiedProxyConnectors = getModifiedProxyConnectors();
 
       openDialogConfirm(function(){
@@ -405,7 +405,8 @@ $(function() {
       var proxyConnectors=findProxyConnectorsWithSourceId(proxyConnector);
       $.log("displayOrderEdit:"+proxyConnector.sourceRepoId()+",number:"+proxyConnectors.length);
 
-      var proxyConnectorEditOrderViewModel=new ProxyConnectorEditOrderViewModel(proxyConnectors);
+      var managedRepository = getManagedRepository(proxyConnector.sourceRepoId());
+      var proxyConnectorEditOrderViewModel=new ProxyConnectorEditOrderViewModel(proxyConnectors,self,managedRepository);
       ko.applyBindings(proxyConnectorEditOrderViewModel,$("#main-content #proxy-connector-edit-order").get(0));
       activateProxyConnectorsEditOrderTab();
     }
@@ -442,17 +443,20 @@ $(function() {
           $("#proxy-connectors-view-tabs-a-network-proxies-grid").html($.i18n.prop("proxy-connectors.grid.tab.title"));
           mainContent.find("#proxy-connectors-view-tabs-li-edit a").html($.i18n.prop("add"));
         }
+        if ($(e.target).attr("href")=="#proxy-connectors-edit-order") {
+          activateProxyConnectorsEditOrderTab();
+        }
 
       });
     }
 
   }
 
-  ProxyConnectorEditOrderViewModel=function(proxyConnectors,proxyConnectorsViewModel){
+  ProxyConnectorEditOrderViewModel=function(proxyConnectors,proxyConnectorsViewModel,managedRepository){
     var self=this;
     this.proxyConnectors=ko.observableArray(proxyConnectors);
     this.proxyConnectorsViewModel=proxyConnectorsViewModel;
-
+    this.managedRepository=managedRepository;
     proxyConnectorMoved=function(arg){
       $.log("proxyConnectorMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
       // if only 1 move just update two whereas update all with the new order
@@ -464,6 +468,20 @@ $(function() {
           self.proxyConnectors()[i].order(i+1);
         }
       }
+    }
+
+    this.findRemoteRepository=function(id){
+      $.log("findRemoteRepository:"+id());
+      for(i=0;i<self.proxyConnectorsViewModel.remoteRepositories().length;i++){
+        if (self.proxyConnectorsViewModel.remoteRepositories()[i].id()==id()){
+          return self.proxyConnectorsViewModel.remoteRepositories()[i];
+        }
+      }
+      return null;
+    }
+
+    this.updateModifiedProxyConnectors=function(){
+      self.proxyConnectorsViewModel.updateModifiedProxyConnectors();
     }
 
   }
