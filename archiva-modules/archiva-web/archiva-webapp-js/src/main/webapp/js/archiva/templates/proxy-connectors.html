@@ -251,7 +251,7 @@
     {{var remoteRepository=$parent.findRemoteRepository(targetRepoId)}}
     <div class="row-fluid">
       <div class="span1">
-        <img src="images/internet-web-browser.png"/>
+        <img src="images/system-software-update.png"/>
       </div>
       <div class="span6 pull-left">
         <p>${targetRepoId}</p>
@@ -264,9 +264,12 @@
 
 <script id="proxy-connector-edit-order-managed-repository-tmpl" type="text/html">
   <div class="well row-fluid">
+    <div class="span1">
+      <img src="images/applications-internet.png"/>
+    </div>
     <div class="span6">
-    <p>${managedRepository.id}</p>
-    <p>${managedRepository.name}</p>
+      <p>${managedRepository.id}</p>
+      <p>${managedRepository.name}</p>
     </div>
     <div class="span2">
       {{if proxyConnectorsViewModel.bulkSave()}}
