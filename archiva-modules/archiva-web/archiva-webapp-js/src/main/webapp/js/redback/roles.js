@@ -164,19 +164,32 @@ $(function() {
     }
 
     updateModifiedRoles=function(){
+
+
       var modifiedRoles = getModifiedRoles();
       $.log("modifiedRoles:"+modifiedRoles);
-      for(i=0;i<modifiedRoles.length;i++){
-        var modifiedRole=modifiedRoles[i];
-        if (modifiedRole.modified()){
-          modifiedRole.updateDescription();
-          modifiedRole.modified(false);
-        }
-        if (modifiedRole.usersModified()){
-          modifiedRole.updateUsers();
-          modifiedRole.usersModified(false);
-        }
-      }
+
+
+      openDialogConfirm(function(){
+                          for(i=0;i<modifiedRoles.length;i++){
+                            var modifiedRole=modifiedRoles[i];
+                            if (modifiedRole.modified()){
+                              modifiedRole.updateDescription();
+                              modifiedRole.modified(false);
+                            }
+                            if (modifiedRole.usersModified()){
+                              modifiedRole.updateUsers();
+                              modifiedRole.usersModified(false);
+                            }
+                          }
+                          closeDialogConfirm();
+                        },
+                        $.i18n.prop('ok'),
+                        $.i18n.prop('cancel'),
+                        $.i18n.prop('bulk.save.confirm.title'),
+                        $.i18n.prop('role.bulk.save.confirm',modifiedRoles.length));
+
+
     }
 
     updateRole=function(modifiedRole){
