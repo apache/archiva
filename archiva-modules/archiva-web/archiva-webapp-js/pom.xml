@@ -544,6 +544,78 @@
     <plugins>
 
       <plugin>
+        <groupId>com.samaxes.maven</groupId>
+        <artifactId>maven-minify-plugin</artifactId>
+        <version>1.3.5</version>
+        <executions>
+          <execution>
+            <id>startup-minify</id>
+            <phase>generate-resources</phase>
+            <configuration>
+              <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
+              <cssSourceDir>css</cssSourceDir>
+              <cssSourceFiles>
+                <cssSourceFile>jquery-ui-1.8.16.custom.css</cssSourceFile>
+                <cssSourceFile>jquery.ui.1.8.16.ie.css</cssSourceFile>
+                <cssSourceFile>bootstrap.css</cssSourceFile>
+                <cssSourceFile>archiva.css</cssSourceFile>
+              </cssSourceFiles>
+              <cssFinalFile>apache-archiva-${project.version}.css</cssFinalFile>
+              <jsSourceDir>js</jsSourceDir>
+              <jsSourceFiles>
+                <jsSourceFile>jquery-1.7.1.js</jsSourceFile>
+                <jsSourceFile>lab.js</jsSourceFile>
+                <jsSourceFile>require.1.0.1.js</jsSourceFile>
+              </jsSourceFiles>
+              <jsFinalFile>apache-archiva-startup-${project.version}.js</jsFinalFile>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>main-minify</id>
+            <phase>generate-resources</phase>
+            <configuration>
+              <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
+              <jsSourceDir>js</jsSourceDir>
+              <jsSourceFiles>
+                <jsSourceFile>jquery.tmpl.js</jsSourceFile>
+                <jsSourceFile>archiva/utils.js</jsSourceFile>
+                <jsSourceFile>jquery.i18n.properties-1.0.9.js</jsSourceFile>
+                <jsSourceFile>archiva/i18nload.js</jsSourceFile>
+                <jsSourceFile>jquery.cookie.1.0.0.js</jsSourceFile>
+                <jsSourceFile>knockout-debug.js</jsSourceFile>
+                <jsSourceFile>jquery-ui-1.8.16.custom.min.js</jsSourceFile>
+                <jsSourceFile>jquery.validate.js</jsSourceFile>
+                <jsSourceFile>jquery.json-2.3.min.js</jsSourceFile>
+                <jsSourceFile>archiva/main-tmpl.js</jsSourceFile>
+                <jsSourceFile>archiva/repositories.js</jsSourceFile>
+                <jsSourceFile>archiva/network-proxies.js</jsSourceFile>
+                <jsSourceFile>archiva/proxy-connectors.js</jsSourceFile>
+                <jsSourceFile>redback/operation.js</jsSourceFile>
+                <jsSourceFile>redback/redback-tmpl.js</jsSourceFile>
+                <jsSourceFile>bootstrap.js</jsSourceFile>
+                <jsSourceFile>knockout.simpleGrid.js</jsSourceFile>
+                <jsSourceFile>redback/user.js</jsSourceFile>
+                <jsSourceFile>redback/users.js</jsSourceFile>
+                <jsSourceFile>redback/redback.js</jsSourceFile>
+                <jsSourceFile>redback/register.js</jsSourceFile>
+                <jsSourceFile>redback/permission.js</jsSourceFile>
+                <jsSourceFile>redback/resource.js</jsSourceFile>
+                <jsSourceFile>redback/roles.js</jsSourceFile>
+                <jsSourceFile>archiva/main.js</jsSourceFile>
+              </jsSourceFiles>
+              <jsFinalFile>apache-archiva-main-${project.version}.js</jsFinalFile>
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat6-maven-plugin</artifactId>
         <configuration>
