@@ -356,9 +356,9 @@ $(function() {
       return res;
     }
 
-    showSettings=function(proxyConnector){
+    showSettings=function(proxyConnector,targetContentStartId, targetImgStartId){
       //proxyConnector=getProxyConnector(proxyConnector.sourceRepoId(),proxyConnector.targetRepoId());
-      var targetContent = $("#proxy-connectors-grid-remoterepo-settings-content-"
+      var targetContent = $( (targetContentStartId?targetContentStartId:"#proxy-connectors-grid-remoterepo-settings-content-")
                                 +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId());
       targetContent.html("");
       targetContent.append($("#proxy-connectors-remote-settings-popover-tmpl")
@@ -367,8 +367,8 @@ $(function() {
                                     proxyConnector:ko.toJS(proxyConnector)
                                     }));
 
-      var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-"+proxyConnector.sourceRepoId()
-                            +"-"+proxyConnector.targetRepoId());
+      var targetImg = $((targetImgStartId?targetImgStartId:"#proxy-connectors-grid-remoterepo-settings-edit-")
+                            +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId());
       targetImg.attr("data-content",targetContent.html());
       targetImg.popover(
           {

@@ -72,15 +72,17 @@
     <tr data-bind="css:{ 'modified': row.modified()}">
       <td>${row.sourceRepoId()}</td>
       <td>${row.targetRepoId()}</td>
-      <td><img src="images/utilities-system-monitor-22-22.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
+      <td>
+          <img src="images/utilities-system-monitor-22-22.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
                data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
-               data-bind="event: { mouseover: function(){ showSettings(row)},}"></td>
+               data-bind="event: { mouseover: function(){ showSettings(row)},}">
+          <div id="proxy-connectors-grid-remoterepo-settings-content-${row.sourceRepoId()}-${row.targetRepoId()}"
+               style="display:none"></div>
+      </td>
       <td>
         <a data-bind="click: function(){ editProxyConnector(row)}" href="#">
            ${$.i18n.prop('edit')}
         </a>
-        <div id="proxy-connectors-grid-remoterepo-settings-content-${row.sourceRepoId()}-${row.targetRepoId()}"
-             style="display:none"></div>
       </td>
       <td>
         <a href="#" data-bind="click: function(){ deleteProxyConnector(row)}">
