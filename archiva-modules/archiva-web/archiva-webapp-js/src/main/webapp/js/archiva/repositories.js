@@ -233,6 +233,7 @@ $(function() {
             curManagedRepository.location(data.managedRepository.location);
             self.managedRepositoriesViewModel.managedRepositories.push(curManagedRepository);
             displaySuccessMessage($.i18n.prop('managedrepository.added'));
+            curManagedRepository.modified(false);
             activateManagedRepositoriesGridTab();
           },
           error: function(data) {
@@ -642,6 +643,7 @@ $(function() {
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
+              self.remoteRepository.modified(false);
               self.remoteRepositoriesViewModel.remoteRepositories.push(self.remoteRepository);
               displaySuccessMessage($.i18n.prop('remoterepository.added'));
               activateRemoteRepositoriesGridTab();
