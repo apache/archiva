@@ -179,6 +179,17 @@ $(function() {
       }
     }
 
+    updateRole=function(modifiedRole){
+      if (modifiedRole.modified()){
+        modifiedRole.updateDescription();
+        modifiedRole.modified(false);
+      }
+      if (modifiedRole.usersModified()){
+        modifiedRole.updateUsers();
+        modifiedRole.usersModified(false);
+      }
+    }
+
   }
 
   displayRolesGrid = function(){

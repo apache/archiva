@@ -190,6 +190,7 @@
           <th>${ columnDefinition.headerText }</th>
         {{/each}}
         <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('save')}</th>
       </tr>
   </thead>
   <tbody>
@@ -203,6 +204,11 @@
               {{/each}}
               <td>
                 <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ editRole(row) }">${$.i18n.prop('edit')}</a>
+              </td>
+              <td>
+                {{if row.modified()}}
+                  <a href="#" class="btn" data-bind="click: function(){ updateRole(row) }">${$.i18n.prop('save')}</a>
+                {{/if}}
               </td>
           </tr>
       {{/each}}
