@@ -297,6 +297,11 @@ $(function() {
                         $.i18n.prop('proxy.connector.bulk.save.confirm',modifiedProxyConnectors.length));
     }
 
+    updateProxyConnector=function(proxyConnector){
+      var viewModel = new ProxyConnectorViewModel(proxyConnector,true,self,false);
+      viewModel.save();
+    }
+
     editProxyConnector=function(proxyConnector){
       var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,true,self);
       var mainContent = $("#main-content");

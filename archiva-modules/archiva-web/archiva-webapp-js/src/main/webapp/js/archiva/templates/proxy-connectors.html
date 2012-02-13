@@ -51,15 +51,10 @@
         <th title="${$.i18n.prop('proxy-connectors.grid.remoterepo.title')}">
           ${$.i18n.prop('proxy-connectors.grid.remoterepo.grid.header')}
         </th>
-        <th>
-            ${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}
-        </th>          
-        <th>
-          ${$.i18n.prop('edit')}
-        </th>
-        <th>
-          ${$.i18n.prop('delete')}
-        </th>
+        <th>${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}</th>
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('save')}</th>
       </tr>
     </thead>
     <tbody>
@@ -81,6 +76,13 @@
         <a href="#" data-bind="click: function(){ deleteProxyConnector(row)}">
           <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
         </a>
+      </td>
+      <td>
+        {{if row.modified()}}
+          <a href="#" class="btn btn-warning" data-bind="click: function(){ updateProxyConnector(row)}">
+              ${$.i18n.prop('save')}
+          </a>
+        {{/if}}
       </td>
     </tr>
     {{/each}}
@@ -223,6 +225,6 @@
 </script>
 <script id="proxy-connectors-bulk-save-tmpl" type='text/x-jquery-tmpl'>
   {{if bulkSave()}}
-    <button data-bind="click: updateModifiedProxyConnectors" class="btn">${$.i18n.prop('save.all')}</button>
+    <a data-bind="click: updateModifiedProxyConnectors" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
 </script>
