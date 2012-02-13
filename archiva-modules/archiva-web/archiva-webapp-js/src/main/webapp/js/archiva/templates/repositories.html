@@ -127,7 +127,7 @@
             </td>
             {{if row.modified()}}
               <td>
-                <a href="#" data-bind="click: function(){ updateManagedRepository(row) }">${$.i18n.prop('save')}</a>
+                <a href="#" class="btn btn-warning" data-bind="click: function(){ updateManagedRepository(row) }">${$.i18n.prop('save')}</a>
               </td>
             {{else}}
               <td></td>
@@ -457,6 +457,6 @@
 
 <script id="managed-repositories-bulk-save-tmpl" type='text/x-jquery-tmpl'>
   {{if bulkSave()}}
-    <button data-bind="click: updateModifiedManagedRepositories" class="btn">${$.i18n.prop('save.all')}</button>
+    <a data-bind="click: updateModifiedManagedRepositories" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
 </script>
