@@ -80,7 +80,7 @@
           </td>
         {{if row.modified()}}
           <td>
-            <a href="#" data-bind="click: function(){ updateNetworkProxy(row) }">${$.i18n.prop('save')}</a>
+            <a href="#" data-bind="click: function(){ updateNetworkProxy(row) }" class="btn btn-warning">${$.i18n.prop('save')}</a>
           </td>
         {{else}}
           <td></td>
@@ -159,6 +159,6 @@
 
 <script id="network-proxies-bulk-save-tmpl" type='text/x-jquery-tmpl'>
   {{if bulkSave()}}
-    <button data-bind="click: updateModifiedNetworkProxies" class="btn">${$.i18n.prop('save.all')}</button>
+    <a data-bind="click: updateModifiedNetworkProxies" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
 </script>
