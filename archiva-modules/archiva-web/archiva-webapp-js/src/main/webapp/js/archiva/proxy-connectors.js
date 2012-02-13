@@ -269,6 +269,7 @@ $(function() {
     this.remoteRepositories=ko.observableArray([]);
     this.networkProxies=ko.observableArray([]);
 
+
     this.bulkSave=function(){
       return getModifiedProxyConnectors().length>0;
     }
@@ -389,6 +390,25 @@ $(function() {
       return null;
     }
 
+    orderChangeAware=function(proxyConnector){
+      return findProxyConnectorsWithSourceId(proxyConnector).length>1;
+    }
+
+    findProxyConnectorsWithSourceId=function(proxyConnector){
+      return $.grep(self.proxyConnectors(),function(curProxyConnector,idx){
+                                                  return curProxyConnector.sourceRepoId()==proxyConnector.sourceRepoId();
+                                                }
+                                            );
+    }
+
+    displayOrderEdit=function(proxyConnector){
+      var proxyConnectors=findProxyConnectorsWithSourceId(proxyConnector);
+      $.log("displayOrderEdit:"+proxyConnector.sourceRepoId()+",number:"+proxyConnectors.length);
+
+      var proxyConnectorEditOrderViewModel=new ProxyConnectorEditOrderViewModel(proxyConnectors);
+      ko.applyBindings(proxyConnectorEditOrderViewModel,$("#main-content #proxy-connector-edit-order").get(0));
+      activateProxyConnectorsEditOrderTab();
+    }
 
     this.displayGrid=function(){
       this.gridViewModel = new ko.simpleGrid.viewModel({
@@ -424,6 +444,26 @@ $(function() {
         }
 
       });
+    }
+
+  }
+
+  ProxyConnectorEditOrderViewModel=function(proxyConnectors,proxyConnectorsViewModel){
+    var self=this;
+    this.proxyConnectors=ko.observableArray(proxyConnectors);
+    this.proxyConnectorsViewModel=proxyConnectorsViewModel;
+
+    proxyConnectorMoved=function(arg){
+      $.log("proxyConnectorMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
+      // if only 1 move just update two whereas update all with the new order
+      if (arg.targetIndex-arg.sourceIndex==1){
+        self.proxyConnectors()[arg.targetIndex].order(arg.targetIndex+1);
+        self.proxyConnectors()[arg.sourceIndex].order(arg.sourceIndex+1);
+      } else {
+        for (i=0;i<self.proxyConnectors().length;i++){
+          self.proxyConnectors()[i].order(i+1);
+        }
+      }
     }
 
   }
@@ -485,8 +525,8 @@ $(function() {
 
   activateProxyConnectorsGridTab=function(){
     var mainContent = $("#main-content");
-    mainContent.find("#proxy-connectors-edit").removeClass("active");
-    mainContent.find("#proxy-connectors-view-tabs-li-edit").removeClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-content div[class*='tab-pane']").removeClass("active");
+    mainContent.find("#proxy-connectors-view-tabs li").removeClass("active");
 
     mainContent.find("#proxy-connectors-view").addClass("active");
     mainContent.find("#proxy-connectors-view-tabs-li-grid").addClass("active");
@@ -496,11 +536,22 @@ $(function() {
 
   activateProxyConnectorsEditTab=function(){
     var mainContent = $("#main-content");
+
+    mainContent.find("#proxy-connectors-view-tabs-content div[class*='tab-pane']").removeClass("active");
+    mainContent.find("#proxy-connectors-view-tabs li").removeClass("active");
+
     mainContent.find("#proxy-connectors-edit").addClass("active");
     mainContent.find("#proxy-connectors-view-tabs-li-edit").addClass("active");
+  }
 
-    mainContent.find("#proxy-connectors-view").removeClass("active");
-    mainContent.find("#proxy-connectors-view-tabs-li-grid").removeClass("active");
+  activateProxyConnectorsEditOrderTab=function(){
+    var mainContent = $("#main-content");
+
+    mainContent.find("#proxy-connectors-view-tabs-content div[class*='tab-pane']").removeClass("active");
+    mainContent.find("#proxy-connectors-view-tabs li").removeClass("active");
+
+    mainContent.find("#proxy-connector-edit-order").addClass("active");
+    mainContent.find("#proxy-connectors-view-tabs-li-edit-order").addClass("active");
   }
 
   mapProxyConnector=function(data){

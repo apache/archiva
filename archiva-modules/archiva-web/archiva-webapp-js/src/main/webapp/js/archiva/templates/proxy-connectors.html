@@ -28,6 +28,9 @@
     <li id="proxy-connectors-view-tabs-li-edit">
       <a data-toggle="tab" href="#proxy-connectors-edit" id="proxy-connectors-view-tabs-a-edit">${$.i18n.prop('add')}</a>
     </li>
+    <li id="proxy-connectors-view-tabs-li-edit-order">
+      <a data-toggle="tab" href="#proxy-connectors-edit-order" id="proxy-connectors-view-tabs-a-edit-order">${$.i18n.prop('proxy-connectors.grid.tab.edit.order')}</a>
+    </li>
   </ul>
   <div id="proxy-connectors-view-tabs-content" class="tab-content">
     <div id="proxy-connectors-view" class="tab-pane active">
@@ -38,6 +41,11 @@
       <div id="proxy-connectorsPagination"></div>
     </div>
     <div id="proxy-connectors-edit" class="tab-pane"></div>
+    <div id="proxy-connector-edit-order" class="tab-pane">
+      <ul id="proxy-connector-edit-order-div"
+         data-bind="sortable: { template: 'proxy-connector-edit-order-tmpl', data: proxyConnectors,afterMove: proxyConnectorMoved}">
+      </ul>
+    </div>
   </div>
 
 </script>
@@ -55,13 +63,14 @@
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('save')}</th>
+        <th>${$.i18n.prop('proxy-connectors.grid.header.order')}</th>
       </tr>
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
     <tr data-bind="css:{ 'modified': row.modified()}">
       <td>${row.sourceRepoId()}</td>
-      <td>${row.targetRepoId()}-${row.order()}</td>
+      <td>${row.targetRepoId()}</td>
       <td><img src="images/utilities-system-monitor.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
                data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
                data-bind="event: { mouseover: function(){ showSettings(row)},}"></td>
@@ -81,6 +90,13 @@
         {{if row.modified()}}
           <a href="#" class="btn btn-warning" data-bind="click: function(){ updateProxyConnector(row)}">
               ${$.i18n.prop('save')}
+          </a>
+        {{/if}}
+      </td>
+      <td>
+        {{if orderChangeAware(row)}}
+          <a href="#" class="btn btn-warning" data-bind="click: function(){ displayOrderEdit(row)}">
+              ${$.i18n.prop('proxy-connectors.order.edit')}
           </a>
         {{/if}}
       </td>
@@ -227,4 +243,12 @@
   {{if bulkSave()}}
     <a data-bind="click: updateModifiedProxyConnectors" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
+</script>
+
+<script id="proxy-connector-edit-order-tmpl" type='text/html'>
+    <li>
+      <a href="#">
+        ${sourceRepoId}-${targetRepoId}-${order}
+      </a>
+    </li>
 </script>
