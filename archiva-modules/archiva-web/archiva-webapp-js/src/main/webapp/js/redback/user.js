@@ -264,7 +264,7 @@ $(function() {
       $.ajax(url, {
           type: "GET",
           success: function(result) {
-            displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username()));
+            displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username(),value));
           },
           error: function(result) {
             var obj = jQuery.parseJSON(result.responseText);
