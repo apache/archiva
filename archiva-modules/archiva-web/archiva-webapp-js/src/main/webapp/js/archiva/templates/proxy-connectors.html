@@ -18,7 +18,7 @@
 -->
 <script id="proxyConnectorsMain" type="text/x-jquery-tmpl">
   <div class="page-header">
-    <h2>${$.i18n.prop('proxy-connectors.list')}</h2>
+    <h2><img src="images/preferences-system-network-proxy-32-32.png"/>${$.i18n.prop('proxy-connectors.list')}</h2>
   </div>
 
   <ul id="proxy-connectors-view-tabs" class="nav nav-tabs">
@@ -72,7 +72,7 @@
     <tr data-bind="css:{ 'modified': row.modified()}">
       <td>${row.sourceRepoId()}</td>
       <td>${row.targetRepoId()}</td>
-      <td><img src="images/utilities-system-monitor.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
+      <td><img src="images/utilities-system-monitor-22-22.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
                data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
                data-bind="event: { mouseover: function(){ showSettings(row)},}"></td>
       <td>
@@ -84,7 +84,7 @@
       </td>
       <td>
         <a href="#" data-bind="click: function(){ deleteProxyConnector(row)}">
-          <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+          <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
         </a>
       </td>
       <td>
@@ -213,20 +213,20 @@
         </div>
 
 
-          <div class="control-group span6">
-            <h4>${$.i18n.prop('proxy-connector.whitelist')}</h4>
-            <table class="table">
-              <thead>
-                <th><input type="text" id="whitelist-value"/></th>
-                <th><a href="#" data-bind="click: function(){ addWhitelistPattern() }">${$.i18n.prop('add')}</a></th>
-              </thead>
-              <tbody data-bind="foreach: proxyConnector.whiteListPatterns">
-                <tr>
-                  <td data-bind="text: $data"></td>
-                  <td><a href="#" data-bind="click: function(){removeWhitelistPattern($data)}">${$.i18n.prop('delete')}</a></td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="control-group span6">
+          <h4>${$.i18n.prop('proxy-connector.whitelist')}</h4>
+          <table class="table">
+            <thead>
+              <th><input type="text" id="whitelist-value"/></th>
+              <th><a href="#" data-bind="click: function(){ addWhitelistPattern() }">${$.i18n.prop('add')}</a></th>
+            </thead>
+            <tbody data-bind="foreach: proxyConnector.whiteListPatterns">
+              <tr>
+                <td data-bind="text: $data"></td>
+                <td><a href="#" data-bind="click: function(){removeWhitelistPattern($data)}">${$.i18n.prop('delete')}</a></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
       </fieldset>
@@ -251,11 +251,14 @@
     {{var remoteRepository=$parent.findRemoteRepository(targetRepoId)}}
     <div class="row-fluid">
       <div class="span1">
-        <img src="images/system-software-update.png"/>
+        <img src="images/system-software-update-32-32.png"/>
       </div>
       <div class="span6 pull-left">
-        <p>${targetRepoId}</p>
-        <p>${remoteRepository.name()}&nbsp;(<a href="${remoteRepository.url()}" target="_blank">${remoteRepository.url()}</a>)</p>
+        <blockquote>
+            ${targetRepoId}
+            <br/>
+            ${remoteRepository.name()}&nbsp;(<a href="${remoteRepository.url()}" target="_blank">${remoteRepository.url()}</a>)
+        </blockquote>
         <!--<p>${order}</p>-->
       </div>
     </div>
@@ -265,11 +268,14 @@
 <script id="proxy-connector-edit-order-managed-repository-tmpl" type="text/html">
   <div class="well row-fluid">
     <div class="span1">
-      <img src="images/applications-internet.png"/>
+      <img src="images/applications-internet-32-32.png"/>
     </div>
     <div class="span6">
-      <p>${managedRepository.id}</p>
-      <p>${managedRepository.name}</p>
+      <blockquote>
+          ${managedRepository.id}
+          <br/>
+          ${managedRepository.name}
+      </blockquote>
     </div>
     <div class="span2">
       {{if proxyConnectorsViewModel.bulkSave()}}
