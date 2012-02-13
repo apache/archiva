@@ -162,7 +162,7 @@ $(function() {
                         },
                         $.i18n.prop('ok'),
                         $.i18n.prop('cancel'),
-                        $.i18n.prop('bulk.save.confirm.title'),
+                        $.i18n.prop('networkproxy.bulk.save.confirm.title'),
                         $.i18n.prop('networkproxy.bulk.save.confirm',modifiedNetworkProxies.length));
 
 

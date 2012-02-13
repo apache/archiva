@@ -186,8 +186,8 @@ $(function() {
                         },
                         $.i18n.prop('ok'),
                         $.i18n.prop('cancel'),
-                        $.i18n.prop('bulk.save.confirm.title'),
-                        $.i18n.prop('role.bulk.save.confirm',modifiedRoles.length));
+                        $.i18n.prop('roles.bulk.save.confirm.title'),
+                        $.i18n.prop('roles.bulk.save.confirm',modifiedRoles.length));
 
 
     }

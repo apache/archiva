@@ -405,7 +405,7 @@ $(function() {
                         },
                         $.i18n.prop('ok'),
                         $.i18n.prop('cancel'),
-                        $.i18n.prop('bulk.save.confirm.title'),
+                        $.i18n.prop('managed.repository.bulk.save.confirm.title'),
                         $.i18n.prop('managed.repository.bulk.save.confirm',repos.length));
     }
 
