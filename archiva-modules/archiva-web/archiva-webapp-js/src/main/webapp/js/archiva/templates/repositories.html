@@ -65,6 +65,7 @@
             </ul>
             <div id="remote-repositories-tabs-content" class="pill-content">
               <div id="remote-repositories-view" class="pill-pane active">
+                  <div id="remote-repositories-bulk-save-btn" data-bind='template:{name:"remote-repositories-bulk-save-tmpl"}'></div>
                   <table class="table table-striped table-bordered" id="remote-repositories-table"
                          data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_remote-repositoriesGrid',pageLinksId:'remote-repositoriesPagination',data:'remoteRepositories'">
                   </table>
@@ -310,6 +311,7 @@
         {{/each}}
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('modified')}</th>
         <th>${$.i18n.prop('remoterepository.downloadremoteindex')}</th>
       </tr>
   </thead>
@@ -327,6 +329,13 @@
                 <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
               </a>
             </td>
+            {{if row.modified()}}
+              <td>
+                <a href="#" class="btn btn-warning" data-bind="click: function(){ updateRemoteRepository(row) }">${$.i18n.prop('save')}</a>
+              </td>
+            {{else}}
+              <td></td>
+            {{/if}}
             <td>
               <a href="#" data-bind="click: function(){ scheduleDownloadRemoteIndex(row) }">
                 <img src="images/view-refresh.png" title="${$.i18n.prop('remoterepository.downloadremoteindex.now')}"/>
@@ -458,5 +467,11 @@
 <script id="managed-repositories-bulk-save-tmpl" type='text/x-jquery-tmpl'>
   {{if bulkSave()}}
     <a data-bind="click: updateModifiedManagedRepositories" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
+  {{/if}}
+</script>
+
+<script id="remote-repositories-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+  {{if bulkSave()}}
+    <a data-bind="click: updateModifiedRemoteRepositories" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
 </script>

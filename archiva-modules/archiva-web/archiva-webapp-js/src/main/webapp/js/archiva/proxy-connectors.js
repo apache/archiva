@@ -310,6 +310,7 @@ $(function() {
       activateProxyConnectorsEditTab();
       mainContent.find("#proxy-connectors-view-tabs-li-edit a").html($.i18n.prop("edit"));
     }
+
     deleteProxyConnector=function(proxyConnector){
 
       openDialogConfirm(

@@ -610,7 +610,7 @@ $(function() {
 
     this.availableLayouts = window.managedRepositoryTypes;
 
-    save=function(){
+    this.save=function(){
       var valid = $("#main-content #remote-repository-edit-form").valid();
       if (valid==false) {
         return;
@@ -624,8 +624,9 @@ $(function() {
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
-              displaySuccessMessage($.i18n.prop('remoterepository.updated'));
+              displaySuccessMessage($.i18n.prop('remoterepository.updated',self.remoteRepository.id()));
               activateRemoteRepositoriesGridTab();
+              self.remoteRepository.modified(false);
             },
             error: function(data) {
               var res = $.parseJSON(data.responseText);
@@ -704,6 +705,38 @@ $(function() {
                 $.i18n.prop('cancel'),
                 $.i18n.prop('remoterepository.delete.confirm',remoteRepository.id()),null);
 
+    }
+
+    this.bulkSave=function(){
+      return getModifiedRemoteRepositories().length>0;
+    }
+
+    getModifiedRemoteRepositories=function(){
+      var prx = $.grep(self.remoteRepositories(),
+          function (remoteRepository,i) {
+            return remoteRepository.modified();
+          });
+      return prx;
+    }
+
+    updateModifiedRemoteRepositories=function(){
+      var modifiedRemoteRepositories = getModifiedRemoteRepositories();
+
+      openDialogConfirm(function(){
+                          for(i=0;i<modifiedRemoteRepositories.length;i++){
+                            updateRemoteRepository(modifiedRemoteRepositories[i]);
+                          }
+                          closeDialogConfirm();
+                        },
+                        $.i18n.prop('ok'),
+                        $.i18n.prop('cancel'),
+                        $.i18n.prop('remoterepositories.bulk.save.confirm.title'),
+                        $.i18n.prop('remoterepositories.bulk.save.confirm',modifiedRemoteRepositories.length));
+    }
+
+    updateRemoteRepository=function(remoteRepository){
+      var viewModel = new RemoteRepositoryViewModel(remoteRepository,true,self);
+      viewModel.save();
     }
 
     scheduleDownloadRemoteIndex=function(remoteRepository){
@@ -863,7 +896,7 @@ $(function() {
         }
       });
       var mainContent = $("#main-content");
-      ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-table").get(0));
+      ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-view").get(0));
       mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
       removeMediumSpinnerImg("#main-content #remote-repositories-content");
     });
