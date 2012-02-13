@@ -102,28 +102,28 @@
             {{/each}}
             <td>
             {{if row.releases() == true}}
-              <img src="images/weather-clear.png" title="${$.i18n.prop('release.included')}"/>
+              <img src="images/weather-clear-22-22.png" title="${$.i18n.prop('release.included')}"/>
             {{else}}
-              <img src="images/dialog-error.png" title="${$.i18n.prop('release.notincluded')}"/>
+              <img src="images/dialog-error-22-22.png" title="${$.i18n.prop('release.notincluded')}"/>
             {{/if}}
             </td>
 
             <td>
               {{if row.snapshots() == true}}
-                <img src="images/weather-clear.png" title="${$.i18n.prop('snapshots.included')}"/>
+                <img src="images/weather-clear-22-22.png" title="${$.i18n.prop('snapshots.included')}"/>
               {{else}}
-                  <img src="images/dialog-error.png" title="${$.i18n.prop('snapshots.notincluded')}"/>
+                  <img src="images/dialog-error-22-22.png" title="${$.i18n.prop('snapshots.notincluded')}"/>
               {{/if}}
             </td>
             <td>
               <a href="#" data-bind="click: function(){ scanNow(row) }">
-                <img src="images/view-refresh.png" title="${$.i18n.prop('managedrepository.scan.now')}"/>
+                <img src="images/view-refresh-22-22.png" title="${$.i18n.prop('managedrepository.scan.now')}"/>
               </a>
             </td>
             <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
             <td>
               <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
-                <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+                <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
               </a>
             </td>
             {{if row.modified()}}
@@ -135,7 +135,7 @@
             {{/if}}
             <td><a href="#" data-bind="click: function(){ showPomSnippet(row) }">${$.i18n.prop('managedrepository.pomsnippet')}</a></td>
             <td id="managedrepository-stats-${row.id()}">
-              <img src="images/utilities-system-monitor.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
+              <img src="images/utilities-system-monitor-22-22.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
                    data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
                    id="managedrepository-stats-img-${row.id()}"/>
             </td>
@@ -326,7 +326,7 @@
             </td>
             <td>
               <a href="#" data-bind="click: function(){ removeRemoteRepository(row) }">
-                <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+                <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
               </a>
             </td>
             {{if row.modified()}}
@@ -338,7 +338,7 @@
             {{/if}}
             <td>
               <a href="#" data-bind="click: function(){ scheduleDownloadRemoteIndex(row) }">
-                <img src="images/view-refresh.png" title="${$.i18n.prop('remoterepository.downloadremoteindex.now')}"/>
+                <img src="images/view-refresh-22-22.png" title="${$.i18n.prop('remoterepository.downloadremoteindex.now')}"/>
               </a>
             </td>
           </tr>
