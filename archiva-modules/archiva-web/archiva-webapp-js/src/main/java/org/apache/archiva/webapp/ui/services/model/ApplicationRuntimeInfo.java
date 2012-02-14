@@ -42,6 +42,8 @@ public class ApplicationRuntimeInfo
 
     private boolean logMissingI18n;
 
+    private String baseUrl;
+
 
     public ApplicationRuntimeInfo()
     {
@@ -124,6 +126,16 @@ public class ApplicationRuntimeInfo
         this.logMissingI18n = logMissingI18n;
     }
 
+    public String getBaseUrl()
+    {
+        return baseUrl;
+    }
+
+    public void setBaseUrl( String baseUrl )
+    {
+        this.baseUrl = baseUrl;
+    }
+
     @Override
     public String toString()
     {
@@ -136,6 +148,7 @@ public class ApplicationRuntimeInfo
         sb.append( ", timestamp=" ).append( timestamp );
         sb.append( ", copyrightRange='" ).append( copyrightRange ).append( '\'' );
         sb.append( ", logMissingI18n=" ).append( logMissingI18n );
+        sb.append( ", baseUrl='" ).append( baseUrl ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

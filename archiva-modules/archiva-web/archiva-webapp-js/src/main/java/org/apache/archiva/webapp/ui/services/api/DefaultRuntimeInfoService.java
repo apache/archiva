@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 /**
  * @author Olivier Lamy
@@ -37,6 +39,9 @@ public class DefaultRuntimeInfoService
     private Logger i18nLogger = LoggerFactory.getLogger( "archivaMissingi18n.logger" );
 
     private ArchivaRuntimeInfo archivaRuntimeInfo;
+
+    @Context
+    protected HttpServletRequest httpServletRequest;
 
     @Inject
     public DefaultRuntimeInfoService( ArchivaRuntimeInfo archivaRuntimeInfo )
@@ -51,7 +56,15 @@ public class DefaultRuntimeInfoService
         applicationRuntimeInfo.setBuildNumber( this.archivaRuntimeInfo.getBuildNumber() );
         applicationRuntimeInfo.setTimestamp( this.archivaRuntimeInfo.getTimestamp() );
         applicationRuntimeInfo.setVersion( this.archivaRuntimeInfo.getVersion() );
+        applicationRuntimeInfo.setBaseUrl( getBaseUrl( httpServletRequest ) );
         return applicationRuntimeInfo;
+    }
+
+    protected String getBaseUrl( HttpServletRequest req )
+    {
+        return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
+            ? ""
+            : ":" + req.getServerPort() ) + req.getContextPath();
     }
 
     public Boolean logMissingI18n( String key )
