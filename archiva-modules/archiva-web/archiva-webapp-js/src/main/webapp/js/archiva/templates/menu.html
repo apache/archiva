@@ -31,6 +31,9 @@
     <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-configuration']}">
       <li class="nav-header">${$.i18n.prop('menu.administration')}</li>
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-configuration']}">
+        <a href="#" id="menu-repository-groups-list-a" onclick="displayRepositoryGroups()">${$.i18n.prop('menu.repository.groups')}</a>
+      </li>
+      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-configuration']}">
         <a href="#" id="menu-repositories-list-a" onclick="displayRepositoriesGrid()">${$.i18n.prop('menu.repositories')}</a>
       </li>
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-configuration']}">

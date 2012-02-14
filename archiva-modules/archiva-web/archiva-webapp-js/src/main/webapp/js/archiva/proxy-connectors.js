@@ -328,12 +328,7 @@ $(function() {
 
 
     getManagedRepository=function(id){
-      var managedRepository=$.grep(self.managedRepositories(),
-                                      function(repo,idx){
-                                        return repo.id()==id;
-                                      }
-                            );
-      return ($.isArray(managedRepository) && managedRepository.length>0) ? managedRepository[0]:new ManagedRepository();
+      return findManagedRepository(id,self.managedRepositories());
     }
 
     getRemoteRepository=function(id){

@@ -957,4 +957,13 @@ $(function() {
     });
   }
 
+  findManagedRepository=function(id,managedRepositories){
+    var managedRepository=$.grep(managedRepositories,
+                                    function(repo,idx){
+                                      return repo.id()==id;
+                                    }
+                          );
+    return ($.isArray(managedRepository) && managedRepository.length>0) ? managedRepository[0]:new ManagedRepository();
+  }
+
 });

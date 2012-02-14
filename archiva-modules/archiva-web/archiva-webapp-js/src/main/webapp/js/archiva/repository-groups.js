@@ -18,5 +18,71 @@
  */
 $(function() {
 
+  RepositoryGroup=function(id,repositories){
+
+    var self=this;
+
+    //private String id;
+    this.id=ko.observable(id);
+    this.id.subscribe(function(newValue){self.modified(true)});
+
+    // private List<String> repositories;
+    this.repositories=ko.observableArray(repositories);
+    this.repositories.subscribe(function(newValue){self.modified(true)});
+
+    this.modified=ko.observable(false);
+  }
+
+  RepositoryGroupViewModel=function(){
+    this.repositoryGroups=ko.observableArray([]);
+    this.managedRepositories=ko.observableArray([]);
+
+    findManagedRepository=function(id){
+      return findManagedRepository(id,self.managedRepositories());
+    }
+  }
+
+  displayRepositoryGroups=function(){
+    screenChange();
+    var mainContent = $("#main-content");
+    mainContent.html(mediumSpinnerImg());
+    this.repositoryGroupViewModel=new RepositoryGroupViewModel();
+    var self=this;
+
+    loadManagedRepositories(function(data) {
+      self.repositoryGroupViewModel.managedRepositories(mapManagedRepositories(data));
+
+      $.ajax("restServices/archivaServices/repositoryGroupService/getRepositoriesGroups", {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            var mappedRepositoryGroups=mapRepositoryGroups(data);
+            mainContent.html($("#repositoryGroupsMain").tmpl());
+            self.repositoryGroupViewModel.repositoryGroups(mappedRepositoryGroups);
+            //ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-table" ).get(0));
+            ko.applyBindings(repositoryGroupViewModel,mainContent.get(0));
+
+          }
+        }
+      );
+
+    });
+
+
+  }
+
+  mapRepositoryGroups=function(data){
+    if (data == null){
+      return new Array();
+    }
+    var mappedRepositoryGroups = $.map(data.repositoryGroup, function(item) {
+      return mapRepositoryGroup(item);
+    });
+    return mappedRepositoryGroups;
+  }
+
+  mapRepositoryGroup=function(data){
+    return new RepositoryGroup(data.id, mapStringArray(data.repositories));
+  }
 
 });
