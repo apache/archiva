@@ -53,6 +53,7 @@
 .draggable-item {
   cursor: move;
   margin-bottom: 12px;
+  margin-left: 4px;
   min-height: 2px;
   padding: 12px;
   border: 2px dotted #ddd;
@@ -60,6 +61,14 @@
 }
 
 .network-proxy-remote-item{
+  margin-bottom: 12px;
+  min-height: 2px;
+  padding: 12px;
+  border: 2px dotted #ddd;
+  margin-left: 2em
+}
+
+.dotted{
   margin-bottom: 12px;
   min-height: 2px;
   padding: 12px;

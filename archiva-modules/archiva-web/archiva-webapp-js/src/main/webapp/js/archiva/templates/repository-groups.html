@@ -50,6 +50,7 @@
       <th>${$.i18n.prop('repository.groups.repositories.grid.header')}</th>
       <th>${$.i18n.prop('edit')}</th>
       <th>${$.i18n.prop('delete')}</th>
+      <th>${$.i18n.prop('save')}</th>
     </thead>
     <tbody>
     {{each(i, repositoryGroup) repositoryGroups}}
@@ -72,6 +73,13 @@
             <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
           </a>
         </td>
+        <td>
+          {{if repositoryGroup.modified()}}
+            <a href="#" class="btn btn-warning" data-bind="click: function(){saveRepositoryGroup(repositoryGroup)}">
+              ${$.i18n.prop('save')}
+            </a>
+          {{/if}}
+        </td>
       </tr>
     {{/each}}
     </tbody>
@@ -79,26 +87,29 @@
 </script>
 
 <script id="repository-group-edit-tmpl" type="text/html">
+  {{if update}}
+    <div class="dotted span7">
+      <blockquote>
+        ${repositoryGroup.id}
+        <br/>
+        <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
+          ${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}
+        </a>
+      </blockquote>
+    </div>
+  {{else}}
   <form id="repository-group-edit-form" class="form-horizontal">
     <fieldset id="repository-group-edit-fieldset">
       <div class="control-group">
         <label class="control-label" for="id">${$.i18n.prop('id')}</label>
         <div class="controls">
-          {{if update}}
-            ${repositoryGroup.id}
-            <br/>
-            <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
-                ${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}
-            </a>
-
-          {{else}}
             <input type="text" class="xlarge required" id="id" name="id" size="50"
                    data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
-          {{/if}}
         </div>
       </div>
     </fieldset>
   </form>
+  {{/if}}
 </script>
 
 <script id="repository-group-edit-order-tmpl" type="text/html">

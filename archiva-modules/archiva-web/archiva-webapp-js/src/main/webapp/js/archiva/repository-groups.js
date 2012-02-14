@@ -47,7 +47,7 @@ $(function() {
       $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
       var repositories=[];
       for(var i=0;i<self.repositoryGroup.managedRepositories().length;i++){
-        repositories.push(self.repositoryGroup.managedRepositories()[i]);
+        repositories.push(self.repositoryGroup.managedRepositories()[i].id());
       }
       self.repositoryGroup.repositories(repositories);
       self.repositoryGroup.modified(true);
@@ -75,7 +75,31 @@ $(function() {
       ko.applyBindings(repositoryGroupViewModel,$("#main-content #repository-groups-edit" ).get(0));
     }
 
+    this.saveRepositoryGroup=function(repositoryGroup){
+        repositoryGroup.managedRepositories([]);
+        $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
+          {
+            type: "POST",
+            contentType: 'application/json',
+            data: "{\"repositoryGroup\": " + ko.toJSON(repositoryGroup)+"}",
+            dataType: 'json',
+            success: function(data) {
+              $.log("update repositoryGroup id:"+repositoryGroup.id());
+              var message=$.i18n.prop('repository.group.updated',repositoryGroup.id());
+              displaySuccessMessage(message);
+              repositoryGroup.modified(false);
+              if (!this.bulkMode){
+                //activateNetworkProxiesGridTab();
+              }
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
 
+    }
 
     getManagedRepository=function(id){
       $.log("getManagedRepository:"+id);
