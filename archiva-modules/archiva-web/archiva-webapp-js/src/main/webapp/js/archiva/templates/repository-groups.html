@@ -35,10 +35,10 @@
       </div>
     </div>
     <div id="repository-groups-edit" class="tab-pane active">
-        <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
-        <div id="repository-groups-edit-order-div"
-             data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.managedRepositories,afterMove: repositoryMoved}">
-        </div>
+      <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
+      <div id="repository-groups-edit-order-div"
+           data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.managedRepositories,afterMove: repositoryMoved}">
+      </div>
     </div>
   </div>  
 </script>
@@ -87,6 +87,7 @@
 </script>
 
 <script id="repository-group-edit-tmpl" type="text/html">
+  <div class="row-fluid">
   {{if update}}
     <div class="dotted span7">
       <blockquote>
@@ -98,18 +99,27 @@
       </blockquote>
     </div>
   {{else}}
-  <form id="repository-group-edit-form" class="form-horizontal">
-    <fieldset id="repository-group-edit-fieldset">
-      <div class="control-group">
-        <label class="control-label" for="id">${$.i18n.prop('id')}</label>
-        <div class="controls">
-            <input type="text" class="xlarge required" id="id" name="id" size="50"
+    <div class="dotted span7">
+      <form id="repository-group-edit-form" class="form-horizontal">
+        <fieldset id="repository-group-edit-fieldset">
+          <div class="control-group">
+            <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+            <div class="controls">
+              <input type="text" class="xlarge required" id="id" name="id" size="50"
                    data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
-        </div>
-      </div>
-    </fieldset>
-  </form>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
   {{/if}}
+  {{if repositoryGroup.modified()}}
+    <div class="span3">
+      <a href="#" class="btn btn-warning" data-bind="click: function(){saveRepositoryGroup(repositoryGroup)}">${$.i18n.prop('save')}</a>
+    </div>
+    <br/>
+  {{/if}}
+  </div>
 </script>
 
 <script id="repository-group-edit-order-tmpl" type="text/html">

@@ -52,7 +52,9 @@ $(function() {
       self.repositoryGroup.repositories(repositories);
       self.repositoryGroup.modified(true);
     }
-
+    this.saveRepositoryGroup=function(repositoryGroup){
+      self.repositoryGroupsViewModel.saveRepositoryGroup(repositoryGroup);
+    }
   }
 
   RepositoryGroupsViewModel=function(){
@@ -76,7 +78,7 @@ $(function() {
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
-        repositoryGroup.managedRepositories([]);
+        clearUserMessages();
         $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
           {
             type: "POST",
