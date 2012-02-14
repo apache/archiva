@@ -118,12 +118,12 @@
     </div>
   {{else}}
     <div class="dotted span7">
-      <form id="repository-group-edit-form" class="form-horizontal">
+      <form id="repository-group-edit-form" class="">
         <fieldset id="repository-group-edit-fieldset">
           <div class="control-group">
             <label class="control-label" for="id">${$.i18n.prop('id')}</label>
             <div class="controls">
-              <input type="text" class="xlarge required" id="id" name="id" size="50"
+              <input type="text" class="xlarge required" id="id" name="id" size="15"
                    data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
             </div>
           </div>

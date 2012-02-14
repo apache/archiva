@@ -63,7 +63,7 @@ $(function() {
       if (self.update){
         self.repositoryGroupsViewModel.saveRepositoryGroup(repositoryGroup);
       } else {
-        $.log("addRepository group");
+        self.repositoryGroupsViewModel.addRepositoryGroup(repositoryGroup);
       }
     }
 
@@ -82,7 +82,21 @@ $(function() {
     }
 
     this.deleteRepositoryGroup=function(repositoryGroup){
-      $.log("deleteRepositoryGroup:"+repositoryGroup.id());
+      clearUserMessages();
+      $.ajax("restServices/archivaServices/repositoryGroupService/deleteRepositoryGroup/"+encodeURIComponent(repositoryGroup.id()),
+        {
+          type: "GET",
+          success: function(data) {
+            var message=$.i18n.prop('repository.group.deleted',repositoryGroup.id());
+            displaySuccessMessage(message);
+            self.repositoryGroups.remove(repositoryGroup);
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          }
+        }
+      );
     }
 
     this.editRepositoryGroup=function(repositoryGroup){
@@ -90,6 +104,7 @@ $(function() {
       var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,true,self);
       activateRepositoryGroupEditTab();
       ko.applyBindings(repositoryGroupViewModel,$("#main-content #repository-groups-edit" ).get(0));
+      $("#main-content #repository-groups-view-tabs-li-edit a").html($.i18n.prop("edit"));
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
@@ -105,9 +120,6 @@ $(function() {
               var message=$.i18n.prop('repository.group.updated',repositoryGroup.id());
               displaySuccessMessage(message);
               repositoryGroup.modified(false);
-              if (!this.bulkMode){
-                //activateNetworkProxiesGridTab();
-              }
             },
             error: function(data) {
               var res = $.parseJSON(data.responseText);
@@ -115,6 +127,30 @@ $(function() {
             }
           }
         );
+
+    }
+
+    this.addRepositoryGroup=function(repositoryGroup){
+      clearUserMessages();
+      $.ajax("restServices/archivaServices/repositoryGroupService/addRepositoryGroup",
+        {
+          type: "POST",
+          contentType: 'application/json',
+          data: "{\"repositoryGroup\": " + ko.toJSON(repositoryGroup)+"}",
+          dataType: 'json',
+          success: function(data) {
+            $.log("update repositoryGroup id:"+repositoryGroup.id());
+            var message=$.i18n.prop('repository.group.added',repositoryGroup.id());
+            displaySuccessMessage(message);
+            repositoryGroup.modified(false);
+            self.repositoryGroups.push(repositoryGroup);
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          }
+        }
+      );
 
     }
 
@@ -156,7 +192,7 @@ $(function() {
             mainContent.find("#repository-groups-view-tabs").on('show', function (e) {
               if ($(e.target).attr("href")=="#repository-groups-edit") {
                 var repositoryGroup = new RepositoryGroup();
-                var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,false,self);
+                var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,false,self.repositoryGroupsViewModel);
                 activateRepositoryGroupEditTab();
                 ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
               }
