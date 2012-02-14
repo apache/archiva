@@ -33,12 +33,39 @@ $(function() {
     this.modified=ko.observable(false);
   }
 
-  RepositoryGroupViewModel=function(){
+  RepositoryGroupViewModel=function(repositoryGroup,update,repositoryGroupsViewModel){
+    this.repositoryGroup=repositoryGroup;
+    this.update=update;
+    this.repositoryGroupsViewModel=null;
+  }
+
+  RepositoryGroupsViewModel=function(){
+    var self=this;
     this.repositoryGroups=ko.observableArray([]);
     this.managedRepositories=ko.observableArray([]);
 
-    findManagedRepository=function(id){
+    this.findManagedRepository=function(id){
       return findManagedRepository(id,self.managedRepositories());
+    }
+
+    this.deleteRepositoryGroup=function(repositoryGroup){
+      $.log("deleteRepositoryGroup:"+repositoryGroup.id());
+    }
+
+    this.editRepositoryGroup=function(repositoryGroup){
+      $.log("editRepositoryGroup:"+repositoryGroup.id());
+      var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,true,self);
+      activateRepositoryGroupEditTab();
+      ko.applyBindings(repositoryGroupViewModel,$("#main-content #repository-groups-edit" ).get(0));
+    }
+
+    repositoryMoved=function(){
+      $.log("repositoryMoved");
+    }
+
+    getManagedRepository=function(id){
+      $.log("getManagedRepository:"+id);
+      return findManagedRepository(self.managedRepositories());
     }
   }
 
@@ -46,11 +73,11 @@ $(function() {
     screenChange();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
-    this.repositoryGroupViewModel=new RepositoryGroupViewModel();
+    this.repositoryGroupsViewModel=new RepositoryGroupsViewModel();
     var self=this;
 
     loadManagedRepositories(function(data) {
-      self.repositoryGroupViewModel.managedRepositories(mapManagedRepositories(data));
+      self.repositoryGroupsViewModel.managedRepositories(mapManagedRepositories(data));
 
       $.ajax("restServices/archivaServices/repositoryGroupService/getRepositoriesGroups", {
           type: "GET",
@@ -58,9 +85,9 @@ $(function() {
           success: function(data) {
             var mappedRepositoryGroups=mapRepositoryGroups(data);
             mainContent.html($("#repositoryGroupsMain").tmpl());
-            self.repositoryGroupViewModel.repositoryGroups(mappedRepositoryGroups);
+            self.repositoryGroupsViewModel.repositoryGroups(mappedRepositoryGroups);
             //ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-table" ).get(0));
-            ko.applyBindings(repositoryGroupViewModel,mainContent.get(0));
+            ko.applyBindings(repositoryGroupsViewModel,mainContent.find("#repository-groups-view" ).get(0));
 
           }
         }
@@ -69,6 +96,27 @@ $(function() {
     });
 
 
+  }
+
+  activateRepositoryGroupsGridTab=function(){
+    var mainContent = $("#main-content");
+    mainContent.find("#repository-groups-view-tabs-content div[class*='tab-pane']").removeClass("active");
+    mainContent.find("#repository-groups-view-tabs li").removeClass("active");
+
+    mainContent.find("#repository-groups-view").addClass("active");
+    mainContent.find("#repository-groups-view-tabs-li-grid").addClass("active");
+    mainContent.find("#repository-groups-view-tabs-li-edit a").html($.i18n.prop("add"));
+
+  }
+
+  activateRepositoryGroupEditTab=function(){
+    var mainContent = $("#main-content");
+
+    mainContent.find("#repository-groups-view-tabs-content div[class*='tab-pane']").removeClass("active");
+    mainContent.find("#repository-groups-view-tabs li").removeClass("active");
+
+    mainContent.find("#repository-groups-edit").addClass("active");
+    mainContent.find("#repository-groups-view-tabs-li-edit").addClass("active");
   }
 
   mapRepositoryGroups=function(data){

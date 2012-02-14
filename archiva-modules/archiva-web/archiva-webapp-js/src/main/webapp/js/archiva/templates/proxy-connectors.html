@@ -81,7 +81,7 @@
       </td>
       <td>
         <a data-bind="click: function(){ editProxyConnector(row)}" href="#">
-           ${$.i18n.prop('edit')}
+          <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
         </a>
       </td>
       <td>
@@ -98,7 +98,7 @@
       </td>
       <td>
         {{if orderChangeAware(row)}}
-          <a href="#" class="btn btn-warning" data-bind="click: function(){ displayOrderEdit(row)}">
+          <a href="#" class="btn btn-info" data-bind="click: function(){ displayOrderEdit(row)}">
               ${$.i18n.prop('proxy-connectors.order.edit')}
           </a>
         {{/if}}

@@ -204,7 +204,9 @@
               </td>
               {{/each}}
               <td>
-                <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ editRole(row) }">${$.i18n.prop('edit')}</a>
+                <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ editRole(row) }">
+                  <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+                </a>
               </td>
               <td>
                 {{if row.modified()}}

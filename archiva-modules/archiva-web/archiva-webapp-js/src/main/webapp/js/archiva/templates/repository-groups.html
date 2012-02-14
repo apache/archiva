@@ -20,32 +20,36 @@
   <div class="page-header">
     <h2>${$.i18n.prop('repository.groups.list')}</h2>
   </div>
-  <div id="repository-groups-table" data-bind='template:{name:"repository-groups-table-tmpl"}'>
+  <ul id="repository-groups-view-tabs" class="nav nav-tabs">
+    <li id="repository-groups-view-tabs-li-grid" class="active">
+      <a data-toggle="tab" href="#repository-groups-view" id="repository-groups-view-tabs-a-network-proxies-grid">${$.i18n.prop('repository-groups.grid.tab.title')}</a>
+    </li>
+    <li id="repository-groups-view-tabs-li-edit">
+      <a data-toggle="tab" href="#repository-groups-edit" id="repository-groups-view-tabs-a-edit">${$.i18n.prop('add')}</a>
+    </li>
 
-  </div>
-  <br/><br/>
-    <table class="table table-striped table-bordered">
-      <thead>
-        <th>group</th>
-        <th>repos</th>
-      </thead>
-      <tbody>
-        <div id="repository-groups-table-bind" data-bind="foreach: repositoryGroups">
-          <tr>
-            <td data-bind="value: $data.id"></td>
-          </tr>
+  </ul>
+  <div id="repository-groups-view-tabs-content" class="tab-content">
+    <div id="repository-groups-view" class="tab-pane active">    
+      <div id="repository-groups-table" data-bind='template:{name:"repository-groups-table-tmpl"}'>
+      </div>
+    </div>
+    <div id="repository-groups-edit" class="tab-pane active">
+        <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
+        <div id="repository-groups-edit-order-div"
+             data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.repositories,afterMove: repositoryMoved}">
         </div>
-      </tbody>
-    </table>
-
-  </div>
+    </div>
+  </div>  
 </script>
 
 <script id="repository-groups-table-tmpl" type="text/html">
   <table class="table table-striped table-bordered">
     <thead>
-      <th>group</th>
-      <th>repos</th>
+      <th>${$.i18n.prop('repository.groups.groups.grid.header')}</th>
+      <th>${$.i18n.prop('repository.groups.repositories.grid.header')}</th>
+      <th>${$.i18n.prop('edit')}</th>
+      <th>${$.i18n.prop('delete')}</th>
     </thead>
     <tbody>
     {{each(i, repositoryGroup) repositoryGroups}}
@@ -58,8 +62,42 @@
           {{/each}}
           </ul>
         </td>
+        <td>
+          <a href="#" data-bind="click: function(){editRepositoryGroup(repositoryGroup)}">
+            <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+          </a>
+        </td>
+        <td>
+          <a href="#" data-bind="click: function(){deleteRepositoryGroup(repositoryGroup)}">
+            <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
+          </a>
+        </td>
       </tr>
     {{/each}}
     </tbody>
   </table>
+</script>
+
+<script id="repository-group-edit-tmpl" type="text/html">
+  <form id="repository-group-edit-form" class="form-horizontal">
+    <fieldset id="repository-group-edit-fieldset">
+      <div class="control-group">
+        <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+        <div class="controls">
+          {{if update}}
+            <span class="uneditable-input">${repositoryGroup.id}</span>
+          {{else}}
+            <input type="text" class="xlarge required" id="id" name="id" size="50"
+                   data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
+          {{/if}}
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</script>
+
+<script id="repository-group-edit-order-tmpl" type="text/html">
+  <div class="well draggable-item">
+    ${$data}-${managedRepository.name()}
+  </div>
 </script>

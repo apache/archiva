@@ -120,7 +120,11 @@
                 <img src="images/view-refresh-22-22.png" title="${$.i18n.prop('managedrepository.scan.now')}"/>
               </a>
             </td>
-            <td><a href="#" data-bind="click: function(){ editManagedRepository(row) }">${$.i18n.prop('edit')}</a></td>
+            <td>
+              <a href="#" data-bind="click: function(){ editManagedRepository(row) }">
+                <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+              </a>
+            </td>
             <td>
               <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
                 <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
@@ -317,12 +321,14 @@
   </thead>
   <tbody>
       {{each(i, row) itemsOnCurrentPage()}}
-          <tr>
+          <tr data-bind="css:{ 'modified': row.modified()}">
             {{each(j, columnDefinition) columns}}
               <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
             {{/each}}
             <td>
-              <a href="#" data-bind="click: function(){ editRemoteRepository(row) }">${$.i18n.prop('edit')}</a>
+              <a href="#" data-bind="click: function(){ editRemoteRepository(row) }">
+                <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+              </a>
             </td>
             <td>
               <a href="#" data-bind="click: function(){ removeRemoteRepository(row) }">
@@ -352,7 +358,7 @@
     <form id="remote-repository-edit-form" class="form-horizontal">
       <fieldset id="remote-repository-edit-fieldset">
         <div class="control-group">
-          <label class="control-label" for="name">${$.i18n.prop('id')}</label>
+          <label class="control-label" for="id">${$.i18n.prop('id')}</label>
           <div class="controls">
             {{if update}}
               <span class="uneditable-input">${$data.remoteRepository.id}</span>

@@ -34,7 +34,11 @@
               {{each(j, columnDefinition) columns}}
               <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
               {{/each}}
-              <td id="users-grid-user-id-${row.username()}"><a href="#" data-bind="click: function(){ editUserBox(row) }">Edit</a></td>
+              <td id="users-grid-user-id-${row.username()}">
+                <a href="#" data-bind="click: function(){ editUserBox(row) }">
+                  <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+                </a>
+              </td>
               {{if row.username()=="admin" || row.username()=="guest"}}
                 <td></td>
               {{else}}

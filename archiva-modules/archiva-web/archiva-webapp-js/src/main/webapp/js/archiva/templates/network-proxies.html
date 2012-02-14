@@ -71,7 +71,9 @@
         {{/if}}
           <td>${row.useNtlm()}</td>
           <td>
-            <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">${$.i18n.prop('edit')}</a>
+            <a href="#" data-bind="click: function(){ editNetworkProxy(row) }">
+              <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+            </a>
           </td>
           <td>
             <a href="#" data-bind="click: function(){ removeNetworkProxy(row) }">
