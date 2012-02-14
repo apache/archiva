@@ -22,7 +22,9 @@
   </div>
   <ul id="repository-groups-view-tabs" class="nav nav-tabs">
     <li id="repository-groups-view-tabs-li-grid" class="active">
-      <a data-toggle="tab" href="#repository-groups-view" id="repository-groups-view-tabs-a-network-proxies-grid">${$.i18n.prop('repository-groups.grid.tab.title')}</a>
+      <a data-toggle="tab" href="#repository-groups-view" id="repository-groups-view-tabs-a-network-proxies-grid">
+        ${$.i18n.prop('repository-groups.grid.tab.title')}
+      </a>
     </li>
     <li id="repository-groups-view-tabs-li-edit">
       <a data-toggle="tab" href="#repository-groups-edit" id="repository-groups-view-tabs-a-edit">${$.i18n.prop('add')}</a>
@@ -30,17 +32,33 @@
 
   </ul>
   <div id="repository-groups-view-tabs-content" class="tab-content">
-    <div id="repository-groups-view" class="tab-pane active">    
-      <div id="repository-groups-table" data-bind='template:{name:"repository-groups-table-tmpl"}'>
-      </div>
-    </div>
-    <div id="repository-groups-edit" class="tab-pane active">
-      <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
-      <div id="repository-groups-edit-order-div"
-           data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.managedRepositories,afterMove: repositoryMoved}">
-      </div>
-    </div>
-  </div>  
+        <div id="repository-groups-view" class="tab-pane active">
+          <div id="repository-groups-table" data-bind='template:{name:"repository-groups-table-tmpl"}'>
+          </div>
+        </div>
+        <div id="repository-groups-edit" class="tab-pane">
+              <div class="row-fluid">
+                <div class="span5 dotted">
+                  <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
+                  <div id="repository-groups-edit-order-div" style="min-height: 80px"
+                     data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.managedRepositories,afterMove:repositoryMoved}">
+                  </div>
+                </div>
+
+                <div class="span5 dotted">
+                  <h5>${$.i18n.prop('repository.groups.available.repositories')}</h5>
+                  <br/>
+                  <div id="repository-groups-edit-available-repositories" style="min-height: 80px"
+                       data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:availableRepositories,afterMove:repositoryMoved}">
+
+                  </div>
+                </div>
+
+              </div>
+
+        </div>
+
+  </div>
 </script>
 
 <script id="repository-groups-table-tmpl" type="text/html">
@@ -123,13 +141,15 @@
 </script>
 
 <script id="repository-group-edit-order-tmpl" type="text/html">
-  <div class="well draggable-item span6">
+  <div class="well draggable-item">
     <blockquote>
       ${$data.id()}
       <br/>
       ${$data.name()}
       <br/>
-      ${window.archivaRuntimeInfo.baseUrl}/repository/${$data.id()}
+      <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${$data.id()}" target="_blank">
+        ${window.archivaRuntimeInfo.baseUrl}/repository/${$data.id()}
+      </a>
       <br/>
     </blockquote>
 

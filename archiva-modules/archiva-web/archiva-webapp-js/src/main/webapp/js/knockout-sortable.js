@@ -110,7 +110,6 @@ ko.bindingHandlers.sortable = {
         ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
             $(element).sortable("destroy");
         });
-
         //we are wrapping the template binding
         return ko.bindingHandlers.template.init(element, function() { return templateOptions; }, allBindingsAccessor, data, context);
     },

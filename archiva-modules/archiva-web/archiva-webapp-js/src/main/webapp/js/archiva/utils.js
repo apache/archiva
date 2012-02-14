@@ -209,7 +209,7 @@ mapStringArray=function(data){
     if ($.isArray(data)){
       return $.map(data,function(item){
         return item;
-     });
+      });
     } else {
       return new Array(data);
     }
