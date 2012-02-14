@@ -49,7 +49,6 @@ public class DefaultRuntimeInfoService
         this.archivaRuntimeInfo = archivaRuntimeInfo;
     }
 
-    @Inject
     public ApplicationRuntimeInfo getApplicationRuntimeInfo()
     {
         ApplicationRuntimeInfo applicationRuntimeInfo = new ApplicationRuntimeInfo();
