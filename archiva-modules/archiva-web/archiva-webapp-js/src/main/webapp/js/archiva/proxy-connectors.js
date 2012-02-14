@@ -80,7 +80,7 @@ $(function() {
     //this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
 
     this.updatePolicyEntry=function(key,value){
-      for(i=0;i<policiesEntries.length;i++){
+      for(var i=0;i<policiesEntries.length;i++){
         if (policiesEntries[i].key==key){
           policiesEntries[i].value=value;
           self.modified(true);
@@ -145,7 +145,7 @@ $(function() {
 
     getPolicyOptions=function(id){
       var policyInformations=self.proxyConnectorsViewModel.policyInformations();
-      for(i=0;i<policyInformations.length;i++){
+      for(var i=0;i<policyInformations.length;i++){
         if (policyInformations[i].id()==id){
           return policyInformations[i].options();
         }
@@ -227,7 +227,7 @@ $(function() {
     }
 
     this.deleteProperty=function(key){
-      for(i=0;i<self.proxyConnector.propertiesEntries().length;i++){
+      for(var i=0;i<self.proxyConnector.propertiesEntries().length;i++){
         var entry=self.proxyConnector.propertiesEntries()[i];
         if (entry.key()==key()){
           self.proxyConnector.propertiesEntries.remove(entry);
@@ -286,7 +286,7 @@ $(function() {
       var modifiedProxyConnectors = getModifiedProxyConnectors();
 
       openDialogConfirm(function(){
-                          for(i=0;i<modifiedProxyConnectors.length;i++){
+                          for(var i=0;i<modifiedProxyConnectors.length;i++){
                             var viewModel = new ProxyConnectorViewModel(modifiedProxyConnectors[i],true,self,false);
                             viewModel.save();
                           }
@@ -388,7 +388,7 @@ $(function() {
     }
 
     this.findPolicyInformationName=function(id){
-      for(i=0;i<self.policyInformations().length;i++){
+      for(var i=0;i<self.policyInformations().length;i++){
         if (id==self.policyInformations()[i].id()){
           return self.policyInformations()[i].name();
         }
@@ -478,7 +478,7 @@ $(function() {
 
     this.findRemoteRepository=function(id){
       $.log("findRemoteRepository:"+id());
-      for(i=0;i<self.proxyConnectorsViewModel.remoteRepositories().length;i++){
+      for(var i=0;i<self.proxyConnectorsViewModel.remoteRepositories().length;i++){
         if (self.proxyConnectorsViewModel.remoteRepositories()[i].id()==id()){
           return self.proxyConnectorsViewModel.remoteRepositories()[i];
         }

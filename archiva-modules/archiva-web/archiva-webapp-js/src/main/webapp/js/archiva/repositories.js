@@ -97,7 +97,7 @@ $(function() {
 
 
     this.getTypeLabel=function(){
-      for(i=0;i<window.managedRepositoryTypes.length;i++){
+      for(var i=0;i<window.managedRepositoryTypes.length;i++){
         if (window.managedRepositoryTypes[i].type==self.layout()){
           return window.managedRepositoryTypes[i].label;
         }
@@ -574,7 +574,7 @@ $(function() {
     this.downloadRemoteIndexOnStartup.subscribe(function(newValue){self.modified(true)});
 
     this.getTypeLabel=function(){
-      for(i=0;i<window.managedRepositoryTypes.length;i++){
+      for(var i=0;i<window.managedRepositoryTypes.length;i++){
         if (window.managedRepositoryTypes[i].type==self.layout()){
           return window.managedRepositoryTypes[i].label;
         }
@@ -725,7 +725,7 @@ $(function() {
       var modifiedRemoteRepositories = getModifiedRemoteRepositories();
 
       openDialogConfirm(function(){
-                          for(i=0;i<modifiedRemoteRepositories.length;i++){
+                          for(var i=0;i<modifiedRemoteRepositories.length;i++){
                             updateRemoteRepository(modifiedRemoteRepositories[i]);
                           }
                           closeDialogConfirm();

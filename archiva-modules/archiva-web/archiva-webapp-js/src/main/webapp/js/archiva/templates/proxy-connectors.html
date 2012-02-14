@@ -281,16 +281,16 @@
     </div>
     <div class="span6">
       <blockquote>
-          ${managedRepository.id}
-          <br/>
-          ${managedRepository.name}
+        ${managedRepository.id}
+        <br/>
+        ${managedRepository.name}
       </blockquote>
     </div>
     <div class="span2">
       {{if proxyConnectorsViewModel.bulkSave()}}
         <p>
-           <a data-bind="click: function(){updateModifiedProxyConnectors()}"
-              href="#" class="btn btn-warning">${$.i18n.prop('save.all')}</a></p>
+          <a data-bind="click: function(){updateModifiedProxyConnectors()}"
+             href="#" class="btn btn-warning">${$.i18n.prop('save.all')}</a></p>
       {{/if}}
     </div>
   </div>

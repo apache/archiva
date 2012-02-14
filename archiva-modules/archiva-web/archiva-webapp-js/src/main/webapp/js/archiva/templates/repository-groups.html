@@ -37,7 +37,7 @@
     <div id="repository-groups-edit" class="tab-pane active">
         <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
         <div id="repository-groups-edit-order-div"
-             data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.repositories,afterMove: repositoryMoved}">
+             data-bind="sortable: { template: 'repository-group-edit-order-tmpl',data:repositoryGroup.managedRepositories,afterMove: repositoryMoved}">
         </div>
     </div>
   </div>  
@@ -53,7 +53,7 @@
     </thead>
     <tbody>
     {{each(i, repositoryGroup) repositoryGroups}}
-      <tr>
+      <tr data-bind="css:{ 'modified': repositoryGroup.modified()}">
         <td>${repositoryGroup.id}</td>
         <td>
           <ul>
@@ -85,7 +85,12 @@
         <label class="control-label" for="id">${$.i18n.prop('id')}</label>
         <div class="controls">
           {{if update}}
-            <span class="uneditable-input">${repositoryGroup.id}</span>
+            ${repositoryGroup.id}
+            <br/>
+            <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
+                ${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}
+            </a>
+
           {{else}}
             <input type="text" class="xlarge required" id="id" name="id" size="50"
                    data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
@@ -97,7 +102,15 @@
 </script>
 
 <script id="repository-group-edit-order-tmpl" type="text/html">
-  <div class="well draggable-item">
-    ${$data}-${managedRepository.name()}
+  <div class="well draggable-item span6">
+    <blockquote>
+      ${$data.id()}
+      <br/>
+      ${$data.name()}
+      <br/>
+      ${window.archivaRuntimeInfo.baseUrl}/repository/${$data.id()}
+      <br/>
+    </blockquote>
+
   </div>
 </script>

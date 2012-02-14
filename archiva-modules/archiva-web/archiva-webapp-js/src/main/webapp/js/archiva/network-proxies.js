@@ -154,7 +154,7 @@ $(function() {
       var modifiedNetworkProxies = getModifiedNetworkProxies();
 
       openDialogConfirm(function(){
-                          for(i=0;i<modifiedNetworkProxies.length;i++){
+                          for(var i=0;i<modifiedNetworkProxies.length;i++){
                             var viewModel = new NetworkProxyViewModel(modifiedNetworkProxies[i],true,self,false);
                             viewModel.save();
                           }

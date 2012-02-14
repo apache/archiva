@@ -30,13 +30,29 @@ $(function() {
     this.repositories=ko.observableArray(repositories);
     this.repositories.subscribe(function(newValue){self.modified(true)});
 
+    // to store managedRepositories description not sended to server
+    this.managedRepositories=ko.observableArray([]);
+    this.managedRepositories.subscribe(function(newValue){self.modified(true)});
+
     this.modified=ko.observable(false);
   }
 
   RepositoryGroupViewModel=function(repositoryGroup,update,repositoryGroupsViewModel){
+    var self = this;
     this.repositoryGroup=repositoryGroup;
     this.update=update;
-    this.repositoryGroupsViewModel=null;
+    this.repositoryGroupsViewModel=repositoryGroupsViewModel;
+
+    repositoryMoved=function(arg){
+      $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
+      var repositories=[];
+      for(var i=0;i<self.repositoryGroup.managedRepositories().length;i++){
+        repositories.push(self.repositoryGroup.managedRepositories()[i]);
+      }
+      self.repositoryGroup.repositories(repositories);
+      self.repositoryGroup.modified(true);
+    }
+
   }
 
   RepositoryGroupsViewModel=function(){
@@ -53,20 +69,19 @@ $(function() {
     }
 
     this.editRepositoryGroup=function(repositoryGroup){
-      $.log("editRepositoryGroup:"+repositoryGroup.id());
+      $.log("editRepositoryGroup:"+repositoryGroup.id()+",repositories:"+repositoryGroup.repositories().length+",managed:"+repositoryGroup.managedRepositories().length);
       var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,true,self);
       activateRepositoryGroupEditTab();
       ko.applyBindings(repositoryGroupViewModel,$("#main-content #repository-groups-edit" ).get(0));
     }
 
-    repositoryMoved=function(){
-      $.log("repositoryMoved");
-    }
+
 
     getManagedRepository=function(id){
       $.log("getManagedRepository:"+id);
       return findManagedRepository(self.managedRepositories());
     }
+
   }
 
   displayRepositoryGroups=function(){
@@ -84,9 +99,13 @@ $(function() {
           dataType: 'json',
           success: function(data) {
             var mappedRepositoryGroups=mapRepositoryGroups(data);
+            for(var i=0;i<mappedRepositoryGroups.length;i++){
+              mappedRepositoryGroups[i]
+                  .managedRepositories(self.mapManagedRepositoriesToRepositoryGroup(mappedRepositoryGroups[i]));
+              mappedRepositoryGroups[i].modified(false);
+            }
             mainContent.html($("#repositoryGroupsMain").tmpl());
             self.repositoryGroupsViewModel.repositoryGroups(mappedRepositoryGroups);
-            //ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-table" ).get(0));
             ko.applyBindings(repositoryGroupsViewModel,mainContent.find("#repository-groups-view" ).get(0));
 
           }
@@ -95,8 +114,17 @@ $(function() {
 
     });
 
+    this.mapManagedRepositoriesToRepositoryGroup=function(repositoryGroup){
+      var managedRepositories=[];
+      for(var i=0;i<repositoryGroup.repositories().length;i++){
+        managedRepositories.push(self.repositoryGroupsViewModel.findManagedRepository(repositoryGroup.repositories()[i]));
+      }
+      return managedRepositories;
+    }
 
   }
+
+
 
   activateRepositoryGroupsGridTab=function(){
     var mainContent = $("#main-content");
