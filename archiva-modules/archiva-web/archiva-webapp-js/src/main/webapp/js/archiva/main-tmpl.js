@@ -23,8 +23,10 @@ require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
           "text!js/archiva/templates/grids-generics.html?"+appendTemplateUrl(),
           "text!js/archiva/templates/repositories.html?"+appendTemplateUrl(),
           "text!js/archiva/templates/network-proxies.html?"+appendTemplateUrl(),
-          "text!js/archiva/templates//proxy-connectors.html?"+appendTemplateUrl()],
-  function(menu,topbar,message,modal,grids_generics,repositories,network_proxies,proxies_connectors) {
+          "text!js/archiva/templates/proxy-connectors.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates/repository-groups.html?"+appendTemplateUrl()],
+  function(menu,topbar,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
+           repository_groups) {
 
     // template loading
     $.tmpl( menu ).appendTo("#html-fragments");
@@ -35,6 +37,7 @@ require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
     $("#html-fragments").append(repositories);
     $("#html-fragments").append(network_proxies);
     $("#html-fragments").append(proxies_connectors);
-    $.log("main-tmpl.js menu loaded");
+    $("#html-fragments").append(repository_groups);
+    $.log("main-tmpl.js loaded");
   }
 );
