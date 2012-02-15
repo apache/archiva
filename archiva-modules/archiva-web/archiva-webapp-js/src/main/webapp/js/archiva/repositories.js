@@ -758,7 +758,7 @@ $(function() {
             {
               type: "GET",
                 success: function(data) {
-                  displaySuccessMessage($.i18n.prop("remoterepository.scanned.scheduled",remoteRepository.name()));
+                  displaySuccessMessage($.i18n.prop("remoterepository.download.remote.scheduled",remoteRepository.name()));
 
                 },
                 error: function(data) {
@@ -774,7 +774,7 @@ $(function() {
         },
         $.i18n.prop("ok"),
         $.i18n.prop("cancel"),
-        $.i18n.prop("remoterepository.scan.confirm",remoteRepository.name()),
+        $.i18n.prop("remoterepository.download.remote.confirm",remoteRepository.name()),
         $("#remote-repository-scan-modal-tmpl").tmpl(remoteRepository));
     }
   }
