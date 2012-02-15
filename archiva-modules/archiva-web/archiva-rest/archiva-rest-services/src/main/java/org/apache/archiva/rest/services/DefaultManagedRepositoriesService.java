@@ -57,18 +57,10 @@ public class DefaultManagedRepositoriesService
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
     private RepositoryCommonValidator repositoryCommonValidator;
 
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
-
-    @Inject
-    @Named( value = "repositorySessionFactory" )
-    protected RepositorySessionFactory repositorySessionFactory;
-
 
     public List<ManagedRepository> getManagedRepositories()
         throws ArchivaRestServiceException

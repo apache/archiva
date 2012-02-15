@@ -58,6 +58,7 @@
       <ref bean="archivaAdministrationService#default"/>
       <ref bean="searchService#rest"/>
       <ref bean="commonServices#rest"/>
+      <ref bean="browseService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>

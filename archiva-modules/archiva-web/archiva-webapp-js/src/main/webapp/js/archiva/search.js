@@ -17,8 +17,29 @@
  * under the License.
  */
 $(function() {
+
+  BrowseTopViewModel=function(groupIds){
+    this.groupIds=groupIds;
+
+
+  }
+
   displayBrowse=function(){
-    $("#main-content" ).html("coming soon :-)");
+    var mainContent = $("#main-content");
+    mainContent.html(mediumSpinnerImg());
+    $.ajax("restServices/archivaServices/browseService/rootGroups", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          var groupdIds = $.map(data.groupIdList.groupIds,function(item){
+            return item;
+          });
+          $.log("size:"+groupdIds.length);
+          var browseTopViewModel = new BrowseTopViewModel(groupdIds);
+          mainContent.html($("#browse-tmpl" ).tmpl());
+          ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
+        }
+    });
   }
 
   displaySearch=function(){

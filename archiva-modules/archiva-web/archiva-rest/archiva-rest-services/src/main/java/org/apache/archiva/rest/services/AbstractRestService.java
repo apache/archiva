@@ -20,8 +20,14 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.users.User;
+import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.slf4j.Logger;
@@ -29,9 +35,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +57,14 @@ public abstract class AbstractRestService
 
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+
+    @Inject
+    private UserRepositories userRepositories;
+
+
+    @Inject
+    @Named( value = "repositorySessionFactory" )
+    protected RepositorySessionFactory repositorySessionFactory;
 
     @Context
     protected HttpServletRequest httpServletRequest;
@@ -69,6 +85,39 @@ public abstract class AbstractRestService
     public void setAuditListeners( List<AuditListener> auditListeners )
     {
         this.auditListeners = auditListeners;
+    }
+
+    protected List<String> getObservableRepos()
+    {
+        try
+        {
+            List<String> ids = userRepositories.getObservableRepositoryIds( getPrincipal() );
+            return ids == null ? Collections.<String>emptyList() : ids;
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            log.warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
+    }
+
+    protected String getPrincipal()
+    {
+        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
+
+        return redbackRequestInformation == null
+            ? UserManager.GUEST_USERNAME
+            : ( redbackRequestInformation.getUser() == null
+                ? UserManager.GUEST_USERNAME
+                : redbackRequestInformation.getUser().getUsername() );
     }
 
     protected String getBaseUrl( HttpServletRequest req )

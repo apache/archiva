@@ -183,9 +183,9 @@ public class BrowseAction
         return SUCCESS;
     }
 
-    private ArrayList<String> getSortedList( Set<String> set )
+    private List<String> getSortedList( Set<String> set )
     {
-        ArrayList<String> list = new ArrayList<String>( set );
+        List<String> list = new ArrayList<String>( set );
         Collections.sort( list );
         return list;
     }

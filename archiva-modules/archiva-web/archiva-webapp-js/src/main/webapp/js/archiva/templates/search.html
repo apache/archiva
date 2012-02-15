@@ -16,3 +16,22 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
+
+<script id="browse-tmpl" type="text/html">
+  <div>
+    <div class="page-header">
+      <h2>${$.i18n.prop('browse.groups')}</h2>
+    </div>
+  </div>
+  <div id="browse_result" data-bind='template:{name:"browse-top-tmpl"}'>
+
+  </div>
+</script>
+
+<script id="browse-top-tmpl" type="text/html">
+  <ul>
+    {{each(i,groupId) groupIds}}
+      <li>${groupId}</li>
+    {{/each}}
+  </ul>
+</script>

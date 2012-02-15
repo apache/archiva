@@ -61,13 +61,9 @@ public class DefaultSearchService
     implements SearchService
 {
 
-    private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     private RepositorySearch repositorySearch;
-
-    @Inject
-    private UserRepositories userRepositories;
 
     public List<Artifact> quickSearch( String queryString )
         throws ArchivaRestServiceException
@@ -178,40 +174,6 @@ public class DefaultSearchService
         throws ArchivaRestServiceException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-
-    protected List<String> getObservableRepos()
-    {
-        try
-        {
-            List<String> ids = userRepositories.getObservableRepositoryIds( getPrincipal() );
-            return ids == null ? Collections.<String>emptyList() : ids;
-        }
-        catch ( PrincipalNotFoundException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( AccessDeniedException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        catch ( ArchivaSecurityException e )
-        {
-            log.warn( e.getMessage(), e );
-        }
-        return Collections.emptyList();
-    }
-
-    protected String getPrincipal()
-    {
-        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
-
-        return redbackRequestInformation == null
-            ? UserManager.GUEST_USERNAME
-            : ( redbackRequestInformation.getUser() == null
-                ? UserManager.GUEST_USERNAME
-                : redbackRequestInformation.getUser().getUsername() );
     }
 
     protected List<Artifact> getArtifacts( SearchResults searchResults )
