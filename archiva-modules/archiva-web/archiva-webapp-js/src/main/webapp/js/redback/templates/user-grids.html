@@ -50,41 +50,25 @@
               {{/if}}
               {{if row.locked()==true}}
                 <td>
-                    {{if row.username()=="admin" || row.username()=="guest"}}
-                      <img src="images/system-lock-screen-22-22.png"/>
-                    {{else}}
-                      <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen-22-22.png"/></a>
-                    {{/if}}
+                  <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen-22-22.png"/></a>
                 </td>
               {{else}}
                 <td>
-                    {{if row.username()=="admin" || row.username()=="guest"}}
-                      <img src="images/weather-clear-22-22.png"/>
-                    {{else}}
-                      <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear-22-22.png"/></a>
-                    {{/if}}
+                  <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear-22-22.png"/></a>
                 </td>
               {{/if}}
 
               {{if row.passwordChangeRequired()==true}}
                 <td>
-                    {{if row.username()=="admin" || row.username()=="guest"}}
-                      <img src="images/dialog-error-22-22.png"/>
-                    {{else}}
-                      <a href="#" data-bind="click: function(){ passwordChangeRequire(row,false) }">
-                          <img src="images/dialog-error-22-22.png"/>
-                      </a>
-                    {{/if}}
+                  <a href="#" data-bind="click: function(){ passwordChangeRequire(row,false) }">
+                    <img src="images/dialog-error-22-22.png"/>
+                  </a>
                 </td>
               {{else}}
               <td>
-                  {{if row.username()=="admin" || row.username()=="guest"}}
-                    <img src="images/weather-clear-22-22.png"/>
-                  {{else}}
-                    <a href="#" data-bind="click: function(){ passwordChangeRequire(row,true) }">
-                        <img src="images/weather-clear-22-22.png"/>
-                    </a>
-                  {{/if}}
+                <a href="#" data-bind="click: function(){ passwordChangeRequire(row,true) }">
+                  <img src="images/weather-clear-22-22.png"/>
+                </a>
               </td>
               {{/if}}
           </tr>
