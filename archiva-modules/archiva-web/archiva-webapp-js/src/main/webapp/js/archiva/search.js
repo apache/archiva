@@ -20,7 +20,8 @@ $(function() {
 
   BrowseTopViewModel=function(groupIds){
     this.groupIds=groupIds;
-
+    var mainContent = $("#main-content");
+    mainContent.find("#browse_result").html(mediumSpinnerImg());
     displayGroupDetail=function(groupId){
       $.log("groupId:"+groupId);
       $.ajax("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId), {
@@ -31,10 +32,10 @@ $(function() {
                 $.map(data.browseGroupIdResult.browseGroupIdEntries,function(item){
                   return new BrowseGroupIdEntry(item.name, item.project);
                 }): [data.browseGroupIdResult.browseGroupIdEntries];
-            $("#main-content #browse_result").html($("#browse-groups-div-tmpl" ).tmpl());
+            mainContent.find("#browse_result").html($("#browse-groups-div-tmpl" ).tmpl());
             var browseGroupsViewModel = new BrowseGroupsViewModel(browseGroupIdEntryies);
 
-            ko.applyBindings(browseGroupsViewModel,$("#main-content #browse-groups-div" ).get(0));
+            ko.applyBindings(browseGroupsViewModel,mainContent.find("#browse-groups-div" ).get(0));
           }
       });
     }
