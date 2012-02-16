@@ -23,9 +23,7 @@ $(function() {
     var mainContent = $("#main-content");
     var browseResult=mainContent.find("#browse_result");
     displayGroupDetail=function(groupId){
-      $.log("groupId:"+groupId);
-
-      browseResult.hide( "slide", {}, 700,
+      browseResult.hide( "slide", {}, 500,
         function(){
           browseResult.html(mediumSpinnerImg());
           browseResult.show();
