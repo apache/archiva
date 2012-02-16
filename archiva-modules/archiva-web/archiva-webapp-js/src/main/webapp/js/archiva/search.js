@@ -27,10 +27,12 @@ $(function() {
           type: "GET",
           dataType: 'json',
           success: function(data) {
-            var groupdIds = $.map(data.groupIdList.groupIds,function(item){
-              return item;
-            });
-            $.log("size:"+groupdIds.length);
+            var browseGroupIdEntryies = $.isArray(data.browseGroupIdResult.browseGroupIdEntries) ?
+                $.map(data.browseGroupIdResult.browseGroupIdEntries,function(item){
+                  $.log("name:"+item.name);
+                  return new BrowseGroupIdEntry(item.name, item.project);
+                }): [data.browseGroupIdResult.browseGroupIdEntries];
+            $.log("size:"+browseGroupIdEntryies.length);
             //var browseTopViewModel = new BrowseTopViewModel(groupdIds);
 
             //ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
@@ -60,5 +62,10 @@ $(function() {
 
   displaySearch=function(){
     $("#main-content" ).html("coming soon :-)");
+  }
+
+  BrowseGroupIdEntry=function(name,project){
+    this.name=name;
+    this.project=project;
   }
 });

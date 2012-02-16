@@ -38,7 +38,7 @@ public class BrowseGroupIdResult
 
     public BrowseGroupIdResult( List<BrowseGroupIdEntry> browseGroupIdEntries )
     {
-        // no op
+        this.browseGroupIdEntries = browseGroupIdEntries;
     }
 
     public List<BrowseGroupIdEntry> getBrowseGroupIdEntries()
