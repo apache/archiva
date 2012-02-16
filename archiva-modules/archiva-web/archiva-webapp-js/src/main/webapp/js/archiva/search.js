@@ -21,23 +21,31 @@ $(function() {
   BrowseTopViewModel=function(groupIds){
     this.groupIds=groupIds;
     var mainContent = $("#main-content");
-    mainContent.find("#browse_result").html(mediumSpinnerImg());
+    var browseResult=mainContent.find("#browse_result");
     displayGroupDetail=function(groupId){
       $.log("groupId:"+groupId);
-      $.ajax("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId), {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            var browseGroupIdEntryies = $.isArray(data.browseGroupIdResult.browseGroupIdEntries) ?
-                $.map(data.browseGroupIdResult.browseGroupIdEntries,function(item){
-                  return new BrowseGroupIdEntry(item.name, item.project);
-                }): [data.browseGroupIdResult.browseGroupIdEntries];
-            mainContent.find("#browse_result").html($("#browse-groups-div-tmpl" ).tmpl());
-            var browseGroupsViewModel = new BrowseGroupsViewModel(browseGroupIdEntryies);
 
-            ko.applyBindings(browseGroupsViewModel,mainContent.find("#browse-groups-div" ).get(0));
-          }
-      });
+      browseResult.hide( "slide", {}, 700,
+        function(){
+          browseResult.html(mediumSpinnerImg());
+          browseResult.show();
+          $.ajax("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId), {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              var browseGroupIdEntryies = $.isArray(data.browseGroupIdResult.browseGroupIdEntries) ?
+                   $.map(data.browseGroupIdResult.browseGroupIdEntries,function(item){
+                     return new BrowseGroupIdEntry(item.name, item.project);
+                   }): [data.browseGroupIdResult.browseGroupIdEntries];
+              browseResult.html($("#browse-groups-div-tmpl" ).tmpl());
+              var browseGroupsViewModel = new BrowseGroupsViewModel(browseGroupIdEntryies);
+
+              ko.applyBindings(browseGroupsViewModel,mainContent.find("#browse-groups-div" ).get(0));
+            }
+         });
+        }
+      );
+
     }
   }
 
