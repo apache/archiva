@@ -29,9 +29,11 @@
 </script>
 
 <script id="browse-top-tmpl" type="text/html">
-  <ul>
-    {{each(i,groupId) groupIds}}
-      <li>${groupId}</li>
-    {{/each}}
-  </ul>
+  <div class="well">
+    <ul>
+      {{each(i,groupId) groupIds}}
+        <li class="browse-list">&nbsp;${groupId}</li>
+      {{/each}}
+    </ul>
+  </div>
 </script>

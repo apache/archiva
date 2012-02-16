@@ -75,3 +75,7 @@
   border: 2px dotted #ddd;
   margin-left: 2em
 }
+
+.browse-list{
+  list-style-image: url("../images/folder.png")
+}
