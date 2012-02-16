@@ -21,12 +21,28 @@ $(function() {
   BrowseTopViewModel=function(groupIds){
     this.groupIds=groupIds;
 
+    displayGroupDetail=function(groupId){
+      $.log("groupId:"+groupId);
+      $.ajax("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId), {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            var groupdIds = $.map(data.groupIdList.groupIds,function(item){
+              return item;
+            });
+            $.log("size:"+groupdIds.length);
+            //var browseTopViewModel = new BrowseTopViewModel(groupdIds);
 
+            //ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
+          }
+      });
+    }
   }
 
   displayBrowse=function(){
     var mainContent = $("#main-content");
-    mainContent.html(mediumSpinnerImg());
+    mainContent.html($("#browse-tmpl" ).tmpl());
+    mainContent.find("#browse_result").html(mediumSpinnerImg());
     $.ajax("restServices/archivaServices/browseService/rootGroups", {
         type: "GET",
         dataType: 'json',
@@ -36,7 +52,7 @@ $(function() {
           });
           $.log("size:"+groupdIds.length);
           var browseTopViewModel = new BrowseTopViewModel(groupdIds);
-          mainContent.html($("#browse-tmpl" ).tmpl());
+
           ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
         }
     });

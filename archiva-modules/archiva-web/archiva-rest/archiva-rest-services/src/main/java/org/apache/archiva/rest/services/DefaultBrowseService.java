@@ -21,6 +21,8 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.rest.api.model.BrowseGroupIdEntry;
+import org.apache.archiva.rest.api.model.BrowseGroupIdResult;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
@@ -90,7 +92,69 @@ public class DefaultBrowseService
         return new GroupIdList( getSortedList( namespaces ) );
     }
 
-    //---------------------------
+    public BrowseGroupIdResult browseGroupId( String groupId )
+        throws ArchivaRestServiceException
+    {
+
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            // FIXME 403 ???
+            return new BrowseGroupIdResult();
+        }
+
+        Set<String> projects = new LinkedHashSet<String>();
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        Set<String> namespaces;
+        try
+        {
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            Set<String> namespacesToCollapse = new LinkedHashSet<String>();
+            for ( String repoId : selectedRepos )
+            {
+                namespacesToCollapse.addAll( metadataResolver.resolveNamespaces( repositorySession, repoId, groupId ) );
+
+                projects.addAll( metadataResolver.resolveProjects( repositorySession, repoId, groupId ) );
+            }
+
+            // TODO: this logic should be optional, particularly remembering we want to keep this code simple
+            // it is located here to avoid the content repository implementation needing to do too much for what
+            // is essentially presentation code
+            namespaces = new LinkedHashSet<String>();
+            for ( String n : namespacesToCollapse )
+            {
+                // TODO: check performance of this
+                namespaces.add(
+                    collapseNamespaces( repositorySession, metadataResolver, selectedRepos, groupId + "." + n ) );
+            }
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+        List<BrowseGroupIdEntry> browseGroupIdEntries =
+            new ArrayList<BrowseGroupIdEntry>( namespaces.size() + projects.size() );
+        for ( String namespace : namespaces )
+        {
+            browseGroupIdEntries.add( new BrowseGroupIdEntry( namespace, false ) );
+        }
+        for ( String project : projects )
+        {
+            browseGroupIdEntries.add( new BrowseGroupIdEntry( project, true ) );
+        }
+        Collections.sort( browseGroupIdEntries );
+        return new BrowseGroupIdResult( browseGroupIdEntries );
+
+    }
+
+//---------------------------
     // internals
     //---------------------------
 

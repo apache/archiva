@@ -23,16 +23,18 @@
       <h2>${$.i18n.prop('browse.groups')}</h2>
     </div>
   </div>
-  <div id="browse_result" data-bind='template:{name:"browse-top-tmpl"}'>
+  <div id="browse_result" class="well" data-bind='template:{name:"browse-top-tmpl"}'>
 
   </div>
 </script>
 
 <script id="browse-top-tmpl" type="text/html">
-  <div class="well">
+  <div>
     <ul>
       {{each(i,groupId) groupIds}}
-        <li class="browse-list">&nbsp;${groupId}</li>
+        <li class="browse-list">
+          <a href="#" data-bind="click: function(){displayGroupDetail(groupId)}">&nbsp;${groupId}</a>
+        </li>
       {{/each}}
     </ul>
   </div>

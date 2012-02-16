@@ -163,8 +163,8 @@ public class BrowseAction
             }
 
             // TODO: this logic should be optional, particularly remembering we want to keep this code simple
-            //       it is located here to avoid the content repository implementation needing to do too much for what
-            //       is essentially presentation code
+            // it is located here to avoid the content repository implementation needing to do too much for what
+            // is essentially presentation code
             namespaces = new LinkedHashSet<String>();
             for ( String n : namespacesToCollapse )
             {
