@@ -23,6 +23,9 @@
       <h2>${$.i18n.prop('browse.groups')}</h2>
     </div>
   </div>
+  <div id="browse_breadcrumb">
+
+  </div>
   <div id="browse_result" class="well" data-bind='template:{name:"browse-top-tmpl"}'>
 
   </div>
@@ -31,9 +34,9 @@
 <script id="browse-top-tmpl" type="text/html">
   <div>
     <ul>
-      {{each(i,groupId) groupIds}}
+      {{each(i,browseIdEntry) browseIdEntries}}
         <li class="browse-list">
-          <a href="#" data-bind="click: function(){displayGroupDetail(groupId)}">&nbsp;${groupId}</a>
+          <a href="#" data-bind="click: function(){displayGroupId(browseIdEntry.name)}">&nbsp;${browseIdEntry.name}</a>
         </li>
       {{/each}}
     </ul>
@@ -49,9 +52,12 @@
 <script id="browse-groups-tmpl" type="text/html">
   <div>
     <ul>
-      {{each(i,browseGroupIdEntry) browseGroupIdEntryies}}
+      <li class="browse-list"><a href="#" data-bind="click:function(){displayGroupId($root.parentGroupdId)}">..</a></li>
+      {{each(i,browseIdEntry) browseIdEntries}}
         <li class="browse-list">
-          <a href="#">&nbsp;${browseGroupIdEntry.name}-project: ${browseGroupIdEntry.project}</a>
+          <a href="#" data-bind="click:function(){displayGroupId(browseIdEntry.name)}">
+            &nbsp;${browseIdEntry.name}-project: ${browseIdEntry.project}
+          </a>
         </li>
       {{/each}}
     </ul>

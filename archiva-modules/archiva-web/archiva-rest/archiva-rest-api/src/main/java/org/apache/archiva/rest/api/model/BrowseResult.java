@@ -26,28 +26,28 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@XmlRootElement( name = "browseGroupIdResult" )
-public class BrowseGroupIdResult
+@XmlRootElement( name = "browseResult" )
+public class BrowseResult
 {
-    private List<BrowseGroupIdEntry> browseGroupIdEntries;
+    private List<BrowseIdEntry> browseIdEntries;
 
-    public BrowseGroupIdResult()
+    public BrowseResult()
     {
         // no op
     }
 
-    public BrowseGroupIdResult( List<BrowseGroupIdEntry> browseGroupIdEntries )
+    public BrowseResult( List<BrowseIdEntry> browseIdEntries )
     {
-        this.browseGroupIdEntries = browseGroupIdEntries;
+        this.browseIdEntries = browseIdEntries;
     }
 
-    public List<BrowseGroupIdEntry> getBrowseGroupIdEntries()
+    public List<BrowseIdEntry> getBrowseIdEntries()
     {
-        return browseGroupIdEntries == null ? Collections.<BrowseGroupIdEntry>emptyList() : browseGroupIdEntries;
+        return browseIdEntries == null ? Collections.<BrowseIdEntry>emptyList() : browseIdEntries;
     }
 
-    public void setBrowseGroupIdEntries( List<BrowseGroupIdEntry> browseGroupIdEntries )
+    public void setBrowseIdEntries( List<BrowseIdEntry> browseIdEntries )
     {
-        this.browseGroupIdEntries = browseGroupIdEntries;
+        this.browseIdEntries = browseIdEntries;
     }
 }

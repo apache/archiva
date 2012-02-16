@@ -21,9 +21,8 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.rest.api.model.BrowseGroupIdEntry;
-import org.apache.archiva.rest.api.model.BrowseGroupIdResult;
-import org.apache.archiva.rest.api.model.GroupIdList;
+import org.apache.archiva.rest.api.model.BrowseIdEntry;
+import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,14 +46,14 @@ public class DefaultBrowseService
     implements BrowseService
 {
 
-    public GroupIdList getRootGroups()
+    public BrowseResult getRootGroups()
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getObservableRepos();
         if ( CollectionUtils.isEmpty( selectedRepos ) )
         {
             // FIXME 403 ???
-            return new GroupIdList( Collections.<String>emptyList() );
+            return new BrowseResult();
         }
 
         Set<String> namespaces = new LinkedHashSet<String>();
@@ -89,10 +88,17 @@ public class DefaultBrowseService
             repositorySession.close();
         }
 
-        return new GroupIdList( getSortedList( namespaces ) );
+        List<BrowseIdEntry> browseGroupIdEntries = new ArrayList<BrowseIdEntry>( namespaces.size() );
+        for ( String namespace : namespaces )
+        {
+            browseGroupIdEntries.add( new BrowseIdEntry( namespace, false ) );
+        }
+
+        Collections.sort( browseGroupIdEntries );
+        return new BrowseResult( browseGroupIdEntries );
     }
 
-    public BrowseGroupIdResult browseGroupId( String groupId )
+    public BrowseResult browseGroupId( String groupId )
         throws ArchivaRestServiceException
     {
 
@@ -100,7 +106,7 @@ public class DefaultBrowseService
         if ( CollectionUtils.isEmpty( selectedRepos ) )
         {
             // FIXME 403 ???
-            return new BrowseGroupIdResult();
+            return new BrowseResult();
         }
 
         Set<String> projects = new LinkedHashSet<String>();
@@ -139,22 +145,21 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        List<BrowseGroupIdEntry> browseGroupIdEntries =
-            new ArrayList<BrowseGroupIdEntry>( namespaces.size() + projects.size() );
+        List<BrowseIdEntry> browseGroupIdEntries = new ArrayList<BrowseIdEntry>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
-            browseGroupIdEntries.add( new BrowseGroupIdEntry( namespace, false ) );
+            browseGroupIdEntries.add( new BrowseIdEntry( namespace, false ) );
         }
         for ( String project : projects )
         {
-            browseGroupIdEntries.add( new BrowseGroupIdEntry( project, true ) );
+            browseGroupIdEntries.add( new BrowseIdEntry( project, true ) );
         }
         Collections.sort( browseGroupIdEntries );
-        return new BrowseGroupIdResult( browseGroupIdEntries );
+        return new BrowseResult( browseGroupIdEntries );
 
     }
 
-//---------------------------
+    //---------------------------
     // internals
     //---------------------------
 

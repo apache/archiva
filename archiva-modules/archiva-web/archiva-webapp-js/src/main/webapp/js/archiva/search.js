@@ -18,37 +18,21 @@
  */
 $(function() {
 
-  BrowseTopViewModel=function(groupIds){
-    this.groupIds=groupIds;
-    var mainContent = $("#main-content");
-    var browseResult=mainContent.find("#browse_result");
-    displayGroupDetail=function(groupId){
-      browseResult.hide( "slide", {}, 500,
-        function(){
-          browseResult.html(mediumSpinnerImg());
-          browseResult.show();
-          $.ajax("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId), {
-            type: "GET",
-            dataType: 'json',
-            success: function(data) {
-              var browseGroupIdEntryies = $.isArray(data.browseGroupIdResult.browseGroupIdEntries) ?
-                   $.map(data.browseGroupIdResult.browseGroupIdEntries,function(item){
-                     return new BrowseGroupIdEntry(item.name, item.project);
-                   }): [data.browseGroupIdResult.browseGroupIdEntries];
-              browseResult.html($("#browse-groups-div-tmpl" ).tmpl());
-              var browseGroupsViewModel = new BrowseGroupsViewModel(browseGroupIdEntryies);
-
-              ko.applyBindings(browseGroupsViewModel,mainContent.find("#browse-groups-div" ).get(0));
-            }
-         });
-        }
-      );
-
+  BrowseTopViewModel=function(browseIdEntries){
+    this.browseIdEntries=browseIdEntries;
+    displayGroupId=function(groupId){
+      displayGroupDetail(groupId,"..");
     }
+
   }
 
-  BrowseGroupsViewModel=function(browseGroupIdEntryies){
-    this.browseGroupIdEntryies=browseGroupIdEntryies;
+  BrowseGroupsViewModel=function(browseIdEntries,parentGroupdId){
+    var self = this;
+    this.browseIdEntries=browseIdEntries;
+    this.parentGroupdId=parentGroupdId;
+    displayGroupId=function(groupId){
+      displayGroupDetail(groupId,self.parentGroupdId);
+    }
   }
 
   displayBrowse=function(){
@@ -59,23 +43,54 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var groupdIds =
-              $.isArray(data.groupIdList.groupIds)? $.map(data.groupIdList.groupIds,function(item){
-                return item;
-              }): [data.groupIdList.groupIds];
-          $.log("size:"+groupdIds.length);
-          var browseTopViewModel = new BrowseTopViewModel(groupdIds);
+          var browseIdEntries = mapBrowseIdEntries(data);
+          $.log("size:"+browseIdEntries.length);
+          var browseTopViewModel = new BrowseTopViewModel(browseIdEntries);
 
           ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
         }
     });
   }
 
+  displayGroupDetail=function(groupId,parentGroupdId){
+    var mainContent = $("#main-content");
+    var browseResult=mainContent.find("#browse_result");
+    browseResult.hide( "slide", {}, 500,
+      function(){
+        browseResult.html(mediumSpinnerImg());
+        browseResult.show();
+        var url = "restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+        $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            var browseIdEntries = mapBrowseIdEntries(data);
+            browseResult.html($("#browse-groups-div-tmpl" ).tmpl());
+            var browseGroupsViewModel = new BrowseGroupsViewModel(browseIdEntries,parentGroupdId);
+
+            ko.applyBindings(browseGroupsViewModel,mainContent.find("#browse-groups-div" ).get(0));
+          }
+       });
+      }
+    );
+
+  }
+
   displaySearch=function(){
     $("#main-content" ).html("coming soon :-)");
   }
 
-  BrowseGroupIdEntry=function(name,project){
+  mapBrowseIdEntries=function(data){
+    if (data.browseResult && data.browseResult.browseIdEntries) {
+      return $.isArray(data.browseResult.browseIdEntries) ?
+         $.map(data.browseResult.browseIdEntries,function(item){
+           return new BrowseIdEntry(item.name, item.project);
+         }): [data.browseResult.browseIdEntries];
+    }
+    return [];
+  }
+
+  BrowseIdEntry=function(name,project){
     this.name=name;
     this.project=project;
   }

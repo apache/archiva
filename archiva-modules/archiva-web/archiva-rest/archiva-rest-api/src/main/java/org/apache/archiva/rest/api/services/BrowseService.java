@@ -18,7 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.BrowseGroupIdResult;
+import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -39,13 +39,13 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true, noPermission = false )
-    GroupIdList getRootGroups()
+    BrowseResult getRootGroups()
         throws ArchivaRestServiceException;
 
     @Path( "browseGroupId/{groupId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true, noPermission = false )
-    BrowseGroupIdResult browseGroupId(@PathParam( "groupId" ) String groupId )
+    BrowseResult browseGroupId(@PathParam( "groupId" ) String groupId )
         throws ArchivaRestServiceException;
 }
