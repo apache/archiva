@@ -29,16 +29,19 @@ $(function() {
           success: function(data) {
             var browseGroupIdEntryies = $.isArray(data.browseGroupIdResult.browseGroupIdEntries) ?
                 $.map(data.browseGroupIdResult.browseGroupIdEntries,function(item){
-                  $.log("name:"+item.name);
                   return new BrowseGroupIdEntry(item.name, item.project);
                 }): [data.browseGroupIdResult.browseGroupIdEntries];
-            $.log("size:"+browseGroupIdEntryies.length);
-            //var browseTopViewModel = new BrowseTopViewModel(groupdIds);
+            $("#main-content #browse_result").html($("#browse-groups-div-tmpl" ).tmpl());
+            var browseGroupsViewModel = new BrowseGroupsViewModel(browseGroupIdEntryies);
 
-            //ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
+            ko.applyBindings(browseGroupsViewModel,$("#main-content #browse-groups-div" ).get(0));
           }
       });
     }
+  }
+
+  BrowseGroupsViewModel=function(browseGroupIdEntryies){
+    this.browseGroupIdEntryies=browseGroupIdEntryies;
   }
 
   displayBrowse=function(){
@@ -49,9 +52,10 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var groupdIds = $.map(data.groupIdList.groupIds,function(item){
-            return item;
-          });
+          var groupdIds =
+              $.isArray(data.groupIdList.groupIds)? $.map(data.groupIdList.groupIds,function(item){
+                return item;
+              }): [data.groupIdList.groupIds];
           $.log("size:"+groupdIds.length);
           var browseTopViewModel = new BrowseTopViewModel(groupdIds);
 

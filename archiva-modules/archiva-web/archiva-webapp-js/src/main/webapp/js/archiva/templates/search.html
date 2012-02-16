@@ -39,3 +39,21 @@
     </ul>
   </div>
 </script>
+
+<script id="browse-groups-div-tmpl" type="text/html">
+  <div id="browse-groups-div" data-bind='template:{name:"browse-groups-tmpl"}'>
+
+  </div>
+</script>
+
+<script id="browse-groups-tmpl" type="text/html">
+  <div>
+    <ul>
+      {{each(i,browseGroupIdEntry) browseGroupIdEntryies}}
+        <li class="browse-list">
+          <a href="#">&nbsp;${browseGroupIdEntry.name}-project: ${browseGroupIdEntry.project}</a>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
+</script>
