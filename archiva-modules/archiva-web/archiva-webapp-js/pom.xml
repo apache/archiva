@@ -558,7 +558,7 @@
                 <cssSourceFile>jquery-ui-1.8.16.custom.css</cssSourceFile>
                 <cssSourceFile>jquery.ui.1.8.16.ie.css</cssSourceFile>
                 <cssSourceFile>bootstrap.css</cssSourceFile>
-                <cssSourceFile>archiva.css</cssSourceFile>
+                <cssSourceFile>archiva.2.0.1.css</cssSourceFile>
               </cssSourceFiles>
               <cssFinalFile>apache-archiva-${project.version}.css</cssFinalFile>
               <jsSourceDir>js</jsSourceDir>
@@ -595,7 +595,7 @@
                 <jsSourceFile>archiva/proxy-connectors.js</jsSourceFile>
                 <jsSourceFile>redback/operation.js</jsSourceFile>
                 <jsSourceFile>redback/redback-tmpl.js</jsSourceFile>
-                <jsSourceFile>bootstrap.js</jsSourceFile>
+                <jsSourceFile>bootstrap.2.0.1.js</jsSourceFile>
                 <jsSourceFile>knockout.simpleGrid.js</jsSourceFile>
                 <jsSourceFile>redback/user.js</jsSourceFile>
                 <jsSourceFile>redback/users.js</jsSourceFile>
