@@ -89,7 +89,8 @@
     <lucene.version>3.0.3</lucene.version>
     <cxfVersion>2.5.1</cxfVersion>
     <derbyVersion>10.8.2.2</derbyVersion>
-    <httpclient.version>4.1.2</httpclient.version>
+    <httpclient.version>4.1.3</httpclient.version>
+    <httpclient.core.version>4.1.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
     <!-- restore when we will be able to use a derby in memory database -->
@@ -1129,6 +1130,17 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${httpclient.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${httpclient.core.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
