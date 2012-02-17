@@ -18,22 +18,16 @@
  */
 $(function() {
 
-  BrowseTopViewModel=function(browseIdEntries){
+  BrowseViewModel=function(browseIdEntries,parentGroupdId){
     this.browseIdEntries=browseIdEntries;
+    this.parentGroupdId=parentGroupdId;
     displayGroupId=function(groupId){
       displayGroupDetail(groupId,"..");
     }
 
   }
 
-  BrowseGroupsViewModel=function(browseIdEntries,parentGroupdId){
-    var self = this;
-    this.browseIdEntries=browseIdEntries;
-    this.parentGroupdId=parentGroupdId;
-    displayGroupId=function(groupId){
-      displayGroupDetail(groupId,self.parentGroupdId);
-    }
-  }
+
 
   displayBrowse=function(){
     clearUserMessages();
@@ -46,9 +40,9 @@ $(function() {
         success: function(data) {
           var browseIdEntries = mapBrowseIdEntries(data);
           $.log("size:"+browseIdEntries.length);
-          var browseTopViewModel = new BrowseTopViewModel(browseIdEntries);
+          var browseViewModel = new BrowseViewModel(browseIdEntries);
 
-          ko.applyBindings(browseTopViewModel,mainContent.get(0));
+          ko.applyBindings(browseViewModel,mainContent.get(0));
         }
     });
   }
@@ -66,10 +60,9 @@ $(function() {
           dataType: 'json',
           success: function(data) {
             var browseIdEntries = mapBrowseIdEntries(data);
-            //browseResult.html($("#browse-groups-div-tmpl" ).tmpl());
-            var browseGroupsViewModel = new BrowseGroupsViewModel(browseIdEntries,parentGroupdId);
+            var browseViewModel = new BrowseViewModel(browseIdEntries,parentGroupdId);
 
-            ko.applyBindings(browseGroupsViewModel,mainContent.get(0));
+            ko.applyBindings(browseViewModel,mainContent.get(0));
           }
        });
       }
