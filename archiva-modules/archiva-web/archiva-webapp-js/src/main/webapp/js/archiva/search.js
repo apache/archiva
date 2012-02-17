@@ -36,6 +36,7 @@ $(function() {
   }
 
   displayBrowse=function(){
+    clearUserMessages();
     var mainContent = $("#main-content");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());

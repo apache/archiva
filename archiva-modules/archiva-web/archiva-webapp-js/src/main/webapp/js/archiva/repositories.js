@@ -758,8 +758,8 @@ $(function() {
             {
               type: "GET",
                 success: function(data) {
+                  clearUserMessages();
                   displaySuccessMessage($.i18n.prop("remoterepository.download.remote.scheduled",remoteRepository.name()));
-
                 },
                 error: function(data) {
                   var res = $.parseJSON(data.responseText);
