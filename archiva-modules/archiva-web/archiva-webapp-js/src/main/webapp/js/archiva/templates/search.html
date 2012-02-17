@@ -42,11 +42,13 @@
     <ul>
       <!-- if null we are on root level -->
       {{if $root.parentBrowseViewModel}}
-        <li class="browse-list"><a href="#" data-bind="click:function(){displayParentGroupId()}">..</a></li>
+        <li class="browse-list" data-bind="click:function(){displayParentGroupId()}">
+          <a href="#">..</a>
+        </li>
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
-        <li class="browse-list">
-          <a href="#" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
+        <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
+          <a href="#">
             &nbsp;${browseResultEntry.name} (project: ${browseResultEntry.project})
           </a>
         </li>
@@ -58,6 +60,8 @@
 <script id="browse-breadcrumb-tmpl" type="text/html">
   <ul class="breadcrumb">
     <li><a href="#" data-bind="click: function(){ browseRoot()}"><i class="icon-home"/>&nbsp;</a>&nbsp;<span class="divider">/</span></li>
-    <li><a href="#">org</a>&nbsp;<span class="divider">/</span></li>
+    {{each(i,breadCrumbEntry) breadCrumbEntries}}
+      <li><a href="#">${breadCrumbEntry}</a>&nbsp;<span class="divider">/</span></li>
+    {{/each}}
   </ul>
 </script>

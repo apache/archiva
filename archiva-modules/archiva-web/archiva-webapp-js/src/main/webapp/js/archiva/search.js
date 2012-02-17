@@ -41,9 +41,22 @@ $(function() {
         browseRoot();
       }
     }
+
+    breadCrumbEntries=function(){
+      var curBrowseViewModel=self;
+      var entries=[];
+      do{
+        entries.push(curBrowseViewModel.groupId);
+        curBrowseViewModel=curBrowseViewModel.parentBrowseViewModel;
+        if (!curBrowseViewModel) return entries.reverse();
+      }while(curBrowseViewModel.parentBrowseViewModel)
+      return entries.reverse();
+    }
   }
 
-
+  findParentGroupId=function(browseViewModel){
+    return browseViewModel.groupId;
+  }
 
   displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl){
     var mainContent = $("#main-content");
