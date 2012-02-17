@@ -34,7 +34,7 @@ $(function() {
 
 
 
-  displayGroupDetail=function(groupId,parentGroupdId){
+  displayGroupDetail=function(groupId,parentGroupdId,restUrl){
     var mainContent = $("#main-content");
     var browseResult=mainContent.find("#browse_result");
     var browseBreadCrumb=mainContent.find("#browse_breadcrumb");
@@ -43,7 +43,7 @@ $(function() {
           browseResult.html(mediumSpinnerImg());
           browseBreadCrumb.html(smallSpinnerImg());
           mainContent.find("#main_browse_result_content" ).show();
-          var url = "restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+          var url = restUrl ? restUrl : "restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
           $.ajax(url, {
             type: "GET",
             dataType: 'json',
@@ -56,7 +56,10 @@ $(function() {
          });
         }
     );
+  }
 
+  browseRoot=function(){
+    displayGroupDetail(null,null,"restServices/archivaServices/browseService/rootGroups");
   }
 
   /**
