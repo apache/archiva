@@ -155,6 +155,16 @@ public class MockWagon
         return 0;
     }
 
+    public void setReadTimeout( int timeoutValue )
+    {
+
+    }
+
+    public int getReadTimeout()
+    {
+        return 0;
+    }
+
     public void addSessionListener( SessionListener sessionListener )
     {
 
