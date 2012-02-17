@@ -40,7 +40,10 @@
 <script id="browse-groups-tmpl" type="text/html">
   <div>
     <ul>
-      <li class="browse-list"><a href="#" data-bind="click:function(){displayGroupId($root.parentGroupdId)}">..</a></li>
+      <!-- if null we are on root level -->
+      {{if $root.parentBrowseViewModel}}
+        <li class="browse-list"><a href="#" data-bind="click:function(){displayParentGroupId()}">..</a></li>
+      {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
         <li class="browse-list">
           <a href="#" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">

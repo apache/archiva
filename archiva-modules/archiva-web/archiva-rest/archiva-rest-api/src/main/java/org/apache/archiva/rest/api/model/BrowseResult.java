@@ -31,6 +31,8 @@ public class BrowseResult
 {
     private List<BrowseResultEntry> browseResultEntries;
 
+    private boolean rootLevel;
+
     public BrowseResult()
     {
         // no op

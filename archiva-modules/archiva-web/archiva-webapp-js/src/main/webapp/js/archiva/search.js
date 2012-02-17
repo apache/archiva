@@ -22,19 +22,30 @@ $(function() {
   // browse part
   //-----------------------------------------
 
-  BrowseViewModel=function(browseResultEntries,parentGroupdId){
+  BrowseViewModel=function(browseResultEntries,parentBrowseViewModel,groupId){
     var self=this;
     this.browseResultEntries=browseResultEntries;
-    this.parentGroupdId=parentGroupdId;
+    this.parentBrowseViewModel=parentBrowseViewModel;
+    this.groupId=groupId;
     displayGroupId=function(groupId){
-      displayGroupDetail(groupId,self.parentGroupdId);
+      displayGroupDetail(groupId,self);
+      $.log("called displayGroupDetail groupId:"+groupId
+                +",parentBrowseViewModel.groupId:"+(parentBrowseViewModel?parentBrowseViewModel.groupId:"null"));
     }
-
+    displayParentGroupId=function(){
+      $.log("called displayParentGroupId groupId:"+self.parentBrowseViewModel.groupId);
+      // if null parent is root level
+      if (self.parentBrowseViewModel.groupId){
+        displayGroupDetail(self.parentBrowseViewModel.groupId,self.parentBrowseViewModel);
+      } else {
+        browseRoot();
+      }
+    }
   }
 
 
 
-  displayGroupDetail=function(groupId,parentGroupdId,restUrl){
+  displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl){
     var mainContent = $("#main-content");
     var browseResult=mainContent.find("#browse_result");
     var browseBreadCrumb=mainContent.find("#browse_breadcrumb");
@@ -49,7 +60,8 @@ $(function() {
             dataType: 'json',
             success: function(data) {
               var browseResultEntries = mapbrowseResultEntries(data);
-              var browseViewModel = new BrowseViewModel(browseResultEntries,parentGroupdId);
+              $.log("displayGroupDetail#sucess parentBrowseViewModel:"+parentBrowseViewModel);
+              var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId);
 
               ko.applyBindings(browseViewModel,mainContent.get(0));
             }
@@ -76,7 +88,7 @@ $(function() {
         success: function(data) {
           var browseResultEntries = mapbrowseResultEntries(data);
           $.log("size:"+browseResultEntries.length);
-          var browseViewModel = new BrowseViewModel(browseResultEntries,"..");
+          var browseViewModel = new BrowseViewModel(browseResultEntries,null,null);
           ko.applyBindings(browseViewModel,mainContent.get(0));
         }
     });
