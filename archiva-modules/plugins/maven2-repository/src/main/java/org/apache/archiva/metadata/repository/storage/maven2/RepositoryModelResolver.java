@@ -309,8 +309,9 @@ public class RepositoryModelResolver
 
         // Convert seconds to milliseconds
         int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
-
+        // FIXME olamy having 2 config values
         // Set timeout
+        wagon.setReadTimeout( timeoutInMilliseconds );
         wagon.setTimeout( timeoutInMilliseconds );
 
         try

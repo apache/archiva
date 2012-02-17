@@ -1109,7 +1109,9 @@ public class DefaultRepositoryProxyConnectors
         // Convert seconds to milliseconds
         int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
 
-        // Set timeout
+        // Set timeout  read and connect
+        // FIXME olamy having 2 config values
+        wagon.setReadTimeout( timeoutInMilliseconds );
         wagon.setTimeout( timeoutInMilliseconds );
 
         try
