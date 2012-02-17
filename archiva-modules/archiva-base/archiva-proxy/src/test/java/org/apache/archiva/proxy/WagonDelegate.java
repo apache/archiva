@@ -113,6 +113,16 @@ public class WagonDelegate
         return 0;
     }
 
+    public void setReadTimeout( int timeoutValue )
+    {
+        // ignore
+    }
+
+    public int getReadTimeout()
+    {
+        return 0;
+    }
+
     public Repository getRepository()
     {
         return delegate.getRepository();
