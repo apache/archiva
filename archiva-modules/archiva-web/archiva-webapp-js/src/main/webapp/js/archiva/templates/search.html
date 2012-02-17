@@ -20,26 +20,17 @@
 <script id="browse-tmpl" type="text/html">
   <div>
     <div class="page-header">
-      <h2>${$.i18n.prop('browse.groups')}</h2>
+      <h2>${$.i18n.prop('browse.repository')}</h2>
     </div>
   </div>
   <div id="browse_breadcrumb">
-
-  </div>
-  <div id="browse_result" class="well" data-bind='template:{name:"browse-top-tmpl"}'>
-
-  </div>
-</script>
-
-<script id="browse-top-tmpl" type="text/html">
-  <div>
-    <ul>
-      {{each(i,browseIdEntry) browseIdEntries}}
-        <li class="browse-list">
-          <a href="#" data-bind="click: function(){displayGroupId(browseIdEntry.name)}">&nbsp;${browseIdEntry.name}</a>
-        </li>
-      {{/each}}
+    <ul class="breadcrumb">
+      <li><a href="#"><i class="icon-home"/>&nbsp;</a>&nbsp;<span class="divider">/</span></li>
+      <li><a href="#">org</a>&nbsp;<span class="divider">/</span></li>
     </ul>
+  </div>
+  <div id="browse_result" class="well" data-bind='template:{name:"browse-groups-tmpl"}'>
+
   </div>
 </script>
 

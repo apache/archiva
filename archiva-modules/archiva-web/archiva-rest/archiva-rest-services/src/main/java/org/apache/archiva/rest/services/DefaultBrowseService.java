@@ -71,7 +71,6 @@ public class DefaultBrowseService
             {
                 namespacesToCollapse.addAll( metadataResolver.resolveRootNamespaces( repositorySession, repoId ) );
             }
-
             for ( String n : namespacesToCollapse )
             {
                 // TODO: check performance of this

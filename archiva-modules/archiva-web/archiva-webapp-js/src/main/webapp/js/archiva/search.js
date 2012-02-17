@@ -47,7 +47,7 @@ $(function() {
           $.log("size:"+browseIdEntries.length);
           var browseTopViewModel = new BrowseTopViewModel(browseIdEntries);
 
-          ko.applyBindings(browseTopViewModel,mainContent.find("#browse_result" ).get(0));
+          ko.applyBindings(browseTopViewModel,mainContent.get(0));
         }
     });
   }
@@ -65,10 +65,10 @@ $(function() {
           dataType: 'json',
           success: function(data) {
             var browseIdEntries = mapBrowseIdEntries(data);
-            browseResult.html($("#browse-groups-div-tmpl" ).tmpl());
+            //browseResult.html($("#browse-groups-div-tmpl" ).tmpl());
             var browseGroupsViewModel = new BrowseGroupsViewModel(browseIdEntries,parentGroupdId);
 
-            ko.applyBindings(browseGroupsViewModel,mainContent.find("#browse-groups-div" ).get(0));
+            ko.applyBindings(browseGroupsViewModel,mainContent.get(0));
           }
        });
       }
