@@ -18,17 +18,50 @@
  */
 $(function() {
 
+  //-----------------------------------------
+  // browse part
+  //-----------------------------------------
+
   BrowseViewModel=function(browseResultEntries,parentGroupdId){
+    var self=this;
     this.browseResultEntries=browseResultEntries;
     this.parentGroupdId=parentGroupdId;
     displayGroupId=function(groupId){
-      displayGroupDetail(groupId,"..");
+      displayGroupDetail(groupId,self.parentGroupdId);
     }
 
   }
 
 
 
+  displayGroupDetail=function(groupId,parentGroupdId){
+    var mainContent = $("#main-content");
+    var browseResult=mainContent.find("#browse_result");
+    var browseBreadCrumb=mainContent.find("#browse_breadcrumb");
+    mainContent.find("#main_browse_result_content").hide( "slide", {}, 300,
+        function(){
+          browseResult.html(mediumSpinnerImg());
+          browseBreadCrumb.html(smallSpinnerImg());
+          mainContent.find("#main_browse_result_content" ).show();
+          var url = "restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+          $.ajax(url, {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              var browseResultEntries = mapbrowseResultEntries(data);
+              var browseViewModel = new BrowseViewModel(browseResultEntries,parentGroupdId);
+
+              ko.applyBindings(browseViewModel,mainContent.get(0));
+            }
+         });
+        }
+    );
+
+  }
+
+  /**
+   * call from menu entry to display root level
+   */
   displayBrowse=function(){
     clearUserMessages();
     var mainContent = $("#main-content");
@@ -40,38 +73,10 @@ $(function() {
         success: function(data) {
           var browseResultEntries = mapbrowseResultEntries(data);
           $.log("size:"+browseResultEntries.length);
-          var browseViewModel = new BrowseViewModel(browseResultEntries);
-
+          var browseViewModel = new BrowseViewModel(browseResultEntries,"..");
           ko.applyBindings(browseViewModel,mainContent.get(0));
         }
     });
-  }
-
-  displayGroupDetail=function(groupId,parentGroupdId){
-    var mainContent = $("#main-content");
-    var browseResult=mainContent.find("#browse_result");
-    browseResult.hide( "slide", {}, 500,
-      function(){
-        browseResult.html(mediumSpinnerImg());
-        browseResult.show();
-        var url = "restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
-        $.ajax(url, {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            var browseResultEntries = mapbrowseResultEntries(data);
-            var browseViewModel = new BrowseViewModel(browseResultEntries,parentGroupdId);
-
-            ko.applyBindings(browseViewModel,mainContent.get(0));
-          }
-       });
-      }
-    );
-
-  }
-
-  displaySearch=function(){
-    $("#main-content" ).html("coming soon :-)");
   }
 
   mapbrowseResultEntries=function(data){
@@ -88,4 +93,13 @@ $(function() {
     this.name=name;
     this.project=project;
   }
+
+  //-----------------------------------------
+  // search part
+  //-----------------------------------------
+
+  displaySearch=function(){
+    $("#main-content" ).html("coming soon :-)");
+  }
+
 });
