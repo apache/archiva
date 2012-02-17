@@ -61,7 +61,9 @@
   <ul class="breadcrumb">
     <li><a href="#" data-bind="click: function(){ browseRoot()}"><i class="icon-home"/>&nbsp;</a>&nbsp;<span class="divider">/</span></li>
     {{each(i,breadCrumbEntry) breadCrumbEntries}}
-      <li><a href="#">${breadCrumbEntry}</a>&nbsp;<span class="divider">/</span></li>
+      <li data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">
+        <a href="#">${breadCrumbEntry.displayValue}</a>&nbsp;<span class="divider">/</span>
+      </li>
     {{/each}}
   </ul>
 </script>

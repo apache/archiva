@@ -43,15 +43,21 @@ $(function() {
     }
 
     breadCrumbEntries=function(){
-      var curBrowseViewModel=self;
-      var entries=[];
-      do{
-        entries.push(curBrowseViewModel.groupId);
-        curBrowseViewModel=curBrowseViewModel.parentBrowseViewModel;
-        if (!curBrowseViewModel) return entries.reverse();
-      }while(curBrowseViewModel.parentBrowseViewModel)
-      return entries.reverse();
+      // root level ?
+      if (!self.parentBrowseViewModel) return [];
+
+      var splitted = self.groupId.split(".");
+      var breadCrumbEntries=[];
+      var curGroupId;
+      for (var i=0;i<splitted.length;i++){
+        curGroupId+=splitted[i];
+        breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
+        curGroupId+="."
+      }
+      return breadCrumbEntries;
     }
+
+
   }
 
   findParentGroupId=function(browseViewModel){
@@ -120,6 +126,11 @@ $(function() {
   BrowseResultEntry=function(name,project){
     this.name=name;
     this.project=project;
+  }
+
+  BreadCrumbEntry=function(groupId,displayValue){
+    this.groupId=groupId;
+    this.displayValue=displayValue;
   }
 
   //-----------------------------------------
