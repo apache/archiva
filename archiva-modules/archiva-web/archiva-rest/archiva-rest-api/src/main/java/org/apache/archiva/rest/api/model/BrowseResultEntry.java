@@ -24,21 +24,21 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@XmlRootElement( name = "browseIdEntry" )
-public class BrowseIdEntry
-    implements Comparable<BrowseIdEntry>
+@XmlRootElement( name = "browseResultEntry" )
+public class BrowseResultEntry
+    implements Comparable<BrowseResultEntry>
 {
 
     private String name;
 
     private boolean project;
 
-    public BrowseIdEntry()
+    public BrowseResultEntry()
     {
         // no op
     }
 
-    public BrowseIdEntry( String name, boolean project )
+    public BrowseResultEntry( String name, boolean project )
     {
         this.name = name;
         this.project = project;
@@ -64,8 +64,8 @@ public class BrowseIdEntry
         this.project = project;
     }
 
-    public int compareTo( BrowseIdEntry browseGroupIdEntry )
+    public int compareTo( BrowseResultEntry browseGroupResultEntry )
     {
-        return this.name.compareTo( browseGroupIdEntry.name );
+        return this.name.compareTo( browseGroupResultEntry.name );
     }
 }

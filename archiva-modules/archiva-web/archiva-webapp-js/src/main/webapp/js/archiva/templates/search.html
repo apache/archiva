@@ -44,10 +44,10 @@
   <div>
     <ul>
       <li class="browse-list"><a href="#" data-bind="click:function(){displayGroupId($root.parentGroupdId)}">..</a></li>
-      {{each(i,browseIdEntry) browseIdEntries}}
+      {{each(i,browseResultEntry) browseResultEntries}}
         <li class="browse-list">
-          <a href="#" data-bind="click:function(){displayGroupId(browseIdEntry.name)}">
-            &nbsp;${browseIdEntry.name}-project: ${browseIdEntry.project}
+          <a href="#" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
+            &nbsp;${browseResultEntry.name} (project: ${browseResultEntry.project})
           </a>
         </li>
       {{/each}}

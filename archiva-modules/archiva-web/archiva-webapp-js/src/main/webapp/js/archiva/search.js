@@ -18,8 +18,8 @@
  */
 $(function() {
 
-  BrowseViewModel=function(browseIdEntries,parentGroupdId){
-    this.browseIdEntries=browseIdEntries;
+  BrowseViewModel=function(browseResultEntries,parentGroupdId){
+    this.browseResultEntries=browseResultEntries;
     this.parentGroupdId=parentGroupdId;
     displayGroupId=function(groupId){
       displayGroupDetail(groupId,"..");
@@ -38,9 +38,9 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var browseIdEntries = mapBrowseIdEntries(data);
-          $.log("size:"+browseIdEntries.length);
-          var browseViewModel = new BrowseViewModel(browseIdEntries);
+          var browseResultEntries = mapbrowseResultEntries(data);
+          $.log("size:"+browseResultEntries.length);
+          var browseViewModel = new BrowseViewModel(browseResultEntries);
 
           ko.applyBindings(browseViewModel,mainContent.get(0));
         }
@@ -59,8 +59,8 @@ $(function() {
           type: "GET",
           dataType: 'json',
           success: function(data) {
-            var browseIdEntries = mapBrowseIdEntries(data);
-            var browseViewModel = new BrowseViewModel(browseIdEntries,parentGroupdId);
+            var browseResultEntries = mapbrowseResultEntries(data);
+            var browseViewModel = new BrowseViewModel(browseResultEntries,parentGroupdId);
 
             ko.applyBindings(browseViewModel,mainContent.get(0));
           }
@@ -74,17 +74,17 @@ $(function() {
     $("#main-content" ).html("coming soon :-)");
   }
 
-  mapBrowseIdEntries=function(data){
-    if (data.browseResult && data.browseResult.browseIdEntries) {
-      return $.isArray(data.browseResult.browseIdEntries) ?
-         $.map(data.browseResult.browseIdEntries,function(item){
-           return new BrowseIdEntry(item.name, item.project);
-         }): [data.browseResult.browseIdEntries];
+  mapbrowseResultEntries=function(data){
+    if (data.browseResult && data.browseResult.browseResultEntries) {
+      return $.isArray(data.browseResult.browseResultEntries) ?
+         $.map(data.browseResult.browseResultEntries,function(item){
+           return new BrowseResultEntry(item.name, item.project);
+         }): [data.browseResult.browseResultEntries];
     }
     return [];
   }
 
-  BrowseIdEntry=function(name,project){
+  BrowseResultEntry=function(name,project){
     this.name=name;
     this.project=project;
   }

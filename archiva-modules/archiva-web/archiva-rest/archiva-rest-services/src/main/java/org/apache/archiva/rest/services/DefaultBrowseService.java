@@ -21,7 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.rest.api.model.BrowseIdEntry;
+import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
@@ -87,14 +87,14 @@ public class DefaultBrowseService
             repositorySession.close();
         }
 
-        List<BrowseIdEntry> browseGroupIdEntries = new ArrayList<BrowseIdEntry>( namespaces.size() );
+        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<BrowseResultEntry>( namespaces.size() );
         for ( String namespace : namespaces )
         {
-            browseGroupIdEntries.add( new BrowseIdEntry( namespace, false ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
         }
 
-        Collections.sort( browseGroupIdEntries );
-        return new BrowseResult( browseGroupIdEntries );
+        Collections.sort( browseGroupResultEntries );
+        return new BrowseResult( browseGroupResultEntries );
     }
 
     public BrowseResult browseGroupId( String groupId )
@@ -144,17 +144,17 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        List<BrowseIdEntry> browseGroupIdEntries = new ArrayList<BrowseIdEntry>( namespaces.size() + projects.size() );
+        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<BrowseResultEntry>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
-            browseGroupIdEntries.add( new BrowseIdEntry( namespace, false ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
         }
         for ( String project : projects )
         {
-            browseGroupIdEntries.add( new BrowseIdEntry( project, true ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( project, true ) );
         }
-        Collections.sort( browseGroupIdEntries );
-        return new BrowseResult( browseGroupIdEntries );
+        Collections.sort( browseGroupResultEntries );
+        return new BrowseResult( browseGroupResultEntries );
 
     }
 

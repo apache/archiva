@@ -79,3 +79,7 @@
 .browse-list{
   list-style-image: url("../images/folder.png")
 }
+
+.force-upper-case{
+  text-transform: uppercase;
+}

@@ -29,25 +29,25 @@ import java.util.List;
 @XmlRootElement( name = "browseResult" )
 public class BrowseResult
 {
-    private List<BrowseIdEntry> browseIdEntries;
+    private List<BrowseResultEntry> browseResultEntries;
 
     public BrowseResult()
     {
         // no op
     }
 
-    public BrowseResult( List<BrowseIdEntry> browseIdEntries )
+    public BrowseResult( List<BrowseResultEntry> browseResultEntries )
     {
-        this.browseIdEntries = browseIdEntries;
+        this.browseResultEntries = browseResultEntries;
     }
 
-    public List<BrowseIdEntry> getBrowseIdEntries()
+    public List<BrowseResultEntry> getBrowseResultEntries()
     {
-        return browseIdEntries == null ? Collections.<BrowseIdEntry>emptyList() : browseIdEntries;
+        return browseResultEntries == null ? Collections.<BrowseResultEntry>emptyList() : browseResultEntries;
     }
 
-    public void setBrowseIdEntries( List<BrowseIdEntry> browseIdEntries )
+    public void setBrowseResultEntries( List<BrowseResultEntry> browseResultEntries )
     {
-        this.browseIdEntries = browseIdEntries;
+        this.browseResultEntries = browseResultEntries;
     }
 }
