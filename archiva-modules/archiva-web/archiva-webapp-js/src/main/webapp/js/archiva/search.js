@@ -29,8 +29,6 @@ $(function() {
     this.groupId=groupId;
     displayGroupId=function(groupId){
       displayGroupDetail(groupId,self);
-      $.log("called displayGroupDetail groupId:"+groupId
-                +",parentBrowseViewModel.groupId:"+(parentBrowseViewModel?parentBrowseViewModel.groupId:"null"));
     }
     displayParentGroupId=function(){
       $.log("called displayParentGroupId groupId:"+self.parentBrowseViewModel.groupId);
@@ -45,10 +43,9 @@ $(function() {
     breadCrumbEntries=function(){
       // root level ?
       if (!self.parentBrowseViewModel) return [];
-
       var splitted = self.groupId.split(".");
       var breadCrumbEntries=[];
-      var curGroupId;
+      var curGroupId="";
       for (var i=0;i<splitted.length;i++){
         curGroupId+=splitted[i];
         breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
@@ -79,9 +76,7 @@ $(function() {
             dataType: 'json',
             success: function(data) {
               var browseResultEntries = mapbrowseResultEntries(data);
-              $.log("displayGroupDetail#sucess parentBrowseViewModel:"+parentBrowseViewModel);
               var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId);
-
               ko.applyBindings(browseViewModel,mainContent.get(0));
             }
          });
