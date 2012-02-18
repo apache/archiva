@@ -287,23 +287,7 @@ $(function() {
     $("#users-view-tabs-li-user-edit").addClass("active");
   }
 
-  /**
-   * not used as we don't have the mapping in web.xml
-   * but why to handle such urls which go directly to a view
-   */
-  $(document).ready(function() {
-    // url ends with /users/list
-    // and current has archiva-manage-users karma
-    // so display users list
-    var pathContent = window.location.pathname.split("/");
-    var usersIndex = $.inArray("users", pathContent);
-    if (usersIndex>=0 && pathContent[usersIndex+1]=="list") {
-      if ($.inArray("archiva-manage-users",window.redbackModel.operatioNames)>=0){
-        displayUsersGrid();
-      }
-    }
 
-  });
 
 
 

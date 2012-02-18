@@ -57,9 +57,7 @@ $(function() {
 
   }
 
-  findParentGroupId=function(browseViewModel){
-    return browseViewModel.groupId;
-  }
+
 
   displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl){
     var mainContent = $("#main-content");
@@ -106,6 +104,23 @@ $(function() {
           ko.applyBindings(browseViewModel,mainContent.get(0));
         }
     });
+  }
+
+  /**
+   * called if browser url contains queryParam browse=groupId
+   * @param groupId
+   */
+  displayBrowseGroupId=function(groupId){
+    clearUserMessages();
+    var mainContent = $("#main-content");
+    mainContent.html($("#browse-tmpl" ).tmpl());
+    mainContent.find("#browse_result").html(mediumSpinnerImg());
+    var parentBrowseViewModel=new BrowseViewModel(null,null,null);
+    displayGroupDetail(groupId,parentBrowseViewModel,null)
+  }
+
+  function BrowseResultEntry(a, b){
+
   }
 
   mapbrowseResultEntries=function(data){

@@ -162,6 +162,11 @@ $(function() {
     if (validateMeId) {
       validateKey(validateMeId);
     }
+
+    var browse = $.urlParam('browse');
+    if (browse){
+      displayBrowseGroupId(browse);
+    }
   });
 
   startArchivaApplication = function(){
