@@ -21,8 +21,8 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
+import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.commons.collections.CollectionUtils;
@@ -144,14 +144,15 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<BrowseResultEntry>( namespaces.size() + projects.size() );
+        List<BrowseResultEntry> browseGroupResultEntries =
+            new ArrayList<BrowseResultEntry>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
             browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
         }
         for ( String project : projects )
         {
-            browseGroupResultEntries.add( new BrowseResultEntry( project, true ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( groupId + '.' + project, true ) );
         }
         Collections.sort( browseGroupResultEntries );
         return new BrowseResult( browseGroupResultEntries );

@@ -49,7 +49,7 @@
       {{each(i,browseResultEntry) browseResultEntries}}
         <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
           <a href="#">
-            &nbsp;${browseResultEntry.name} (project: ${browseResultEntry.project})
+            &nbsp;${displayEntry(browseResultEntry.name)} (project: ${browseResultEntry.project})
           </a>
         </li>
       {{/each}}

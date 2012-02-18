@@ -54,7 +54,12 @@ $(function() {
       return breadCrumbEntries;
     }
 
-
+    displayEntry=function(value){
+      if (self.groupId){
+        return value.substr(self.groupId.length+1,value.length-self.groupId.length);
+      }
+      return value;
+    }
   }
 
 
@@ -119,16 +124,13 @@ $(function() {
     displayGroupDetail(groupId,parentBrowseViewModel,null)
   }
 
-  function BrowseResultEntry(a, b){
-
-  }
 
   mapbrowseResultEntries=function(data){
     if (data.browseResult && data.browseResult.browseResultEntries) {
       return $.isArray(data.browseResult.browseResultEntries) ?
          $.map(data.browseResult.browseResultEntries,function(item){
            return new BrowseResultEntry(item.name, item.project);
-         }): [data.browseResult.browseResultEntries];
+         } ).sort(): [data.browseResult.browseResultEntries];
     }
     return [];
   }
