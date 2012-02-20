@@ -1455,7 +1455,7 @@
                     <exclude>net.sf.ehcache:ehcache</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
-                    <exclude>&gt;org.codehaus.plexus:plexus-taskqueue</exclude>
+                    <exclude>org.codehaus.plexus:plexus-taskqueue</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
