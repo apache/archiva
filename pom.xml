@@ -147,15 +147,6 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-    <developer>
-      <id>wsmoak</id>
-      <name>Wendy Smoak</name>
-      <email>wsmoak@apache.org</email>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>-7</timezone>
-    </developer>
     <!--Committers-->
     <developer>
       <id>dennisl</id>
@@ -250,6 +241,13 @@
     <developer>
       <id>jmcconnell</id>
       <name>Jesse McConnell</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>wsmoak</id>
+      <name>Wendy Smoak</name>
       <roles>
         <role>Emeritus</role>
       </roles>
