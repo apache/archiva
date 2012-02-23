@@ -47,7 +47,11 @@
         </li>
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
-        <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
+        {{if browseResultEntry.project}}
+          <li class="browse-list" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
+        {{else}}
+          <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
+        {{/if}}
           <a href="#">
             &nbsp;${displayEntry(browseResultEntry.name)} (project: ${browseResultEntry.project})
           </a>

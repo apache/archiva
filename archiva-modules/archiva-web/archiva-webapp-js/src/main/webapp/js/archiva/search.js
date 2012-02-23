@@ -40,6 +40,19 @@ $(function() {
       }
     }
 
+    displayProjectEntry=function(id){
+      $.log("displayProjectEntry:"+id);
+      var url = "restServices/archivaServices/browseService/browseGroupId?g=org.apache.maven&a=maven-archiver";
+
+      $.ajax(url, {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+
+        }
+     });
+    }
+
     breadCrumbEntries=function(){
       // root level ?
       if (!self.parentBrowseViewModel) return [];

@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
+import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.commons.collections.CollectionUtils;
@@ -156,6 +157,44 @@ public class DefaultBrowseService
         }
         Collections.sort( browseGroupResultEntries );
         return new BrowseResult( browseGroupResultEntries );
+
+    }
+
+    public VersionsList getVersionsList( String groupId, String artifactId )
+        throws ArchivaRestServiceException
+    {
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            // FIXME 403 ???
+            return new VersionsList();
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
+        try
+        {
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            Set<String> versions = new LinkedHashSet<String>();
+
+            for ( String repoId : selectedRepos )
+            {
+                versions.addAll(
+                    metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId, artifactId ) );
+            }
+
+            return new VersionsList( new ArrayList<String>( versions ) );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
 
     }
 

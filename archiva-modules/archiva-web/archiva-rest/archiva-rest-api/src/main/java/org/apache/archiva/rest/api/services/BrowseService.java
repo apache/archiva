@@ -19,13 +19,14 @@ package org.apache.archiva.rest.api.services;
  */
 
 import org.apache.archiva.rest.api.model.BrowseResult;
-import org.apache.archiva.rest.api.model.GroupIdList;
+import org.apache.archiva.rest.api.model.VersionsList;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -46,6 +47,13 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true, noPermission = false )
-    BrowseResult browseGroupId(@PathParam( "groupId" ) String groupId )
+    BrowseResult browseGroupId( @PathParam( "groupId" ) String groupId )
+        throws ArchivaRestServiceException;
+
+    @Path( "browseGroupId" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true, noPermission = false )
+    VersionsList getVersionsList( @QueryParam( "g" ) String groupId, @QueryParam( "a" ) String artifactId )
         throws ArchivaRestServiceException;
 }
