@@ -27,6 +27,14 @@
   <artifactId>metadata-model</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Metadata :: Model</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
