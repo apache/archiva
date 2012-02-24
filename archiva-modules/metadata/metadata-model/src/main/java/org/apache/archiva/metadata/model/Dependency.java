@@ -19,11 +19,14 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Information about a dependency that this project has on another project or artifact.
  *
  * @todo will be reviewing what is appropriate for the base here - rest should be in a maven dependency facet - avoid details on it externally
  */
+@XmlRootElement( name = "dependency" )
 public class Dependency
 {
     /**

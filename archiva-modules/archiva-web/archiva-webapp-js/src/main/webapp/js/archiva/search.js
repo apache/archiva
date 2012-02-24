@@ -42,7 +42,7 @@ $(function() {
 
     displayProjectEntry=function(id){
       $.log("displayProjectEntry:"+id);
-      var url = "restServices/archivaServices/browseService/browseGroupId?g=org.apache.maven&a=maven-archiver";
+      var url = "restServices/archivaServices/browseService/versionsList/org.apache.maven/maven-archiver";
 
       $.ajax(url, {
         type: "GET",
@@ -50,7 +50,18 @@ $(function() {
         success: function(data) {
 
         }
-     });
+      });
+
+      url = "restServices/archivaServices/browseService/projectVersionMetadata/org.apache.maven/maven-archiver";
+
+      $.ajax(url, {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+
+        }
+      });
+
     }
 
     breadCrumbEntries=function(){

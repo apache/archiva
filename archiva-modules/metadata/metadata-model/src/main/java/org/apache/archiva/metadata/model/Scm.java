@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement( name = "scm" )
 public class Scm
 {
     private String connection;

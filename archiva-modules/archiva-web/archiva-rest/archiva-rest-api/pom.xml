@@ -45,6 +45,10 @@
       <artifactId>archiva-policies</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.codehaus.redback</groupId>

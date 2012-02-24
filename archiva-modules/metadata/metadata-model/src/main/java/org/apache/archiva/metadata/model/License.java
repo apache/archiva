@@ -19,9 +19,12 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A description of a particular license used by a project.
  */
+@XmlRootElement( name = "license" )
 public class License
 {
     /**

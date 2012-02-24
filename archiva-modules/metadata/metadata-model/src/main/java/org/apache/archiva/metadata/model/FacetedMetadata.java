@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,7 +78,7 @@ public abstract class FacetedMetadata
 
     /**
      * Get all available facets as a Map (typically used by bean rendering, such as in Archiva's JSPs).
-
+     *
      * @return the map of facets
      * @see #facets
      */

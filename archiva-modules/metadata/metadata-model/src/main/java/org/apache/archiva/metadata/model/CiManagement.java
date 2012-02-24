@@ -19,11 +19,14 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Information about the CI system used by the project.
  *
  * @todo considering moving this to a facet - avoid referring to it externally
  */
+@XmlRootElement( name = "ciManagement" )
 public class CiManagement
 {
     /**

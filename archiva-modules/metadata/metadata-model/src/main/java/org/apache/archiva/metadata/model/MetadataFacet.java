@@ -19,14 +19,20 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;
 
+@XmlRootElement( name = "metadataFacet" )
 public interface MetadataFacet
 {
+    @XmlElement(name = "facetId")
     String getFacetId();
 
+    @XmlElement(name = "name")
     String getName();
 
+    @XmlElement(name = "properties")
     Map<String, String> toProperties();
 
     void fromProperties( Map<String, String> properties );

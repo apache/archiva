@@ -19,9 +19,11 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlRootElement( name = "projectVersionMetadata" )
 public class ProjectVersionMetadata
     extends FacetedMetadata
 {
