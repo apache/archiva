@@ -86,7 +86,6 @@ public class RepositorySession
      * exception occurs.
      */
     public void close()
-        throws MetadataRepositoryException
     {
         try
         {
@@ -98,7 +97,7 @@ public class RepositorySession
         catch ( MetadataRepositoryException e )
         {
             // olamy use revert here ?
-            throw e;
+            throw new RuntimeException( e.getMessage(), e );
         }
         finally
         {
