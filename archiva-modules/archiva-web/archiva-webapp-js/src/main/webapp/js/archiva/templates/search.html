@@ -78,7 +78,6 @@
           <a href="#" data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
         {{/if}}
         {{if i<number-1}}
-          &nbsp;
           <span class="divider">/</span>
         {{/if}}
       </li>
@@ -87,5 +86,35 @@
 </script>
 
 <script id="browse-artifact-tmpl" type="text/html">
-        foo
+  <div class="row-fluid">
+    <div>
+      <a href="#" data-bind="click: function(){displayArtifactInfo()}">
+          ${$.i18n.prop('browse.artifact.display.artifactInfo')}
+      </a>
+    </div>
+    <br/>
+    <div id="artifact-info" class="alert alert-info" style="display: none">
+      <div>${$.i18n.prop('browse.artifact.groupId')}:&nbsp;${groupId}</div>
+      <div>${$.i18n.prop('browse.artifact.artifactId')}:&nbsp;${artifactId}</div>
+      <div>${$.i18n.prop('browse.artifact.name')}:&nbsp;${projectVersionMetadata.name}</div>
+      <div>${$.i18n.prop('browse.artifact.organization.name')}:&nbsp;${projectVersionMetadata.organization.name}</div>
+      {{if  projectVersionMetadata.issueManagement}}
+        <div>${$.i18n.prop('browse.artifact.organization.issueManagement')}:&nbsp;
+            <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">${projectVersionMetadata.issueManagement.system}</a>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class="page-header">
+      <h4>${$.i18n.prop('browse.artifact.versions')}</h4>
+    </div>
+
+    <div>
+      <ul>
+      {{each(i,version) versions}}
+        <li>${version}</li>
+      {{/each}}
+      </ul>
+    </div>
+  </div>
 </script>

@@ -57,15 +57,7 @@ $(function() {
     breadCrumbEntries=function(){
       // root level ?
       if (!self.parentBrowseViewModel) return [];
-      var splitted = self.groupId.split(".");
-      var breadCrumbEntries=[];
-      var curGroupId="";
-      for (var i=0;i<splitted.length;i++){
-        curGroupId+=splitted[i];
-        breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
-        curGroupId+="."
-      }
-      return breadCrumbEntries;
+      return calculateBreadCrumbEntries(self.groupId);
     }
 
     displayEntry=function(value){
@@ -76,11 +68,23 @@ $(function() {
     }
   }
 
-
+  calculateBreadCrumbEntries=function(groupId){
+    var splitted = groupId.split(".");
+    var breadCrumbEntries=[];
+    var curGroupId="";
+    for (var i=0;i<splitted.length;i++){
+      curGroupId+=splitted[i];
+      breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
+      curGroupId+="."
+    }
+    return breadCrumbEntries;
+  }
 
   displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl){
     var mainContent = $("#main-content");
     var browseResult=mainContent.find("#browse_result");
+    browseResult.show();
+    mainContent.find("#browse_artifact" ).hide();
     var browseBreadCrumb=mainContent.find("#browse_breadcrumb");
     mainContent.find("#main_browse_result_content").hide( "slide", {}, 300,
         function(){
@@ -94,36 +98,63 @@ $(function() {
             success: function(data) {
               var browseResultEntries = mapbrowseResultEntries(data);
               var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId);
-              ko.applyBindings(browseViewModel,mainContent.get(0));
+              ko.applyBindings(browseViewModel,browseBreadCrumb.get(0));
+              ko.applyBindings(browseViewModel,browseResult.get(0));
             }
          });
         }
     );
   }
 
-  ArtifactDetailViewModel=function(){
+  ArtifactDetailViewModel=function(groupId,artifactId){
+    var self=this;
     this.versions=[];
     this.projectVersionMetadata=null;
+    this.groupId=groupId;
+    this.artifactId=artifactId;
+    breadCrumbEntries=function(){
+      var entries = calculateBreadCrumbEntries(self.groupId);
+      entries.push(new BreadCrumbEntry("foo",self.artifactId));
+      return entries;
+    }
+    displayArtifactInfo=function(){
+      if ($("#main-content #artifact-info:visible" ).length>0) {
+        $("#main-content #artifact-info" ).hide();
+      } else {
+        $("#main-content #artifact-info" ).show();
+      }
 
+
+    }
   }
 
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
     $.log("displayArtifactDetail:"+groupId+":"+artifactId);
-    var artifactDetailViewModel=new ArtifactDetailViewModel();
-    $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+groupId+"/"+artifactId, {
-      type: "GET",
-      dataType: 'json',
-      success: function(data) {
-        artifactDetailViewModel.projectVersionMetadata=mapProjectVersionMetadata(data);
-        $.ajax("restServices/archivaServices/browseService/versionsList/"+groupId+"/"+artifactId, {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            artifactDetailViewModel.versions=mapVersionsList(data);
-          }
-        });
+    var artifactDetailViewModel=new ArtifactDetailViewModel(groupId,artifactId);
+    var mainContent = $("#main-content");
+    mainContent.find("#browse_result").hide();
+    mainContent.find("#main_browse_result_content").hide("slide", {}, 300,function(){
+      mainContent.find("#browse_breadcrumb").html(smallSpinnerImg());
+      mainContent.find("#browse_artifact").show();
+      mainContent.find("#browse_artifact").html(mediumSpinnerImg());
+      mainContent.find("#main_browse_result_content").show();
+      $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+groupId+"/"+artifactId, {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          artifactDetailViewModel.projectVersionMetadata=mapProjectVersionMetadata(data);
+          $.ajax("restServices/archivaServices/browseService/versionsList/"+groupId+"/"+artifactId, {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              artifactDetailViewModel.versions=mapVersionsList(data);
+              ko.applyBindings(artifactDetailViewModel,mainContent.find("#browse_artifact").get(0));
+              ko.applyBindings(artifactDetailViewModel,mainContent.find("#browse_breadcrumb").get(0));
 
-      }
+             }
+          });
+        }
+      });
     });
   }
 
@@ -146,7 +177,8 @@ $(function() {
           var browseResultEntries = mapbrowseResultEntries(data);
           $.log("size:"+browseResultEntries.length);
           var browseViewModel = new BrowseViewModel(browseResultEntries,null,null);
-          ko.applyBindings(browseViewModel,mainContent.get(0));
+          ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
+          ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
         }
     });
   }
@@ -183,6 +215,8 @@ $(function() {
   BreadCrumbEntry=function(groupId,displayValue){
     this.groupId=groupId;
     this.displayValue=displayValue;
+    this.artifactId=null;
+    this.artifact=false;
   }
   mapVersionsList=function(data){
     if (data.versionsList){
@@ -195,44 +229,50 @@ $(function() {
     return [];
   }
   mapProjectVersionMetadata=function(data){
-    if (data.projectVersionMetadata){
-      var projectVersionMetadata = new ProjectVersionMetadata(data.id,data.url,data.name,data.description,null,null,null,null,null,
-                                        null,null,data.incomplete);
-      if (data.organization){
-        projectVersionMetadata.organization=new Organization(data.organization.name,data.organization.url);
+    if (data && data.projectVersionMetadata){
+      var projectVersionMetadata =
+          new ProjectVersionMetadata(data.projectVersionMetadata.id,data.projectVersionMetadata.url,
+                                    data.projectVersionMetadata.name,data.projectVersionMetadata.description,
+                                    null,null,null,null,null,null,null,data.projectVersionMetadata.incomplete);
+
+      if (data.projectVersionMetadata.organization){
+        projectVersionMetadata.organization=new Organization(data.projectVersionMetadata.organization.name,data.projectVersionMetadata.organization.url);
       }
-      if (data.issueManagement){
-        projectVersionMetadata.issueManagement=new IssueManagement(data.issueManagement.system,data.issueManagement.url);
+      if (data.projectVersionMetadata.issueManagement){
+        projectVersionMetadata.issueManagement=
+            new IssueManagement(data.projectVersionMetadata.issueManagement.system,data.projectVersionMetadata.issueManagement.url);
       }
-      if (data.scm){
-        projectVersionMetadata.scm=new Scm(data.scm.connection,data.scm.developerConnection,data.scm.url);
+      if (data.projectVersionMetadata.scm){
+        projectVersionMetadata.scm=
+            new Scm(data.projectVersionMetadata.scm.connection,data.projectVersionMetadata.scm.developerConnection,data.projectVersionMetadata.scm.url);
       }
-      if (data.ciManagement){
-        projectVersionMetadata.ciManagement=new CiManagement(data.ciManagement.system,data.ciManagement.url);
+      if (data.projectVersionMetadata.ciManagement){
+        projectVersionMetadata.ciManagement=new CiManagement(data.projectVersionMetadata.ciManagement.system,data.projectVersionMetadata.ciManagement.url);
       }
-      if (data.licenses){
+      if (data.projectVersionMetadata.licenses){
         var licenses =
-        $.isArray(data.licenses) ? $.map(data.licenses,function(item){
+        $.isArray(data.projectVersionMetadata.licenses) ? $.map(data.projectVersionMetadata.licenses,function(item){
               return new License(item.name,item.url);
-          }):[data.licenses];
+          }):[data.projectVersionMetadata.licenses];
         projectVersionMetadata.licenses=licenses;
       }
-      if (data.mailingLists){
+      if (data.projectVersionMetadata.mailingLists){
         var mailingLists =
-        $.isArray(data.mailingLists) ? $.map(data.mailingLists,function(item){
+        $.isArray(data.projectVersionMetadata.mailingLists) ? $.map(data.projectVersionMetadata.mailingLists,function(item){
               return new MailingList(item.mainArchiveUrl,item.otherArchives,item.name,item.postAddress,
                                      item.subscribeAddress,item.unsubscribeAddress);
-          }):[data.mailingLists];
+          }):[data.projectVersionMetadata.mailingLists];
         projectVersionMetadata.mailingLists=mailingLists;
       }
-      if (data.dependencies){
+      if (data.projectVersionMetadata.dependencies){
         var dependencies =
-        $.isArray(data.dependencies) ? $.map(data.dependencies,function(item){
+        $.isArray(data.projectVersionMetadata.dependencies) ? $.map(data.projectVersionMetadata.dependencies,function(item){
               return new Dependency(item.classifier,item.optional,item.scope,item.systemPath,item.type,
                                     item.artifactId,item.groupId,item.version);
-          }):[data.dependencies];
+          }):[data.projectVersionMetadata.dependencies];
         projectVersionMetadata.dependencies=dependencies;
       }
+      $.log("projectVersionMetadata.issueManagement.system:"+(projectVersionMetadata.issueManagement?projectVersionMetadata.issueManagement.system:"null"));
       return projectVersionMetadata;
     }
     return null;
