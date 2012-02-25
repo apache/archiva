@@ -50,23 +50,7 @@ $(function() {
         if (i<values.length-2)groupId+=".";
       }
       var artifactId=values[values.length-1];
-      $.log("displayProjectEntry:"+id+",groupId:artifactId:"+groupId+":"+artifactId);
-
-      $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+groupId+"/"+artifactId, {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
-
-          $.ajax("restServices/archivaServices/browseService/versionsList/"+groupId+"/"+artifactId, {
-            type: "GET",
-            dataType: 'json',
-            success: function(data) {
-
-            }
-          });
-
-        }
-      });
+      displayArtifactDetail(groupId,artifactId,self);
 
     }
 
@@ -115,6 +99,32 @@ $(function() {
          });
         }
     );
+  }
+
+  ArtifactDetailViewModel=function(){
+    this.versions=[];
+    this.projectVersionMetadata=null;
+
+  }
+
+  displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
+    $.log("displayArtifactDetail:"+groupId+":"+artifactId);
+    var artifactDetailViewModel=new ArtifactDetailViewModel();
+    $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+groupId+"/"+artifactId, {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        artifactDetailViewModel.projectVersionMetadata=mapProjectVersionMetadata(data);
+        $.ajax("restServices/archivaServices/browseService/versionsList/"+groupId+"/"+artifactId, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            artifactDetailViewModel.versions=mapVersionsList(data);
+          }
+        });
+
+      }
+    });
   }
 
   browseRoot=function(){
@@ -173,6 +183,186 @@ $(function() {
   BreadCrumbEntry=function(groupId,displayValue){
     this.groupId=groupId;
     this.displayValue=displayValue;
+  }
+  mapVersionsList=function(data){
+    if (data.versionsList){
+      if (data.versionsList.versions){
+        return $.isArray(data.versionsList.versions)? $.map(data.versionsList.versions,function(item){return item})
+            :[data.versionsList.versions];
+      }
+
+    }
+    return [];
+  }
+  mapProjectVersionMetadata=function(data){
+    if (data.projectVersionMetadata){
+      var projectVersionMetadata = new ProjectVersionMetadata(data.id,data.url,data.name,data.description,null,null,null,null,null,
+                                        null,null,data.incomplete);
+      if (data.organization){
+        projectVersionMetadata.organization=new Organization(data.organization.name,data.organization.url);
+      }
+      if (data.issueManagement){
+        projectVersionMetadata.issueManagement=new IssueManagement(data.issueManagement.system,data.issueManagement.url);
+      }
+      if (data.scm){
+        projectVersionMetadata.scm=new Scm(data.scm.connection,data.scm.developerConnection,data.scm.url);
+      }
+      if (data.ciManagement){
+        projectVersionMetadata.ciManagement=new CiManagement(data.ciManagement.system,data.ciManagement.url);
+      }
+      if (data.licenses){
+        var licenses =
+        $.isArray(data.licenses) ? $.map(data.licenses,function(item){
+              return new License(item.name,item.url);
+          }):[data.licenses];
+        projectVersionMetadata.licenses=licenses;
+      }
+      if (data.mailingLists){
+        var mailingLists =
+        $.isArray(data.mailingLists) ? $.map(data.mailingLists,function(item){
+              return new MailingList(item.mainArchiveUrl,item.otherArchives,item.name,item.postAddress,
+                                     item.subscribeAddress,item.unsubscribeAddress);
+          }):[data.mailingLists];
+        projectVersionMetadata.mailingLists=mailingLists;
+      }
+      if (data.dependencies){
+        var dependencies =
+        $.isArray(data.dependencies) ? $.map(data.dependencies,function(item){
+              return new Dependency(item.classifier,item.optional,item.scope,item.systemPath,item.type,
+                                    item.artifactId,item.groupId,item.version);
+          }):[data.dependencies];
+        projectVersionMetadata.dependencies=dependencies;
+      }
+      return projectVersionMetadata;
+    }
+    return null;
+  }
+
+  ProjectVersionMetadata=function(id,url,name,description,organization,issueManagement,scm,ciManagement,licenses,
+                                  mailingLists,dependencies,incomplete){
+    // private String id;
+    this.id=id;
+
+    // private String url;
+    this.url=url
+
+    //private String name;
+    this.name=name;
+
+    //private String description;
+    this.description=description;
+
+    //private Organization organization;
+    this.organization=organization;
+
+    //private IssueManagement issueManagement;
+    this.issueManagement=issueManagement;
+
+    //private Scm scm;
+    this.scm=scm;
+
+    //private CiManagement ciManagement;
+    this.ciManagement=ciManagement;
+
+    //private List<License> licenses = new ArrayList<License>();
+    this.licenses=licenses;
+
+    //private List<MailingList> mailingLists = new ArrayList<MailingList>();
+    this.mailingLists=mailingLists;
+
+    //private List<Dependency> dependencies = new ArrayList<Dependency>();
+    this.dependencies=dependencies;
+
+    //private boolean incomplete;
+    this.incomplete=incomplete;
+
+  }
+
+  Organization=function(name,url){
+    //private String name;
+    this.name=name;
+
+    //private String url;
+    this.url=url;
+  }
+
+  IssueManagement=function(system,url) {
+    //private String system;
+    this.system=system;
+
+    //private String url;
+    this.url=url;
+  }
+
+  Scm=function(connection,developerConnection,url) {
+    //private String connection;
+    this.connection=connection;
+
+    //private String developerConnection;
+    this.developerConnection=developerConnection;
+
+    //private String url;
+    this.url=url;
+  }
+
+  CiManagement=function(system,url) {
+    //private String system;
+    this.system=system;
+
+    //private String url;
+    this.url=url;
+  }
+
+  License=function(name,url){
+    this.name=name;
+    this.url=url;
+  }
+
+  MailingList=function(mainArchiveUrl,otherArchives,name,postAddress,subscribeAddress,unsubscribeAddress){
+    //private String mainArchiveUrl;
+    this.mainArchiveUrl=mainArchiveUrl;
+
+    //private List<String> otherArchives;
+    this.otherArchives=otherArchives;
+
+    //private String name;
+    this.name=name;
+
+    //private String postAddress;
+    this.postAddress=postAddress;
+
+    //private String subscribeAddress;
+    this.subscribeAddress=subscribeAddress;
+
+    //private String unsubscribeAddress;
+    this.unsubscribeAddress=unsubscribeAddress;
+  }
+
+  Dependency=function(classifier,optional,scope,systemPath,type,artifactId,groupId,version){
+    //private String classifier;
+    this.classifier=classifier;
+
+    //private boolean optional;
+    this.optional=optional;
+
+    //private String scope;
+    this.scope=scope;
+
+    //private String systemPath;
+    this.systemPath=systemPath;
+
+    //private String type;
+    this.type=type;
+
+    //private String artifactId;
+    this.artifactId=artifactId;
+
+    //private String groupId;
+    this.groupId=groupId;
+
+    //private String version;
+    this.version=version;
+
   }
 
   //-----------------------------------------
