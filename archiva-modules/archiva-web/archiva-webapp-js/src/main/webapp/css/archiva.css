@@ -79,6 +79,9 @@
 .browse-list{
   list-style-image: url("../images/folder.png")
 }
+.browse-list-project{
+  list-style-image: url("../images/document-open.png")
+}
 
 .force-upper-case{
   text-transform: uppercase;

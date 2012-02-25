@@ -48,12 +48,12 @@
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
         {{if browseResultEntry.project}}
-          <li class="browse-list" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
+          <li class="browse-list-project" title="artifact" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
         {{else}}
           <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
         {{/if}}
           <a href="#">
-            &nbsp;${displayEntry(browseResultEntry.name)} (project: ${browseResultEntry.project})
+            &nbsp;${displayEntry(browseResultEntry.name)}
           </a>
         </li>
       {{/each}}
