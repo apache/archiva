@@ -149,8 +149,12 @@
           </exclusion>
         </exclusions>
     </dependency>
-
-    <!-- normally not needed but here for wadl feature currently in cxf -->
+    <!--
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-jaxrs</artifactId>
+    </dependency>
+    -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-bundle-jaxrs</artifactId>
