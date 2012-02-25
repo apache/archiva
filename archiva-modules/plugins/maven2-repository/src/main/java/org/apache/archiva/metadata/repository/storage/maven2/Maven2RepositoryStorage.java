@@ -43,6 +43,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeEx
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.xml.XMLException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.IssueManagement;
@@ -131,6 +132,7 @@ public class Maven2RepositoryStorage
     {
         DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
         builder = defaultModelBuilderFactory.newInstance();
+
     }
 
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
@@ -217,15 +219,17 @@ public class Maven2RepositoryStorage
                 }
             }
 
-            ModelBuildingRequest req = new DefaultModelBuildingRequest();
-            req.setProcessPlugins( false );
-            req.setPomFile( file );
+            ModelBuildingRequest req =
+                new DefaultModelBuildingRequest()
+                    .setProcessPlugins( false )
+                    .setPomFile( file )
+                    .setTwoPhaseBuilding( true )
+                    .setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
             // MRM-1411
             req.setModelResolver(
                 new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
                                              repositoryConfiguration ) );
-            req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
             Model model;
             try
@@ -241,8 +245,11 @@ public class Maven2RepositoryStorage
                 {
                     // MRM-1411, related to MRM-1335
                     // this means that the problem was that the parent wasn't resolved!
-                    if ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
-                        !e.getModelId().equals( problem.getModelId() ) )
+                    // olamy really hackhish but fail with java profile so use error message
+                    // || ( StringUtils.startsWith( problem.getMessage(), "Failed to determine Java version for profile" ) )
+                    // but setTwoPhaseBuilding(true) fix that
+                    if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
+                        !e.getModelId().equals( problem.getModelId() ) )  )
                     {
                         log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
                                       "Using defaults for project version metadata.." );
@@ -257,7 +264,9 @@ public class Maven2RepositoryStorage
                         metadata.addFacet( facet );
 
                         String errMsg =
-                            "Error in resolving artifact's parent POM file. " + problem.getException().getMessage();
+                            "Error in resolving artifact's parent POM file. " + ( problem.getException() == null
+                                ? problem.getMessage()
+                                : problem.getException().getMessage() );
                         RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
                         repoProblemFacet.setRepositoryId( repoId );
                         repoProblemFacet.setId( repoId );
