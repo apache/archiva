@@ -65,7 +65,6 @@ public class RepositorySession
     }
 
     public void save()
-        throws MetadataRepositoryException
     {
         repository.save();
 
@@ -73,7 +72,6 @@ public class RepositorySession
     }
 
     public void revert()
-        throws MetadataRepositoryException
     {
         repository.revert();
         dirty = false;
@@ -93,11 +91,6 @@ public class RepositorySession
             {
                 save();
             }
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            // olamy use revert here ?
-            throw new RuntimeException( e.getMessage(), e );
         }
         finally
         {

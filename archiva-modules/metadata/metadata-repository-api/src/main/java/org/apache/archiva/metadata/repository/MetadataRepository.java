@@ -130,13 +130,11 @@ public interface MetadataRepository
                                                String projectVersion )
         throws MetadataResolutionException;
 
-    void save()
-        throws MetadataRepositoryException;
+    void save();
 
     void close();
 
-    void revert()
-        throws MetadataRepositoryException;
+    void revert();
 
     boolean canObtainAccess( Class<?> aClass );
 

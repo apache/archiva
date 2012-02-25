@@ -1021,7 +1021,6 @@ public class JcrMetadataRepository
     }
 
     public void save()
-        throws MetadataRepositoryException
     {
         try
         {
@@ -1029,12 +1028,11 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            throw new MetadataRepositoryException( e.getMessage(), e );
+            throw new RuntimeException( e.getMessage(), e );
         }
     }
 
     public void revert()
-        throws MetadataRepositoryException
     {
         try
         {
@@ -1042,7 +1040,7 @@ public class JcrMetadataRepository
         }
         catch ( RepositoryException e )
         {
-            throw new MetadataRepositoryException( e.getMessage(), e );
+            throw new RuntimeException( e.getMessage(), e );
         }
     }
 
