@@ -170,7 +170,7 @@ $(function() {
             var updated = JSON.parse(result);
             if (updated == true) {
               displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
-              $("#users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
+              $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
               clearForm("#main-content #user-create");
               activateUsersGridTab();
               return this;
@@ -287,7 +287,7 @@ $(function() {
    */
   adminCreateBox=function() {
     window.redbackModel.createUser=true;
-    jQuery("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
+    $("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
     var viewModel = new AdminUserViewModel();
     ko.applyBindings(viewModel);
     $("#user-create").validate({

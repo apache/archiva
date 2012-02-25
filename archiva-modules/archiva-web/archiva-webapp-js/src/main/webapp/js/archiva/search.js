@@ -125,9 +125,8 @@ $(function() {
    * call from menu entry to display root level
    */
   displayBrowse=function(){
-    clearUserMessages();
+    screenChange()
     var mainContent = $("#main-content");
-    mainContent.attr("data-bind","");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());
     $.ajax("restServices/archivaServices/browseService/rootGroups", {
