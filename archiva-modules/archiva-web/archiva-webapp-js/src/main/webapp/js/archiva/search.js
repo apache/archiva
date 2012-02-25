@@ -41,23 +41,29 @@ $(function() {
     }
 
     displayProjectEntry=function(id){
-      $.log("displayProjectEntry:"+id);
-      var url = "restServices/archivaServices/browseService/versionsList/org.apache.maven/maven-archiver";
+      // value org.apache.maven/maven-archiver
+      // split this org.apache.maven and maven-archiver
+      var values = id.split(".");
+      var groupId="";
+      for (var i = 0;i<values.length-1;i++){
+        groupId+=values[i];
+        if (i<values.length-2)groupId+=".";
+      }
+      var artifactId=values[values.length-1];
+      $.log("displayProjectEntry:"+id+",groupId:artifactId:"+groupId+":"+artifactId);
 
-      $.ajax(url, {
+      $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+groupId+"/"+artifactId, {
         type: "GET",
         dataType: 'json',
         success: function(data) {
 
-        }
-      });
+          $.ajax("restServices/archivaServices/browseService/versionsList/"+groupId+"/"+artifactId, {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
 
-      url = "restServices/archivaServices/browseService/projectVersionMetadata/org.apache.maven/maven-archiver";
-
-      $.ajax(url, {
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
+            }
+          });
 
         }
       });
@@ -121,6 +127,7 @@ $(function() {
   displayBrowse=function(){
     clearUserMessages();
     var mainContent = $("#main-content");
+    mainContent.attr("data-bind","");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());
     $.ajax("restServices/archivaServices/browseService/rootGroups", {
