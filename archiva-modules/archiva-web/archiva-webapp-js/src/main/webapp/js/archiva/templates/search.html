@@ -94,15 +94,38 @@
     </div>
     <br/>
     <div id="artifact-info" class="alert alert-info" style="display: none">
-      <div>${$.i18n.prop('browse.artifact.groupId')}:&nbsp;${groupId}</div>
-      <div>${$.i18n.prop('browse.artifact.artifactId')}:&nbsp;${artifactId}</div>
-      <div>${$.i18n.prop('browse.artifact.name')}:&nbsp;${projectVersionMetadata.name}</div>
-      <div>${$.i18n.prop('browse.artifact.organization.name')}:&nbsp;${projectVersionMetadata.organization.name}</div>
-      {{if  projectVersionMetadata.issueManagement}}
-        <div>${$.i18n.prop('browse.artifact.organization.issueManagement')}:&nbsp;
-            <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">${projectVersionMetadata.issueManagement.system}</a>
-        </div>
-      {{/if}}
+      <table class="table table-condensed">
+        <tbody>
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.groupId')}</th>
+            <td>${groupId}</td>
+          </tr>
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
+            <td>${artifactId}</td>
+          </tr>
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.name')}</th>
+            <td>${projectVersionMetadata.name}</td>
+          </tr>
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.description')}</th>
+            <td>${projectVersionMetadata.description}</td>
+          </tr>
+          {{if projectVersionMetadata.organization}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
+            <td>${projectVersionMetadata.organization.name}</td>
+          </tr>
+          {{/if}}
+          {{if projectVersionMetadata.issueManagement}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
+            <td><a href="${projectVersionMetadata.issueManagement.url}" target="_blank">${projectVersionMetadata.issueManagement.system}</a></td>
+          </tr>
+          {{/if}}
+        </tbody>
+      </table>
     </div>
 
     <div class="page-header">
