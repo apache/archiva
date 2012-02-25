@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The repository session provides a single interface to accessing Archiva repositories. It provides access to three
  * resources:
@@ -40,6 +43,8 @@ public class RepositorySession
 
     private boolean dirty;
 
+    private Logger log = LoggerFactory.getLogger( getClass() );
+
     // FIXME: include storage here too - perhaps a factory based on repository ID, or one per type to retrieve and
     //        operate on a given repo within the storage API
 
@@ -60,32 +65,17 @@ public class RepositorySession
     }
 
     public void save()
+        throws MetadataRepositoryException
     {
-        try
-        {
-            repository.save();
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            // FIXME
-            throw new RuntimeException( e );
-        }
+        repository.save();
 
         dirty = false;
     }
 
     public void revert()
+        throws MetadataRepositoryException
     {
-        try
-        {
-            repository.revert();
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            // FIXME
-            throw new RuntimeException( e );
-        }
-
+        repository.revert();
         dirty = false;
     }
 
@@ -96,13 +86,24 @@ public class RepositorySession
      * exception occurs.
      */
     public void close()
+        throws MetadataRepositoryException
     {
-        if ( dirty )
+        try
         {
-            save();
+            if ( dirty )
+            {
+                save();
+            }
         }
-
-        repository.close();
+        catch ( MetadataRepositoryException e )
+        {
+            // olamy use revert here ?
+            throw e;
+        }
+        finally
+        {
+            repository.close();
+        }
     }
 
     public void markDirty()
