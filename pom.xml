@@ -67,7 +67,7 @@
     <commons-io.version>2.1</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <struts.version>2.2.3.1</struts.version>
-    <maven3x.version>3.0.3</maven3x.version>
+    <maven3x.version>3.0.4</maven3x.version>
     <maven.version>2.0.8</maven.version>
     <maven-dependency-tree.version>1.2</maven-dependency-tree.version>
     <maven-model-converter.version>2.1</maven-model-converter.version>
