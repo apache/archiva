@@ -102,7 +102,8 @@
               javax.ws.rs,
               javax.xml.bind.annotation,
               org.apache.archiva.admin.model.beans;version=${project.version},
-              org.codehaus.plexus.redback.authorization
+              org.codehaus.plexus.redback.authorization,
+              org.apache.archiva.metadata.model
             </Import-Package>
           </instructions>
         </configuration>
