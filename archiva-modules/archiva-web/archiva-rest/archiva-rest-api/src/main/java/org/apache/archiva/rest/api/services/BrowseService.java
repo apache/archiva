@@ -39,28 +39,28 @@ public interface BrowseService
     @Path( "rootGroups" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true, noPermission = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     BrowseResult getRootGroups()
         throws ArchivaRestServiceException;
 
     @Path( "browseGroupId/{groupId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true, noPermission = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     BrowseResult browseGroupId( @PathParam( "groupId" ) String groupId )
         throws ArchivaRestServiceException;
 
     @Path( "versionsList/{g}/{a}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true, noPermission = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     VersionsList getVersionsList( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId )
         throws ArchivaRestServiceException;
 
     @Path( "projectVersionMetadata/{g}/{a}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true, noPermission = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     ProjectVersionMetadata getProjectVersionMetadata( @PathParam( "g" ) String groupId,
                                                       @PathParam( "a" ) String artifactId )
         throws ArchivaRestServiceException;

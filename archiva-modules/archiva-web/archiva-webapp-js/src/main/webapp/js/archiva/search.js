@@ -129,7 +129,6 @@ $(function() {
   }
 
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
-    $.log("displayArtifactDetail:"+groupId+":"+artifactId);
     var artifactDetailViewModel=new ArtifactDetailViewModel(groupId,artifactId);
     var mainContent = $("#main-content");
     mainContent.find("#browse_result").hide();

@@ -48,7 +48,7 @@
         </li>
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
-        {{if browseResultEntry.project}}
+        {{if browseResultEntry.project=='true'}}
           <li class="browse-list-project" title="artifact" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
         {{else}}
           <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
