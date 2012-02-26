@@ -80,8 +80,14 @@ $(function() {
     this.findManagedRepository=function(id){
       return findManagedRepository(id,self.managedRepositories());
     }
-
     this.deleteRepositoryGroup=function(repositoryGroup){
+      openDialogConfirm(
+          function(){self.removeRepositoryGroup(repositoryGroup);window.modalConfirmDialog.modal('hide')},
+          $.i18n.prop('ok'), $.i18n.prop('cancel'),
+          $.i18n.prop('repository.group.delete.confirm',repositoryGroup.id()),
+          $("#repository-group-location-warning-tmpl").tmpl(self.repositoryGroup));
+    }
+    this.removeRepositoryGroup=function(repositoryGroup){
       clearUserMessages();
       $.ajax("restServices/archivaServices/repositoryGroupService/deleteRepositoryGroup/"+encodeURIComponent(repositoryGroup.id()),
         {
