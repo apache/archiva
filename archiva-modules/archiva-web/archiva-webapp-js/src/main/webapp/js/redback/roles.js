@@ -145,6 +145,7 @@ $(function() {
            activateRoleEditTab();
            mainContent.find("#role-view-users").tabs("show");
            mainContent.find("#role-edit-users-tabs-content #role-view-users").addClass("active");
+           mainContent.find("#role-edit").collapse("show");
          }
         }
       );

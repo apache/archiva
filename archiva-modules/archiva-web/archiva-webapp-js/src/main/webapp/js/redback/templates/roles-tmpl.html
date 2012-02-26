@@ -46,141 +46,153 @@
 </script>
 
 <script id="editRoleTab" type="text/x-jquery-tmpl">
-  <div class="page-header">
-    <h3>${$.i18n.prop('role')}</h3>
-  </div>
-  <table class="table table-bordered" id="editRoleTable">
-    <tbody>
-      <tr>
-        <td>${$.i18n.prop('name')}:</td>
-        <td id="role-edit-name">${$data.name}</td>
-      </tr>
-      <tr>
-        <td>${$.i18n.prop('description')}:</td>
-        <td><input type="text" id="role-edit-description" data-bind="value: description"></td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <div class="pull-left">
-            <button class="btn" id="role-edit-description-save" data-bind="click: saveRoleDescription">${$.i18n.prop('save')}</button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="page-header">
-    <h3>${$.i18n.prop('role.model.parent.roles')}</h3>
-  </div>
-  {{if $data.parentRoleNames}}
-    <ul>
-        {{each $data.parentRoleNames}}
-          <li>${$value}</li>
-        {{/each}}
-
-    </ul>
-  {{/if}}
-
-  <div class="page-header">
-    <h3>${$.i18n.prop('role.model.child.roles')}</h3>
-  </div>
-  {{if $data.childRoleNames}}
-    <ul>
-        {{each $data.childRoleNames}}
-          <li>${$value}</li>
-        {{/each}}
-    </ul>
-  {{/if}}
-
-  <div class="page-header">
-    <h3>${$.i18n.prop('permissions')}</h3>
-  </div>
-  {{if $data.permissions}}
-    <table class="table table-striped table-bordered" id="rolePermissionsTable">
-      <thead>
-        <tr>
-          <th>${$.i18n.prop('name')}</th>
-          <th>${$.i18n.prop('role.operation')}</th>
-          <th>${$.i18n.prop('role.resource')}</th>
-        </tr>
-      </thead>
-      <tbody>
-          {{each permissions}}
+  <div class="accordion" id="edit-role-accordion">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <h3>
+          <a class="accordion-toggle" href="#role-collapse" data-parent="#edit-role-accordion" data-toggle="collapse">${$.i18n.prop('role')}</a>
+        </h3>
+      </div>
+      <div id="role-collapse" class="accordion-body collapse in">
+        <table class="table table-bordered" id="editRoleTable">
+          <tbody>
             <tr>
-              <td>${$value.name}</td>
-              {{if $value.operation }}
-                <td>${$value.operation().name}</td>
-              {{else}}
-                <td></td>
-              {{/if}}
-              {{if $value.resource }}
-                <td>${$value.resource().identifier}</td>
-              {{else}}
-                <td></td>
-              {{/if}}
+              <td>${$.i18n.prop('name')}:</td>
+              <td id="role-edit-name">${$data.name}</td>
             </tr>
-          {{/each}}
-      </tbody>
-    </table>
-  {{/if}}
+            <tr>
+              <td>${$.i18n.prop('description')}:</td>
+              <td><input type="text" id="role-edit-description" data-bind="value: description"></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <div class="pull-left">
+                  <button class="btn" id="role-edit-description-save" data-bind="click: saveRoleDescription">${$.i18n.prop('save')}</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-  <div class="page-header">
-    <h2>${$.i18n.prop('role.edit.section.users')}</h2>
-  </div>
-  {{if $data.parentsRolesUsers}}
-    <div class="page-header">
-      <h3>${$.i18n.prop('role.edit.users.defined.in.parent.roles')}</h3>
-    </div>
-      <ul>
-      {{each $data.parentsRolesUsers}}
-        <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
-      {{/each}}
-      </ul>
-  {{/if}}
-
-  <ul id="role-edit-users-tabs" class="nav nav-tabs">
-    <li class="active" id="role-view-users-li">
-      <a data-toggle="tab" href="#role-view-users">${$.i18n.prop('role.edit.users.list')}</a>
-    </li>
-    <li id="role-edit-users-li">
-      <a data-toggle="tab" href="#role-edit-users">${$.i18n.prop('edit')}</a>
-    </li>
-  </ul>  
-
-  <div class="pill-content" id="role-edit-users-tabs-content">
-      <div id="role-view-users" class="active pill-pane">
         <div class="page-header">
-          <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
+          <h3>${$.i18n.prop('role.model.parent.roles')}</h3>
         </div>
-        <div id="role-list-users">
-          {{if users().length>0}}
-              <ul>
-              {{each(j, user) users()}}
-                <li>${user.fullName()} - ( ${user.username()} - ${user.email()} ) </li>
-              {{/each}}
-              </ul>
-          {{else}}
-            ${$.i18n.prop('role.edit.no.user.defined')}
-          {{/if}}
-        </div>
-      </div>
-
-      <div id="role-edit-users" class="clearfix ar-multiselect pill-pane">
-
-        <div class="ar-multiselect-column ar-multiselect-left">
-        <select data-bind="options: otherUsers ,optionsText: 'username',selectedOptions:selectedOtherUsers" multiple="true" id="role-edit-available-users"></select>
-        </div>
-        <div class="ar-multiselect-column ar-multiselect-center">
-        <ul style="list-style: none">
-          <li><input class="btn" id="role-edit-users-add-user" type="button" data-bind="click: addUser" value="&gt;"/></li>
-          <li><input class="btn" id="role-edit-users-remove-user" type="button" data-bind="click: removeUser" value="&lt;"/></li>
+        {{if $data.parentRoleNames}}
+        <ul>
+          {{each $data.parentRoleNames}}
+            <li>${$value}</li>
+          {{/each}}
         </ul>
+        {{/if}}
+
+        <div class="page-header">
+          <h3>${$.i18n.prop('role.model.child.roles')}</h3>
         </div>
-        <div class="ar-multiselect-column ar-multiselect-right">
-          <select data-bind="options: users ,optionsText: 'username',selectedOptions:selectedUsers" multiple="true" id="role-edit-affected-users"></select>
+        {{if $data.childRoleNames}}
+        <ul>
+          {{each $data.childRoleNames}}
+            <li>${$value}</li>
+          {{/each}}
+        </ul>
+        {{/if}}
+
+        <div class="page-header">
+          <h3>${$.i18n.prop('permissions')}</h3>
         </div>
-        <button class="btn" id="role-edit-users-save" data-bind="click: saveUsers">${$.i18n.prop('save')}</button>
+        {{if $data.permissions}}
+          <table class="table table-striped table-bordered" id="rolePermissionsTable">
+            <thead>
+              <tr>
+                <th>${$.i18n.prop('name')}</th>
+                <th>${$.i18n.prop('role.operation')}</th>
+                <th>${$.i18n.prop('role.resource')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{each permissions}}
+              <tr>
+                <td>${$value.name}</td>
+                {{if $value.operation }}
+                  <td>${$value.operation().name}</td>
+                {{else}}
+                  <td></td>
+                {{/if}}
+                {{if $value.resource }}
+                  <td>${$value.resource().identifier}</td>
+                {{else}}
+                  <td></td>
+                {{/if}}
+              </tr>
+             {{/each}}
+            </tbody>
+          </table>
+        {{/if}}
       </div>
+    </div>
+    <div class="accordion-group>">
+      <div class="accordion-heading">
+        <h3>
+          <a class="accordion-toggle" href="#role-users-collapse" data-parent="#edit-role-accordion" data-toggle="collapse">${$.i18n.prop('role.edit.section.users')}</a>
+        </h3>
+      </div>
+      <div id="role-users-collapse" class="accordion-body collapse">
+        {{if $data.parentsRolesUsers}}
+        <div class="page-header">
+          <h3>${$.i18n.prop('role.edit.users.defined.in.parent.roles')}</h3>
+        </div>
+        <ul>
+        {{each $data.parentsRolesUsers}}
+          <li>${$value.fullName} - ( ${$value.username} - ${$value.email} ) </li>
+        {{/each}}
+        </ul>
+        {{/if}}
+
+        <ul id="role-edit-users-tabs" class="nav nav-tabs">
+          <li class="active" id="role-view-users-li">
+            <a data-toggle="tab" href="#role-view-users">${$.i18n.prop('role.edit.users.list')}</a>
+          </li>
+          <li id="role-edit-users-li">
+            <a data-toggle="tab" href="#role-edit-users">${$.i18n.prop('edit')}</a>
+          </li>
+        </ul>
+
+        <div class="pill-content" id="role-edit-users-tabs-content">
+          <div id="role-view-users" class="active pill-pane">
+            <div class="page-header">
+              <h3>${$.i18n.prop('role.edit.users.defined.in.current.role')}</h3>
+            </div>
+            <div id="role-list-users">
+              {{if users().length>0}}
+              <ul>
+                {{each(j, user) users()}}
+                <li>${user.fullName()} - ( ${user.username()} - ${user.email()} ) </li>
+                {{/each}}
+              </ul>
+              {{else}}
+                ${$.i18n.prop('role.edit.no.user.defined')}
+              {{/if}}
+            </div>
+          </div>
+
+          <div id="role-edit-users" class="clearfix ar-multiselect pill-pane">
+
+            <div class="ar-multiselect-column ar-multiselect-left">
+              <select data-bind="options: otherUsers ,optionsText: 'username',selectedOptions:selectedOtherUsers" multiple="true" id="role-edit-available-users"></select>
+            </div>
+            <div class="ar-multiselect-column ar-multiselect-center">
+              <ul style="list-style: none">
+                <li><input class="btn" id="role-edit-users-add-user" type="button" data-bind="click: addUser" value="&gt;"/></li>
+                <li><input class="btn" id="role-edit-users-remove-user" type="button" data-bind="click: removeUser" value="&lt;"/></li>
+              </ul>
+            </div>
+            <div class="ar-multiselect-column ar-multiselect-right">
+              <select data-bind="options: users ,optionsText: 'username',selectedOptions:selectedUsers" multiple="true" id="role-edit-affected-users"></select>
+            </div>
+            <button class="btn" id="role-edit-users-save" data-bind="click: saveUsers">${$.i18n.prop('save')}</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </script>
 
