@@ -149,4 +149,21 @@ public class Dependency
     {
         return groupId;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "Dependency" );
+        sb.append( "{classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", optional=" ).append( optional );
+        sb.append( ", scope='" ).append( scope ).append( '\'' );
+        sb.append( ", systemPath='" ).append( systemPath ).append( '\'' );
+        sb.append( ", type='" ).append( type ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

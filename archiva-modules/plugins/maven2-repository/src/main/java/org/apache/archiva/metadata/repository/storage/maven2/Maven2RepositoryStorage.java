@@ -223,7 +223,7 @@ public class Maven2RepositoryStorage
                 new DefaultModelBuildingRequest()
                     .setProcessPlugins( false )
                     .setPomFile( file )
-                    .setTwoPhaseBuilding( true )
+                    .setTwoPhaseBuilding( false )
                     .setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
             // MRM-1411
