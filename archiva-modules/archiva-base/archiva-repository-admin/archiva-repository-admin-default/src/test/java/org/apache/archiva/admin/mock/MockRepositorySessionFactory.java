@@ -217,7 +217,6 @@ public class MockRepositorySessionFactory
                     }
 
                     public void save( )
-                        throws MetadataRepositoryException
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
@@ -228,7 +227,6 @@ public class MockRepositorySessionFactory
                     }
 
                     public void revert( )
-                        throws MetadataRepositoryException
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }

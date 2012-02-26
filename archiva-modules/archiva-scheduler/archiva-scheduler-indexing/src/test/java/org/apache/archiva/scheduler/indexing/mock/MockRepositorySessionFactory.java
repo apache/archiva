@@ -42,26 +42,26 @@ import java.util.List;
 public class MockRepositorySessionFactory
     implements RepositorySessionFactory
 {
-    public RepositorySession createSession( )
+    public RepositorySession createSession()
     {
         return new RepositorySession( null, null )
         {
             @Override
-            public void close( )
+            public void close()
             {
                 return;
             }
 
             @Override
-            public void save( )
+            public void save()
             {
                 // no op
             }
 
             @Override
-            public MetadataRepository getRepository( )
+            public MetadataRepository getRepository()
             {
-                return new MetadataRepository( )
+                return new MetadataRepository()
                 {
                     public void updateProject( String repositoryId, ProjectMetadata project )
                         throws MetadataRepositoryException
@@ -92,7 +92,7 @@ public class MockRepositorySessionFactory
                     public List<String> getMetadataFacets( String repositoryId, String facetId )
                         throws MetadataRepositoryException
                     {
-                        return Collections.emptyList( );
+                        return Collections.emptyList();
                     }
 
                     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
@@ -126,7 +126,7 @@ public class MockRepositorySessionFactory
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public Collection<String> getRepositories( )
+                    public Collection<String> getRepositories()
                         throws MetadataRepositoryException
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -216,19 +216,17 @@ public class MockRepositorySessionFactory
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public void save( )
-                        throws MetadataRepositoryException
+                    public void save()
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public void close( )
+                    public void close()
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public void revert( )
-                        throws MetadataRepositoryException
+                    public void revert()
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
