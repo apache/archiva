@@ -534,7 +534,6 @@ public class FileMetadataRepository
     }
 
     public void save()
-        throws MetadataRepositoryException
     {
         // it's all instantly persisted
     }
@@ -545,7 +544,6 @@ public class FileMetadataRepository
     }
 
     public void revert()
-        throws MetadataRepositoryException
     {
         log.warn( "Attempted to revert a session, but the file-based repository storage doesn't support it" );
     }
