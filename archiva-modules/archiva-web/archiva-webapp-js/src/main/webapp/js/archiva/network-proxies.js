@@ -193,7 +193,8 @@ $(function() {
                   closeDialogConfirm();
                 }
               }
-            )}, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('networkproxy.delete.confirm',networkProxy.id()),null);
+            )}, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('networkproxy.delete.confirm',networkProxy.id()),
+            $("#network-proxy-delete-warning-tmpl" ).tmpl(networkProxy));
     }
   }
 

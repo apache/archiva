@@ -164,3 +164,8 @@
     <a data-bind="click: updateModifiedNetworkProxies" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
 </script>
+<script id="network-proxy-delete-warning-tmpl" type='text/x-jquery-tmpl'>
+    <div>
+      <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
+    </div>
+</script>
