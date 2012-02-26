@@ -321,7 +321,8 @@ $(function() {
             displaySuccessMessage($.i18n.prop('proxyconnector.removed'));
             self.proxyConnectors.remove(proxyConnector);
             closeDialogConfirm();
-          })}, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('proxyconnector.delete.confirm'),null);
+          })}, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('proxyconnector.delete.confirm'),
+          $("#proxy-connector-delete-warning-tmpl").tmpl(proxyConnector));
 
 
     }
