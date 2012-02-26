@@ -18,18 +18,13 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
-import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,6 +50,40 @@ public class SearchServiceTest
         createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
+
+        // START SNIPPET: quick-search
+        List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );
+        // return all artifacts with groupId OR artifactId OR version OR packaging OR className
+        // NOTE : only artifacts with classifier empty are returned
+        // END SNIPPET: quick-search
+
+        assertNotNull( artifacts );
+        assertTrue( " not 6 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
+                    artifacts.size() == 6 );
+        log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
+
+        deleteTestRepo( testRepoId );
+    }
+
+    /**
+     * same search but with Guest user
+     * @throws Exception
+     */
+    @Test
+    public void quickSearchOnArtifactIdGuest()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
+
+        SearchService searchService = getSearchService( null );
 
         // START SNIPPET: quick-search
         List<Artifact> artifacts = searchService.quickSearch( "commons-logging" );

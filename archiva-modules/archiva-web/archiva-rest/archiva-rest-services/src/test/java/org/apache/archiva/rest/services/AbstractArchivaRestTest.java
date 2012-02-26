@@ -329,6 +329,9 @@ public abstract class AbstractArchivaRestTest
         getRoleManagementService( authorizationHeader ).assignTemplatedRole(
             ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "admin" );
 
+        getRoleManagementService( authorizationHeader ).assignTemplatedRole(
+            ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "guest" );
+
         getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
 
     }

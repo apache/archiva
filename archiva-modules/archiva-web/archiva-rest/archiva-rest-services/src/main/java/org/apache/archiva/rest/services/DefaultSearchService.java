@@ -73,7 +73,6 @@ public class DefaultSearchService
         }
 
         SearchResultLimits limits = new SearchResultLimits( 0 );
-        List<String> observableRepoIds = getObservableRepos();
         try
         {
             SearchResults searchResults =
