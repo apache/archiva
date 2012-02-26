@@ -705,7 +705,8 @@ $(function() {
                   }
                 )}, $.i18n.prop('ok'),
                 $.i18n.prop('cancel'),
-                $.i18n.prop('remoterepository.delete.confirm',remoteRepository.id()),null);
+                $.i18n.prop('remoterepository.delete.confirm',remoteRepository.id()),
+                $("#remote-repository-delete-modal-tmpl").tmpl(remoteRepository));
 
     }
 
