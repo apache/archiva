@@ -105,7 +105,7 @@ $(function() {
               dataType: 'json',
               success: function(data) {
                 // FIXME i18n
-                displaySuccessMessage("user " + currentUser.username() + " deleted");
+                displaySuccessMessage( $.i18n.prop("user.deleted", currentUser.username()));
                 self.users.remove(currentUser);
               },
               error: function(result) {
@@ -118,7 +118,7 @@ $(function() {
             }
           );
         }
-        ,"Ok", $.i18n.prop("cancel"), $.i18n.prop("user.delete.message") + ": " + currentUser.username(),
+        ,"Ok", $.i18n.prop("cancel"), $.i18n.prop("user.delete.message", currentUser.username()),
         $("#user-delete-warning-tmpl" ).tmpl(currentUser));
 
     }
@@ -197,7 +197,6 @@ $(function() {
             return mapApplicationRoles(item);
           });
           viewModel.applicationRoles=ko.observableArray(mappedApplicationRoles);
-          $.log("applicationRoles length:"+mappedApplicationRoles.length);
           mainContent.find("#user-edit-roles-edit").attr("data-bind",'template: {name:"user_edit_roles_tmpl"}');
           ko.applyBindings(viewModel,mainContent.find("#user-edit-roles-edit").get(0));
           $.log("assignedRoles:"+user.assignedRoles().length);
@@ -217,13 +216,9 @@ $(function() {
     }
 
     saveUser=function(){
-      $.log("UserViewModel#saveUser");
       var valid = $("#main-content #user-create").valid();
       if (valid==false) {
-        $.log("user#save valid:false");
         return;
-      } else {
-        $.log("user#save valid:true,update:"+self.updateMode);
       }
       if (self.updateMode==false){
         return user.create(function(){self.usersViewModel.users.push(user)});
@@ -291,10 +286,6 @@ $(function() {
     mainContent.find("#users-view-tabs-content #createUserForm").addClass("active");
     mainContent.find("#users-view-tabs-li-user-edit").addClass("active");
   }
-
-
-
-
 
 });
 

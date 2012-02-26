@@ -102,7 +102,7 @@ $(function() {
           success: function(result) {
             var created = JSON.parse(result);
             if (created == true) {
-              displaySuccessMessage("user created:"+currentUser.username());
+              displaySuccessMessage( $.i18n.prop("user.created",currentUser.username()));
               if (successFnCallback){
                 successFnCallback(currentUser);
               }
@@ -137,9 +137,8 @@ $(function() {
           success: function(result) {
             var created = JSON.parse(result);
             if (created == true) {
-              displaySuccessMessage("admin user created");
+              displaySuccessMessage( $.i18n.prop("user.admin.created"));
               var onSuccessCall=function(){
-                $.log("onSuccessCall after admin creation");
                 reccordLoginCookie(currentAdminUser);
                 screenChange();
                 checkCreateAdminLink();
@@ -169,6 +168,7 @@ $(function() {
           success: function(result) {
             var updated = JSON.parse(result);
             if (updated == true) {
+              clearUserMessages();
               displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
               $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
               clearForm("#main-content #user-create");
@@ -347,10 +347,8 @@ $(function() {
         logged = true;
       }
     }
-    $.log("successLoginCallbackFn, logged:"+logged);
     if (logged == true) {
       var user = mapUser(result.user);
-      $.log("user.passwordChangeRequired:"+user.passwordChangeRequired());
       if (user.passwordChangeRequired()==true){
         changePasswordBox(true,false,user);
         return;
@@ -548,7 +546,7 @@ $(function() {
           var created = JSON.parse(result);
           // FIXME i18n
           if (created == true) {
-            displaySuccessMessage("details updated.");
+            displaySuccessMessage( $.i18n.prop("user.details.updated"));
             window.modalEditUserBox.modal('hide');
             reccordLoginCookie(user);
             clearForm("#user-edit-form");
