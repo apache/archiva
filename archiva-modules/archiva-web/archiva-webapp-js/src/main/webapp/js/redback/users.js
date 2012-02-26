@@ -118,7 +118,8 @@ $(function() {
             }
           );
         }
-        ,"Ok", $.i18n.prop("cancel"), $.i18n.prop("user.delete.message") + ": " + currentUser.username());
+        ,"Ok", $.i18n.prop("cancel"), $.i18n.prop("user.delete.message") + ": " + currentUser.username(),
+        $("#user-delete-warning-tmpl" ).tmpl(currentUser));
 
     }
 
