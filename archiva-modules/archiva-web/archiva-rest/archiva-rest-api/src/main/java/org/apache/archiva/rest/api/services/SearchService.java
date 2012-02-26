@@ -48,7 +48,7 @@ public interface SearchService
     @Path( "quickSearch" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noPermission = true, noRestriction = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     /**
      * <b>search will be apply on all repositories the current user has karma</b>
      */
@@ -58,7 +58,7 @@ public interface SearchService
     @Path( "getArtifactVersions" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noPermission = true, noRestriction = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     /**
      * <b>search will be apply on all repositories the current user has karma</b>
      */
@@ -70,7 +70,7 @@ public interface SearchService
     @Path( "searchArtifacts" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noPermission = true, noRestriction = false )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     /**
      * If searchRequest contains repositories, the search will be done only on those repositories.
      * <b>if no repositories, the search will be apply on all repositories the current user has karma</b>
