@@ -86,3 +86,14 @@
 .force-upper-case{
   text-transform: uppercase;
 }
+
+.dropdown-menu {
+    max-width: 920px;
+}
+.ui-menu-item {
+    cursor: pointer;
+}
+
+.ui-autocomplete-loading{
+  background:url('../images/small-spinner.gif') no-repeat right center;
+}

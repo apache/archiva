@@ -187,16 +187,18 @@ $(function() {
     })
 
     $( "#quick-search-autocomplete" ).autocomplete({
+      minLength: 3,
+			source: function(request, response){
+        $.get("restServices/archivaServices/searchService/quickSearch?queryString="+encodeURIComponent(request.term),
+           function(data) {
+             var res = $.map(data.artifact,function(item){
+               return item.artifactId;
+             });
+             response(res);
+           }
+        );
 
-			minLength: 3,
-			source: function( request, response ) {
-        $.log("source");
-        return ["foo","bar"];
-				/*var data = $.getJSON( "restServices/archivaServices/searchService/quickSearch?queryString="+encodeURIComponent(request.term));
-        return $.map(data,function(item){
-          return item.artifactId;
-        })*/
-			  }
+      }
 		});
 
 

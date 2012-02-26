@@ -61,7 +61,6 @@ public class DefaultSearchService
     implements SearchService
 {
 
-
     @Inject
     private RepositorySearch repositorySearch;
 
