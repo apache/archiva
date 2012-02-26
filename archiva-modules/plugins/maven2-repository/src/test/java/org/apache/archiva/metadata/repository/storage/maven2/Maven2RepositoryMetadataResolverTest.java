@@ -132,6 +132,16 @@ public class Maven2RepositoryMetadataResolverTest
     }
 
     @Test
+    public void testModelWithJdkProfileActivation()
+        throws Exception
+    {
+
+        ProjectVersionMetadata metadata =
+            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.maven", "maven-archiver", "2.4.1" );
+        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
+    }
+
+    @Test
     public void testGetProjectVersionMetadata()
         throws Exception
     {
@@ -633,10 +643,11 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Arrays.asList( "apache" ), storage.listProjects( TEST_REPO_ID, "org.apache", ALL ) );
         assertEquals( Arrays.asList( "archiva", "archiva-base", "archiva-common", "archiva-modules", "archiva-parent" ),
                       storage.listProjects( TEST_REPO_ID, "org.apache.archiva", ALL ) );
-        assertEquals( Collections.<String>emptyList(), storage.listProjects( TEST_REPO_ID, "org.apache.maven", ALL ) );
+        assertEquals( Arrays.asList( "maven-archiver", "maven-parent" ),
+                      storage.listProjects( TEST_REPO_ID, "org.apache.maven", ALL ) );
         assertEquals( Collections.<String>emptyList(),
                       storage.listProjects( TEST_REPO_ID, "org.apache.maven.plugins", ALL ) );
-        assertEquals( Arrays.asList( "maven-downloader" ),
+        assertEquals( Arrays.asList( "maven-downloader", "maven-shared-components" ),
                       storage.listProjects( TEST_REPO_ID, "org.apache.maven.shared", ALL ) );
     }
 
@@ -653,7 +664,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( Arrays.asList( "1.0" ),
                       storage.listProjectVersions( TEST_REPO_ID, "com.example.test", "invalid-pom", ALL ) );
 
-        assertEquals( Arrays.asList( "4", "5-SNAPSHOT" ),
+        assertEquals( Arrays.asList( "4", "5-SNAPSHOT", "7" ),
                       storage.listProjectVersions( TEST_REPO_ID, "org.apache", "apache", ALL ) );
 
         assertEquals( Arrays.asList( "1.2.1", "1.2.2" ),

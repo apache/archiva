@@ -226,6 +226,12 @@ public class Maven2RepositoryStorage
                     .setTwoPhaseBuilding( false )
                     .setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
+
+            //MRM-1607. olamy this will resolve jdk profiles on the current running archiva jvm
+            req.setSystemProperties( System.getProperties() );
+
+
+
             // MRM-1411
             req.setModelResolver(
                 new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
