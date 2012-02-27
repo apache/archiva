@@ -408,8 +408,67 @@ $(function() {
   // search part
   //-----------------------------------------
 
+  SearchRequest=function(){
+    //private String groupId;
+    this.groupId=ko.observable();
+
+    //private String artifactId;
+    this.artifactId=ko.observable();
+
+    //private String version;
+    this.version=ko.observable();
+
+    //private String packaging;
+    this.packaging=ko.observable();
+
+    //private String className;
+    this.className=ko.observable();
+
+    //private List<String> repositories = new ArrayList<String>();
+    this.repositories=ko.observableArray();
+
+    //private String bundleVersion;
+    this.bundleVersion=ko.observable();
+
+    //private String bundleSymbolicName;
+    this.bundleSymbolicName=ko.observable();
+
+    //private String bundleExportPackage;
+    this.bundleExportPackage=ko.observable();
+
+    //private String bundleExportService;
+    this.bundleExportService=ko.observable();
+
+    //private String classifier;
+    this.classifier=ko.observable();
+
+    //private boolean includePomArtifacts = false;
+    this.includePomArtifacts=ko.observable(false);
+  }
+
+
+  SearchParameters=function(){
+    this.basicQueryString=ko.observable();
+    this.searchRequest=ko.observable(new SearchRequest());
+  }
+
+  SearchViewModel=function(){
+    this.searchParameters=ko.observable(new SearchParameters());
+
+    basicSearch=function(){
+      $.log("query:"+this.searchParameters().basicQueryString())
+    }
+
+    advancedSearch=function(){
+      $.log("groupId:"+this.searchParameters().searchRequest().groupId());
+    }
+  }
+
   displaySearch=function(){
-    $("#main-content" ).html($("#search-artifacts-form" ).tmpl());
+    var mainContent=$("#main-content");
+    mainContent.html($("#search-artifacts-div-tmpl" ).tmpl());
+    var searchViewModel=new SearchViewModel();
+    ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
   }
 
 });
