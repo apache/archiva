@@ -548,9 +548,11 @@ $(function() {
   SearchViewModel=function(){
     this.searchParameters=ko.observable(new SearchParameters());
     this.observableRepoIds=ko.observableArray([]);
+    this.selectedRepoIds=[];
 
     basicSearch=function(){
-      $.log("query:"+this.searchParameters().basicQueryString())
+      $.log("query:"+this.searchParameters().basicQueryString());
+      $.log("repoIds:"+this.selectedRepoIds);
     }
 
     advancedSearch=function(){
@@ -559,6 +561,7 @@ $(function() {
   }
 
   displaySearch=function(){
+    clearUserMessages();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
     $.ajax("restServices/archivaServices/searchService/observableRepoIds", {
@@ -569,7 +572,16 @@ $(function() {
           var searchViewModel=new SearchViewModel();
           searchViewModel.observableRepoIds(mapStringList(data));
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
-          mainContent.find("#search-basic-repostories-select" ).chosen();
+          mainContent.find("#search-basic-repostories-select" ).chosen()
+              .change(function(){
+                                  searchViewModel.selectedRepoIds=[];
+                                  mainContent.find("#search-basic-repositories" )
+                                      .find(".chzn-choices li span").each(function(i,span){
+                                                  searchViewModel.selectedRepoIds.push($(span).html());
+                                                  }
+                                                );
+
+                                });
         }
     });
 

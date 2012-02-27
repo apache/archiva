@@ -154,14 +154,21 @@
   <div class="page-header">
     <h3>${$.i18n.prop('search.artifact.header')}</h3>
   </div>
-  <div class="accordion" id="search-artifacts-accordion">
-    <div class="accordion-group">
-      <div class="accordion-heading">
-        <a class="accordion-toggle" href="#search-form-collapse" data-parent="#search-artifacts-accordion" data-toggle="collapse">${$.i18n.prop('search.artifact.form.header')}</a>
-      </div>
-      <div id="search-form-collapse" class="accordion-body collapse in">
+  <div id="search-artifacts-tabs">
+    <div class="tabbable tabs-below">
+      <ul class="nav nav-tabs">
+        <li class="active">
+          <a data-toggle="tab" href="#search-form-collapse">${$.i18n.prop('search.artifact.form.header')}</a>
+        </li>
+          <li class="">
+            <a data-toggle="tab" href="#search-results">${$.i18n.prop('search.artifact.results.header')}</a>
+          </li>
+      </ul>
+      <div class="tab-content">
+
+      <div id="search-form-collapse" class="tab-pane active">
         <div class="tabbable tabs-below">
-          <ul class="nav nav-tabs">
+          <ul class="nav nav-pills">
             <li class="active">
               <a href="#search-basic-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.basic')}</a>
             </li>
@@ -172,35 +179,31 @@
               <a href="#search-osgi-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.osgi')}</a>
             </li>
           </ul>
-          <div class="tab-content">
-            <div class="tab-pane active" id="search-basic-form-pane">
-              <form class="well form-horizontal" id="search-basic-form">
+          <div class="pill-content">
+            <div class="pill-pane active" id="search-basic-form-pane">
+              <form class="well form-inline" id="search-basic-form">
                 <fieldset>
-                  <div class="control-group">
-                    <label class="control-label" for="search-terms">${$.i18n.prop('search.artifact.search.form.query.terms')}</label>
-                    <div class="controls">
-                      <input type="text" class="input-medium search-query" id="search-terms" name="search-terms" size="50"
-                             data-bind="value: searchParameters().basicQueryString"/>
-                    </div>
-                  </div>
-                  <div class="control-group">
-
-
-                    <div>
-                      <select data-placeholder="Choose a Country" id="search-basic-repostories-select" class="chzn-select"
-                              multiple style="z-index: 1000" tabindex="10">
+                    <div class="control-group" id="search-basic-repositories">
+                      <select data-placeholder="${$.i18n.prop('search.artifact.search.form.query.repositories')}"
+                              id="search-basic-repostories-select" class="chzn-select"
+                              multiple style="width:350px;" tabindex="4">
                         <option value="">All</option>
                         {{each(i,repoId) observableRepoIds}}
                           <option value="${repoId}">${repoId}</option>
                         {{/each}}
                       </select>
+                  </div>
+                  <div class="control-group">
+                    <label class="control-label" for="search-terms"></label>
+                    <div class="controls">
+                      <input type="text" class="input-medium search-query" id="search-terms" name="search-terms" size="50"
+                             data-bind="value: searchParameters().basicQueryString" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
                     </div>
                   </div>
-                </fieldset>
                 <button type="submit" class="btn" data-bind="click: basicSearch">Search</button>
               </form>
             </div>
-            <div class="tab-pane" id="search-advanced-form-pane">
+            <div class="pill-pane" id="search-advanced-form-pane">
                 <form class="well form-horizontal" id="search-advanced-form">
                   <fieldset>
                     <div class="control-group">
@@ -210,22 +213,50 @@
                                data-bind="value: searchParameters().searchRequest().groupId"/>
                       </div>
                     </div>
+                    <div class="control-group">
+                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.artifactId')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="artifactId" name="artifactId" size="50"
+                               data-bind="value: searchParameters().searchRequest().artifactId"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.version')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="version" name="version" size="50"
+                               data-bind="value: searchParameters().searchRequest().version"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.packaging')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="packaging" name="packaging" size="50"
+                               data-bind="value: searchParameters().searchRequest().packaging"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.className')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="className" name="className" size="50"
+                               data-bind="value: searchParameters().searchRequest().className"/>
+                      </div>
+                    </div>
                   </fieldset>
                   <button type="submit" class="btn" data-bind="click: advancedSearch">Search</button>
                 </form>
             </div>
-            <div class="tab-pane" id="search-osgi-form-pane">
+            <div class="pill-pane" id="search-osgi-form-pane">
               <p>osgi search form.</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="accordion-heading">
-        <a class="accordion-toggle" href="#search-results" data-parent="#search-artifacts-accordion" data-toggle="collapse">${$.i18n.prop('search.artifact.results.header')}</a>
-      </div>
-      <div id="search-results" class="accordion-body collapse">
+
+      <div id="search-results" class="tab-pane">
         results
+      </div>
+
       </div>
     </div>
   </div>

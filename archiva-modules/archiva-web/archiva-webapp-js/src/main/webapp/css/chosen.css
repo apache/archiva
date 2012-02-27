@@ -256,9 +256,6 @@
   font-style: normal;
 }
 
-.chzn-results ul {
-  z-index: 1000;
-}
 
 .chzn-container .chzn-results .highlighted em {
   background: transparent;
@@ -277,6 +274,7 @@
 }
 .chzn-container-multi .chzn-drop .result-selected {
   display: none;
+  z-index: 999;
 }
 .chzn-container .chzn-results-scroll {
   background: white;
