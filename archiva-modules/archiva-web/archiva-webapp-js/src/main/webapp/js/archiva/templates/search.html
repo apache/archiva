@@ -170,8 +170,17 @@
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="search-basic-form-pane">
-                <form id="search-basic-form" class="form-search">
-                  <input type="text"/>
+                <form class="well form-horizontal" id="search-basic-form">
+                  <fieldset>
+                    <div class="control-group">
+                      <label class="control-label" for="search-terms">${$.i18n.prop('search.artifact.search.form.query.terms')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="search-terms" name="search-terms" size="50"
+                               data-bind="value: managedRepository.name"/>
+                      </div>
+                    </div>
+                  </fieldset>
+                  <button type="submit" class="btn">Search</button>
                 </form>
               </div>
               <div class="tab-pane" id="search-advanced-form-pane">
