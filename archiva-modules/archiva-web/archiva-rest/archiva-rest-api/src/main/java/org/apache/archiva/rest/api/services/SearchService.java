@@ -23,6 +23,7 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
+import org.apache.archiva.rest.api.model.StringList;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
@@ -86,6 +87,13 @@ public interface SearchService
      * <b>this method applies on Maven Indexer lucene index, so datas not yet indexed won't be available</b>
      */
     GroupIdList getAllGroupIds( @QueryParam( "selectedRepos" ) List<String> selectedRepos )
+        throws ArchivaRestServiceException;
+
+    @Path( "observablesRepoIds" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    StringList getObservablesRepoIds()
         throws ArchivaRestServiceException;
 
     /*

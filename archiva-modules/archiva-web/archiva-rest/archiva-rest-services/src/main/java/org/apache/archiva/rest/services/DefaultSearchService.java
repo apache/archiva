@@ -30,24 +30,14 @@ import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.Dependency;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
+import org.apache.archiva.rest.api.model.StringList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.apache.archiva.security.AccessDeniedException;
-import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.security.PrincipalNotFoundException;
-import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
-import org.codehaus.redback.rest.services.RedbackRequestInformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -174,6 +164,15 @@ public class DefaultSearchService
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public StringList getObservablesRepoIds()
+        throws ArchivaRestServiceException
+    {
+        return new StringList( getObservableRepos() );
+    }
+
+    //-------------------------------------
+    // internal
+    //-------------------------------------
     protected List<Artifact> getArtifacts( SearchResults searchResults )
     {
 
