@@ -206,7 +206,8 @@ $(function() {
 
       }
 		});
-
+    // by default display search screen
+    displaySearch();
 
   }
   startArchivaApplication();

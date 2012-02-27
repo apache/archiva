@@ -150,5 +150,45 @@
   <div class="page-header">
     <h3>${$.i18n.prop('search.artifact.header')}</h3>
   </div>
-  here
+  <div class="accordion" id="search-artifacts-accordion">
+    <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" href="#search-form-collapse" data-parent="#search-artifacts-accordion" data-toggle="collapse">${$.i18n.prop('search.artifact.form.header')}</a>
+        </div>
+        <div id="search-form-collapse" class="accordion-body collapse in">
+          <div class="tabbable tabs-below">
+            <ul class="nav nav-tabs">
+              <li class="active">
+                <a href="#search-basic-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.basic')}</a>
+              </li>
+              <li>
+                <a href="#search-advanced-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.advanced')}</a>
+              </li>
+              <li>
+                <a href="#search-osgi-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.osgi')}</a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="search-basic-form-pane">
+                <form id="search-basic-form" class="form-search">
+                  <input type="text"/>
+                </form>
+              </div>
+              <div class="tab-pane" id="search-advanced-form-pane">
+                <p>advanced search form.</p>
+              </div>
+              <div class="tab-pane" id="search-osgi-form-pane">
+                <p>osgi search form.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-heading">
+          <a class="accordion-toggle" href="#search-results" data-parent="#search-artifacts-accordion" data-toggle="collapse">${$.i18n.prop('search.artifact.results.header')}</a>
+        </div>
+        <div id="search-results" class="accordion-body collapse">
+          results
+        </div>
+    </div>
 </script>
