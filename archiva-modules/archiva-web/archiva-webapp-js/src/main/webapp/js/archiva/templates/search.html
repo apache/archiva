@@ -183,6 +183,19 @@
                              data-bind="value: searchParameters().basicQueryString"/>
                     </div>
                   </div>
+                  <div class="control-group">
+
+
+                    <div>
+                      <select data-placeholder="Choose a Country" id="search-basic-repostories-select" class="chzn-select"
+                              multiple style="z-index: 1000" tabindex="10">
+                        <option value="">All</option>
+                        {{each(i,repoId) observableRepoIds}}
+                          <option value="${repoId}">${repoId}</option>
+                        {{/each}}
+                      </select>
+                    </div>
+                  </div>
                 </fieldset>
                 <button type="submit" class="btn" data-bind="click: basicSearch">Search</button>
               </form>

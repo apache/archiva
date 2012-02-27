@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="stylesheet" href="css/chosen.css"/>
   <link rel="stylesheet" href="css/jquery-ui-1.8.16.custom.css"/>
   <link rel="stylesheet" href="css/bootstrap.2.0.1.css">
   <link rel="stylesheet" href="css/archiva.css">
@@ -89,6 +90,7 @@ $.ajax(
            .script(buildLoadJsUrl("archiva/repository-groups.js")).wait()
            .script(buildLoadJsUrl("archiva/search.js")).wait()
            .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
+           .script("chosen.jquery.js" )
            .script("bootstrap.2.0.1.js" )
            .script(buildLoadJsUrl("knockout.simpleGrid.js"))
            .script(buildLoadJsUrl("knockout-sortable.js"))

@@ -89,7 +89,7 @@ public interface SearchService
     GroupIdList getAllGroupIds( @QueryParam( "selectedRepos" ) List<String> selectedRepos )
         throws ArchivaRestServiceException;
 
-    @Path( "observablesRepoIds" )
+    @Path( "observableRepoIds" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )

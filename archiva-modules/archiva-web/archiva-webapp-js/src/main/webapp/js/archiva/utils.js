@@ -317,6 +317,17 @@ Entry=function(key,value){
   this.value=ko.observable(value);
   //this.value.subscribe(function(newValue){self.modified(true)});
 }
+/**
+ * map {"stringList":{"strings":["foo-managed","internal","snapshots"]}} to an array
+ * @param data
+ */
+mapStringList=function(data){
+  if (data && data.stringList && data.stringList.strings){
+  return $.isArray(data.stringList.strings) ?
+      $.map(data.stringList.strings,function(item){return item}): [data.stringList.strings];
+  }
+  return [];
+}
 
 // extends jquery tmpl to support var def
 $.extend($.tmpl.tag, {

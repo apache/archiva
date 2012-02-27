@@ -547,6 +547,7 @@ $(function() {
 
   SearchViewModel=function(){
     this.searchParameters=ko.observable(new SearchParameters());
+    this.observableRepoIds=ko.observableArray([]);
 
     basicSearch=function(){
       $.log("query:"+this.searchParameters().basicQueryString())
@@ -559,9 +560,19 @@ $(function() {
 
   displaySearch=function(){
     var mainContent=$("#main-content");
-    mainContent.html($("#search-artifacts-div-tmpl" ).tmpl());
-    var searchViewModel=new SearchViewModel();
-    ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
+    mainContent.html(mediumSpinnerImg());
+    $.ajax("restServices/archivaServices/searchService/observableRepoIds", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          mainContent.html($("#search-artifacts-div-tmpl" ).tmpl());
+          var searchViewModel=new SearchViewModel();
+          searchViewModel.observableRepoIds(mapStringList(data));
+          ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
+          mainContent.find("#search-basic-repostories-select" ).chosen();
+        }
+    });
+
   }
 
 });
