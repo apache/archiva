@@ -407,6 +407,99 @@ $(function() {
   //-----------------------------------------
   // search part
   //-----------------------------------------
+  Artifact=function(context,url,groupId,artifactId,repositoryId,version,prefix,goals,bundleVersion,bundleSymbolicName,
+                    bundleExportPackage,bundleExportService,bundleDescription,bundleName,bundleLicense,bundleDocUrl,
+                    bundleImportPackage,bundleRequireBundle,classifier,packaging,fileExtension){
+    //private String context;
+    this.context=context;
+
+    //private String url;
+    this.url=url;
+
+    //private String groupId;
+    this.groupId=groupId;
+
+    //private String artifactId;
+    this.artifactId=artifactId;
+
+    //private String repositoryId;
+    this.repositoryId=repositoryId;
+
+    //private String version;
+    this.version=version;
+
+    //Plugin goal prefix (only if packaging is "maven-plugin")
+    //private String prefix;
+    this.prefix=prefix;
+
+    //Plugin goals (only if packaging is "maven-plugin")
+    //private List<String> goals;
+    this.goals=goals;
+
+    //private String bundleVersion;
+    this.bundleVersion=bundleVersion;
+
+    // contains osgi metadata Bundle-SymbolicName if available
+    //private String bundleSymbolicName;
+    this.bundleSymbolicName=bundleSymbolicName;
+
+    //contains osgi metadata Export-Package if available
+    //private String bundleExportPackage;
+    this.bundleExportPackage=bundleExportPackage;
+
+    //contains osgi metadata Export-Service if available
+    //private String bundleExportService;
+    this.bundleExportService=bundleExportService;
+
+    ///contains osgi metadata Bundle-Description if available
+    //private String bundleDescription;
+    this.bundleDescription=bundleDescription;
+
+    // contains osgi metadata Bundle-Name if available
+    //private String bundleName;
+    this.bundleName=bundleName;
+
+    //contains osgi metadata Bundle-License if available
+    //private String bundleLicense;
+    this.bundleLicense=bundleLicense;
+
+    ///contains osgi metadata Bundle-DocURL if available
+    //private String bundleDocUrl;
+    this.bundleDocUrl=bundleDocUrl;
+
+    // contains osgi metadata Import-Package if available
+    //private String bundleImportPackage;
+    this.bundleImportPackage=bundleImportPackage;
+
+    ///contains osgi metadata Require-Bundle if available
+    //private String bundleRequireBundle;
+    this.bundleRequireBundle=bundleRequireBundle;
+
+    //private String classifier;
+    this.classifier=classifier;
+
+    //private String packaging;
+    this.packaging=packaging;
+
+    //file extension of the artifact
+    //private String fileExtension;
+    this.fileExtension=fileExtension;
+  }
+
+  mapArtifacts=function(data){
+    if (data.artifact){
+      return $.isArray(data.artifact )? $.map(data.artifact,function(item){return mapArtifact(item)}) : [data.artifact];
+    }
+    return [];
+  }
+
+  mapArtifact=function(data){
+    return new Artifact(data.context,data.url,data.groupId,data.artifactId,data.repositoryId,data.version,data.prefix,
+                        data.goals,data.bundleVersion,data.bundleSymbolicName,
+                        data.bundleExportPackage,data.bundleExportService,data.bundleDescription,data.bundleName,
+                        data.bundleLicense,data.bundleDocUrl,
+                        data.bundleImportPackage,data.bundleRequireBundle,data.classifier,data.packaging,data.fileExtension);
+  }
 
   SearchRequest=function(){
     //private String groupId;
