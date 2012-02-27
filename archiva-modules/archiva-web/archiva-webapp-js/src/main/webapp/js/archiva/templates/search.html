@@ -187,7 +187,7 @@
                     <select data-placeholder="${$.i18n.prop('search.artifact.search.form.query.repositories')}"
                             id="search-basic-repostories-select" class="chzn-select"
                             multiple style="width:350px;" tabindex="4">
-                      <option value="">All</option>
+                      <option value="all">${$.i18n.prop('search.artifact.search.form.repositories.all')}</option>
                       {{each(i,repoId) observableRepoIds}}
                         <option value="${repoId}">${repoId}</option>
                       {{/each}}

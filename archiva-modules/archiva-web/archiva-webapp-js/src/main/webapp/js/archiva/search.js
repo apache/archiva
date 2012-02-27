@@ -551,8 +551,20 @@ $(function() {
     this.selectedRepoIds=[];
 
     basicSearch=function(){
-      $.log("query:"+this.searchParameters().basicQueryString());
-      $.log("repoIds:"+this.selectedRepoIds);
+      //$.log("query:"+this.searchParameters().basicQueryString());
+      //$.log("repoIds:"+this.selectedRepoIds);
+      var queryTerm=this.searchParameters().basicQueryString();
+      if (!queryTerm || $.trim(queryTerm).length<1){
+        $.log("empty");
+        var errorList=[{
+          message: $.i18n.prop("search.artifact.search.form.terms.empty"),
+    		  element: $("#main-content #search-basic-form #search-terms" ).get(0)
+        }];
+        customShowError("#main-content #search-basic-form", null, null, errorList);
+      } else {
+        // cleanup previours error message
+        customShowError("#main-content #search-basic-form", null, null, []);
+      }
     }
 
     advancedSearch=function(){
