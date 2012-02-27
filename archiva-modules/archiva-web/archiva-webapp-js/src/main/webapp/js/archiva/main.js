@@ -156,19 +156,6 @@ $(function() {
     });
   }
 
-  // handle url with registration link
-  $(document).ready(function() {
-    var validateMeId = $.urlParam('validateMe');
-    if (validateMeId) {
-      validateKey(validateMeId);
-    }
-
-    var browse = $.urlParam('browse');
-    if (browse){
-      displayBrowseGroupId(browse);
-    }
-  });
-
   startArchivaApplication = function(){
     $.log("startArchivaApplication");
     $('#topbar-menu-container').html($("#topbar-menu"));
@@ -206,11 +193,28 @@ $(function() {
 
       }
 		});
-    // by default display search screen
-    displaySearch();
+
 
   }
   startArchivaApplication();
+
+
+  // handle url with registration link
+  $(document).ready(function() {
+    var validateMeId = $.urlParam('validateMe');
+    if (validateMeId) {
+      validateKey(validateMeId);
+      return;
+    }
+
+    var browse = $.urlParam('browse');
+    if (browse){
+      displayBrowseGroupId(browse);
+      return;
+    }
+    // by default display search screen
+    displaySearch();
+  });
 })
 });
 

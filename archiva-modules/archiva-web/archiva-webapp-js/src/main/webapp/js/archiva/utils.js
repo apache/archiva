@@ -329,6 +329,19 @@ mapStringList=function(data){
   return [];
 }
 
+// utils
+String.prototype.endsWith = function(str) {
+  return (this.match(str+"$")==str)
+}
+
+String.prototype.startsWith = function(str) {
+  return (this.match("^"+str)==str)
+}
+
+String.prototype.substringBeforeLast = function(str) {
+  return this.substring(0,this.lastIndexOf(str));
+}
+
 // extends jquery tmpl to support var def
 $.extend($.tmpl.tag, {
     "var": {

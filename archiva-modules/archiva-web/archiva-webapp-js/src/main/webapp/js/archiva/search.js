@@ -180,6 +180,101 @@ $(function() {
           ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
         }
     });
+    enableAutocompleBrowse();
+  }
+
+  enableAutocompleBrowse=function(){
+    // browse-autocomplete
+    $( "#main-content #browse-autocomplete" ).autocomplete({
+      minLength: 3,
+			source: function(request, response){
+        var query = "";
+        if (request.term.indexOf('.')<0){
+          // try with rootGroups then filtered
+          $.get("restServices/archivaServices/browseService/rootGroups",
+             function(data) {
+               var browseResultEntries = mapbrowseResultEntries(data);
+               var filetered = [];
+               for(var i=0;i<browseResultEntries.length;i++){
+                 if (browseResultEntries[i].name.startsWith(request.term)){
+                   filetered.push(browseResultEntries[i]);
+                 }
+               }
+               response(filetered);
+
+             }
+          );
+          return;
+        }
+        var dotEnd=request.term.endsWith(".");
+        // org.apache. requets with org.apache
+        // org.apa request with org before last dot and filter response with startsWith
+        if (request.term.indexOf(".")>=0){
+          if (dotEnd){
+            query= request.term.substring(0, request.term.length-1);
+          } else {
+            // substring before last
+            query=request.term.substringBeforeLast(".");
+          }
+        } else {
+          query=request.term;
+        }
+        $.get("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(query),
+           function(data) {
+             var browseResultEntries = mapbrowseResultEntries(data);
+             if (dotEnd){
+              response(browseResultEntries);
+             } else {
+               var filetered = [];
+               for(var i=0;i<browseResultEntries.length;i++){
+                 if (browseResultEntries[i].name.startsWith(request.term)){
+                   filetered.push(browseResultEntries[i]);
+                 }
+               }
+               response(filetered);
+             }
+           }
+        );
+      },
+      select: function( event, ui ) {
+        $.log("ui.item.label:"+ui.item.name);
+        if (ui.item.project=='true'){
+          // value org.apache.maven/maven-archiver
+          // split this org.apache.maven and maven-archiver
+          var id=ui.item.name;
+          var values = id.split(".");
+          var groupId="";
+          for (var i = 0;i<values.length-1;i++){
+            groupId+=values[i];
+            if (i<values.length-2)groupId+=".";
+          }
+          var artifactId=values[values.length-1];
+          displayArtifactDetail(groupId,artifactId,self);
+        } else {
+          displayBrowseGroupIdFromAutoComplete(ui.item.name);
+        }
+        return false;
+      }
+		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+					return $( "<li></li>" )
+						.data( "item.autocomplete", item )
+						.append( "<a>" + item.name + "</a>" )
+						.appendTo( ul );
+				};;
+  }
+
+  /**
+   * called if browser url contains queryParam browse=groupId
+   * @param groupId
+   */
+  displayBrowseGroupIdFromAutoComplete=function(groupId){
+    clearUserMessages();
+    var mainContent = $("#main-content");
+    //mainContent.html($("#browse-tmpl" ).tmpl());
+    mainContent.find("#browse_result").html(mediumSpinnerImg());
+    var parentBrowseViewModel=new BrowseViewModel(null,null,null);
+    displayGroupDetail(groupId,parentBrowseViewModel,null);
+    enableAutocompleBrowse();
   }
 
   /**
@@ -192,7 +287,8 @@ $(function() {
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());
     var parentBrowseViewModel=new BrowseViewModel(null,null,null);
-    displayGroupDetail(groupId,parentBrowseViewModel,null)
+    displayGroupDetail(groupId,parentBrowseViewModel,null);
+    enableAutocompleBrowse();
   }
 
 
