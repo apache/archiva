@@ -183,23 +183,23 @@
             <div class="pill-pane active" id="search-basic-form-pane">
               <form class="well form-inline" id="search-basic-form">
                 <fieldset>
-                    <div class="control-group" id="search-basic-repositories">
-                      <select data-placeholder="${$.i18n.prop('search.artifact.search.form.query.repositories')}"
-                              id="search-basic-repostories-select" class="chzn-select"
-                              multiple style="width:350px;" tabindex="4">
-                        <option value="">All</option>
-                        {{each(i,repoId) observableRepoIds}}
-                          <option value="${repoId}">${repoId}</option>
-                        {{/each}}
-                      </select>
+                  <div class="control-group" id="search-basic-repositories">
+                    <select data-placeholder="${$.i18n.prop('search.artifact.search.form.query.repositories')}"
+                            id="search-basic-repostories-select" class="chzn-select"
+                            multiple style="width:350px;" tabindex="4">
+                      <option value="">All</option>
+                      {{each(i,repoId) observableRepoIds}}
+                        <option value="${repoId}">${repoId}</option>
+                      {{/each}}
+                    </select>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="search-terms"></label>
+                  <div class="controls">
+                    <input type="text" class="input-medium search-query" id="search-terms" name="search-terms" size="50"
+                           data-bind="value: searchParameters().basicQueryString" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
                   </div>
-                  <div class="control-group">
-                    <label class="control-label" for="search-terms"></label>
-                    <div class="controls">
-                      <input type="text" class="input-medium search-query" id="search-terms" name="search-terms" size="50"
-                             data-bind="value: searchParameters().basicQueryString" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
-                    </div>
-                  </div>
+                </div>
                 <button type="submit" class="btn" data-bind="click: basicSearch">Search</button>
               </form>
             </div>
@@ -254,7 +254,7 @@
 
 
       <div id="search-results" class="tab-pane">
-        results
+        No Results yet. Try a search !
       </div>
 
       </div>
