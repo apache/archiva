@@ -194,7 +194,13 @@ $(function() {
              var res = $.map(data.artifact,function(item){
                return item.artifactId;
              });
-             response(res);
+             var uniqId = [];
+             for (var i= 0;i<res.length;i++){
+               if ( $.inArray(res[i],uniqId)<0){
+                 uniqId.push(res[i]);
+               }
+             }
+             response(uniqId);
            }
         );
 
