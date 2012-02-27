@@ -26,6 +26,8 @@ mvn tomcat7:run -pl :archiva-webapp-js -Pjs -am -Pdev
 or
 mvn tomcat6:run -pl :archiva-webapp-js -Pjs -am -Pdev
 
+hit your browser: http://localhost:9091/archiva/index.html
+
 Test Registration email
 ========================
 Redback can send email on registration by default the mail jndi si configured to use localhost.
