@@ -318,7 +318,8 @@ $(function() {
               {
                 type: "GET",
                   beforeSend:function(){
-                    displayInfoMessage($.i18n.prop("managedrepository.scan.started"));
+                    displayInfoMessage($.i18n.prop("managedrepository.scan.started",managedRepository.id()));
+                    closeDialogConfirm();
                   },
                   success: function(data) {
                     displaySuccessMessage($.i18n.prop("managedrepository.scanned",managedRepository.name()));
