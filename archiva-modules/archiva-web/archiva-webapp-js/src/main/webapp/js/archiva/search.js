@@ -561,15 +561,29 @@ $(function() {
     		  element: $("#main-content #search-basic-form #search-terms" ).get(0)
         }];
         customShowError("#main-content #search-basic-form", null, null, errorList);
+        return;
       } else {
         // cleanup previours error message
         customShowError("#main-content #search-basic-form", null, null, []);
       }
+      $("#main-content #search-results" ).html(mediumSpinnerImg());
+      activateSearchResultsTab();
+
     }
 
     advancedSearch=function(){
       $.log("groupId:"+this.searchParameters().searchRequest().groupId());
     }
+  }
+
+  activateSearchResultsTab=function(){
+    var mainContent=$("#main-content");
+    mainContent.find("#search-form-collapse").removeClass("active");
+    mainContent.find("#search-results").addClass("active");
+
+    mainContent.find("#search-form-collapse-li").removeClass("active");
+    mainContent.find("#search-results-li" ).addClass("active");
+
   }
 
   displaySearch=function(){
