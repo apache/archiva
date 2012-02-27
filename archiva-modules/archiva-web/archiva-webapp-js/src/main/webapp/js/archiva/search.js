@@ -409,7 +409,7 @@ $(function() {
   //-----------------------------------------
 
   displaySearch=function(){
-    $("#main-content" ).html("coming soon :-)");
+    $("#main-content" ).html($("#search-artifacts-form" ).tmpl());
   }
 
 });

@@ -115,7 +115,11 @@
           {{if projectVersionMetadata.organization}}
           <tr>
             <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
-            <td>${projectVersionMetadata.organization.name}</td>
+            {{if projectVersionMetadata.organization.url}}
+              <td><a href="${projectVersionMetadata.organization.url}" target="_blank">${projectVersionMetadata.organization.name}</a></td>
+            {{else}}
+              <td>${projectVersionMetadata.organization.name}</td>
+            {{/if}}
           </tr>
           {{/if}}
           {{if projectVersionMetadata.issueManagement}}
@@ -140,4 +144,11 @@
       </ul>
     </div>
   </div>
+</script>
+
+<script id="search-artifacts-form" type="text/html">
+  <div class="page-header">
+    <h3>${$.i18n.prop('search.artifact.header')}</h3>
+  </div>
+  here
 </script>
