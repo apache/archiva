@@ -198,7 +198,7 @@
                   <label class="control-label" for="search-terms"></label>
                   <div class="controls">
                     <input type="text" class="input-medium search-query" id="search-terms" name="search-terms" size="50"
-                           data-bind="value: searchParameters().basicQueryString" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
+                           data-bind="value: searchRequest().queryTerms" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
                   </div>
                 </div>
                 <button type="submit" class="btn" data-bind="click: basicSearch">Search</button>
@@ -211,35 +211,35 @@
                       <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.groupId')}</label>
                       <div class="controls">
                         <input type="text" class="input-medium search-query" id="groupId" name="groupId" size="50"
-                               data-bind="value: searchParameters().searchRequest().groupId"/>
+                               data-bind="value: searchRequest().groupId"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.artifactId')}</label>
                       <div class="controls">
                         <input type="text" class="input-medium search-query" id="artifactId" name="artifactId" size="50"
-                               data-bind="value: searchParameters().searchRequest().artifactId"/>
+                               data-bind="value: searchRequest().artifactId"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.version')}</label>
                       <div class="controls">
                         <input type="text" class="input-medium search-query" id="version" name="version" size="50"
-                               data-bind="value: searchParameters().searchRequest().version"/>
+                               data-bind="value: searchRequest().version"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.packaging')}</label>
                       <div class="controls">
                         <input type="text" class="input-medium search-query" id="packaging" name="packaging" size="50"
-                               data-bind="value: searchParameters().searchRequest().packaging"/>
+                               data-bind="value: searchRequest().packaging"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.className')}</label>
                       <div class="controls">
                         <input type="text" class="input-medium search-query" id="className" name="className" size="50"
-                               data-bind="value: searchParameters().searchRequest().className"/>
+                               data-bind="value: searchRequest().className"/>
                       </div>
                     </div>
                   </fieldset>
@@ -262,4 +262,12 @@
     </div>
   </div>
 
+</script>
+
+<script id="search-results-view-tmpl" type="text/html">
+  {{if artifacts.length==0}}
+    no results
+  {{else}}
+    results
+  {{/if}}
 </script>

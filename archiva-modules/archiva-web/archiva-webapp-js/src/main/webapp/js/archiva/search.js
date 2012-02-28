@@ -598,6 +598,9 @@ $(function() {
   }
 
   SearchRequest=function(){
+
+    this.queryTerms=ko.observable();
+
     //private String groupId;
     this.groupId=ko.observable();
 
@@ -614,7 +617,7 @@ $(function() {
     this.className=ko.observable();
 
     //private List<String> repositories = new ArrayList<String>();
-    this.repositories=ko.observableArray();
+    this.repositories=ko.observableArray([]);
 
     //private String bundleVersion;
     this.bundleVersion=ko.observable();
@@ -635,21 +638,20 @@ $(function() {
     this.includePomArtifacts=ko.observable(false);
   }
 
-
-  SearchParameters=function(){
-    this.basicQueryString=ko.observable();
-    this.searchRequest=ko.observable(new SearchRequest());
+  ResultViewModel=function(artifacts){
+    this.artifacts=artifacts;
   }
 
+
   SearchViewModel=function(){
-    this.searchParameters=ko.observable(new SearchParameters());
+    this.searchRequest=ko.observable(new SearchRequest());
     this.observableRepoIds=ko.observableArray([]);
     this.selectedRepoIds=[];
 
     basicSearch=function(){
       //$.log("query:"+this.searchParameters().basicQueryString());
       //$.log("repoIds:"+this.selectedRepoIds);
-      var queryTerm=this.searchParameters().basicQueryString();
+      var queryTerm=this.searchRequest().queryTerms();
       if (!queryTerm || $.trim(queryTerm).length<1){
         $.log("empty");
         var errorList=[{
@@ -662,8 +664,28 @@ $(function() {
         // cleanup previours error message
         customShowError("#main-content #search-basic-form", null, null, []);
       }
-      $("#main-content #search-results" ).html(mediumSpinnerImg());
-      activateSearchResultsTab();
+      var searchResults=$("#main-content #search-results" );
+      searchResults.html(mediumSpinnerImg());
+      this.searchRequest().repositories=this.selectedRepoIds;
+      $.ajax("restServices/archivaServices/searchService/quickSearchWithRepositories",
+        {
+          type: "POST",
+          data: "{\"searchRequest\": " + ko.toJSON(this.searchRequest)+"}",
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function(data) {
+            var resultViewModel=new ResultViewModel(mapArtifacts(data));
+            searchResults.attr("data-bind","template:{name:'search-results-view-tmpl'}");
+            ko.applyBindings(resultViewModel,searchResults.get(0));
+            activateSearchResultsTab();
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          }
+        }
+      );
+
 
     }
 

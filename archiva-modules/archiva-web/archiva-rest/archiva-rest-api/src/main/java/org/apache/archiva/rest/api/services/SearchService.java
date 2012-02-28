@@ -56,7 +56,7 @@ public interface SearchService
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
-    @Path( "quickSearch" )
+    @Path( "quickSearchWithRepositories" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
