@@ -19,22 +19,12 @@
   <div id="main-menu">
 
     <ul class="nav nav-list">
-      <li class="nav-header">${$.i18n.prop('menu.find')}</li>
+      <li class="nav-header">${$.i18n.prop('menu.artifacts')}</li>
       <li>
-        <a href="#" id="menu-find-search-a" onclick="displaySearch(this)">${$.i18n.prop('menu.find.search')}</a>
+        <a href="#" id="menu-find-search-a" onclick="displaySearch(this)">${$.i18n.prop('menu.artifacts.search')}</a>
       </li>
       <li>
-        <a href="#" id="menu-find-browse-a" onclick="displayBrowse()">${$.i18n.prop('menu.find.browse')}</a>
-      </li>
-    </ul>
-
-    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}">
-      <li class="nav-header">${$.i18n.prop('menu.manage')}</li>
-      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
-        <a href="#" id="menu-users-list-a" onclick="displayUsersGrid(this)">${$.i18n.prop('menu.users')}</a>
-      </li>
-      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
-        <a href="#" id="menu-roles-list-a" onclick="displayRolesGrid()">${$.i18n.prop('menu.roles')}</a>
+        <a href="#" id="menu-find-browse-a" onclick="displayBrowse()">${$.i18n.prop('menu.artifacts.browse')}</a>
       </li>
     </ul>
 
@@ -47,10 +37,20 @@
         <a href="#" id="menu-repositories-list-a" onclick="displayRepositoriesGrid()">${$.i18n.prop('menu.repositories')}</a>
       </li>
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-configuration']}">
-        <a href="#" id="menu-network-proxies-list-a" onclick="displayNetworkProxies()">${$.i18n.prop('menu.network-proxies')}</a>
+        <a href="#" id="menu-proxy-connectors-list-a" onclick="displayProxyConnectors()">${$.i18n.prop('menu.proxy-connectors')}</a>
       </li>
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-configuration']}">
-        <a href="#" id="menu-proxy-connectors-list-a" onclick="displayProxyConnectors()">${$.i18n.prop('menu.proxy-connectors')}</a>
+        <a href="#" id="menu-network-proxies-list-a" onclick="displayNetworkProxies()">${$.i18n.prop('menu.network-proxies')}</a>
+      </li>
+    </ul>
+
+    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}">
+      <li class="nav-header">${$.i18n.prop('menu.manage')}</li>
+      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
+        <a href="#" id="menu-users-list-a" onclick="displayUsersGrid(this)">${$.i18n.prop('menu.users')}</a>
+      </li>
+      <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
+        <a href="#" id="menu-roles-list-a" onclick="displayRolesGrid()">${$.i18n.prop('menu.roles')}</a>
       </li>
     </ul>
 
