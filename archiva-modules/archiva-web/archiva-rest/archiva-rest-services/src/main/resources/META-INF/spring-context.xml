@@ -42,6 +42,7 @@
 
   <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.JSONProvider">
     <!-- without that String 2.0 are transformed to 2 which is not correct for versions -->
+    <!-- side effect json boolean are string rather than boolean -->
     <property name="convertTypesToStrings" value="true"/>
     <!--property name="serializeAsArray" value="true"/--> 
 

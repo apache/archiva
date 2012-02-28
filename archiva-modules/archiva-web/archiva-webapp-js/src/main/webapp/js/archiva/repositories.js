@@ -149,9 +149,11 @@ $(function() {
     if (data==null){
       return null;
     }
-    return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots,data.releases,
-                                 data.blockRedeployments,data.cronExpression,
-                                 data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,data.stageRepoNeeded);
+    return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots=='true'
+                                 ,data.releases=='true',
+                                 data.blockRedeployments=='true',data.cronExpression,
+                                 data.scanned=='true',data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots=='true',
+                                 data.stageRepoNeeded=='true');
   }
 
   mapArchivaRepositoryStatistics=function(data){
@@ -591,8 +593,8 @@ $(function() {
       return null;
     }
     return new RemoteRepository(data.id,data.name,data.layout,data.indexDirectory,data.url,data.userName,data.password,
-                                data.timeout,data.downloadRemoteIndex,data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
-                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup);
+                                data.timeout,data.downloadRemoteIndex=='true',data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
+                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup=='true');
   }
 
   mapRemoteRepositories=function(data){
