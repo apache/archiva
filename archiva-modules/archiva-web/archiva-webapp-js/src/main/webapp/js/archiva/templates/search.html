@@ -255,7 +255,9 @@
 
 
       <div id="search-results" class="tab-pane">
-        No Results yet. Try a search !
+        <table class="table table-striped table-bordered" id="search-results-grid">
+        </table>
+        <div id="search-results-view-grid-pagination"></div>
       </div>
 
       </div>
@@ -264,10 +266,21 @@
 
 </script>
 
-<script id="search-results-view-tmpl" type="text/html">
-  {{if artifacts.length==0}}
-    no results
-  {{else}}
-    results
-  {{/if}}
+<script id="search-results-view-grid-tmpl" type="text/html">
+    <thead>
+        <tr>
+          {{each(i, columnDefinition) columns}}
+            <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
+          {{/each}}
+        </tr>
+    </thead>
+    <tbody>
+        {{each(i, row) itemsOnCurrentPage()}}
+            <tr>
+              {{each(j, columnDefinition) columns}}
+                <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+              {{/each}}
+            </tr>
+        {{/each}}
+    </tbody>
 </script>

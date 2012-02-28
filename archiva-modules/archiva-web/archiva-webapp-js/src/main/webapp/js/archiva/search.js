@@ -639,15 +639,38 @@ $(function() {
   }
 
   ResultViewModel=function(artifacts){
-    this.artifacts=artifacts;
+    var self=this;
+    this.artifacts=ko.observableArray(artifacts);
+    this.gridViewModel = new ko.simpleGrid.viewModel({
+      data: self.artifacts,
+      columns: [
+        {
+          headerText: $.i18n.prop('search.artifact.results.groupId'),
+          rowText: "groupId"
+        },
+        {
+          headerText: $.i18n.prop('search.artifact.results.artifactId'),
+          rowText: "artifactId"
+        },
+        {
+          headerText: $.i18n.prop('search.artifact.results.version'),
+          rowText: "version"
+        }
+      ],
+      pageSize: 10,
+      gridUpdateCallBack: function(){
+
+      }
+    });
   }
 
 
   SearchViewModel=function(){
+    var self=this;
     this.searchRequest=ko.observable(new SearchRequest());
     this.observableRepoIds=ko.observableArray([]);
     this.selectedRepoIds=[];
-
+    this.resultViewModel=new ResultViewModel([]);
     basicSearch=function(){
       //$.log("query:"+this.searchParameters().basicQueryString());
       //$.log("repoIds:"+this.selectedRepoIds);
@@ -664,8 +687,8 @@ $(function() {
         // cleanup previours error message
         customShowError("#main-content #search-basic-form", null, null, []);
       }
-      var searchResults=$("#main-content #search-results" );
-      searchResults.html(mediumSpinnerImg());
+      var searchResultsGrid=$("#main-content #search-results #search-results-grid" );
+      $("#main-content #user-messages").html(mediumSpinnerImg());
       this.searchRequest().repositories=this.selectedRepoIds;
       $.ajax("restServices/archivaServices/searchService/quickSearchWithRepositories",
         {
@@ -674,10 +697,20 @@ $(function() {
           contentType: 'application/json',
           dataType: 'json',
           success: function(data) {
-            var resultViewModel=new ResultViewModel(mapArtifacts(data));
-            searchResults.attr("data-bind","template:{name:'search-results-view-tmpl'}");
-            ko.applyBindings(resultViewModel,searchResults.get(0));
-            activateSearchResultsTab();
+            clearUserMessages();
+            var artifacts=mapArtifacts(data);
+            if (artifacts.length<1){
+              displayWarningMessage( $.i18n.prop("search.artifact.noresults"));
+              return;
+            } else {
+              self.resultViewModel.artifacts(artifacts);
+              if (!searchResultsGrid.attr("data-bind")){
+                searchResultsGrid.attr("data-bind",
+                                 "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
+                ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
+              }
+              activateSearchResultsTab();
+            }
           },
           error: function(data) {
             var res = $.parseJSON(data.responseText);
