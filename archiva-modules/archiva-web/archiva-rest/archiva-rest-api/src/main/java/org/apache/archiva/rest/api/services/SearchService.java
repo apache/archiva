@@ -56,16 +56,14 @@ public interface SearchService
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
-    @Path( "getArtifactVersions" )
-    @GET
+    @Path( "quickSearch" )
+    @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     /**
-     * <b>search will be apply on all repositories the current user has karma</b>
+     * <b>if not repositories in SearchRequest: search will be apply on all repositories the current user has karma</b>
      */
-    List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
-                                        @QueryParam( "artifactId" ) String artifactId,
-                                        @QueryParam( "packaging" ) String packaging )
+    List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
 
     @Path( "searchArtifacts" )
@@ -78,6 +76,19 @@ public interface SearchService
      */
     List<Artifact> searchArtifacts( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
+
+    @Path( "getArtifactVersions" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    /**
+     * <b>search will be apply on all repositories the current user has karma</b>
+     */
+    List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
+                                        @QueryParam( "artifactId" ) String artifactId,
+                                        @QueryParam( "packaging" ) String packaging )
+        throws ArchivaRestServiceException;
+
 
     @Path( "getAllGroupIds" )
     @GET
@@ -93,6 +104,9 @@ public interface SearchService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
+    /**
+     * @since 1.4-M3
+     */
     StringList getObservablesRepoIds()
         throws ArchivaRestServiceException;
 

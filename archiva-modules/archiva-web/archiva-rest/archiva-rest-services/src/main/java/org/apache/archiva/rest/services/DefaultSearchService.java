@@ -78,6 +78,34 @@ public class DefaultSearchService
         }
     }
 
+    public List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
+        throws ArchivaRestServiceException
+    {
+        String queryString = searchRequest.getQueryTerms();
+        if ( StringUtils.isBlank( queryString ) )
+        {
+            return Collections.emptyList();
+        }
+        List<String> repositories = searchRequest.getRepositories();
+        if ( repositories == null || repositories.isEmpty() )
+        {
+            repositories = getObservableRepos();
+        }
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        try
+        {
+            SearchResults searchResults = repositorySearch.search( getPrincipal(), repositories, queryString, limits,
+                                                                   Collections.<String>emptyList() );
+            return getArtifacts( searchResults );
+
+        }
+        catch ( RepositorySearchException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
     public List<Artifact> getArtifactVersions( String groupId, String artifactId, String packaging )
         throws ArchivaRestServiceException
     {

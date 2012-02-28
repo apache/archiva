@@ -25,6 +25,13 @@ import java.util.List;
 @XmlRootElement( name = "searchRequest" )
 public class SearchRequest
 {
+
+    /**
+     * @since 1.4-M3
+     * to be able to search with a query on selected repositories
+     */
+    private String queryTerms;
+
     /**
      * groupId
      */
@@ -229,12 +236,23 @@ public class SearchRequest
         this.includePomArtifacts = includePomArtifacts;
     }
 
+    public String getQueryTerms()
+    {
+        return queryTerms;
+    }
+
+    public void setQueryTerms( String queryTerms )
+    {
+        this.queryTerms = queryTerms;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "SearchRequest" );
-        sb.append( "{groupId='" ).append( groupId ).append( '\'' );
+        sb.append( "{queryTerms='" ).append( queryTerms ).append( '\'' );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
         sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
         sb.append( ", version='" ).append( version ).append( '\'' );
         sb.append( ", packaging='" ).append( packaging ).append( '\'' );
