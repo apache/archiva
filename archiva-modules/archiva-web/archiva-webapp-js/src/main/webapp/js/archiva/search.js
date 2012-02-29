@@ -638,6 +638,32 @@ $(function() {
     this.includePomArtifacts=ko.observable(false);
   }
 
+  applyAutocompleteOnHeader=function(property,resultViewModel){
+    $( "#main-content #search-filter-auto-"+property ).autocomplete({
+      minLength: 0,
+			source: function(request, response){
+        var founds=[];
+        $(resultViewModel.artifacts()).each(function(idx,artifact){
+          if(artifact[property].startsWith(request.term)){
+            founds.push(artifact[property]);
+          }
+        });
+        response(unifyArray(founds,true));
+      },
+      select: function( event, ui ) {
+        $.log("property:"+property+','+ui.item.value);
+        var artifacts=[];
+        $(resultViewModel.artifacts()).each(function(idx,artifact){
+          if(artifact[property].startsWith(ui.item.value)){
+            artifacts.push(artifact);
+          }
+        });
+        resultViewModel.artifacts(artifacts);
+        return false;
+      }
+    });
+  }
+
   ResultViewModel=function(artifacts){
     var self=this;
     this.originalArtifacts=artifacts;
@@ -663,7 +689,9 @@ $(function() {
       ],
       pageSize: 10,
       gridUpdateCallBack: function(){
-
+        applyAutocompleteOnHeader('groupId',self);
+        applyAutocompleteOnHeader('artifactId',self);
+        applyAutocompleteOnHeader('version',self);
       }
     });
   }
@@ -734,9 +762,7 @@ $(function() {
                                  "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
               }
-              applyAutocompleteOnHeader('groupId');
-              applyAutocompleteOnHeader('artifactId');
-              applyAutocompleteOnHeader('version');
+
               activateSearchResultsTab();
             }
           },
@@ -753,31 +779,6 @@ $(function() {
       );
     }
 
-    applyAutocompleteOnHeader=function(property){
-      $( "#main-content #search-filter-auto-"+property ).autocomplete({
-        minLength: 1,
-  			source: function(request, response){
-          var founds=[];
-          $(self.resultViewModel.artifacts()).each(function(idx,artifact){
-            if(artifact[property].startsWith(request.term)){
-              founds.push(artifact[property]);
-            }
-          });
-          response(unifyArray(founds,true));
-        }
-      });
-    }
-
-    // olamy not used as we cannot filter on className etc...
-    filterResults=function(){
-      var filtered=[];
-      for (var i=0;i<self.resultViewModel.artifacts().length;i++){
-        if (self.resultViewModel.artifacts()[i].groupId==this.searchRequest().groupId()){
-          filtered.push(self.resultViewModel.artifacts()[i]);
-        }
-      }
-      self.resultViewModel.artifacts(filtered);
-    }
   }
 
   activateSearchResultsTab=function(){
