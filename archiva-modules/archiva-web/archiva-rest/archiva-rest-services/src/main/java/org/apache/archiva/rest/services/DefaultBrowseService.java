@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
@@ -185,7 +186,7 @@ public class DefaultBrowseService
 
     }
 
-    private Set<String> getVersions( List<String> selectedRepos, String groupId, String artifactId )
+    private Collection<String> getVersions( List<String> selectedRepos, String groupId, String artifactId )
         throws MetadataResolutionException
 
     {
@@ -202,7 +203,12 @@ public class DefaultBrowseService
                     metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId, artifactId ) );
             }
 
-            return versions;
+            List<String> sortedVersions = new ArrayList<String>( versions );
+
+            Collections.sort( sortedVersions, VersionComparator.getInstance() );
+
+
+            return sortedVersions;
         }
         finally
         {
@@ -226,7 +232,7 @@ public class DefaultBrowseService
         try
         {
 
-            Set<String> projectVersions = getVersions( selectedRepos, groupId, artifactId );
+            Collection<String> projectVersions = getVersions( selectedRepos, groupId, artifactId );
 
             repositorySession = repositorySessionFactory.createSession();
 
