@@ -688,7 +688,8 @@ $(function() {
         customShowError("#main-content #search-basic-form", null, null, []);
       }
       var searchResultsGrid=$("#main-content #search-results #search-results-grid" );
-      $("#main-content #user-messages").html(mediumSpinnerImg());
+      $("#main-content #btn-basic-search" ).button("loading");
+      $("#user-messages").html(mediumSpinnerImg());
       this.searchRequest().repositories=this.selectedRepoIds;
       $.ajax("restServices/archivaServices/searchService/quickSearchWithRepositories",
         {
@@ -715,6 +716,10 @@ $(function() {
           error: function(data) {
             var res = $.parseJSON(data.responseText);
             displayRestError(res);
+          },
+          complete:function() {
+            $("#main-content #btn-basic-search" ).button("reset");
+            removeMediumSpinnerImg("#user-messages");
           }
         }
       );
