@@ -45,12 +45,12 @@
     </ul>
 
     <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}">
-      <li class="nav-header">${$.i18n.prop('menu.manage')}</li>
+      <li class="nav-header">${$.i18n.prop('menu.users')}</li>
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
-        <a href="#" id="menu-users-list-a" onclick="displayUsersGrid(this)">${$.i18n.prop('menu.users')}</a>
+        <a href="#" id="menu-users-list-a" onclick="displayUsersGrid(this)">${$.i18n.prop('menu.users.manage')}</a>
       </li>
       <li style="display: none" redback-permissions="{permissions: ['archiva-manage-users']}">
-        <a href="#" id="menu-roles-list-a" onclick="displayRolesGrid()">${$.i18n.prop('menu.roles')}</a>
+        <a href="#" id="menu-roles-list-a" onclick="displayRolesGrid()">${$.i18n.prop('menu.users.roles')}</a>
       </li>
     </ul>
 
