@@ -640,6 +640,7 @@ $(function() {
 
   ResultViewModel=function(artifacts){
     var self=this;
+    this.originalArtifacts=artifacts;
     this.artifacts=ko.observableArray(artifacts);
     this.gridViewModel = new ko.simpleGrid.viewModel({
       data: self.artifacts,
@@ -672,8 +673,6 @@ $(function() {
     this.selectedRepoIds=[];
     this.resultViewModel=new ResultViewModel([]);
     basicSearch=function(){
-      //$.log("query:"+this.searchParameters().basicQueryString());
-      //$.log("repoIds:"+this.selectedRepoIds);
       var queryTerm=this.searchRequest().queryTerms();
       if (!queryTerm || $.trim(queryTerm).length<1){
         $.log("empty");
@@ -687,11 +686,33 @@ $(function() {
         // cleanup previours error message
         customShowError("#main-content #search-basic-form", null, null, []);
       }
-      var searchResultsGrid=$("#main-content #search-results #search-results-grid" );
-      $("#main-content #btn-basic-search" ).button("loading");
+      self.search("restServices/archivaServices/searchService/quickSearchWithRepositories");
+
+
+    }
+
+    advancedSearch=function(){
+      self.search("restServices/archivaServices/searchService/searchArtifacts");
+    }
+
+    this.search=function(url){
+
+      var mainContent=$("#main-content");
+
+      var searchResultsGrid=mainContent.find("#search-results #search-results-grid" );
+      mainContent.find("#btn-basic-search" ).button("loading");
       $("#user-messages").html(mediumSpinnerImg());
+
+
+      self.selectedRepoIds=[];
+      mainContent.find("#search-basic-repositories" )
+          .find(".chzn-choices li span").each(function(i,span){
+                      self.selectedRepoIds.push($(span).html());
+                      }
+                    );
+
       this.searchRequest().repositories=this.selectedRepoIds;
-      $.ajax("restServices/archivaServices/searchService/quickSearchWithRepositories",
+      $.ajax(url,
         {
           type: "POST",
           data: "{\"searchRequest\": " + ko.toJSON(this.searchRequest)+"}",
@@ -723,12 +744,6 @@ $(function() {
           }
         }
       );
-
-
-    }
-
-    advancedSearch=function(){
-      $.log("groupId:"+this.searchParameters().searchRequest().groupId());
     }
   }
 
@@ -754,16 +769,7 @@ $(function() {
           var searchViewModel=new SearchViewModel();
           searchViewModel.observableRepoIds(mapStringList(data));
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
-          mainContent.find("#search-basic-repostories-select" ).chosen()
-              .change(function(){
-                                  searchViewModel.selectedRepoIds=[];
-                                  mainContent.find("#search-basic-repositories" )
-                                      .find(".chzn-choices li span").each(function(i,span){
-                                                  searchViewModel.selectedRepoIds.push($(span).html());
-                                                  }
-                                                );
-
-                                });
+          mainContent.find("#search-basic-repostories-select" ).chosen();
         }
     });
 
