@@ -703,6 +703,7 @@ $(function() {
 
       var searchResultsGrid=mainContent.find("#search-results #search-results-grid" );
       mainContent.find("#btn-basic-search" ).button("loading");
+      mainContent.find("#btn-advanced-search" ).button("loading");
       $("#user-messages").html(mediumSpinnerImg());
 
 
@@ -733,8 +734,50 @@ $(function() {
                                  "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
               }
+              // FIXME something generic here !
+
+              $( "#main-content #search-filter-auto-groupId" ).autocomplete({
+                minLength: 1,
+          			source: function(request, response){
+                  var groupIds=[];
+                  $(self.resultViewModel.artifacts()).each(function(idx,artifact){
+                    if(artifact.groupId.startsWith(request.term)){
+                      groupIds.push(artifact.groupId);
+                    }
+                  });
+                  response(unifyArray(groupIds,true));
+                }
+              });
+
+              $( "#main-content #search-filter-auto-artifactId" ).autocomplete({
+                minLength: 1,
+          			source: function(request, response){
+                  var artifactIds=[];
+                  $(self.resultViewModel.artifacts()).each(function(idx,artifact){
+                    if(artifact.artifactId.startsWith(request.term)){
+                      artifactIds.push(artifact.artifactId);
+                    }
+                  });
+                  response(unifyArray(artifactIds,true));
+                }
+              });
+
+              $( "#main-content #search-filter-auto-version" ).autocomplete({
+                minLength: 1,
+          			source: function(request, response){
+                  var versions=[];
+                  $(self.resultViewModel.artifacts()).each(function(idx,artifact){
+                    if(artifact.version.startsWith(request.term)){
+                      versions.push(artifact.version);
+                    }
+                  });
+                  response(unifyArray(versions,true));
+                }
+              });
+
+
+
               activateSearchResultsTab();
-              mainContent.find("#btn-advanced-search-filter" ).show();
             }
           },
           error: function(data) {
@@ -742,13 +785,15 @@ $(function() {
             displayRestError(res);
           },
           complete:function() {
-            $("#main-content #btn-basic-search" ).button("reset");
+            mainContent.find("##btn-basic-search" ).button("reset");
+            mainContent.find("#btn-advanced-search" ).button("reset");
             removeMediumSpinnerImg("#user-messages");
           }
         }
       );
     }
 
+    // olamy not used as we cannot filter on className etc...
     filterResults=function(){
       var filtered=[];
       for (var i=0;i<self.resultViewModel.artifacts().length;i++){

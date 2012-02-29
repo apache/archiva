@@ -329,6 +329,21 @@ mapStringList=function(data){
   return [];
 }
 
+/**
+ * return an array with removing duplicate strings
+ * @param strArray an array of string
+ * @param sorted to sort or not
+ */
+unifyArray=function(strArray,sorted){
+  var res = [];
+  $(strArray).each(function(idx,str){
+    if ( $.inArray(str,res)<0){
+      res.push(str);
+    }
+  });
+  return sorted?res.sort():res;
+}
+
 // utils
 String.prototype.endsWith = function(str) {
   return (this.match(str+"$")==str)
