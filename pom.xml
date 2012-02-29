@@ -1763,7 +1763,7 @@
         <repository>
           <id>apache.snapshots</id>
           <name>Apache Snapshots</name>
-          <url>https://repository.apache.org/content/groups/snapshots-group/</url>
+          <url>https://repository.apache.org/content/groups/snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -1776,7 +1776,17 @@
         <pluginRepository>
           <id>apache.snapshots</id>
           <name>Apache Snapshots</name>
-          <url>https://repository.apache.org/content/groups/snapshots-group/</url>
+          <url>https://repository.apache.org/content/groups/snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>codehaus.snapshots</id>
+          <url>https://nexus.codehaus.org/content/groups/snapshots-group/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
