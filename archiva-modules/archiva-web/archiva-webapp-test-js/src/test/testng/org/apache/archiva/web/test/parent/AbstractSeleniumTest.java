@@ -56,7 +56,7 @@ public abstract class AbstractSeleniumTest
         throws Exception
     {
         p = new Properties();
-        p.load( this.getClass().getClassLoader().getResourceAsStream( "testng.properties" ) );
+        p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
     }
 
     /**
@@ -99,7 +99,7 @@ public abstract class AbstractSeleniumTest
 
     protected String getEscapeProperty( String key )
     {
-        InputStream input = this.getClass().getClassLoader().getResourceAsStream( "testng.properties" );
+        InputStream input = this.getClass().getClassLoader().getResourceAsStream( "test.properties" );
         String value = null;
         List<String> lines;
         try
