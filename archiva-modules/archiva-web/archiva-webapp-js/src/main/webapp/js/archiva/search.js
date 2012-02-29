@@ -734,49 +734,9 @@ $(function() {
                                  "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
               }
-              // FIXME something generic here !
-
-              $( "#main-content #search-filter-auto-groupId" ).autocomplete({
-                minLength: 1,
-          			source: function(request, response){
-                  var groupIds=[];
-                  $(self.resultViewModel.artifacts()).each(function(idx,artifact){
-                    if(artifact.groupId.startsWith(request.term)){
-                      groupIds.push(artifact.groupId);
-                    }
-                  });
-                  response(unifyArray(groupIds,true));
-                }
-              });
-
-              $( "#main-content #search-filter-auto-artifactId" ).autocomplete({
-                minLength: 1,
-          			source: function(request, response){
-                  var artifactIds=[];
-                  $(self.resultViewModel.artifacts()).each(function(idx,artifact){
-                    if(artifact.artifactId.startsWith(request.term)){
-                      artifactIds.push(artifact.artifactId);
-                    }
-                  });
-                  response(unifyArray(artifactIds,true));
-                }
-              });
-
-              $( "#main-content #search-filter-auto-version" ).autocomplete({
-                minLength: 1,
-          			source: function(request, response){
-                  var versions=[];
-                  $(self.resultViewModel.artifacts()).each(function(idx,artifact){
-                    if(artifact.version.startsWith(request.term)){
-                      versions.push(artifact.version);
-                    }
-                  });
-                  response(unifyArray(versions,true));
-                }
-              });
-
-
-
+              applyAutocompleteOnHeader('groupId');
+              applyAutocompleteOnHeader('artifactId');
+              applyAutocompleteOnHeader('version');
               activateSearchResultsTab();
             }
           },
@@ -791,6 +751,21 @@ $(function() {
           }
         }
       );
+    }
+
+    applyAutocompleteOnHeader=function(property){
+      $( "#main-content #search-filter-auto-"+property ).autocomplete({
+        minLength: 1,
+  			source: function(request, response){
+          var founds=[];
+          $(self.resultViewModel.artifacts()).each(function(idx,artifact){
+            if(artifact[property].startsWith(request.term)){
+              founds.push(artifact[property]);
+            }
+          });
+          response(unifyArray(founds,true));
+        }
+      });
     }
 
     // olamy not used as we cannot filter on className etc...
