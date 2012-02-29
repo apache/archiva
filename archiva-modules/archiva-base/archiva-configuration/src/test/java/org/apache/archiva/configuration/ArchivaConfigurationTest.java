@@ -306,8 +306,7 @@ public class ArchivaConfigurationTest
         userFile.getParentFile( ).mkdirs( );
         FileUtils.writeStringToFile( userFile, "<configuration/>", null );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
         Configuration configuration = new Configuration( );
         configuration.setWebapp( new WebappConfiguration( ) );
@@ -336,8 +335,7 @@ public class ArchivaConfigurationTest
         userFile.delete( );
         assertFalse( userFile.exists( ) );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-defaults" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user-defaults" );
 
         archivaConfiguration.reload( );
 
