@@ -119,7 +119,6 @@
   </dependencies>
 
   <build>
-    <testSourceDirectory>src/test/testng</testSourceDirectory>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
