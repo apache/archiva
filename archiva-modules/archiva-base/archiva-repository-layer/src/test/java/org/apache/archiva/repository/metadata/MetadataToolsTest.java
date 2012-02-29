@@ -20,8 +20,6 @@ package org.apache.archiva.repository.metadata;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.model.ProjectReference;
@@ -35,21 +33,23 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.MockConfiguration;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.xml.sax.SAXException;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.xml.parsers.ParserConfigurationException;
 
 import static org.junit.Assert.*;
 
@@ -58,11 +58,13 @@ import static org.junit.Assert.*;
  *
  * @version $Id$
  */
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
+@ContextConfiguration(
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
 public class MetadataToolsTest
     extends AbstractRepositoryLayerTestCase
 {
-    @Inject @Named(value = "metadataTools#test")
+    @Inject
+    @Named( value = "metadataTools#test" )
     private MetadataTools tools;
 
     @Inject
@@ -76,7 +78,7 @@ public class MetadataToolsTest
         removeProxyConnector( "test-repo", "apache-snapshots" );
         removeProxyConnector( "test-repo", "internal-snapshots" );
         removeProxyConnector( "test-repo", "snapshots.codehaus.org" );
-        
+
         assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT",
                                 new String[]{ "1.0-alpha-11-SNAPSHOT", "1.0-alpha-11-20070221.194724-2",
                                     "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
@@ -552,19 +554,19 @@ public class MetadataToolsTest
         assertMetadata( buf.toString(), testRepo, reference );
     }
 
-    private void removeProxyConnector( String sourceRepoId, String targetRepoId ) 
+    private void removeProxyConnector( String sourceRepoId, String targetRepoId )
     {
         ProxyConnectorConfiguration toRemove = null;
-        for (ProxyConnectorConfiguration pcc : config.getConfiguration().getProxyConnectors()) 
+        for ( ProxyConnectorConfiguration pcc : config.getConfiguration().getProxyConnectors() )
         {
-             if (pcc.getTargetRepoId().equals( targetRepoId ) && pcc.getSourceRepoId().equals( sourceRepoId )) 
-             {
-                 toRemove = pcc;
-             }
+            if ( pcc.getTargetRepoId().equals( targetRepoId ) && pcc.getSourceRepoId().equals( sourceRepoId ) )
+            {
+                toRemove = pcc;
+            }
         }
-        if (toRemove != null)
+        if ( toRemove != null )
         {
-            config.getConfiguration().removeProxyConnector(toRemove);
+            config.getConfiguration().removeProxyConnector( toRemove );
             String prefix = "proxyConnectors.proxyConnector(" + "1" + ")";  // XXX 
             config.triggerChange( prefix + ".sourceRepoId", toRemove.getSourceRepoId() );
             config.triggerChange( prefix + ".targetRepoId", toRemove.getTargetRepoId() );
@@ -574,8 +576,8 @@ public class MetadataToolsTest
             config.triggerChange( prefix + ".policies.snapshots", toRemove.getPolicy( "snapshots", "" ) );
             config.triggerChange( prefix + ".policies.cache-failures", toRemove.getPolicy( "cache-failures", "" ) );
         }
-    } 
-    
+    }
+
     private void createProxyConnector( String sourceRepoId, String targetRepoId )
     {
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
