@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.Properties;
+import org.springframework.cache.CacheManager;
 
 /**
  * CachedFailuresPolicyTest
@@ -81,11 +82,9 @@ public class CachedFailuresPolicyTest
     }
 
     @Test
-    public void testPolicyYesNotInCache()
+    public void testPolicyYes()
         throws Exception
     {
-
-        //CacheManager.getInstance().clearAll();
 
         DownloadPolicy policy = lookupPolicy();
         File localFile = getFile();
@@ -93,20 +92,13 @@ public class CachedFailuresPolicyTest
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
 
-        policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );
-    }
-
-    @Test
-    public void testPolicyYesInCache()
-        throws Exception
-    {
-        DownloadPolicy policy = lookupPolicy();
-        File localFile = getFile();
-        Properties request = createRequest();
-
+        // should not fail
+        policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );        
+        // status Yes Not In cache
+        
+        // Yes in Cache
         String url = "http://a.bad.hostname.maven.org/path/to/resource.txt";
-
-
+         
         urlFailureCache.cacheFailure( url );
 
         request.setProperty( "url", url );
@@ -120,5 +112,5 @@ public class CachedFailuresPolicyTest
         {
             // expected path.
         }
-    }
+    }   
 }
