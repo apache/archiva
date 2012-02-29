@@ -724,7 +724,9 @@ $(function() {
     advancedSearch=function(){
       self.search("restServices/archivaServices/searchService/searchArtifacts");
     }
-
+    removeFilter=function(){
+      self.resultViewModel.artifacts(self.resultViewModel.originalArtifacts);
+    }
     this.search=function(url){
 
       var mainContent=$("#main-content");
@@ -756,11 +758,13 @@ $(function() {
               displayWarningMessage( $.i18n.prop("search.artifact.noresults"));
               return;
             } else {
+              self.resultViewModel.originalArtifacts=artifacts;
               self.resultViewModel.artifacts(artifacts);
               if (!searchResultsGrid.attr("data-bind")){
                 searchResultsGrid.attr("data-bind",
                                  "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
+                ko.applyBindings(self,mainContent.find("#remove-filter-id" ).get(0));
               }
 
               activateSearchResultsTab();
