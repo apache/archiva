@@ -209,7 +209,8 @@
                              data-bind="value: searchRequest().queryTerms" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
                     </div>
                   </div>
-                  <button type="submit" id="btn-basic-search" class="btn btn-primary" data-loading-text="${$.i18n.prop('search.artifact.searching')}" data-bind="click: basicSearch">Search</button>
+                  <button type="submit" id="btn-basic-search" class="btn btn-primary"
+                          data-loading-text="${$.i18n.prop('search.artifact.searching')}" data-bind="click: basicSearch">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
                 </fieldset>
               </form>
             </div>
@@ -252,7 +253,12 @@
                       </div>
                     </div>
                   </fieldset>
-                  <button type="submit" id="btn-advanced-search" class="btn btn-primary" class="btn" data-bind="click: advancedSearch">Search</button>
+                  <button type="submit" id="btn-advanced-search" class="btn btn-primary"
+                          data-bind="click: advancedSearch">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
+
+                  <button type="submit" id="btn-advanced-search-filter" class="btn btn-success hide"
+                          data-bind="click: filterResults">${$.i18n.prop('search.artifact.search.form.btn.search.filter')}</button>
+
                 </form>
             </div>
             <div class="pill-pane" id="search-osgi-form-pane">
@@ -280,6 +286,11 @@
         <tr>
           {{each(i, columnDefinition) columns}}
             <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
+          {{/each}}
+        </tr>
+        <tr>
+          {{each(i, columnDefinition) columns}}
+            <th title="${ columnDefinition.title }" id="search-filter-auto-${ columnDefinition.id }"><input type="text" place-holder="filter"/></th>
           {{/each}}
         </tr>
     </thead>

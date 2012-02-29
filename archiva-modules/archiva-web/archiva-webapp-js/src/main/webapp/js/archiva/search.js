@@ -647,15 +647,18 @@ $(function() {
       columns: [
         {
           headerText: $.i18n.prop('search.artifact.results.groupId'),
-          rowText: "groupId"
+          rowText: "groupId",
+          id: "groupId"
         },
         {
           headerText: $.i18n.prop('search.artifact.results.artifactId'),
-          rowText: "artifactId"
+          rowText: "artifactId",
+          id: "artifactId"
         },
         {
           headerText: $.i18n.prop('search.artifact.results.version'),
-          rowText: "version"
+          rowText: "version",
+          id: "version"
         }
       ],
       pageSize: 10,
@@ -674,8 +677,7 @@ $(function() {
     this.resultViewModel=new ResultViewModel([]);
     basicSearch=function(){
       var queryTerm=this.searchRequest().queryTerms();
-      if (!queryTerm || $.trim(queryTerm).length<1){
-        $.log("empty");
+      if ($.trim(queryTerm).length<1){
         var errorList=[{
           message: $.i18n.prop("search.artifact.search.form.terms.empty"),
     		  element: $("#main-content #search-basic-form #search-terms" ).get(0)
@@ -732,6 +734,7 @@ $(function() {
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
               }
               activateSearchResultsTab();
+              mainContent.find("#btn-advanced-search-filter" ).show();
             }
           },
           error: function(data) {
@@ -744,6 +747,16 @@ $(function() {
           }
         }
       );
+    }
+
+    filterResults=function(){
+      var filtered=[];
+      for (var i=0;i<self.resultViewModel.artifacts().length;i++){
+        if (self.resultViewModel.artifacts()[i].groupId==this.searchRequest().groupId()){
+          filtered.push(self.resultViewModel.artifacts()[i]);
+        }
+      }
+      self.resultViewModel.artifacts(filtered);
     }
   }
 
