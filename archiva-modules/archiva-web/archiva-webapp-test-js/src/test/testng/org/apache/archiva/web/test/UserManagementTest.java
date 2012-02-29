@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 /**
  * @author Olivier Lamy
  */
-@Test( groups = { "usermanagement" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "usermanagement" }, dependsOnGroups = { "about" } )
 public class UserManagementTest
     extends AbstractArchivaTest
 {

@@ -26,13 +26,15 @@ import org.testng.annotations.Test;
 /**
  * @author Olivier Lamy
  */
-@Test( groups = { "usermanagement" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "usermanagement" }, dependsOnGroups = "about" )
 public class RolesManagementTest
     extends AbstractArchivaTest
 {
+    @Test
     public void testReadRolesAndUpdateDescription()
         throws Exception
     {
+        login( getAdminUsername(), getAdminPassword() );
         clickLinkWithLocator( "menu-roles-list-a", true );
         assertTextPresent( "Archiva System Administrator " );
         Assert.assertTrue( StringUtils.isEmpty( getText( "role-description-Guest" ) ) );

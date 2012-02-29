@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
 public class LoginTest
     extends AbstractArchivaTest
 {
-    @Test( alwaysRun = true )
+    @Test
     public void testWithBadUsername()
     {
         goToLoginPage();
@@ -45,7 +45,7 @@ public class LoginTest
 
     }
 
-    @Test( dependsOnMethods = { "testWithBadUsername" }, alwaysRun = true )
+    @Test
     public void testWithBadPassword()
     {
         goToLoginPage();
@@ -55,27 +55,25 @@ public class LoginTest
         assertTextPresent( "You have entered an incorrect username and/or password" );
     }
 
-    @Test( dependsOnMethods = { "testWithBadPassword" }, alwaysRun = true )
+    @Test
     public void testWithEmptyUsername()
     {
         goToLoginPage();
         setFieldValue( "user-login-form-password", "password" );
         clickLinkWithLocator( "modal-login-ok", true );
-        //assertTextPresent( "User Name is required" );
         assertTextPresent( "This field is required." );
     }
 
-    @Test( dependsOnMethods = { "testWithEmptyUsername" }, alwaysRun = true )
+    @Test( alwaysRun = true )
     public void testWithEmptyPassword()
     {
         goToLoginPage();
         setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
         clickLinkWithLocator( "modal-login-ok", true );
-        //assertTextPresent( "You have entered an incorrect username and/or password" );
         assertTextPresent( "This field is required." );
     }
 
-    @Test( groups = { "loginSuccess" }, dependsOnMethods = { "testWithEmptyPassword" }, alwaysRun = true )
+    @Test
     public void testWithCorrectUsernamePassword()
     {
         goToLoginPage();

@@ -1,6 +1,11 @@
 package org.apache.archiva.web.test.parent;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +35,67 @@ public abstract class AbstractArchivaTest
     protected String username;
 
     protected String fullname;
+
+    @Override
+    @AfterTest
+    public void close()
+        throws Exception
+    {
+        super.close();
+    }
+
+    @Override
+    @BeforeSuite
+    public void open()
+        throws Exception
+    {
+        super.open();
+    }
+
+    public void assertAdminCreated()
+        throws Exception
+    {
+        initializeArchiva( System.getProperty( "baseUrl" ), System.getProperty( "browser" ),
+                           Integer.getInteger( "maxWaitTimeInMs" ), System.getProperty( "seleniumHost" ),
+                           Integer.getInteger( "seleniumPort" ) );
+    }
+
+    @BeforeTest
+    @Parameters( { "baseUrl", "browser", "maxWaitTimeInMs", "seleniumHost", "seleniumPort" } )
+    public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs,
+                                   @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort )
+        throws Exception
+    {
+
+        super.open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
+
+        getSelenium().open( baseUrl );
+
+        waitPage();
+
+        // if not admin user created create one
+        if ( isElementVisible( "create-admin-link" ) )
+        {
+            Assert.assertFalse( getSelenium().isVisible( "login-link-a" ) );
+            Assert.assertFalse( getSelenium().isVisible( "register-link-a" ) );
+            clickLinkWithLocator( "create-admin-link-a", false );
+            assertCreateAdmin();
+            String fullname = getProperty( "ADMIN_FULLNAME" );
+            String username = getAdminUsername();
+            String mail = getProperty( "ADMIN_EMAIL" );
+            String password = getProperty( "ADMIN_PASSWORD" );
+            submitAdminData( fullname, mail, password );
+            assertUserLoggedIn( username );
+            clickLinkWithLocator( "logout-link-a" );
+        }
+        else
+        {
+            Assert.assertTrue( getSelenium().isVisible( "login-link-a" ) );
+            Assert.assertTrue( getSelenium().isVisible( "register-link-a" ) );
+            login( getAdminUsername(), getAdminPassword() );
+        }
+
+    }
 
     protected static String getErrorMessageText()
     {
@@ -487,7 +553,7 @@ public abstract class AbstractArchivaTest
 
     public void goToHomePage()
     {
-        getSelenium().open( "" );
+        getSelenium().open( baseUrl );
     }
 
     // Upload Artifact
@@ -728,5 +794,10 @@ public abstract class AbstractArchivaTest
         assertLinkNotVisible( "Edit Details" );
         assertLinkNotVisible( "Logout" );
         assertLinkVisible( "Login" );
+    }
+
+    protected String getAdminUserName()
+    {
+        return getProperty( "ADMIN_FULLNAME" );
     }
 }

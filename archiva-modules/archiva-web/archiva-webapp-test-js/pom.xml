@@ -233,6 +233,8 @@
                 <browser>${selenium.browser}</browser>
                 <baseUrl>${baseUrl}</baseUrl>
                 <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
+                <seleniumHost>${seleniumHost}</seleniumHost>
+                <seleniumPort>${seleniumPort}</seleniumPort>
               </systemPropertyVariables>
             </configuration>
           </execution>
