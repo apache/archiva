@@ -1813,6 +1813,29 @@
     </profile>
 
     <profile>
+      <!-- profile to run struts webapp it test -->
+      <id>it</id>
+      <modules>
+        <module>archiva-modules/archiva-web/archiva-webapp-test</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- profile to run javascript webapp -->
+      <id>js</id>
+      <modules>
+        <module>archiva-modules/archiva-web/archiva-webapp-js</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- profile to run javascript webapp and it tests -->
+      <id>it-js</id>
+      <modules>
+        <module>archiva-modules/archiva-web/archiva-webapp-js</module>
+        <module>archiva-modules/archiva-web/archiva-webapp-test-js</module>
+      </modules>
+    </profile>
+
+    <profile>
       <!-- olamy profile to test tomcat plugin dev -->
       <id>tdev</id>
       <modules>

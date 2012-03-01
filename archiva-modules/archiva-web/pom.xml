@@ -112,26 +112,5 @@
     </pluginManagement>
   </build>
 
-  <profiles>
-    <profile>
-      <id>it</id>
-      <modules>
-        <module>archiva-webapp-test</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>js</id>
-      <modules>
-        <module>archiva-webapp-js</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>it-js</id>
-      <modules>
-        <module>archiva-webapp-js</module>
-        <module>archiva-webapp-test-js</module>
-      </modules>
-    </profile>
-  </profiles>
 
 </project>
