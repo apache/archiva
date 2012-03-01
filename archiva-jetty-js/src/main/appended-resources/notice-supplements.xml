@@ -19,42 +19,7 @@
       </licenses>
     </project>
   </supplement>
-  <supplement>
-    <project>
-      <groupId>org.eclipse.jdt.core.compiler</groupId>
-      <artifactId>ecj</artifactId>
-      <name>Eclipse ECJ</name>
-      <url>http://www.eclipse.org/jdt</url>
-      <organization>
-        <name>The Eclipse Foundation</name>
-        <url>http://www.eclipse.org</url>
-      </organization>
-      <licenses>
-        <license>
-          <name>Eclipse Public License v1.0</name>
-          <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
-        </license>
-      </licenses>
-    </project>
-  </supplement>
-  <supplement>
-    <project>
-      <groupId>org.eclipse.jdt</groupId>
-      <artifactId>core</artifactId>
-      <name>Eclipse JDT Core</name>
-      <url>http://www.eclipse.org/jdt</url>
-      <organization>
-        <name>The Eclipse Foundation</name>
-        <url>http://www.eclipse.org</url>
-      </organization>
-      <licenses>
-        <license>
-          <name>Eclipse Public License v1.0</name>
-          <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
-        </license>
-      </licenses>
-    </project>
-  </supplement>
+
   <supplement>
     <project>
       <groupId>geronimo-spec</groupId>
