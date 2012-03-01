@@ -315,58 +315,58 @@ $(function() {
     this.artifact=false;
   }
   mapVersionsList=function(data){
-    if (data.versionsList){
-      if (data.versionsList.versions){
-        return $.isArray(data.versionsList.versions)? $.map(data.versionsList.versions,function(item){return item})
-            :[data.versionsList.versions];
+    if (data){
+      if (data.versions){
+        return $.isArray(data.versions)? $.map(data.versions,function(item){return item})
+            :[data.versions];
       }
 
     }
     return [];
   }
   mapProjectVersionMetadata=function(data){
-    if (data && data.projectVersionMetadata){
+    if (data){
       var projectVersionMetadata =
-          new ProjectVersionMetadata(data.projectVersionMetadata.id,data.projectVersionMetadata.url,
-                                    data.projectVersionMetadata.name,data.projectVersionMetadata.description,
-                                    null,null,null,null,null,null,null,data.projectVersionMetadata.incomplete);
+          new ProjectVersionMetadata(data.id,data.url,
+                                    data.name,data.description,
+                                    null,null,null,null,null,null,null,data.incomplete);
 
-      if (data.projectVersionMetadata.organization){
-        projectVersionMetadata.organization=new Organization(data.projectVersionMetadata.organization.name,data.projectVersionMetadata.organization.url);
+      if (data.organization){
+        organization=new Organization(data.organization.name,data.organization.url);
       }
-      if (data.projectVersionMetadata.issueManagement){
-        projectVersionMetadata.issueManagement=
-            new IssueManagement(data.projectVersionMetadata.issueManagement.system,data.projectVersionMetadata.issueManagement.url);
+      if (data.issueManagement){
+        issueManagement=
+            new IssueManagement(data.issueManagement.system,data.issueManagement.url);
       }
-      if (data.projectVersionMetadata.scm){
-        projectVersionMetadata.scm=
-            new Scm(data.projectVersionMetadata.scm.connection,data.projectVersionMetadata.scm.developerConnection,data.projectVersionMetadata.scm.url);
+      if (data.scm){
+        scm=
+            new Scm(data.scm.connection,data.scm.developerConnection,data.scm.url);
       }
-      if (data.projectVersionMetadata.ciManagement){
-        projectVersionMetadata.ciManagement=new CiManagement(data.projectVersionMetadata.ciManagement.system,data.projectVersionMetadata.ciManagement.url);
+      if (data.ciManagement){
+        ciManagement=new CiManagement(data.ciManagement.system,data.ciManagement.url);
       }
-      if (data.projectVersionMetadata.licenses){
+      if (data.licenses){
         var licenses =
-        $.isArray(data.projectVersionMetadata.licenses) ? $.map(data.projectVersionMetadata.licenses,function(item){
+        $.isArray(data.licenses) ? $.map(data.licenses,function(item){
               return new License(item.name,item.url);
-          }):[data.projectVersionMetadata.licenses];
-        projectVersionMetadata.licenses=licenses;
+          }):[data.licenses];
+        licenses=licenses;
       }
-      if (data.projectVersionMetadata.mailingLists){
+      if (data.mailingLists){
         var mailingLists =
-        $.isArray(data.projectVersionMetadata.mailingLists) ? $.map(data.projectVersionMetadata.mailingLists,function(item){
+        $.isArray(data.mailingLists) ? $.map(data.mailingLists,function(item){
               return new MailingList(item.mainArchiveUrl,item.otherArchives,item.name,item.postAddress,
                                      item.subscribeAddress,item.unsubscribeAddress);
-          }):[data.projectVersionMetadata.mailingLists];
-        projectVersionMetadata.mailingLists=mailingLists;
+          }):[data.mailingLists];
+        mailingLists=mailingLists;
       }
-      if (data.projectVersionMetadata.dependencies){
+      if (data.dependencies){
         var dependencies =
-        $.isArray(data.projectVersionMetadata.dependencies) ? $.map(data.projectVersionMetadata.dependencies,function(item){
+        $.isArray(data.dependencies) ? $.map(data.dependencies,function(item){
               return new Dependency(item.classifier,item.optional,item.scope,item.systemPath,item.type,
                                     item.artifactId,item.groupId,item.version);
-          }):[data.projectVersionMetadata.dependencies];
-        projectVersionMetadata.dependencies=dependencies;
+          }):[data.dependencies];
+        dependencies=dependencies;
       }
       $.log("projectVersionMetadata.issueManagement.system:"+(projectVersionMetadata.issueManagement?projectVersionMetadata.issueManagement.system:"null"));
       return projectVersionMetadata;
