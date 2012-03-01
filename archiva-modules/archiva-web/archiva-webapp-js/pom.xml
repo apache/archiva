@@ -37,6 +37,7 @@
     <archiva.devMode>true</archiva.devMode>
     <archiva.javascriptLog>true</archiva.javascriptLog>
     <archiva.logMissingI18n>true</archiva.logMissingI18n>
+    <archivaAppServerBase>${project.build.directory}/appserver-base</archivaAppServerBase>
   </properties>
 
   <dependencies>
@@ -661,14 +662,14 @@
           <path>${tomcatRunPath}</path>
           <contextFile>${tomcatContextXml}</contextFile>
           <systemProperties>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-            <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
+            <plexus.home>${archivaAppServerBase}</plexus.home>
+            <appserver.base>${archivaAppServerBase}</appserver.base>
+            <appserver.home>${archivaAppServerBase}</appserver.home>
+            <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
             </redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-            <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
+            <archiva.user.configFileName>${archivaAppServerBase}/conf/archiva.xml</archiva.user.configFileName>
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
@@ -698,13 +699,13 @@
           <path>${tomcatRunPath}</path>
           <contextFile>${tomcatContextXml}</contextFile>
           <systemProperties>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-            <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
+            <plexus.home>${archivaAppServerBase}</plexus.home>
+            <appserver.base>${archivaAppServerBase}</appserver.base>
+            <appserver.home>${archivaAppServerBase}</appserver.home>
+            <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
             <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-            <archiva.user.configFileName>${project.build.directory}/appserver-base/conf/archiva.xml</archiva.user.configFileName>
+            <archiva.user.configFileName>${archivaAppServerBase}/conf/archiva.xml</archiva.user.configFileName>
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
