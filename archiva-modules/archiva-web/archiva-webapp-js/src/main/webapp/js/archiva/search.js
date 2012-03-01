@@ -137,12 +137,12 @@ $(function() {
       mainContent.find("#browse_artifact").show();
       mainContent.find("#browse_artifact").html(mediumSpinnerImg());
       mainContent.find("#main_browse_result_content").show();
-      $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+groupId+"/"+artifactId, {
+      $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId), {
         type: "GET",
         dataType: 'json',
         success: function(data) {
           artifactDetailViewModel.projectVersionMetadata=mapProjectVersionMetadata(data);
-          $.ajax("restServices/archivaServices/browseService/versionsList/"+groupId+"/"+artifactId, {
+          $.ajax("restServices/archivaServices/browseService/versionsList/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId), {
             type: "GET",
             dataType: 'json',
             success: function(data) {
@@ -293,11 +293,12 @@ $(function() {
 
 
   mapbrowseResultEntries=function(data){
-    if (data.browseResult && data.browseResult.browseResultEntries) {
-      return $.isArray(data.browseResult.browseResultEntries) ?
-         $.map(data.browseResult.browseResultEntries,function(item){
+    $.log("mapbrowseResultEntries");
+    if (data) {
+      return $.isArray(data) ?
+         $.map(data,function(item){
            return new BrowseResultEntry(item.name, item.project);
-         } ).sort(): [data.browseResult.browseResultEntries];
+         } ).sort(): [data];
     }
     return [];
   }
@@ -584,7 +585,7 @@ $(function() {
 
   mapArtifacts=function(data){
     if (data){
-      return $.isArray(data )? $.map(data.artifact,function(item){return mapArtifact(item)}) : [data];
+      return $.isArray(data )? $.map(data,function(item){return mapArtifact(item)}) : [data];
     }
     return [];
   }
@@ -748,7 +749,7 @@ $(function() {
       $.ajax(url,
         {
           type: "POST",
-          data: "{\"searchRequest\": " + ko.toJSON(this.searchRequest)+"}",
+          data: ko.toJSON(this.searchRequest),
           contentType: 'application/json',
           dataType: 'json',
           success: function(data) {
@@ -805,7 +806,9 @@ $(function() {
         success: function(data) {
           mainContent.html($("#search-artifacts-div-tmpl" ).tmpl());
           var searchViewModel=new SearchViewModel();
-          searchViewModel.observableRepoIds(mapStringList(data));
+          var repos=mapStringList(data);
+          $.log("repos:"+repos);
+          searchViewModel.observableRepoIds(repos);
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
           mainContent.find("#search-basic-repostories-select" ).chosen();
         }
