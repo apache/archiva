@@ -20,11 +20,11 @@ package org.apache.archiva.scheduler.repository;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
@@ -55,11 +55,12 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     @Named( value = "taskExecutor#test-repository-scanning" )
     protected TaskExecutor taskExecutor;
 
-    @Inject @Named(value = "archivaConfiguration#test-repository-scanning")
+    @Inject
+    @Named( value = "archivaConfiguration#test-repository-scanning" )
     protected ArchivaConfiguration archivaConfig;
 
     @Inject
-    @Named(value = "repositoryStatisticsManager#test")
+    @Named( value = "repositoryStatisticsManager#test" )
     protected RepositoryStatisticsManager repositoryStatisticsManager;
 
     @Inject
@@ -131,5 +132,5 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
 
         super.tearDown();
     }
-     
+
 }

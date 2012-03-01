@@ -77,7 +77,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
         assertFalse( "newArtifactGroup should not exist.", newArtifactGroup.exists() );
-        
+
         FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 
@@ -122,7 +122,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
         assertFalse( "newArtifactGroup should not exist.", newArtifactGroup.exists() );
-        
+
         FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 
@@ -169,7 +169,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
         assertFalse( "newArtifactGroup should not exist.", newArtifactGroup.exists() );
-        
+
         FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
                                           newArtifactGroup );
 

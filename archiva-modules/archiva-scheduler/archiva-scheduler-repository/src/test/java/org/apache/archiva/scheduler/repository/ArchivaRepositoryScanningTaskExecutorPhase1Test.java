@@ -29,14 +29,14 @@ import java.util.Collection;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
- * 
+ *
  * @version $Id: ArchivaRepositoryScanningTaskExecutorPhase1Test.java 1214303 2011-12-14 15:37:51Z olamy $
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaRepositoryScanningTaskExecutorPhase1Test
     extends ArchivaRepositoryScanningTaskExecutorAbstractTest
-{   
+{
     // Split of ArchivaRepositoryScanningTaskExecutorTest should be executed first 
     // to avoid testConsumer in unknown state if member of Phase2 all ready executed
     @Test
@@ -46,14 +46,14 @@ public class ArchivaRepositoryScanningTaskExecutorPhase1Test
         RepositoryTask repoTask = new RepositoryTask();
 
         repoTask.setRepositoryId( TEST_REPO_ID );
-        
+
         taskExecutor.executeTask( repoTask );
 
         Collection<ArtifactReference> unprocessedResultList = testConsumer.getConsumed();
 
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
-        
+
     }
-        
+
 }
