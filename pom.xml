@@ -506,7 +506,17 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-rest-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- END SNIPPET: rest-dependencies -->
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-rest-services</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
