@@ -80,9 +80,11 @@ $(function() {
     //this.modified.subscribe(function(newValue){$.log("ProxyConnector modified:"+newValue)});
 
     this.updatePolicyEntry=function(key,value){
-      for(var i=0;i<policiesEntries.length;i++){
-        if (policiesEntries[i].key==key){
-          policiesEntries[i].value=value;
+      $.log("updatePolicyEntry:"+key+":"+value);
+      for(var i=0;i<self.policiesEntries().length;i++){
+        if (self.policiesEntries()[i].key==key){
+          self.policiesEntries()[i].value=value;
+          $.log("really updatedPolicyEntry:"+key+":"+self.policiesEntries()[i].value);
           self.modified(true);
         }
       }
@@ -138,8 +140,13 @@ $(function() {
     }
 
     changePolicyOption=function(id){
-      var value = $("#main-content #policy-"+id + " option:selected").val();
-      self.proxyConnector.updatePolicyEntry(id,value);
+      var selectedOption=$("#main-content #policy-"+id + " option:selected");
+      if (selectedOption.length>0){
+        var value = selectedOption.val();
+        $.log("changePolicyOption:"+id+":"+value);
+        self.proxyConnector.updatePolicyEntry(id,value);
+
+      }
     }
 
 
@@ -366,9 +373,8 @@ $(function() {
                                                 proxyConnector:ko.toJS(proxyConnector)
                                                 } ).html();
 
-      $.log("tmpl:"+tmplHtml);
       targetContent.append(tmplHtml);
-      $.log("showSettings#targetContent:"+id+","+targetContent.length+","+targetContent.attr("id")+",html:"+targetContent.html());
+
       var targetImg = $((targetImgStartId?targetImgStartId:"#proxy-connectors-grid-remoterepo-settings-edit-")
                             +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId());
       targetImg.attr("data-content",targetContent.html());
@@ -618,7 +624,9 @@ $(function() {
     if (data==null){
       return null;
     }
-    return new PolicyInformation(mapStringArray(data.options),data.defaultOption,data.id,data.name);
+    var policyInformation = new PolicyInformation(mapStringArray(data.options),data.defaultOption,data.id,data.name);
+    $.log("policyInformation.options:"+policyInformation.options());
+    return policyInformation;
   }
 
   mapPolicyInformations=function(data){
