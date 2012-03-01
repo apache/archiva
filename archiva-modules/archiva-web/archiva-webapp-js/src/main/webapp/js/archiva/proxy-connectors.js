@@ -81,12 +81,19 @@ $(function() {
 
     this.updatePolicyEntry=function(key,value){
       $.log("updatePolicyEntry:"+key+":"+value);
+      var found=false;
       for(var i=0;i<self.policiesEntries().length;i++){
+        $.log('loop policiesEntries:'+self.policiesEntries()[i].key);
         if (self.policiesEntries()[i].key==key){
           self.policiesEntries()[i].value=value;
-          $.log("really updatedPolicyEntry:"+key+":"+self.policiesEntries()[i].value);
+          $.log("really updatedPolicyEntry:"+key+":"+self.policiesEntries()[i].value)
+          found=true;
           self.modified(true);
         }
+      }
+      if(!found){
+        self.policiesEntries().push(new Entry(key,value));
+        $.log("added updatedPolicyEntry:"+key+":"+self.policiesEntries()[i].value());
       }
     }
 
