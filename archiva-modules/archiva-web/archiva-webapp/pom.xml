@@ -34,6 +34,7 @@
     <archiva.baseRestUrl/>
     <rest.admin.pwd/>
     <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
+    <archivaAppServerBase>${project.build.directory}/appserver-base</archivaAppServerBase>
   </properties>
 
   <dependencies>
@@ -1388,10 +1389,10 @@
               <path>/archiva</path>
               <contextFile>${tomcatContextXml}</contextFile>
               <systemProperties>
-                <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-                <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-                <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-                <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
+                <plexus.home>${archivaAppServerBase}</plexus.home>
+                <appserver.base>${archivaAppServerBase}</appserver.base>
+                <appserver.home>${archivaAppServerBase}</appserver.home>
+                <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
                 <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
                 </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
@@ -1418,10 +1419,10 @@
               <path>/archiva</path>
               <contextFile>${tomcatContextXml}</contextFile>
               <systemProperties>
-                <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-                <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-                <appserver.home>${project.build.directory}/appserver-home</appserver.home>
-                <derby.system.home>${project.build.directory}/appserver-base/logs</derby.system.home>
+                <plexus.home>${archivaAppServerBase}</plexus.home>
+                <appserver.base>${archivaAppServerBase}</appserver.base>
+                <appserver.home>${archivaAppServerBase}</appserver.home>
+                <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
                 <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
                 </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
