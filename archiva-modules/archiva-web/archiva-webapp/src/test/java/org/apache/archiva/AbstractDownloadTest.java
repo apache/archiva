@@ -31,6 +31,7 @@ import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.api.model.User;
 import org.codehaus.redback.rest.api.services.RoleManagementService;
@@ -46,6 +47,8 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
+
+import java.util.Collections;
 
 /**
  * @author Olivier Lamy
@@ -153,7 +156,8 @@ public abstract class AbstractDownloadTest
     {
         ProxyConnectorService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ProxyConnectorService.class );
+                                       ProxyConnectorService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -164,7 +168,8 @@ public abstract class AbstractDownloadTest
     {
         RemoteRepositoriesService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       RemoteRepositoriesService.class );
+                                       RemoteRepositoriesService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -175,7 +180,8 @@ public abstract class AbstractDownloadTest
     {
         ManagedRepositoriesService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ManagedRepositoriesService.class );
+                                       ManagedRepositoriesService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -187,7 +193,8 @@ public abstract class AbstractDownloadTest
     {
         RepositoryGroupService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       RepositoryGroupService.class );
+                                       RepositoryGroupService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -198,7 +205,8 @@ public abstract class AbstractDownloadTest
     {
         RepositoriesService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       RepositoriesService.class );
+                                       RepositoriesService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -209,7 +217,8 @@ public abstract class AbstractDownloadTest
     {
         SearchService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       SearchService.class );
+                                       SearchService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
@@ -227,7 +236,8 @@ public abstract class AbstractDownloadTest
     {
         RoleManagementService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
-                                       RoleManagementService.class );
+                                       RoleManagementService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         // for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
@@ -243,7 +253,7 @@ public abstract class AbstractDownloadTest
     {
         UserService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
-                                       UserService.class );
+                                       UserService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         // for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
