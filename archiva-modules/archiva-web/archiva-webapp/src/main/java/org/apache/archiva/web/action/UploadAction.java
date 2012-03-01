@@ -306,7 +306,7 @@ public class UploadAction
 
             String artifactPath = repository.toPath( artifactReference );
 
-            int lastIndex = artifactPath.lastIndexOf( '/' );
+            int lastIndex = artifactPath.lastIndexOf( File.separatorChar );
 
             String path = artifactPath.substring( 0, lastIndex );
             File targetPath = new File( repoConfig.getLocation(), path );
