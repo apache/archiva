@@ -53,14 +53,19 @@ appendArchivaVersion=function(){
 buildLoadJsUrl=function(srcScript){
   return srcScript+"?"+appendArchivaVersion();
 }
+
+$.ajaxSetup({
+  dataType: 'json'
+});
+
 $.ajax(
   {
     url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo",
     dataType: 'json',
     success:function(data){
-        window.archivaDevMode=data.applicationRuntimeInfo.devMode;
-        window.archivaJavascriptLog=data.applicationRuntimeInfo.javascriptLog;
-        window.archivaRuntimeInfo=data.applicationRuntimeInfo;
+        window.archivaDevMode=data.devMode;
+        window.archivaJavascriptLog=data.javascriptLog;
+        window.archivaRuntimeInfo=data;
         require.config({
             baseUrl: "js/"
           });

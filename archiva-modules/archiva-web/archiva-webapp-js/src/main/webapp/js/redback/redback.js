@@ -42,7 +42,7 @@ $(function() {
     $.ajax("restServices/redbackServices/loginService/isLogged", {
       type: "GET",
       success: function(data) {
-        userLogged = JSON.parse(data);
+        userLogged = data;
         if (successFn){
           successFn(userLogged == false ? null : jQuery.parseJSON($.cookie('redback_login')));
         }

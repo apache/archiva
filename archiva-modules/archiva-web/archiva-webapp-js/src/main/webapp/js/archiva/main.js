@@ -73,7 +73,7 @@ $(function() {
     $.ajax({
       url: url,
       success: function(data){
-        var mappedOperations = $.map(data.operation, function(item) {
+        var mappedOperations = $.map(data, function(item) {
             return mapOperation(item);
         });
         window.redbackModel.operatioNames = $.map(mappedOperations, function(item){
@@ -143,7 +143,7 @@ $(function() {
       type: "GET",
       dataType: 'json',
       success: function(data) {
-        var adminExists = JSON.parse(data);
+        var adminExists = data;
         if (adminExists == false) {
           $("#create-admin-link").show();
           $("#login-link").hide();

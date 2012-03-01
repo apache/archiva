@@ -85,7 +85,7 @@ $(function() {
           type: "POST",
           dataType: 'json',
           contentType: 'application/json',
-          data: "{\"role\": " +  ko.toJSON(self)+"}",
+          data: ko.toJSON(self),
           success: function(data) {
             clearUserMessages();
             displaySuccessMessage($.i18n.prop("role.users.updated",this.name));
@@ -134,7 +134,7 @@ $(function() {
          type: "GET",
          dataType: 'json',
          success: function(data) {
-           var mappedRole = mapRole(data.role);
+           var mappedRole = mapRole(data);
            role.parentRoleNames(mappedRole.parentRoleNames());
            role.parentsRolesUsers(mappedRole.parentsRolesUsers());
            role.users(mappedRole.users());
@@ -215,7 +215,7 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var mappedRoles = $.map(data.role, function(item) {
+          var mappedRoles = $.map(data, function(item) {
             return mapRole(item);
           });
           var rolesViewModel = new RolesViewModel();
@@ -263,7 +263,6 @@ $(function() {
       activateRoleUsersEditTab()
     }
     saveRoleDescription=function(){
-      $.log("saveRoleDescription:"+currentRole.description());
       currentRole.updateDescription();
     }
     saveUsers=function(){

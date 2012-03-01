@@ -134,7 +134,7 @@ $(function() {
           type: "GET",
           dataType: 'json',
           success: function(data) {
-            var mappedRoles = $.map(data.role, function(item) {
+            var mappedRoles = $.map(data, function(item) {
               return item.name;
             });
             user.assignedRoles = ko.observableArray(mappedRoles);
@@ -193,7 +193,7 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var mappedApplicationRoles = $.map(data.applicationRole, function(item) {
+          var mappedApplicationRoles = $.map(data, function(item) {
             return mapApplicationRoles(item);
           });
           viewModel.applicationRoles=ko.observableArray(mappedApplicationRoles);
@@ -242,7 +242,7 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var mappedUsers = $.map(data.user, function(item) {
+          var mappedUsers = $.map(data, function(item) {
             return mapUser(item);
           });
           var usersViewModel = new UsersViewModel();

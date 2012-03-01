@@ -95,12 +95,12 @@ $(function() {
       }
       var currentUser = this;
       $.ajax("restServices/redbackServices/userService/createUser", {
-          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          data: ko.toJSON(this),
           contentType: 'application/json',
           type: "POST",
           dataType: 'json',
           success: function(result) {
-            var created = JSON.parse(result);
+            var created = result;
             if (created == true) {
               displaySuccessMessage( $.i18n.prop("user.created",currentUser.username()));
               if (successFnCallback){
@@ -130,12 +130,12 @@ $(function() {
       }
       var currentAdminUser = this;
       $.ajax("restServices/redbackServices/userService/createAdminUser", {
-          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          data: ko.toJSON(this),
           contentType: 'application/json',
           type: "POST",
           dataType: 'json',
           success: function(result) {
-            var created = JSON.parse(result);
+            var created = result;
             if (created == true) {
               displaySuccessMessage( $.i18n.prop("user.admin.created"));
               var onSuccessCall=function(){
@@ -161,12 +161,12 @@ $(function() {
     this.update=function(){
       var currentUser = this;
       $.ajax("restServices/redbackServices/userService/updateUser", {
-          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          data: ko.toJSON(this),
           contentType: 'application/json',
           type: "POST",
           dataType: 'json',
           success: function(result) {
-            var updated = JSON.parse(result);
+            var updated = result;
             if (updated == true) {
               clearUserMessages();
               displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
@@ -207,7 +207,7 @@ $(function() {
       var curUser = this;
       clearUserMessages();
       $.ajax("restServices/redbackServices/roleManagementService/updateUserRoles", {
-          data: "{\"user\": " +  ko.toJSON(this)+"}",
+          data: ko.toJSON(this),
           contentType: 'application/json',
           type: "POST",
           dataType: 'json',
@@ -280,6 +280,13 @@ $(function() {
    */
   AdminUserViewModel=function() {
     this.user = new User("admin","","", "the administrator");
+    var self=this;
+    saveUser=function(){
+      if(! $("#user-create" ).valid() ) {
+        return;
+      }
+      self.user.createAdmin();
+    }
   }
 
   /**
@@ -343,12 +350,12 @@ $(function() {
     if (result == null) {
       logged = false;
     } else {
-      if (result.user) {
+      if (result.username) {
         logged = true;
       }
     }
     if (logged == true) {
-      var user = mapUser(result.user);
+      var user = mapUser(result);
       if (user.passwordChangeRequired()==true){
         changePasswordBox(true,false,user);
         return;
@@ -538,12 +545,12 @@ $(function() {
   editUserDetails=function(user){
     $("#modal-user-edit-err-message").html("");
     $.ajax("restServices/redbackServices/userService/updateMe", {
-        data: "{\"user\": " +  ko.toJSON(user)+"}",
+        data: ko.toJSON(user),
         contentType: 'application/json',
         type: "POST",
         dataType: 'json',
         success: function(result) {
-          var created = JSON.parse(result);
+          var created = result;
           // FIXME i18n
           if (created == true) {
             displaySuccessMessage( $.i18n.prop("user.details.updated"));
@@ -595,7 +602,7 @@ $(function() {
       url: url,
       success: function(result){
         $.log("changePassword#success result:"+result);
-        var user = mapUser(result.user);
+        var user = mapUser(result);
         if (user) {
           window.modalChangePasswordBox.modal('hide');
           $.log("changePassword#sucess,registration:"+registration);
