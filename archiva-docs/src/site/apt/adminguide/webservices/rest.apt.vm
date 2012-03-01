@@ -71,29 +71,15 @@ Using REST Services
 
   Dependencies to add in order to use those REST Services
 
-+-------------------------
+%{snippet|id=rest-dependencies|url=https://svn.apache.org/repos/asf/archiva/trunk/pom.xml}
 
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-rest-api</artifactId>
-      <version>${project.version}
-    </dependency>
+  Current versions use in Apache Archiva:
 
-    if you use CXF:
+   * $\{project.version}: ${project.version}
 
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-bundle-jaxrs</artifactId>
-      <version>2.4.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-server</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+   * $\{cxfVersion}: ${cxfVersion}
 
-+-------------------------
+   * $\{jacksonVersion}: ${jacksonVersion}
 
 * Security Framework Services:
 
