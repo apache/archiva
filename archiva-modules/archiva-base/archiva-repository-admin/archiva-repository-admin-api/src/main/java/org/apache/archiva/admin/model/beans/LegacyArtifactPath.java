@@ -18,6 +18,9 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -76,27 +79,32 @@ public class LegacyArtifactPath
         return path.equals( this.path );
     }
 
+    @JsonIgnore
     public String getGroupId()
     {
         return artifact.split( ":" )[0];
     }
 
+    @JsonIgnore
     public String getArtifactId()
     {
         return artifact.split( ":" )[1];
     }
 
+    @JsonIgnore
     public String getVersion()
     {
         return artifact.split( ":" )[2];
     }
 
+    @JsonIgnore
     public String getClassifier()
     {
         String classifier = artifact.split( ":" )[3];
         return classifier.length() > 0 ? classifier : null;
     }
 
+    @JsonIgnore
     public String getType()
     {
         return artifact.split( ":" )[4];

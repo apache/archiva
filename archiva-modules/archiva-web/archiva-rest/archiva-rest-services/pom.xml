@@ -149,12 +149,18 @@
           </exclusion>
         </exclusions>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-jaxrs</artifactId>
     </dependency>
-    -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-xc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-bundle-jaxrs</artifactId>
@@ -162,6 +168,10 @@
         <exclusion>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-server</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.jettison</groupId>
+          <artifactId>jettison</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

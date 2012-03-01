@@ -93,6 +93,7 @@
     <httpclient.core.version>4.1.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
+    <jacksonVersion>1.9.5</jacksonVersion>
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
@@ -473,7 +474,17 @@
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-jaxrs</artifactId>
-        <version>1.9.5</version>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-xc</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
@@ -487,6 +498,10 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

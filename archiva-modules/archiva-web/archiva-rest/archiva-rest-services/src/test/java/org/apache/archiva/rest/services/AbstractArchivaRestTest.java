@@ -36,11 +36,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.codehaus.redback.rest.services.AbstractRestServicesTest;
 import org.junit.Before;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -100,13 +102,16 @@ public abstract class AbstractArchivaRestTest
     {
         RepositoriesService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       RepositoriesService.class );
+                                       RepositoriesService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         if ( authzHeader != null )
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
 
     }
@@ -115,13 +120,16 @@ public abstract class AbstractArchivaRestTest
     {
         ManagedRepositoriesService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ManagedRepositoriesService.class );
+                                       ManagedRepositoriesService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         if ( authzHeader != null )
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
 
     }
@@ -129,13 +137,15 @@ public abstract class AbstractArchivaRestTest
     protected PingService getPingService()
     {
         return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                          PingService.class );
+                                          PingService.class,
+                                          Collections.singletonList( new JacksonJaxbJsonProvider() ) );
     }
 
     protected RemoteRepositoriesService getRemoteRepositoriesService()
     {
         return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                          RemoteRepositoriesService.class );
+                                          RemoteRepositoriesService.class,
+                                          Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
 
     }
@@ -143,17 +153,21 @@ public abstract class AbstractArchivaRestTest
     protected RepositoryGroupService getRepositoryGroupService()
     {
         return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                          RepositoryGroupService.class );
+                                          RepositoryGroupService.class,
+                                          Collections.singletonList( new JacksonJaxbJsonProvider() ) );
     }
 
     protected ProxyConnectorService getProxyConnectorService()
     {
         ProxyConnectorService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ProxyConnectorService.class );
+                                       ProxyConnectorService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
     }
 
@@ -161,10 +175,13 @@ public abstract class AbstractArchivaRestTest
     {
         NetworkProxyService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       NetworkProxyService.class );
+                                       NetworkProxyService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
     }
 
@@ -172,7 +189,8 @@ public abstract class AbstractArchivaRestTest
     {
         ArchivaAdministrationService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ArchivaAdministrationService.class );
+                                       ArchivaAdministrationService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -187,13 +205,16 @@ public abstract class AbstractArchivaRestTest
         // START SNIPPET: cxf-searchservice-creation
         SearchService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       SearchService.class );
+                                       SearchService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         if ( authzHeader != null )
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
         // END SNIPPET: cxf-searchservice-creation
 
@@ -203,13 +224,16 @@ public abstract class AbstractArchivaRestTest
     {
         CommonServices service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       CommonServices.class );
+                                       CommonServices.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         if ( authzHeader != null )
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
     }
 

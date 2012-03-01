@@ -34,6 +34,10 @@
       <artifactId>jaxb-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
@@ -98,7 +102,8 @@
               org.apache.commons.collections;version="[3.2,4)",
               org.apache.commons.lang;version="[2.4,3)",
               org.codehaus.plexus.redback.users,
-              org.apache.maven.index.context;resolution:=optional
+              org.apache.maven.index.context;resolution:=optional,
+              org.codehaus.jackson.annotate
             </Import-Package>
           </instructions>
         </configuration>

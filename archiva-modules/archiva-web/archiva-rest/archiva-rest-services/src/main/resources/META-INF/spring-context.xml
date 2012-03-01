@@ -38,23 +38,13 @@
   <context:annotation-config/>
   <context:component-scan
       base-package="org.apache.archiva.rest.services"/>
-  <!-- convertTypesToStrings -->
 
-  <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.JSONProvider">
-    <!-- without that String 2.0 are transformed to 2 which is not correct for versions -->
-    <!-- side effect json boolean are string rather than boolean -->
-    <property name="convertTypesToStrings" value="true"/>
-    <!--property name="serializeAsArray" value="true"/--> 
-
-  </bean>
 
   <jaxrs:server id="archivaServices" address="/archivaServices">
 
     <jaxrs:providers>
-      <ref bean="jsonProvider"/>
-      <!--
       <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
-      -->
+
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="archivaRestServiceExceptionMapper"/>
