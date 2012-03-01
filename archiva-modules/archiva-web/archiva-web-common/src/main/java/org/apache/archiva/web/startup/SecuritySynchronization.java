@@ -100,9 +100,12 @@ public class SecuritySynchronization
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) && propertyName.endsWith( ".id" ) )
         {
-            synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
+            if ( propertyValue != null )
+            {
+                syncRepoConfiguration( (String) propertyValue );
+            }
         }
     }
 
@@ -117,38 +120,37 @@ public class SecuritySynchronization
 
         for ( ManagedRepositoryConfiguration repoConfig : repos )
         {
-            // manage roles for repositories
-            try
-            {
-                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
-                                                       repoConfig.getId() ) )
-                {
-                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
-                                                     repoConfig.getId() );
-                }
-                else
-                {
-                    roleManager.verifyTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
-                                                     repoConfig.getId() );
-                }
+            syncRepoConfiguration( repoConfig.getId() );
+        }
+    }
 
-                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
-                                                       repoConfig.getId() ) )
-                {
-                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
-                                                     repoConfig.getId() );
-                }
-                else
-                {
-                    roleManager.verifyTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER,
-                                                     repoConfig.getId() );
-                }
-            }
-            catch ( RoleManagerException e )
+    private void syncRepoConfiguration( String id )
+    {
+        // manage roles for repositories
+        try
+        {
+            if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, id ) )
             {
-                // Log error.
-                log.error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
+                roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, id );
             }
+            else
+            {
+                roleManager.verifyTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, id );
+            }
+
+            if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, id ) )
+            {
+                roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, id );
+            }
+            else
+            {
+                roleManager.verifyTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, id );
+            }
+        }
+        catch ( RoleManagerException e )
+        {
+            // Log error.
+            log.error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
         }
     }
 
