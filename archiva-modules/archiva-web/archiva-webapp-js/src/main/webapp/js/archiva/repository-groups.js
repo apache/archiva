@@ -119,7 +119,7 @@ $(function() {
           {
             type: "POST",
             contentType: 'application/json',
-            data: "{\"repositoryGroup\": " + ko.toJSON(repositoryGroup)+"}",
+            data:ko.toJSON(repositoryGroup),
             dataType: 'json',
             success: function(data) {
               $.log("update repositoryGroup id:"+repositoryGroup.id());
@@ -142,7 +142,7 @@ $(function() {
         {
           type: "POST",
           contentType: 'application/json',
-          data: "{\"repositoryGroup\": " + ko.toJSON(repositoryGroup)+"}",
+          data: ko.toJSON(repositoryGroup),
           dataType: 'json',
           success: function(data) {
             $.log("update repositoryGroup id:"+repositoryGroup.id());
@@ -258,7 +258,7 @@ $(function() {
     if (data == null){
       return new Array();
     }
-    var mappedRepositoryGroups = $.map(data.repositoryGroup, function(item) {
+    var mappedRepositoryGroups = $.map(data, function(item) {
       return mapRepositoryGroup(item);
     });
     return mappedRepositoryGroups;

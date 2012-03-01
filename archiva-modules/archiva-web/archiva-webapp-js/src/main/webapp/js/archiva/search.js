@@ -238,7 +238,7 @@ $(function() {
       },
       select: function( event, ui ) {
         $.log("ui.item.label:"+ui.item.name);
-        if (ui.item.project=='true'){
+        if (ui.item.project){
           // value org.apache.maven/maven-archiver
           // split this org.apache.maven and maven-archiver
           var id=ui.item.name;
@@ -583,8 +583,8 @@ $(function() {
   }
 
   mapArtifacts=function(data){
-    if (data.artifact){
-      return $.isArray(data.artifact )? $.map(data.artifact,function(item){return mapArtifact(item)}) : [data.artifact];
+    if (data){
+      return $.isArray(data )? $.map(data.artifact,function(item){return mapArtifact(item)}) : [data];
     }
     return [];
   }

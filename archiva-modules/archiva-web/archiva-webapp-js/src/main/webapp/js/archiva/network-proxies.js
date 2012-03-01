@@ -71,7 +71,7 @@ $(function() {
           {
             type: "POST",
             contentType: 'application/json',
-            data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
+            data: ko.toJSON(networkProxy),
             dataType: 'json',
             success: function(data) {
               $.log("update proxy id:"+self.networkProxy.id());
@@ -94,7 +94,7 @@ $(function() {
           {
             type: "POST",
             contentType: 'application/json',
-            data: "{\"networkProxy\": " + ko.toJSON(networkProxy)+"}",
+            data: ko.toJSON(networkProxy),
             dataType: 'json',
             success: function(data) {
               self.networkProxy.modified(false);
@@ -313,7 +313,7 @@ $(function() {
   }
 
   mapNetworkProxies=function(data){
-    var mappedNetworkProxies = $.map(data.networkProxy, function(item) {
+    var mappedNetworkProxies = $.map(data, function(item) {
       return mapNetworkProxy(item);
     });
     return mappedNetworkProxies;

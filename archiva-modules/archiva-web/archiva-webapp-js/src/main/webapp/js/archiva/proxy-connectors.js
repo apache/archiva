@@ -189,7 +189,7 @@ $(function() {
         $.ajax("restServices/archivaServices/proxyConnectorService/updateProxyConnector",
           {
             type: "POST",
-            data: "{\"proxyConnector\": " + ko.toJSON(self.proxyConnector)+"}",
+            data: ko.toJSON(self.proxyConnector),
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
@@ -208,7 +208,7 @@ $(function() {
         $.ajax("restServices/archivaServices/proxyConnectorService/addProxyConnector",
           {
             type: "POST",
-            data: "{\"proxyConnector\": " + ko.toJSON(self.proxyConnector)+"}",
+            data: ko.toJSON(self.proxyConnector),
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
@@ -608,7 +608,7 @@ $(function() {
   }
 
   mapProxyConnectors=function(data){
-    var mappedProxyConnectors = $.map(data.proxyConnector, function(item) {
+    var mappedProxyConnectors = $.map(data, function(item) {
       return mapProxyConnector(item);
     });
     return mappedProxyConnectors;
@@ -622,7 +622,7 @@ $(function() {
   }
 
   mapPolicyInformations=function(data){
-    return $.map(data.policyInformation, function(item) {
+    return $.map(data, function(item) {
               return mapPolicyInformation(item);
            });
   }

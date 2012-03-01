@@ -140,7 +140,7 @@ $(function() {
   }
 
   mapManagedRepositories=function(data){
-    var mappedManagedRepositories = $.map(data.managedRepository, function(item) {
+    var mappedManagedRepositories = $.map(data, function(item) {
       return mapManagedRepository(item);
     });
     return mappedManagedRepositories;
@@ -149,11 +149,11 @@ $(function() {
     if (data==null){
       return null;
     }
-    return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots=='true'
-                                 ,data.releases=='true',
-                                 data.blockRedeployments=='true',data.cronExpression,
-                                 data.scanned=='true',data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots=='true',
-                                 data.stageRepoNeeded=='true');
+    return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots
+                                 ,data.releases,
+                                 data.blockRedeployments,data.cronExpression,
+                                 data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,
+                                 data.stageRepoNeeded);
   }
 
   mapArchivaRepositoryStatistics=function(data){
@@ -185,7 +185,7 @@ $(function() {
         $.ajax("restServices/archivaServices/managedRepositoriesService/updateManagedRepository",
           {
             type: "POST",
-            data: "{\"managedRepository\": " + ko.toJSON(this.managedRepository)+"}",
+            data: ko.toJSON(this.managedRepository),
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
@@ -229,7 +229,7 @@ $(function() {
         {
           type: "POST",
           contentType: 'application/json',
-          data: "{\"managedRepository\": " + ko.toJSON(managedRepository)+"}",
+          data: ko.toJSON(managedRepository),
           dataType: 'json',
           success: function(data) {
             curManagedRepository.location(data.managedRepository.location);
@@ -426,10 +426,10 @@ $(function() {
           type: "GET",
           dataType: 'json',
           success: function(data) {
-            if (data.archivaRepositoryStatistics==null){
+            if (data==null){
               return;
             }
-            var archivaRepositoryStatistics=mapArchivaRepositoryStatistics(data.archivaRepositoryStatistics);
+            var archivaRepositoryStatistics=mapArchivaRepositoryStatistics(data);
             archivaRepositoryStatistics.managedRepository=curRepo;
             var mainContent = $("#main-content");
             mainContent.find("#managedrepository-stats-"+curRepo.id()).append($("#managed-repository-stats-tmpl").tmpl(archivaRepositoryStatistics));
@@ -593,12 +593,12 @@ $(function() {
       return null;
     }
     return new RemoteRepository(data.id,data.name,data.layout,data.indexDirectory,data.url,data.userName,data.password,
-                                data.timeout,data.downloadRemoteIndex=='true',data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
-                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup=='true');
+                                data.timeout,data.downloadRemoteIndex,data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
+                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup);
   }
 
   mapRemoteRepositories=function(data){
-    var mappedRemoteRepositories = $.map(data.remoteRepository, function(item) {
+    var mappedRemoteRepositories = $.map(data, function(item) {
       return mapRemoteRepository(item);
     });
     return mappedRemoteRepositories;
@@ -624,7 +624,7 @@ $(function() {
         $.ajax("restServices/archivaServices/remoteRepositoriesService/updateRemoteRepository",
           {
             type: "POST",
-            data: "{\"remoteRepository\": " + ko.toJSON(this.remoteRepository)+"}",
+            data: ko.toJSON(this.remoteRepository),
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
@@ -642,7 +642,7 @@ $(function() {
         $.ajax("restServices/archivaServices/remoteRepositoriesService/addRemoteRepository",
           {
             type: "POST",
-            data: "{\"remoteRepository\": " + ko.toJSON(this.remoteRepository)+"}",
+            data: ko.toJSON(this.remoteRepository),
             contentType: 'application/json',
             dataType: 'json',
             success: function(data) {
@@ -691,7 +691,7 @@ $(function() {
     removeRemoteRepository=function(remoteRepository){
       clearUserMessages();
       openDialogConfirm(
-          function(){$.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+remoteRepository.id(),
+          function(){$.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+encodeURIComponent(remoteRepository.id()),
                   {
                     type: "GET",
                     success: function(data) {

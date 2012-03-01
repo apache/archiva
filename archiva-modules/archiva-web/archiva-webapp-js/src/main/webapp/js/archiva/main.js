@@ -178,7 +178,7 @@ $(function() {
 			source: function(request, response){
         $.get("restServices/archivaServices/searchService/quickSearch?queryString="+encodeURIComponent(request.term),
            function(data) {
-             var res = $.map(data.artifact,function(item){
+             var res = $.map(data,function(item){
                return item.artifactId;
              });
              var uniqId = [];
