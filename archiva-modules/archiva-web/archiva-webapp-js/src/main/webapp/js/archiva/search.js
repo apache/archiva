@@ -294,11 +294,11 @@ $(function() {
 
   mapbrowseResultEntries=function(data){
     $.log("mapbrowseResultEntries");
-    if (data) {
-      return $.isArray(data) ?
-         $.map(data,function(item){
+    if (data.browseResultEntries) {
+      return $.isArray(data.browseResultEntries) ?
+         $.map(data.browseResultEntries,function(item){
            return new BrowseResultEntry(item.name, item.project);
-         } ).sort(): [data];
+         } ).sort(): [data.browseResultEntries];
     }
     return [];
   }
