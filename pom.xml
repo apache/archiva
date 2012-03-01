@@ -1835,6 +1835,7 @@
       <id>js</id>
       <modules>
         <module>archiva-modules/archiva-web/archiva-webapp-js</module>
+        <module>archiva-jetty-js</module>
       </modules>
     </profile>
     <profile>

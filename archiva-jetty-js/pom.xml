@@ -1,0 +1,269 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.archiva</groupId>
+    <artifactId>archiva</artifactId>
+    <version>1.4-M3-SNAPSHOT</version>
+  </parent>
+  <artifactId>archiva-jetty-js</artifactId>
+  <packaging>pom</packaging>
+  <!-- This is filtered into the scripts, so should be set to Apache Archiva -->
+  <name>Apache Archiva JS</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-webapp-js</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-docs</artifactId>
+      <type>zip</type>
+      <classifier>docs</classifier>
+    </dependency>
+    <!-- Runtime dependencies that need to be included in the generated binaries -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-jndi</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-start</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-deploy</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.6.5</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.4</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.6</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.1.1</version>
+        <configuration>
+          <daemons>
+            <daemon>
+              <id>archiva</id>
+              <mainClass>org.eclipse.jetty.start.Main</mainClass>
+              <commandLineArguments>
+                <commandLineArgument>conf/jetty.xml</commandLineArgument>
+              </commandLineArguments>
+              <platforms>
+                <platform>jsw</platform>
+              </platforms>
+              <generatorConfigurations>
+                <generatorConfiguration>
+                  <generator>jsw</generator>
+                  <configuration>
+                    <property>
+                      <name>wrapper.console.loglevel</name>
+                      <value>INFO</value>
+                    </property>
+                    <property>
+                      <name>wrapper.java.additional.1.stripquotes</name>
+                      <value>TRUE</value>
+                    </property>
+                    <property>
+                      <name>set.default.REPO_DIR</name>
+                      <value>lib</value>
+                    </property>
+                    <property>
+                      <name>wrapper.logfile</name>
+                      <value>%ARCHIVA_BASE%/logs/wrapper.YYYYMMDD.log</value>
+                    </property>
+                    <property>
+                      <name>wrapper.logfile.rollmode</name>
+                      <value>DATE</value>
+                    </property>
+                    <property>
+                      <name>wrapper.app.parameter.2</name>
+                      <value>%ARCHIVA_BASE%/conf/jetty.xml</value>
+                    </property>
+                    <property>
+                      <name>app.base.envvar</name>
+                      <value>ARCHIVA_BASE</value>
+                    </property>
+                    <property>
+                      <name>wrapper.on_exit.default</name>
+                      <value>RESTART</value>
+                    </property>
+                    <property>
+                      <name>wrapper.on_exit.0</name>
+                      <value>SHUTDOWN</value>
+                    </property>
+                    <property>
+                      <name>wrapper.restart.delay</name>
+                      <value>30</value>
+                    </property>
+                  </configuration>
+                  <includes>
+                    <include>linux-x86-32</include>
+                    <include>linux-x86-64</include>
+                    <include>macosx-x86-universal-32</include>
+                    <include>solaris-x86-32</include>
+                    <include>solaris-sparc-32</include>
+                    <include>solaris-sparc-64</include>
+                    <include>windows-x86-32</include>
+                  </includes>
+                </generatorConfiguration>
+              </generatorConfigurations>
+              <jvmSettings>
+                <systemProperties>
+                  <systemProperty>appserver.home=.</systemProperty>
+                  <systemProperty>appserver.base=%ARCHIVA_BASE%</systemProperty>
+                  <!-- can't set this at present, it moves the databases if ARCHIVA_BASE is not set
+                  <systemProperty>derby.system.home=%ARCHIVA_BASE%/logs</systemProperty>
+                  -->
+                  <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
+                  <systemProperty>java.io.tmpdir=%ARCHIVA_BASE%/temp</systemProperty>
+                  <systemProperty>archiva.tmp.group.index.ttl=30</systemProperty>
+                </systemProperties>
+                <extraArguments>
+                  <extraArgument>-XX:MaxPermSize=128m</extraArgument>
+                </extraArguments>
+                <initialMemorySize>512</initialMemorySize>
+                <maxMemorySize>512</maxMemorySize>
+              </jvmSettings>
+            </daemon>
+          </daemons>
+          <repoPath>lib</repoPath>
+          <repositoryLayout>flat</repositoryLayout>
+          <assembleDirectory>target/generated-resources/appassembler/jsw/archiva</assembleDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-daemons</goal>
+              <goal>create-repository</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptor>src/main/assembly/bin.xml</descriptor>
+          <finalName>apache-archiva-js-${project.version}</finalName>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>config</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <copy todir="target/generated-resources/appassembler/jsw/archiva/conf">
+                  <fileset dir="src/main/conf" />
+                </copy>
+                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs" />
+                <mkdir dir="target/generated-resources/appassembler/jsw/archiva/temp" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <configuration>
+          <supplementalModels>
+            <supplementalModel>notice-supplements.xml</supplementalModel>
+          </supplementalModels>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>src/main/conf/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
