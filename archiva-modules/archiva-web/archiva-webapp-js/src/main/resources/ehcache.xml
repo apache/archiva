@@ -1,0 +1,92 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<ehcache>
+  <diskStore path="java.io.tmpdir" />
+
+  <!-- make default cache very short lived -->
+
+  <defaultCache
+    maxElementsInMemory="100"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="300"
+    timeToLiveSeconds="600"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <!--
+    cache Redback classes longer to avoid a lot of SQL queries
+    See REDBACK-227
+  -->
+  <cache name="defaultJpox"
+      maxElementsInMemory="10000"
+      maxElementsOnDisk="0"
+      eternal="false"
+      overflowToDisk="false"
+      timeToIdleSeconds="1800"
+      timeToLiveSeconds="14400"
+      memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoOperation"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoPermission"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoResource"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoRole"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="1800"
+    timeToLiveSeconds="14400"
+    memoryStoreEvictionPolicy="LFU" />
+
+  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoUserAssignment"
+    maxElementsInMemory="10000"
+    maxElementsOnDisk="0"
+    eternal="false"
+    overflowToDisk="false"
+    timeToIdleSeconds="300"
+    timeToLiveSeconds="600"
+    memoryStoreEvictionPolicy="LFU" />
+
+</ehcache>
+
