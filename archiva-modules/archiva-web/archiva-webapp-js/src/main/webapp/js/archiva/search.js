@@ -332,25 +332,25 @@ $(function() {
                                     null,null,null,null,null,null,null,data.incomplete);
 
       if (data.organization){
-        organization=new Organization(data.organization.name,data.organization.url);
+        projectVersionMetadata.organization=new Organization(data.organization.name,data.organization.url);
       }
       if (data.issueManagement){
-        issueManagement=
+        projectVersionMetadata.issueManagement=
             new IssueManagement(data.issueManagement.system,data.issueManagement.url);
       }
       if (data.scm){
-        scm=
+        projectVersionMetadata.scm=
             new Scm(data.scm.connection,data.scm.developerConnection,data.scm.url);
       }
       if (data.ciManagement){
-        ciManagement=new CiManagement(data.ciManagement.system,data.ciManagement.url);
+        projectVersionMetadata.ciManagement=new CiManagement(data.ciManagement.system,data.ciManagement.url);
       }
       if (data.licenses){
         var licenses =
         $.isArray(data.licenses) ? $.map(data.licenses,function(item){
               return new License(item.name,item.url);
           }):[data.licenses];
-        licenses=licenses;
+        projectVersionMetadata.licenses=licenses;
       }
       if (data.mailingLists){
         var mailingLists =
@@ -358,7 +358,7 @@ $(function() {
               return new MailingList(item.mainArchiveUrl,item.otherArchives,item.name,item.postAddress,
                                      item.subscribeAddress,item.unsubscribeAddress);
           }):[data.mailingLists];
-        mailingLists=mailingLists;
+        projectVersionMetadata.mailingLists=mailingLists;
       }
       if (data.dependencies){
         var dependencies =
@@ -366,7 +366,7 @@ $(function() {
               return new Dependency(item.classifier,item.optional,item.scope,item.systemPath,item.type,
                                     item.artifactId,item.groupId,item.version);
           }):[data.dependencies];
-        dependencies=dependencies;
+        projectVersionMetadata.dependencies=dependencies;
       }
       $.log("projectVersionMetadata.issueManagement.system:"+(projectVersionMetadata.issueManagement?projectVersionMetadata.issueManagement.system:"null"));
       return projectVersionMetadata;
