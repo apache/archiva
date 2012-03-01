@@ -207,12 +207,14 @@ public abstract class AbstractArchivaRestTest
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        SearchService.class,
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
-
+        // to add authentification
         if ( authzHeader != null )
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        // to configure read timeout
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        // if you want to use json as exchange format xml is supported too
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         return service;
