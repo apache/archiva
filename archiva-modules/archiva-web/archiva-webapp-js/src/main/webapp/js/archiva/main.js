@@ -63,6 +63,34 @@ $(function() {
     });
   }
 
+  // handle url with registration link
+  var checkUrlParams=function() {
+    var validateMeId = $.urlParam('validateMe');
+    if (validateMeId) {
+      validateKey(validateMeId);
+      return;
+    }
+
+    var browse = $.urlParam('browse');
+    if (browse){
+      displayBrowseGroupId(browse);
+      return;
+    }
+
+    var screen = $.urlParam('screen');
+    $.log("screen:"+screen+',operations:'+window.redbackModel.operatioNames);
+    if(screen){
+
+      if(screen='proxy-connectors'&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
+        displayProxyConnectors();
+        return;
+      }
+    }
+
+    // by default display search screen
+    displaySearch();
+  }
+
   decorateMenuWithKarma=function(user) {
     var username = user.username;
     // we can receive an observable user so take if it's a function or not
@@ -86,6 +114,7 @@ $(function() {
         $("#sidebar-content [redback-permissions]").each(function(element){
           checkElementKarma(this);
         });
+        checkUrlParams();
       }
     });
   }
@@ -156,6 +185,8 @@ $(function() {
     });
   }
 
+
+
   startArchivaApplication = function(){
     $.log("startArchivaApplication");
     $('#topbar-menu-container').html($("#topbar-menu"));
@@ -193,28 +224,14 @@ $(function() {
 
       }
 		});
-
-
   }
+
+
+
   startArchivaApplication();
 
 
-  // handle url with registration link
-  $(document).ready(function() {
-    var validateMeId = $.urlParam('validateMe');
-    if (validateMeId) {
-      validateKey(validateMeId);
-      return;
-    }
 
-    var browse = $.urlParam('browse');
-    if (browse){
-      displayBrowseGroupId(browse);
-      return;
-    }
-    // by default display search screen
-    displaySearch();
-  });
 })
 });
 
