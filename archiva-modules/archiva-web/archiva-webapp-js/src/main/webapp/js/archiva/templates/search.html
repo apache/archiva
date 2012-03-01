@@ -35,7 +35,6 @@
 
 <script id="browse-groups-div-tmpl" type="text/html">
   <div id="browse-groups-div" data-bind='template:{name:"browse-groups-tmpl"}'>
-
   </div>
 </script>
 
@@ -158,6 +157,7 @@
     <div id="search-artifacts-div" data-bind='template:{name:"search-artifacts-form-tmpl"}'>
     </div>
 </script>
+
 <script id="search-artifacts-form-tmpl" type="text/html">
 
   <div class="page-header">
@@ -267,8 +267,14 @@
 
 
       <div id="search-results" class="tab-pane">
-        <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">remove filter</a>
+        <div class="row">
+          <div class="span3">
+            <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">remove filter</a>
+          </div>
+          <div class="span4" id="search-result-number-div">
 
+          </div>
+        </div>
         <table class="table table-striped table-bordered" id="search-results-grid">
         </table>
         <div id="search-results-view-grid-pagination"></div>
@@ -277,6 +283,13 @@
       </div>
     </div>
   </div>
+
+</script>
+
+<script type="text/html" id="search-result-number-div-tmpl">
+  <blockquote>
+      ${$.i18n.prop('search.artifact.result.size')}:&nbsp;${resultViewModel.artifacts().length}
+  </blockquote>
 
 </script>
 

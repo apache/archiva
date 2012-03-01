@@ -94,8 +94,9 @@ public class DefaultRemoteRepositoryAdmin
     {
         try
         {
+            List<RemoteRepository> remoteRepositories = getRemoteRepositories();
             // close index on shutdown
-            for ( RemoteRepository remoteRepository : getRemoteRepositories() )
+            for ( RemoteRepository remoteRepository : remoteRepositories )
             {
                 IndexingContext context = indexer.getIndexingContexts().get( remoteRepository.getId() );
                 if ( context != null )

@@ -766,6 +766,9 @@ $(function() {
                                  "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
                 ko.applyBindings(self,mainContent.find("#remove-filter-id" ).get(0));
+                mainContent.find("#search-result-number-div").attr("data-bind",
+                  "template:{name:'search-result-number-div-tmpl'}");
+                ko.applyBindings(self,mainContent.find("#search-result-number-div" ).get(0));
               }
 
               activateSearchResultsTab();
