@@ -40,7 +40,7 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "user-login-form-username", "badUsername" );
         clickLinkWithLocator( "modal-login-ok", true );
-        assertTextPresent( "This field is required.f" );
+        assertTextPresent( "This field is required." );
 
     }
 
