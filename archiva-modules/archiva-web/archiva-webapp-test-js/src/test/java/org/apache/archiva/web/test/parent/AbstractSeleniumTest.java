@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -507,12 +506,21 @@ public abstract class AbstractSeleniumTest
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
         String time = sdf.format( new Date() );
         File targetPath = new File( "target", "screenshots" );
-        StackTraceElement stackTrace[] = failure.getStackTrace();
         String cName = this.getClass().getName();
-        int index = getStackTraceIndexOfCallingClass( cName, stackTrace );
-        String methodName = stackTrace[index].getMethodName();
-        int lNumber = stackTrace[index].getLineNumber();
-        String lineNumber = Integer.toString( lNumber );
+
+        String methodName = "";
+        int lineNumber = 0;
+
+        for ( StackTraceElement stackTrace : failure.getStackTrace() )
+        {
+            if ( stackTrace.getClassName().equals( this.getClass().getName() ) )
+            {
+                methodName = stackTrace.getMethodName();
+                lineNumber = stackTrace.getLineNumber();
+                break;
+            }
+        }
+
         String className = cName.substring( cName.lastIndexOf( '.' ) + 1 );
         targetPath.mkdirs();
         Selenium selenium = AbstractSeleniumTest.getSelenium();
@@ -523,21 +531,6 @@ public abstract class AbstractSeleniumTest
         File fileName = new File( targetPath, fileBaseName + ".png" );
         selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
 
-    }
-
-    private int getStackTraceIndexOfCallingClass( String nameOfClass, StackTraceElement stackTrace[] )
-    {
-        boolean match = false;
-        int i = 0;
-        do
-        {
-            String className = stackTrace[i].getClassName();
-            match = Pattern.matches( nameOfClass, className );
-            i++;
-        }
-        while ( match == false );
-        i--;
-        return i;
     }
 
 }
