@@ -24,6 +24,7 @@ import com.thoughtworks.selenium.Selenium;
 import org.apache.archiva.web.test.tools.AfterSeleniumFailure;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -42,22 +43,29 @@ import java.util.Properties;
 
 public abstract class AbstractSeleniumTest
 {
+    public String browser = System.getProperty( "browser" );
 
-    public static String baseUrl;
+    public String baseUrl = System.getProperty( "baseUrl" );
 
-    public static String maxWaitTimeInMs;
+    public int maxWaitTimeInMs = Integer.getInteger( "maxWaitTimeInMs" );
 
-    private static ThreadLocal<Selenium> selenium = new ThreadLocal<Selenium>();
+    public String seleniumHost = System.getProperty( "seleniumHost", "localhost" );
+
+    public int seleniumPort = Integer.getInteger( "seleniumPort", 4444 );
+
+    private Selenium selenium = null;
 
     public Properties p;
 
+    @Before
     public void open()
         throws Exception
     {
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
+        open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
+        assertAdminCreated();
     }
-
 
     /**
      * Close selenium session.
@@ -69,28 +77,22 @@ public abstract class AbstractSeleniumTest
         if ( getSelenium() != null )
         {
             getSelenium().stop();
-            selenium.set( null );
         }
     }
 
     /**
      * Initialize selenium
      */
-    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort, String maxWaitTimeInMs )
+    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort, int maxWaitTimeInMs )
         throws Exception
     {
         try
         {
-            AbstractSeleniumTest.baseUrl = baseUrl;
-            AbstractSeleniumTest.maxWaitTimeInMs = maxWaitTimeInMs;
-
             if ( getSelenium() == null )
             {
-                DefaultSelenium s = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
-
-                s.start();
-                s.setTimeout( maxWaitTimeInMs );
-                selenium.set( s );
+                selenium = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
+                selenium.start();
+                selenium.setTimeout( Integer.toString( maxWaitTimeInMs ) );
             }
         }
         catch ( Exception e )
@@ -104,9 +106,7 @@ public abstract class AbstractSeleniumTest
     public void assertAdminCreated()
         throws Exception
     {
-        initializeArchiva( System.getProperty( "baseUrl" ), System.getProperty( "browser" ),
-                           Integer.getInteger( "maxWaitTimeInMs" ), System.getProperty( "seleniumHost", "localhost" ),
-                           Integer.getInteger( "seleniumPort", 4444 ) );
+        initializeArchiva( baseUrl, browser, maxWaitTimeInMs, seleniumHost, seleniumPort );
     }
 
     public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs, String seleniumHost,
@@ -114,7 +114,7 @@ public abstract class AbstractSeleniumTest
         throws Exception
     {
 
-        open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
+        open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
 
         getSelenium().open( baseUrl );
 
@@ -144,9 +144,9 @@ public abstract class AbstractSeleniumTest
 
     }
 
-    public static Selenium getSelenium()
+    public Selenium getSelenium()
     {
-        return selenium == null ? null : selenium.get();
+        return selenium;
     }
 
     protected String getProperty( String key )
@@ -431,7 +431,7 @@ public abstract class AbstractSeleniumTest
 
         try
         {
-            Thread.sleep( Long.parseLong( maxWaitTimeInMs ) );
+            Thread.sleep( maxWaitTimeInMs );
         }
         catch ( InterruptedException e )
         {
@@ -667,7 +667,7 @@ public abstract class AbstractSeleniumTest
 
         String className = cName.substring( cName.lastIndexOf( '.' ) + 1 );
         targetPath.mkdirs();
-        Selenium selenium = AbstractSeleniumTest.getSelenium();
+        Selenium selenium = getSelenium();
         String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
 
         selenium.windowMaximize();

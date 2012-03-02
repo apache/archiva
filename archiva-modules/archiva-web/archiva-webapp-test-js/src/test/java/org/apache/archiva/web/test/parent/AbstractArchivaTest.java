@@ -34,21 +34,6 @@ public abstract class AbstractArchivaTest
 
     protected String fullname;
 
-
-    @Override
-    @Before
-    public void open()
-        throws Exception
-    {
-        super.open();
-        assertAdminCreated();
-    }
-
-    protected static String getErrorMessageText()
-    {
-        return getSelenium().getText( "//ul[@class='errorMessage']/li/span" );
-    }
-
     public String getUserEmail()
     {
         String email = getProperty( "USERROLE_EMAIL" );
