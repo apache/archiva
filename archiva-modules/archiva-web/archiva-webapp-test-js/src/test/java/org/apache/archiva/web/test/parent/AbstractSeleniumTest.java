@@ -21,7 +21,7 @@ package org.apache.archiva.web.test.parent;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
-import org.apache.archiva.web.test.tools.ScreenshotCaptureRule;
+import org.apache.archiva.web.test.tools.ArchivaSeleniumExecutionRule;
 import org.junit.Assert;
 import org.junit.Rule;
 
@@ -44,7 +44,7 @@ public abstract class AbstractSeleniumTest
 {
 
     @Rule
-    public ScreenshotCaptureRule screenshotCaptureRule = new ScreenshotCaptureRule();
+    public ArchivaSeleniumExecutionRule archivaSeleniumExecutionRule = new ArchivaSeleniumExecutionRule();
 
     public String browser = System.getProperty( "browser" );
 
@@ -70,7 +70,7 @@ public abstract class AbstractSeleniumTest
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
-        screenshotCaptureRule.selenium = selenium;
+        archivaSeleniumExecutionRule.selenium = selenium;
         assertAdminCreated();
     }
 

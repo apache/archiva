@@ -28,7 +28,7 @@ import org.junit.runners.model.Statement;
 /**
  * @author Olivier Lamy
  */
-public class ScreenshotCaptureRule
+public class ArchivaSeleniumExecutionRule
     implements MethodRule //TestRule
 {
 

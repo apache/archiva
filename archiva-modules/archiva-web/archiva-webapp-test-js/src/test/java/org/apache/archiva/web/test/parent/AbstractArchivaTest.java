@@ -1,7 +1,5 @@
 package org.apache.archiva.web.test.parent;
 
-import org.apache.archiva.web.test.tools.ScreenshotCaptureRule;
-import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
