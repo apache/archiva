@@ -22,14 +22,11 @@ package org.apache.archiva.web.test.parent;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import org.apache.archiva.web.test.tools.AfterSeleniumFailure;
-import org.apache.commons.io.IOUtils;
+import org.junit.After;
 import org.junit.Assert;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -52,15 +49,28 @@ public abstract class AbstractSeleniumTest
 
     private static ThreadLocal<Selenium> selenium = new ThreadLocal<Selenium>();
 
-    public static Properties p;
-
-    private final static String PROPERTIES_SEPARATOR = "=";
+    public Properties p;
 
     public void open()
         throws Exception
     {
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
+    }
+
+
+    /**
+     * Close selenium session.
+     */
+    @After
+    public void close()
+        throws Exception
+    {
+        if ( getSelenium() != null )
+        {
+            getSelenium().stop();
+            selenium.set( null );
+        }
     }
 
     /**
@@ -91,6 +101,49 @@ public abstract class AbstractSeleniumTest
         }
     }
 
+    public void assertAdminCreated()
+        throws Exception
+    {
+        initializeArchiva( System.getProperty( "baseUrl" ), System.getProperty( "browser" ),
+                           Integer.getInteger( "maxWaitTimeInMs" ), System.getProperty( "seleniumHost", "localhost" ),
+                           Integer.getInteger( "seleniumPort", 4444 ) );
+    }
+
+    public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs, String seleniumHost,
+                                   int seleniumPort )
+        throws Exception
+    {
+
+        open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
+
+        getSelenium().open( baseUrl );
+
+        waitPage();
+
+        // if not admin user created create one
+        if ( isElementVisible( "create-admin-link" ) )
+        {
+            Assert.assertFalse( getSelenium().isVisible( "login-link-a" ) );
+            Assert.assertFalse( getSelenium().isVisible( "register-link-a" ) );
+            clickLinkWithLocator( "create-admin-link-a", false );
+            assertCreateAdmin();
+            String fullname = getProperty( "ADMIN_FULLNAME" );
+            String username = getAdminUsername();
+            String mail = getProperty( "ADMIN_EMAIL" );
+            String password = getProperty( "ADMIN_PASSWORD" );
+            submitAdminData( fullname, mail, password );
+            assertUserLoggedIn( username );
+            clickLinkWithLocator( "logout-link-a" );
+        }
+        else
+        {
+            Assert.assertTrue( getSelenium().isVisible( "login-link-a" ) );
+            Assert.assertTrue( getSelenium().isVisible( "register-link-a" ) );
+            login( getAdminUsername(), getAdminPassword() );
+        }
+
+    }
+
     public static Selenium getSelenium()
     {
         return selenium == null ? null : selenium.get();
@@ -101,47 +154,138 @@ public abstract class AbstractSeleniumTest
         return p.getProperty( key );
     }
 
-    protected String getEscapeProperty( String key )
+    public String getAdminUsername()
     {
-        InputStream input = this.getClass().getClassLoader().getResourceAsStream( "test.properties" );
-        String value = null;
-        List<String> lines;
-        try
-        {
-            lines = IOUtils.readLines( input );
-        }
-        catch ( IOException e )
-        {
-            lines = new ArrayList<String>();
-        }
-        for ( String l : lines )
-        {
-            if ( l != null && l.startsWith( key ) )
-            {
-                int indexSeparator = l.indexOf( PROPERTIES_SEPARATOR );
-                value = l.substring( indexSeparator + 1 ).trim();
-                break;
-            }
-        }
-        return value;
+        String adminUsername = getProperty( "ADMIN_USERNAME" );
+        return adminUsername;
     }
 
-    /**
-     * Close selenium session.
-     */
-    public void close()
-        throws Exception
+    public String getAdminPassword()
     {
-        if ( getSelenium() != null )
+        String adminPassword = getProperty( "ADMIN_PASSWORD" );
+        return adminPassword;
+    }
+
+    public void submitAdminData( String fullname, String email, String password )
+    {
+        setFieldValue( "fullname", fullname );
+        setFieldValue( "email", email );
+        setFieldValue( "password", password );
+        setFieldValue( "confirmPassword", password );
+        clickButtonWithLocator( "user-create-form-register-button" );
+    }
+
+    public void login( String username, String password )
+    {
+        login( username, password, true, "Login Page" );
+    }
+
+    public void login( String username, String password, boolean valid, String assertReturnPage )
+    {
+        if ( isElementVisible( "login-link-a" ) )//isElementPresent( "loginLink" ) )
         {
-            getSelenium().stop();
-            selenium.set( null );
+            goToLoginPage();
+
+            submitLoginPage( username, password, false, valid, assertReturnPage );
         }
+        if ( valid )
+        {
+            assertUserLoggedIn( username );
+        }
+    }
+
+    // Go to Login Page
+    public void goToLoginPage()
+    {
+        getSelenium().open( baseUrl );
+        waitPage();
+        // are we already logged in ?
+        if ( isElementVisible( "logout-link" ) ) //isElementPresent( "logoutLink" ) )
+        {
+            // so logout
+            clickLinkWithLocator( "logout-link-a", false );
+            clickLinkWithLocator( "login-link-a" );
+        }
+        else if ( isElementVisible( "login-link-a" ) )
+        {
+            clickLinkWithLocator( "login-link-a" );
+        }
+        assertLoginModal();
+    }
+
+
+    public void assertLoginModal()
+    {
+        assertElementPresent( "user-login-form" );
+        Assert.assertTrue( isElementVisible( "register-link" ) );
+        assertElementPresent( "user-login-form-username" );
+        assertElementPresent( "user-login-form-password" );
+        assertButtonWithIdPresent( "modal-login-ok" );
+    }
+
+
+    public void submitLoginPage( String username, String password )
+    {
+        submitLoginPage( username, password, false, true, "Login Page" );
+    }
+
+    public void submitLoginPage( String username, String password, boolean validUsernamePassword )
+    {
+        submitLoginPage( username, password, false, validUsernamePassword, "Login Page" );
+    }
+
+    public void submitLoginPage( String username, String password, boolean rememberMe, boolean validUsernamePassword,
+                                 String assertReturnPage )
+    {
+        clickLinkWithLocator( "login-link-a", false );
+        setFieldValue( "user-login-form-username", username );
+        setFieldValue( "user-login-form-password", password );
+        /*
+        if ( rememberMe )
+        {
+            checkField( "rememberMe" );
+        }*/
+
+        clickButtonWithLocator( "modal-login-ok" );
+        if ( validUsernamePassword )
+        {
+            assertUserLoggedIn( username );
+        }
+        /*
+        else
+        {
+            if ( "Login Page".equals( assertReturnPage ) )
+            {
+                assertLoginPage();
+            }
+            else
+            {
+                assertPage( assertReturnPage );
+            }
+        }*/
     }
 
     // *******************************************************
     // Auxiliar methods. This method help us and simplify test.
     // *******************************************************
+
+    protected void assertUserLoggedIn( String username )
+    {
+        Assert.assertFalse( isElementVisible( "login-link" ) );
+        Assert.assertTrue( isElementVisible( "logout-link" ) );
+        Assert.assertFalse( isElementVisible( "register-link" ) );
+        Assert.assertFalse( isElementVisible( "create-admin-link" ) );
+    }
+
+    public void assertCreateAdmin()
+    {
+        assertElementPresent( "user-create" );
+        assertFieldValue( "admin", "username" );
+        assertElementPresent( "fullname" );
+        assertElementPresent( "password" );
+        assertElementPresent( "confirmPassword" );
+        assertElementPresent( "email" );
+    }
 
     public void assertFieldValue( String fieldValue, String fieldName )
     {

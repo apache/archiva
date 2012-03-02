@@ -1,8 +1,6 @@
 package org.apache.archiva.web.test.parent;
 
 import org.apache.archiva.web.test.tools.ArchivaSeleniumRunner;
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
@@ -36,13 +34,6 @@ public abstract class AbstractArchivaTest
 
     protected String fullname;
 
-    @Override
-    @After
-    public void close()
-        throws Exception
-    {
-        super.close();
-    }
 
     @Override
     @Before
@@ -51,49 +42,6 @@ public abstract class AbstractArchivaTest
     {
         super.open();
         assertAdminCreated();
-    }
-
-    public void assertAdminCreated()
-        throws Exception
-    {
-        initializeArchiva( System.getProperty( "baseUrl" ), System.getProperty( "browser" ),
-                           Integer.getInteger( "maxWaitTimeInMs" ), System.getProperty( "seleniumHost", "localhost" ),
-                           Integer.getInteger( "seleniumPort", 4444 ) );
-    }
-
-    public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs, String seleniumHost,
-                                   int seleniumPort )
-        throws Exception
-    {
-
-        super.open( baseUrl, browser, seleniumHost, seleniumPort, Integer.toString( maxWaitTimeInMs ) );
-
-        getSelenium().open( baseUrl );
-
-        waitPage();
-
-        // if not admin user created create one
-        if ( isElementVisible( "create-admin-link" ) )
-        {
-            Assert.assertFalse( getSelenium().isVisible( "login-link-a" ) );
-            Assert.assertFalse( getSelenium().isVisible( "register-link-a" ) );
-            clickLinkWithLocator( "create-admin-link-a", false );
-            assertCreateAdmin();
-            String fullname = getProperty( "ADMIN_FULLNAME" );
-            String username = getAdminUsername();
-            String mail = getProperty( "ADMIN_EMAIL" );
-            String password = getProperty( "ADMIN_PASSWORD" );
-            submitAdminData( fullname, mail, password );
-            assertUserLoggedIn( username );
-            clickLinkWithLocator( "logout-link-a" );
-        }
-        else
-        {
-            Assert.assertTrue( getSelenium().isVisible( "login-link-a" ) );
-            Assert.assertTrue( getSelenium().isVisible( "register-link-a" ) );
-            login( getAdminUsername(), getAdminPassword() );
-        }
-
     }
 
     protected static String getErrorMessageText()
@@ -131,56 +79,6 @@ public abstract class AbstractArchivaTest
         return basedir;
     }
 
-    public String getAdminUsername()
-    {
-        String adminUsername = getProperty( "ADMIN_USERNAME" );
-        return adminUsername;
-    }
-
-    public String getAdminPassword()
-    {
-        String adminPassword = getProperty( "ADMIN_PASSWORD" );
-        return adminPassword;
-    }
-
-    public void assertCreateAdmin()
-    {
-        assertElementPresent( "user-create" );
-        assertFieldValue( "admin", "username" );
-        assertElementPresent( "fullname" );
-        assertElementPresent( "password" );
-        assertElementPresent( "confirmPassword" );
-        assertElementPresent( "email" );
-    }
-
-    public void submitAdminData( String fullname, String email, String password )
-    {
-        setFieldValue( "fullname", fullname );
-        setFieldValue( "email", email );
-        setFieldValue( "password", password );
-        setFieldValue( "confirmPassword", password );
-        clickButtonWithLocator( "user-create-form-register-button" );
-        //submit();
-    }
-
-    // Go to Login Page
-    public void goToLoginPage()
-    {
-        getSelenium().open( baseUrl );
-        waitPage();
-        // are we already logged in ?
-        if ( isElementVisible( "logout-link" ) ) //isElementPresent( "logoutLink" ) )
-        {
-            // so logout
-            clickLinkWithLocator( "logout-link-a", false );
-            clickLinkWithLocator( "login-link-a" );
-        }
-        else if ( isElementVisible( "login-link-a" ) )
-        {
-            clickLinkWithLocator( "login-link-a" );
-        }
-        assertLoginModal();
-    }
 
     public void submitUserData( String username, String password, boolean rememberme, boolean success )
     {
@@ -201,15 +99,6 @@ public abstract class AbstractArchivaTest
         {
             assertLoginModal();
         }
-    }
-
-    public void assertLoginModal()
-    {
-        assertElementPresent( "user-login-form" );
-        Assert.assertTrue( isElementVisible( "register-link" ) );
-        assertElementPresent( "user-login-form-username" );
-        assertElementPresent( "user-login-form-password" );
-        assertButtonWithIdPresent( "modal-login-ok" );
     }
 
     // User Management
@@ -337,74 +226,6 @@ public abstract class AbstractArchivaTest
         assertTextNotPresent( fullName );
 
 
-    }
-
-    public void login( String username, String password )
-    {
-        login( username, password, true, "Login Page" );
-    }
-
-    public void login( String username, String password, boolean valid, String assertReturnPage )
-    {
-        if ( isElementVisible( "login-link-a" ) )//isElementPresent( "loginLink" ) )
-        {
-            goToLoginPage();
-
-            submitLoginPage( username, password, false, valid, assertReturnPage );
-        }
-        if ( valid )
-        {
-            assertUserLoggedIn( username );
-        }
-    }
-
-    public void submitLoginPage( String username, String password )
-    {
-        submitLoginPage( username, password, false, true, "Login Page" );
-    }
-
-    public void submitLoginPage( String username, String password, boolean validUsernamePassword )
-    {
-        submitLoginPage( username, password, false, validUsernamePassword, "Login Page" );
-    }
-
-    public void submitLoginPage( String username, String password, boolean rememberMe, boolean validUsernamePassword,
-                                 String assertReturnPage )
-    {
-        clickLinkWithLocator( "login-link-a", false );
-        setFieldValue( "user-login-form-username", username );
-        setFieldValue( "user-login-form-password", password );
-        /*
-        if ( rememberMe )
-        {
-            checkField( "rememberMe" );
-        }*/
-
-        clickButtonWithLocator( "modal-login-ok" );
-        if ( validUsernamePassword )
-        {
-            assertUserLoggedIn( username );
-        }
-        /*
-        else
-        {
-            if ( "Login Page".equals( assertReturnPage ) )
-            {
-                assertLoginPage();
-            }
-            else
-            {
-                assertPage( assertReturnPage );
-            }
-        }*/
-    }
-
-    protected void assertUserLoggedIn( String username )
-    {
-        Assert.assertFalse( isElementVisible( "login-link" ) );
-        Assert.assertTrue( isElementVisible( "logout-link" ) );
-        Assert.assertFalse( isElementVisible( "register-link" ) );
-        Assert.assertFalse( isElementVisible( "create-admin-link" ) );
     }
 
     // User Roles
