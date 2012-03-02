@@ -1,8 +1,9 @@
 package org.apache.archiva.web.test.parent;
 
-import org.apache.archiva.web.test.tools.ArchivaSeleniumRunner;
-import org.junit.Before;
+import org.apache.archiva.web.test.tools.ScreenshotCaptureRule;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +27,11 @@ import java.io.IOException;
  * under the License.
  */
 
-@RunWith( ArchivaSeleniumRunner.class )
+@RunWith( BlockJUnit4ClassRunner.class )
 public abstract class AbstractArchivaTest
     extends AbstractSeleniumTest
 {
+
     protected String username;
 
     protected String fullname;

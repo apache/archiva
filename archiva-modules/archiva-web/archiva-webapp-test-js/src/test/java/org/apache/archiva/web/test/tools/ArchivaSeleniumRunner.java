@@ -42,9 +42,11 @@ public class ArchivaSeleniumRunner
         super( clazz );
     }
 
+
+
     /*
-     * FIXME move that to a Rule.
-     */
+    * FIXME move that to a Rule.
+    */
     @Override
     protected Statement withAfters( FrameworkMethod method, Object target, Statement statement )
     {

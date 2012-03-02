@@ -22,9 +22,9 @@ package org.apache.archiva.web.test.parent;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import org.apache.archiva.web.test.tools.AfterSeleniumFailure;
-import org.junit.After;
+import org.apache.archiva.web.test.tools.ScreenshotCaptureRule;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -43,6 +43,10 @@ import java.util.Properties;
 
 public abstract class AbstractSeleniumTest
 {
+
+    @Rule
+    public ScreenshotCaptureRule screenshotCaptureRule = new ScreenshotCaptureRule();
+
     public String browser = System.getProperty( "browser" );
 
     public String baseUrl = System.getProperty( "baseUrl" );
@@ -57,22 +61,20 @@ public abstract class AbstractSeleniumTest
 
     public Properties p;
 
-    @Before
     public void open()
         throws Exception
     {
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
+        screenshotCaptureRule.selenium = selenium;
         assertAdminCreated();
     }
 
     /**
      * Close selenium session.
      */
-    @After
     public void close()
-        throws Exception
     {
         if ( getSelenium() != null )
         {
@@ -645,27 +647,23 @@ public abstract class AbstractSeleniumTest
     }
 
     @AfterSeleniumFailure
-    public void captureScreenShotOnFailure( Throwable failure )
+    public void captureScreenShotOnFailure( Throwable failure, String methodName, String className )
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
         String time = sdf.format( new Date() );
         File targetPath = new File( "target", "screenshots" );
-        String cName = this.getClass().getName();
 
-        String methodName = "";
         int lineNumber = 0;
 
         for ( StackTraceElement stackTrace : failure.getStackTrace() )
         {
             if ( stackTrace.getClassName().equals( this.getClass().getName() ) )
             {
-                methodName = stackTrace.getMethodName();
                 lineNumber = stackTrace.getLineNumber();
                 break;
             }
         }
 
-        String className = cName.substring( cName.lastIndexOf( '.' ) + 1 );
         targetPath.mkdirs();
         Selenium selenium = getSelenium();
         String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
