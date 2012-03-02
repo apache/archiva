@@ -31,7 +31,7 @@ import org.junit.runners.model.Statement;
 public class ArchivaSeleniumExecutionRule
     implements MethodRule //TestRule
 {
-
+    // FIXME cerate a separate TestRule for open and close calls ?
     public Selenium selenium;
 
     public Statement apply( Statement base, FrameworkMethod method, Object target )
@@ -43,8 +43,11 @@ public class ArchivaSeleniumExecutionRule
         }
         catch ( Throwable e )
         {
-            ( (AbstractSeleniumTest) target ).captureScreenShotOnFailure( e, method.getMethod().getName(),
-                                                                          target.getClass().getName() );
+            String fileName =
+                ( (AbstractSeleniumTest) target ).captureScreenShotOnFailure( e, method.getMethod().getName(),
+                                                                              target.getClass().getName() );
+
+            throw new RuntimeException( e.getMessage() + " see screenShot file:" + fileName, e );
         }
         finally
         {
@@ -63,6 +66,6 @@ public class ArchivaSeleniumExecutionRule
 
     public Statement apply( Statement base, Description description )
     {
-        return base;  //To change body of implemented methods use File | Settings | File Templates.
+        return base;
     }
 }

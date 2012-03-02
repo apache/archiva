@@ -62,6 +62,7 @@ public abstract class AbstractSeleniumTest
 
     /**
      * this method is called by the Rule before executing a test
+     *
      * @throws Exception
      */
     public void open()
@@ -649,7 +650,7 @@ public abstract class AbstractSeleniumTest
         Assert.assertEquals( getSelenium().getValue( locator ), expectedValue );
     }
 
-    public void captureScreenShotOnFailure( Throwable failure, String methodName, String className )
+    public String captureScreenShotOnFailure( Throwable failure, String methodName, String className )
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
         String time = sdf.format( new Date() );
@@ -673,8 +674,10 @@ public abstract class AbstractSeleniumTest
         selenium.windowMaximize();
 
         File fileName = new File( targetPath, fileBaseName + ".png" );
+
         selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
 
+        return fileName.getAbsolutePath();
     }
 
 }
