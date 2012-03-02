@@ -21,7 +21,6 @@ package org.apache.archiva.web.test.parent;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
-import org.apache.archiva.web.test.tools.AfterSeleniumFailure;
 import org.apache.archiva.web.test.tools.ScreenshotCaptureRule;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -61,6 +60,10 @@ public abstract class AbstractSeleniumTest
 
     public Properties p;
 
+    /**
+     * this method is called by the Rule before executing a test
+     * @throws Exception
+     */
     public void open()
         throws Exception
     {
@@ -72,7 +75,7 @@ public abstract class AbstractSeleniumTest
     }
 
     /**
-     * Close selenium session.
+     * this method is called by the Rule after executing a tests
      */
     public void close()
     {
@@ -646,7 +649,6 @@ public abstract class AbstractSeleniumTest
         Assert.assertEquals( getSelenium().getValue( locator ), expectedValue );
     }
 
-    @AfterSeleniumFailure
     public void captureScreenShotOnFailure( Throwable failure, String methodName, String className )
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
