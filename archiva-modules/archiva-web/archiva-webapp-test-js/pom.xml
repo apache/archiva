@@ -34,11 +34,7 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.testng</groupId>
-      <artifactId>testng</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -202,20 +198,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <redirectTestOutputToFile>false</redirectTestOutputToFile>
-          <properties>
-            <!--
-              Use this instead of suiteXmlFiles so that we can add the exclusion, as it is only accepted without suiteXmlFiles
-            -->
-            <property>
-              <name>listener</name>
-              <value>org.apache.archiva.web.test.listener.CaptureScreenShotsListener</value>
-            </property>
-            <property>
-              <name>excludegroups</name>
-              <!-- Exclude on all browsers but Firefox, as it is the only one that Selenium supports file uploads on -->
-              <value>${excluded.groups}</value>
-            </property>
-          </properties>
           <runOrder>alphabetical</runOrder>
           <!-- see https://jira.codehaus.org/browse/SUREFIRE-828 -->
           <excludedGroups>foonotatestsurefireissue</excludedGroups>

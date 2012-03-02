@@ -20,13 +20,13 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 public class ArchivaAdminTest
     extends AbstractArchivaTest
 {
 
-    @Test( groups = { "about" }, alwaysRun = true )
+    @Test
     public void testHome()
     {
         getSelenium().open( baseUrl );

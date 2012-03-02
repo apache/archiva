@@ -19,15 +19,16 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * @author Olivier Lamy
  */
-@Test( groups = { "usermanagement" }, dependsOnGroups = { "about" } )
+
 public class UserManagementTest
     extends AbstractArchivaTest
 {
+    @Test
     public void testBasicAddDeleteUser()
     {
         username = getProperty( "GUEST_USERNAME" );

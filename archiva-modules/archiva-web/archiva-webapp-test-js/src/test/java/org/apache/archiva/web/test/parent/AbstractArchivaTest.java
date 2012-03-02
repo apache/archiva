@@ -1,11 +1,10 @@
 package org.apache.archiva.web.test.parent;
 
-import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
+import org.apache.archiva.web.test.tools.ArchivaSeleniumRunner;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +28,7 @@ import java.io.IOException;
  * under the License.
  */
 
+@RunWith( ArchivaSeleniumRunner.class )
 public abstract class AbstractArchivaTest
     extends AbstractSeleniumTest
 {
@@ -37,7 +37,7 @@ public abstract class AbstractArchivaTest
     protected String fullname;
 
     @Override
-    @AfterTest
+    @After
     public void close()
         throws Exception
     {
@@ -45,25 +45,24 @@ public abstract class AbstractArchivaTest
     }
 
     @Override
-    @BeforeSuite
+    @Before
     public void open()
         throws Exception
     {
         super.open();
+        assertAdminCreated();
     }
 
     public void assertAdminCreated()
         throws Exception
     {
         initializeArchiva( System.getProperty( "baseUrl" ), System.getProperty( "browser" ),
-                           Integer.getInteger( "maxWaitTimeInMs" ), System.getProperty( "seleniumHost" ),
-                           Integer.getInteger( "seleniumPort" ) );
+                           Integer.getInteger( "maxWaitTimeInMs" ), System.getProperty( "seleniumHost", "localhost" ),
+                           Integer.getInteger( "seleniumPort", 4444 ) );
     }
 
-    @BeforeTest
-    @Parameters( { "baseUrl", "browser", "maxWaitTimeInMs", "seleniumHost", "seleniumPort" } )
-    public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs,
-                                   @Optional( "localhost" ) String seleniumHost, @Optional( "4444" ) int seleniumPort )
+    public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs, String seleniumHost,
+                                   int seleniumPort )
         throws Exception
     {
 

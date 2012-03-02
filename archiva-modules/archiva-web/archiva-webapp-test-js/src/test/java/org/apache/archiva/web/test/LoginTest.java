@@ -20,9 +20,7 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * Based on LoginTest of Emmanuel Venisse test.
@@ -31,10 +29,11 @@ import org.testng.annotations.Test;
  * @version $Id$
  */
 
-@Test( groups = { "login" }, dependsOnGroups = { "about" } )
+
 public class LoginTest
     extends AbstractArchivaTest
 {
+
     @Test
     public void testWithBadUsername()
     {
@@ -64,7 +63,7 @@ public class LoginTest
         assertTextPresent( "This field is required." );
     }
 
-    @Test( alwaysRun = true )
+    @Test
     public void testWithEmptyPassword()
     {
         goToLoginPage();
@@ -84,18 +83,5 @@ public class LoginTest
         assertUserLoggedIn( getProperty( "ADMIN_USERNAME" ) );
     }
 
-    @BeforeTest
-    public void open()
-        throws Exception
-    {
-        super.open();
-    }
 
-    @Override
-    @AfterTest
-    public void close()
-        throws Exception
-    {
-        super.close();
-    }
 }

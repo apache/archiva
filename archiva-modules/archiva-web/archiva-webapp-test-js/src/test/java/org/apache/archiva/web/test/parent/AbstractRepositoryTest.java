@@ -19,8 +19,9 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
+import org.junit.Assert;
+
 import java.io.File;
-import org.testng.Assert;
 
 public abstract class AbstractRepositoryTest
     extends AbstractArchivaTest
@@ -145,7 +146,9 @@ public abstract class AbstractRepositoryTest
             "Network Proxy*:,Managed Repository*:,Remote Repository*:,Policies:,Return error when:,On remote error:,Releases:,Snapshots:,Checksum:,Cache failures:,Properties:,No properties have been set.,Black List:,No black list patterns have been set.,White List:,No white list patterns have been set.";
         String[] arrayProxy = proxy.split( "," );
         for ( String arrayproxy : arrayProxy )
+        {
             assertTextPresent( arrayproxy );
+        }
         /*
          * String proxyElements =
          * "addProxyConnector_connector_proxyId,addProxyConnector_connector_sourceRepoId,addProxyConnector_connector_targetRepoId,policy_propagate-errors-on-update,policy_propagate-errors,policy_releases,policy_snapshots,policy_checksum,policy_cache-failures,propertiesEntry,propertiesValue,blackListEntry,whiteListEntry"
@@ -206,12 +209,16 @@ public abstract class AbstractRepositoryTest
         String remote = "Identifier*:,Name*:,URL*:,Username:,Password:,Timeout in seconds:,Type:";
         String[] arrayRemote = remote.split( "," );
         for ( String arrayremote : arrayRemote )
+        {
             assertTextPresent( arrayremote );
+        }
         String remoteElements =
             "addRemoteRepository_repository_id,addRemoteRepository_repository_name,addRemoteRepository_repository_url,addRemoteRepository_repository_userName,addRemoteRepository_repository_password,addRemoteRepository_repository_timeout,addRemoteRepository_repository_layout";
         String[] arrayRemoteElements = remoteElements.split( "," );
         for ( String arrayremotelement : arrayRemoteElements )
+        {
             assertElementPresent( arrayremotelement );
+        }
     }
 
     public void assertDeleteRemoteRepositoryPage()
@@ -264,18 +271,19 @@ public abstract class AbstractRepositoryTest
         clickButtonWithValue( "Update Repository" );
     }
 
-    public void editManagedRepository(String name, String directory, String indexDirectory, String type, String cron, String daysOlder, String retentionCount)
+    public void editManagedRepository( String name, String directory, String indexDirectory, String type, String cron,
+                                       String daysOlder, String retentionCount )
     {
         goToRepositoriesPage();
         clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[1]/img" );
         assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
-        setFieldValue( "repository.name" , name );
-        setFieldValue( "repository.location" , directory );
-        setFieldValue( "repository.indexDirectory" , indexDirectory );
+        setFieldValue( "repository.name", name );
+        setFieldValue( "repository.location", directory );
+        setFieldValue( "repository.indexDirectory", indexDirectory );
         selectValue( "repository.layout", type );
-        setFieldValue( "repository.cronExpression" , cron );
-        setFieldValue( "repository.daysOlder" , daysOlder );
-        setFieldValue( "repository.retentionCount" , retentionCount );
+        setFieldValue( "repository.cronExpression", cron );
+        setFieldValue( "repository.daysOlder", daysOlder );
+        setFieldValue( "repository.retentionCount", retentionCount );
         clickButtonWithValue( "Update Repository" );
     }
 
@@ -311,27 +319,35 @@ public abstract class AbstractRepositoryTest
             "**/*.pom,**/*.jar,**/*.ear,**/*.war,**/*.car,**/*.sar,**/*.mar,**/*.rar,**/*.dtd,**/*.tld,**/*.tar.gz,**/*.tar.bz2,**/*.zip";
         String[] arrayArtifactTypes = artifactsTypes.split( "," );
         for ( int i = 0; i < arrayArtifactTypes.length; i++ )
+        {
             Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[1]/table." + i + ".0" ),
                                  arrayArtifactTypes[i] );
+        }
 
         String autoremove = "**/*.bak,**/*~,**/*-";
         String[] arrayAutoremove = autoremove.split( "," );
         for ( int i = 0; i < arrayAutoremove.length; i++ )
+        {
             Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[2]/table." + i + ".0" ),
                                  arrayAutoremove[i] );
+        }
 
         String ignored = "**/.htaccess,**/KEYS,**/*.rb,**/*.sh,**/.svn/**,**/.DAV/**";
         String[] arrayIgnored = ignored.split( "," );
         for ( int i = 0; i < arrayIgnored.length; i++ )
+        {
             Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[3]/table." + i + ".0" ),
                                  arrayIgnored[i] );
+        }
 
         String indexableContent =
             "**/*.txt,**/*.TXT,**/*.block,**/*.config,**/*.pom,**/*.xml,**/*.xsd,**/*.dtd,**/*.tld";
         String[] arrayIndexableContent = indexableContent.split( "," );
         for ( int i = 0; i < arrayIndexableContent.length; i++ )
+        {
             Assert.assertEquals( getSelenium().getTable( "//div[@id='contentArea']/div/div[4]/table." + i + ".0" ),
                                  arrayIndexableContent[i] );
+        }
     }
 
     // ///////////////////////////////////////////

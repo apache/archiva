@@ -20,16 +20,17 @@ package org.apache.archiva.web.test;
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.apache.commons.lang.StringUtils;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
+
 
 /**
  * @author Olivier Lamy
  */
-@Test( groups = { "usermanagement" }, dependsOnGroups = "about" )
 public class RolesManagementTest
     extends AbstractArchivaTest
 {
+
     @Test
     public void testReadRolesAndUpdateDescription()
         throws Exception

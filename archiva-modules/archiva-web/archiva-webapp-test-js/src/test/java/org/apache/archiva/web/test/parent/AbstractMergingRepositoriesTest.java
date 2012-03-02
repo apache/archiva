@@ -21,7 +21,7 @@ package org.apache.archiva.web.test.parent;
 
 import java.io.File;
 
-public class AbstractMergingRepositoriesTest
+public abstract class AbstractMergingRepositoriesTest
     extends AbstractArchivaTest
 {
 

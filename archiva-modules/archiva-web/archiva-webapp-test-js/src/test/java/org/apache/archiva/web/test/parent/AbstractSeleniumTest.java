@@ -21,18 +21,23 @@ package org.apache.archiva.web.test.parent;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import org.apache.archiva.web.test.tools.AfterSeleniumFailure;
 import org.apache.commons.io.IOUtils;
-import org.testng.Assert;
+import org.junit.Assert;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -123,7 +128,7 @@ public abstract class AbstractSeleniumTest
     }
 
     /**
-     * Close selenium session. Called from AfterSuite method of sub-class
+     * Close selenium session.
      */
     public void close()
         throws Exception
@@ -168,7 +173,7 @@ public abstract class AbstractSeleniumTest
 
     public void assertTextPresent( String text )
     {
-        Assert.assertTrue( getSelenium().isTextPresent( text ), "'" + text + "' isn't present." );
+        Assert.assertTrue( "'" + text + "' isn't present.", getSelenium().isTextPresent( text ) );
     }
 
     /**
@@ -185,42 +190,42 @@ public abstract class AbstractSeleniumTest
             present = present || getSelenium().isTextPresent( text );
             sb.append( " " + text + " " );
         }
-        Assert.assertTrue( present, "'one of the following test " + sb.toString() + "' isn't present." );
+        Assert.assertTrue( "'one of the following test " + sb.toString() + "' isn't present.", present );
     }
 
     public void assertTextNotPresent( String text )
     {
-        Assert.assertFalse( getSelenium().isTextPresent( text ), "'" + text + "' is present." );
+        Assert.assertFalse( "'" + text + "' is present.", getSelenium().isTextPresent( text ) );
     }
 
     public void assertElementPresent( String elementLocator )
     {
-        Assert.assertTrue( isElementPresent( elementLocator ), "'" + elementLocator + "' isn't present." );
+        Assert.assertTrue( "'" + elementLocator + "' isn't present.", isElementPresent( elementLocator ) );
     }
 
     public void assertElementNotPresent( String elementLocator )
     {
-        Assert.assertFalse( isElementPresent( elementLocator ), "'" + elementLocator + "' is present." );
+        Assert.assertFalse( "'" + elementLocator + "' is present.", isElementPresent( elementLocator ) );
     }
 
     public void assertLinkPresent( String text )
     {
-        Assert.assertTrue( isElementPresent( "link=" + text ), "The link '" + text + "' isn't present." );
+        Assert.assertTrue( "The link '" + text + "' isn't present.", isElementPresent( "link=" + text ) );
     }
 
     public void assertLinkNotPresent( String text )
     {
-        Assert.assertFalse( isElementPresent( "link=" + text ), "The link('" + text + "' is present." );
+        Assert.assertFalse( "The link('" + text + "' is present.", isElementPresent( "link=" + text ) );
     }
 
     public void assertLinkNotVisible( String text )
     {
-        Assert.assertFalse( isElementVisible( "link=" + text ), "The link('" + text + "' is visible." );
+        Assert.assertFalse( "The link('" + text + "' is visible.", isElementVisible( "link=" + text ) );
     }
 
     public void assertLinkVisible( String text )
     {
-        Assert.assertTrue( isElementVisible( "link=" + text ), "The link('" + text + "' is not visible." );
+        Assert.assertTrue( "The link('" + text + "' is not visible.", isElementVisible( "link=" + text ) );
     }
 
     public void assertImgWithAlt( String alt )
@@ -313,7 +318,7 @@ public abstract class AbstractSeleniumTest
         String[] optionsPresent = getSelenium().getSelectOptions( selectField );
         List<String> expected = Arrays.asList( options );
         List<String> present = Arrays.asList( optionsPresent );
-        Assert.assertTrue( present.containsAll( expected ), "Options expected are not included in present options" );
+        Assert.assertTrue( "Options expected are not included in present options", present.containsAll( expected ) );
     }
 
     public void assertSelectedValue( String value, String fieldName )
@@ -330,17 +335,17 @@ public abstract class AbstractSeleniumTest
 
     public void assertButtonWithValuePresent( String text )
     {
-        Assert.assertTrue( isButtonWithValuePresent( text ), "'" + text + "' button isn't present" );
+        Assert.assertTrue( "'" + text + "' button isn't present", isButtonWithValuePresent( text ) );
     }
 
     public void assertButtonWithIdPresent( String id )
     {
-        Assert.assertTrue( isButtonWithIdPresent( id ), "'Button with id =" + id + "' isn't present" );
+        Assert.assertTrue( "'Button with id =" + id + "' isn't present", isButtonWithIdPresent( id ) );
     }
 
     public void assertButtonWithValueNotPresent( String text )
     {
-        Assert.assertFalse( isButtonWithValuePresent( text ), "'" + text + "' button is present" );
+        Assert.assertFalse( "'" + text + "' button is present", isButtonWithValuePresent( text ) );
     }
 
     public boolean isButtonWithValuePresent( String text )
@@ -494,6 +499,45 @@ public abstract class AbstractSeleniumTest
     public void assertElementValue( String locator, String expectedValue )
     {
         Assert.assertEquals( getSelenium().getValue( locator ), expectedValue );
+    }
+
+    @AfterSeleniumFailure
+    public void captureScreenShotOnFailure( Throwable failure )
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
+        String time = sdf.format( new Date() );
+        File targetPath = new File( "target", "screenshots" );
+        StackTraceElement stackTrace[] = failure.getStackTrace();
+        String cName = this.getClass().getName();
+        int index = getStackTraceIndexOfCallingClass( cName, stackTrace );
+        String methodName = stackTrace[index].getMethodName();
+        int lNumber = stackTrace[index].getLineNumber();
+        String lineNumber = Integer.toString( lNumber );
+        String className = cName.substring( cName.lastIndexOf( '.' ) + 1 );
+        targetPath.mkdirs();
+        Selenium selenium = AbstractSeleniumTest.getSelenium();
+        String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
+
+        selenium.windowMaximize();
+
+        File fileName = new File( targetPath, fileBaseName + ".png" );
+        selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
+
+    }
+
+    private int getStackTraceIndexOfCallingClass( String nameOfClass, StackTraceElement stackTrace[] )
+    {
+        boolean match = false;
+        int i = 0;
+        do
+        {
+            String className = stackTrace[i].getClassName();
+            match = Pattern.matches( nameOfClass, className );
+            i++;
+        }
+        while ( match == false );
+        i--;
+        return i;
     }
 
 }
