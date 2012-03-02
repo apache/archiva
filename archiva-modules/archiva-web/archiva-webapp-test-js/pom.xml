@@ -288,7 +288,7 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <copy todir="${webappDirectory}/WEB-INF/classes">
+                    <copy overwrite="true" todir="${webappDirectory}/WEB-INF/classes">
                       <fileset dir="src/test/resources/logging"/>
                     </copy>
                     <copy todir="${project.build.directory}/appserver-base">
