@@ -260,7 +260,7 @@ $(function() {
 						.data( "item.autocomplete", item )
 						.append( "<a>" + item.name + "</a>" )
 						.appendTo( ul );
-				};;
+				};
   }
 
   /**

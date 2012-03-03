@@ -81,7 +81,7 @@ $(function() {
     $.log("screen:"+screen+',operations:'+window.redbackModel.operatioNames);
     if(screen){
 
-      if(screen='proxy-connectors'&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
+      if(screen=='proxy-connectors'&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
         displayProxyConnectors();
         return;
       }
