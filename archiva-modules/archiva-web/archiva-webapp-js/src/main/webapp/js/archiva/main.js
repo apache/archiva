@@ -75,6 +75,8 @@ $(function() {
     if (browse){
       displayBrowseGroupId(browse);
       return;
+    }else{
+      $.log("no browse");
     }
 
     var screen = $.urlParam('screen');
@@ -93,6 +95,7 @@ $(function() {
 
   decorateMenuWithKarma=function(user) {
     var username = user.username;
+    $.log("decorateMenuWithKarma");
     // we can receive an observable user so take if it's a function or not
     if ($.isFunction(username)){
       username = user.username();
@@ -154,6 +157,7 @@ $(function() {
       $("#login-link").show();
       $("#register-link").show();
       $("#change-password-link").hide();
+      checkUrlParams();
     } else {
       $("#change-password-link").show();
       $("#logout-link").show();

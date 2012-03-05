@@ -283,6 +283,7 @@ $(function() {
    */
   displayBrowseGroupId=function(groupId){
     clearUserMessages();
+    $.log("displayBrowseGroupId:"+groupId);
     var mainContent = $("#main-content");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());
