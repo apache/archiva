@@ -87,13 +87,11 @@
 
 <script id="browse-artifact-tmpl" type="text/html">
   <div class="row-fluid">
-    <div>
-      <a href="#" data-bind="click: function(){displayArtifactInfo()}">
-          ${$.i18n.prop('browse.artifact.display.artifactInfo')}
-      </a>
+    <div class="span6">
+    <div class="page-header">
+      <h4>${$.i18n.prop('browse.artifact.display.artifactInfo')}</h4>
     </div>
-    <br/>
-    <div id="artifact-info" class="alert alert-info" style="display: none">
+    <div id="artifact-info" class="alert alert-info">
       <table class="table table-condensed">
         <tbody>
           <tr>
@@ -139,17 +137,18 @@
         </tbody>
       </table>
     </div>
-
+    </div>
+    <div class="span4">
     <div class="page-header">
       <h4>${$.i18n.prop('browse.artifact.versions')}</h4>
     </div>
-
-    <div>
-      <ul>
+    <div class="alert alert-success">
+      <table class="table table-condensed">
       {{each(i,version) versions}}
-        <li>${version}</li>
+        <tr><th>${version}</th></tr>
       {{/each}}
-      </ul>
+      </table>
+    </div>
     </div>
   </div>
 </script>
