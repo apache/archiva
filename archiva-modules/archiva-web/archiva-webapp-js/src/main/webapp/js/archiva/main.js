@@ -213,21 +213,35 @@ $(function() {
 			source: function(request, response){
         $.get("restServices/archivaServices/searchService/quickSearch?queryString="+encodeURIComponent(request.term),
            function(data) {
-             var res = $.map(data,function(item){
-               return item.artifactId;
-             });
+             var res = mapArtifacts(data);
              var uniqId = [];
+             var uniqArtifactIds=[];
              for (var i= 0;i<res.length;i++){
-               if ( $.inArray(res[i],uniqId)<0){
-                 uniqId.push(res[i]);
+               if ( $.inArray(res[i].artifactId,uniqId)<0){
+                 uniqId.push(res[i].artifactId);
+                 uniqArtifactIds.push(res[i]);
                }
              }
-             response(uniqId);
+             response(uniqArtifactIds);
            }
         );
-
+      },
+      select: function( event, ui ) {
+        $.log("select artifactId:"+ui.item.artifactId);
+        displaySearch(function(){
+          var searchViewModel = new SearchViewModel();
+          var searchRequest = new SearchRequest();
+          searchRequest.artifactId(ui.item.artifactId);
+          searchViewModel.searchRequest(searchRequest);
+          searchViewModel.externalAdvancedSearch();
+        });
       }
-		});
+		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+							return $( "<li></li>" )
+								.data( "item.autocomplete", item )
+								.append( "<a>" + item.artifactId + "</a>" )
+								.appendTo( ul );
+						};;
   }
 
 

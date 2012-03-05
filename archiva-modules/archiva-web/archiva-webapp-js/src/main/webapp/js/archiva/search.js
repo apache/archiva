@@ -747,10 +747,14 @@ $(function() {
         customShowError("#main-content #search-basic-form", null, null, []);
       }
       self.search("restServices/archivaServices/searchService/quickSearchWithRepositories");
-
-
     }
 
+    /**
+     * use from autocomplete search
+     */
+    this.externalAdvancedSearch=function(){
+      this.search("restServices/archivaServices/searchService/searchArtifacts");
+    }
     advancedSearch=function(){
       self.search("restServices/archivaServices/searchService/searchArtifacts");
     }
@@ -828,7 +832,7 @@ $(function() {
 
   }
 
-  displaySearch=function(){
+  displaySearch=function(successCallbackFn){
     clearUserMessages();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
@@ -843,6 +847,7 @@ $(function() {
           searchViewModel.observableRepoIds(repos);
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
           mainContent.find("#search-basic-repostories-select" ).chosen();
+          if (successCallbackFn) successCallbackFn();
         }
     });
 
