@@ -272,7 +272,41 @@
                 </form>
             </div>
             <div class="pill-pane" id="search-osgi-form-pane">
-              <p>osgi search form.</p>
+                <form class="well form-horizontal" id="search-osgi-form">
+                  <fieldset>
+                    <div class="control-group">
+                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleSymbolicName')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="bundleSymbolicName" name="bundleSymbolicName" size="50"
+                               data-bind="value: searchRequest().bundleSymbolicName"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleVersion')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="bundleVersion" name="bundleVersion" size="50"
+                               data-bind="value: searchRequest().bundleVersion"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleExportPackage')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="bundleExportPackage" name="bundleExportPackage" size="50"
+                               data-bind="value: searchRequest().bundleExportPackage"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleExportService')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="bundleExportService" name="bundleExportService" size="50"
+                               data-bind="value: searchRequest().bundleExportService"/>
+                      </div>
+                    </div>
+                  </fieldset>
+                  <button type="submit" id="btn-osgi-search" class="btn btn-primary"
+                          data-bind="click: advancedSearch">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
+
+                </form>
             </div>
           </div>
         </div>
