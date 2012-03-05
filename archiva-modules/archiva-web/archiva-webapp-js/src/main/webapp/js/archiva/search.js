@@ -657,6 +657,8 @@ $(function() {
 
     //private boolean includePomArtifacts = false;
     this.includePomArtifacts=ko.observable(false);
+
+    this.classifier=ko.observable();
   }
 
   applyAutocompleteOnHeader=function(property,resultViewModel){
@@ -665,7 +667,7 @@ $(function() {
 			source: function(request, response){
         var founds=[];
         $(resultViewModel.artifacts()).each(function(idx,artifact){
-          if(artifact[property].startsWith(request.term)){
+          if(artifact[property] && artifact[property].startsWith(request.term)){
             founds.push(artifact[property]);
           }
         });
@@ -675,10 +677,11 @@ $(function() {
         $.log("property:"+property+','+ui.item.value);
         var artifacts=[];
         $(resultViewModel.artifacts()).each(function(idx,artifact){
-          if(artifact[property].startsWith(ui.item.value)){
+          if(artifact[property] && artifact[property].startsWith(ui.item.value)){
             artifacts.push(artifact);
           }
         });
+        $.log("property:"+property+','+ui.item.value+",size:"+artifacts.length);
         resultViewModel.artifacts(artifacts);
         return false;
       }
@@ -706,6 +709,11 @@ $(function() {
           headerText: $.i18n.prop('search.artifact.results.version'),
           rowText: "version",
           id: "version"
+        },
+        {
+          headerText: $.i18n.prop('search.artifact.results.classifier'),
+          rowText: "classifier",
+          id: "classifier"
         }
       ],
       pageSize: 10,
@@ -713,6 +721,7 @@ $(function() {
         applyAutocompleteOnHeader('groupId',self);
         applyAutocompleteOnHeader('artifactId',self);
         applyAutocompleteOnHeader('version',self);
+        applyAutocompleteOnHeader('classifier',self);
       }
     });
   }

@@ -244,6 +244,13 @@
                       </div>
                     </div>
                     <div class="control-group">
+                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.classifier')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="classifier" name="classifier" size="50"
+                               data-bind="value: searchRequest().classifier"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.packaging')}</label>
                       <div class="controls">
                         <input type="text" class="input-medium search-query" id="packaging" name="packaging" size="50"
@@ -257,6 +264,7 @@
                                data-bind="value: searchRequest().className"/>
                       </div>
                     </div>
+
                   </fieldset>
                   <button type="submit" id="btn-advanced-search" class="btn btn-primary"
                           data-bind="click: advancedSearch">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
@@ -308,7 +316,7 @@
         <tr>
           {{each(i, columnDefinition) columns}}
             <th title="${ columnDefinition.title }">
-              <input type="text" class="form-search" id="search-filter-auto-${ columnDefinition.id }" place-holder="filtering"/>
+              <input type="text" class="form-search" id="search-filter-auto-${ columnDefinition.id }" placeholder="filtering"/>
             </th>
           {{/each}}
         </tr>
