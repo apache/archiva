@@ -100,6 +100,7 @@ $(function() {
               var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId);
               ko.applyBindings(browseViewModel,browseBreadCrumb.get(0));
               ko.applyBindings(browseViewModel,browseResult.get(0));
+              enableAutocompleBrowse(groupId);
             }
          });
         }
@@ -178,26 +179,40 @@ $(function() {
           var browseViewModel = new BrowseViewModel(browseResultEntries,null,null);
           ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
           ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
+          enableAutocompleBrowse();
         }
     });
-    enableAutocompleBrowse();
+
   }
 
-  enableAutocompleBrowse=function(){
+  enableAutocompleBrowse=function(groupId){
     // browse-autocomplete
+    var url="restServices/archivaServices/browseService/rootGroups";
+    if (groupId){
+      url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+    }
     $( "#main-content #browse-autocomplete" ).autocomplete({
-      minLength: 3,
+      minLength: 2,
 			source: function(request, response){
         var query = "";
-        if (request.term.indexOf('.')<0){
+        if (request.term.indexOf('.')<0&&!groupId){
           // try with rootGroups then filtered
-          $.get("restServices/archivaServices/browseService/rootGroups",
+          $.get(url,
              function(data) {
                var browseResultEntries = mapbrowseResultEntries(data);
+
                var filetered = [];
                for(var i=0;i<browseResultEntries.length;i++){
                  if (browseResultEntries[i].name.startsWith(request.term)){
-                   filetered.push(browseResultEntries[i]);
+                   if (groupId){
+                     $.log("groupId:"+groupId+",browseResultEntry.name:"+browseResultEntries[i].name);
+                     if (browseResultEntries[i].name.startsWith(groupId)) {
+                       filetered.push(browseResultEntries[i]);
+                     }
+
+                   } else {
+                     filetered.push(browseResultEntries[i]);
+                   }
                  }
                }
                response(filetered);
@@ -209,16 +224,16 @@ $(function() {
         var dotEnd=request.term.endsWith(".");
         // org.apache. requets with org.apache
         // org.apa request with org before last dot and filter response with startsWith
-        if (request.term.indexOf(".")>=0){
-          if (dotEnd){
-            query= request.term.substring(0, request.term.length-1);
+          if (request.term.indexOf(".")>=0){
+            if (dotEnd){
+              query= groupId?groupId+'.'+request.term.substring(0, request.term.length-1):request.term.substring(0, request.term.length-1);
+            } else {
+              // substring before last
+              query=groupId?groupId+'.'+request.term.substringBeforeLast("."):request.term.substringBeforeLast(".");
+            }
           } else {
-            // substring before last
-            query=request.term.substringBeforeLast(".");
+            query=groupId?groupId:request.term;
           }
-        } else {
-          query=request.term;
-        }
         $.get("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(query),
            function(data) {
              var browseResultEntries = mapbrowseResultEntries(data);
@@ -227,8 +242,14 @@ $(function() {
              } else {
                var filetered = [];
                for(var i=0;i<browseResultEntries.length;i++){
-                 if (browseResultEntries[i].name.startsWith(request.term)){
-                   filetered.push(browseResultEntries[i]);
+                 if (groupId){
+                   if (browseResultEntries[i].name.startsWith(groupId+'.'+request.term)){
+                     filetered.push(browseResultEntries[i]);
+                   }
+                 } else {
+                   if (browseResultEntries[i].name.startsWith(request.term)){
+                     filetered.push(browseResultEntries[i]);
+                   }
                  }
                }
                response(filetered);
@@ -258,13 +279,13 @@ $(function() {
 		}).data( "autocomplete" )._renderItem = function( ul, item ) {
 					return $( "<li></li>" )
 						.data( "item.autocomplete", item )
-						.append( "<a>" + item.name + "</a>" )
+						.append( groupId ? "<a>" +  item.name.substring(groupId.length+1, item.name.length) + "</a>": "<a>" + item.name + "</a>" )
 						.appendTo( ul );
 				};
   }
 
   /**
-   * called if browser url contains queryParam browse=groupId
+   *
    * @param groupId
    */
   displayBrowseGroupIdFromAutoComplete=function(groupId){
@@ -274,7 +295,6 @@ $(function() {
     mainContent.find("#browse_result").html(mediumSpinnerImg());
     var parentBrowseViewModel=new BrowseViewModel(null,null,null);
     displayGroupDetail(groupId,parentBrowseViewModel,null);
-    enableAutocompleBrowse();
   }
 
   /**
@@ -289,7 +309,6 @@ $(function() {
     mainContent.find("#browse_result").html(mediumSpinnerImg());
     var parentBrowseViewModel=new BrowseViewModel(null,null,null);
     displayGroupDetail(groupId,parentBrowseViewModel,null);
-    enableAutocompleBrowse();
   }
 
 

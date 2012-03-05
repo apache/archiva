@@ -767,7 +767,9 @@
                 <configuration>
                   <tasks>
                     <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties"
-                          todir="${basedir}/target/"/>
+                          todir="${project.build.directory}/target/"/>
+                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml"
+                          todir="${project.build.outputDirectory}"/>
                   </tasks>
                 </configuration>
               </execution>

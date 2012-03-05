@@ -24,7 +24,6 @@
     </div>
   </div>
   <div id="main_browse_result">
-    <input type="text" class="form-search span6" size="50" id="browse-autocomplete"/>
     <div id="main_browse_result_content" class="well">
       <div id="browse_breadcrumb" data-bind='template:{name:"browse-breadcrumb-tmpl"}'></div>
       <div id="browse_result" class="well" data-bind='template:{name:"browse-groups-tmpl"}'></div>
@@ -82,7 +81,14 @@
         {{/if}}
       </li>
     {{/each}}
+    <li>
+      {{if number>0}}
+        <span class="divider">/</span>
+      {{/if}}
+      <input type="text" class="form-search span6" size="50" id="browse-autocomplete"/>
+    </li>
   </ul>
+
 </script>
 
 <script id="browse-artifact-tmpl" type="text/html">
