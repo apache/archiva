@@ -88,67 +88,67 @@
 <script id="browse-artifact-tmpl" type="text/html">
   <div class="row-fluid">
     <div class="span6">
-    <div class="page-header">
-      <h4>${$.i18n.prop('browse.artifact.display.artifactInfo')}</h4>
-    </div>
-    <div id="artifact-info" class="alert alert-info">
-      <table class="table table-condensed">
-        <tbody>
-          <tr>
-            <th>${$.i18n.prop('browse.artifact.groupId')}</th>
-            <td>${groupId}</td>
-          </tr>
-          <tr>
-            <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
-            <td>${artifactId}</td>
-          </tr>
-          <tr>
-            <th>${$.i18n.prop('browse.artifact.name')}</th>
-            <td>${projectVersionMetadata.name}</td>
-          </tr>
-          <tr>
-            <th>${$.i18n.prop('browse.artifact.description')}</th>
-            <td>${projectVersionMetadata.description}</td>
-          </tr>
-          {{if projectVersionMetadata.organization}}
-          <tr>
-            <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
-            {{if projectVersionMetadata.organization.url}}
+      <div class="page-header">
+        <h4>${$.i18n.prop('browse.artifact.display.artifactInfo')}</h4>
+      </div>
+      <div id="artifact-info" class="alert alert-info">
+        <table class="table table-condensed">
+          <tbody>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.groupId')}</th>
+              <td>${groupId}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
+              <td>${artifactId}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.name')}</th>
+              <td>${projectVersionMetadata.name}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.description')}</th>
+              <td>${projectVersionMetadata.description}</td>
+            </tr>
+            {{if projectVersionMetadata.organization}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
+              {{if projectVersionMetadata.organization.url}}
+                <td>
+                  <a href="${projectVersionMetadata.organization.url}" target="_blank">
+                    <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
+                  </a>
+                </td>
+              {{else}}
+                <td>${projectVersionMetadata.organization.name}</td>
+              {{/if}}
+            </tr>
+            {{/if}}
+            {{if projectVersionMetadata.issueManagement}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
               <td>
-                <a href="${projectVersionMetadata.organization.url}" target="_blank">
-                  <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
+                <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
+                  <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
                 </a>
               </td>
-            {{else}}
-              <td>${projectVersionMetadata.organization.name}</td>
+            </tr>
             {{/if}}
-          </tr>
-          {{/if}}
-          {{if projectVersionMetadata.issueManagement}}
-          <tr>
-            <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
-            <td>
-              <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
-                <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
-              </a>
-            </td>
-          </tr>
-          {{/if}}
-        </tbody>
-      </table>
-    </div>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="span4">
-    <div class="page-header">
-      <h4>${$.i18n.prop('browse.artifact.versions')}</h4>
-    </div>
-    <div class="alert alert-success">
-      <table class="table table-condensed">
-      {{each(i,version) versions}}
-        <tr><th>${version}</th></tr>
-      {{/each}}
-      </table>
-    </div>
+      <div class="page-header">
+        <h4>${$.i18n.prop('browse.artifact.versions')}</h4>
+      </div>
+      <div class="alert alert-success">
+        <table class="table table-condensed">
+        {{each(i,version) versions}}
+          <tr><th>${version}</th></tr>
+        {{/each}}
+        </table>
+      </div>
     </div>
   </div>
 </script>
