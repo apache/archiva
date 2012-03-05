@@ -282,7 +282,7 @@
       <div id="search-results" class="tab-pane">
         <div class="row">
           <div class="span3">
-            <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">remove filter</a>
+            <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">${$.i18n.prop('search.artifact.result.filter')}</a>
           </div>
           <div class="span4" id="search-result-number-div">
 
@@ -316,7 +316,8 @@
         <tr>
           {{each(i, columnDefinition) columns}}
             <th title="${ columnDefinition.title }">
-              <input type="text" class="form-search" id="search-filter-auto-${ columnDefinition.id }" placeholder="filtering"/>
+              <input type="text" class="form-search" id="search-filter-auto-${ columnDefinition.id }"
+                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
             </th>
           {{/each}}
         </tr>
