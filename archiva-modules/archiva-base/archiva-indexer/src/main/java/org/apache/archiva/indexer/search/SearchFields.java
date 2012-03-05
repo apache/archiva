@@ -97,8 +97,17 @@ public class SearchFields
      */
     private String bundleExportService;
 
+
+    /**
+     * contains osgi metadata Require-Bundle if available
+     *
+     * @since 1.4-M3
+     */
+    private String bundleRequireBundle;
+
     /**
      * not return artifact with file extension pom
+     *
      * @since 1.4-M2
      */
     private boolean includePomArtifacts = false;
@@ -262,6 +271,16 @@ public class SearchFields
         this.includePomArtifacts = includePomArtifacts;
     }
 
+    public String getBundleRequireBundle()
+    {
+        return bundleRequireBundle;
+    }
+
+    public void setBundleRequireBundle( String bundleRequireBundle )
+    {
+        this.bundleRequireBundle = bundleRequireBundle;
+    }
+
     @Override
     public String toString()
     {
@@ -279,6 +298,7 @@ public class SearchFields
         sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
         sb.append( ", bundleName='" ).append( bundleName ).append( '\'' );
         sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( ", includePomArtifacts=" ).append( includePomArtifacts );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( '}' );

@@ -223,6 +223,20 @@ public class NexusRepositorySearch
                    Occur.MUST );
         }
 
+        if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
+                                           new StringSearchExpression( searchFields.getBundleImportPackage() ) ),
+                   Occur.MUST );
+        }
+
+        if ( StringUtils.isNotBlank( searchFields.getBundleRequireBundle() ) )
+        {
+            q.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
+                                           new StringSearchExpression( searchFields.getBundleRequireBundle() ) ),
+                   Occur.MUST );
+        }
+
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
             q.add(

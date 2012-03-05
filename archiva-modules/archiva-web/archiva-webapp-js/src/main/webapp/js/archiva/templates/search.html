@@ -302,6 +302,20 @@
                                data-bind="value: searchRequest().bundleExportService"/>
                       </div>
                     </div>
+                    <div class="control-group">
+                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleImportPackage')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="bundleImportPackage" name="bundleImportPackage" size="50"
+                               data-bind="value: searchRequest().bundleImportPackage"/>
+                      </div>
+                    </div>
+                    <div class="control-group">
+                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleRequireBundle')}</label>
+                      <div class="controls">
+                        <input type="text" class="input-medium search-query" id="bundleRequireBundle" name="bundleRequireBundle" size="50"
+                               data-bind="value: searchRequest().bundleRequireBundle"/>
+                      </div>
+                    </div>
                   </fieldset>
                   <button type="submit" id="btn-osgi-search" class="btn btn-primary"
                           data-bind="click: advancedSearch">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>

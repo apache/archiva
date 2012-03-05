@@ -28,7 +28,7 @@ public class SearchRequest
 
     /**
      * @since 1.4-M3
-     * to be able to search with a query on selected repositories
+     *        to be able to search with a query on selected repositories
      */
     private String queryTerms;
 
@@ -91,10 +91,26 @@ public class SearchRequest
      */
     private String bundleExportService;
 
+    /**
+     * contains osgi metadata Import-Package if available
+     *
+     * @since 1.4-M3
+     */
+    private String bundleImportPackage;
+
+
+    /**
+     * contains osgi metadata Require-Bundle if available
+     *
+     * @since 1.4-M3
+     */
+    private String bundleRequireBundle;
+
     private String classifier;
 
     /**
      * not return artifact with file extension pom
+     *
      * @since 1.4-M2
      */
     private boolean includePomArtifacts = false;
@@ -246,6 +262,26 @@ public class SearchRequest
         this.queryTerms = queryTerms;
     }
 
+    public String getBundleImportPackage()
+    {
+        return bundleImportPackage;
+    }
+
+    public void setBundleImportPackage( String bundleImportPackage )
+    {
+        this.bundleImportPackage = bundleImportPackage;
+    }
+
+    public String getBundleRequireBundle()
+    {
+        return bundleRequireBundle;
+    }
+
+    public void setBundleRequireBundle( String bundleRequireBundle )
+    {
+        this.bundleRequireBundle = bundleRequireBundle;
+    }
+
     @Override
     public String toString()
     {
@@ -262,6 +298,8 @@ public class SearchRequest
         sb.append( ", bundleSymbolicName='" ).append( bundleSymbolicName ).append( '\'' );
         sb.append( ", bundleExportPackage='" ).append( bundleExportPackage ).append( '\'' );
         sb.append( ", bundleExportService='" ).append( bundleExportService ).append( '\'' );
+        sb.append( ", bundleImportPackage='" ).append( bundleImportPackage ).append( '\'' );
+        sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( ", includePomArtifacts=" ).append( includePomArtifacts );
         sb.append( '}' );

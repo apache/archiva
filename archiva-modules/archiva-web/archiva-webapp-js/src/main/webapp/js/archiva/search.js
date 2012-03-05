@@ -652,6 +652,10 @@ $(function() {
     //private String bundleExportService;
     this.bundleExportService=ko.observable();
 
+    this.bundleImportPackage=ko.observable();
+
+    this.bundleRequireBundle=ko.observable();
+
     //private String classifier;
     this.classifier=ko.observable();
 
