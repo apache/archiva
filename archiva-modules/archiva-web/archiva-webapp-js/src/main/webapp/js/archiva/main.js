@@ -228,6 +228,7 @@ $(function() {
       },
       select: function( event, ui ) {
         $.log("select artifactId:"+ui.item.artifactId);
+        // user can be in a non search view so init the search view first
         displaySearch(function(){
           var searchViewModel = new SearchViewModel();
           var searchRequest = new SearchRequest();
