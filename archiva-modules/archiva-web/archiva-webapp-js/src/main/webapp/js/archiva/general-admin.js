@@ -240,7 +240,7 @@ $(function() {
     clearUserMessages();
     var mainContent=$("#main-content");
 
-    mainContent.html($("#legacy-artifact-path-main" ).html());
+    mainContent.html($("#legacy-artifact-path-main").tmpl());
 
     $.ajax("restServices/archivaServices/archivaAdministrationService/getLegacyArtifactPaths", {
         type: "GET",
