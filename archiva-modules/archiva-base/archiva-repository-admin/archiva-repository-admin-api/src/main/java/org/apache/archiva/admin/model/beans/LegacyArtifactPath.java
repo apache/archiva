@@ -18,9 +18,6 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -43,6 +40,16 @@ public class LegacyArtifactPath
      */
     private String artifact;
 
+    private String groupId;
+
+    private String artifactId;
+
+    private String version;
+
+    private String classifier;
+
+    private String type;
+
     public LegacyArtifactPath()
     {
         // no op
@@ -51,7 +58,25 @@ public class LegacyArtifactPath
     public LegacyArtifactPath( String path, String artifact )
     {
         this.path = path;
+
         this.artifact = artifact;
+        initValues( this.artifact );
+    }
+
+    private void initValues( String artifact )
+    {
+        String[] splitted = artifact.split( ":" );
+        if ( splitted.length < 4 )
+        {
+            throw new IllegalArgumentException( "artifact value '" + artifact + "' is not correct" );
+        }
+        this.groupId = splitted[0];// artifact.split( ":" )[0];
+        this.artifactId = splitted[1];// artifact.split( ":" )[1];
+        this.version = splitted[2];// artifact.split( ":" )[2];
+        String classifier = splitted.length >= 4 ? splitted[3] : null;// artifact.split( ":" )[3];
+        this.classifier = classifier.length() > 0 ? classifier : null;
+        String type = splitted.length >= 5 ? splitted[4] : null;
+        this.type = type.length() > 0 ? artifact.split( ":" )[4] : null;
     }
 
     public String getPath()
@@ -72,6 +97,7 @@ public class LegacyArtifactPath
     public void setArtifact( String artifact )
     {
         this.artifact = artifact;
+        initValues( this.artifact );
     }
 
     public boolean match( String path )
@@ -79,35 +105,42 @@ public class LegacyArtifactPath
         return path.equals( this.path );
     }
 
-    @JsonIgnore
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
     public String getGroupId()
     {
-        return artifact.split( ":" )[0];
+        return this.groupId;// artifact.split( ":" )[0];
     }
 
-    @JsonIgnore
+
     public String getArtifactId()
     {
-        return artifact.split( ":" )[1];
+        return this.artifactId;// artifact.split( ":" )[1];
     }
 
-    @JsonIgnore
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
     public String getVersion()
     {
-        return artifact.split( ":" )[2];
+        return this.version;// artifact.split( ":" )[2];
     }
 
-    @JsonIgnore
     public String getClassifier()
     {
-        String classifier = artifact.split( ":" )[3];
-        return classifier.length() > 0 ? classifier : null;
+        //String classifier = artifact.split( ":" )[3];
+        //return classifier.length() > 0 ? classifier : null;
+        return this.classifier;
     }
 
-    @JsonIgnore
     public String getType()
     {
-        return artifact.split( ":" )[4];
+        return this.type;// artifact.split( ":" )[4];
     }
 
     @Override
@@ -145,6 +178,11 @@ public class LegacyArtifactPath
         sb.append( "LegacyArtifactPath" );
         sb.append( "{path='" ).append( path ).append( '\'' );
         sb.append( ", artifact='" ).append( artifact ).append( '\'' );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", type='" ).append( type ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

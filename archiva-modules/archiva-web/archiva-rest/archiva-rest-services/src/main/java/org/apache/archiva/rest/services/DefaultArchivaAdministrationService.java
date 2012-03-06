@@ -25,11 +25,16 @@ import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
+import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +50,10 @@ public class DefaultArchivaAdministrationService
 {
     @Inject
     private ArchivaAdministration archivaAdministration;
+
+    @Inject
+    @Named( value = "managedRepositoryContent#legacy" )
+    private ManagedRepositoryContent repositoryContent;
 
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws ArchivaRestServiceException
@@ -62,8 +71,26 @@ public class DefaultArchivaAdministrationService
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
         throws ArchivaRestServiceException
     {
+
+        // Check the proposed Artifact macthes the path
+        ArtifactReference artifact = new ArtifactReference();
+
+        artifact.setGroupId( legacyArtifactPath.getGroupId() );
+        artifact.setArtifactId( legacyArtifactPath.getArtifactId() );
+        artifact.setClassifier( legacyArtifactPath.getClassifier() );
+        artifact.setVersion( legacyArtifactPath.getVersion() );
+        artifact.setType( legacyArtifactPath.getType() );
+        String path = repositoryContent.toPath( artifact );
+        if ( !StringUtils.equals( path, legacyArtifactPath.getPath() ) )
+        {
+            throw new ArchivaRestServiceException(
+                "artifact path reference '" + legacyArtifactPath.getPath() + "' does not match the initial path: '"
+                    + path + "'", Response.Status.BAD_REQUEST.getStatusCode() );
+        }
+
         try
         {
+
             archivaAdministration.addLegacyArtifactPath( legacyArtifactPath, getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
