@@ -224,17 +224,17 @@ mapStringArray=function(data){
  * @param idToAppend
  */
 displayRedbackError=function(obj,idToAppend) {
-  if ($.isArray(obj.redbackRestError.errorMessages)) {
+  if ($.isArray(obj.errorMessages)) {
     $.log("displayRedbackError with array");
-    for(var i=0; i<obj.redbackRestError.errorMessages.length; i++ ) {
-      if(obj.redbackRestError.errorMessages[i].errorKey) {
+    for(var i=0; i<obj.errorMessages.length; i++ ) {
+      if(obj.errorMessages[i].errorKey) {
         $.log("displayRedbackError with array loop");
-        displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages[i].errorKey, obj.redbackRestError.errorMessages[i].args ),idToAppend);
+        displayErrorMessage($.i18n.prop( obj.errorMessages[i].errorKey, obj.errorMessages[i].args ),idToAppend);
       }
     }
   } else {
     $.log("displayRedbackError no array");
-    displayErrorMessage($.i18n.prop( obj.redbackRestError.errorMessages.errorKey, obj.redbackRestError.errorMessages.args ),idToAppend);
+    displayErrorMessage($.i18n.prop( obj.errorMessages.errorKey, obj.errorMessages.args ),idToAppend);
   }
 }
 
@@ -249,29 +249,30 @@ displayRestError=function(data,idToAppend){
     displayRedbackError(archivaRestError,idToAppend)
   }
   // if we have the fieldName display error on it
-  if (data.archivaRestError && data.archivaRestError.fieldName){
-    if ($("#main-content #"+data.archivaRestError.fieldName)){
+  if (data && data.fieldName){
+    var mainContent=$("#main-content");
+
+    if (mainContent.find("#"+data.fieldName)){
       var message=null;
-      if (data.archivaRestError.errorKey) {
-        message=$.i18n.prop('data.archivaRestError.errorKey');
+      if (data.errorKey) {
+        message=$.i18n.prop('data.errorKey');
       } else {
-        message=data.archivaRestError.errorMessage;
+        message=data.errorMessage;
       }
-      $( "#main-content div.clearfix" ).removeClass( "error" );
-      $( "#main-content span.help-inline" ).remove();
-      $("#main-content #"+data.archivaRestError.fieldName).parents( "div.clearfix" ).addClass( "error" );
-      $("#main-content #"+data.archivaRestError.fieldName).parent().append( "<span class=\"help-inline\">" + message + "</span>" );
+      mainContent.find("div.clearfix" ).removeClass( "error" );
+      mainContent.find("span.help-inline" ).remove();
+      mainContent.find("#"+data.fieldName).parents( "div.clearfix" ).addClass( "error" );
+      mainContent.find("#"+data.fieldName).parent().append( "<span class=\"help-inline\">" + message + "</span>" );
       return;
     }
     // we don't have any id with this fieldName so continue
   }
 
-  if (data.archivaRestError && data.archivaRestError.errorKey && data.archivaRestError.errorKey.length>0){
-      $.log("with errorKey:"+dataarchivaRestError.errorKey);
-      displayErrorMessage($.i18n.prop( data.archivaRestError.errorKey ),idToAppend);
+  if (data.errorKey && data.errorKey.length>0){
+      displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
     } else {
-      $.log("data.errorMessage:"+data.archivaRestError.errorMessage);
-      displayErrorMessage(data.archivaRestError.errorMessage,idToAppend);
+      $.log("data.errorMessage:"+data.errorMessage);
+      displayErrorMessage(data.errorMessage,idToAppend);
   }
 
 }

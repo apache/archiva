@@ -72,7 +72,7 @@ public class DefaultArchivaAdministrationService
         throws ArchivaRestServiceException
     {
 
-        // Check the proposed Artifact macthes the path
+        // Check the proposed Artifact matches the path
         ArtifactReference artifact = new ArtifactReference();
 
         artifact.setGroupId( legacyArtifactPath.getGroupId() );

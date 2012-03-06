@@ -22,7 +22,7 @@ $(function() {
   // legacy path part
   //-------------------------
 
-  LegacyArtifactPath=function(path,groupId,artifactId,version,classifier,type){
+  LegacyArtifactPath=function(path,groupId,artifactId,version,classifier,type,update){
     //private String path;
     this.path=ko.observable(path);
 
@@ -32,7 +32,7 @@ $(function() {
      */
     //private String artifact;
     //this.artifact=ko.observable(artifact);
-
+    this.update=update;
     //private String groupId;
     this.groupId=ko.observable(groupId);
 
@@ -84,7 +84,97 @@ $(function() {
     return data?new LegacyArtifactPath(data.path,data.groupId,data.artifactId,data.version,data.classifier,data.type):null;
   }
 
-  LegacyPathViewModel=function(){
+  activateLegacyArtifactPathFormValidation=function(){
+    var theForm=$("#main-content #legacy-artifact-paths-edit-form");
+    var validator = theForm.validate({
+      showErrors: function(validator, errorMap, errorList) {
+       customShowError("#main-content #legacy-artifact-paths-edit-form",validator,errorMap,errorMap);
+      }
+    });
+  }
+
+  LegacyArtifactPathViewModel=function(legacyArtifactPath,update,legacyArtifactPathsViewModel){
+    var self=this;
+    this.update=update;
+    this.legacyArtifactPath=legacyArtifactPath;
+    this.legacyArtifactPathsViewModel=legacyArtifactPathsViewModel;
+
+    this.display=function(){
+      var mainContent=$("#main-content");
+      ko.applyBindings(self,mainContent.find("#legacy-artifact-paths-edit" ).get(0));
+      mainContent.find("#legacy-artifact-paths-view-tabs-li-edit a").html($.i18n.prop("edit"));
+      activateLegacyArtifactPathFormValidation();
+      activateLegacyArtifactPathsEditTab();
+    }
+
+    displayGrid=function(){
+      activateLegacyArtifactPathsGridTab();
+    }
+
+    calculatePath=function(){
+      var path="";
+      if (self.legacyArtifactPath.groupId()){
+        path+=self.legacyArtifactPath.groupId()+"/jars/";
+      }
+      if (self.legacyArtifactPath.artifactId()){
+        path+=self.legacyArtifactPath.artifactId();
+      }
+      if (self.legacyArtifactPath.version()){
+        path+="-"+self.legacyArtifactPath.version();
+      }
+      if (self.legacyArtifactPath.classifier()){
+        path+="-"+self.legacyArtifactPath.classifier();
+      }
+      if (self.legacyArtifactPath.type()){
+        path+="."+self.legacyArtifactPath.type();
+      }
+      self.legacyArtifactPath.path(path);
+    }
+
+    this.save=function(){
+      var theForm=$("#main-content #legacy-artifact-paths-edit-form");
+      if (!theForm.valid()){
+        return;
+      }
+      // do that on server side
+      /*if (theForm.find("#artifact" ).val()
+          !=theForm.find("#path" ).val()){
+        var errorList=[{
+          message: $.i18n.prop("path must match artifact"),
+    		  element: theForm.find("#path" ).get(0)
+        }];
+        customShowError("#main-content #legacy-artifact-paths-edit-form", null, null, errorList);
+        return;
+      }*/
+      // TODO call id exists if add ?
+      clearUserMessages();
+      $.log("save ok");
+      if (self.update){
+        $.log("update");
+      }else {
+        $.ajax("restServices/archivaServices/archivaAdministrationService/addLegacyArtifactPath",
+          {
+            type: "POST",
+            contentType: 'application/json',
+            data: ko.toJSON(self.legacyArtifactPath),
+            dataType: 'json',
+            success: function(data) {
+              self.legacyArtifactPath.modified(false);
+              self.legacyArtifactPathsViewModel.legacyArtifactPaths.push(self.legacyArtifactPath);
+              displaySuccessMessage($.i18n.prop('legacy-artifact-path.added',self.legacyArtifactPath.path()));
+              activateLegacyArtifactPathsGridTab();
+            },
+            error: function(data) {
+              var res = $.parseJSON(data.responseText);
+              displayRestError(res);
+            }
+          }
+        );
+      }
+    }
+  }
+
+  LegacyArtifactPathsViewModel=function(){
     var self=this;
     this.legacyArtifactPaths=ko.observableArray([]);
 
@@ -108,7 +198,8 @@ $(function() {
 
 
     editLegacyArtifactPath=function(legacyArtifactPath){
-
+      var legacyArtifactPathViewModel=new LegacyArtifactPathViewModel(legacyArtifactPath,true);
+      legacyArtifactPathViewModel.display();
     }
 
     removeLegacyArtifactPath=function(legacyArtifactPath){
@@ -131,11 +222,27 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data){
-          var legacyPathViewModel=new LegacyPathViewModel();
+          var legacyArtifactPathsViewModel=new LegacyArtifactPathsViewModel();
           var legacyPaths=mapLegacyArtifactPaths(data);
           $.log("legacyPaths:"+legacyPaths.length);
-          legacyPathViewModel.legacyArtifactPaths(legacyPaths);
-          ko.applyBindings(legacyPathViewModel,mainContent.find("#legacy-artifact-paths-view" ).get(0));
+          legacyArtifactPathsViewModel.legacyArtifactPaths(legacyPaths);
+          ko.applyBindings(legacyArtifactPathsViewModel,mainContent.find("#legacy-artifact-paths-view" ).get(0));
+
+          mainContent.find("#legacy-artifact-paths-view-tabs").on('show', function (e) {
+            if ($(e.target).attr("href")=="#legacy-artifact-paths-edit") {
+              var viewModel = new LegacyArtifactPathViewModel(new LegacyArtifactPath(),false,legacyArtifactPathsViewModel);
+              viewModel.display();
+              activateLegacyArtifactPathFormValidation();
+              clearUserMessages();
+            }
+            if ($(e.target).attr("href")=="#legacy-artifact-paths-view") {
+              mainContent.find("#legacy-artifact-paths-view-tabs-li-edit a").html($.i18n.prop("add"));
+              clearUserMessages();
+            }
+
+          });
+
+
           activateLegacyArtifactPathsGridTab();
         }
     });

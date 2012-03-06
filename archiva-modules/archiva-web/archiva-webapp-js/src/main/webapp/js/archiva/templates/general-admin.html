@@ -37,7 +37,7 @@
            </table>
            <div id="legacy-artifact-pathsPagination"></div>
        </div>
-       <div id="network-proxies-edit" class="tab-pane" data-bind='template: {name:"legacy-artifact-paths-edit-tmpl"}'></div>
+       <div id="legacy-artifact-paths-edit" class="tab-pane" data-bind='template: {name:"legacy-artifact-paths-edit-tmpl"}'></div>
      </div>
  </div>
 </script>
@@ -84,5 +84,65 @@
     {{/each}}
     </tbody>
 
+</script>
+
+<script id="legacy-artifact-paths-edit-tmpl" type="text/html">
+    <form id="legacy-artifact-paths-edit-form" class="well form-horizontal">
+      <fieldset id="legacy-artifact-paths-edit-fieldset">
+        <div class="control-group">
+          <label class="control-label" for="groupId">${$.i18n.prop('legacy-artifact-paths.groupId')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required" id="groupId" name="groupId" size="8"
+                   data-bind="value: legacyArtifactPath.groupId"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="artifactId">${$.i18n.prop('legacy-artifact-paths.artifactId')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required" id="artifactId" name="artifactId" size="8"
+                   data-bind="value: legacyArtifactPath.artifactId"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="version">${$.i18n.prop('legacy-artifact-paths.version')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required" id="version" name="version" size="8"
+                   data-bind="value: legacyArtifactPath.version"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="classifier">${$.i18n.prop('legacy-artifact-paths.classifier')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge" id="classifier" name="classifier" size="8"
+                   data-bind="value: legacyArtifactPath.classifier"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="type">${$.i18n.prop('legacy-artifact-paths.type')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required" id="type" name="type" size="8"
+                   data-bind="value: legacyArtifactPath.type"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="path">${$.i18n.prop('legacy-artifact-paths.path')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required" id="path" name="path" size="8"
+                   data-bind="value: legacyArtifactPath.path"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="artifact">${$.i18n.prop('legacy-artifact-paths.artifact')}</label>
+          <div class="controls">
+            <span title="calculated from values" class="uneditable-input"
+                  id="artifact" data-bind="text: legacyArtifactPath.artifact"></span>
+          </div>
+        </div>
+
+      </fieldset>
+      <button id="network-proxy-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      <button id="network-proxy-btn-cancel" data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
+      <button id="network-proxy-btn-calculate-path" data-bind="click: calculatePath" class="btn btn-success">${$.i18n.prop('legacy-artifact-paths.calculatePath')}</button>
+    </form>
 </script>
 
