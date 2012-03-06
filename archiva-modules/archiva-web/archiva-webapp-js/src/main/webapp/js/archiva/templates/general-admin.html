@@ -16,10 +16,73 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id="legacy-path-main" type="text/html">
- <div id="legacy-path-screen" data-bind='template:{name:"legacy-path-div"}'></div>
+<script id="legacy-artifact-path-main" type="text/html">
+ <div id="legacy-artifact-path-screen">
+     <div class="page-header">
+       <h2>${$.i18n.prop('legacy-artifact-paths.list')}</h2>
+     </div>
+
+     <ul id="legacy-artifact-paths-view-tabs" class="nav nav-tabs">
+       <li id="legacy-artifact-paths-view-tabs-li-grid">
+         <a data-toggle="tab" href="#legacy-artifact-paths-view" id="legacy-artifact-paths-view-tabs-a-grid">${$.i18n.prop('legacy-artifact-paths.grid.tab.title')}</a>
+       </li>
+       <li id="legacy-artifact-paths-view-tabs-li-edit">
+         <a data-toggle="tab" href="#legacy-artifact-paths-edit">${$.i18n.prop('add')}</a>
+       </li>
+     </ul>
+     <div id="legacy-artifact-paths-view-tabs-content" class="tab-content">
+       <div id="legacy-artifact-paths-view" class="tab-pane">
+           <table class="table table-striped table-bordered" id="legacy-artifact-paths-table"
+                  data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-legacy-artifact-paths-grid',pageLinksId:'legacy-artifact-pathsPagination'">
+           </table>
+           <div id="legacy-artifact-pathsPagination"></div>
+       </div>
+       <div id="network-proxies-edit" class="tab-pane" data-bind='template: {name:"legacy-artifact-paths-edit-tmpl"}'></div>
+     </div>
+ </div>
 </script>
 
-<script id="legacy-path-div" type="text/html">
-   foo
+<script id='ko-legacy-artifact-paths-grid' type='text/x-jquery-tmpl'>
+    <thead>
+    <tr>
+        {{each(i, columnDefinition) columns}}
+        <th>${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('modified')}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{each(i, row) itemsOnCurrentPage()}}
+      <tr data-bind="css:{ 'modified': row.modified()}">
+        {{each(j, columnDefinition) columns}}
+        {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
+          <td>
+              ${val}
+          </td>
+        {{/each}}
+          <td>
+            <a href="#" data-bind="click: function(){ editLegacyArtifactPath(row) }">
+              <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+            </a>
+          </td>
+          <td>
+            <a href="#" data-bind="click: function(){ removeLegacyArtifactPath(row) }">
+              <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+            </a>
+          </td>
+        {{if row.modified()}}
+          <td>
+            <a href="#" data-bind="click: function(){ updateLegacyArtifactPath(row) }" class="btn btn-warning">${$.i18n.prop('save')}</a>
+          </td>
+        {{else}}
+          <td></td>
+        {{/if}}
+
+    </tr>
+    {{/each}}
+    </tbody>
+
 </script>
+

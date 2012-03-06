@@ -82,9 +82,12 @@ $(function() {
     var screen = $.urlParam('screen');
     $.log("screen:"+screen+',operations:'+window.redbackModel.operatioNames);
     if(screen){
-
       if(screen=='proxy-connectors'&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
         displayProxyConnectors();
+        return;
+      }
+      if(screen=="legacy-artifact-path-support"&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
+        displayLegacyArtifactPathSupport();
         return;
       }
     }
