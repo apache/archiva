@@ -203,21 +203,31 @@ $(function() {
     }
 
     removeLegacyArtifactPath=function(legacyArtifactPath){
-      $.ajax("restServices/archivaServices/archivaAdministrationService/deleteLegacyArtifactPath?path="+encodeURIComponent(legacyArtifactPath.path()),
-        {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            self.legacyArtifactPaths.remove(legacyArtifactPath);
-            displaySuccessMessage($.i18n.prop('legacy-artifact-path.removed',legacyArtifactPath.path()));
-            activateLegacyArtifactPathsGridTab();
-          },
-          error: function(data) {
-            var res = $.parseJSON(data.responseText);
-            displayRestError(res);
-          }
-        }
-      );
+
+      openDialogConfirm(
+          function(){
+
+            $.ajax("restServices/archivaServices/archivaAdministrationService/deleteLegacyArtifactPath?path="+encodeURIComponent(legacyArtifactPath.path()),
+              {
+                type: "GET",
+                dataType: 'json',
+                success: function(data) {
+                  self.legacyArtifactPaths.remove(legacyArtifactPath);
+                  displaySuccessMessage($.i18n.prop('legacy-artifact-path.removed',legacyArtifactPath.path()));
+                  activateLegacyArtifactPathsGridTab();
+                },
+                error: function(data) {
+                  var res = $.parseJSON(data.responseText);
+                  displayRestError(res);
+                },
+                complete: function(){
+                  closeDialogConfirm();
+                }
+              }
+            );
+          }, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('legacy-artifact-path.delete.confirm',legacyArtifactPath.path()),
+                      $("#legacy-artifact-path-delete-warning-tmpl" ).tmpl(legacyArtifactPath));
+
     }
 
     updateLegacyArtifactPath=function(legacyArtifactPath){
