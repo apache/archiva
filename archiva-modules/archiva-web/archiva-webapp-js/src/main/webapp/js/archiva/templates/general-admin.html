@@ -48,9 +48,7 @@
         {{each(i, columnDefinition) columns}}
         <th>${ columnDefinition.headerText }</th>
         {{/each}}
-        <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
-        <th>${$.i18n.prop('modified')}</th>
     </tr>
     </thead>
     <tbody>
@@ -63,23 +61,10 @@
           </td>
         {{/each}}
           <td>
-            <a href="#" data-bind="click: function(){ editLegacyArtifactPath(row) }">
-              <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
-            </a>
-          </td>
-          <td>
             <a href="#" data-bind="click: function(){ removeLegacyArtifactPath(row) }">
               <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
             </a>
           </td>
-        {{if row.modified()}}
-          <td>
-            <a href="#" data-bind="click: function(){ updateLegacyArtifactPath(row) }" class="btn btn-warning">${$.i18n.prop('save')}</a>
-          </td>
-        {{else}}
-          <td></td>
-        {{/if}}
-
     </tr>
     {{/each}}
     </tbody>
