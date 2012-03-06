@@ -25,12 +25,13 @@ require(["text!js/redback/templates/user-edit.html?"+appendTemplateUrl(),
           "text!js/redback/templates/roles-tmpl.html?"+appendTemplateUrl()],
     function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
 
+      var htmlFragment=$("#html-fragments");
 
       // template loading
 
-      $("#html-fragments").append(useredit);
+      htmlFragment.append(useredit);
 
-      $("#html-fragments").append(usergrids);
+      htmlFragment.append(usergrids);
 
       $.tmpl(login).appendTo("#html-fragments");
 
@@ -40,7 +41,7 @@ require(["text!js/redback/templates/user-edit.html?"+appendTemplateUrl(),
 
       $.tmpl(usereditform).appendTo("#html-fragments");
 
-      $("#html-fragments").append(roles);
+      htmlFragment.append(roles);
 
       $.log("redback-tmpl.js loaded");
     }

@@ -25,21 +25,24 @@ require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
           "text!js/archiva/templates/network-proxies.html?"+appendTemplateUrl(),
           "text!js/archiva/templates/proxy-connectors.html?"+appendTemplateUrl(),
           "text!js/archiva/templates/repository-groups.html?"+appendTemplateUrl(),
-          "text!js/archiva/templates/search.html?"+appendTemplateUrl()],
+          "text!js/archiva/templates/search.html?"+appendTemplateUrl(),
+          "text!js/archiva/templates/general-admin.html?"+appendTemplateUrl()],
   function(menu,topbar,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
-           repository_groups,search) {
+           repository_groups,search,general_admin) {
 
+    var htmlFragment=$("#html-fragments");
     // template loading
-    $.tmpl( menu ).appendTo("#html-fragments");
-    $.tmpl( topbar ).appendTo("#html-fragments");
-    $("#html-fragments").append(message);
-    $.tmpl( modal ).appendTo("#html-fragments");
-    $("#html-fragments").append(grids_generics);
-    $("#html-fragments").append(repositories);
-    $("#html-fragments").append(network_proxies);
-    $("#html-fragments").append(proxies_connectors);
-    $("#html-fragments").append(repository_groups);
-    $("#html-fragments").append(search);
+    $.tmpl( menu ).appendTo(htmlFragment);
+    $.tmpl( topbar ).appendTo(htmlFragment);
+    htmlFragment.append(message);
+    $.tmpl( modal ).appendTo(htmlFragment);
+    htmlFragment.append(grids_generics);
+    htmlFragment.append(repositories);
+    htmlFragment.append(network_proxies);
+    htmlFragment.append(proxies_connectors);
+    htmlFragment.append(repository_groups);
+    htmlFragment.append(search);
+    htmlFragment.append(general_admin);
     $.log("main-tmpl.js loaded");
   }
 );
