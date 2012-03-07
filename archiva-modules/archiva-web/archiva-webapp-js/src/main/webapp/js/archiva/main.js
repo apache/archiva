@@ -80,20 +80,28 @@ $(function() {
     }
 
     var screen = $.urlParam('screen');
-    $.log("screen:"+screen+',operations:'+window.redbackModel.operatioNames);
+
     if(screen){
-      if(screen=='proxy-connectors'&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
+      if(screen=='proxy-connectors'&& hasKarma('archiva-manage-configuration')){
         displayProxyConnectors();
         return;
       }
-      if(screen=="legacy-artifact-path-support"&& $.inArray('archiva-manage-configuration',window.redbackModel.operatioNames)>=0){
+      if(screen=="legacy-artifact-path-support"&& hasKarma('archiva-manage-configuration')){
         displayLegacyArtifactPathSupport();
+        return;
+      }
+      if (screen=='repository-scanning'&& hasKarma('archiva-manage-configuration')){
+        displayRepositoryScanning();
         return;
       }
     }
 
     // by default display search screen
     displaySearch();
+  }
+
+  hasKarma=function(karmaName){
+    return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   }
 
   decorateMenuWithKarma=function(user) {
