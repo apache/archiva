@@ -151,14 +151,14 @@ public class ArchivaAdministrationServiceTest
         assertFalse( consumers.isEmpty() );
         assertAllDisabled( consumers );
 
-        getArchivaAdministrationService().addInvalidContentConsumer( "foo" );
+        getArchivaAdministrationService().enabledInvalidContentConsumer( "foo" );
 
         consumers = getArchivaAdministrationService().getInvalidContentAdminRepositoryConsumers();
         assertFalse( consumers.isEmpty() );
         assertAllEnabled( consumers );
 
 
-        getArchivaAdministrationService().removeInvalidContentConsumer( "foo" );
+        getArchivaAdministrationService().disabledInvalidContentConsumer( "foo" );
 
         consumers = getArchivaAdministrationService().getInvalidContentAdminRepositoryConsumers();
 

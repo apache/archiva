@@ -101,47 +101,47 @@ public interface ArchivaAdministrationService
     Boolean removeFileType( @QueryParam( "fileTypeId" ) String fileTypeId )
         throws ArchivaRestServiceException;
 
-    @Path( "addKnownContentConsumer" )
+    @Path( "enabledKnownContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean addKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
+    Boolean enabledKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
         throws ArchivaRestServiceException;
 
-    @Path( "setKnownContentConsumers" )
+    @Path( "enabledKnownContentConsumers" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    void setKnownContentConsumers( List<String> knownContentConsumers )
+    void enabledKnownContentConsumers( List<String> knownContentConsumers )
         throws ArchivaRestServiceException;
 
 
-    @Path( "removeKnownContentConsumer" )
+    @Path( "disabledKnownContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean removeKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
+    Boolean disabledKnownContentConsumer( @QueryParam( "knownContentConsumer" ) String knownContentConsumer )
         throws ArchivaRestServiceException;
 
-    @Path( "addInvalidContentConsumer" )
+    @Path( "enabledInvalidContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean addInvalidContentConsumer( @QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
+    Boolean enabledInvalidContentConsumer( @QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
         throws ArchivaRestServiceException;
 
-    @Path( "setInvalidContentConsumers" )
+    @Path( "enabledInvalidContentConsumers" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    void setInvalidContentConsumers( List<String> invalidContentConsumers )
+    void enabledInvalidContentConsumers( List<String> invalidContentConsumers )
         throws ArchivaRestServiceException;
 
-    @Path( "removeInvalidContentConsumer" )
+    @Path( "disabledInvalidContentConsumer" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean removeInvalidContentConsumer( @QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
+    Boolean disabledInvalidContentConsumer( @QueryParam( "invalidContentConsumer" ) String invalidContentConsumer )
         throws ArchivaRestServiceException;
 
     @Path( "getFileTypes" )

@@ -190,7 +190,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public Boolean addKnownContentConsumer( String knownContentConsumer )
+    public Boolean enabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
         try
@@ -204,7 +204,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public void setKnownContentConsumers( List<String> knownContentConsumers )
+    public void enabledKnownContentConsumers( List<String> knownContentConsumers )
         throws ArchivaRestServiceException
     {
         try
@@ -217,7 +217,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public Boolean removeKnownContentConsumer( String knownContentConsumer )
+    public Boolean disabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
         try
@@ -231,7 +231,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public Boolean addInvalidContentConsumer( String invalidContentConsumer )
+    public Boolean enabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
         try
@@ -245,7 +245,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public void setInvalidContentConsumers( List<String> invalidContentConsumers )
+    public void enabledInvalidContentConsumers( List<String> invalidContentConsumers )
         throws ArchivaRestServiceException
     {
         try
@@ -258,7 +258,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public Boolean removeInvalidContentConsumer( String invalidContentConsumer )
+    public Boolean disabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
         try

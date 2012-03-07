@@ -305,8 +305,8 @@ public abstract class AbstractArchivaRestTest
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
 
-        getArchivaAdministrationService().addKnownContentConsumer( "create-missing-checksums" );
-        getArchivaAdministrationService().addKnownContentConsumer( "metadata-updater" );
+        getArchivaAdministrationService().enabledKnownContentConsumer( "create-missing-checksums" );
+        getArchivaAdministrationService().enabledKnownContentConsumer( "metadata-updater" );
 
     }
 
