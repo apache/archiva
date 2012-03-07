@@ -322,13 +322,114 @@ $(function() {
     return [];
   }
 
+  AdminRepositoryConsumer=function(enabled,id,description){
+    //private boolean enabled = false;
+    this.enabled=ko.observable(enabled);
+
+    //private String id;
+    this.id=ko.observable(id)
+
+    //private String description;
+    this.description=ko.observable(description);
+  }
+
+  mapAdminRepositoryConsumer=function(data){
+    return new AdminRepositoryConsumer(data.enabled,data.id,data.description);
+  }
+
+  mapAdminRepositoryConsumers=function(data){
+    if (data!=null){
+      return $.isArray(data)? $.map(data,function(item){
+        return mapAdminRepositoryConsumer(item)
+      }):[mapAdminRepositoryConsumer(data)];
+    }
+    return [];
+  }
+
+
+
+  RepositoryScanningViewModel=function(){
+    var self=this;
+    this.fileTypes=ko.observableArray([]);
+
+    this.findFileType=function(id){
+      var fileType=null;
+      for (var i=0;i<self.fileTypes().length;i++){
+        if (id==self.fileTypes()[i].id()){
+          fileType=self.fileTypes()[i];
+        }
+      }
+      return fileType;
+    }
+
+    removeFileTypePattern=function(id,pattern){
+      clearUserMessages();
+      var url="restServices/archivaServices/archivaAdministrationService/removeFileTypePattern?"
+      url+="fileTypeId="+encodeURIComponent(id);
+      url+="&pattern="+encodeURIComponent(pattern);
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data){
+            self.findFileType(id ).patterns.remove(pattern);
+            displaySuccessMessage( $.i18n.prop("repository-scanning.file-types.removed.pattern",id,pattern));
+
+          }
+      });
+    }
+
+    addFileTypePattern=function(id){
+      var pattern=$("#main-content #pattern-"+id ).val();
+      $.log("addFileTypePattern:"+id+":"+pattern);
+      clearUserMessages();
+      var url="restServices/archivaServices/archivaAdministrationService/addFileTypePattern?"
+      url+="fileTypeId="+encodeURIComponent(id);
+      url+="&pattern="+encodeURIComponent(pattern);
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data){
+            self.findFileType(id ).patterns.push(pattern);
+            displaySuccessMessage( $.i18n.prop("repository-scanning.file-types.added.pattern",id,pattern));
+
+          }
+      });
+    }
+  }
+
   displayRepositoryScanning=function(){
+
+    clearUserMessages();
+    var mainContent=$("#main-content");
+
+    mainContent.html($("#repository-scanning-main").tmpl());
+    mainContent.find("#file-types-content").html(mediumSpinnerImg());
+
+    var repositoryScanningViewModel=new RepositoryScanningViewModel();
 
     $.ajax("restServices/archivaServices/archivaAdministrationService/getFileTypes", {
         type: "GET",
         dataType: 'json',
         success: function(data){
           var fileTypes=mapFileTypes(data);
+          repositoryScanningViewModel.fileTypes(fileTypes);
+          ko.applyBindings(repositoryScanningViewModel,mainContent.find("#file-types-content").get(0));
+        }
+    });
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getKnownContentAdminRepositoryConsumers", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data){
+          var adminRepositoryConsumers=mapAdminRepositoryConsumers(data);
+        }
+    });
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getInvalidContentAdminRepositoryConsumers", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data){
+          var adminRepositoryConsumers=mapAdminRepositoryConsumers(data);
         }
     });
 

@@ -137,3 +137,57 @@
     </div>
 </script>
 
+<script id="repository-scanning-main" type="text/html">
+  <div id="repository-scanning-screen">
+    <div class="page-header">
+      <h2>${$.i18n.prop('repository-scanning.head')}</h2>
+    </div>
+  </div>
+
+  <ul id="repositories-tabs" class="nav nav-tabs">
+    <li class="active">
+      <a data-toggle="tab" href="#file-types-content">${$.i18n.prop('repository-scanning.file-types.head')}</a>
+    </li>
+    <li>
+      <a data-toggle="tab" href="#consumers-content">${$.i18n.prop('repository-scanning.consumers.head')}</a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div id="file-types-content" class="tab-pane active" data-bind='template: {name:"file-types-tmpl"}'>
+      file types
+    </div>
+    <div id="consumers-content" class="tab-pane">
+      consumers
+    </div>
+  </div>
+
+</script>
+
+<script id="file-types-tmpl" type="text/html">
+  <!-- accordion ?? -->
+  <div class="span4">
+  {{each(i, fileType) fileTypes}}
+    <div class="page-header">
+      <h4>${fileType.id}</h4>
+    </div>
+    <table class="table table-condensed">
+      {{each(j,pattern) fileType.patterns}}
+      <tr>
+        <td>${pattern}</td>
+        <td>
+          <a href="#" data-bind="click: function(){ removeFileTypePattern(fileType.id(),pattern) }">
+            <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
+          </a>
+        </td>
+      </tr>
+      {{/each}}
+      <tr>
+        <td><input type="text" id="pattern-${fileType.id}"/></td>
+        <td><a href="#" data-bind="click: function(){addFileTypePattern(fileType.id())}">add</a></td>
+      </tr>
+    </table>
+  {{/each}}
+  </div>
+</script>
+
