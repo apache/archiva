@@ -27,6 +27,7 @@ import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.repository.admin.FiletypeToMapClosure;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -67,7 +68,7 @@ public class RepositoryScanningAction
     private List<String> fileTypeIds;
 
     /**
-     * List of {@link AdminRepositoryConsumer} objects for consumers of known content.
+     * List of {@link org.apache.archiva.rest.api.model.AdminRepositoryConsumer} objects for consumers of known content.
      */
     private List<AdminRepositoryConsumer> knownContentConsumers;
 
@@ -100,6 +101,30 @@ public class RepositoryScanningAction
     {
         super.addActionMessage( aMessage );
         log.info( "[ActionMessage] {}", aMessage );
+    }
+
+    public void prepare()
+        throws Exception
+    {
+        FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
+
+        CollectionUtils.forAllDo( archivaAdministration.getFileTypes(), filetypeToMapClosure );
+        fileTypeMap = filetypeToMapClosure.getMap();
+
+        AddAdminRepoConsumerClosure addAdminRepoConsumer =
+            new AddAdminRepoConsumerClosure( archivaAdministration.getKnownContentConsumers() );
+        CollectionUtils.forAllDo( repoconsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
+        this.knownContentConsumers = addAdminRepoConsumer.getList();
+        Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+
+        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( archivaAdministration.getInvalidContentConsumers() );
+        CollectionUtils.forAllDo( repoconsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
+        this.invalidContentConsumers = addAdminRepoConsumer.getList();
+        Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+
+        fileTypeIds = new ArrayList<String>();
+        fileTypeIds.addAll( fileTypeMap.keySet() );
+        Collections.sort( fileTypeIds );
     }
 
     public String addFiletypePattern()
@@ -185,32 +210,6 @@ public class RepositoryScanningAction
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
 
         return bundle;
-    }
-
-    public void prepare()
-        throws Exception
-    {
-
-
-        FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
-
-        CollectionUtils.forAllDo( archivaAdministration.getFileTypes(), filetypeToMapClosure );
-        fileTypeMap = filetypeToMapClosure.getMap();
-
-        AddAdminRepoConsumerClosure addAdminRepoConsumer =
-            new AddAdminRepoConsumerClosure( archivaAdministration.getKnownContentConsumers() );
-        CollectionUtils.forAllDo( repoconsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
-        this.knownContentConsumers = addAdminRepoConsumer.getList();
-        Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
-
-        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( archivaAdministration.getInvalidContentConsumers() );
-        CollectionUtils.forAllDo( repoconsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
-        this.invalidContentConsumers = addAdminRepoConsumer.getList();
-        Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
-
-        fileTypeIds = new ArrayList<String>();
-        fileTypeIds.addAll( fileTypeMap.keySet() );
-        Collections.sort( fileTypeIds );
     }
 
     public void setFileTypeId( String fileTypeId )

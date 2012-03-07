@@ -19,6 +19,8 @@ package org.apache.archiva.web.action.admin.scanning;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
+
 import java.util.Comparator;
 
 /**

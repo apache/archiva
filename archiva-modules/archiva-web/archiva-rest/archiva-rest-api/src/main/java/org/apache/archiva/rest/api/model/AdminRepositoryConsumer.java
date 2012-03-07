@@ -1,4 +1,4 @@
-package org.apache.archiva.web.action.admin.scanning;
+package org.apache.archiva.rest.api.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,17 +19,34 @@ package org.apache.archiva.web.action.admin.scanning;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * AdminRepositoryConsumer 
+ * AdminRepositoryConsumer
  *
  * @version $Id$
  */
+@XmlRootElement( name = "adminRepositoryConsumer" )
 public class AdminRepositoryConsumer
 {
     private boolean enabled = false;
+
     private String id;
+
     private String description;
-    
+
+    public AdminRepositoryConsumer()
+    {
+        // no op
+    }
+
+    public AdminRepositoryConsumer( boolean enabled, String id, String description )
+    {
+        this.enabled = enabled;
+        this.id = id;
+        this.description = description;
+    }
+
     public String getDescription()
     {
         return description;

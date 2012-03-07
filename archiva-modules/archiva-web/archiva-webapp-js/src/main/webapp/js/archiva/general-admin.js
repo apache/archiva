@@ -296,4 +296,43 @@ $(function() {
   }
 
 
+  //---------------------------
+  // repository scanning part
+  //---------------------------
+
+  FileType=function(id,patterns){
+    //private String id;
+    this.id=ko.observable(id);
+
+    //private List<String> patterns;
+    this.patterns=ko.observableArray(patterns);
+
+  }
+
+  mapFileType=function(data){
+    return new FileType(data.id,data.patterns);
+  }
+
+  mapFileTypes=function(data){
+    if (data!=null){
+      return $.isArray(data)? $.map(data,function(item){
+        return mapFileType(item)
+      }):[mapFileType(data)];
+    }
+    return [];
+  }
+
+  displayRepositoryScanning=function(){
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getFileTypes", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data){
+          var fileTypes=mapFileTypes(data);
+        }
+    });
+
+  }
+
+
 });

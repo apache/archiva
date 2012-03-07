@@ -19,6 +19,7 @@ package org.apache.archiva.web.action.admin.scanning;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.commons.collections.Closure;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 
