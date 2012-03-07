@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
+import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -155,6 +156,26 @@ public interface ArchivaAdministrationService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<String> getKnownContentConsumers()
+        throws ArchivaRestServiceException;
+
+    @Path( "getKnownContentAdminRepositoryConsumers" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    /**
+     * @since 1.4-M3
+     */
+    List<AdminRepositoryConsumer> getKnownContentAdminRepositoryConsumers()
+        throws ArchivaRestServiceException;
+
+    @Path( "getInvalidContentAdminRepositoryConsumers" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    /**
+     * @since 1.4-M3
+     */
+    List<AdminRepositoryConsumer> getInvalidContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException;
 
     @Path( "getInvalidContentConsumers" )

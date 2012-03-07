@@ -27,8 +27,13 @@ import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.rest.services.utils.AddAdminRepoConsumerClosure;
+import org.apache.archiva.rest.services.utils.AdminRepositoryConsumerComparator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +59,9 @@ public class DefaultArchivaAdministrationService
     @Inject
     @Named( value = "managedRepositoryContent#legacy" )
     private ManagedRepositoryContent repositoryContent;
+
+    @Inject
+    private RepositoryContentConsumers repoConsumerUtil;
 
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws ArchivaRestServiceException
@@ -380,6 +388,42 @@ public class DefaultArchivaAdministrationService
         try
         {
             archivaAdministration.setNetworkConfiguration( networkConfiguration );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public List<AdminRepositoryConsumer> getKnownContentAdminRepositoryConsumers()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            AddAdminRepoConsumerClosure addAdminRepoConsumer =
+                new AddAdminRepoConsumerClosure( archivaAdministration.getKnownContentConsumers() );
+            CollectionUtils.forAllDo( repoConsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
+            List<AdminRepositoryConsumer> knownContentConsumers = addAdminRepoConsumer.getList();
+            Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+            return knownContentConsumers;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage() );
+        }
+    }
+
+    public List<AdminRepositoryConsumer> getInvalidContentAdminRepositoryConsumers()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            AddAdminRepoConsumerClosure addAdminRepoConsumer =
+                new AddAdminRepoConsumerClosure( archivaAdministration.getInvalidContentConsumers() );
+            CollectionUtils.forAllDo( repoConsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
+            List<AdminRepositoryConsumer> invalidContentConsumers = addAdminRepoConsumer.getList();
+            Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+            return invalidContentConsumers;
         }
         catch ( RepositoryAdminException e )
         {

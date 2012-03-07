@@ -1,4 +1,4 @@
-package org.apache.archiva.web.action.admin.scanning;
+package org.apache.archiva.rest.services.utils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

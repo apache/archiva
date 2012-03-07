@@ -28,6 +28,8 @@ import org.apache.archiva.admin.repository.admin.FiletypeToMapClosure;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
+import org.apache.archiva.rest.services.utils.AddAdminRepoConsumerClosure;
+import org.apache.archiva.rest.services.utils.AdminRepositoryConsumerComparator;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;

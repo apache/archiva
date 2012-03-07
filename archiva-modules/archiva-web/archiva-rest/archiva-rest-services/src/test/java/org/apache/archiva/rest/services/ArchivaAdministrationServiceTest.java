@@ -22,10 +22,12 @@ import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
+import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -129,5 +131,55 @@ public class ArchivaAdministrationServiceTest
         assertTrue( ui.isDisableEasterEggs() );
         assertFalse( ui.isAppletFindEnabled() );
         assertFalse( ui.isShowFindArtifacts() );
+    }
+
+    @Test
+    public void getKnownContentAdminRepositoryConsumer()
+        throws Exception
+    {
+        List<AdminRepositoryConsumer> consumers =
+            getArchivaAdministrationService().getKnownContentAdminRepositoryConsumers();
+        assertFalse( consumers.isEmpty() );
+    }
+
+    @Test
+    public void getInvalidContentAdminRepositoryConsumer()
+        throws Exception
+    {
+        List<AdminRepositoryConsumer> consumers =
+            getArchivaAdministrationService().getInvalidContentAdminRepositoryConsumers();
+        assertFalse( consumers.isEmpty() );
+        assertAllDisabled( consumers );
+
+        getArchivaAdministrationService().addInvalidContentConsumer( "foo" );
+
+        consumers = getArchivaAdministrationService().getInvalidContentAdminRepositoryConsumers();
+        assertFalse( consumers.isEmpty() );
+        assertAllEnabled( consumers );
+
+
+        getArchivaAdministrationService().removeInvalidContentConsumer( "foo" );
+
+        consumers = getArchivaAdministrationService().getInvalidContentAdminRepositoryConsumers();
+
+        assertAllDisabled( consumers );
+
+        assertFalse( consumers.isEmpty() );
+    }
+
+    private void assertAllEnabled( List<AdminRepositoryConsumer> consumers )
+    {
+        for ( AdminRepositoryConsumer consumer : consumers )
+        {
+            assertTrue( consumer.isEnabled() );
+        }
+    }
+
+    private void assertAllDisabled( List<AdminRepositoryConsumer> consumers )
+    {
+        for ( AdminRepositoryConsumer consumer : consumers )
+        {
+            assertFalse( consumer.isEnabled() );
+        }
     }
 }
