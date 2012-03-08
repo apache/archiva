@@ -291,6 +291,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-test-mocks</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
