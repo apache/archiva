@@ -184,7 +184,11 @@
       {{/each}}
       <tr>
         <td><input type="text" id="pattern-${fileType.id}"/></td>
-        <td><a href="#" data-bind="click: function(){addFileTypePattern(fileType.id())}">add</a></td>
+        <td>
+          <a href="#" data-bind="click: function(){addFileTypePattern(fileType.id())}">
+            <img src="images/list-add-22-22.png" title="${$.i18n.prop('add')}"/>
+          </a>
+        </td>
       </tr>
     </table>
   {{/each}}
