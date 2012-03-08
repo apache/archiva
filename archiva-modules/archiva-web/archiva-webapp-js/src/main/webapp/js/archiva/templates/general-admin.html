@@ -216,19 +216,19 @@
     <tbody>
       {{each(i,knownAdminRepositoryConsumer) knownAdminRepositoryConsumers}}
       <tr>
-            {{if knownAdminRepositoryConsumer.enabled()==true}}
-              <td>
-                <a href="#" data-bind="click: function(){ disableKnowContentConsumer(knownAdminRepositoryConsumer) }">
-                  <img src="images/weather-clear-22-22.png"/>
-                </a>
-              </td>
-            {{else}}
-            <td>
-              <a href="#" data-bind="click: function(){ enableKnowContentConsumer(knownAdminRepositoryConsumer) }">
-                <img src="images/dialog-error-22-22.png"/>
-              </a>
-            </td>
-            {{/if}}
+        {{if knownAdminRepositoryConsumer.enabled()==true}}
+          <td>
+            <a href="#" data-bind="click: function(){ disableKnowContentConsumer(knownAdminRepositoryConsumer) }">
+              <img src="images/weather-clear-22-22.png"/>
+            </a>
+          </td>
+          {{else}}
+          <td>
+            <a href="#" data-bind="click: function(){ enableKnowContentConsumer(knownAdminRepositoryConsumer) }">
+              <img src="images/dialog-error-22-22.png"/>
+            </a>
+          </td>
+        {{/if}}
 
         <td>${knownAdminRepositoryConsumer.id}</td>
         <td>${knownAdminRepositoryConsumer.description}</td>
@@ -253,7 +253,19 @@
     <tbody>
       {{each(i,invalidAdminRepositoryConsumer) invalidAdminRepositoryConsumers}}
       <tr>
-        <td>${invalidAdminRepositoryConsumer.enabled}</td>
+        {{if invalidAdminRepositoryConsumer.enabled()==true}}
+          <td>
+            <a href="#" data-bind="click: function(){ disableInvalidContentConsumer(invalidAdminRepositoryConsumer) }">
+              <img src="images/weather-clear-22-22.png"/>
+            </a>
+          </td>
+          {{else}}
+          <td>
+            <a href="#" data-bind="click: function(){ enableInvalidContentConsumer(invalidAdminRepositoryConsumer) }">
+              <img src="images/dialog-error-22-22.png"/>
+            </a>
+          </td>
+        {{/if}}
         <td>${invalidAdminRepositoryConsumer.id}</td>
         <td>${invalidAdminRepositoryConsumer.description}</td>
       </tr>
