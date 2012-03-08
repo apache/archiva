@@ -570,6 +570,12 @@
       <artifactId>spring-web</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-test-mocks</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -698,6 +704,7 @@
           <port>${tomcatRunPort}</port>
           <path>${tomcatRunPath}</path>
           <contextFile>${tomcatContextXml}</contextFile>
+          <useTestClasspath>true</useTestClasspath>
           <systemProperties>
             <plexus.home>${archivaAppServerBase}</plexus.home>
             <appserver.base>${archivaAppServerBase}</appserver.base>

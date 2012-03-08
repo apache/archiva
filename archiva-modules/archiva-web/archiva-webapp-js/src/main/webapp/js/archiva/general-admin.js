@@ -425,6 +425,35 @@ $(function() {
           }
       });
     }
+
+    disableInvalidContentConsumer=function(adminRepositoryConsumer){
+      clearUserMessages();
+      var url="restServices/archivaServices/archivaAdministrationService/disabledInvalidContentConsumer/"
+      url+=encodeURIComponent(adminRepositoryConsumer.id());
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data){
+            adminRepositoryConsumer.enabled(false);
+            displaySuccessMessage( $.i18n.prop("repository-scanning.consumers.invalid.disabled",adminRepositoryConsumer.id()));
+          }
+      });
+    }
+
+    enableInvalidContentConsumer=function(adminRepositoryConsumer){
+      clearUserMessages();
+      var url="restServices/archivaServices/archivaAdministrationService/enabledInvalidContentConsumer/"
+      url+=encodeURIComponent(adminRepositoryConsumer.id());
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data){
+            adminRepositoryConsumer.enabled(true);
+            displaySuccessMessage( $.i18n.prop("repository-scanning.consumers.invalid.enabled",adminRepositoryConsumer.id()));
+          }
+      });
+    }
+
   }
 
   displayRepositoryScanning=function(){
