@@ -155,10 +155,10 @@
 
   <div class="tab-content">
     <div id="file-types-content" class="tab-pane active" data-bind='template: {name:"file-types-tmpl"}'>
-      file types
     </div>
     <div id="consumers-content" class="tab-pane">
-      consumers
+      <div id="consumers-known-content" data-bind='template: {name:"consumers-known-content-tmpl"}'></div>
+      <div id="consumers-invalid-content" data-bind='template: {name:"consumers-invalid-content-tmpl"}'></div>
     </div>
   </div>
 
@@ -200,4 +200,54 @@
   </div>
 </div>
 </script>
+
+<script id="consumers-known-content-tmpl" type="text/html">
+  <div class="page-header">
+    <h4>${$.i18n.prop('repository-scanning.consumers.know-content.head')}</h4>
+  </div>
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>${$.i18n.prop('repository-scanning.consumers.grid.enabled')}</th>
+        <th>${$.i18n.prop('repository-scanning.consumers.grid.id')}</th>
+        <th>${$.i18n.prop('repository-scanning.consumers.grid.description')}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{each(i,knownAdminRepositoryConsumer) knownAdminRepositoryConsumers}}
+      <tr>
+        <td>${knownAdminRepositoryConsumer.enabled}</td>
+        <td>${knownAdminRepositoryConsumer.id}</td>
+        <td>${knownAdminRepositoryConsumer.description}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
+
+<script id="consumers-invalid-content-tmpl" type="text/html">
+  <div class="page-header">
+    <h4>${$.i18n.prop('repository-scanning.consumers.invalid-content.head')}</h4>
+  </div>
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>${$.i18n.prop('repository-scanning.consumers.grid.enabled')}</th>
+        <th>${$.i18n.prop('repository-scanning.consumers.grid.id')}</th>
+        <th>${$.i18n.prop('repository-scanning.consumers.grid.description')}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{each(i,invalidAdminRepositoryConsumer) invalidAdminRepositoryConsumers}}
+      <tr>
+        <td>${invalidAdminRepositoryConsumer.enabled}</td>
+        <td>${invalidAdminRepositoryConsumer.id}</td>
+        <td>${invalidAdminRepositoryConsumer.description}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</script>
+
+
 

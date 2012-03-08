@@ -351,6 +351,8 @@ $(function() {
   RepositoryScanningViewModel=function(){
     var self=this;
     this.fileTypes=ko.observableArray([]);
+    this.knownAdminRepositoryConsumers=ko.observableArray([]);
+    this.invalidAdminRepositoryConsumers=ko.observableArray([]);
 
     this.findFileType=function(id){
       var fileType=null;
@@ -404,6 +406,8 @@ $(function() {
 
     mainContent.html($("#repository-scanning-main").tmpl());
     mainContent.find("#file-types-content").html(mediumSpinnerImg());
+    mainContent.find("#consumers-known-content").html(mediumSpinnerImg());
+    mainContent.find("#consumers-invalid-content").html(mediumSpinnerImg());
 
     var repositoryScanningViewModel=new RepositoryScanningViewModel();
 
@@ -421,7 +425,9 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data){
-          var adminRepositoryConsumers=mapAdminRepositoryConsumers(data);
+          var knownAdminRepositoryConsumers=mapAdminRepositoryConsumers(data);
+          repositoryScanningViewModel.knownAdminRepositoryConsumers(knownAdminRepositoryConsumers);
+          ko.applyBindings(repositoryScanningViewModel,mainContent.find("#consumers-known-content").get(0));
         }
     });
 
@@ -429,7 +435,9 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data){
-          var adminRepositoryConsumers=mapAdminRepositoryConsumers(data);
+          var invalidAdminRepositoryConsumers=mapAdminRepositoryConsumers(data);
+          repositoryScanningViewModel.invalidAdminRepositoryConsumers(invalidAdminRepositoryConsumers);
+          ko.applyBindings(repositoryScanningViewModel,mainContent.find("#consumers-invalid-content").get(0));
         }
     });
 
