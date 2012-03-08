@@ -500,5 +500,52 @@ $(function() {
 
   }
 
+  //---------------------------
+  // network configuration part
+  //---------------------------
 
+  NetworkConfiguration=function(maxTotal,maxTotalPerHost,usePooling){
+    //private int maxTotal = 30;
+    this.maxTotal=ko.observable(maxTotal);
+
+    //private int maxTotalPerHost = 30;
+    this.maxTotalPerHost=ko.observable(maxTotalPerHost);
+
+    //private boolean usePooling = true;
+    this.usePooling=ko.observable(usePooling);
+  }
+
+  NetworkConfigurationViewModel=function(networkConfiguration){
+    var self=this;
+    this.networkConfiguration=ko.observable(networkConfiguration);
+
+    save=function(){
+      clearUserMessages();
+      $.ajax("restServices/archivaServices/archivaAdministrationService/setNetworkConfiguration", {
+        type: "POST",
+        contentType: 'application/json',
+        data: ko.toJSON(self.networkConfiguration),
+        dataType: 'json',
+        success: function(data){
+          displaySuccessMessage( $.i18n.prop("network-configuration.updated"));
+        }
+      });
+    }
+  }
+
+  displayNetworkConfiguration=function(){
+    var mainContent=$("#main-content");
+    mainContent.html($("#network-configuration-screen").tmpl());
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getNetworkConfiguration", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data){
+          var networkConfiguration=new NetworkConfiguration(data.maxTotal,data.maxTotalPerHost,data.usePooling);
+          var networkConfigurationViewModel=new NetworkConfigurationViewModel(networkConfiguration);
+          ko.applyBindings(networkConfigurationViewModel,mainContent.get(0));
+        }
+    });
+
+  }
 });

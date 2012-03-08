@@ -109,46 +109,46 @@
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"  for="protocol">${$.i18n.prop('protocol')}</label>
+          <label class="control-label" for="protocol">${$.i18n.prop('protocol')}</label>
           <div class="controls">
             <input type="text" class="xlarge required" id="protocol" name="protocol" size="8"
                    data-bind="value: networkProxy.protocol"/>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"  for="host">${$.i18n.prop('host')}</label>
+          <label class="control-label" for="host">${$.i18n.prop('host')}</label>
           <div class="controls">
             <input type="text" class="xlarge required" id="host" name="host" size="15"
                    data-bind="value: networkProxy.host"/>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"  for="port">${$.i18n.prop('port')}</label>
+          <label class="control-label" for="port">${$.i18n.prop('port')}</label>
           <div class="controls">
             <input type="text" class="xlarge required digits" id="port" name="port" size="6"
                    data-bind="value: networkProxy.port"/>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"  for="username">${$.i18n.prop('username')}</label>
+          <label class="control-label" for="username">${$.i18n.prop('username')}</label>
           <div class="controls">
             <input type="text" class="xlarge" id="username" name="username" size="50"
                    data-bind="value: networkProxy.username"/>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label"  for="password">${$.i18n.prop('password')}</label>
+          <label class="control-label" for="password">${$.i18n.prop('password')}</label>
           <div class="controls">
             <input type="password" class="xlarge" id="password" name="password" size="50"
                    data-bind="value: networkProxy.password"/>
           </div>
         </div>
-          <div class="control-group">
-            <label class="control-label"  for="password">${$.i18n.prop('network.proxy.useNtlm')}</label>
-            <div class="controls">
-              <input type="checkbox" id="useNtlm" name="useNtlm" data-bind="checked: networkProxy.useNtlm"/>
-            </div>
+        <div class="control-group">
+          <label class="control-label" for="useNtlm">${$.i18n.prop('network.proxy.useNtlm')}</label>
+          <div class="controls">
+            <input type="checkbox" id="useNtlm" name="useNtlm" data-bind="checked: networkProxy.useNtlm"/>
           </div>
+        </div>
 
       </fieldset>
       <button id="network-proxy-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>

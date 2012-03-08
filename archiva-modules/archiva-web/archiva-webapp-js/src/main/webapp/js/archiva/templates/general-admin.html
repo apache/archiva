@@ -274,5 +274,40 @@
   </table>
 </script>
 
+<script id="network-configuration-screen" type="text/html">
+  <div class="page-header">
+    <h3>${$.i18n.prop('network-configuration.header')}</h3>
+  </div>
+  <div id="network-configuration-form" data-bind='template: {name:"network-configuration-form-tmpl"}'></div>
+</script>
+
+<script id="network-configuration-form-tmpl" type="text/html">
+    <form id="network-proxy-edit-form" class="well form-horizontal">
+      <fieldset id="network-proxy-edit-fieldset">
+        <div class="control-group">
+          <label class="control-label" for="maxTotal">${$.i18n.prop('network-configuration.maxTotal')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required digits" id="maxTotal" name="maxTotal" size="8"
+                   data-bind="value: networkConfiguration().maxTotal"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="maxTotal">${$.i18n.prop('network-configuration.maxTotalPerHost')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required digits" id="maxTotalPerHost" name="maxTotalPerHost" size="8"
+                   data-bind="value: networkConfiguration().maxTotalPerHost"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="usePooling">${$.i18n.prop('network-configuration.usePooling')}</label>
+          <div class="controls">
+            <input type="checkbox" id="usePooling" name="usePooling" data-bind="checked: networkConfiguration().usePooling"/>
+          </div>
+        </div>
+      </fieldset>
+      <button id="network-configuration-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+    </form>
+</script>
+
 
 

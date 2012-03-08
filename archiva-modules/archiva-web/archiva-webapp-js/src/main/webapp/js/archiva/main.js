@@ -94,6 +94,10 @@ $(function() {
         displayRepositoryScanning();
         return;
       }
+      if (screen=='network-configuration'&& hasKarma('archiva-manage-configuration')){
+        displayNetworkConfiguration();
+        return;
+      }
     }
 
     // by default display search screen
