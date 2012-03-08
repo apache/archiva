@@ -165,12 +165,15 @@
 </script>
 
 <script id="file-types-tmpl" type="text/html">
-  <!-- accordion ?? -->
+<div class="accordion" id="accordion-file-types">
   <div class="span4">
   {{each(i, fileType) fileTypes}}
-    <div class="page-header">
-      <h4>${fileType.id}</h4>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" href="#collapse-pattern-${fileType.id}"
+         data-parent="#accordion-file-types" data-toggle="collapse">${fileType.id}&nbsp;<i class="icon-resize-vertical"/></a>
     </div>
+    <div id="collapse-pattern-${fileType.id}" class="accordion-body collapse">
     <table class="table table-condensed">
       {{each(j,pattern) fileType.patterns}}
       <tr>
@@ -191,7 +194,10 @@
         </td>
       </tr>
     </table>
+    </div>
+  </div>
   {{/each}}
   </div>
+</div>
 </script>
 
