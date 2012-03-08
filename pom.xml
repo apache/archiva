@@ -1785,13 +1785,6 @@
       </modules>
     </profile>
 
-    <profile>
-      <!-- olamy profile to test tomcat plugin dev -->
-      <id>tdev</id>
-      <modules>
-        <module>archiva-tomcat</module>
-      </modules>
-    </profile>
   </profiles>
 
   <repositories>
