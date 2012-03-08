@@ -50,13 +50,36 @@
       <url>http://vmbuild.apache.org/archiva/repository/archiva-releases-stage</url>
     </repository>
     <snapshotRepository>
-      <id>vmbuild.snapshots</id>
+      <id>${snapshotsDeployId}</id>
       <name>Apache Development Snapshot Repository</name>
-      <url>http://vmbuild.apache.org/archiva/repository/snapshots</url>
+      <url>${snapshotsDeployUrl}</url>
     </snapshotRepository>
   </distributionManagement>
 
-  <!-- Developers listed by PMC Chair, PMC, Committers, Contributers, all alphabetical-->
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
+    <url>http://svn.apache.org/viewvc/archiva/parent/</url>
+  </scm>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/MRM</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>continuum</system>
+    <url>http://vmbuild.apache.org/continuum</url>
+  </ciManagement>
+
+  <properties>
+    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
+    <snapshotsDeployUrl>http://vmbuild.apache.org/archiva/repository/snapshots</snapshotsDeployUrl>
+    <snapshotsDeployId>vmbuild.snapshots</snapshotsDeployId>
+  </properties>
+
+  <!-- Developers listed by PMC Chair, PMC, Committers, Contributors, Emeritus all alphabetical-->
   <developers>
     <developer>
       <id>oching</id>
@@ -447,28 +470,6 @@
       </otherArchives>
     </mailingList>
   </mailingLists>
-
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/parent/</url>
-  </scm>
-
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MRM</url>
-  </issueManagement>
-
-  <ciManagement>
-    <system>continuum</system>
-    <url>http://vmbuild.apache.org/continuum</url>
-  </ciManagement>
-
-  <properties>
-    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
-  </properties>
-
-
 
   <build>
     <plugins>
