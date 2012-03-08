@@ -270,7 +270,8 @@ $(function() {
   }
 
   activateNetworkProxyFormValidation=function(){
-    var validator = $("#main-content #network-proxy-edit-form").validate({
+    var editForm=$("#main-content #network-proxy-edit-form");
+    var validator = editForm.validate({
       rules: {id: {
        required: true,
        remote: {
@@ -279,7 +280,7 @@ $(function() {
        }
       }},
       showErrors: function(validator, errorMap, errorList) {
-       customShowError("#main-content #network-proxy-edit-form",validator,errorMap,errorMap);
+       customShowError(editForm,validator,errorMap,errorMap);
       }
     });
     validator.settings.messages["id"]=$.i18n.prop("id.required.or.alreadyexists");

@@ -82,6 +82,10 @@ $(function() {
     var screen = $.urlParam('screen');
 
     if(screen){
+      if(screen=='network-proxies'&& hasKarma('archiva-manage-configuration')){
+        displayNetworkProxies();
+        return;
+      }
       if(screen=='proxy-connectors'&& hasKarma('archiva-manage-configuration')){
         displayProxyConnectors();
         return;
