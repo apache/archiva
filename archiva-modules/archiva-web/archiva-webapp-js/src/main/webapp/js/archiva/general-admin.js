@@ -397,6 +397,34 @@ $(function() {
           }
       });
     }
+
+    disableKnowContentConsumer=function(adminRepositoryConsumer){
+      clearUserMessages();
+      var url="restServices/archivaServices/archivaAdministrationService/disabledKnownContentConsumer/"
+      url+=encodeURIComponent(adminRepositoryConsumer.id());
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data){
+            adminRepositoryConsumer.enabled(false);
+            displaySuccessMessage( $.i18n.prop("repository-scanning.consumers.know.disabled",adminRepositoryConsumer.id()));
+          }
+      });
+    }
+
+    enableKnowContentConsumer=function(adminRepositoryConsumer){
+      clearUserMessages();
+      var url="restServices/archivaServices/archivaAdministrationService/enabledKnownContentConsumer/"
+      url+=encodeURIComponent(adminRepositoryConsumer.id());
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data){
+            adminRepositoryConsumer.enabled(true);
+            displaySuccessMessage( $.i18n.prop("repository-scanning.consumers.know.enabled",adminRepositoryConsumer.id()));
+          }
+      });
+    }
   }
 
   displayRepositoryScanning=function(){

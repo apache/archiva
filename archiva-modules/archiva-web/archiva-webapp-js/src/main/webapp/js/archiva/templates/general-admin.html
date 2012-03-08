@@ -216,7 +216,20 @@
     <tbody>
       {{each(i,knownAdminRepositoryConsumer) knownAdminRepositoryConsumers}}
       <tr>
-        <td>${knownAdminRepositoryConsumer.enabled}</td>
+            {{if knownAdminRepositoryConsumer.enabled()==true}}
+              <td>
+                <a href="#" data-bind="click: function(){ disableKnowContentConsumer(knownAdminRepositoryConsumer) }">
+                  <img src="images/weather-clear-22-22.png"/>
+                </a>
+              </td>
+            {{else}}
+            <td>
+              <a href="#" data-bind="click: function(){ enableKnowContentConsumer(knownAdminRepositoryConsumer) }">
+                <img src="images/dialog-error-22-22.png"/>
+              </a>
+            </td>
+            {{/if}}
+
         <td>${knownAdminRepositoryConsumer.id}</td>
         <td>${knownAdminRepositoryConsumer.description}</td>
       </tr>
