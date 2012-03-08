@@ -119,16 +119,7 @@
       </roles>
       <timezone>-8</timezone>
     </developer>
-    <developer>
-      <id>evenisse</id>
-      <name>Emmanuel Venisse</name>
-      <email>evenisse@apache.org</email>
-      <organization>ASF</organization>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
+
 
     <developer>
       <id>joakime</id>
@@ -140,16 +131,7 @@
       </roles>
       <timezone>-5</timezone>
     </developer>
-    <developer>
-      <id>jtolentino</id>
-      <name>Ernesto Tolentino Jr.</name>
-      <email>jtolentino@apache.org</email>
-      <organization>ASF</organization>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>+8</timezone>
-    </developer>
+
     <developer>
       <id>nicolas</id>
       <name>Nicolas De Loof</name>
@@ -264,6 +246,22 @@
     <developer>
       <id>jmcconnell</id>
       <name>Jesse McConnell</name>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>evenisse</id>
+      <name>Emmanuel Venisse</name>
+      <email>evenisse@apache.org</email>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jtolentino</id>
+      <name>Ernesto Tolentino Jr.</name>
+      <email>jtolentino@apache.org</email>
       <roles>
         <role>Emeritus</role>
       </roles>
