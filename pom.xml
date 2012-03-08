@@ -1759,59 +1759,7 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>snapshots-build</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <repositories>
-        <repository>
-          <id>redback.snapshots</id>
-          <name>Codehaus Redback Snapshots Repository</name>
-          <url>http://snapshots.repository.codehaus.org/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>apache.snapshots</id>
-          <name>Apache Snapshots</name>
-          <url>https://repository.apache.org/content/groups/snapshots/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <id>apache.snapshots</id>
-          <name>Apache Snapshots</name>
-          <url>https://repository.apache.org/content/groups/snapshots/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <id>codehaus.snapshots</id>
-          <url>https://nexus.codehaus.org/content/groups/snapshots-group/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </pluginRepository>
-      </pluginRepositories>
-    </profile>
+
 
     <profile>
       <!-- profile to run struts webapp it test -->
@@ -1845,4 +1793,53 @@
       </modules>
     </profile>
   </profiles>
+
+  <repositories>
+    <repository>
+      <id>redback.snapshots</id>
+      <name>Codehaus Redback Snapshots Repository</name>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>apache.snapshots</id>
+      <name>Apache Snapshots</name>
+      <url>https://repository.apache.org/content/groups/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>apache.snapshots</id>
+      <name>Apache Snapshots</name>
+      <url>https://repository.apache.org/content/groups/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>codehaus.snapshots</id>
+      <url>https://nexus.codehaus.org/content/groups/snapshots-group/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>
