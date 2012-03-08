@@ -285,8 +285,8 @@ displayRestError=function(data,idToAppend){
  * @param errorList
  */
 customShowError=function(selector, validator, errorMap, errorList) {
-  $(selector ).find("div.control-group" ).removeClass( "error" );
-  $(selector).find("span.help-inline").remove();
+  $.isFunction(selector)? selector.find("div.control-group" ).removeClass( "error" ):$(selector).find("div.control-group" ).removeClass( "error" );
+  $.isFunction(selector)? selector.find("span.help-inline").remove():$(selector).find("span.help-inline").remove();
   for ( var i = 0; errorList[i]; i++ ) {
     var error = errorList[i];
     var field = $("#"+error.element.id);

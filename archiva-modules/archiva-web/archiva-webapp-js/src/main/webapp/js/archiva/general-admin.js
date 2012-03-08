@@ -520,6 +520,9 @@ $(function() {
     this.networkConfiguration=ko.observable(networkConfiguration);
 
     save=function(){
+      if (!$("#main-content #network-proxy-edit-form").valid()){
+        return;
+      }
       clearUserMessages();
       $.ajax("restServices/archivaServices/archivaAdministrationService/setNetworkConfiguration", {
         type: "POST",
@@ -544,6 +547,11 @@ $(function() {
           var networkConfiguration=new NetworkConfiguration(data.maxTotal,data.maxTotalPerHost,data.usePooling);
           var networkConfigurationViewModel=new NetworkConfigurationViewModel(networkConfiguration);
           ko.applyBindings(networkConfigurationViewModel,mainContent.get(0));
+          var validator = $("#main-content #network-proxy-edit-form").validate({
+            showErrors: function(validator, errorMap, errorList) {
+             customShowError(mainContent.find("#network-proxy-edit-form" ).get(0),validator,errorMap,errorMap);
+            }
+          });
         }
     });
 
