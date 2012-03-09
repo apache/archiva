@@ -51,6 +51,9 @@ import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
+import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -145,6 +148,9 @@ public class DefaultRepositoriesService
 
     @Inject
     protected List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
+
+    @Inject
+    private RepositoryScanner repoScanner;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -735,19 +741,19 @@ public class DefaultRepositoriesService
         }
         catch ( RepositoryException e )
         {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 400 );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500 );
         }
         catch ( MetadataResolutionException e )
         {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 400 );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500 );
         }
         catch ( MetadataRepositoryException e )
         {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 400 );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500 );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(), 400 );
+            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(), 500 );
         }
         finally
 
@@ -757,6 +763,25 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    public RepositoryScanStatistics scanRepositoryDirectories( String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        long sinceWhen = RepositoryScanner.FRESH_SCAN;
+        try
+        {
+            return repoScanner.scan( getManagedRepositoryAdmin().getManagedRepository( repositoryId ), sinceWhen );
+        }
+        catch ( RepositoryScannerException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500 );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500 );
+        }
+    }
 
     /**
      * Update artifact level metadata. Creates one if metadata does not exist after artifact deletion.

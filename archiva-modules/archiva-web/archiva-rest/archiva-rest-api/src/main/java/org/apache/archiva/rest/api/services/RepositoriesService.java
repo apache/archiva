@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -45,8 +46,23 @@ public interface RepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    /**
+     * index repository
+     */
     Boolean scanRepository( @QueryParam( "repositoryId" ) String repositoryId,
                             @QueryParam( "fullScan" ) boolean fullScan )
+        throws ArchivaRestServiceException;
+
+
+    @Path( "scanRepositoryDirectories/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
+    /**
+     * scan directories
+     * @since 1.4-M3
+     */
+    RepositoryScanStatistics scanRepositoryDirectories( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
 

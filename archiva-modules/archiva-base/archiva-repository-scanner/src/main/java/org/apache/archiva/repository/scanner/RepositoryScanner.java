@@ -22,6 +22,7 @@ package org.apache.archiva.repository.scanner;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.Set;

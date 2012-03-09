@@ -19,18 +19,21 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * RepositoryScanStatistics - extension to the RepositoryContentStatistics model.
  *
  * @version $Id$
  */
+@XmlRootElement( name = "repositoryScanStatistics" )
 public class RepositoryScanStatistics
 {
     private transient List<String> knownConsumers;
@@ -38,7 +41,7 @@ public class RepositoryScanStatistics
     private transient List<String> invalidConsumers;
 
     private transient long startTimestamp;
-    
+
     private SimpleDateFormat df = new SimpleDateFormat();
 
     /**
@@ -49,7 +52,7 @@ public class RepositoryScanStatistics
     /**
      * Field whenGathered
      */
-    private java.util.Date whenGathered;
+    private Date whenGathered;
 
     /**
      * Field duration
