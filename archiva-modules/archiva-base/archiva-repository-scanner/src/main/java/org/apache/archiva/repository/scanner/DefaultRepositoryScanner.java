@@ -21,11 +21,11 @@ package org.apache.archiva.repository.scanner;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.springframework.stereotype.Service;
 
@@ -130,17 +130,23 @@ public class DefaultRepositoryScanner
 
         inProgressScans.add( scannerInstance );
 
-        dirWalker.addDirectoryWalkListener( scannerInstance );
+        RepositoryScanStatistics stats;
+        try
+        {
+            dirWalker.addDirectoryWalkListener( scannerInstance );
 
-        // Execute scan.
-        dirWalker.scan();
+            // Execute scan.
+            dirWalker.scan();
 
-        RepositoryScanStatistics stats = scannerInstance.getStatistics();
+            stats = scannerInstance.getStatistics();
 
-        stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
-        stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
-
-        inProgressScans.remove( scannerInstance );
+            stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
+            stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
+        }
+        finally
+        {
+            inProgressScans.remove( scannerInstance );
+        }
 
         return stats;
     }

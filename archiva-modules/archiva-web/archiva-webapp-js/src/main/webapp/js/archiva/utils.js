@@ -289,7 +289,7 @@ customShowError=function(selector, validator, errorMap, errorList) {
   $(selector).find("span.help-inline").remove();
   for ( var i = 0; errorList[i]; i++ ) {
     var error = errorList[i];
-    var field = $(selector).find("#"+error.element.id);// $.isFunction(selector)? selector.find(fieldSelector ).get(0):$(selector).find(selector);
+    var field = $(selector).find("#"+error.element.id);
     field.parents( "div.control-group" ).addClass( "error" );
     field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
   }
@@ -314,10 +314,9 @@ appendTemplateUrl=function(){
 Entry=function(key,value){
   var self=this;
   this.key=ko.observable(key);
-  //this.key.subscribe(function(newValue){self.modified(true)});
   this.value=ko.observable(value);
-  //this.value.subscribe(function(newValue){self.modified(true)});
 }
+
 /**
  * map {"strings":["snapshots","internal"]} to an array
  * @param data
@@ -345,7 +344,10 @@ unifyArray=function(strArray,sorted){
   return sorted?res.sort():res;
 }
 
-// utils
+//------------------------------------
+// utils javascript string extensions
+//------------------------------------
+
 String.prototype.endsWith = function(str) {
   return (this.match(str+"$")==str)
 }
@@ -358,7 +360,10 @@ String.prototype.substringBeforeLast = function(str) {
   return this.substring(0,this.lastIndexOf(str));
 }
 
+//-----------------------------------------
 // extends jquery tmpl to support var def
+//-----------------------------------------
+
 $.extend($.tmpl.tag, {
     "var": {
         open: "var $1;"
