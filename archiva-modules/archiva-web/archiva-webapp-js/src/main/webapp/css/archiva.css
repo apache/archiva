@@ -80,7 +80,8 @@
   list-style-image: url("../images/folder.png")
 }
 .browse-list-project{
-  list-style-image: url("../images/document-open.png")
+  list-style-image: url("../images/folder-saved-search.png");
+
 }
 
 .force-upper-case{

@@ -48,14 +48,13 @@
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
         {{if browseResultEntry.project}}
-          <li class="browse-list-project" title="artifact" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
+          <li class="browse-list-project" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
+            <a href="#">${displayEntry(browseResultEntry.name)}</a>
         {{else}}
           <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
-        {{/if}}
-          <a href="#">
-            &nbsp;${displayEntry(browseResultEntry.name)}
-          </a>
-        </li>
+            <a href="#" title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+        {{/if}}          
+          </li>
       {{/each}}
     </ul>
   </div>
@@ -64,19 +63,19 @@
 <script id="browse-breadcrumb-tmpl" type="text/html">
   <ul class="breadcrumb">
     <li>
-      <a href="#" data-bind="click: function(){ browseRoot()}">
-        <!--img src="images/go-home.png"/-->
-        <i class="icon-home"/>&nbsp;</a>&nbsp;<span class="divider">/</span>
+      <a href="#" data-bind="click: function(){ browseRoot()}"><img src="images/go-home.png"/></a>&nbsp;<span class="divider">/</span>
+        <!-- <i class="icon-home"/> -->
+        
     </li>
     {{var number=breadCrumbEntries().length}}
     {{each(i,breadCrumbEntry) breadCrumbEntries}}
       <li>
-        {{if i==number-1}}
+        {{if i==(number-1)}}
           ${breadCrumbEntry.displayValue}
         {{else}}
           <a href="#" data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
         {{/if}}
-        {{if i<number-1}}
+        {{if i<(number-1)}}
           <span class="divider">/</span>
         {{/if}}
       </li>
