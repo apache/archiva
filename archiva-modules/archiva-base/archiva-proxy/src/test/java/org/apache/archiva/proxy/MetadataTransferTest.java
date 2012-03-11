@@ -38,7 +38,6 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.wagon.TransferFailedException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;

@@ -19,27 +19,24 @@ package org.apache.archiva.repository.metadata;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Date;
-
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.model.Plugin;
-import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.xml.XMLException;
-import org.apache.archiva.xml.XMLReader;
-import org.dom4j.Element;
+
+import java.io.File;
 
 /**
  * RepositoryMetadataReader - read maven-metadata.xml files.
  *
  * @version $Id$
+ * @deprecated use {@link MavenMetadataReader}
  */
 public class RepositoryMetadataReader
 {
+
     /**
      * Read and return the {@link ArchivaRepositoryMetadata} object from the provided xml file.
-     * 
+     *
      * @param metadataFile the maven-metadata.xml file to read.
      * @return the archiva repository metadata object that represents the provided file contents.
      * @throws RepositoryMetadataException
@@ -49,46 +46,7 @@ public class RepositoryMetadataReader
     {
         try
         {
-            XMLReader xml = new XMLReader( "metadata", metadataFile );
-            // invoke this to remove namespaces, see MRM-1136
-            xml.removeNamespaces();
-            
-            ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-
-            metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
-            metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
-            metadata.setVersion( xml.getElementText( "//metadata/version" ) );
-            metadata.setFileLastModified( new Date( metadataFile.lastModified() ) );
-            metadata.setFileSize( metadataFile.length() );
-
-            metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
-            metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
-            metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );
-            metadata.setAvailableVersions( xml.getElementListText( "//metadata/versioning/versions/version" ) );
-
-            Element snapshotElem = xml.getElement( "//metadata/versioning/snapshot" );
-            if ( snapshotElem != null )
-            {
-                SnapshotVersion snapshot = new SnapshotVersion();
-                snapshot.setTimestamp( snapshotElem.elementTextTrim( "timestamp" ) );
-                String tmp = snapshotElem.elementTextTrim( "buildNumber" );
-                if( NumberUtils.isNumber( tmp ))
-                {
-                    snapshot.setBuildNumber( NumberUtils.toInt( tmp ) );
-                }
-                metadata.setSnapshotVersion( snapshot );
-            }
-
-            for ( Element plugin : xml.getElementList( "//metadata/plugins/plugin" ) )
-            {
-                Plugin p = new Plugin();
-                p.setPrefix( plugin.elementTextTrim( "prefix" ) );
-                p.setArtifactId( plugin.elementTextTrim( "artifactId" ) );
-                p.setName( plugin.elementTextTrim( "name" ) );
-                metadata.addPlugin( p );
-            }
-
-            return metadata;
+            return MavenMetadataReader.read( metadataFile );
         }
         catch ( XMLException e )
         {

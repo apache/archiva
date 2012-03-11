@@ -27,7 +27,6 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;

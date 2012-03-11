@@ -148,11 +148,11 @@ public class Maven2RepositoryStorage
     {
         try
         {
-            ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
+            ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
 
             String artifactVersion = projectVersion;
 
-            File basedir = new File( repositoryConfiguration.getLocation() );
+            File basedir = new File( managedRepository.getLocation() );
             if ( VersionUtil.isSnapshot( projectVersion ) )
             {
                 File metadataFile =
@@ -234,8 +234,8 @@ public class Maven2RepositoryStorage
 
             // MRM-1411
             req.setModelResolver(
-                new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
-                                             repositoryConfiguration ) );
+                new RepositoryModelResolver( managedRepository, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
+                                             managedRepository ) );
 
             Model model;
             try

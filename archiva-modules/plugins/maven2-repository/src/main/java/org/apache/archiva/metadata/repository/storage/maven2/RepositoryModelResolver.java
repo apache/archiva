@@ -23,8 +23,10 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.xml.XMLException;
@@ -72,6 +74,8 @@ public class RepositoryModelResolver
     // key/value: remote repo ID/network proxy
     Map<String, NetworkProxy> networkProxyMap;
 
+    private ManagedRepository managedRepository;
+
     public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator )
     {
         this.basedir = basedir;
@@ -79,11 +83,11 @@ public class RepositoryModelResolver
         this.pathTranslator = pathTranslator;
     }
 
-    public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator, WagonFactory wagonFactory,
-                                    List<RemoteRepository> remoteRepositories,
+    public RepositoryModelResolver( ManagedRepository managedRepository, RepositoryPathTranslator pathTranslator,
+                                    WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
                                     Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository )
     {
-        this( basedir, pathTranslator );
+        this( new File( managedRepository.getLocation() ), pathTranslator );
 
         this.wagonFactory = wagonFactory;
 
@@ -104,6 +108,41 @@ public class RepositoryModelResolver
 
         if ( !model.exists() )
         {
+
+            // is a SNAPSHOT ?
+            if ( StringUtils.contains( version, "SNAPSHOT" ) )
+            {
+                // reading metadata if there
+                File mavenMetadata = new File( model.getParent(), METADATA_FILENAME );
+                if ( mavenMetadata.exists() )
+                {
+                    try
+                    {
+                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata );
+                        SnapshotVersion snapshotVersion = archivaRepositoryMetadata.getSnapshotVersion();
+                        if ( snapshotVersion != null )
+                        {
+                            String lastVersion = snapshotVersion.getTimestamp();
+                            int buildNumber = snapshotVersion.getBuildNumber();
+                            String snapshotPath =
+                                StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
+                                    + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion
+                                    + '-' + buildNumber + ".pom";
+                            model = new File( basedir, snapshotPath );
+                            //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
+                            if ( model.exists() )
+                            {
+                                return new FileModelSource( model );
+                            }
+                        }
+                    }
+                    catch ( XMLException e )
+                    {
+                        log.warn( "fail to read {}, {}", mavenMetadata.getAbsolutePath(), e.getCause() );
+                    }
+                }
+            }
+
             for ( RemoteRepository remoteRepository : remoteRepositories )
             {
                 try

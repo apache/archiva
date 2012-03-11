@@ -19,13 +19,14 @@ package org.apache.archiva.repository.metadata;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLWriter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -36,10 +37,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
 
 /**
- * RepositoryMetadataWriter 
+ * RepositoryMetadataWriter
  *
  * @version $Id$
  */
@@ -59,15 +59,15 @@ public class RepositoryMetadataWriter
         catch ( IOException e )
         {
             thrown = true;
-            throw new RepositoryMetadataException( "Unable to write metadata file: " + outputFile.getAbsolutePath()
-                + " - " + e.getMessage(), e );
+            throw new RepositoryMetadataException(
+                "Unable to write metadata file: " + outputFile.getAbsolutePath() + " - " + e.getMessage(), e );
         }
         finally
         {
             IOUtils.closeQuietly( writer );
-            if (thrown)
+            if ( thrown )
             {
-                FileUtils.deleteQuietly(outputFile);
+                FileUtils.deleteQuietly( outputFile );
             }
         }
     }
@@ -80,14 +80,14 @@ public class RepositoryMetadataWriter
         Element root = DocumentHelper.createElement( "metadata" );
         doc.setRootElement( root );
 
-        addOptionalElementText( root, "groupId", metadata.getGroupId());
+        addOptionalElementText( root, "groupId", metadata.getGroupId() );
         addOptionalElementText( root, "artifactId", metadata.getArtifactId() );
         addOptionalElementText( root, "version", metadata.getVersion() );
 
         if ( CollectionUtils.isNotEmpty( metadata.getPlugins() ) )
         {
             Element plugins = root.addElement( "plugins" );
-            for ( Plugin plugin : (List<Plugin>)metadata.getPlugins() )
+            for ( Plugin plugin : (List<Plugin>) metadata.getPlugins() )
             {
                 Element p = plugins.addElement( "plugin" );
                 p.addElement( "prefix" ).setText( plugin.getPrefix() );
@@ -96,9 +96,8 @@ public class RepositoryMetadataWriter
             }
         }
 
-        if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() )
-            || StringUtils.isNotBlank( metadata.getReleasedVersion() )
-            || StringUtils.isNotBlank( metadata.getLatestVersion() )
+        if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() ) || StringUtils.isNotBlank(
+            metadata.getReleasedVersion() ) || StringUtils.isNotBlank( metadata.getLatestVersion() )
             || StringUtils.isNotBlank( metadata.getLastUpdated() ) || ( metadata.getSnapshotVersion() != null ) )
         {
             Element versioning = root.addElement( "versioning" );
@@ -113,7 +112,7 @@ public class RepositoryMetadataWriter
                 addOptionalElementText( snapshot, "buildNumber", bnum );
                 addOptionalElementText( snapshot, "timestamp", metadata.getSnapshotVersion().getTimestamp() );
             }
-            
+
             if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() ) )
             {
                 Element versions = versioning.addElement( "versions" );

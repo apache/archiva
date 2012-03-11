@@ -22,11 +22,12 @@ package org.apache.archiva.repository.metadata;
 import org.apache.archiva.repository.RepositoryException;
 
 /**
- * RepositoryMetadataException 
+ * RepositoryMetadataException
  *
  * @version $Id$
  */
-public class RepositoryMetadataException extends RepositoryException
+public class RepositoryMetadataException
+    extends RepositoryException
 {
 
     public RepositoryMetadataException()

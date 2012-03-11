@@ -186,8 +186,6 @@ public class DefaultDependencyTreeBuilder
             return;
         }
 
-        File basedir = new File( repository.getLocation() );
-
         try
         {
             // MRM-1411
@@ -216,7 +214,7 @@ public class DefaultDependencyTreeBuilder
             }
 
             Model model = buildProject(
-                new RepositoryModelResolver( basedir, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
+                new RepositoryModelResolver( repository, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
                                              repository ), groupId, artifactId, version );
 
             Map managedVersions = createManagedVersionMap( model );

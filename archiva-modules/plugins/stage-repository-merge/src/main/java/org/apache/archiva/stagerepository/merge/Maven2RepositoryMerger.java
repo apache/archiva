@@ -35,7 +35,6 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
