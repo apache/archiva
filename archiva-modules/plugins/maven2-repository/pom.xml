@@ -172,6 +172,8 @@
               javax.annotation,
               javax.xml.bind.annotation,
               javax.inject,
+              org.apache.archiva.maven2.metadata*;version=${project.version},
+              org.apache.archiva.model*;version=${project.version},
               org.apache.archiva.common*;version=${project.version},
               org.apache.archiva.checksum;version=${project.version},
               org.apache.archiva.configuration;version=${project.version},
