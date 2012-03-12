@@ -593,6 +593,8 @@ $(function() {
     return [];
   }
 
+
+
   displayCacheEntries=function(){
     var divContent = $("#main-content #status_caches");
     divContent.html(smallSpinnerImg());
@@ -684,6 +686,32 @@ $(function() {
     });
   }
 
+  displayQueueEntries=function(){
+    var divContent = $("#main-content #status_queues");
+    divContent.html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/queueEntries", {
+        type: "GET",
+        success: function(data){
+          var queueEntries=mapQueueEntries(data);
+          divContent.html($("#status_queues_tmpl" ).tmpl({queueEntries: queueEntries}));
+        }
+    });
+  }
+
+  displayServerTime=function(){
+    var divContent = $("#main-content #status_current_time");
+    divContent.html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/currentServerTime/"+encodeURIComponent(usedLang()), {
+        type: "GET",
+        dataType: "text",
+        success: function(data){
+          var curTime=data;
+          $.log("currentServerTime:"+curTime);
+          divContent.html(curTime);
+        }
+    });
+  }
+
   displaySystemStatus=function(){
     screenChange();
     var mainContent=$("#main-content");
@@ -695,29 +723,22 @@ $(function() {
 
     displayMemoryUsage();
 
-    $.ajax("restServices/archivaServices/systemStatusService/currentServerTime/"+encodeURIComponent(usedLang()), {
-        type: "GET",
-        dataType: "text",
-        success: function(data){
-          var curTime=data;
-          $.log("currentServerTime:"+curTime);
-          mainContent.find("#status_current_time").html(curTime);
-        }
-    });
+    displayServerTime();
 
-    $.ajax("restServices/archivaServices/systemStatusService/queueEntries", {
-        type: "GET",
-        success: function(data){
-          var queueEntries=mapQueueEntries(data);
-          mainContent.find("#status_queues").html($("#status_queues_tmpl" ).tmpl({queueEntries: queueEntries}));
-        }
-    });
+    displayQueueEntries();
 
     displayScanningStats();
 
     displayCacheEntries();
   }
 
+  refreshSystemStatus=function(){
+    displayCacheEntries();
+    displayScanningStats();
+    displayMemoryUsage();
+    displayQueueEntries();
+    displayServerTime();
+  }
 
 
 });
