@@ -310,6 +310,10 @@
 </script>
 
 <script id="system-status-main" type="text/html">
+
+  <div class="page-header">
+    <h3>${$.i18n.prop('system-status.header.main')}</h3>
+  </div>
   <div class="page-header">
     <h4>${$.i18n.prop('system-status.header.queues')}</h4>
   </div>
@@ -354,12 +358,38 @@
 
 </script>
 
+<script id="status_caches_tmpl" type="text/html">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>${$.i18n.prop('system-status.caches.grid.header.key')}</th>
+        <th>${$.i18n.prop('system-status.caches.grid.header.size')}</th>
+        <th>${$.i18n.prop('system-status.caches.grid.header.cacheHits')}</th>
+        <th>${$.i18n.prop('system-status.caches.grid.header.cacheMiss')}</th>
+        <th>${$.i18n.prop('system-status.caches.grid.header.cacheHitRate')}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{each(i,cacheEntry) cacheEntries}}
+      <tr>
+        <td>${cacheEntry.key}</td>
+        <td>${cacheEntry.size}</td>
+        <td>${cacheEntry.cacheHits}</td>
+        <td>${cacheEntry.cacheMiss}</td>
+        <td>${cacheEntry.cacheHitRate}</td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</script>
+
+
 <script id="status_queues_tmpl" type="text/html">
   <table class="table table-condensed">
     <thead>
       <tr>
         <th>${$.i18n.prop('system-status.queues.grid.header.key')}</th>
-        <th>${$.i18n.prop('system-status.queues.grid.header.number')}</th>
+        <th>${$.i18n.prop('system-status.queues.grid.header.size')}</th>
       </tr>
     </thead>
     <tbody>
@@ -372,7 +402,6 @@
     </tbody>
   </table>
 </script>
-
 
 
 

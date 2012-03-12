@@ -18,9 +18,12 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
+import org.codehaus.plexus.cache.Cache;
+import org.codehaus.plexus.cache.CacheStatistics;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,13 +51,19 @@ public class DefaultSystemStatusService
 
     private ApplicationContext applicationContext;
 
-    Map<String, TaskQueue> queues = null;
+    private Map<String, TaskQueue> queues = null;
+
+    Map<String, Cache> caches = null;
+
 
     @Inject
     public DefaultSystemStatusService( ApplicationContext applicationContext )
     {
         this.applicationContext = applicationContext;
+
         queues = getBeansOfType( applicationContext, TaskQueue.class );
+
+        caches = getBeansOfType( applicationContext, Cache.class );
     }
 
     public String getMemoryStatus()
@@ -98,5 +108,22 @@ public class DefaultSystemStatusService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
+    }
+
+    public List<CacheEntry> getCacheEntries()
+        throws ArchivaRestServiceException
+    {
+        List<CacheEntry> cacheEntries = new ArrayList<CacheEntry>( caches.size() );
+        DecimalFormat decimalFormat = new DecimalFormat( "#%" );
+
+        for ( Map.Entry<String, Cache> entry : caches.entrySet() )
+        {
+            CacheStatistics cacheStatistics = entry.getValue().getStatistics();
+            cacheEntries.add( new CacheEntry( entry.getKey(), cacheStatistics.getSize(), cacheStatistics.getCacheHits(),
+                                              cacheStatistics.getCacheMiss(),
+                                              decimalFormat.format( cacheStatistics.getCacheHitRate() ).toString() ) );
+        }
+
+        return cacheEntries;
     }
 }

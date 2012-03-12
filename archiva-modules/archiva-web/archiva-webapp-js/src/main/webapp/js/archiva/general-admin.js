@@ -573,9 +573,35 @@ $(function() {
         return new QueueEntry(item.key,item.entriesNumber);
       })
     }
-    return null;
+    return [];
   }
 
+  CacheEntry=function(key,size,cacheHits,cacheMiss,cacheHitRate){
+    this.key=key;
+    this.size=size;
+    this.cacheHits=cacheHits;
+    this.cacheMiss=cacheMiss;
+    this.cacheHitRate=cacheHitRate;
+  }
+
+  mapCacheEntries=function(data){
+    if(data!=null){
+      return $.map(data,function(item){
+        return new CacheEntry(item.key,item.size,item.cacheHits,item.cacheMiss,item.cacheHitRate);
+      })
+    }
+    return [];
+  }
+
+  displayCacheEntries=function(){
+    $.ajax("restServices/archivaServices/systemStatusService/cacheEntries", {
+        type: "GET",
+        success: function(data){
+          var cacheEntries=mapCacheEntries(data);
+          $("#main-content #status_caches").html($("#status_caches_tmpl" ).tmpl({cacheEntries: cacheEntries}));
+        }
+    });
+  }
 
   displaySystemStatus=function(){
     screenChange();
@@ -613,6 +639,9 @@ $(function() {
         }
     });
 
+    displayCacheEntries();
   }
+
+
 
 });

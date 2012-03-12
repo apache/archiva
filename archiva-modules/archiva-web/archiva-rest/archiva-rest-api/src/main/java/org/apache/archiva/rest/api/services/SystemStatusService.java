@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -55,6 +56,13 @@ public interface SystemStatusService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     List<QueueEntry> getQueueEntries()
+        throws ArchivaRestServiceException;
+
+    @Path( "cacheEntries" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    List<CacheEntry> getCacheEntries()
         throws ArchivaRestServiceException;
 
 }
