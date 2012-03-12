@@ -109,7 +109,7 @@ public class RepositoryModelResolver
         if ( !model.exists() )
         {
 
-            // is a SNAPSHOT ?
+            // is a SNAPSHOT ? so we can try to find locally before asking remote repositories.
             if ( StringUtils.contains( version, "SNAPSHOT" ) )
             {
                 File localSnapshotModel = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent() );
