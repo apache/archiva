@@ -318,14 +318,14 @@
     <h4>${$.i18n.prop('system-status.header.queues')}</h4>
   </div>
   <div id="status_queues">
-      <img src="images/small-spinner.gif"/>
+    <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
     <h4>${$.i18n.prop('system-status.header.scanning')}</h4>
   </div>
   <div id="status_scanning">
-      <img src="images/small-spinner.gif"/>
+    <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
@@ -414,6 +414,31 @@
     {{/each}}
     </tbody>
   </table>
+</script>
+
+<script id="status_scanning_tmpl" type="text/html">
+  {{if repositoryScannerStatisticsList.length == 0}}
+    <p>No scans in progress.</p>
+  {{else}}
+    <table>
+      <thead>
+        <tr>
+          <th>Repository</th>
+          <th>Files processed</th>
+          <th>New files</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{each(i,repositoryScannerStatistics) repositoryScannerStatisticsList}}
+        <tr>
+          <td>${repositoryScannerStatistics.managedRepository.name()}</td>
+          <td>${repositoryScannerStatistics.totalFileCount}</td>
+          <td>${repositoryScannerStatistics.newFileCount}</td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  {{/if}}
 </script>
 
 

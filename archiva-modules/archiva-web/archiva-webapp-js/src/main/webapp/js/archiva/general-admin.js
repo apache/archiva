@@ -627,6 +627,34 @@ $(function() {
     });
   }
 
+  mapRepositoryScannerStatisticsList=function(data){
+    if(data!=null){
+      return $.isArray(data)? $.map(data,function(item){
+        return mapRepositoryScannerStatistics(item);
+      }):[data];
+    }
+    return [];
+  }
+
+
+  mapRepositoryScannerStatistics=function(data){
+    return new RepositoryScannerStatistics(mapManagedRepository(data.managedRepository),data.totalFileCount,
+                                            data.newFileCount,data.consumerScanningStatistics);
+  }
+
+  RepositoryScannerStatistics=function(managedRepository,totalFileCount,newFileCount,consumerScanningStatistics){
+    //private ManagedRepository managedRepository;
+    this.managedRepository=managedRepository
+
+    this.consumerScanningStatistics= consumerScanningStatistics;
+
+    //private long totalFileCount = 0;
+    this.totalFileCount=totalFileCount;
+
+    //private long newFileCount = 0;
+    this.newFileCount=newFileCount;
+  }
+
   displaySystemStatus=function(){
     screenChange();
     var mainContent=$("#main-content");
@@ -660,6 +688,18 @@ $(function() {
         success: function(data){
           var queueEntries=mapQueueEntries(data);
           mainContent.find("#status_queues").html($("#status_queues_tmpl" ).tmpl({queueEntries: queueEntries}));
+        }
+    });
+
+    var dataStr='[{"managedRepository":{"id":"snapshots","name":"Archiva Managed Snapshot Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/snapshots","snapshots":true,"releases":false,"blockRedeployments":false,"cronExpression":"0 0,30 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerCounts":{"create-missing-checksums":114,"duplicate-artifacts":12,"metadata-updater":114,"index-content":197,"create-archiva-metadata":113},"consumerTimings":{"create-missing-checksums":86,"duplicate-artifacts":929,"metadata-updater":263,"index-content":13,"create-archiva-metadata":11088},"totalFileCount":592,"newFileCount":592},{"managedRepository":{"id":"internal","name":"the Archiva Managed Internal Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/internal","snapshots":false,"releases":true,"blockRedeployments":true,"cronExpression":"0 */5 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerCounts":{"create-missing-checksums":28,"duplicate-artifacts":28,"metadata-updater":28,"index-content":52,"create-archiva-metadata":28},"consumerTimings":{"create-missing-checksums":71,"duplicate-artifacts":4151,"metadata-updater":2645,"index-content":1,"create-archiva-metadata":3971},"totalFileCount":157,"newFileCount":157}]';
+    var data= mapRepositoryScannerStatisticsList( $.parseJSON(dataStr));
+    $.log("size:"+data.length);
+    mainContent.find("#status_scanning" ).html($("#status_scanning_tmpl").tmpl({repositoryScannerStatisticsList:data}));
+
+    $.ajax("restServices/archivaServices/systemStatusService/repositoryScannerStatistics", {
+        type: "GET",
+        success: function(data){
+          //mainContent.find("#status_scanning" ).html("#status_scanning_tmpl" ).tmpl(data);
         }
     });
 

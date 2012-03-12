@@ -18,8 +18,12 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.repository.scanner.RepositoryScanner;
+import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.rest.api.model.CacheEntry;
+import org.apache.archiva.rest.api.model.ConsumerScanningStatistics;
 import org.apache.archiva.rest.api.model.QueueEntry;
+import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
 import org.codehaus.plexus.cache.Cache;
@@ -34,10 +38,12 @@ import javax.ws.rs.core.Response;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Olivier Lamy
@@ -49,17 +55,18 @@ public class DefaultSystemStatusService
     implements SystemStatusService
 {
 
-    private ApplicationContext applicationContext;
 
     private Map<String, TaskQueue> queues = null;
 
-    Map<String, Cache> caches = null;
+    private Map<String, Cache> caches = null;
+
+    private RepositoryScanner scanner;
 
 
     @Inject
-    public DefaultSystemStatusService( ApplicationContext applicationContext )
+    public DefaultSystemStatusService( ApplicationContext applicationContext, RepositoryScanner scanner )
     {
-        this.applicationContext = applicationContext;
+        this.scanner = scanner;
 
         queues = getBeansOfType( applicationContext, TaskQueue.class );
 
@@ -149,5 +156,49 @@ public class DefaultSystemStatusService
             cache.clear();
         }
         return Boolean.TRUE;
+    }
+
+    public List<RepositoryScannerStatistics> getRepositoryScannerStatistics()
+        throws ArchivaRestServiceException
+    {
+        Set<RepositoryScannerInstance> repositoryScannerInstances = scanner.getInProgressScans();
+        if ( repositoryScannerInstances.isEmpty() )
+        {
+            return Collections.emptyList();
+        }
+        List<RepositoryScannerStatistics> repositoryScannerStatisticsList =
+            new ArrayList<RepositoryScannerStatistics>( repositoryScannerInstances.size() );
+
+        for ( RepositoryScannerInstance instance : repositoryScannerInstances )
+        {
+            RepositoryScannerStatistics repositoryScannerStatistics = new RepositoryScannerStatistics();
+            repositoryScannerStatisticsList.add( repositoryScannerStatistics );
+            repositoryScannerStatistics.setManagedRepository( instance.getRepository() );
+            //repositoryScannerStatistics.setRepositoryScanStatistics( instance.getStatistics() );
+            //repositoryScannerStatistics.setConsumerCounts( new HashMap<String, Long>( instance.getConsumerCounts() ) );
+            //repositoryScannerStatistics.setConsumerTimings(
+            //    new HashMap<String, Long>( instance.getConsumerTimings() ) );
+            repositoryScannerStatistics.setNewFileCount( instance.getStats().getNewFileCount() );
+            repositoryScannerStatistics.setTotalFileCount( instance.getStats().getTotalFileCount() );
+            repositoryScannerStatistics.setConsumerScanningStatistics( mapConsumerScanningStatistics( instance ) );
+        }
+
+        return repositoryScannerStatisticsList;
+    }
+
+    private List<ConsumerScanningStatistics> mapConsumerScanningStatistics( RepositoryScannerInstance instance )
+    {
+        // FIXME take care of NPE here !!!
+        List<ConsumerScanningStatistics> ret =
+            new ArrayList<ConsumerScanningStatistics>( instance.getConsumerCounts().size() );
+        for ( Map.Entry<String, Long> entry : instance.getConsumerCounts().entrySet() )
+        {
+            ConsumerScanningStatistics consumerScanningStatistics = new ConsumerScanningStatistics();
+            consumerScanningStatistics.setConsumerKey( entry.getKey() );
+            consumerScanningStatistics.setCount( entry.getValue() );
+            consumerScanningStatistics.setTime( instance.getConsumerTimings().get( entry.getKey() ) );
+            ret.add( consumerScanningStatistics );
+        }
+        return ret;
     }
 }
