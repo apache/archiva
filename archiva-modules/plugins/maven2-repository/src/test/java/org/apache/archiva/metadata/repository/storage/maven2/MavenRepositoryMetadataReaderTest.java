@@ -20,6 +20,9 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.Plugin;
 import org.apache.archiva.xml.XMLException;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +49,7 @@ public class MavenRepositoryMetadataReaderTest
     {
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/plugins/maven-metadata.xml" );
 
-        MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "org.apache.maven.plugins", metadata.getGroupId() );
@@ -57,17 +60,17 @@ public class MavenRepositoryMetadataReaderTest
         assertNull( metadata.getSnapshotVersion() );
         assertNull( metadata.getLastUpdated() );
 
-        MavenRepositoryMetadata.Plugin cleanPlugin = new MavenRepositoryMetadata.Plugin();
+        Plugin cleanPlugin = new Plugin();
         cleanPlugin.setPrefix( "clean" );
         cleanPlugin.setArtifactId( "maven-clean-plugin" );
         cleanPlugin.setName( "Maven Clean Plugin" );
 
-        MavenRepositoryMetadata.Plugin compilerPlugin = new MavenRepositoryMetadata.Plugin();
+        Plugin compilerPlugin = new Plugin();
         compilerPlugin.setPrefix( "compiler" );
         compilerPlugin.setArtifactId( "maven-compiler-plugin" );
         compilerPlugin.setName( "Maven Compiler Plugin" );
 
-        MavenRepositoryMetadata.Plugin surefirePlugin = new MavenRepositoryMetadata.Plugin();
+        Plugin surefirePlugin = new Plugin();
         surefirePlugin.setPrefix( "surefire" );
         surefirePlugin.setArtifactId( "maven-surefire-plugin" );
         surefirePlugin.setName( "Maven Surefire Plugin" );
@@ -81,7 +84,7 @@ public class MavenRepositoryMetadataReaderTest
     {
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
-        MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "org.apache.maven.shared", metadata.getGroupId() );
@@ -99,7 +102,7 @@ public class MavenRepositoryMetadataReaderTest
     {
         File metadataFile = new File( defaultRepoDir, "org/apache/apache/5-SNAPSHOT/maven-metadata.xml" );
 
-        MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "org.apache", metadata.getGroupId() );

@@ -31,6 +31,7 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -40,10 +41,11 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.xml.XMLException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.IssueManagement;
@@ -159,10 +161,10 @@ public class Maven2RepositoryStorage
                     pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
                 try
                 {
-                    MavenRepositoryMetadata metadata = MavenRepositoryMetadataReader.read( metadataFile );
+                    ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
                     // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
-                    MavenRepositoryMetadata.Snapshot snapshotVersion = metadata.getSnapshotVersion();
+                    SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();
                     if ( snapshotVersion != null )
                     {
                         artifactVersion =
@@ -220,22 +222,16 @@ public class Maven2RepositoryStorage
             }
 
             ModelBuildingRequest req =
-                new DefaultModelBuildingRequest()
-                    .setProcessPlugins( false )
-                    .setPomFile( file )
-                    .setTwoPhaseBuilding( false )
-                    .setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
-
+                new DefaultModelBuildingRequest().setProcessPlugins( false ).setPomFile( file ).setTwoPhaseBuilding(
+                    false ).setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
             //MRM-1607. olamy this will resolve jdk profiles on the current running archiva jvm
             req.setSystemProperties( System.getProperties() );
 
-
-
             // MRM-1411
             req.setModelResolver(
-                new RepositoryModelResolver( managedRepository, pathTranslator, wagonFactory, remoteRepositories, networkProxies,
-                                             managedRepository ) );
+                new RepositoryModelResolver( managedRepository, pathTranslator, wagonFactory, remoteRepositories,
+                                             networkProxies, managedRepository ) );
 
             Model model;
             try
@@ -255,7 +251,7 @@ public class Maven2RepositoryStorage
                     // || ( StringUtils.startsWith( problem.getMessage(), "Failed to determine Java version for profile" ) )
                     // but setTwoPhaseBuilding(true) fix that
                     if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
-                        !e.getModelId().equals( problem.getModelId() ) )  )
+                        !e.getModelId().equals( problem.getModelId() ) ) )
                     {
                         log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
                                       "Using defaults for project version metadata.." );
@@ -631,7 +627,7 @@ public class Maven2RepositoryStorage
         }
 
         // if a metadata file is present, check if this is the "artifactId" directory, marking it as a project
-        MavenRepositoryMetadata metadata = readMetadata( dir );
+        ArchivaRepositoryMetadata metadata = readMetadata( dir );
         if ( metadata != null && dir.getName().equals( metadata.getArtifactId() ) )
         {
             return true;
@@ -683,7 +679,7 @@ public class Maven2RepositoryStorage
         }
 
         // if a metadata file is present, check if this is the "version" directory, marking it as a project version
-        MavenRepositoryMetadata metadata = readMetadata( dir );
+        ArchivaRepositoryMetadata metadata = readMetadata( dir );
         if ( metadata != null && projectVersion.equals( metadata.getVersion() ) )
         {
             return true;
@@ -692,15 +688,15 @@ public class Maven2RepositoryStorage
         return false;
     }
 
-    private MavenRepositoryMetadata readMetadata( File directory )
+    private ArchivaRepositoryMetadata readMetadata( File directory )
     {
-        MavenRepositoryMetadata metadata = null;
+        ArchivaRepositoryMetadata metadata = null;
         File metadataFile = new File( directory, METADATA_FILENAME );
         if ( metadataFile.exists() )
         {
             try
             {
-                metadata = MavenRepositoryMetadataReader.read( metadataFile );
+                metadata = MavenMetadataReader.read( metadataFile );
             }
             catch ( XMLException e )
             {
