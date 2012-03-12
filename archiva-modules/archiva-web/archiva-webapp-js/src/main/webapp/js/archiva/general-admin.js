@@ -585,7 +585,8 @@ $(function() {
         }
     });
 
-    var versionInfo="Build number: "+window.archivaRuntimeInfo.buildNumber+" - Build Timestamp: "+window.archivaRuntimeInfo.timestampStr;
+    var versionInfo=$.i18n.prop('system-status.header.version.buildNumber')+": "+window.archivaRuntimeInfo.buildNumber
+        +" - "+$.i18n.prop('system-status.header.version.timestampStr')+": "+window.archivaRuntimeInfo.timestampStr;
     mainContent.find("#status_version_info").html(versionInfo);
 
   }
