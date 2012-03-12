@@ -22,11 +22,15 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@Service("systemStatusService#rest")
+@Service( "systemStatusService#rest" )
 public class DefaultSystemStatusService
     implements SystemStatusService
 {
@@ -44,5 +48,12 @@ public class DefaultSystemStatusService
     private static String formatMemory( long l )
     {
         return l / ( 1024 * 1024 ) + "M";
+    }
+
+    public String getCurrentServerTime( String locale )
+        throws ArchivaRestServiceException
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", new Locale( locale ) );
+        return sdf.format( new Date() );
     }
 }

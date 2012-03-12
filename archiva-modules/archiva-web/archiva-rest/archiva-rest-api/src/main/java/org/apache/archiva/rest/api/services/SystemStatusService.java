@@ -23,6 +23,7 @@ import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -38,6 +39,13 @@ public interface SystemStatusService
     @Produces( MediaType.TEXT_PLAIN )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     String getMemoryStatus()
+        throws ArchivaRestServiceException;
+
+    @Path( "currentServerTime/{locale}" )
+    @GET
+    @Produces( MediaType.TEXT_PLAIN )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    String getCurrentServerTime( @PathParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
 
 }

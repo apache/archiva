@@ -20,11 +20,16 @@
 $(function() {
   // load i18n resources from rest call
 
-  var browserLang = $.i18n.browserLang();
-  var requestLang = $.urlParam('request_lang');
-  if (requestLang) {
-    browserLang=requestLang;
+  usedLang=function(){
+    var browserLang = $.i18n.browserLang();
+    var requestLang = $.urlParam('request_lang');
+    if (requestLang) {
+      browserLang=requestLang;
+    }
+    return browserLang;
   }
+
+  var browserLang = usedLang();
   $.log("use browserLang:"+browserLang);
   // -- archiva
   // load default

@@ -566,14 +566,22 @@ $(function() {
     screenChange();
     var mainContent=$("#main-content");
     mainContent.html($("#system-status-main").tmpl());
-    mainContent.find("#status_memory_info" ).html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/memoryStatus", {
         type: "GET",
         dataType: "text",
         success: function(data){
           var memUsage = data;
           $.log("memUsage:"+memUsage);
-          mainContent.find("#status_memory_info" ).html($("#memory-info-tmpl" ).tmpl({memoryUsage: memUsage}));
+          mainContent.find("#status_memory_info" ).html(memUsage);
+        }
+    });
+    $.ajax("restServices/archivaServices/systemStatusService/currentServerTime/"+encodeURIComponent(usedLang()), {
+        type: "GET",
+        dataType: "text",
+        success: function(data){
+          var curTime=data;
+          $.log("currentServerTime:"+curTime);
+          mainContent.find("#status_current_time").html(curTime);
         }
     });
   }
