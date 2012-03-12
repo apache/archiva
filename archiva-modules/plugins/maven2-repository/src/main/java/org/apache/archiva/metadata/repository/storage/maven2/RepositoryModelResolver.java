@@ -112,10 +112,10 @@ public class RepositoryModelResolver
             // is a SNAPSHOT ?
             if ( StringUtils.contains( version, "SNAPSHOT" ) )
             {
-                model = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent() );
-                if ( model != null )
+                File localSnapshotModel = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent() );
+                if ( localSnapshotModel != null )
                 {
-                    return new FileModelSource( model );
+                    return new FileModelSource( localSnapshotModel );
                 }
 
             }
