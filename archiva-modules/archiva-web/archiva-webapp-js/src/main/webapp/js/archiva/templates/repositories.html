@@ -145,7 +145,7 @@
                    id="managedrepository-stats-img-${row.id()}"/>
             </td>
             <td>
-              <a href="#" data-bind="click: function(){directoriesScan(row)}">Scan directories</a>
+              <a href="#" data-bind="click: function(){directoriesScan(row)}" class="btn btn-warning">${$.i18n.prop('managedrepository.scan.directories.grid')}</a>
             </td>
           </tr>
       {{/each}}
