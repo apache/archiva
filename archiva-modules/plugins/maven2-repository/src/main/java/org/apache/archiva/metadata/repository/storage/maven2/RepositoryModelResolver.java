@@ -112,35 +112,12 @@ public class RepositoryModelResolver
             // is a SNAPSHOT ?
             if ( StringUtils.contains( version, "SNAPSHOT" ) )
             {
-                // reading metadata if there
-                File mavenMetadata = new File( model.getParent(), METADATA_FILENAME );
-                if ( mavenMetadata.exists() )
+                model = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent() );
+                if ( model != null )
                 {
-                    try
-                    {
-                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata );
-                        SnapshotVersion snapshotVersion = archivaRepositoryMetadata.getSnapshotVersion();
-                        if ( snapshotVersion != null )
-                        {
-                            String lastVersion = snapshotVersion.getTimestamp();
-                            int buildNumber = snapshotVersion.getBuildNumber();
-                            String snapshotPath =
-                                StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
-                                    + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion
-                                    + '-' + buildNumber + ".pom";
-                            model = new File( basedir, snapshotPath );
-                            //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
-                            if ( model.exists() )
-                            {
-                                return new FileModelSource( model );
-                            }
-                        }
-                    }
-                    catch ( XMLException e )
-                    {
-                        log.warn( "fail to read {}, {}", mavenMetadata.getAbsolutePath(), e.getCause() );
-                    }
+                    return new FileModelSource( model );
                 }
+
             }
 
             for ( RemoteRepository remoteRepository : remoteRepositories )
@@ -166,6 +143,43 @@ public class RepositoryModelResolver
         }
 
         return new FileModelSource( model );
+    }
+
+    protected File findTimeStampedSnapshotPom( String groupId, String artifactId, String version,
+                                               String parentDirectory )
+    {
+
+        // reading metadata if there
+        File mavenMetadata = new File( parentDirectory, METADATA_FILENAME );
+        if ( mavenMetadata.exists() )
+        {
+            try
+            {
+                ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata );
+                SnapshotVersion snapshotVersion = archivaRepositoryMetadata.getSnapshotVersion();
+                if ( snapshotVersion != null )
+                {
+                    String lastVersion = snapshotVersion.getTimestamp();
+                    int buildNumber = snapshotVersion.getBuildNumber();
+                    String snapshotPath =
+                        StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
+                            + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion + '-'
+                            + buildNumber + ".pom";
+                    File model = new File( basedir, snapshotPath );
+                    //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
+                    if ( model.exists() )
+                    {
+                        return model;
+                    }
+                }
+            }
+            catch ( XMLException e )
+            {
+                log.warn( "fail to read {}, {}", mavenMetadata.getAbsolutePath(), e.getCause() );
+            }
+        }
+
+        return null;
     }
 
     public void addRepository( Repository repository )
