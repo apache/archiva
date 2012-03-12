@@ -691,15 +691,12 @@ $(function() {
         }
     });
 
-    var dataStr='[{"managedRepository":{"id":"snapshots","name":"Archiva Managed Snapshot Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/snapshots","snapshots":true,"releases":false,"blockRedeployments":false,"cronExpression":"0 0,30 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerScanningStatistics":[{"consumerKey":"create-missing-checksums","count":83,"time":137},{"consumerKey":"metadata-updater","count":83,"time":192},{"consumerKey":"duplicate-artifacts","count":10,"time":2788},{"consumerKey":"index-content","count":134,"time":10},{"consumerKey":"create-archiva-metadata","count":82,"time":9399}],"totalFileCount":403,"newFileCount":403},{"managedRepository":{"id":"internal","name":"the Archiva Managed Internal Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/internal","snapshots":false,"releases":true,"blockRedeployments":true,"cronExpression":"0 */5 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerScanningStatistics":[{"consumerKey":"create-missing-checksums","count":12,"time":2206},{"consumerKey":"metadata-updater","count":12,"time":1261},{"consumerKey":"duplicate-artifacts","count":12,"time":3461},{"consumerKey":"index-content","count":19,"time":0},{"consumerKey":"create-archiva-metadata","count":11,"time":3615}],"totalFileCount":58,"newFileCount":58}]';
-    var data= mapRepositoryScannerStatisticsList( $.parseJSON(dataStr));
-    $.log("size:"+data.length);
-    mainContent.find("#status_scanning" ).html($("#status_scanning_tmpl").tmpl({repositoryScannerStatisticsList:data}));
-
     $.ajax("restServices/archivaServices/systemStatusService/repositoryScannerStatistics", {
         type: "GET",
         success: function(data){
-          //mainContent.find("#status_scanning" ).html("#status_scanning_tmpl" ).tmpl(data);
+          var stats= mapRepositoryScannerStatisticsList(data);
+          $.log("size:"+data.length);
+          mainContent.find("#status_scanning" ).html($("#status_scanning_tmpl").tmpl({repositoryScannerStatisticsList:stats}));
         }
     });
 

@@ -26,6 +26,7 @@ import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
+import org.apache.archiva.rest.services.utils.ConsumerScanningStatisticsComparator;
 import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.cache.CacheStatistics;
 import org.codehaus.plexus.taskqueue.TaskQueue;
@@ -184,6 +185,7 @@ public class DefaultSystemStatusService
 
     private List<ConsumerScanningStatistics> mapConsumerScanningStatistics( RepositoryScannerInstance instance )
     {
+        DecimalFormat decimalFormat = new DecimalFormat( "###.##" );
         // FIXME take care of NPE here !!!
         List<ConsumerScanningStatistics> ret =
             new ArrayList<ConsumerScanningStatistics>( instance.getConsumerCounts().size() );
@@ -193,8 +195,14 @@ public class DefaultSystemStatusService
             consumerScanningStatistics.setConsumerKey( entry.getKey() );
             consumerScanningStatistics.setCount( entry.getValue() );
             consumerScanningStatistics.setTime( instance.getConsumerTimings().get( entry.getKey() ) );
+            if ( consumerScanningStatistics.getCount() > 0 )
+            {
+                consumerScanningStatistics.setAverage( decimalFormat.format(
+                    consumerScanningStatistics.getTime() / consumerScanningStatistics.getCount() ) );
+            }
             ret.add( consumerScanningStatistics );
         }
+        Collections.sort( ret, ConsumerScanningStatisticsComparator.INSTANCE );
         return ret;
     }
 }

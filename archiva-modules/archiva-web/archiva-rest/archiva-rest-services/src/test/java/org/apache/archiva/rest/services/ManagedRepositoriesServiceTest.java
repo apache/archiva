@@ -140,7 +140,8 @@ public class ManagedRepositoriesServiceTest
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
 
-        ArchivaRepositoryStatistics archivaRepositoryStatistics = service.getManagedRepositoryStatistics( testRepoId );
+        ArchivaRepositoryStatistics archivaRepositoryStatistics =
+            service.getManagedRepositoryStatistics( testRepoId, "en" );
 
         assertNotNull( archivaRepositoryStatistics );
 

@@ -34,6 +34,8 @@ public class ConsumerScanningStatistics
 
     private long time;
 
+    private String average;
+
     public ConsumerScanningStatistics()
     {
         // no op
@@ -67,5 +69,15 @@ public class ConsumerScanningStatistics
     public void setTime( long time )
     {
         this.time = time;
+    }
+
+    public String getAverage()
+    {
+        return average;
+    }
+
+    public void setAverage( String average )
+    {
+        this.average = average;
     }
 }

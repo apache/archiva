@@ -418,7 +418,7 @@
 
 <script id="status_scanning_tmpl" type="text/html">
   {{if repositoryScannerStatisticsList.length == 0}}
-    <p>No scans in progress.</p>
+    <h5>No scans in progress.</h5>
   {{else}}
     <table class="table table-condensed">
       <thead>
@@ -443,7 +443,7 @@
                   <th>Name</th>
                   <th>Total</th>
                   <th>Average</th>
-                  <th>Invocations</th>
+                  <th>Invocations time</th>
                 </tr>
               </thead>
               <tbody>
@@ -451,7 +451,7 @@
                 <tr>
                   <td>${consumerScanningStatistics.consumerKey}</td>
                   <td>${consumerScanningStatistics.count}</td>
-                  <td></td>
+                  <td>${consumerScanningStatistics.average}</td>
                   <td>${consumerScanningStatistics.time}</td>
                 </tr>
                 {{/each}}
