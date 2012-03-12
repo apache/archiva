@@ -106,6 +106,10 @@ $(function() {
         displaySystemStatus();
         return;
       }
+      if (screen=='repositories-management'&& hasKarma('archiva-manage-configuration')){
+        displayRepositoriesGrid();
+        return;
+      }
     }
 
     // by default display search screen

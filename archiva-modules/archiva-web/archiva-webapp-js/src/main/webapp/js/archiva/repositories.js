@@ -109,7 +109,7 @@ $(function() {
   }
 
   ArchivaRepositoryStatistics=function(scanEndTime,scanStartTime,totalArtifactCount,totalArtifactFileSize,totalFileCount,
-                                       totalGroupCount,totalProjectCount,newFileCount,duration,managedRepository){
+                                       totalGroupCount,totalProjectCount,newFileCount,duration,managedRepository,lastScanDate){
     //private Date scanEndTime;
     this.scanEndTime = ko.observable(scanEndTime);
 
@@ -137,6 +137,8 @@ $(function() {
     this.duration = ko.observable(duration);
 
     this.managedRepository = managedRepository;
+
+    this.lastScanDate=ko.observable(lastScanDate);
   }
 
   mapManagedRepositories=function(data){
@@ -162,7 +164,7 @@ $(function() {
     }
     return new ArchivaRepositoryStatistics(data.scanEndTime,data.scanStartTime,data.totalArtifactCount,data.totalArtifactFileSize,
                                            data.totalFileCount,data.totalGroupCount,data.totalProjectCount,data.newFileCount,
-                                           data.duration,data.managedRepository)
+                                           data.duration,data.managedRepository,data.lastScanDate)
   }
 
   ManagedRepositoryViewModel=function(managedRepository, update, managedRepositoriesViewModel){
@@ -421,6 +423,7 @@ $(function() {
       }
       var curRepo=managedRepository;
       var url = "restServices/archivaServices/managedRepositoriesService/getManagedRepositoryStatistics/"+managedRepository.id();
+      url+="/"+encodeURIComponent(usedLang());
       $.ajax(url,
         {
           type: "GET",

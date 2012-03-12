@@ -91,19 +91,20 @@ public interface ManagedRepositoriesService
     Boolean fileLocationExists( @QueryParam( "fileLocation" ) String fileLocation )
         throws ArchivaRestServiceException;
 
-    @Path( "getManagedRepositoryStatistics/{repositoryId}" )
+    @Path( "getManagedRepositoryStatistics/{repositoryId}/{lang}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     /**
      * @since 1.4-M3
      */
-    ArchivaRepositoryStatistics getManagedRepositoryStatistics( @PathParam( "repositoryId" ) String repositoryId )
+    ArchivaRepositoryStatistics getManagedRepositoryStatistics( @PathParam( "repositoryId" ) String repositoryId,
+                                                                @PathParam( "lang" ) String lang )
         throws ArchivaRestServiceException;
 
     @Path( "getPomSnippet/{repositoryId}" )
     @GET
-    @Produces( { MediaType.TEXT_PLAIN} )
+    @Produces( { MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     /**
      * return a pom snippet to use this repository with entities escaped (< > )

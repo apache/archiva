@@ -23,11 +23,9 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
@@ -38,10 +36,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -153,10 +152,11 @@ public class DefaultManagedRepositoriesService
         return new File( location ).exists();
     }
 
-    public ArchivaRepositoryStatistics getManagedRepositoryStatistics( String repositoryId )
+    public ArchivaRepositoryStatistics getManagedRepositoryStatistics( String repositoryId, String lang )
         throws ArchivaRestServiceException
     {
         RepositorySession repositorySession = repositorySessionFactory.createSession();
+        SimpleDateFormat sdf = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", new Locale( lang ) );
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
@@ -176,6 +176,8 @@ public class DefaultManagedRepositoriesService
                     new BeanReplicator().replicateBean( stats, ArchivaRepositoryStatistics.class );
                 archivaRepositoryStatistics.setDuration( archivaRepositoryStatistics.getScanEndTime().getTime()
                                                              - archivaRepositoryStatistics.getScanStartTime().getTime() );
+                archivaRepositoryStatistics.setLastScanDate(
+                    sdf.format( archivaRepositoryStatistics.getScanEndTime() ) );
                 return archivaRepositoryStatistics;
             }
 

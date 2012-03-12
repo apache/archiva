@@ -48,6 +48,8 @@ public class ArchivaRepositoryStatistics
 
     private long duration;
 
+    private String lastScanDate;
+
     public ArchivaRepositoryStatistics()
     {
         // no op
@@ -143,6 +145,16 @@ public class ArchivaRepositoryStatistics
         return duration;
     }
 
+    public String getLastScanDate()
+    {
+        return lastScanDate;
+    }
+
+    public void setLastScanDate( String lastScanDate )
+    {
+        this.lastScanDate = lastScanDate;
+    }
+
     @Override
     public String toString()
     {
@@ -156,6 +168,8 @@ public class ArchivaRepositoryStatistics
         sb.append( ", totalGroupCount=" ).append( totalGroupCount );
         sb.append( ", totalProjectCount=" ).append( totalProjectCount );
         sb.append( ", newFileCount=" ).append( newFileCount );
+        sb.append( ", duration=" ).append( duration );
+        sb.append( ", lastScanDate='" ).append( lastScanDate ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

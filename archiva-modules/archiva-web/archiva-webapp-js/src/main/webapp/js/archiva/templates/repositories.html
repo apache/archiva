@@ -287,7 +287,7 @@
 </script>
 <script id="managed-repository-stats-tmpl" type='text/x-jquery-tmpl'>
   <div id="managedrepository-stats-${managedRepository.id()}-popover" style="display:none">
-    <div>${$.i18n.prop('managedrepository.stats.endTime')}: ${scanEndTime()}</div>
+    <div>${$.i18n.prop('managedrepository.stats.endTime')}: ${lastScanDate()}</div>
     <div>${$.i18n.prop('managedrepository.stats.duration')}: ${duration()}ms</div>
     <div>${$.i18n.prop('managedrepository.stats.totalFileCount')}: ${totalFileCount()}</div>
     <div>${$.i18n.prop('managedrepository.stats.newFileCount')}: ${newFileCount()}</div>
