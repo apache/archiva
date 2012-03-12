@@ -615,6 +615,18 @@ $(function() {
     });
   }
 
+  flushAllCaches=function(){
+    clearUserMessages();
+    $("#main-content #status_caches").html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/clearAllCaches", {
+        type: "GET",
+        success: function(data){
+          displaySuccessMessage( $.i18n.prop("system-status.caches.all.flushed"));
+          displayCacheEntries();
+        }
+    });
+  }
+
   displaySystemStatus=function(){
     screenChange();
     var mainContent=$("#main-content");

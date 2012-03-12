@@ -140,4 +140,14 @@ public class DefaultSystemStatusService
         cache.clear();
         return Boolean.TRUE;
     }
+
+    public Boolean clearAllCaches()
+        throws ArchivaRestServiceException
+    {
+        for ( Cache cache : caches.values() )
+        {
+            cache.clear();
+        }
+        return Boolean.TRUE;
+    }
 }

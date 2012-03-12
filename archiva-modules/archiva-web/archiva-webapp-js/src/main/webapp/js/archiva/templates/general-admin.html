@@ -359,6 +359,9 @@
 </script>
 
 <script id="status_caches_tmpl" type="text/html">
+  <a href="#" class="btn btn-warning" onclick="flushAllCaches()">
+    ${$.i18n.prop('system-status.caches.flushAll')}
+  </a>
   <table class="table table-condensed">
     <thead>
       <tr>

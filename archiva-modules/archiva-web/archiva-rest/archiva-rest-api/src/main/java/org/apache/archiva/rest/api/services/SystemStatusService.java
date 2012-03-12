@@ -72,4 +72,12 @@ public interface SystemStatusService
     Boolean clearCache( @PathParam( "key" ) String cacheKey )
         throws ArchivaRestServiceException;
 
+    @Path( "clearAllCaches" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    Boolean clearAllCaches()
+        throws ArchivaRestServiceException;
+
+
 }
