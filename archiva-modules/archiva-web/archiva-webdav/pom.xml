@@ -209,6 +209,8 @@
               javax.inject,
               javax.servlet*,
               org.apache.archiva.admin.model*;version=${project.version},
+              org.apache.archiva.maven2.metadata*;version=${project.version},
+              org.apache.archiva.xml*;version=${project.version},
               org.apache.archiva.audit;version=${project.version},
               org.apache.archiva.common.plexusbridge;version=${project.version},
               org.apache.archiva.common.utils;version=${project.version},
