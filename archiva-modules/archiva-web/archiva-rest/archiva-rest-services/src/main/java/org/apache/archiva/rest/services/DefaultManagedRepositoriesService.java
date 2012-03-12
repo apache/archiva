@@ -184,7 +184,10 @@ public class DefaultManagedRepositoriesService
         }
         finally
         {
-            repositorySession.close();
+            if ( repositorySession != null )
+            {
+                repositorySession.close();
+            }
         }
         return null;
     }

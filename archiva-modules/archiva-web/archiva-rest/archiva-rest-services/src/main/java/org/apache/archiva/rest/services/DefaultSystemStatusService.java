@@ -174,10 +174,6 @@ public class DefaultSystemStatusService
             RepositoryScannerStatistics repositoryScannerStatistics = new RepositoryScannerStatistics();
             repositoryScannerStatisticsList.add( repositoryScannerStatistics );
             repositoryScannerStatistics.setManagedRepository( instance.getRepository() );
-            //repositoryScannerStatistics.setRepositoryScanStatistics( instance.getStatistics() );
-            //repositoryScannerStatistics.setConsumerCounts( new HashMap<String, Long>( instance.getConsumerCounts() ) );
-            //repositoryScannerStatistics.setConsumerTimings(
-            //    new HashMap<String, Long>( instance.getConsumerTimings() ) );
             repositoryScannerStatistics.setNewFileCount( instance.getStats().getNewFileCount() );
             repositoryScannerStatistics.setTotalFileCount( instance.getStats().getTotalFileCount() );
             repositoryScannerStatistics.setConsumerScanningStatistics( mapConsumerScanningStatistics( instance ) );

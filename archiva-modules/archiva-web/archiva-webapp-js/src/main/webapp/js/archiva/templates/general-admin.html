@@ -420,12 +420,13 @@
   {{if repositoryScannerStatisticsList.length == 0}}
     <p>No scans in progress.</p>
   {{else}}
-    <table>
+    <table class="table table-condensed">
       <thead>
         <tr>
           <th>Repository</th>
           <th>Files processed</th>
           <th>New files</th>
+          <th>Stats</th>
         </tr>
       </thead>
       <tbody>
@@ -434,6 +435,30 @@
           <td>${repositoryScannerStatistics.managedRepository.name()}</td>
           <td>${repositoryScannerStatistics.totalFileCount}</td>
           <td>${repositoryScannerStatistics.newFileCount}</td>
+          <td>
+            <blockquote>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Total</th>
+                  <th>Average</th>
+                  <th>Invocations</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{each(j,consumerScanningStatistics) repositoryScannerStatistics.consumerScanningStatisticsList}}
+                <tr>
+                  <td>${consumerScanningStatistics.consumerKey}</td>
+                  <td>${consumerScanningStatistics.count}</td>
+                  <td></td>
+                  <td>${consumerScanningStatistics.time}</td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+            </blockquote>
+          </td>
         </tr>
       {{/each}}
       </tbody>

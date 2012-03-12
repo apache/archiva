@@ -642,11 +642,11 @@ $(function() {
                                             data.newFileCount,data.consumerScanningStatistics);
   }
 
-  RepositoryScannerStatistics=function(managedRepository,totalFileCount,newFileCount,consumerScanningStatistics){
+  RepositoryScannerStatistics=function(managedRepository,totalFileCount,newFileCount,consumerScanningStatisticsList){
     //private ManagedRepository managedRepository;
     this.managedRepository=managedRepository
 
-    this.consumerScanningStatistics= consumerScanningStatistics;
+    this.consumerScanningStatisticsList= consumerScanningStatisticsList;
 
     //private long totalFileCount = 0;
     this.totalFileCount=totalFileCount;
@@ -691,7 +691,7 @@ $(function() {
         }
     });
 
-    var dataStr='[{"managedRepository":{"id":"snapshots","name":"Archiva Managed Snapshot Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/snapshots","snapshots":true,"releases":false,"blockRedeployments":false,"cronExpression":"0 0,30 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerCounts":{"create-missing-checksums":114,"duplicate-artifacts":12,"metadata-updater":114,"index-content":197,"create-archiva-metadata":113},"consumerTimings":{"create-missing-checksums":86,"duplicate-artifacts":929,"metadata-updater":263,"index-content":13,"create-archiva-metadata":11088},"totalFileCount":592,"newFileCount":592},{"managedRepository":{"id":"internal","name":"the Archiva Managed Internal Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/internal","snapshots":false,"releases":true,"blockRedeployments":true,"cronExpression":"0 */5 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerCounts":{"create-missing-checksums":28,"duplicate-artifacts":28,"metadata-updater":28,"index-content":52,"create-archiva-metadata":28},"consumerTimings":{"create-missing-checksums":71,"duplicate-artifacts":4151,"metadata-updater":2645,"index-content":1,"create-archiva-metadata":3971},"totalFileCount":157,"newFileCount":157}]';
+    var dataStr='[{"managedRepository":{"id":"snapshots","name":"Archiva Managed Snapshot Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/snapshots","snapshots":true,"releases":false,"blockRedeployments":false,"cronExpression":"0 0,30 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerScanningStatistics":[{"consumerKey":"create-missing-checksums","count":83,"time":137},{"consumerKey":"metadata-updater","count":83,"time":192},{"consumerKey":"duplicate-artifacts","count":10,"time":2788},{"consumerKey":"index-content","count":134,"time":10},{"consumerKey":"create-archiva-metadata","count":82,"time":9399}],"totalFileCount":403,"newFileCount":403},{"managedRepository":{"id":"internal","name":"the Archiva Managed Internal Repository","layout":"default","indexDirectory":null,"location":"/Users/olamy/dev/tests/archiva-appserver-base-test/data/repositories/internal","snapshots":false,"releases":true,"blockRedeployments":true,"cronExpression":"0 */5 * * * ?","stagingRepository":null,"scanned":true,"daysOlder":30,"retentionCount":2,"deleteReleasedSnapshots":false,"stageRepoNeeded":false,"resetStats":false},"consumerScanningStatistics":[{"consumerKey":"create-missing-checksums","count":12,"time":2206},{"consumerKey":"metadata-updater","count":12,"time":1261},{"consumerKey":"duplicate-artifacts","count":12,"time":3461},{"consumerKey":"index-content","count":19,"time":0},{"consumerKey":"create-archiva-metadata","count":11,"time":3615}],"totalFileCount":58,"newFileCount":58}]';
     var data= mapRepositoryScannerStatisticsList( $.parseJSON(dataStr));
     $.log("size:"+data.length);
     mainContent.find("#status_scanning" ).html($("#status_scanning_tmpl").tmpl({repositoryScannerStatisticsList:data}));

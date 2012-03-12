@@ -33,8 +33,6 @@ public class RepositoryScannerStatistics
 {
     private ManagedRepository managedRepository;
 
-    //private RepositoryScanStatistics repositoryScanStatistics;
-
     private List<ConsumerScanningStatistics> consumerScanningStatistics;
 
     private long totalFileCount = 0;
@@ -55,37 +53,6 @@ public class RepositoryScannerStatistics
     {
         this.managedRepository = managedRepository;
     }
-
-    /*
-    public RepositoryScanStatistics getRepositoryScanStatistics()
-    {
-        return repositoryScanStatistics;
-    }
-
-    public void setRepositoryScanStatistics( RepositoryScanStatistics repositoryScanStatistics )
-    {
-        this.repositoryScanStatistics = repositoryScanStatistics;
-    }*/
-
-    /*public Map<String, Long> getConsumerCounts()
-    {
-        return consumerCounts;
-    }
-
-    public void setConsumerCounts( Map<String, Long> consumerCounts )
-    {
-        this.consumerCounts = consumerCounts;
-    }
-
-    public Map<String, Long> getConsumerTimings()
-    {
-        return consumerTimings;
-    }
-
-    public void setConsumerTimings( Map<String, Long> consumerTimings )
-    {
-        this.consumerTimings = consumerTimings;
-    } */
 
     public List<ConsumerScanningStatistics> getConsumerScanningStatistics()
     {
