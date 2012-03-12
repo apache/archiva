@@ -23,13 +23,13 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.PutMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -261,7 +261,7 @@ public class RepositoryServletRepositoryGroupTest
 
         File returnedMetadata = new File( "target/test-classes/retrievedMetadataFile.xml" );
         FileUtils.writeStringToFile( returnedMetadata, response.getText() );
-        ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( returnedMetadata );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
         assertResponseOK( response );
         assertEquals( "Versions list size", 4, metadata.getAvailableVersions().size() );

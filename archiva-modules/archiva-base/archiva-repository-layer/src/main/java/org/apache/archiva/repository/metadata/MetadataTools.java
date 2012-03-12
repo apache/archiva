@@ -21,11 +21,6 @@ package org.apache.archiva.repository.metadata;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
@@ -33,6 +28,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.Plugin;
@@ -43,6 +39,12 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.xml.XMLException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
@@ -98,7 +100,7 @@ public class MetadataTools
      *
      */
     @Inject
-    @Named(value = "fileTypes")
+    @Named( value = "fileTypes" )
     private FileTypes filetypes;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
@@ -366,9 +368,9 @@ public class MetadataTools
 
         try
         {
-            return RepositoryMetadataReader.read( metadataFile );
+            return MavenMetadataReader.read( metadataFile );
         }
-        catch ( RepositoryMetadataException e )
+        catch ( XMLException e )
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
@@ -391,9 +393,9 @@ public class MetadataTools
 
         try
         {
-            return RepositoryMetadataReader.read( metadataFile );
+            return MavenMetadataReader.read( metadataFile );
         }
-        catch ( RepositoryMetadataException e )
+        catch ( XMLException e )
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
@@ -416,9 +418,9 @@ public class MetadataTools
 
         try
         {
-            return RepositoryMetadataReader.read( metadataFile );
+            return MavenMetadataReader.read( metadataFile );
         }
-        catch ( RepositoryMetadataException e )
+        catch ( XMLException e )
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
@@ -506,13 +508,13 @@ public class MetadataTools
         {
             try
             {
-                ArchivaRepositoryMetadata existingMetadata = RepositoryMetadataReader.read( file );
+                ArchivaRepositoryMetadata existingMetadata = MavenMetadataReader.read( file );
                 if ( existingMetadata != null )
                 {
                     metadatas.add( existingMetadata );
                 }
             }
-            catch ( RepositoryMetadataException e )
+            catch ( XMLException e )
             {
                 log.debug( "Could not read metadata at {}. Metadata will be removed.", file.getAbsolutePath() );
                 FileUtils.deleteQuietly( file );
@@ -574,7 +576,14 @@ public class MetadataTools
         Set<Plugin> allPlugins;
         if ( metadataFile.exists() )
         {
-            allPlugins = new LinkedHashSet<Plugin>( RepositoryMetadataReader.read( metadataFile ).getPlugins() );
+            try
+            {
+                allPlugins = new LinkedHashSet<Plugin>( MavenMetadataReader.read( metadataFile ).getPlugins() );
+            }
+            catch ( XMLException e )
+            {
+                throw new RepositoryMetadataException( e.getMessage(), e );
+            }
         }
         else
         {
@@ -730,11 +739,11 @@ public class MetadataTools
 
         try
         {
-            ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( metadataFile );
+            ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
             return getLastUpdated( metadata );
         }
-        catch ( RepositoryMetadataException e )
+        catch ( XMLException e )
         {
             // Error.
             return 0;

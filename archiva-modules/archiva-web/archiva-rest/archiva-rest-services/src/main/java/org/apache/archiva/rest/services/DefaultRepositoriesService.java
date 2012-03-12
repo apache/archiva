@@ -32,6 +32,7 @@ import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
@@ -49,7 +50,6 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
@@ -66,6 +66,7 @@ import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -513,7 +514,14 @@ public class DefaultRepositoriesService
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         if ( metadataFile.exists() )
         {
-            metadata = RepositoryMetadataReader.read( metadataFile );
+            try
+            {
+                metadata = MavenMetadataReader.read( metadataFile );
+            }
+            catch ( XMLException e )
+            {
+                throw new RepositoryMetadataException( e.getMessage(), e );
+            }
         }
         return metadata;
     }

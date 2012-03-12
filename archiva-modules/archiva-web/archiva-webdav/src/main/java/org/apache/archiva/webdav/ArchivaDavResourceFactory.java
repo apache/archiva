@@ -33,6 +33,7 @@ import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
@@ -47,7 +48,6 @@ import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataMerge;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.security.ServletAuthenticator;
@@ -55,6 +55,7 @@ import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.archiva.webdav.util.TemporaryGroupIndexSessionCleaner;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
+import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -345,13 +346,18 @@ public class ArchivaDavResourceFactory
                             try
                             {
                                 File metadataFile = new File( resourceAbsPath );
-                                ArchivaRepositoryMetadata repoMetadata = RepositoryMetadataReader.read( metadataFile );
+                                ArchivaRepositoryMetadata repoMetadata = MavenMetadataReader.read( metadataFile );
                                 mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
+                            }
+                            catch ( XMLException e )
+                            {
+                                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                        "Error occurred while reading metadata file." );
                             }
                             catch ( RepositoryMetadataException r )
                             {
                                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                        "Error occurred while reading metadata file." );
+                                                        "Error occurred while merging metadata file." );
                             }
                         }
 

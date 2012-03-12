@@ -28,10 +28,8 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -39,7 +37,9 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.metadata.MetadataTools;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -611,7 +611,7 @@ public class UploadActionTest
         // verify build number
         File metadataFile = new File( repoLocation, "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/"
             + MetadataTools.MAVEN_METADATA );
-        ArchivaRepositoryMetadata artifactMetadata = RepositoryMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata artifactMetadata = MavenMetadataReader.read( metadataFile );
 
         SnapshotVersion snapshotVersion = artifactMetadata.getSnapshotVersion();
         assertEquals( "Incorrect build number set in artifact metadata.", 1, snapshotVersion.getBuildNumber() );
@@ -668,7 +668,7 @@ public class UploadActionTest
         // verify build number set in metadata and in filename
         metadataFile = new File( repoLocation,
                                  "/org/apache/archiva/artifact-upload/1.0-SNAPSHOT/" + MetadataTools.MAVEN_METADATA );
-        artifactMetadata = RepositoryMetadataReader.read( metadataFile );
+        artifactMetadata = MavenMetadataReader.read( metadataFile );
 
         snapshotVersion = artifactMetadata.getSnapshotVersion();
         assertEquals( "Incorrect build number set in artifact metadata.", 2, snapshotVersion.getBuildNumber() );

@@ -19,9 +19,9 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.model.ProjectReference;
@@ -33,19 +33,19 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 import static org.junit.Assert.*;
 
@@ -1088,7 +1088,7 @@ public class MetadataTransferTest
         assertTrue( "Actual file exists.", actualFile.exists() );
 
         StringWriter actualContents = new StringWriter();
-        ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( actualFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFile );
         RepositoryMetadataWriter.write( metadata, actualContents );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadataXml, actualContents.toString() ) );

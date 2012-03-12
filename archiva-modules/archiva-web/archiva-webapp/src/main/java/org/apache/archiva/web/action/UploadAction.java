@@ -29,17 +29,9 @@ import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
-import org.apache.archiva.security.AccessDeniedException;
-import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.security.PrincipalNotFoundException;
-import org.apache.archiva.security.UserRepositories;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
@@ -49,8 +41,17 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
+import org.apache.archiva.xml.XMLException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -508,7 +509,14 @@ public class UploadAction
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         if ( metadataFile.exists() )
         {
-            metadata = RepositoryMetadataReader.read( metadataFile );
+            try
+            {
+                metadata = MavenMetadataReader.read( metadataFile );
+            }
+            catch ( XMLException e )
+            {
+                throw new RepositoryMetadataException( e.getMessage(), e );
+            }
         }
         return metadata;
     }

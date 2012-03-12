@@ -24,6 +24,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.filter.Filter;
@@ -32,8 +33,8 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ public class Maven2RepositoryMerger
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );
+
     /**
      *
      */
@@ -78,7 +80,7 @@ public class Maven2RepositoryMerger
     @Inject
     public Maven2RepositoryMerger(
         @Named( value = "archivaConfiguration#default" ) ArchivaConfiguration archivaConfiguration,
-        @Named( value = "repositoryPathTranslator#maven2") RepositoryPathTranslator repositoryPathTranslator )
+        @Named( value = "repositoryPathTranslator#maven2" ) RepositoryPathTranslator repositoryPathTranslator )
     {
         this.configuration = archivaConfiguration;
         this.pathTranslator = repositoryPathTranslator;
@@ -139,8 +141,6 @@ public class Maven2RepositoryMerger
 
         String sourceRepoPath = sourceRepoConfig.getLocation();
 
-
-
         String artifactPath = pathTranslator.toPath( artifactMetadata.getNamespace(), artifactMetadata.getProject(),
                                                      artifactMetadata.getProjectVersion(), artifactMetadata.getId() );
 
@@ -180,10 +180,12 @@ public class Maven2RepositoryMerger
 
         String index = artifactPath.substring( lastIndex + 1 );
         int last = index.lastIndexOf( '.' );
-        File sourcePomFile = new File( sourceRepoPath, artifactPath.substring( 0, lastIndex ) + "/"
-            + artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
-        File targetPomFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) + "/"
-            + artifactPath.substring( lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File sourcePomFile = new File( sourceRepoPath,
+                                       artifactPath.substring( 0, lastIndex ) + "/" + artifactPath.substring(
+                                           lastIndex + 1 ).substring( 0, last ) + ".pom" );
+        File targetPomFile = new File( targetRepoPath,
+                                       artifactPath.substring( 0, lastIndex ) + "/" + artifactPath.substring(
+                                           lastIndex + 1 ).substring( 0, last ) + ".pom" );
 
         if ( !targetPomFile.exists() && sourcePomFile.exists() )
         {
@@ -335,7 +337,14 @@ public class Maven2RepositoryMerger
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         if ( metadataFile.exists() )
         {
-            metadata = RepositoryMetadataReader.read( metadataFile );
+            try
+            {
+                metadata = MavenMetadataReader.read( metadataFile );
+            }
+            catch ( XMLException e )
+            {
+                throw new RepositoryMetadataException( e.getMessage(), e );
+            }
         }
         return metadata;
     }
@@ -373,9 +382,9 @@ public class Maven2RepositoryMerger
         boolean isSame = false;
 
         if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) )
-            && ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) )
-            && ( sourceArtifact.getId().equals( targetArtifact.getId() ) )
-            && ( sourceArtifact.getProjectVersion().equals( targetArtifact.getProjectVersion() ) ) )
+            && ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) && ( sourceArtifact.getId().equals(
+            targetArtifact.getId() ) ) && ( sourceArtifact.getProjectVersion().equals(
+            targetArtifact.getProjectVersion() ) ) )
 
         {
             isSame = true;
