@@ -367,6 +367,7 @@
         <th>${$.i18n.prop('system-status.caches.grid.header.cacheHits')}</th>
         <th>${$.i18n.prop('system-status.caches.grid.header.cacheMiss')}</th>
         <th>${$.i18n.prop('system-status.caches.grid.header.cacheHitRate')}</th>
+        <th>${$.i18n.prop('system-status.caches.grid.header.flush')}</th>
       </tr>
     </thead>
     <tbody>
@@ -377,6 +378,15 @@
         <td>${cacheEntry.cacheHits}</td>
         <td>${cacheEntry.cacheMiss}</td>
         <td>${cacheEntry.cacheHitRate}</td>
+        <td>
+          <a href="#" onclick="flushCache('${cacheEntry.key}')">
+            {{if  cacheEntry.size > 0 }}
+              <img src="images/user-trash-full.png"/>
+            {{else}}
+              <img src="images/user-trash.png"/>
+            {{/if}}
+          </a>
+        </td>
       </tr>
     {{/each}}
     </tbody>

@@ -603,6 +603,18 @@ $(function() {
     });
   }
 
+  flushCache=function(key){
+    clearUserMessages();
+    $("#main-content #status_caches").html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/clearCache/"+encodeURIComponent(key), {
+        type: "GET",
+        success: function(data){
+          displaySuccessMessage( $.i18n.prop("system-status.caches.flushed",key));
+          displayCacheEntries();
+        }
+    });
+  }
+
   displaySystemStatus=function(){
     screenChange();
     var mainContent=$("#main-content");

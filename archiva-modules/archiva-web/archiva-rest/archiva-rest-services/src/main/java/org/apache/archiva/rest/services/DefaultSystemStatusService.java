@@ -126,4 +126,18 @@ public class DefaultSystemStatusService
 
         return cacheEntries;
     }
+
+    public Boolean clearCache( String cacheKey )
+        throws ArchivaRestServiceException
+    {
+        Cache cache = caches.get( cacheKey );
+        if ( cache == null )
+        {
+            throw new ArchivaRestServiceException( "no cache for key: " + cacheKey,
+                                                   Response.Status.BAD_REQUEST.getStatusCode() );
+        }
+
+        cache.clear();
+        return Boolean.TRUE;
+    }
 }
