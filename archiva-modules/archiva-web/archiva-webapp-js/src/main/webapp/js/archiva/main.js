@@ -102,6 +102,10 @@ $(function() {
         displayNetworkConfiguration();
         return;
       }
+      if (screen=='system-status'&& hasKarma('archiva-manage-configuration')){
+        displaySystemStatus();
+        return;
+      }
     }
 
     // by default display search screen

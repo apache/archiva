@@ -457,8 +457,7 @@ $(function() {
   }
 
   displayRepositoryScanning=function(){
-
-    clearUserMessages();
+    screenChange();
     var mainContent=$("#main-content");
 
     mainContent.html($("#repository-scanning-main").tmpl());
@@ -537,6 +536,7 @@ $(function() {
   }
 
   displayNetworkConfiguration=function(){
+    screenChange();
     var mainContent=$("#main-content");
     mainContent.html($("#network-configuration-screen").tmpl());
 
@@ -560,5 +560,22 @@ $(function() {
   //---------------------------
   // system status part
   //---------------------------
+
+
+  displaySystemStatus=function(){
+    screenChange();
+    var mainContent=$("#main-content");
+    mainContent.html($("#system-status-main").tmpl());
+    mainContent.find("#status_memory_info" ).html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/memoryStatus", {
+        type: "GET",
+        dataType: "text",
+        success: function(data){
+          var memUsage = data;
+          $.log("memUsage:"+memUsage);
+          mainContent.find("#status_memory_info" ).html($("#memory-info-tmpl" ).tmpl({memoryUsage: memUsage}));
+        }
+    });
+  }
 
 });

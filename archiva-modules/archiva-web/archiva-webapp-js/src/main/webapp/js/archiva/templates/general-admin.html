@@ -309,5 +309,53 @@
     </form>
 </script>
 
+<script id="system-status-main" type="text/html">
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.queues')}</h4>
+  </div>
+  <div id="status_queues">
+    Queues
+  </div>
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.scanning')}</h4>
+  </div>
+  <div id="status_scanning">
+    repos scanning
+  </div>
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.caches')}</h4>
+  </div>
+  <div id="status_caches">
+    caches
+  </div>
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.memory')}</h4>
+  </div>
+  <div id="status_memory_info">
+    memory
+  </div>
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.current.time')}</h4>
+  </div>
+  <div div="status_current_time">
+    current time
+  </div>
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.version.info')}</h4>
+  </div>
+  <div id="status_version_info">
+    version info
+  </div>
+
+</script>
+
+<div id="memory-info-tmpl">
+  ${memoryUsage}
+</div>
 
 
