@@ -354,6 +354,25 @@
 
 </script>
 
+<script id="status_queues_tmpl" type="text/html">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>${$.i18n.prop('system-status.queues.grid.header.key')}</th>
+        <th>${$.i18n.prop('system-status.queues.grid.header.number')}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {{each(i,queueEntry) queueEntries}}
+      <tr>
+        <td>${queueEntry.key}</td>
+        <td>${queueEntry.entriesNumber}</td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</script>
+
 
 
 

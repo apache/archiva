@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement( name = "browseResultEntry" )
 public class BrowseResultEntry
-    implements Comparable<BrowseResultEntry>
+    implements Comparable<BrowseResultEntry>, Serializable
 {
 
     private String name;

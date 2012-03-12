@@ -561,11 +561,31 @@ $(function() {
   // system status part
   //---------------------------
 
+  QueueEntry=function(key,entriesNumber){
+    this.key=key;
+    this.entriesNumber=entriesNumber;
+  }
+
+
+  mapQueueEntries=function(data){
+    if (data!=null){
+      return $.map(data,function(item){
+        return new QueueEntry(item.key,item.entriesNumber);
+      })
+    }
+    return null;
+  }
+
 
   displaySystemStatus=function(){
     screenChange();
     var mainContent=$("#main-content");
     mainContent.html($("#system-status-main").tmpl());
+
+    var versionInfo=$.i18n.prop('system-status.header.version.buildNumber')+": "+window.archivaRuntimeInfo.buildNumber
+        +" - "+$.i18n.prop('system-status.header.version.timestampStr')+": "+window.archivaRuntimeInfo.timestampStr;
+    mainContent.find("#status_version_info").html(versionInfo);
+
     $.ajax("restServices/archivaServices/systemStatusService/memoryStatus", {
         type: "GET",
         dataType: "text",
@@ -585,9 +605,13 @@ $(function() {
         }
     });
 
-    var versionInfo=$.i18n.prop('system-status.header.version.buildNumber')+": "+window.archivaRuntimeInfo.buildNumber
-        +" - "+$.i18n.prop('system-status.header.version.timestampStr')+": "+window.archivaRuntimeInfo.timestampStr;
-    mainContent.find("#status_version_info").html(versionInfo);
+    $.ajax("restServices/archivaServices/systemStatusService/queueEntries", {
+        type: "GET",
+        success: function(data){
+          var queueEntries=mapQueueEntries(data);
+          mainContent.find("#status_queues").html($("#status_queues_tmpl" ).tmpl({queueEntries: queueEntries}));
+        }
+    });
 
   }
 

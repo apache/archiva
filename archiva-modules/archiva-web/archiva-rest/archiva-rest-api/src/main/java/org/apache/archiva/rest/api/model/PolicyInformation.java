@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ import java.util.List;
  */
 @XmlRootElement( name = "policyInformation" )
 public class PolicyInformation
+    implements Serializable
 {
     private List<String> options;
 

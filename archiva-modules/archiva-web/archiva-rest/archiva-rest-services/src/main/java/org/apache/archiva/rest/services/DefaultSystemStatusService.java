@@ -18,13 +18,22 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
+import org.codehaus.plexus.taskqueue.TaskQueue;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -32,8 +41,21 @@ import java.util.Locale;
  */
 @Service( "systemStatusService#rest" )
 public class DefaultSystemStatusService
+    extends AbstractRestService
     implements SystemStatusService
 {
+
+    private ApplicationContext applicationContext;
+
+    Map<String, TaskQueue> queues = null;
+
+    @Inject
+    public DefaultSystemStatusService( ApplicationContext applicationContext )
+    {
+        this.applicationContext = applicationContext;
+        queues = getBeansOfType( applicationContext, TaskQueue.class );
+    }
+
     public String getMemoryStatus()
         throws ArchivaRestServiceException
     {
@@ -55,5 +77,26 @@ public class DefaultSystemStatusService
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", new Locale( locale ) );
         return sdf.format( new Date() );
+    }
+
+    public List<QueueEntry> getQueueEntries()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            List<QueueEntry> queueEntries = new ArrayList<QueueEntry>( queues.size() );
+            for ( Map.Entry<String, TaskQueue> entry : queues.entrySet() )
+            {
+                queueEntries.add( new QueueEntry( entry.getKey(), entry.getValue().getQueueSnapshot().size() ) );
+            }
+
+            return queueEntries;
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
     }
 }

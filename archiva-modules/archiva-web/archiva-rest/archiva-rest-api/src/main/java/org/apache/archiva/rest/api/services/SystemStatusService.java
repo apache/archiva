@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -26,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -46,6 +48,13 @@ public interface SystemStatusService
     @Produces( MediaType.TEXT_PLAIN )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     String getCurrentServerTime( @PathParam( "locale" ) String locale )
+        throws ArchivaRestServiceException;
+
+    @Path( "queueEntries" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    List<QueueEntry> getQueueEntries()
         throws ArchivaRestServiceException;
 
 }

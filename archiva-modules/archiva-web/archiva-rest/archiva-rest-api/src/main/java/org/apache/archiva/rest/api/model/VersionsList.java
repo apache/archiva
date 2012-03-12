@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ import java.util.List;
  */
 @XmlRootElement( name = "versionsList" )
 public class VersionsList
+    implements Serializable
 {
 
     private List<String> versions;

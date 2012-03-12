@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -27,6 +28,7 @@ import java.util.Date;
  */
 @XmlRootElement( name = "archivaRepositoryStatistics" )
 public class ArchivaRepositoryStatistics
+    implements Serializable
 {
     private Date scanEndTime;
 

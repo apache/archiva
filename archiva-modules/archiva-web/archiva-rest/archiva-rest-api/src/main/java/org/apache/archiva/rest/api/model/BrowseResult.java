@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
  */
 @XmlRootElement( name = "browseResult" )
 public class BrowseResult
+    implements Serializable
 {
     private List<BrowseResultEntry> browseResultEntries;
 

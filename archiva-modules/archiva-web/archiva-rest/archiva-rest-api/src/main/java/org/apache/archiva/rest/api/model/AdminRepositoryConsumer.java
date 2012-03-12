@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * AdminRepositoryConsumer
@@ -28,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement( name = "adminRepositoryConsumer" )
 public class AdminRepositoryConsumer
+    implements Serializable
 {
     private boolean enabled = false;
 
