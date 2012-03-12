@@ -132,11 +132,13 @@ public interface MetadataRepository
 
     void save();
 
-    void close();
+    void close()
+        throws MetadataRepositoryException;
 
     void revert();
 
     boolean canObtainAccess( Class<?> aClass );
 
-    Object obtainAccess( Class<?> aClass );
+    Object obtainAccess( Class<?> aClass )
+        throws MetadataRepositoryException;
 }

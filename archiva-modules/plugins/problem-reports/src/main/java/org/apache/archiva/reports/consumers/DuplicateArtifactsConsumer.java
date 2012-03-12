@@ -181,6 +181,7 @@ public class DuplicateArtifactsConsumer
         }
         catch ( MetadataRepositoryException e )
         {
+            repositorySession.close();
             throw new ConsumerException( e.getMessage(), e );
         }
 

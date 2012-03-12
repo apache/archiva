@@ -321,21 +321,21 @@ $(function() {
             $.ajax(url,
               {
                 type: "GET",
-                  beforeSend:function(){
-                    displayInfoMessage($.i18n.prop("managedrepository.scan.started",managedRepository.id()));
-                    closeDialogConfirm();
-                  },
-                  success: function(data) {
-                    displaySuccessMessage($.i18n.prop("managedrepository.scanned",managedRepository.name()));
-                  },
-                  error: function(data) {
-                    var res = $.parseJSON(data.responseText);
-                    displayRestError(res);
-                  },
-                  complete: function(){
-                    removeSmallSpinnerImg();
-                    closeDialogConfirm();
-                  }
+                beforeSend:function(){
+                  displayInfoMessage($.i18n.prop("managedrepository.scan.started",managedRepository.id()));
+                  closeDialogConfirm();
+                },
+                success: function(data) {
+                  displaySuccessMessage($.i18n.prop("managedrepository.scanned",managedRepository.name()));
+                },
+                error: function(data) {
+                  var res = $.parseJSON(data.responseText);
+                  displayRestError(res);
+                },
+                complete: function(){
+                  removeSmallSpinnerImg();
+                  closeDialogConfirm();
+                }
               }
             );
           },
@@ -413,6 +413,32 @@ $(function() {
                         $.i18n.prop('cancel'),
                         $.i18n.prop('managed.repository.bulk.save.confirm.title'),
                         $.i18n.prop('managed.repository.bulk.save.confirm',repos.length));
+    }
+
+    directoriesScan=function(managedRepository){
+      $.log("directoriesScan:"+managedRepository.id());
+      var url = "restServices/archivaServices/repositoriesService/scanRepositoryDirectoriesNow/"+managedRepository.id();
+      $.ajax(url,
+        {
+          type: "GET",
+          dataType: 'json',
+          beforeSend:function(){
+            displayInfoMessage($.i18n.prop("managedrepository.scan.directories.started", managedRepository.id()));
+          },
+          success: function(data) {
+            $.log(" scanRepositoryDirectoriesNow finished ");
+            displaySuccessMessage( $.i18n.prop("managedrepository.scan.directories.finished", managedRepository.id()));
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete: function(){
+            removeSmallSpinnerImg();
+          }
+
+        }
+      );
     }
 
     showStats=function(managedRepository){

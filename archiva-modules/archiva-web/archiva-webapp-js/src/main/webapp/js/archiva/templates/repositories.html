@@ -86,12 +86,13 @@
         {{/each}}
         <th>Releases</th>
         <th>Snapshots</th>
-        <th>Scan</th>
+        <th title="${$.i18n.prop('managedrepository.scan.index')}">${$.i18n.prop('managedrepository.scan.grid.header')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
         <th>${$.i18n.prop('managedrepository.pomsnippet')}</th>
-        <th title="${$.i18n.prop('managedrepository.stats')}">Stats</th>
+        <th title="${$.i18n.prop('managedrepository.stats')}">${$.i18n.prop('managedrepository.stats.grid.header')}</th>
+        <th title="${$.i18n.prop('managedrepository.scan.directories')}">${$.i18n.prop('managedrepository.scan.directories.grid.header')}</th>
       </tr>
   </thead>
   <tbody>
@@ -142,6 +143,9 @@
               <img src="images/utilities-system-monitor-22-22.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
                    data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
                    id="managedrepository-stats-img-${row.id()}"/>
+            </td>
+            <td>
+              <a href="#" data-bind="click: function(){directoriesScan(row)}">Scan directories</a>
             </td>
           </tr>
       {{/each}}

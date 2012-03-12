@@ -85,6 +85,7 @@ public class JcrRepositorySessionFactory
 
     @PostConstruct
     public void initialize()
+        throws Exception
     {
         metadataFacetFactories = applicationContext.getBeansOfType( MetadataFacetFactory.class );
         // olamy with spring the "id" is now "metadataFacetFactory#hint"

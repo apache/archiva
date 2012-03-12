@@ -771,7 +771,7 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
-    public RepositoryScanStatistics scanRepositoryDirectories( String repositoryId )
+    public RepositoryScanStatistics scanRepositoryDirectoriesNow( String repositoryId )
         throws ArchivaRestServiceException
     {
         long sinceWhen = RepositoryScanner.FRESH_SCAN;

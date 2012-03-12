@@ -94,9 +94,17 @@ public class RepositorySession
         }
         finally
         {
-            repository.close();
+            try
+            {
+                repository.close();
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                throw new RuntimeException( e.getMessage(), e );
+            }
         }
     }
+
 
     public void markDirty()
     {

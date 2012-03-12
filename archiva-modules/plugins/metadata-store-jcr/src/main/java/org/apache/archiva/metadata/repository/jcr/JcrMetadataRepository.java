@@ -93,7 +93,7 @@ public class JcrMetadataRepository
 
     private Repository repository;
 
-    private Session session;
+    private Session jcrSession;
 
     public JcrMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories, Repository repository )
         throws RepositoryException
@@ -101,8 +101,9 @@ public class JcrMetadataRepository
         this.metadataFacetFactories = metadataFacetFactories;
         this.repository = repository;
 
-        session = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
+        //session = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
     }
+
 
     static void initialize( Session session )
         throws RepositoryException
@@ -175,8 +176,8 @@ public class JcrMetadataRepository
 
         try
         {
-            Node node = getOrAddArtifactNode( repositoryId, namespace, projectId, projectVersion,
-                                              artifactMeta.getId() );
+            Node node =
+                getOrAddArtifactNode( repositoryId, namespace, projectId, projectVersion, artifactMeta.getId() );
 
             Calendar cal = Calendar.getInstance();
             cal.setTime( artifactMeta.getFileLastModified() );
@@ -223,8 +224,8 @@ public class JcrMetadataRepository
 
         try
         {
-            Node versionNode = getOrAddProjectVersionNode( repositoryId, namespace, projectId,
-                                                           versionMetadata.getId() );
+            Node versionNode =
+                getOrAddProjectVersionNode( repositoryId, namespace, projectId, versionMetadata.getId() );
 
             versionNode.setProperty( "name", versionMetadata.getName() );
             versionNode.setProperty( "description", versionMetadata.getDescription() );
@@ -268,8 +269,8 @@ public class JcrMetadataRepository
                 versionNode.setProperty( "mailingList." + i + ".post", mailingList.getPostAddress() );
                 versionNode.setProperty( "mailingList." + i + ".unsubscribe", mailingList.getUnsubscribeAddress() );
                 versionNode.setProperty( "mailingList." + i + ".subscribe", mailingList.getSubscribeAddress() );
-                versionNode.setProperty( "mailingList." + i + ".otherArchives", join(
-                    mailingList.getOtherArchives() ) );
+                versionNode.setProperty( "mailingList." + i + ".otherArchives",
+                                         join( mailingList.getOtherArchives() ) );
                 i++;
             }
 
@@ -368,7 +369,7 @@ public class JcrMetadataRepository
         {
             // no need to construct node-by-node here, as we'll find in the next instance, the facet names have / and
             // are paths themselves
-            Node node = session.getRootNode().getNode( getFacetPath( repositoryId, facetId ) );
+            Node node = getJcrSession().getRootNode().getNode( getFacetPath( repositoryId, facetId ) );
 
             // TODO: this is a bit awkward. Might be better to review the purpose of this function - why is the list of
             //   paths helpful?
@@ -409,7 +410,7 @@ public class JcrMetadataRepository
         MetadataFacet metadataFacet = null;
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             Node node = root.getNode( getFacetPath( repositoryId, facetId, name ) );
 
             MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
@@ -468,7 +469,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             String path = getFacetPath( repositoryId, facetId );
             if ( root.hasNode( path ) )
             {
@@ -486,7 +487,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             String path = getFacetPath( repositoryId, facetId, name );
             if ( root.hasNode( path ) )
             {
@@ -525,8 +526,8 @@ public class JcrMetadataRepository
 
         try
         {
-            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
-            ValueFactory valueFactory = session.getValueFactory();
+            Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = getJcrSession().getValueFactory();
             if ( startTime != null )
             {
                 query.bindValue( "start", valueFactory.createValue( createCalendar( startTime ) ) );
@@ -557,7 +558,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             if ( root.hasNode( "repositories" ) )
             {
                 Node node = root.getNode( "repositories" );
@@ -591,8 +592,8 @@ public class JcrMetadataRepository
 
         try
         {
-            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
-            ValueFactory valueFactory = session.getValueFactory();
+            Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = getJcrSession().getValueFactory();
             query.bindValue( "checksum", valueFactory.createValue( checksum ) );
             QueryResult result = query.execute();
 
@@ -615,7 +616,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             String path = getArtifactPath( repositoryId, namespace, projectId, projectVersion, id );
             if ( root.hasNode( path ) )
             {
@@ -633,7 +634,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             String path = getRepositoryPath( repositoryId );
             if ( root.hasNode( path ) )
             {
@@ -655,7 +656,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
             QueryResult result = query.execute();
 
             artifacts = new ArrayList<ArtifactMetadata>();
@@ -687,7 +688,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
 
             // basically just checking it exists
             String path = getProjectPath( repositoryId, namespace, projectId );
@@ -714,7 +715,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
 
             String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion );
             if ( !root.hasNode( path ) )
@@ -729,8 +730,8 @@ public class JcrMetadataRepository
             versionMetadata.setName( getPropertyString( node, "name" ) );
             versionMetadata.setDescription( getPropertyString( node, "description" ) );
             versionMetadata.setUrl( getPropertyString( node, "url" ) );
-            versionMetadata.setIncomplete( node.hasProperty( "incomplete" ) && node.getProperty(
-                "incomplete" ).getBoolean() );
+            versionMetadata.setIncomplete(
+                node.hasProperty( "incomplete" ) && node.getProperty( "incomplete" ).getBoolean() );
 
             // FIXME: decide how to treat these in the content repo
             String scmConnection = getPropertyString( node, "scm.connection" );
@@ -892,7 +893,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
 
             Node node = root.getNode( getProjectVersionPath( repositoryId, namespace, projectId, projectVersion ) );
 
@@ -928,7 +929,7 @@ public class JcrMetadataRepository
         }
         try
         {
-            Query query = session.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
             QueryResult result = query.execute();
 
             for ( Node n : JcrUtils.getNodes( result ) )
@@ -996,7 +997,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
             String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion );
 
             if ( root.hasNode( path ) )
@@ -1024,7 +1025,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            session.save();
+            getJcrSession().save();
         }
         catch ( RepositoryException e )
         {
@@ -1036,7 +1037,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            session.refresh( false );
+            getJcrSession().refresh( false );
         }
         catch ( RepositoryException e )
         {
@@ -1050,18 +1051,39 @@ public class JcrMetadataRepository
     }
 
     public Object obtainAccess( Class<?> aClass )
+        throws MetadataRepositoryException
     {
         if ( aClass == Session.class )
         {
-            return session;
+            try
+            {
+                return getJcrSession();
+            }
+            catch ( RepositoryException e )
+            {
+                log.error( e.getMessage(), e );
+                throw new MetadataRepositoryException( e.getMessage(), e );
+            }
         }
         throw new IllegalArgumentException(
             "Access using " + aClass + " is not supported on the JCR metadata storage" );
     }
 
     public void close()
+        throws MetadataRepositoryException
     {
-        session.logout();
+        try
+        {
+            if ( getJcrSession().isLive() )
+            {
+                getJcrSession().logout();
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
@@ -1152,7 +1174,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Node root = session.getRootNode();
+            Node root = getJcrSession().getRootNode();
 
             Node nodeAtPath = root.getNode( path );
 
@@ -1242,7 +1264,7 @@ public class JcrMetadataRepository
     private Node getOrAddRepositoryNode( String repositoryId )
         throws RepositoryException
     {
-        Node root = session.getRootNode();
+        Node root = getJcrSession().getRootNode();
         Node node = JcrUtils.getOrAddNode( root, "repositories" );
         node = JcrUtils.getOrAddNode( node, repositoryId );
         return node;
@@ -1314,7 +1336,14 @@ public class JcrMetadataRepository
     }
 
     public Session getJcrSession()
+        throws RepositoryException
     {
-        return session;
+        if ( this.jcrSession == null || !this.jcrSession.isLive() )
+        {
+
+            jcrSession = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
+
+        }
+        return this.jcrSession;
     }
 }

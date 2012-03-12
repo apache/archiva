@@ -54,7 +54,7 @@ public interface RepositoriesService
         throws ArchivaRestServiceException;
 
 
-    @Path( "scanRepositoryDirectories/{repositoryId}" )
+    @Path( "scanRepositoryDirectoriesNow/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER )
@@ -62,7 +62,7 @@ public interface RepositoriesService
      * scan directories
      * @since 1.4-M3
      */
-    RepositoryScanStatistics scanRepositoryDirectories( @PathParam( "repositoryId" ) String repositoryId )
+    RepositoryScanStatistics scanRepositoryDirectoriesNow( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
 
