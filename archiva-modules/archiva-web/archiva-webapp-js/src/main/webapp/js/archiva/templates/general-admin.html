@@ -322,21 +322,21 @@
   </div>
 
   <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.scanning')}</h4>
+    <h4>${$.i18n.prop('system-status.header.scanning')}&nbsp;<a href="#" onclick="displayScanningStats()"><img src="images/view-refresh.png"/></a></h4>
   </div>
   <div id="status_scanning">
     <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.caches')}</h4>
+    <h4>${$.i18n.prop('system-status.header.caches')}&nbsp;<a href="#" onclick="displayCacheEntries()"><img src="images/view-refresh.png"/></a></h4>
   </div>
   <div id="status_caches">
       <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.memory')}</h4>
+    <h4>${$.i18n.prop('system-status.header.memory')}&nbsp;<a href="#" onclick="displayMemoryUsage()"><img src="images/view-refresh.png"/></a></h4>
   </div>
   <div id="status_memory_info">
     <img src="images/small-spinner.gif"/>
@@ -451,8 +451,8 @@
                 <tr>
                   <td>${consumerScanningStatistics.consumerKey}</td>
                   <td>${consumerScanningStatistics.count}</td>
-                  <td>${consumerScanningStatistics.average}</td>
-                  <td>${consumerScanningStatistics.time}</td>
+                  <td>${consumerScanningStatistics.average}ms</td>
+                  <td>${consumerScanningStatistics.time}ms</td>
                 </tr>
                 {{/each}}
               </tbody>

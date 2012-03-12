@@ -594,11 +594,13 @@ $(function() {
   }
 
   displayCacheEntries=function(){
+    var divContent = $("#main-content #status_caches");
+    divContent.html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/cacheEntries", {
         type: "GET",
         success: function(data){
           var cacheEntries=mapCacheEntries(data);
-          $("#main-content #status_caches").html($("#status_caches_tmpl" ).tmpl({cacheEntries: cacheEntries}));
+          divContent.html($("#status_caches_tmpl" ).tmpl({cacheEntries: cacheEntries}));
         }
     });
   }
@@ -655,6 +657,33 @@ $(function() {
     this.newFileCount=newFileCount;
   }
 
+  displayScanningStats=function(){
+    var divContent = $("#main-content #status_scanning");
+    divContent.html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/repositoryScannerStatistics", {
+        type: "GET",
+        success: function(data){
+          var stats= mapRepositoryScannerStatisticsList(data);
+          $.log("size:"+data.length);
+          divContent.html($("#status_scanning_tmpl").tmpl({repositoryScannerStatisticsList:stats}));
+        }
+    });
+  }
+
+  displayMemoryUsage=function(){
+    var divContent = $("#main-content #status_memory_info");
+    divContent.html(smallSpinnerImg());
+    $.ajax("restServices/archivaServices/systemStatusService/memoryStatus", {
+        type: "GET",
+        dataType: "text",
+        success: function(data){
+          var memUsage = data;
+          $.log("memUsage:"+memUsage);
+          divContent.html(memUsage);
+        }
+    });
+  }
+
   displaySystemStatus=function(){
     screenChange();
     var mainContent=$("#main-content");
@@ -664,15 +693,8 @@ $(function() {
         +" - "+$.i18n.prop('system-status.header.version.timestampStr')+": "+window.archivaRuntimeInfo.timestampStr;
     mainContent.find("#status_version_info").html(versionInfo);
 
-    $.ajax("restServices/archivaServices/systemStatusService/memoryStatus", {
-        type: "GET",
-        dataType: "text",
-        success: function(data){
-          var memUsage = data;
-          $.log("memUsage:"+memUsage);
-          mainContent.find("#status_memory_info" ).html(memUsage);
-        }
-    });
+    displayMemoryUsage();
+
     $.ajax("restServices/archivaServices/systemStatusService/currentServerTime/"+encodeURIComponent(usedLang()), {
         type: "GET",
         dataType: "text",
@@ -691,14 +713,7 @@ $(function() {
         }
     });
 
-    $.ajax("restServices/archivaServices/systemStatusService/repositoryScannerStatistics", {
-        type: "GET",
-        success: function(data){
-          var stats= mapRepositoryScannerStatisticsList(data);
-          $.log("size:"+data.length);
-          mainContent.find("#status_scanning" ).html($("#status_scanning_tmpl").tmpl({repositoryScannerStatisticsList:stats}));
-        }
-    });
+    displayScanningStats();
 
     displayCacheEntries();
   }
