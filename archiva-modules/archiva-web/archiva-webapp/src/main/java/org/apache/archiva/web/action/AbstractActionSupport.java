@@ -198,25 +198,24 @@ public abstract class AbstractActionSupport
 
     public String getArchivaVersion()
     {
-        return archivaRuntimeInfo.getVersion(); //(String) archivaRuntimeProperties.get( "archiva.version" );
+        return archivaRuntimeInfo.getVersion();
     }
 
     public String getArchivaBuildNumber()
     {
-        return archivaRuntimeInfo.getBuildNumber();// (String) archivaRuntimeProperties.get( "archiva.buildNumber" );
+        return archivaRuntimeInfo.getBuildNumber();
     }
 
     public String getArchivaBuildTimestamp()
     {
         return Long.toString(
-            archivaRuntimeInfo.getTimestamp() ); //(String) archivaRuntimeProperties.get( "archiva.timestamp" );
+            archivaRuntimeInfo.getTimestamp() );
     }
 
     public String getArchivaBuildTimestampDateStr()
     {
         SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", getLocale() );
         return sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) );
-        //new Date( NumberUtils.createLong( (String) archivaRuntimeProperties.get( "archiva.timestamp" ) ) ) );
     }
 
     /**

@@ -44,61 +44,11 @@
 
 
 <script type="text/javascript">
-appendArchivaVersion=function(){
-  return "_archivaVersion="+window.archivaRuntimeInfo.version;
-}
-buildLoadJsUrl=function(srcScript){
-  return srcScript+"?"+appendArchivaVersion();
-}
-$.ajax(
-  {
-    url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo",
-    dataType: 'json',
-    success:function(data){
-        window.archivaDevMode=data.applicationRuntimeInfo.devMode;
-        window.archivaJavascriptLog=data.applicationRuntimeInfo.javascriptLog;
-        window.archivaRuntimeInfo=data.applicationRuntimeInfo;
-        require.config({
-            baseUrl: "js/"
-          });
-        // CacheBust is for dev purpose use false in prod env !
-        var options = {
-            AlwaysPreserveOrder:true,
-            BasePath:"js/",
-            explicit_preloading:false,
-            CacheBust:window.archivaDevMode
-        };
-        $LAB.setGlobalDefaults(options);
-        $LAB
-           .script(buildLoadJsUrl("jquery.tmpl.js")).wait()
-           .script(buildLoadJsUrl("archiva/utils.js")).wait()
-           .script("jquery.i18n.properties-1.0.9.js").wait()
-           .script(buildLoadJsUrl("archiva/i18nload.js")).wait()
-           .script("jquery.cookie.1.0.0.js").wait()
-           .script(buildLoadJsUrl("knockout-debug.js")).wait()
-           .script("jquery-ui-1.8.16.custom.min.js").wait()
-           .script(buildLoadJsUrl("jquery.validate.js")).wait()
-           .script("jquery.json-2.3.min.js").wait()
-           .script(buildLoadJsUrl("archiva/main-tmpl.js")).wait()
-           .script(buildLoadJsUrl("archiva/repositories.js")).wait()
-           .script(buildLoadJsUrl("archiva/network-proxies.js")).wait()
-           .script(buildLoadJsUrl("archiva/proxy-connectors.js")).wait()
-           .script(buildLoadJsUrl("redback/operation.js")).wait()
-           .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
-           .script(buildLoadJsUrl("bootstrap.js"))
-           .script(buildLoadJsUrl("knockout.simpleGrid.js"))
-           //.script("knockout.mapping-latest.debug.js")
-           .script(buildLoadJsUrl("redback/user.js")).wait()
-           .script(buildLoadJsUrl("redback/users.js")).wait()
-           .script(buildLoadJsUrl("redback/redback.js")).wait()
-           .script(buildLoadJsUrl("redback/register.js")).wait()
-           .script(buildLoadJsUrl("redback/permission.js")).wait()
-           .script(buildLoadJsUrl("redback/resource.js")).wait()
-           .script(buildLoadJsUrl("redback/roles.js")).wait()
-           .script(buildLoadJsUrl("archiva/main.js"));
-    }
-  })
+    $(function() {
+        loadJs();
+    });
 </script>
+
 </body>
 
 </html>

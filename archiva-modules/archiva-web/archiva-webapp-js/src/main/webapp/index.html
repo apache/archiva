@@ -11,6 +11,8 @@
 
   <script type="text/javascript" src="js/lab.js"></script>
   <script type="text/javascript" src="js/require.1.0.1.js"></script>
+  <script type="text/javascript" src="js/jquery.i18n.properties-1.0.9.js"></script>
+  <script type="text/javascript" src="js/archiva/startup.js"></script>
   <title>Apache Archiva</title>
 
 </head>
@@ -45,70 +47,12 @@
 
 
 <script type="text/javascript">
-appendArchivaVersion=function(){
-  return "_archivaVersion="+window.archivaRuntimeInfo.version;
-}
-buildLoadJsUrl=function(srcScript){
-  return srcScript+"?"+appendArchivaVersion();
-}
 
-$.ajaxSetup({
-  dataType: 'json'
-});
+    $(function() {
+        loadJs();
+    });
 
-$.ajax(
-  {
-    url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo",
-    dataType: 'json',
-    success:function(data){
-        window.archivaDevMode=data.devMode;
-        window.archivaJavascriptLog=data.javascriptLog;
-        window.archivaRuntimeInfo=data;
-        require.config({
-            baseUrl: "js/"
-          });
-        // CacheBust is for dev purpose use false in prod env !
-        var options = {
-            AlwaysPreserveOrder:true,
-            BasePath:"js/",
-            explicit_preloading:false,
-            CacheBust:window.archivaDevMode
-        };
-        $LAB.setGlobalDefaults(options);
-        $LAB
-           .script(buildLoadJsUrl("jquery.tmpl.js")).wait()
-           .script(buildLoadJsUrl("archiva/utils.js")).wait()
-           .script("jquery.i18n.properties-1.0.9.js").wait()
-           .script(buildLoadJsUrl("archiva/i18nload.js")).wait()
-           .script("jquery.cookie.1.0.0.js").wait()
-           .script(buildLoadJsUrl("knockout-debug.js")).wait()
-           .script("jquery-ui-1.8.16.custom.min.js").wait()
-           .script(buildLoadJsUrl("jquery.validate.js")).wait()
-           .script("jquery.json-2.3.min.js").wait()
-           .script(buildLoadJsUrl("archiva/main-tmpl.js")).wait()
-           .script(buildLoadJsUrl("archiva/general-admin.js"))
-           .script(buildLoadJsUrl("archiva/repositories.js")).wait()
-           .script(buildLoadJsUrl("archiva/network-proxies.js")).wait()
-           .script(buildLoadJsUrl("archiva/proxy-connectors.js")).wait()
-           .script(buildLoadJsUrl("redback/operation.js")).wait()
-           .script(buildLoadJsUrl("archiva/repository-groups.js")).wait()
-           .script(buildLoadJsUrl("archiva/search.js")).wait()
-           .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
-           .script("chosen.jquery.js" )
-           .script("bootstrap.2.0.1.js" )
-           .script(buildLoadJsUrl("knockout.simpleGrid.js"))
-           .script(buildLoadJsUrl("knockout-sortable.js"))
-           //.script("knockout.mapping-latest.debug.js")
-           .script(buildLoadJsUrl("redback/user.js")).wait()
-           .script(buildLoadJsUrl("redback/users.js")).wait()
-           .script(buildLoadJsUrl("redback/redback.js")).wait()
-           .script(buildLoadJsUrl("redback/register.js")).wait()
-           .script(buildLoadJsUrl("redback/permission.js")).wait()
-           .script(buildLoadJsUrl("redback/resource.js")).wait()
-           .script(buildLoadJsUrl("redback/roles.js")).wait()
-           .script(buildLoadJsUrl("archiva/main.js"));
-    }
-  })
+
 </script>
 </body>
 </html>

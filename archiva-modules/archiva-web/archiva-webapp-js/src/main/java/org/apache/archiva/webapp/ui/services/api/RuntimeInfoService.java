@@ -23,6 +23,7 @@ import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -34,11 +35,11 @@ import javax.ws.rs.core.MediaType;
 @Path( "/runtimeInfoService/" )
 public interface RuntimeInfoService
 {
-    @Path( "archivaRuntimeInfo" )
+    @Path( "archivaRuntimeInfo/{locale}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    ApplicationRuntimeInfo getApplicationRuntimeInfo();
+    ApplicationRuntimeInfo getApplicationRuntimeInfo( @PathParam( "locale" ) String locale );
 
 
     @Path( "logMissingI18n" )

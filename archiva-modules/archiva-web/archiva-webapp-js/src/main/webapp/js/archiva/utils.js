@@ -32,18 +32,6 @@ $.log = (function(message) {
 });
 
 /**
- * return value of a param in the url
- * @param name
- */
-$.urlParam = function(name){
-    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
-    if (results) {
-      return results[1] || 0;
-    }
-    return null;
-}
-
-/**
  * display a success message
  * @param text the success text
  * @param idToAppend the id to append the success box

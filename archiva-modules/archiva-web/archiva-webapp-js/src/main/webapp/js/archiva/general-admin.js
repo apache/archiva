@@ -584,6 +584,10 @@ $(function() {
           mainContent.find("#status_current_time").html(curTime);
         }
     });
+
+    var versionInfo="Build number: "+window.archivaRuntimeInfo.buildNumber+" - Build Timestamp: "+window.archivaRuntimeInfo.timestampStr;
+    mainContent.find("#status_version_info").html(versionInfo);
+
   }
 
 });

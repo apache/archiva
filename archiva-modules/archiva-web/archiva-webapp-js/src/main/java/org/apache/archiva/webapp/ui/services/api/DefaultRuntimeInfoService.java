@@ -27,6 +27,9 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -49,13 +52,17 @@ public class DefaultRuntimeInfoService
         this.archivaRuntimeInfo = archivaRuntimeInfo;
     }
 
-    public ApplicationRuntimeInfo getApplicationRuntimeInfo()
+    public ApplicationRuntimeInfo getApplicationRuntimeInfo( String locale )
     {
         ApplicationRuntimeInfo applicationRuntimeInfo = new ApplicationRuntimeInfo();
         applicationRuntimeInfo.setBuildNumber( this.archivaRuntimeInfo.getBuildNumber() );
         applicationRuntimeInfo.setTimestamp( this.archivaRuntimeInfo.getTimestamp() );
         applicationRuntimeInfo.setVersion( this.archivaRuntimeInfo.getVersion() );
         applicationRuntimeInfo.setBaseUrl( getBaseUrl( httpServletRequest ) );
+
+        SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", new Locale( locale ) );
+        applicationRuntimeInfo.setTimestampStr( sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) ) );
+
         return applicationRuntimeInfo;
     }
 

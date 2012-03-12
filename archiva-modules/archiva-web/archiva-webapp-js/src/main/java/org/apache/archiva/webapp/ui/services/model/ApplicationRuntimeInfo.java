@@ -44,6 +44,7 @@ public class ApplicationRuntimeInfo
 
     private String baseUrl;
 
+    private String timestampStr;
 
     public ApplicationRuntimeInfo()
     {
@@ -136,6 +137,16 @@ public class ApplicationRuntimeInfo
         this.baseUrl = baseUrl;
     }
 
+    public String getTimestampStr()
+    {
+        return timestampStr;
+    }
+
+    public void setTimestampStr( String timestampStr )
+    {
+        this.timestampStr = timestampStr;
+    }
+
     @Override
     public String toString()
     {
@@ -149,6 +160,7 @@ public class ApplicationRuntimeInfo
         sb.append( ", copyrightRange='" ).append( copyrightRange ).append( '\'' );
         sb.append( ", logMissingI18n=" ).append( logMissingI18n );
         sb.append( ", baseUrl='" ).append( baseUrl ).append( '\'' );
+        sb.append( ", timestampStr='" ).append( timestampStr ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
