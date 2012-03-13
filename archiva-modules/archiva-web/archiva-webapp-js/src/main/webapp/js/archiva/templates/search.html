@@ -64,8 +64,6 @@
   <ul class="breadcrumb">
     <li>
       <a href="#" data-bind="click: function(){ browseRoot()}"><img src="images/go-home.png"/></a>&nbsp;<span class="divider">/</span>
-        <!-- <i class="icon-home"/> -->
-        
     </li>
     {{var number=breadCrumbEntries().length}}
     {{each(i,breadCrumbEntry) breadCrumbEntries}}
@@ -84,7 +82,7 @@
       {{if number>0}}
         <span class="divider">/</span>
       {{/if}}
-      <input type="text" class="form-search span6" size="50" id="browse-autocomplete"/>
+      <input type="text" class="form-search span4" size="50" id="browse-autocomplete"/>
     </li>
   </ul>
 
