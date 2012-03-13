@@ -179,6 +179,7 @@ public class DownloadArtifactsTest
     }
 
 
+    //FIXME start an other jetty instance rather than being dependant on network !!
     public static class RedirectServlet
         extends HttpServlet
     {
@@ -194,7 +195,7 @@ public class DownloadArtifactsTest
                                         + "<p>The document has moved <a href=\"http://repo1.maven.apache.org/maven2/junit/junit/4.9/junit-4.9.jar\">here</a>.</p>\n"
                                         + "</body></html>\n" + "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n"
                                         + "<html><head>\n" );
-            resp.sendRedirect( "http://repo1.maven.apache.org/maven2/" + req.getRequestURI() );
+            resp.sendRedirect( "http://repo.maven.apache.org/maven2/" + req.getRequestURI() );
         }
     }
 
