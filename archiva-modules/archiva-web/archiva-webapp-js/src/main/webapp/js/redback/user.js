@@ -229,6 +229,7 @@ $(function() {
           type: "GET",
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.locked",curUser.username()));
+            curUser.modified(false);
           },
           error: function(result) {
             var obj = jQuery.parseJSON(result.responseText);
@@ -245,6 +246,7 @@ $(function() {
           type: "GET",
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
+            curUser.modified(false);
           },
           error: function(result) {
             var obj = jQuery.parseJSON(result.responseText);
@@ -265,6 +267,7 @@ $(function() {
           type: "GET",
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username(),value));
+            curUser.modified(false);
           },
           error: function(result) {
             var obj = jQuery.parseJSON(result.responseText);
