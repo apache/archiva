@@ -851,7 +851,7 @@ $(function() {
           searchViewModel.observableRepoIds(repos);
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
           mainContent.find("#search-basic-repostories-select" ).chosen();
-          if (successCallbackFn!=null) successCallbackFn();
+          if (successCallbackFn && $.isFunction(successCallbackFn)) successCallbackFn();
         }
     });
 
