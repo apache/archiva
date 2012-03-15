@@ -91,7 +91,7 @@ $(function() {
                .script(buildLoadJsUrl("archiva/search.js")).wait()
                .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
                .script("chosen.jquery.js" )
-               .script("bootstrap.2.0.1.js" )
+               .script("bootstrap.2.0.2.js" )
                .script(buildLoadJsUrl("knockout.simpleGrid.js"))
                .script(buildLoadJsUrl("knockout-sortable.js"))
                //.script("knockout.mapping-latest.debug.js")
