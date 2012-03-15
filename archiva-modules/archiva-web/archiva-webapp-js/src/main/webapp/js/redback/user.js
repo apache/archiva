@@ -412,9 +412,40 @@ $(function() {
 
   resetPasswordForm=function(key){
     $.log("resetPasswordForm:"+key);
-    validateKey(key,false);
-    $.log("resetPasswordForm#validateKey ok");
-    //displaySearch();
+    changePasswordBox(null,false,null,function(){
+        $.log("ok chgt pwd")
+        $.log("user.js#changePassword");
+        var valid = $("#password-change-form").valid();
+        if (valid==false) {
+            return;
+        }
+        var url = 'restServices/redbackServices/passwordService/changePasswordWithKey?';
+        url += "password="+$("#passwordChangeFormNewPassword").val();
+        url += "&passwordConfirmation="+$("#passwordChangeFormNewPasswordConfirm").val();
+        url += "&key="+key;
+        $.log("url:"+url);
+
+        $.ajax({
+          url: url,
+          success: function(result){
+            $.log("changePassword#success result:"+result);
+            var user = mapUser(result);
+            if (user) {
+              window.modalChangePasswordBox.modal('hide');
+              displaySuccessMessage($.i18n.prop('change.password.success.section.title'));
+            } else {
+              displayErrorMessage("issue appended");
+            }
+            window.modalChangePasswordBox.modal('hide');
+          },
+          error: function(result) {
+           var obj = jQuery.parseJSON(result.responseText);
+           displayRedbackError(obj,"modal-password-change-content");
+          }
+        });
+
+      }
+    );
   }
 
   passwordReset=function(){
@@ -496,7 +527,7 @@ $(function() {
    * @param previousPassword display and validate previous password text field
    * @param registration are we in registration mode ?
    */
-  changePasswordBox=function(previousPassword,registration,user){
+  changePasswordBox=function(previousPassword,registration,user,okFn){
     screenChange();
     $.log("changePasswordBox previousPassword:"+previousPassword+",registration:"+registration+",user:"+user);
     if (previousPassword==true){
@@ -513,7 +544,11 @@ $(function() {
       })
       $("#modal-password-change").delegate("#modal-change-password-ok", "click keydown keypress", function(e) {
         e.preventDefault();
-        changePassword(previousPassword,registration,user);
+        if ( $.isFunction(okFn)){
+          okFn();
+        } else {
+          changePassword(previousPassword,registration,user);
+        }
       });
     }
     window.modalChangePasswordBox.modal('show');
@@ -649,8 +684,8 @@ $(function() {
         var user = mapUser(result);
         if (user) {
           window.modalChangePasswordBox.modal('hide');
-          $.log("changePassword#sucess,registration:"+registration);
           if (registration==true) {
+            $.log("changePassword#sucess,registration:"+registration);
             displaySuccessMessage($.i18n.prop('change.password.success.section.title'))
             loginCall(user.username(), $("#passwordChangeFormNewPassword").val(),successLoginCallbackFn);
           } else {
@@ -659,10 +694,6 @@ $(function() {
         } else {
           displayErrorMessage("issue appended");
         }
-
-      },
-      complete: function(){
-        $("#small-spinner").remove();
         window.modalChangePasswordBox.modal('hide');
       },
       error: function(result) {
