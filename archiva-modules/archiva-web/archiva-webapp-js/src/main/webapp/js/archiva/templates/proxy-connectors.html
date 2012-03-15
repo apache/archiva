@@ -161,7 +161,8 @@
                      value: proxyConnector.targetRepoId,attr: {disabled: isUpdate() }"></select>
           </div>
         </div>
-        <div class="control-group span6">
+        <div class="row">
+          <div class="control-group span6">
             <table class="table">
               <thead>
                 <th colspan="2">${$.i18n.prop('proxy-connector.policies')}</th>
@@ -178,10 +179,11 @@
                   </tr>
               </tbody>
             </table>
+          </div>
         </div>
-        <div class="control-group span6">
-          <h4>${$.i18n.prop('proxy-connector.properties')}</h4>
-
+        <div class="row">
+          <div class="control-group span6">
+            <h4>${$.i18n.prop('proxy-connector.properties')}</h4>
             <table class="table">
               <thead>
                 <th><input type="text" id="property-key"/></th>
@@ -196,9 +198,10 @@
                 </tr>
               </tbody>
             </table>
+          </div>
         </div>
-
-        <div class="control-group span6">
+        <div class="row">
+          <div class="control-group span6">
             <h4>${$.i18n.prop('proxy-connector.blacklist')}</h4>
             <table class="table">
               <thead>
@@ -212,25 +215,25 @@
                 </tr>
               </tbody>
             </table>
+          </div>
         </div>
-
-
-        <div class="control-group span6">
-          <h4>${$.i18n.prop('proxy-connector.whitelist')}</h4>
-          <table class="table">
-            <thead>
-              <th><input type="text" id="whitelist-value"/></th>
-              <th><a href="#" data-bind="click: function(){ addWhitelistPattern() }">${$.i18n.prop('add')}</a></th>
-            </thead>
-            <tbody data-bind="foreach: proxyConnector.whiteListPatterns">
-              <tr>
-                <td data-bind="text: $data"></td>
-                <td><a href="#" data-bind="click: function(){removeWhitelistPattern($data)}">${$.i18n.prop('delete')}</a></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="row">
+          <div class="control-group span6">
+            <h4>${$.i18n.prop('proxy-connector.whitelist')}</h4>
+            <table class="table">
+              <thead>
+                <th><input type="text" id="whitelist-value"/></th>
+                <th><a href="#" data-bind="click: function(){ addWhitelistPattern() }">${$.i18n.prop('add')}</a></th>
+              </thead>
+              <tbody data-bind="foreach: proxyConnector.whiteListPatterns">
+                <tr>
+                  <td data-bind="text: $data"></td>
+                  <td><a href="#" data-bind="click: function(){removeWhitelistPattern($data)}">${$.i18n.prop('delete')}</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-
       </fieldset>
 
       <button id="proxy-connector-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
