@@ -49,14 +49,14 @@ $(function() {
     $.cookie('redback_login', null);
   }
 
-  logout=function(){
+  logout=function(screenChange){
     deleteLoginCookie();
     $("#login-link").show();
     $("#register-link").show();
     $("#logout-link").hide();
     $("#change-password-link").hide();
     hideElementWithKarma();
-    screenChange();
+    if (screenChange) screenChange();
     $("#main-content").html("");
     $.ajax({
       url: 'restServices/redbackServices/loginService/logout'

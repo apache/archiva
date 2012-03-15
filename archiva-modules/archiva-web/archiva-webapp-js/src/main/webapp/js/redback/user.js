@@ -414,7 +414,7 @@ $(function() {
     $.log("resetPasswordForm:"+key);
     validateKey(key,false);
     $.log("resetPasswordForm#validateKey ok");
-    displaySearch();
+    //displaySearch();
   }
 
   passwordReset=function(){
@@ -668,6 +668,7 @@ $(function() {
       error: function(result) {
        var obj = jQuery.parseJSON(result.responseText);
        displayRedbackError(obj);
+       logout(false);
       }
     });
 
