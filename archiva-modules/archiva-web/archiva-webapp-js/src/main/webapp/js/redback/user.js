@@ -333,10 +333,18 @@ $(function() {
         customShowError("#user-login-form",validator,errorMap,errorMap);
       }
     });
-    $("#modal-login").delegate("#modal-login-ok", "click keydown keypress", function(e) {
+    $("#modal-login-ok").on("click", function(e) {
       e.preventDefault();
       login();
     });
+
+    $("#modal-login-password-reset").on("click", function(e) {
+      e.preventDefault();
+      $.log("password reset");
+      passwordReset();
+    });
+
+
 
   }
 
@@ -400,6 +408,34 @@ $(function() {
   var completeLoginCallbackFn=function(){
     $("#modal-login-ok").removeAttr("disabled");
     $("#small-spinner").remove();
+  }
+
+  passwordReset=function(){
+    var username = $("#user-login-form-username" ).val();
+    if(username.trim().length<1){
+      var errorList=[{
+        message: $.i18n.prop("username.cannot.be.empty"),
+  		  element: $("#user-login-form-username").get(0)
+      }];
+      customShowError("#user-login-form", null, null, errorList);
+      return;
+    }
+
+    if (window.modalLoginWindow){
+      window.modalLoginWindow.modal('hide');
+    }
+    $("#user-messages" ).html(mediumSpinnerImg());
+    $.ajax("restServices/redbackServices/userService/resetPassword/"+encodeURIComponent(username), {
+        type: "GET",
+        success: function(result) {
+          clearUserMessages();
+          displaySuccessMessage( $.i18n.prop("password.reset.success"));
+        },
+        error: function(result) {
+          var obj = jQuery.parseJSON(result.responseText);
+          displayRedbackError(obj);
+        }
+      });
   }
 
   /**
