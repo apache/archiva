@@ -207,7 +207,6 @@ public class DefaultBrowseService
 
             Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
-
             return sortedVersions;
         }
         finally
@@ -300,7 +299,9 @@ public class DefaultBrowseService
                     if ( sharedModel.getDescription() != null && !StringUtils.equalsIgnoreCase(
                         sharedModel.getDescription(), versionMetadata.getDescription() ) )
                     {
-                        sharedModel.setDescription( null );
+                        sharedModel.setDescription( StringUtils.isNotEmpty( versionMetadata.getDescription() )
+                                                        ? versionMetadata.getDescription()
+                                                        : "" );
                     }
 
                     if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null
