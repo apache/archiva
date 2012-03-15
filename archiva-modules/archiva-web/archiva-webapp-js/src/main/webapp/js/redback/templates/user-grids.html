@@ -48,28 +48,35 @@
               </a>
             </td>
           {{/if}}
-          {{if row.locked()==true}}
-            <td>
-              <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen-22-22.png"/></a>
-            </td>
+          {{if row.username()=="admin"}}
+            <td></td>
           {{else}}
-            <td>
-              <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear-22-22.png"/></a>
-            </td>
+            {{if row.locked()==true}}
+              <td>
+                <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen-22-22.png"/></a>
+              </td>
+            {{else}}
+              <td>
+                <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear-22-22.png"/></a>
+              </td>
+            {{/if}}
           {{/if}}
-
-          {{if row.passwordChangeRequired()==true}}
+          {{if row.username()=="admin"}}
+            <td></td>
+          {{else}}
+            {{if row.passwordChangeRequired()==true}}
+              <td>
+                <a href="#" data-bind="click: function(){ passwordChangeRequire(row,false) }">
+                  <img src="images/dialog-error-22-22.png"/>
+                </a>
+              </td>
+            {{else}}
             <td>
-              <a href="#" data-bind="click: function(){ passwordChangeRequire(row,false) }">
-                <img src="images/dialog-error-22-22.png"/>
+              <a href="#" data-bind="click: function(){ passwordChangeRequire(row,true) }">
+                <img src="images/weather-clear-22-22.png"/>
               </a>
             </td>
-          {{else}}
-          <td>
-            <a href="#" data-bind="click: function(){ passwordChangeRequire(row,true) }">
-              <img src="images/weather-clear-22-22.png"/>
-            </a>
-          </td>
+            {{/if}}
           {{/if}}
         </tr>
       {{/each}}
