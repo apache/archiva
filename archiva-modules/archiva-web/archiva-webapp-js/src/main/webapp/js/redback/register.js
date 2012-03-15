@@ -96,7 +96,7 @@ $(function() {
    * validate a registration key and go to change password key
    * @param key
    */
-  validateKey=function(key) {
+  validateKey=function(key,registration) {
     // FIXME spinner display
     $.ajax({
       url: 'restServices/redbackServices/userService/validateKey/'+key,
@@ -104,7 +104,7 @@ $(function() {
        success: function(result){
          window.redbackModel.key=key;
          $.log("validateKey#sucess");
-         changePasswordBox(false,true,null);
+         changePasswordBox(false,registration?registration:true,null);
        },
        complete: function(){
          // hide spinner

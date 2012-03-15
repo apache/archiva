@@ -410,6 +410,13 @@ $(function() {
     $("#small-spinner").remove();
   }
 
+  resetPasswordForm=function(key){
+    $.log("resetPasswordForm:"+key);
+    validateKey(key,false);
+    $.log("resetPasswordForm#validateKey ok");
+    displaySearch();
+  }
+
   passwordReset=function(){
     var username = $("#user-login-form-username" ).val();
     if(username.trim().length<1){
@@ -426,16 +433,17 @@ $(function() {
     }
     $("#user-messages" ).html(mediumSpinnerImg());
     $.ajax("restServices/redbackServices/userService/resetPassword/"+encodeURIComponent(username), {
-        type: "GET",
-        success: function(result) {
-          clearUserMessages();
-          displaySuccessMessage( $.i18n.prop("password.reset.success"));
-        },
-        error: function(result) {
-          var obj = jQuery.parseJSON(result.responseText);
-          displayRedbackError(obj);
-        }
-      });
+      type: "GET",
+      success: function(result) {
+        clearUserMessages();
+        displayInfoMessage($.i18n.prop("password.reset.success"));
+      },
+      error: function(result) {
+        clearUserMessages();
+        var obj = jQuery.parseJSON(result.responseText);
+        displayRedbackError(obj);
+      }
+    });
   }
 
   /**

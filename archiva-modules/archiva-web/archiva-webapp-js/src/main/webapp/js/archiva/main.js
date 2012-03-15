@@ -70,6 +70,11 @@ $(function() {
       validateKey(validateMeId);
       return;
     }
+    var resetPassword= $.urlParam('resetPassword');
+    if (resetPassword){
+      resetPasswordForm(resetPassword);
+      return;
+    }
 
     var browse = $.urlParam('browse');
     if (browse){
