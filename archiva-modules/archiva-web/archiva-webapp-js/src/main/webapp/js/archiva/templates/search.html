@@ -20,12 +20,12 @@
 <script id="browse-tmpl" type="text/html">
   <div>
     <div class="page-header">
-      <h2>${$.i18n.prop('browse.repository')}</h2>
+      <div><b>${$.i18n.prop('browse.repository')}</b></div>
+      <div id="selected_repository"></div>
     </div>
   </div>
   <div id="main_browse_result">
     <div id="main_browse_result_content" class="well">
-      <div id="selected_repository"></div>
       <div id="browse_breadcrumb" data-bind='template:{name:"browse-breadcrumb-tmpl"}'></div>
       <div id="browse_result" class="well" data-bind='template:{name:"browse-groups-tmpl"}'></div>
       <div id="browse_artifact" class="well" data-bind='template:{name:"browse-artifact-tmpl"}'></div>
