@@ -35,6 +35,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -251,6 +252,88 @@ public class DefaultBrowseService
         }
     }
 
+    public ProjectVersionMetadata getProjectMetadata( @PathParam( "g" ) String groupId,
+                                                      @PathParam( "a" ) String artifactId,
+                                                      @PathParam( "v" ) String version, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        List<String> selectedRepos = getObservableRepos();
+
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            // FIXME 403 ???
+            return null;
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
+        }
+
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+
+            ProjectVersionMetadata versionMetadata = null;
+            for ( String repoId : selectedRepos )
+            {
+                if ( versionMetadata == null || versionMetadata.isIncomplete() )
+                {
+                    try
+                    {
+                        versionMetadata =
+                            metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId, artifactId,
+                                                                    version );
+                    }
+                    catch ( MetadataResolutionException e )
+                    {
+                        log.error(
+                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId
+                                + " in repo " + repoId + ": " + e.getMessage() );
+                    }
+                }
+            }
+            if ( versionMetadata == null )
+            {
+                return null;
+            }
+
+            MavenProjectFacet mavenFacet = new MavenProjectFacet();
+            mavenFacet.setGroupId( groupId );
+            mavenFacet.setArtifactId( artifactId );
+            versionMetadata.addFacet( mavenFacet );
+            MavenProjectFacet versionMetadataMavenFacet =
+                (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
+            if ( versionMetadataMavenFacet != null )
+            {
+                if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
+                                                                                         versionMetadataMavenFacet.getPackaging() ) )
+                {
+                    mavenFacet.setPackaging( null );
+                }
+            }
+
+            return versionMetadata;
+        }
+        finally
+        {
+            if ( repositorySession != null )
+            {
+                repositorySession.close();
+            }
+        }
+
+    }
+
     public ProjectVersionMetadata getProjectVersionMetadata( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -298,7 +381,7 @@ public class DefaultBrowseService
                 ProjectVersionMetadata versionMetadata = null;
                 for ( String repoId : selectedRepos )
                 {
-                    if ( versionMetadata == null )
+                    if ( versionMetadata == null || versionMetadata.isIncomplete() )
                     {
                         try
                         {
