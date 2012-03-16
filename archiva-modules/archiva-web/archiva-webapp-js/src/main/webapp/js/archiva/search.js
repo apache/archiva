@@ -91,7 +91,17 @@ $(function() {
           browseResult.html(mediumSpinnerImg());
           browseBreadCrumb.html(smallSpinnerImg());
           mainContent.find("#main_browse_result_content" ).show();
-          var url = restUrl ? restUrl : "restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+          var url = "";
+          if (!restUrl) {
+            url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+            var selectedRepo=getSelectedBrowsingRepository();
+            if (selectedRepo){
+              url+="?repositoryId="+selectedRepo;
+            }
+          }else {
+            url=restUrl;
+          }
+
           $.ajax(url, {
             type: "GET",
             dataType: 'json',
@@ -218,6 +228,10 @@ $(function() {
     if (groupId){
       url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
     }
+    var selectedRepo=getSelectedBrowsingRepository();
+    if (selectedRepo){
+      url+="?repositoryId="+selectedRepo;
+    }
     $( "#main-content #browse-autocomplete" ).autocomplete({
       minLength: 2,
 			source: function(request, response){
@@ -261,7 +275,12 @@ $(function() {
           } else {
             query=groupId?groupId:request.term;
           }
-        $.get("restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(query),
+        var browseUrl="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(query);
+        var selectedRepo=getSelectedBrowsingRepository();
+        if (selectedRepo){
+          browseUrl+="?repositoryId="+selectedRepo;
+        }
+        $.get(browseUrl,
            function(data) {
              var browseResultEntries = mapbrowseResultEntries(data);
              if (dotEnd){
