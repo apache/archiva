@@ -165,6 +165,11 @@ public class RepositoryModelResolver
                         StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
                             + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion + '-'
                             + buildNumber + ".pom";
+                    if ( log.isDebugEnabled() )
+                    {
+                        log.debug( "use snapshot path {} for maven coordinate {}", snapshotPath,
+                                   groupId + ":" + artifactId + ":" + version );
+                    }
                     File model = new File( basedir, snapshotPath );
                     //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
                     if ( model.exists() )
