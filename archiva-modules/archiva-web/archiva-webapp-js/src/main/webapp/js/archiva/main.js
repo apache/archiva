@@ -37,19 +37,19 @@ $(function() {
    * reccord a cookie for session with the logged user
    * @param user see user.js
    */
-  var reccordLoginCookie=function(user) {
+  function reccordLoginCookie(user) {
     $.cookie('redback_login', ko.toJSON(user));
   }
 
-  var getUserFromLoginCookie=function(){
+  function getUserFromLoginCookie(){
     return $.parseJSON($.cookie('redback_login'));
   }
 
-  var deleteLoginCookie=function(){
+  function deleteLoginCookie(){
     $.cookie('redback_login', null);
   }
 
-  var logout=function(screenChange){
+  function logout(screenChange){
     deleteLoginCookie();
     $("#login-link").show();
     $("#register-link").show();
@@ -64,7 +64,7 @@ $(function() {
   }
 
   // handle url with registration link
-  var checkUrlParams=function() {
+  function checkUrlParams() {
     var validateMeId = $.urlParam('validateMe');
     if (validateMeId) {
       validateKey(validateMeId);
@@ -134,11 +134,11 @@ $(function() {
     displaySearch();
   }
 
-  var hasKarma=function(karmaName){
+  function hasKarma(karmaName){
     return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   }
 
-  var decorateMenuWithKarma=function(user) {
+  function decorateMenuWithKarma(user) {
     var username = user.username;
     $.log("decorateMenuWithKarma");
     // we can receive an observable user so take if it's a function or not
@@ -184,7 +184,7 @@ $(function() {
     }
   }
 
-  var hideElementWithKarma=function(){
+  function hideElementWithKarma(){
     $("#topbar-menu-container [redback-permissions]").each(function(element){
       $(this).hide();
     });
@@ -195,7 +195,7 @@ $(function() {
     $.log("hideElementWithKarma");
   }
 
-  var userLoggedCallbackFn=function(user){
+  function userLoggedCallbackFn(user){
     $.log("userLoggedCallbackFn:"+ (user?user.username:null));
 
     if (!user) {
@@ -212,7 +212,7 @@ $(function() {
     }
   }
 
-  var checkSecurityLinks=function(){
+  function checkSecurityLinks(){
     userLogged(userLoggedCallbackFn);
   }
 
