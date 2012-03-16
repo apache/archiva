@@ -19,6 +19,8 @@ package org.apache.archiva.security;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -73,5 +75,11 @@ public class UserRepositoriesStub
     public void setRepoIds( List<String> repoIds )
     {
         this.repoIds = repoIds;
+    }
+
+    public List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
+        throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
+    {
+        return Collections.emptyList();
     }
 }
