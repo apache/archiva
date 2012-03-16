@@ -77,7 +77,7 @@ public class UserRepositoriesStub
         this.repoIds = repoIds;
     }
 
-    public List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
+    public List<ManagedRepository> getAccessibleRepositories( String principal )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
         return Collections.emptyList();

@@ -59,7 +59,7 @@ public abstract class AbstractRestService
     private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
 
     @Inject
-    private UserRepositories userRepositories;
+    protected UserRepositories userRepositories;
 
 
     @Inject

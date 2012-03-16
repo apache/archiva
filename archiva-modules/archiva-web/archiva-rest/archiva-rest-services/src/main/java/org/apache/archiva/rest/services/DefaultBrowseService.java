@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
@@ -350,10 +351,10 @@ public class DefaultBrowseService
         }
     }
 
-    public List<String> getUserRepositories()
+    public List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException
     {
-        return getObservableRepos();
+        return userRepositories.getAccessibleRepositories(  )
     }
 
     //---------------------------

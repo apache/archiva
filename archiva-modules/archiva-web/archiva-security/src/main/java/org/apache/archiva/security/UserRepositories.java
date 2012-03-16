@@ -90,14 +90,13 @@ public interface UserRepositories
     /**
      *
      * @param principal
-     * @param operation
      * @since 1.4-M3
      * @return
      * @throws ArchivaSecurityException
      * @throws AccessDeniedException
      * @throws PrincipalNotFoundException
      */
-    List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
+    List<ManagedRepository> getAccessibleRepositories( String principal )
             throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException;
     
 }

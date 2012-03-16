@@ -92,7 +92,13 @@ public class DefaultUserRepositories
         return repoIds;
     }
 
-    public List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
+    public List<ManagedRepository> getAccessibleRepositories( String principal )
+        throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
+    {
+        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+    }
+
+    private List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
         SecuritySession securitySession = createSession( principal );
