@@ -58,6 +58,10 @@
     <level value="error"/>
   </logger>
 
+  <logger name="org.apache.archiva.web.action.UploadAction">
+    <level value="debug"/>
+  </logger>
+
   <logger name="org.apache.archiva.admin.repository.managed">
     <level value="debug"/>
   </logger>
