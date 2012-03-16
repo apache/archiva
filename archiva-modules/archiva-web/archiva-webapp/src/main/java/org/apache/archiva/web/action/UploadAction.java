@@ -306,12 +306,12 @@ public class UploadAction
 
             String artifactPath = repository.toPath( artifactReference );
 
-            log.debug( "artifactPath:{}", artifactPath );
-
-            int lastIndex = artifactPath.lastIndexOf( File.separatorChar );
+            int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
             File targetPath = new File( repoConfig.getLocation(), path );
+
+            log.debug( "artifactPath: {} found targetPath: {}", artifactPath, targetPath );
 
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = -1;
