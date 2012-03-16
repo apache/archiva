@@ -35,7 +35,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -252,9 +251,8 @@ public class DefaultBrowseService
         }
     }
 
-    public ProjectVersionMetadata getProjectMetadata( @PathParam( "g" ) String groupId,
-                                                      @PathParam( "a" ) String artifactId,
-                                                      @PathParam( "v" ) String version, String repositoryId )
+    public ProjectVersionMetadata getProjectMetadata( String groupId, String artifactId, String version,
+                                                      String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getObservableRepos();
