@@ -80,8 +80,17 @@ $(function() {
     if (browse){
       displayBrowseGroupId(browse);
       return;
-    }else{
-      $.log("no browse");
+    }
+
+    var artifact= $.urlParam("artifact");
+    // format groupId:artifactId org.apache.maven.plugins:maven-jar-plugin
+    //
+    if (artifact){
+      if ( artifact.indexOf(':')>=0){
+        var splitted = artifact.split(':');
+        displayBrowseArtifactDetail(splitted[0],splitted[1],null,null);
+        return;
+      }
     }
 
     var screen = $.urlParam('screen');

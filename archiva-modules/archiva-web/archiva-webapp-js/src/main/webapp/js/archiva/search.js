@@ -311,6 +311,10 @@ $(function() {
     displayGroupDetail(groupId,parentBrowseViewModel,null);
   }
 
+  displayBrowseArtifactDetail=function(groupId, artifactId){
+    displayBrowseGroupId(groupId);
+    displayArtifactDetail(groupId,artifactId,null,null);
+  }
 
   mapbrowseResultEntries=function(data){
     $.log("mapbrowseResultEntries");
