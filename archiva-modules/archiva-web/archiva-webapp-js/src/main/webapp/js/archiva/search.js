@@ -170,18 +170,28 @@ $(function() {
     var mainContent = $("#main-content");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());
-    $.ajax("restServices/archivaServices/browseService/rootGroups", {
+
+    $.ajax("restServices/archivaServices/browseService/userRepositories", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var browseResultEntries = mapbrowseResultEntries(data);
-          $.log("size:"+browseResultEntries.length);
-          var browseViewModel = new BrowseViewModel(browseResultEntries,null,null);
-          ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
-          ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
-          enableAutocompleBrowse();
+          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data}));// selected_repository_tmpl
+          $.ajax("restServices/archivaServices/browseService/rootGroups", {
+              type: "GET",
+              dataType: 'json',
+              success: function(data) {
+                var browseResultEntries = mapbrowseResultEntries(data);
+                $.log("size:"+browseResultEntries.length);
+                var browseViewModel = new BrowseViewModel(browseResultEntries,null,null);
+                ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
+                ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
+                enableAutocompleBrowse();
+              }
+          });
         }
     });
+
+
 
   }
 

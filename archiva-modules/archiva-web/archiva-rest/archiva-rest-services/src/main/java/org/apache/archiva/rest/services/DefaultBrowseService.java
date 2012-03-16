@@ -350,6 +350,12 @@ public class DefaultBrowseService
         }
     }
 
+    public List<String> getUserRepositories()
+        throws ArchivaRestServiceException
+    {
+        return getObservableRepos();
+    }
+
     //---------------------------
     // internals
     //---------------------------

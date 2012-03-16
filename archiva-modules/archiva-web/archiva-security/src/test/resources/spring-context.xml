@@ -37,8 +37,9 @@
   <bean name="userRepositories" class="org.apache.archiva.security.DefaultUserRepositories">
     <property name="securitySystem" ref="securitySystem#testable"/>
     <property name="roleManager" ref="roleManager"/>
-    <property name="archivaConfiguration" ref="archivaConfiguration"/>
   </bean>
+
+
 
   <bean name="authorizer#rbac" class="org.codehaus.plexus.redback.authorization.rbac.RbacAuthorizer">
     <property name="manager" ref="rBACManager#memory"/>
@@ -83,7 +84,9 @@
   </bean>
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
 
-  <bean name="registry#test" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <alias name="commons-configuration" alias="registry#test"/>
+
+  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[
@@ -98,38 +101,16 @@
     </property>
   </bean>
 
-  <!--
-    partially configured
+  <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
+    <property name="properties">
+      <props>
+        <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>
+        <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+        <prop key="org.quartz.threadPool.threadCount">2</prop>
+        <prop key="org.quartz.threadPool.threadPriority">4</prop>
+        <prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
+      </props>
+    </property>
+  </bean>
 
-    <component>
-      <role>org.codehaus.plexus.redback.role.RoleManager</role>
-      <role-hint>default</role-hint>
-      <implementation>org.codehaus.plexus.redback.role.DefaultRoleManager</implementation>
-      <description>RoleProfileManager:</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.role.validator.RoleModelValidator</role>
-          <role-hint>default</role-hint>
-          <field-name>modelValidator</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.role.processor.RoleModelProcessor</role>
-          <role-hint>default</role-hint>
-          <field-name>modelProcessor</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.role.template.RoleTemplateProcessor</role>
-          <role-hint>default</role-hint>
-          <field-name>templateProcessor</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
-          <role-hint>memory</role-hint>
-          <field-name>rbacManager</field-name>
-        </requirement>
-      </requirements>
-    </component>
-
-
-  -->
 </beans>

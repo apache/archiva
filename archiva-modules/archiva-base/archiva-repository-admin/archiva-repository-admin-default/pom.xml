@@ -165,20 +165,17 @@
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>
-      <version>${redback.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <scope>test</scope>
-      <version>${redback.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.codehaus.redback</groupId>
       <artifactId>redback-rbac-cached</artifactId>
-      <version>${redback.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

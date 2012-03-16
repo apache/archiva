@@ -25,6 +25,7 @@
   </div>
   <div id="main_browse_result">
     <div id="main_browse_result_content" class="well">
+      <div id="selected_repository"></div>
       <div id="browse_breadcrumb" data-bind='template:{name:"browse-breadcrumb-tmpl"}'></div>
       <div id="browse_result" class="well" data-bind='template:{name:"browse-groups-tmpl"}'></div>
       <div id="browse_artifact" class="well" data-bind='template:{name:"browse-artifact-tmpl"}'></div>
@@ -376,4 +377,13 @@
             </tr>
         {{/each}}
     </tbody>
+</script>
+
+
+<script id="selected_repository_tmpl" type="text/html">
+  <select id="repository">
+    {{each(i,repository) repositories}}
+    <option value="${repository}">${repository}</option>
+    {{/each}}
+  </select>
 </script>

@@ -20,8 +20,9 @@ package org.apache.archiva.security;
  */
 
 import com.google.common.collect.Lists;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -57,9 +58,9 @@ public class DefaultUserRepositories
     private RoleManager roleManager;
 
     @Inject
-    private ArchivaConfiguration archivaConfiguration;
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    private Logger log = LoggerFactory.getLogger( DefaultUserRepositories.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
@@ -80,34 +81,55 @@ public class DefaultUserRepositories
     private List<String> getAccessibleRepositoryIds( String principal, String operation )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
-        SecuritySession securitySession = createSession( principal );
 
-        List<String> repoIds = new ArrayList<String>();
-
-        List<ManagedRepositoryConfiguration> repos = archivaConfiguration.getConfiguration().getManagedRepositories();
-
-        for ( ManagedRepositoryConfiguration repo : repos )
+        List<ManagedRepository> managedRepositories = getAccessibleRepositories( principal, operation );
+        List<String> repoIds = new ArrayList<String>( managedRepositories.size() );
+        for ( ManagedRepository managedRepository : managedRepositories )
         {
-            try
-            {
-                String repoId = repo.getId();
-                if ( securitySystem.isAuthorized( securitySession, operation, repoId ) )
-                {
-                    repoIds.add( repoId );
-                }
-            }
-            catch ( AuthorizationException e )
-            {
-                // swallow.
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Not authorizing '{}' for repository '{}': {}",
-                               Lists.<Object>newArrayList( principal, repo.getId(), e.getMessage() ) );
-                }
-            }
+            repoIds.add( managedRepository.getId() );
         }
 
         return repoIds;
+    }
+
+    public List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
+        throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
+    {
+        SecuritySession securitySession = createSession( principal );
+
+        List<ManagedRepository> managedRepositories = new ArrayList<ManagedRepository>();
+
+        try
+        {
+            List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+
+            for ( ManagedRepository repo : repos )
+            {
+                try
+                {
+                    String repoId = repo.getId();
+                    if ( securitySystem.isAuthorized( securitySession, operation, repoId ) )
+                    {
+                        managedRepositories.add( repo );
+                    }
+                }
+                catch ( AuthorizationException e )
+                {
+                    // swallow.
+                    if ( log.isDebugEnabled() )
+                    {
+                        log.debug( "Not authorizing '{}' for repository '{}': {}",
+                                   Lists.<Object>newArrayList( principal, repo.getId(), e.getMessage() ) );
+                    }
+                }
+            }
+
+            return managedRepositories;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaSecurityException( e.getMessage(), e );
+        }
     }
 
     private SecuritySession createSession( String principal )
@@ -211,15 +233,5 @@ public class DefaultUserRepositories
     public void setRoleManager( RoleManager roleManager )
     {
         this.roleManager = roleManager;
-    }
-
-    public ArchivaConfiguration getArchivaConfiguration()
-    {
-        return archivaConfiguration;
-    }
-
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
     }
 }

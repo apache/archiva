@@ -19,6 +19,8 @@ package org.apache.archiva.security;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+
 import java.util.List;
 
 /**
@@ -84,5 +86,18 @@ public interface UserRepositories
      */
     boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
         throws AccessDeniedException, ArchivaSecurityException;
+
+    /**
+     *
+     * @param principal
+     * @param operation
+     * @since 1.4-M3
+     * @return
+     * @throws ArchivaSecurityException
+     * @throws AccessDeniedException
+     * @throws PrincipalNotFoundException
+     */
+    List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
+            throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException;
     
 }

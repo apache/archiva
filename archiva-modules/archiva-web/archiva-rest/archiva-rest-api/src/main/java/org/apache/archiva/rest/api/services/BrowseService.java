@@ -28,6 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -63,5 +64,12 @@ public interface BrowseService
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     ProjectVersionMetadata getProjectVersionMetadata( @PathParam( "g" ) String groupId,
                                                       @PathParam( "a" ) String artifactId )
+        throws ArchivaRestServiceException;
+
+    @Path( "userRepositories" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<String> getUserRepositories()
         throws ArchivaRestServiceException;
 }
