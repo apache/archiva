@@ -18,7 +18,7 @@
  */
 require( ["order!jquery" ,"order!redback/redback"],
 function($) {
-  "use strict"
+
 $(function() {
 
   // define a container object with various datas
@@ -37,26 +37,26 @@ $(function() {
    * reccord a cookie for session with the logged user
    * @param user see user.js
    */
-  function reccordLoginCookie(user) {
+  reccordLoginCookie=function(user) {
     $.cookie('redback_login', ko.toJSON(user));
   }
 
-  function getUserFromLoginCookie(){
+  getUserFromLoginCookie=function(){
     return $.parseJSON($.cookie('redback_login'));
   }
 
-  function deleteLoginCookie(){
+  deleteLoginCookie=function(){
     $.cookie('redback_login', null);
   }
 
-  function logout(screenChange){
+  logout=function(doScreenChange){
     deleteLoginCookie();
     $("#login-link").show();
     $("#register-link").show();
     $("#logout-link").hide();
     $("#change-password-link").hide();
     hideElementWithKarma();
-    if (screenChange) screenChange();
+    if (doScreenChange) screenChange();
     $("#main-content").html("");
     $.ajax({
       url: 'restServices/redbackServices/loginService/logout'
@@ -64,7 +64,7 @@ $(function() {
   }
 
   // handle url with registration link
-  function checkUrlParams() {
+  checkUrlParams=function(){
     var validateMeId = $.urlParam('validateMe');
     if (validateMeId) {
       validateKey(validateMeId);
@@ -125,7 +125,7 @@ $(function() {
         return;
       }
       if (screen=="browse"){
-        displayBrowse();
+        displayBrowse(true);
         return;
       }
     }
@@ -134,11 +134,11 @@ $(function() {
     displaySearch();
   }
 
-  function hasKarma(karmaName){
+  hasKarma=function(karmaName){
     return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   }
 
-  function decorateMenuWithKarma(user) {
+  decorateMenuWithKarma=function(user) {
     var username = user.username;
     $.log("decorateMenuWithKarma");
     // we can receive an observable user so take if it's a function or not
@@ -167,7 +167,7 @@ $(function() {
     });
   }
 
-  function checkElementKarma(element){
+  checkElementKarma=function(element){
     var bindingValue = $(element).attr("redback-permissions");
     $(element).hide();
     var neededKarmas = $(eval(bindingValue)).toArray();
@@ -184,7 +184,7 @@ $(function() {
     }
   }
 
-  function hideElementWithKarma(){
+  hideElementWithKarma=function(){
     $("#topbar-menu-container [redback-permissions]").each(function(element){
       $(this).hide();
     });
@@ -195,7 +195,7 @@ $(function() {
     $.log("hideElementWithKarma");
   }
 
-  function userLoggedCallbackFn(user){
+  userLoggedCallbackFn=function(user){
     $.log("userLoggedCallbackFn:"+ (user?user.username:null));
 
     if (!user) {
@@ -212,11 +212,11 @@ $(function() {
     }
   }
 
-  function checkSecurityLinks(){
+  checkSecurityLinks=function(){
     userLogged(userLoggedCallbackFn);
   }
 
-  function checkCreateAdminLink(){
+  checkCreateAdminLink=function(){
     $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
       type: "GET",
       dataType: 'json',
@@ -236,7 +236,7 @@ $(function() {
 
 
 
-  function startArchivaApplication(){
+  startArchivaApplication=function(){
     $.log("startArchivaApplication");
     $('#topbar-menu-container').html($("#topbar-menu"));
     $('#sidebar-content').html($("#main-menu"));
@@ -290,11 +290,7 @@ $(function() {
 						};;
   }
 
-
-
   startArchivaApplication();
-
-
 
 })
 });

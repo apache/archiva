@@ -53,7 +53,7 @@ public class DefaultBrowseService
     implements BrowseService
 {
 
-    public BrowseResult getRootGroups()
+    public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getObservableRepos();
@@ -61,6 +61,17 @@ public class DefaultBrowseService
         {
             // FIXME 403 ???
             return new BrowseResult();
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
         }
 
         Set<String> namespaces = new LinkedHashSet<String>();
@@ -74,6 +85,7 @@ public class DefaultBrowseService
         {
             MetadataResolver metadataResolver = repositorySession.getResolver();
             namespacesToCollapse = new LinkedHashSet<String>();
+
             for ( String repoId : selectedRepos )
             {
                 namespacesToCollapse.addAll( metadataResolver.resolveRootNamespaces( repositorySession, repoId ) );
@@ -104,7 +116,7 @@ public class DefaultBrowseService
         return new BrowseResult( browseGroupResultEntries );
     }
 
-    public BrowseResult browseGroupId( String groupId )
+    public BrowseResult browseGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
 
@@ -113,6 +125,17 @@ public class DefaultBrowseService
         {
             // FIXME 403 ???
             return new BrowseResult();
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
         }
 
         Set<String> projects = new LinkedHashSet<String>();

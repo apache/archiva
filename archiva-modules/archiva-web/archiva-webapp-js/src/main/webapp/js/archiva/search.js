@@ -165,18 +165,21 @@ $(function() {
   /**
    * call from menu entry to display root level
    */
-  displayBrowse=function(){
+  displayBrowse=function(freshView){
     screenChange()
     var mainContent = $("#main-content");
-    mainContent.html($("#browse-tmpl" ).tmpl());
+    if(freshView){
+      mainContent.html($("#browse-tmpl" ).tmpl());
+    }
     mainContent.find("#browse_result").html(mediumSpinnerImg());
 
     $.ajax("restServices/archivaServices/browseService/userRepositories", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data}));// selected_repository_tmpl
-          $.ajax("restServices/archivaServices/browseService/rootGroups", {
+          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data}));
+          var url="restServices/archivaServices/browseService/rootGroups"
+          $.ajax(url, {
               type: "GET",
               dataType: 'json',
               success: function(data) {
@@ -191,8 +194,22 @@ $(function() {
         }
     });
 
+  }
 
+  changeBrowseRepository=function(){
+    var selectedRepository=getSelectedBrowsingRepository();
+    //displayBrowse(false,selectedRepository);
+    displayGroupDetail(null,null,"restServices/archivaServices/browseService/rootGroups?repositoryId="+encodeURIComponent(selectedRepository));
+  }
 
+  getSelectedBrowsingRepository=function(){
+    var selectedOption=$("#main-content #select_browse_repository option:selected" );
+    if (selectedOption.length>0){
+      var repoId=selectedOption.val();
+      $.log("getSelectedBrowsingRepository:"+repoId);
+      return repoId;
+    }
+    $.log("getSelectedBrowsingRepository:none");
   }
 
   enableAutocompleBrowse=function(groupId){
@@ -301,7 +318,6 @@ $(function() {
   displayBrowseGroupIdFromAutoComplete=function(groupId){
     clearUserMessages();
     var mainContent = $("#main-content");
-    //mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result").html(mediumSpinnerImg());
     var parentBrowseViewModel=new BrowseViewModel(null,null,null);
     displayGroupDetail(groupId,parentBrowseViewModel,null);
