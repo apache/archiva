@@ -18,7 +18,7 @@
  */
 require( ["order!jquery" ,"order!redback/redback"],
 function($) {
-
+  "use strict"
 $(function() {
 
   // define a container object with various datas
@@ -37,19 +37,19 @@ $(function() {
    * reccord a cookie for session with the logged user
    * @param user see user.js
    */
-  reccordLoginCookie=function(user) {
+  var reccordLoginCookie=function(user) {
     $.cookie('redback_login', ko.toJSON(user));
   }
 
-  getUserFromLoginCookie=function(){
+  var getUserFromLoginCookie=function(){
     return $.parseJSON($.cookie('redback_login'));
   }
 
-  deleteLoginCookie=function(){
+  var deleteLoginCookie=function(){
     $.cookie('redback_login', null);
   }
 
-  logout=function(screenChange){
+  var logout=function(screenChange){
     deleteLoginCookie();
     $("#login-link").show();
     $("#register-link").show();
@@ -124,17 +124,21 @@ $(function() {
         displayRepositoriesGrid();
         return;
       }
+      if (screen=="browse"){
+        displayBrowse();
+        return;
+      }
     }
 
     // by default display search screen
     displaySearch();
   }
 
-  hasKarma=function(karmaName){
+  var hasKarma=function(karmaName){
     return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   }
 
-  decorateMenuWithKarma=function(user) {
+  var decorateMenuWithKarma=function(user) {
     var username = user.username;
     $.log("decorateMenuWithKarma");
     // we can receive an observable user so take if it's a function or not
@@ -163,7 +167,7 @@ $(function() {
     });
   }
 
-  checkElementKarma=function(element){
+  function checkElementKarma(element){
     var bindingValue = $(element).attr("redback-permissions");
     $(element).hide();
     var neededKarmas = $(eval(bindingValue)).toArray();
@@ -180,7 +184,7 @@ $(function() {
     }
   }
 
-  hideElementWithKarma=function(){
+  var hideElementWithKarma=function(){
     $("#topbar-menu-container [redback-permissions]").each(function(element){
       $(this).hide();
     });
@@ -191,7 +195,7 @@ $(function() {
     $.log("hideElementWithKarma");
   }
 
-  userLoggedCallbackFn=function(user){
+  var userLoggedCallbackFn=function(user){
     $.log("userLoggedCallbackFn:"+ (user?user.username:null));
 
     if (!user) {
@@ -208,11 +212,11 @@ $(function() {
     }
   }
 
-  checkSecurityLinks=function(){
+  var checkSecurityLinks=function(){
     userLogged(userLoggedCallbackFn);
   }
 
-  checkCreateAdminLink=function(){
+  function checkCreateAdminLink(){
     $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
       type: "GET",
       dataType: 'json',
@@ -232,7 +236,7 @@ $(function() {
 
 
 
-  startArchivaApplication = function(){
+  function startArchivaApplication(){
     $.log("startArchivaApplication");
     $('#topbar-menu-container').html($("#topbar-menu"));
     $('#sidebar-content').html($("#main-menu"));
