@@ -189,7 +189,7 @@ public class DefaultBrowseService
 
     }
 
-    public VersionsList getVersionsList( String groupId, String artifactId )
+    public VersionsList getVersionsList( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getObservableRepos();
@@ -197,6 +197,17 @@ public class DefaultBrowseService
         {
             // FIXME 403 ???
             return new VersionsList();
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
         }
 
         try
@@ -240,7 +251,7 @@ public class DefaultBrowseService
         }
     }
 
-    public ProjectVersionMetadata getProjectVersionMetadata( String groupId, String artifactId )
+    public ProjectVersionMetadata getProjectVersionMetadata( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
 
@@ -250,6 +261,17 @@ public class DefaultBrowseService
         {
             // FIXME 403 ???
             return null;
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
         }
 
         RepositorySession repositorySession = null;

@@ -58,7 +58,8 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    VersionsList getVersionsList( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId )
+    VersionsList getVersionsList( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                                  @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "projectVersionMetadata/{g}/{a}" )
@@ -66,7 +67,8 @@ public interface BrowseService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     ProjectVersionMetadata getProjectVersionMetadata( @PathParam( "g" ) String groupId,
-                                                      @PathParam( "a" ) String artifactId )
+                                                      @PathParam( "a" ) String artifactId,
+                                                      @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "userRepositories" )

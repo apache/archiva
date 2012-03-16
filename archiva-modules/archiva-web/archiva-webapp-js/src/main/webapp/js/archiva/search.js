@@ -148,12 +148,19 @@ $(function() {
       mainContent.find("#browse_artifact").show();
       mainContent.find("#browse_artifact").html(mediumSpinnerImg());
       mainContent.find("#main_browse_result_content").show();
-      $.ajax("restServices/archivaServices/browseService/projectVersionMetadata/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId), {
+      var metadataUrl="restServices/archivaServices/browseService/projectVersionMetadata/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
+      var versionsListUrl="restServices/archivaServices/browseService/versionsList/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
+      var selectedRepo=getSelectedBrowsingRepository();
+      if (selectedRepo){
+        metadataUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+        versionsListUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+      }
+      $.ajax(metadataUrl, {
         type: "GET",
         dataType: 'json',
         success: function(data) {
           artifactDetailViewModel.projectVersionMetadata=mapProjectVersionMetadata(data);
-          $.ajax("restServices/archivaServices/browseService/versionsList/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId), {
+          $.ajax(versionsListUrl, {
             type: "GET",
             dataType: 'json',
             success: function(data) {
