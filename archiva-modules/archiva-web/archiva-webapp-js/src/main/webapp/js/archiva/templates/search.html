@@ -114,6 +114,12 @@
               <th>${$.i18n.prop('browse.artifact.description')}</th>
               <td>${projectVersionMetadata.description}</td>
             </tr>
+            {{if projectVersionMetadata.mavenFacet}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.packaging')}</th>
+              <td>${projectVersionMetadata.mavenFacet.packaging}</td>
+            </tr>
+            {{/if}}
             {{if projectVersionMetadata.organization}}
             <tr>
               <th>${$.i18n.prop('browse.artifact.organization.name')}</th>

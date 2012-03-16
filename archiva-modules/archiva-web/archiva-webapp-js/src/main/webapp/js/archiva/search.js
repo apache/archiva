@@ -444,10 +444,27 @@ $(function() {
           }):[data.dependencies];
         projectVersionMetadata.dependencies=dependencies;
       }
-      $.log("projectVersionMetadata.issueManagement.system:"+(projectVersionMetadata.issueManagement?projectVersionMetadata.issueManagement.system:"null"));
+      // maven facet currently only for packaging
+      if(data.facetList){
+        if( $.isArray(data.facetList)){
+          for (var i=0;i<data.facetList.length;i++){
+            if(data.facetList[i].facetId=='org.apache.archiva.metadata.repository.storage.maven2.project'){
+              projectVersionMetadata.mavenFacet=new MavenFacet(data.facetList[i].packaging);
+            }
+          }
+        } else {
+          if(data.facetList.facetId=='org.apache.archiva.metadata.repository.storage.maven2.project'){
+            projectVersionMetadata.mavenFacet=new MavenFacet(data.facetList.packaging);
+          }
+        }
+      }
       return projectVersionMetadata;
     }
     return null;
+  }
+
+  MavenFacet=function(packaging){
+    this.packaging=packaging;
   }
 
   ProjectVersionMetadata=function(id,url,name,description,organization,issueManagement,scm,ciManagement,licenses,
@@ -487,6 +504,8 @@ $(function() {
 
     //private boolean incomplete;
     this.incomplete=incomplete;
+
+    this.mavenFacet=null;
 
   }
 
