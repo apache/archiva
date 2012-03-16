@@ -30,6 +30,7 @@ import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
+import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -354,7 +355,15 @@ public class DefaultBrowseService
     public List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException
     {
-        return userRepositories.getAccessibleRepositories(  )
+        try
+        {
+            return userRepositories.getAccessibleRepositories( getPrincipal() );
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            throw new ArchivaRestServiceException( "repositories.read.observable.error",
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
     }
 
     //---------------------------

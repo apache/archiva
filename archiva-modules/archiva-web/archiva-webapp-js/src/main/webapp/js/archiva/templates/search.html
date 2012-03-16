@@ -383,7 +383,7 @@
 <script id="selected_repository_tmpl" type="text/html">
   <select id="repository">
     {{each(i,repository) repositories}}
-    <option value="${repository}">${repository}</option>
+    <option value="${repository.id}">${repository.name}</option>
     {{/each}}
   </select>
 </script>
