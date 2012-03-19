@@ -75,6 +75,7 @@ $(function() {
     for (var i=0;i<splitted.length;i++){
       curGroupId+=splitted[i];
       breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
+      $.log("calculateBreadCrumbEntries:"+curGroupId+":"+splitted[i]);
       curGroupId+="."
     }
     return breadCrumbEntries;
@@ -138,19 +139,24 @@ $(function() {
     }
 
     displayArtifactVersionDetail=function(version){
-      var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(self.groupId,self.artifactId,version,self);
+      var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(self.groupId,self.artifactId,version,getSelectedBrowsingRepository());
       artifactVersionDetailViewModel.display();
     }
 
   }
 
-  ArtifactVersionDetailViewModel=function(groupId,artifactId,version,artifactDetailViewModel){
+  ArtifactVersionDetailViewModel=function(groupId,artifactId,version){
     var mainContent = $("#main-content");
     var self=this;
     this.groupId=groupId;
     this.artifactId=artifactId;
     this.version=version;
     this.projectVersionMetadata=null;
+
+    displayGroupId=function(groupId){
+      displayGroupDetail(groupId,null);
+    }
+
     breadCrumbEntries=function(){
       var entries = calculateBreadCrumbEntries(self.groupId);
       var artifactBreadCrumbEntry = new BreadCrumbEntry(self.groupId,self.artifactId);

@@ -397,7 +397,11 @@
   <select id="select_browse_repository" onchange="changeBrowseRepository()">
     <option value="">All</option>
     {{each(i,repository) repositories}}
-    <option value="${repository.id}">${repository.name}</option>
+      {{if selected && selected==repository.id}}
+        <option value="${repository.id}" selected>${repository.name}</option>
+      {{else}}
+        <option value="${repository.id}">${repository.name}</option>
+      {{/if}}
     {{/each}}
   </select>
 </script>

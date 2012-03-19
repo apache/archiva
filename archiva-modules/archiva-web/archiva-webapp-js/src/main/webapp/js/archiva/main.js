@@ -83,15 +83,42 @@ $(function() {
     }
 
     var artifact= $.urlParam("artifact");
+    var repositoryId = $.urlParam("repositoryId");
     // format groupId:artifactId org.apache.maven.plugins:maven-jar-plugin
-    //
+    // or  groupId:artifactId:version org.apache.maven.plugins:maven-jar-plugin:2.3.1
+    // repository in param repositoryId
     if (artifact){
       if ( artifact.indexOf(':')>=0){
         var splitted = artifact.split(':');
-        displayBrowseArtifactDetail(splitted[0],splitted[1],null,null);
-        return;
+        $.log("splitted.length:"+splitted.length);
+        if(splitted.length==2){
+          displayBrowseArtifactDetail(splitted[0],splitted[1],null,null);
+          return;
+        } else if (splitted.length==3) {
+          var mainContent=$("#main-content");
+          mainContent.html($("#browse-tmpl" ).tmpl());
+          mainContent.find("#browse_result" ).hide();
+          mainContent.find("#browse_artifact_detail").show();
+          mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
+          mainContent.find("#browse_breadcrumb" ).show();
+          mainContent.find("#browse_breadcrumb" ).html(mediumSpinnerImg());
+          $.ajax("restServices/archivaServices/browseService/userRepositories", {
+              type: "GET",
+              dataType: 'json',
+              success: function(data) {
+                mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
+                var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(splitted[0],splitted[1],splitted[2]);
+                artifactVersionDetailViewModel.display(true);
+              }
+          });
+
+          return;
+        } else {
+          displayWarningMessage( $.i18n.prop("shortcut.artifact.illegal"));
+        }
       }
     }
+
 
     var screen = $.urlParam('screen');
 
