@@ -145,6 +145,11 @@ $(function() {
 
   }
 
+  displayArtifactVersionDetailViewModel=function(groupId,artifactId,version){
+    var artifactVersionDetailViewModel = new ArtifactVersionDetailViewModel (groupId,artifactId,version)
+    artifactVersionDetailViewModel.display();
+  }
+
   ArtifactVersionDetailViewModel=function(groupId,artifactId,version){
     var mainContent = $("#main-content");
     var self=this;
@@ -153,8 +158,14 @@ $(function() {
     this.version=version;
     this.projectVersionMetadata=null;
 
+
     displayGroupId=function(groupId){
       displayGroupDetail(groupId,null);
+    }
+
+    displayParent=function(){
+      displayArtifactVersionDetailViewModel(self.projectVersionMetadata.mavenFacet.parent.groupId,self.projectVersionMetadata.mavenFacet.parent.artifactId,
+                                            self.projectVersionMetadata.mavenFacet.parent.version);
     }
 
     breadCrumbEntries=function(){
@@ -514,12 +525,12 @@ $(function() {
         if( $.isArray(data.facetList)){
           for (var i=0;i<data.facetList.length;i++){
             if(data.facetList[i].facetId=='org.apache.archiva.metadata.repository.storage.maven2.project'){
-              projectVersionMetadata.mavenFacet=new MavenFacet(data.facetList[i].packaging);
+              projectVersionMetadata.mavenFacet=new MavenFacet(data.facetList[i].packaging,data.facetList[i].parent);
             }
           }
         } else {
           if(data.facetList.facetId=='org.apache.archiva.metadata.repository.storage.maven2.project'){
-            projectVersionMetadata.mavenFacet=new MavenFacet(data.facetList.packaging);
+            projectVersionMetadata.mavenFacet=new MavenFacet(data.facetList.packaging,data.facetList.parent);
           }
         }
       }
@@ -528,8 +539,12 @@ $(function() {
     return null;
   }
 
-  MavenFacet=function(packaging){
+  MavenFacet=function(packaging,parent){
     this.packaging=packaging;
+    if(parent){
+      this.parent={groupId:parent.groupId,artifactId:parent.artifactId,version:parent.version};
+    }
+
   }
 
   ProjectVersionMetadata=function(id,url,name,description,organization,issueManagement,scm,ciManagement,licenses,
