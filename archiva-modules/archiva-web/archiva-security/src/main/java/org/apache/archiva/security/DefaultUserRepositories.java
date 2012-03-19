@@ -205,7 +205,7 @@ public class DefaultUserRepositories
     }
 
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
-        throws AccessDeniedException, ArchivaSecurityException
+        throws ArchivaSecurityException
     {
         try
         {

@@ -121,5 +121,11 @@ public interface RepositoriesService
     Boolean deleteArtifact( @QueryParam( "" ) Artifact artifact, @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
+    @Path( "isAuthorizedToDeleteArtifacts/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true)
+    Boolean isAuthorizedToDeleteArtifacts( @PathParam( "repositoryId" ) String repoId )
+        throws ArchivaRestServiceException;
 
 }

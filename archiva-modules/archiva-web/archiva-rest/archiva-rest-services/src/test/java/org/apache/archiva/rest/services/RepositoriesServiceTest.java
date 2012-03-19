@@ -152,12 +152,52 @@ public class RepositoriesServiceTest
         }
     }
 
+    @Test
+    public void authorizedToDeleteArtifacts()
+        throws Exception
+    {
+        ManagedRepository managedRepository = getTestManagedRepository( "SOURCE_REPO_ID", "SOURCE_REPO_ID" );
+        try
+        {
+            getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+            assertTrue( repositoriesService.isAuthorizedToDeleteArtifacts( managedRepository.getId() ) );
+        }
+        finally
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( managedRepository.getId(),
+                                                                                          true );
+        }
+    }
+
+    @Test
+    public void notAuthorizedToDeleteArtifacts()
+        throws Exception
+    {
+        ManagedRepository managedRepository = getTestManagedRepository( "SOURCE_REPO_ID", "SOURCE_REPO_ID" );
+        try
+        {
+            getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
+            RepositoriesService repositoriesService = getRepositoriesService( guestAuthzHeader );
+            assertFalse( repositoriesService.isAuthorizedToDeleteArtifacts( managedRepository.getId() ) );
+        }
+        finally
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( managedRepository.getId(),
+                                                                                          true );
+        }
+    }
+
+    protected ManagedRepository getTestManagedRepository( String id, String path )
+    {
+        String location = new File( FileUtil.getBasedir(), "target/" + path ).getAbsolutePath();
+        return new ManagedRepository( id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
+                                      true, false );
+    }
 
     protected ManagedRepository getTestManagedRepository()
     {
-        String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
-        return new ManagedRepository( "TEST", "test", location, "default", true, true, true, "2 * * * * ?", null, false,
-                                      80, 80, true, false );
+        return getTestManagedRepository( "TEST", "test-repo" );
     }
 
 }

@@ -65,6 +65,7 @@ import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
@@ -85,6 +86,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -624,13 +626,17 @@ public class DefaultRepositoriesService
     public Boolean deleteArtifact( Artifact artifact, String repositoryId )
         throws ArchivaRestServiceException
     {
-        String userName = (String) getAuditInformation().getUser().getUsername();
-        if ( StringUtils.isBlank( userName ) )
-        {
-            // TODO use constants from a class instead of magic number
-            throw new ArchivaRestServiceException( "deleteArtifact call: userName not found", 403 );
 
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400 );
         }
+
+        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403 );
+        }
+
         if ( artifact == null )
         {
             throw new ArchivaRestServiceException( "artifact cannot be null", 400 );
@@ -644,11 +650,6 @@ public class DefaultRepositoriesService
         if ( StringUtils.isEmpty( artifact.getArtifactId() ) )
         {
             throw new ArchivaRestServiceException( "artifact.artifactId cannot be null", 400 );
-        }
-
-        if ( StringUtils.isEmpty( repositoryId ) )
-        {
-            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400 );
         }
 
         // TODO more control on artifact fields
@@ -769,6 +770,24 @@ public class DefaultRepositoriesService
             repositorySession.close();
         }
         return Boolean.TRUE;
+    }
+
+    public Boolean isAuthorizedToDeleteArtifacts( String repoId )
+        throws ArchivaRestServiceException
+    {
+        String userName =
+            getAuditInformation().getUser() == null ? "guest" : getAuditInformation().getUser().getUsername();
+
+        try
+        {
+            boolean res = userRepositories.isAuthorizedToDeleteArtifacts( userName, repoId );
+            return res;
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
     }
 
     public RepositoryScanStatistics scanRepositoryDirectoriesNow( String repositoryId )
