@@ -129,7 +129,6 @@ $(function() {
         return;
       }
     }
-
     // by default display search screen
     displaySearch();
   }
@@ -289,7 +288,6 @@ $(function() {
 								.appendTo( ul );
 						};;
   }
-
   startArchivaApplication();
 
 })

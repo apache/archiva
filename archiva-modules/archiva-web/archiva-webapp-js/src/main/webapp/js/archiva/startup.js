@@ -53,6 +53,7 @@ $(function() {
   });
 
   loadJs=function(){
+
     $.ajax(
       {
         url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),

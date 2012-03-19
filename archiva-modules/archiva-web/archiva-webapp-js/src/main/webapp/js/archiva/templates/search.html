@@ -155,7 +155,9 @@
       <div class="alert alert-success">
         <table class="table table-condensed">
         {{each(i,version) versions}}
-          <tr><th>${version}</th></tr>
+          <tr>
+            <th><a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
+          </tr>
         {{/each}}
         </table>
       </div>

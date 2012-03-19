@@ -134,9 +134,12 @@ $(function() {
       } else {
         $("#main-content #artifact-info" ).show();
       }
-
-
     }
+
+    displayArtifactVersionDetail=function(version){
+      $.log("displayArtifactVersionDetail:"+groupId+":"+artifactId+":"+version);
+    }
+
   }
 
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
@@ -931,5 +934,7 @@ $(function() {
     });
 
   }
+
+
 
 });
