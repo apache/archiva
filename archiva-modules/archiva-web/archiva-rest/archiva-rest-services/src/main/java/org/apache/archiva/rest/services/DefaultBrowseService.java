@@ -436,27 +436,27 @@ public class DefaultBrowseService
                         && !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
                                                           versionMetadata.getIssueManagement().getUrl() ) )
                     {
-                        sharedModel.setIssueManagement( null );
+                        sharedModel.setIssueManagement( versionMetadata.getIssueManagement() );
                     }
 
                     if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null
                         && !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
                                                           versionMetadata.getCiManagement().getUrl() ) )
                     {
-                        sharedModel.setCiManagement( null );
+                        sharedModel.setCiManagement( versionMetadata.getCiManagement() );
                     }
 
                     if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null
                         && !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
                                                           versionMetadata.getOrganization().getName() ) )
                     {
-                        sharedModel.setOrganization( null );
+                        sharedModel.setOrganization( versionMetadata.getOrganization() );
                     }
 
                     if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(),
                                                                                         versionMetadata.getUrl() ) )
                     {
-                        sharedModel.setUrl( null );
+                        sharedModel.setUrl( versionMetadata.getUrl() );
                     }
                 }
 
