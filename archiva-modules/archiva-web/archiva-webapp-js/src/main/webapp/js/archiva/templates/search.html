@@ -29,6 +29,7 @@
       <div id="browse_breadcrumb" data-bind='template:{name:"browse-breadcrumb-tmpl"}'></div>
       <div id="browse_result" class="well" data-bind='template:{name:"browse-groups-tmpl"}'></div>
       <div id="browse_artifact" class="well" data-bind='template:{name:"browse-artifact-tmpl"}'></div>
+      <div id="browse_artifact_detail" class="well" data-bind='template:{name:"browse-artifact-detail-tmpl"}'></div>
     </div>
   </div>
 </script>
@@ -395,4 +396,72 @@
     <option value="${repository.id}">${repository.name}</option>
     {{/each}}
   </select>
+</script>
+
+<script id="browse-artifact-detail-tmpl" type="text/html">
+    <ul id="artifact-details-tabs" class="nav nav-tabs">
+      <li class="active">
+        <a data-toggle="tab" href="#artifact-details-info-content">${$.i18n.prop('artifact.detail.tab.header.info')}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#artifact-details-dependencies-content">${$.i18n.prop('artifact.detail.tab.header.dependencies')}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#artifact-details-dependency-tree-content">${$.i18n.prop('artifact.detail.tab.header.dependency.tree')}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#artifact-details-used-by-content">${$.i18n.prop('artifact.detail.tab.header.used.by')}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#artifact-details-mailing-list-content">${$.i18n.prop('artifact.detail.tab.header.mailing.list')}</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#artifact-details-metadatas-content">${$.i18n.prop('artifact.detail.tab.header.metadatas')}</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+  	  <div id="artifact-details-info-content" class="tab-pane active">
+        <blockquote>${projectVersionMetadata.description}</blockquote>
+        <div class="row span4">
+        <table class="table">
+          <tbody>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.groupId')}</th>
+              <td>${groupId}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
+              <td>${artifactId}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.version')}</th>
+              <td>${version}</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+  	  </div>
+
+
+  	  <div id="artifact-details-dependencies-content" class="tab-pane">
+        dependencies
+  	  </div>
+
+      <div id="artifact-details-dependency-tree-content" class="tab-pane">
+        dependency tree
+      </div>
+
+      <div id="artifact-details-used-by-content" class="tab-pane">
+        used by
+      </div>
+
+      <div id="artifact-details-mailing-list-content" class="tab-pane">
+        mailing list
+      </div>
+
+      <div id="artifact-details-metadatas-content" class="tab-pane">
+        metadatas
+      </div>
+
+    </div>
 </script>

@@ -124,6 +124,7 @@ $(function() {
         displayRepositoriesGrid();
         return;
       }
+
       if (screen=="browse"){
         displayBrowse(true);
         return;
