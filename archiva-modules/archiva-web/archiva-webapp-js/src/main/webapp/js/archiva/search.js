@@ -162,19 +162,25 @@ $(function() {
         if (selectedRepo){
           metadataUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
         }
-        if (self.artifactDetailViewModel && self.artifactDetailViewModel.projectVersionMetadata){
-          self.projectVersionMetadata=self.artifactDetailViewModel.projectVersionMetadata;
-          ko.applyBindings(self,mainContent.find("#browse_artifact_detail" ).get(0));
-        } else {
-          $.ajax(metadataUrl, {
-            type: "GET",
-            dataType: 'json',
-            success: function(data) {
-              self.projectVersionMetadata=mapProjectVersionMetadata(data);
-              ko.applyBindings(self,mainContent.find("#browse_artifact_detail" ).get(0));
-            }
-          });
-        }
+
+        $.ajax(metadataUrl, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+            self.projectVersionMetadata=mapProjectVersionMetadata(data);
+            ko.applyBindings(self,mainContent.find("#browse_artifact_detail" ).get(0));
+            mainContent.find("#artifact-details-tabs").on('show', function (e) {
+              if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
+                $.log("#artifact-details-dependency-tree-content");
+              }
+              if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
+                $.log("#artifact-details-used-by-content");
+              }
+
+            });
+          }
+        });
+
       });
     }
   }
