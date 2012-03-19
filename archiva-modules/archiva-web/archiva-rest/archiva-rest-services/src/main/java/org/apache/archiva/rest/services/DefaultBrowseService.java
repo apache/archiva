@@ -418,10 +418,10 @@ public class DefaultBrowseService
                         }
                     }
 
-                    if ( sharedModel.getName() != null && !StringUtils.equalsIgnoreCase( sharedModel.getName(),
-                                                                                         versionMetadata.getName() ) )
+                    if ( StringUtils.isEmpty( sharedModel.getName() ) && !StringUtils.isEmpty(
+                        versionMetadata.getName() ) )
                     {
-                        sharedModel.setName( "" );
+                        sharedModel.setName( versionMetadata.getName() );
                     }
 
                     if ( sharedModel.getDescription() != null && !StringUtils.equalsIgnoreCase(
