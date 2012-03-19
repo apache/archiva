@@ -73,7 +73,11 @@
         {{if i==(number-1)}}
           ${breadCrumbEntry.displayValue}
         {{else}}
-          <a href="#" data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
+          {{if breadCrumbEntry.artifact}}
+            <a href="#" data-bind="click: function(){displayArtifactDetail(breadCrumbEntry.groupId,breadCrumbEntry.artifactId,null,null)}">${breadCrumbEntry.displayValue}</a>
+          {{else}}
+            <a href="#" data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
+          {{/if}}
         {{/if}}
         {{if i<(number-1)}}
           <span class="divider">/</span>
@@ -82,7 +86,7 @@
     {{/each}}
     <li>
       {{if number>0}}
-        <span class="divider">/</span>
+        <span class="divider" id="browse-autocomplete-divider">/</span>
       {{/if}}
       <input type="text" class="form-search span4" size="50" id="browse-autocomplete"/>
     </li>

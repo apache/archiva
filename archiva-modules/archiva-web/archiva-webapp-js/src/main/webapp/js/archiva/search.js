@@ -150,37 +150,51 @@ $(function() {
     this.groupId=groupId;
     this.artifactId=artifactId;
     this.version=version;
-    this.artifactDetailViewModel=artifactDetailViewModel;
     this.projectVersionMetadata=null;
+    breadCrumbEntries=function(){
+      var entries = calculateBreadCrumbEntries(self.groupId);
+      var artifactBreadCrumbEntry = new BreadCrumbEntry(self.groupId,self.artifactId);
+      artifactBreadCrumbEntry.artifactId=self.artifactId;
+      artifactBreadCrumbEntry.artifact=true;
+      entries.push(artifactBreadCrumbEntry);
+      entries.push(new BreadCrumbEntry("foo",self.version));
+      return entries;
+    }
     this.display=function(){
-      $.log("displayArtifactVersionDetail:"+self.groupId+":"+self.artifactId+":"+self.version);
-      mainContent.find("#browse_artifact").hide("slide", {}, 300,function(){
-        mainContent.find("#browse_artifact_detail").show();
-        mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
-        var metadataUrl="restServices/archivaServices/browseService/projectVersionMetadata/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
-        var selectedRepo=getSelectedBrowsingRepository();
-        if (selectedRepo){
-          metadataUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
-        }
-
-        $.ajax(metadataUrl, {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            self.projectVersionMetadata=mapProjectVersionMetadata(data);
-            ko.applyBindings(self,mainContent.find("#browse_artifact_detail" ).get(0));
-            mainContent.find("#artifact-details-tabs").on('show', function (e) {
-              if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
-                $.log("#artifact-details-dependency-tree-content");
-              }
-              if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
-                $.log("#artifact-details-used-by-content");
-              }
-
-            });
+      mainContent.find("#browse_breadcrumb").hide("slide", {}, 300,function(){
+        mainContent.find("#browse_artifact").hide("slide", {}, 300,function(){
+          mainContent.find("#browse_artifact_detail").show();
+          mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
+          mainContent.find("#browse_breadcrumb" ).show();
+          mainContent.find("#browse_breadcrumb" ).html(mediumSpinnerImg());
+          var metadataUrl="restServices/archivaServices/browseService/projectVersionMetadata/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
+          var selectedRepo=getSelectedBrowsingRepository();
+          if (selectedRepo){
+            metadataUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
           }
-        });
 
+          $.ajax(metadataUrl, {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              self.projectVersionMetadata=mapProjectVersionMetadata(data);
+              ko.applyBindings(self,mainContent.find("#browse_artifact_detail" ).get(0));
+              ko.applyBindings(self,mainContent.find("#browse_breadcrumb" ).get(0));
+              mainContent.find("#browse-autocomplete" ).hide();
+              mainContent.find("#browse-autocomplete-divider" ).hide();
+              mainContent.find("#artifact-details-tabs").on('show', function (e) {
+                if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
+                  $.log("#artifact-details-dependency-tree-content");
+                }
+                if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
+                  $.log("#artifact-details-used-by-content");
+                }
+
+              });
+            }
+          });
+
+        });
       });
     }
   }
