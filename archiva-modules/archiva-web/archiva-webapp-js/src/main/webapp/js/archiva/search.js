@@ -273,7 +273,7 @@ $(function() {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data}));
+          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:""}));
           var url="restServices/archivaServices/browseService/rootGroups"
           $.ajax(url, {
               type: "GET",
@@ -314,7 +314,7 @@ $(function() {
     }
     var selectedRepo=getSelectedBrowsingRepository();
     if (selectedRepo){
-      url+="?repositoryId="+selectedRepo;
+      url+="?repositoryId="+encodeURIComponent(selectedRepo);
     }
     $( "#main-content #browse-autocomplete" ).autocomplete({
       minLength: 2,
@@ -362,7 +362,7 @@ $(function() {
         var browseUrl="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(query);
         var selectedRepo=getSelectedBrowsingRepository();
         if (selectedRepo){
-          browseUrl+="?repositoryId="+selectedRepo;
+          browseUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
         }
         $.get(browseUrl,
            function(data) {

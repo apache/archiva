@@ -430,7 +430,7 @@
     <div class="tab-content">
   	  <div id="artifact-details-info-content" class="tab-pane active">
         <blockquote>${projectVersionMetadata.description}</blockquote>
-        <div class="row span4">
+        <div class="row span6">
         <table class="table">
           <tbody>
             <tr>
@@ -456,13 +456,16 @@
                 <a href="#" data-bind="click: displayParent">
                   ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
                 </a>
-
               </td>
             </tr>
             {{/if}}
           </tbody>
         </table>
         </div>
+        <div class="row span5">
+          <h4>${$.i18n.prop('browse.artifact.pom.snippet')}</h4>
+            <pre class="prettyprint">&lt;dependency&gt;<br/>&nbsp;&nbsp;&lt;groupId&gt;${groupId}&lt;/groupId&gt;<br/>&nbsp;&nbsp;&lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;<br/>&nbsp;&nbsp;&lt;version&gt;${version}&lt;/version&gt;<br/>&lt;/dependency&gt;</pre>
+          </div>
   	  </div>
 
 
