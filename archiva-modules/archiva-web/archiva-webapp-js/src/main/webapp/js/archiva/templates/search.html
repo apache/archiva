@@ -570,7 +570,18 @@
 
 
   	  <div id="artifact-details-dependencies-content" class="tab-pane">
-        dependencies
+        <table class="table">
+          <tbody>
+        {{each(i,dependency) projectVersionMetadata.dependencies}}
+          <tr>
+            <th>${dependency.artifactId}</th>
+          </tr>
+          <tr>
+            <td>${dependency.groupId},${dependency.artifactId},${dependency.version}</td>
+          </tr>
+        {{/each}}
+          </tbody>
+        </table>
   	  </div>
 
       <div id="artifact-details-dependency-tree-content" class="tab-pane">
