@@ -156,6 +156,10 @@ $(function() {
         displayBrowse(true);
         return;
       }
+      if (screen=='appearance-configuration'&& hasKarma('archiva-manage-configuration')){
+        displayAppearanceConfiguration();
+        return
+      }
     }
     // by default display search screen
     displaySearch();
@@ -261,6 +265,39 @@ $(function() {
     });
   }
 
+    //------------------------------------//
+    // Change UI with appearance settings //
+    //------------------------------------//
+    updateAppearanceToolBar=function() {
+        $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+                if(data.url){
+                  var url = data.url.startsWith("http://") || data.url.startsWith("https://") ? data.url : "http://"+data.url;
+                  var link="<a href='"+url+"' class='brand'>";
+                  if (data.logoLocation) {
+                      link+="<img src='"+data.logoLocation+"' style='max-height: 30px'/>";
+                  } else if (data.name) {
+                      link+=data.name;
+                  } else {
+                      link+="Archiva";
+                  }
+                  link+="</a>";
+                  $("#organisation-logo").html(link);
+                }
+              if (!data.url && data.name){
+                $("#organisation-logo").html("<a href='/' class='brand'>"+data.name+"</a>");
+              }
+              if (!data.url && !data.name){
+                $("#organisation-logo").html("<a href='/' class='brand'>Archiva</a>");
+              }
+            },
+            error: function() {
+                $("#organisation-logo").html("<a href='/' class='brand'>Archiva</a>");
+            }
+        });
+    }
 
 
   startArchivaApplication=function(){
@@ -315,6 +352,7 @@ $(function() {
 								.append( "<a>" + item.artifactId + "</a>" )
 								.appendTo( ul );
 						};;
+    updateAppearanceToolBar();
   }
   startArchivaApplication();
 

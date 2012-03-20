@@ -466,5 +466,44 @@
   {{/if}}
 </script>
 
+<script id="changeAppearance" type="text/html">
+    <div class="page-header">
+        <h2>${$.i18n.prop('appearance-configuration.title-page')}</h2>
+    </div>
+
+    <h2>${$.i18n.prop('appearance-configuration.organisation-details')}</h2>
+
+    <p>
+        ${$.i18n.prop('apperance-configuration.details-description')}
+    </p>
+    
+    <form id="appearance-configuration-form-id" class="well form-horizontal">
+        <fieldset id="appearance-configuration-fielset-id">
+            <div class="control-group">
+                <label class="control-label" for="name">${$.i18n.prop('appearance-configuration.name-label')}</label>
+                <div class="controls">
+                    <input type="text" class="xlarge required" id="name" name="name" size="50"
+                           data-bind="value: organisationInformation().name"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="name">${$.i18n.prop('appearance-configuration.url-label')}</label>
+                <div class="controls">
+                    <input type="text" class="xlarge required" id="url" name="url" size="50"
+                           data-bind="value: organisationInformation().url"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"
+                       for="name">${$.i18n.prop('appearance-configuration.logoLocation-label')}</label>
+                <div class="controls">
+                    <input type="text" class="xlarge" id="logoLocation" name="logoLocation" size="50"
+                           data-bind="value: organisationInformation().logoLocation"/>
+                </div>
+            </div>
+        </fieldset>
+        <button id="appearance-configuration-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+    </form>
+</script>
 
 

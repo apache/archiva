@@ -740,5 +740,86 @@ $(function() {
     displayServerTime();
   }
 
+  //---------------------------
+  // network configuration part
+  //---------------------------
+  OrganisationInformation=function(name,url,logoLocation){
+    this.name=ko.observable(name);
+    this.url=ko.observable(url);
+    this.logoLocation=ko.observable(logoLocation);
+  }
+  mapOrganisationInformation=function(data){
+    return new OrganisationInformation(data.name, data.url, data.logoLocation);
+  }
+  mapOrganisationInformations=function(data){
+    if (data!=null){
+      return $.isArray(data)? $.map(data, function(item){
+        return mapOrganisationInformation(item);
+      }):[mapOrganisationInformation(data)];
+    }
+  }
+  activateOrganisationInformationFormValidation=function(){
+    var validate = $("#main-content #appearance-configuration-form-id").validate({
+      rules: {
+        name: {
+          required: true
+        },
+        url: {
+          required:true,
+          url:true
+        },
+        logoLocation: {
+          required:false,
+          url:true
+        }
+      },
+      showErrors: function(validator, errorMap, errorList) {
+        customShowError("#main-content #appearance-configuration-form-id", validator, errorMap, errorMap);
+      }
+    })
+  }
+  OrganisationInformationViewModel=function(organisationInformation){
+    activateOrganisationInformationFormValidation();
+    this.organisationInformation=ko.observable(organisationInformation);
 
+    this.save=function(){
+      if (!$("#main-content #appearance-configuration-form-id").valid()) {
+          return;
+      }
+      clearUserMessages();
+      $.ajax("restServices/archivaServices/archivaAdministrationService/setOrganisationInformation", {
+        type: "POST",
+        contentType: "application/json",
+        data: ko.toJSON(this.organisationInformation),
+        dataType: "json",
+        success: function(data){
+          displaySuccessMessage($.i18n.prop('appearance-configuration.updated'));
+          updateAppearanceToolBar();
+        },
+        error: function(data){
+          displayErrorMessage($.i18n.prop('appearance-configuration.updating-error'));
+        }
+      });
+    }
+  }
+  displayAppearanceConfiguration=function(){
+    screenChange();
+    var mainContent=$("#main-content");
+    mainContent.html($("#changeAppearance").tmpl());
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        var organisationInformation=new OrganisationInformation(data.name,data.url,data.logoLocation);
+        var organisationInformationViewModel=new OrganisationInformationViewModel(organisationInformation);
+        ko.applyBindings(organisationInformationViewModel, mainContent.get(0));
+        var validator = $("#main-content #appearance-configuration-form-id").validate({
+          showErrors: function(validator,errorMap,errorList) {
+            customShowError(mainContent.find("#appearance-configuration-form-id").get(0),validator,errorMap,errorMap);
+          }
+        });
+      }
+    });
+  }
 });

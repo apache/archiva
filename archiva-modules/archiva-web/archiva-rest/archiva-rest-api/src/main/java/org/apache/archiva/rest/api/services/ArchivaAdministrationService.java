@@ -189,7 +189,7 @@ public interface ArchivaAdministrationService
     @Path( "getOrganisationInformation" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( noPermission = true, noRestriction = true)
     OrganisationInformation getOrganisationInformation()
         throws ArchivaRestServiceException;
 
