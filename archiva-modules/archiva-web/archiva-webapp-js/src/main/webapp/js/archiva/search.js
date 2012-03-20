@@ -185,6 +185,7 @@ $(function() {
           mainContent.find("#browse_breadcrumb" ).show();
           mainContent.find("#browse_breadcrumb" ).html(mediumSpinnerImg());
           var metadataUrl="restServices/archivaServices/browseService/projectVersionMetadata/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
+          metadataUrl+="/"+encodeURIComponent(version);
           var selectedRepo=getSelectedBrowsingRepository();
           if (selectedRepo){
             metadataUrl+="?repositoryId="+encodeURIComponent(selectedRepo);

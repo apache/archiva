@@ -300,25 +300,6 @@ public class DefaultBrowseService
                     }
                 }
             }
-            if ( versionMetadata == null )
-            {
-                return null;
-            }
-
-            MavenProjectFacet mavenFacet = new MavenProjectFacet();
-            mavenFacet.setGroupId( groupId );
-            mavenFacet.setArtifactId( artifactId );
-            versionMetadata.addFacet( mavenFacet );
-            MavenProjectFacet versionMetadataMavenFacet =
-                (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
-            if ( versionMetadataMavenFacet != null )
-            {
-                if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
-                                                                                         versionMetadataMavenFacet.getPackaging() ) )
-                {
-                    mavenFacet.setPackaging( null );
-                }
-            }
 
             return versionMetadata;
         }
