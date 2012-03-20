@@ -430,42 +430,142 @@
     <div class="tab-content">
   	  <div id="artifact-details-info-content" class="tab-pane active">
         <blockquote>${projectVersionMetadata.description}</blockquote>
-        <div class="row span6">
-        <table class="table">
-          <tbody>
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.groupId')}</th>
-              <td>${groupId}</td>
-            </tr>
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
-              <td>${artifactId}</td>
-            </tr>
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.version')}</th>
-              <td>${version}</td>
-            </tr>
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.packaging')}</th>
-              <td>${projectVersionMetadata.mavenFacet.packaging}</td>
-            </tr>
-            {{if projectVersionMetadata.mavenFacet.parent }}
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.parent')}</th>
-              <td>
-                <a href="#" data-bind="click: displayParent">
-                  ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
-                </a>
-              </td>
-            </tr>
-            {{/if}}
-          </tbody>
-        </table>
-        </div>
-        <div class="row span5">
-          <h4>${$.i18n.prop('browse.artifact.pom.snippet')}</h4>
-            <pre class="prettyprint">&lt;dependency&gt;<br/>&nbsp;&nbsp;&lt;groupId&gt;${groupId}&lt;/groupId&gt;<br/>&nbsp;&nbsp;&lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;<br/>&nbsp;&nbsp;&lt;version&gt;${version}&lt;/version&gt;<br/>&lt;/dependency&gt;</pre>
+        <div class="row-fluid">
+          <div class="span6">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th>${$.i18n.prop('browse.artifact.groupId')}</th>
+                  <td>${groupId}</td>
+                </tr>
+                <tr>
+                  <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
+                  <td>${artifactId}</td>
+                </tr>
+                <tr>
+                  <th>${$.i18n.prop('browse.artifact.version')}</th>
+                  <td>${version}</td>
+                </tr>
+                <tr>
+                  <th>${$.i18n.prop('browse.artifact.packaging')}</th>
+                  <td>${projectVersionMetadata.mavenFacet.packaging}</td>
+                </tr>
+                {{if projectVersionMetadata.mavenFacet.parent }}
+                <tr>
+                  <th>${$.i18n.prop('browse.artifact.parent')}</th>
+                  <td>
+                    <a href="#" data-bind="click: displayParent">
+                    ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
+                    </a>
+                  </td>
+                </tr>
+                {{/if}}
+              </tbody>
+            </table>
           </div>
+          <div class="span6">
+            <h4>${$.i18n.prop('browse.artifact.pom.snippet')}</h4>
+              <pre class="prettyprint">&lt;dependency&gt;<br/>&nbsp;&nbsp;&lt;groupId&gt;${groupId}&lt;/groupId&gt;<br/>&nbsp;&nbsp;&lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;<br/>&nbsp;&nbsp;&lt;version&gt;${version}&lt;/version&gt;<br/>&lt;/dependency&gt;</pre>
+          </div>
+        </div>
+        <div>
+          <div class="page-header">
+            <h4>${$.i18n.prop('browse.artifact.other.details')}</h4>
+          </div>
+          <div>
+            <div class="row-fluid">
+              <div class="span9">
+                <table class="table">
+                  <tbody>
+                    {{if projectVersionMetadata.url}}
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.url')}</th>
+                      <td><a href="${projectVersionMetadata.url}" target="_blank">${projectVersionMetadata.url}</a></td>
+                    </tr>
+                    {{/if}}
+                    {{if projectVersionMetadata.organization}}
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
+                      {{if projectVersionMetadata.organization.url}}
+                        <td>
+                          <a href="${projectVersionMetadata.organization.url}" target="_blank">
+                            <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
+                          </a>
+                        </td>
+                      {{else}}
+                        <td>${projectVersionMetadata.organization.name}</td>
+                      {{/if}}
+                    </tr>
+                    {{/if}}
+                    {{each(i,license) projectVersionMetadata.licenses}}
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.license')}</th>
+                      {{if license.url}}
+                        <td>
+                          <a href="${license.url}" target="_blank">
+                            <img src="images/internet-web-browser.png" alt=""/>${license.name}
+                          </a>
+                        </td>
+                      {{else}}
+                        <td>${license.name}</td>
+                      {{/if}}
+                      </tr>
+                    {{/each}}
+                    {{if projectVersionMetadata.issueManagement}}
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
+                      <td>
+                        <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
+                          <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
+                        </a>
+                      </td>
+                    </tr>
+                    {{/if}}
+                    {{if projectVersionMetadata.ciManagement}}
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.organization.ciManagement')}</th>
+                      <td>
+                        <a href="${projectVersionMetadata.ciManagement.url}" target="_blank">
+                          <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.ciManagement.system}
+                        </a>
+                      </td>
+                    </tr>
+                    {{/if}}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{if projectVersionMetadata.scm}}
+        <div>
+          <div class="page-header">
+            <h4>${$.i18n.prop('browse.artifact.scm')}</h4>
+          </div>
+          <div>
+            <div class="row-fluid">
+              <div class="span12">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.scm.connection')}</th>
+                      <td>${projectVersionMetadata.scm.connection}</td>
+                    </tr>
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.scm.devconnection')}</th>
+                      <td>${projectVersionMetadata.scm.developerConnection}</td>
+                    </tr>
+                    <tr>
+                      <th>${$.i18n.prop('browse.artifact.scm.viewer')}</th>
+                      <td>${projectVersionMetadata.scm.url}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/if}}
   	  </div>
 
 

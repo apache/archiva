@@ -499,11 +499,10 @@ $(function() {
         projectVersionMetadata.ciManagement=new CiManagement(data.ciManagement.system,data.ciManagement.url);
       }
       if (data.licenses){
-        var licenses =
-        $.isArray(data.licenses) ? $.map(data.licenses,function(item){
-              return new License(item.name,item.url);
-          }):[data.licenses];
-        projectVersionMetadata.licenses=licenses;
+        projectVersionMetadata.licenses=
+                  $.isArray(data.licenses) ? $.map(data.licenses,function(item){
+                      return new License(item.name,item.url);
+                  }):[data.licenses];
       }
       if (data.mailingLists){
         var mailingLists =
