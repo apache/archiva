@@ -625,16 +625,16 @@
                 <div id="ml_collapse_${i}" class="accordion-body collapse">
               {{/if}}
                 <div class="accordion-inner">
-                  <div>${$.i18n.prop('browse.artifact.mailingList.subscribe')}: <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a></div>
-                  <div>${$.i18n.prop('browse.artifact.mailingList.post')}: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a></div>
-                  <div>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}: <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a></div>
-                  <div>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}: <a href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a></div>
+                  <div><b>${$.i18n.prop('browse.artifact.mailingList.subscribe')}</b>: <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a></div>
+                  <div><b>${$.i18n.prop('browse.artifact.mailingList.post')}</b>: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a></div>
+                  <div><b>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}</b>: <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a></div>
+                  <div><b>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}</b>: <a href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a></div>
                   {{if mailingList.otherArchives}}
                   <div>
-                    ${$.i18n.prop('browse.artifact.mailingList.otherArchivesUrls')}:
+                    <b>${$.i18n.prop('browse.artifact.mailingList.otherArchivesUrls')}:</b>
                     <ul>
                     {{each(j,otherArchive) mailingList.otherArchives}}
-                      <li>${$.i18n.prop('browse.artifact.mailingList.otherArchiveUrl')}: <a href="${otherArchive}" target="_blank">${otherArchive}</a></li>
+                      <li><b>${$.i18n.prop('browse.artifact.mailingList.otherArchiveUrl')}</b>: <a href="${otherArchive}" target="_blank">${otherArchive}</a></li>
                     {{/each}}
                     </ul>
                   </div>
