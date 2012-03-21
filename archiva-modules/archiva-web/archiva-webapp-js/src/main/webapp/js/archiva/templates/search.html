@@ -572,6 +572,7 @@
   	  <div id="artifact-details-dependencies-content" class="tab-pane">
         <table class="table">
           <tbody>
+          {{if projectVersionMetadata.dependencies && projectVersionMetadata.dependencies.length>0}}
           {{each(i,dependency) projectVersionMetadata.dependencies}}
             <tr>
               <th>${dependency.artifactId}</th>
@@ -599,6 +600,9 @@
               </td>
             </tr>
           {{/each}}
+          {{else}}
+            ${$.i18n.prop('browse.artifact.dependencies.none')}
+          {{/if}}
           </tbody>
         </table>
   	  </div>
@@ -612,7 +616,7 @@
       </div>
 
       <div id="artifact-details-mailing-list-content" class="tab-pane">
-        {{if projectVersionMetadata.mailingLists}}
+        {{if projectVersionMetadata.mailingLists && projectVersionMetadata.mailingLists.length>0}}
           <div id="accordion_mailing_lists" class="accordion">
           {{each(i,mailingList) projectVersionMetadata.mailingLists}}
             <div class="accordion-group">
@@ -625,11 +629,27 @@
                 <div id="ml_collapse_${i}" class="accordion-body collapse">
               {{/if}}
                 <div class="accordion-inner">
-                  <div><b>${$.i18n.prop('browse.artifact.mailingList.subscribe')}</b>: <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a></div>
-                  <div><b>${$.i18n.prop('browse.artifact.mailingList.post')}</b>: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a></div>
-                  <div><b>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}</b>: <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a></div>
-                  <div><b>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}</b>: <a href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a></div>
-                  {{if mailingList.otherArchives}}
+                  {{if mailingList.subscribeAddress}}
+                  <div>
+                    <b>${$.i18n.prop('browse.artifact.mailingList.subscribe')}</b>: <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a>
+                  </div>
+                  {{/if}}
+                  {{if mailingList.postAddress}}
+                  <div>
+                    <b>${$.i18n.prop('browse.artifact.mailingList.post')}</b>: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a>
+                  </div>
+                  {{/if}}
+                  {{if mailingList.unsubscribeAddress}}
+                  <div>
+                    <b>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}</b>: <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a>
+                  </div>
+                  {{/if}}
+                  {{if mailingList.mainArchiveUrl}}
+                  <div>
+                    <b>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}</b>: <a href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a>
+                  </div>
+                  {{/if}}
+                  {{if mailingList.otherArchives && mailingList.otherArchives.length>0}}
                   <div>
                     <b>${$.i18n.prop('browse.artifact.mailingList.otherArchivesUrls')}:</b>
                     <ul>
@@ -644,6 +664,8 @@
             </div>
           {{/each}}
           </div>
+        {{else}}
+          ${$.i18n.prop('browse.artifact.mailingList.none')}
         {{/if}}
       </div>
 
