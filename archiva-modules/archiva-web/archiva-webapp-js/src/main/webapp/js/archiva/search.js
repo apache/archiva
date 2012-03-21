@@ -215,6 +215,20 @@ $(function() {
         });
       });
     }
+
+    displayGroup=function(groupId){
+      var parentBrowseViewModel=new BrowseViewModel(null,null,null);
+      displayGroupDetail(groupId,parentBrowseViewModel,null);
+    }
+
+    displayArtifactDetailView=function(groupId, artifactId){
+      displayArtifactDetail(groupId, artifactId);
+    }
+
+    displayArtifactVersionDetailViewModel=function(groupId,artifactId,version){
+      var artifactVersionDetailViewModel = new ArtifactVersionDetailViewModel (groupId,artifactId,version)
+      artifactVersionDetailViewModel.display();
+    }
   }
 
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
@@ -466,6 +480,7 @@ $(function() {
     this.displayValue=displayValue;
     this.artifactId=null;
     this.artifact=false;
+    this.version=null;
   }
   mapVersionsList=function(data){
     if (data){
@@ -682,10 +697,21 @@ $(function() {
       var curGroupId="";
       for (var i=0;i<splitted.length;i++){
         curGroupId+=splitted[i];
+        $.log("splitted[i]:"+i+":"+splitted[i]);
         breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
         curGroupId+="."
       }
-      breadCrumbEntries.push(new BreadCrumbEntry(self.artifactId,self.artifactId));
+      var crumbEntryArtifact=new BreadCrumbEntry(self.groupId,self.artifactId);
+      crumbEntryArtifact.artifactId=self.artifactId;
+      crumbEntryArtifact.artifact=true;
+      breadCrumbEntries.push(crumbEntryArtifact);
+
+      var crumbEntryVersion=new BreadCrumbEntry(self.groupId,self.version);
+      crumbEntryVersion.artifactId=self.artifactId;
+      crumbEntryVersion.artifact=false;
+      crumbEntryVersion.version=self.version;
+      breadCrumbEntries.push(crumbEntryVersion);
+
       return breadCrumbEntries;
     }
 

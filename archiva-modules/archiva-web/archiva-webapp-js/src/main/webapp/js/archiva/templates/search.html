@@ -580,12 +580,19 @@
               <td>
                 {{var entries=dependency.crumbEntries()}}
                 {{each(j,crumbEntry) entries}}
-                  ${crumbEntry.displayValue}
-                  {{if j < entries.length - 1}}
+                  {{if j < entries.length - 2}}
+                    <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
+                  {{else j == entries.length - 2}}
+                    <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
+                  {{else j == entries.length - 1}}
+                    &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+                     <a href="#" data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${dependency.version}</a>&nbsp;
+                  {{/if}}
+                  {{if j < entries.length - 2}}
                      &nbsp;/&nbsp;
                   {{/if}}
                 {{/each}}
-                &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;${dependency.version}&nbsp;
+
                 {{if dependency.scope}}
                   |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${dependency.scope}
                 {{/if}}
