@@ -19,6 +19,7 @@ package org.apache.archiva.web.action;
  * under the License.
  */
 
+import com.opensymphony.xwork2.Action;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
@@ -35,19 +36,13 @@ import org.apache.archiva.rest.services.DefaultRepositoriesService;
 import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsSpringTestCase;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
-import org.codehaus.redback.rest.services.RedbackRequestInformation;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 public class DeleteArtifactActionTest
@@ -151,7 +146,7 @@ public class DeleteArtifactActionTest
         repositoryFactoryControl.replay();
         metadataRepositoryControl.replay();
 
-        action.doDelete();
+        assertEquals( Action.SUCCESS, action.doDelete() );
 
         String artifactPath =
             REPO_LOCATION + "/" + StringUtils.replace( GROUP_ID, ".", "/" ) + "/" + StringUtils.replace( ARTIFACT_ID,

@@ -53,12 +53,12 @@ public class UserRepositoriesStub
     public boolean isAuthorizedToUploadArtifacts( String principal, String repoId )
         throws ArchivaSecurityException
     {
-        return false;
+        return true;
     }
 
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
     {
-        return false;
+        return true;
     }
 
     public List<String> getManagableRepositoryIds( String principal )
