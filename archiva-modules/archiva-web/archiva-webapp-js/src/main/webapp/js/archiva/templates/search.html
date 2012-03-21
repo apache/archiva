@@ -572,14 +572,26 @@
   	  <div id="artifact-details-dependencies-content" class="tab-pane">
         <table class="table">
           <tbody>
-        {{each(i,dependency) projectVersionMetadata.dependencies}}
-          <tr>
-            <th>${dependency.artifactId}</th>
-          </tr>
-          <tr>
-            <td>${dependency.groupId},${dependency.artifactId},${dependency.version}</td>
-          </tr>
-        {{/each}}
+          {{each(i,dependency) projectVersionMetadata.dependencies}}
+            <tr>
+              <th>${dependency.artifactId}</th>
+            </tr>
+            <tr>
+              <td>
+                {{var entries=dependency.crumbEntries()}}
+                {{each(j,crumbEntry) entries}}
+                  ${crumbEntry.displayValue}
+                  {{if j < entries.length - 1}}
+                     &nbsp;/&nbsp;
+                  {{/if}}
+                {{/each}}
+                &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;${dependency.version}&nbsp;
+                {{if dependency.scope}}
+                  |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${dependency.scope}
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
           </tbody>
         </table>
   	  </div>

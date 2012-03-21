@@ -75,7 +75,6 @@ $(function() {
     for (var i=0;i<splitted.length;i++){
       curGroupId+=splitted[i];
       breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
-      $.log("calculateBreadCrumbEntries:"+curGroupId+":"+splitted[i]);
       curGroupId+="."
     }
     return breadCrumbEntries;
@@ -177,6 +176,7 @@ $(function() {
       entries.push(new BreadCrumbEntry("foo",self.version));
       return entries;
     }
+
     this.display=function(){
       mainContent.find("#browse_breadcrumb").hide("slide", {}, 300,function(){
         mainContent.find("#browse_artifact").hide("slide", {}, 300,function(){
@@ -650,6 +650,7 @@ $(function() {
   }
 
   Dependency=function(classifier,optional,scope,systemPath,type,artifactId,groupId,version){
+    var self=this;
     //private String classifier;
     this.classifier=classifier;
 
@@ -673,6 +674,20 @@ $(function() {
 
     //private String version;
     this.version=version;
+
+    this.crumbEntries=function(){
+      $.log("Dependency#calculateCrumbEntries");
+      var splitted = self.groupId.split(".");
+      var breadCrumbEntries=[];
+      var curGroupId="";
+      for (var i=0;i<splitted.length;i++){
+        curGroupId+=splitted[i];
+        breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
+        curGroupId+="."
+      }
+      breadCrumbEntries.push(new BreadCrumbEntry(self.artifactId,self.artifactId));
+      return breadCrumbEntries;
+    }
 
   }
 
