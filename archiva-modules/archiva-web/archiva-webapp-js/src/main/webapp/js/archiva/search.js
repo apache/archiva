@@ -691,13 +691,11 @@ $(function() {
     this.version=version;
 
     this.crumbEntries=function(){
-      $.log("Dependency#calculateCrumbEntries");
       var splitted = self.groupId.split(".");
       var breadCrumbEntries=[];
       var curGroupId="";
       for (var i=0;i<splitted.length;i++){
         curGroupId+=splitted[i];
-        $.log("splitted[i]:"+i+":"+splitted[i]);
         breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
         curGroupId+="."
       }

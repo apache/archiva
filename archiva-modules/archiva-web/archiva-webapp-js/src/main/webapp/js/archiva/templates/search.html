@@ -612,7 +612,39 @@
       </div>
 
       <div id="artifact-details-mailing-list-content" class="tab-pane">
-        mailing list
+        {{if projectVersionMetadata.mailingLists}}
+          <div id="accordion_mailing_lists" class="accordion">
+          {{each(i,mailingList) projectVersionMetadata.mailingLists}}
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" href="#ml_collapse_${i}" data-parent="#accordion_mailing_lists" data-toggle="collapse">${mailingList.name}</a>
+              </div>
+              {{if i==0}}
+                <div id="ml_collapse_${i}" class="accordion-body collapse in">
+              {{else}}
+                <div id="ml_collapse_${i}" class="accordion-body collapse">
+              {{/if}}
+                <div class="accordion-inner">
+                  <div>${$.i18n.prop('browse.artifact.mailingList.subscribe')}: <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a></div>
+                  <div>${$.i18n.prop('browse.artifact.mailingList.post')}: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a></div>
+                  <div>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}: <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a></div>
+                  <div>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}: <a href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a></div>
+                  {{if mailingList.otherArchives}}
+                  <div>
+                    ${$.i18n.prop('browse.artifact.mailingList.otherArchivesUrls')}:
+                    <ul>
+                    {{each(j,otherArchive) mailingList.otherArchives}}
+                      <li>${$.i18n.prop('browse.artifact.mailingList.otherArchiveUrl')}: <a href="${otherArchive}" target="_blank">${otherArchive}</a></li>
+                    {{/each}}
+                    </ul>
+                  </div>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          {{/each}}
+          </div>
+        {{/if}}
       </div>
 
       <div id="artifact-details-metadatas-content" class="tab-pane">
