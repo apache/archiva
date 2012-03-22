@@ -546,15 +546,6 @@ public class DefaultBrowseService
 
         public boolean endVisit( DependencyNode node )
         {
-            /*
-            if ( node.getChildren().isEmpty() )
-            {
-                currentEntry = currentEntry.getParent();
-            }
-            else
-            {
-
-            } */
             currentEntry = currentEntry.getParent();
             firstChild = false;
             return true;
