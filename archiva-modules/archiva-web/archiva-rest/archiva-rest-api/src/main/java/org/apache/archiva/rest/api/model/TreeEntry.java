@@ -18,6 +18,8 @@ package org.apache.archiva.rest.api.model;
  * under the License.
  */
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,8 +35,10 @@ public class TreeEntry
 
     private List<TreeEntry> childs = new ArrayList<TreeEntry>();
 
-
     private Artifact artifact;
+
+    @JsonIgnore
+    private TreeEntry parent;
 
     public TreeEntry()
     {
@@ -65,5 +69,17 @@ public class TreeEntry
     public void setChilds( List<TreeEntry> childs )
     {
         this.childs = childs;
+    }
+
+    @JsonIgnore
+    public TreeEntry getParent()
+    {
+        return parent;
+    }
+
+    @JsonIgnore
+    public void setParent( TreeEntry parent )
+    {
+        this.parent = parent;
     }
 }

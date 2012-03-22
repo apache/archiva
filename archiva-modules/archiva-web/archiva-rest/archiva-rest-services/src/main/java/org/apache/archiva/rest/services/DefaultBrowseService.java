@@ -510,11 +510,16 @@ public class DefaultBrowseService
     private static class TreeDependencyNodeVisitor
         implements DependencyNodeVisitor
     {
+
         final List<TreeEntry> treeEntries;
 
         private TreeEntry currentEntry;
 
+
         private DependencyNode firstNode;
+
+
+        boolean firstChild = true;
 
         private TreeDependencyNodeVisitor( List<TreeEntry> treeEntries )
         {
@@ -523,51 +528,35 @@ public class DefaultBrowseService
 
         public boolean visit( DependencyNode node )
         {
+            TreeEntry entry = new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) );
+            entry.setParent( currentEntry );
+            currentEntry = entry;
+
             if ( firstNode == null )
             {
                 firstNode = node;
-            }
-            if ( currentEntry == null )
-            {
-                currentEntry =
-                    new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) );
                 treeEntries.add( currentEntry );
             }
             else
             {
-                if ( node.getChildren().isEmpty() )
-                {
-                    currentEntry.getChilds().add(
-                        new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) ) );
-                }
+                currentEntry.getParent().getChilds().add( currentEntry );
             }
-
-            if ( !node.getChildren().isEmpty() )
-            {
-                for ( DependencyNode dependencyNode : (List<DependencyNode>) node.getChildren() )
-                {
-                    if ( dependencyNode.getChildren().isEmpty() )
-                    {
-                        this.currentEntry.getChilds().add( new TreeEntry(
-                            new BeanReplicator().replicateBean( dependencyNode.getArtifact(), Artifact.class ) ) );
-                    }
-                    else
-                    {
-                        TreeEntry backup = this.currentEntry;
-                        this.currentEntry = new TreeEntry(
-                            new BeanReplicator().replicateBean( dependencyNode.getArtifact(), Artifact.class ) );
-                        visit( dependencyNode );
-                        this.currentEntry = backup;
-                    }
-                }
-            }
-
             return true;
         }
 
         public boolean endVisit( DependencyNode node )
         {
-            firstNode = null;
+            /*
+            if ( node.getChildren().isEmpty() )
+            {
+                currentEntry = currentEntry.getParent();
+            }
+            else
+            {
+
+            } */
+            currentEntry = currentEntry.getParent();
+            firstChild = false;
             return true;
         }
 
