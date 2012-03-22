@@ -28,7 +28,7 @@
   <artifactId>archiva-jetty-js</artifactId>
   <packaging>pom</packaging>
   <!-- This is filtered into the scripts, so should be set to Apache Archiva -->
-  <name>Apache Archiva JS</name>
+  <name>Apache Archiva</name>
   <dependencies>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -218,7 +218,7 @@
         </executions>
         <configuration>
           <descriptor>src/main/assembly/bin.xml</descriptor>
-          <finalName>apache-archiva-js-${project.version}</finalName>
+          <finalName>apache-archiva-${project.version}</finalName>
         </configuration>
       </plugin>
       <plugin>
