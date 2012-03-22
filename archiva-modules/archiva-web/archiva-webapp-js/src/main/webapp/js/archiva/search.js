@@ -202,7 +202,25 @@ $(function() {
               mainContent.find("#browse-autocomplete-divider" ).hide();
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
                 if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
-                  $.log("#artifact-details-dependency-tree-content");
+                  var treeContentDiv=$("#artifact-details-dependency-tree-content" );
+                  //if( $.trim(treeContentDiv.html()).length<1){
+                    treeContentDiv.html(mediumSpinnerImg());
+                    var treeDependencyUrl="restServices/archivaServices/browseService/treeEntries/"+encodeURIComponent(groupId);
+                    treeDependencyUrl+="/"+encodeURIComponent(artifactId);
+                    treeDependencyUrl+="/"+encodeURIComponent(version);
+                    var selectedRepo=getSelectedBrowsingRepository();
+                    if (selectedRepo){
+                      treeDependencyUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+                    }
+                    var treeDependencyUrl=
+                    $.ajax(treeDependencyUrl, {
+                      type: "GET",
+                      dataType: 'json',
+                      success: function(data) {
+                        treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: [data[0]]}));
+                      }
+                    });
+                  //}
                 }
                 if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
                   $.log("#artifact-details-used-by-content");
@@ -230,6 +248,8 @@ $(function() {
       artifactVersionDetailViewModel.display();
     }
   }
+
+
 
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
     var artifactDetailViewModel=new ArtifactDetailViewModel(groupId,artifactId);

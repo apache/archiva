@@ -18,23 +18,31 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
+import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
+import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
+import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.shared.dependency.tree.DependencyNode;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
+import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +60,9 @@ public class DefaultBrowseService
     extends AbstractRestService
     implements BrowseService
 {
+
+    @Inject
+    private DependencyTreeBuilder dependencyTreeBuilder;
 
     public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
@@ -457,6 +468,109 @@ public class DefaultBrowseService
                 repositorySession.close();
             }
         }
+    }
+
+    public List<TreeEntry> getTreeEntries( String groupId, String artifactId, String version, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        List<String> selectedRepos = getObservableRepos();
+
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            // FIXME 403 ???
+            return null;
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
+        }
+
+        List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
+        TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
+        try
+        {
+            dependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version,
+                                                       treeDependencyNodeVisitor );
+        }
+        catch ( DependencyTreeBuilderException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        return treeEntries;
+    }
+
+    private static class TreeDependencyNodeVisitor
+        implements DependencyNodeVisitor
+    {
+        final List<TreeEntry> treeEntries;
+
+        private TreeEntry currentEntry;
+
+        private DependencyNode firstNode;
+
+        private TreeDependencyNodeVisitor( List<TreeEntry> treeEntries )
+        {
+            this.treeEntries = treeEntries;
+        }
+
+        public boolean visit( DependencyNode node )
+        {
+            if ( firstNode == null )
+            {
+                firstNode = node;
+            }
+            if ( currentEntry == null )
+            {
+                currentEntry =
+                    new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) );
+                treeEntries.add( currentEntry );
+            }
+            else
+            {
+                if ( node.getChildren().isEmpty() )
+                {
+                    currentEntry.getChilds().add(
+                        new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) ) );
+                }
+            }
+
+            if ( !node.getChildren().isEmpty() )
+            {
+                for ( DependencyNode dependencyNode : (List<DependencyNode>) node.getChildren() )
+                {
+                    if ( dependencyNode.getChildren().isEmpty() )
+                    {
+                        this.currentEntry.getChilds().add( new TreeEntry(
+                            new BeanReplicator().replicateBean( dependencyNode.getArtifact(), Artifact.class ) ) );
+                    }
+                    else
+                    {
+                        TreeEntry backup = this.currentEntry;
+                        this.currentEntry = new TreeEntry(
+                            new BeanReplicator().replicateBean( dependencyNode.getArtifact(), Artifact.class ) );
+                        visit( dependencyNode );
+                        this.currentEntry = backup;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public boolean endVisit( DependencyNode node )
+        {
+            firstNode = null;
+            return true;
+        }
+
     }
 
     public List<ManagedRepository> getUserRepositories()

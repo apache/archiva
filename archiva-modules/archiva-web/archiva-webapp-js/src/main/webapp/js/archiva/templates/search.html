@@ -607,9 +607,7 @@
         </table>
   	  </div>
 
-      <div id="artifact-details-dependency-tree-content" class="tab-pane">
-        dependency tree
-      </div>
+      <div id="artifact-details-dependency-tree-content" class="tab-pane"></div>
 
       <div id="artifact-details-used-by-content" class="tab-pane">
         used by
@@ -674,4 +672,15 @@
       </div>
 
     </div>
+</script>
+
+<script id="dependency_tree_tmpl" type="text/html">
+  <ul>
+  {{each(i,treeEntry) treeEntries}}
+    <li>${treeEntry.artifact.groupId}:${treeEntry.artifact.artifactId}:${treeEntry.artifact.version}</li>
+    {{if treeEntry.childs.length>0}}
+      {{tmpl({treeEntries:treeEntry.childs}) "#dependency_tree_tmpl"}}
+    {{/if}}
+  {{/each}}
+  </ul>
 </script>

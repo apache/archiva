@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.rest.api.model.BrowseResult;
+import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
@@ -85,5 +86,14 @@ public interface BrowseService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<ManagedRepository> getUserRepositories()
+        throws ArchivaRestServiceException;
+
+    @Path( "treeEntries/{g}/{a}/{v}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<TreeEntry> getTreeEntries( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                                    @PathParam( "v" ) String version,
+                                    @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 }
