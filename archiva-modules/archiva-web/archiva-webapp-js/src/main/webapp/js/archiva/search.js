@@ -202,7 +202,7 @@ $(function() {
               mainContent.find("#browse-autocomplete-divider" ).hide();
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
                 if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
-                  var treeContentDiv=$("#artifact-details-dependency-tree-content" );
+                  var treeContentDiv=mainContent.find("#artifact-details-dependency-tree-content" );
                   //if( $.trim(treeContentDiv.html()).length<1){
                     treeContentDiv.html(mediumSpinnerImg());
                     var treeDependencyUrl="restServices/archivaServices/browseService/treeEntries/"+encodeURIComponent(groupId);
@@ -212,12 +212,12 @@ $(function() {
                     if (selectedRepo){
                       treeDependencyUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
                     }
-                    var treeDependencyUrl=
                     $.ajax(treeDependencyUrl, {
                       type: "GET",
                       dataType: 'json',
                       success: function(data) {
-                        treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: [data[0]]}));
+                        var treeEntries = mapTreeEntries(data);
+                        treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: treeEntries}));//[data[0]]
                       }
                     });
                   //}
@@ -234,6 +234,8 @@ $(function() {
       });
     }
 
+
+
     displayGroup=function(groupId){
       var parentBrowseViewModel=new BrowseViewModel(null,null,null);
       displayGroupDetail(groupId,parentBrowseViewModel,null);
@@ -249,7 +251,33 @@ $(function() {
     }
   }
 
+  TreeEntry=function(artifact,childs){
+    this.artifact=artifact;
+    this.childs=childs;
+  }
 
+  mapTreeEntries=function(data){
+    if (data==null){
+      return [];
+    }
+    return $.map(data,function(e) {
+      return new TreeEntry(mapArtifact(e.artifact),mapTreeEntries(e.childs));
+    })
+  }
+
+  dependencyTreeDisplayGroup=function(groupId) {
+    var parentBrowseViewModel=new BrowseViewModel(null,null,null);
+    displayGroupDetail(groupId,parentBrowseViewModel,null);
+  }
+
+  dependencyTreeDisplayArtifactDetailView=function(groupId, artifactId){
+    displayArtifactDetail(groupId, artifactId);
+  }
+
+  dependencyTreeDisplayArtifactVersionDetailViewModel=function(groupId,artifactId,version){
+    var artifactVersionDetailViewModel = new ArtifactVersionDetailViewModel (groupId,artifactId,version)
+    artifactVersionDetailViewModel.display();
+  }
 
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
     var artifactDetailViewModel=new ArtifactDetailViewModel(groupId,artifactId);
@@ -741,6 +769,9 @@ $(function() {
   Artifact=function(context,url,groupId,artifactId,repositoryId,version,prefix,goals,bundleVersion,bundleSymbolicName,
                     bundleExportPackage,bundleExportService,bundleDescription,bundleName,bundleLicense,bundleDocUrl,
                     bundleImportPackage,bundleRequireBundle,classifier,packaging,fileExtension){
+
+    var self=this;
+
     //private String context;
     this.context=context;
 
@@ -815,6 +846,31 @@ $(function() {
     //file extension of the artifact
     //private String fileExtension;
     this.fileExtension=fileExtension;
+
+    // FIXME it's a copy an paste from Dependency we must extract an "abstract" class with common fields
+    this.crumbEntries=function(){
+      var splitted = self.groupId.split(".");
+      var breadCrumbEntries=[];
+      var curGroupId="";
+      for (var i=0;i<splitted.length;i++){
+        curGroupId+=splitted[i];
+        breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
+        curGroupId+="."
+      }
+      var crumbEntryArtifact=new BreadCrumbEntry(self.groupId,self.artifactId);
+      crumbEntryArtifact.artifactId=self.artifactId;
+      crumbEntryArtifact.artifact=true;
+      breadCrumbEntries.push(crumbEntryArtifact);
+
+      var crumbEntryVersion=new BreadCrumbEntry(self.groupId,self.version);
+      crumbEntryVersion.artifactId=self.artifactId;
+      crumbEntryVersion.artifact=false;
+      crumbEntryVersion.version=self.version;
+      breadCrumbEntries.push(crumbEntryVersion);
+
+      return breadCrumbEntries;
+    }
+
   }
 
   mapArtifacts=function(data){
@@ -825,11 +881,14 @@ $(function() {
   }
 
   mapArtifact=function(data){
+    if(data){
     return new Artifact(data.context,data.url,data.groupId,data.artifactId,data.repositoryId,data.version,data.prefix,
                         data.goals,data.bundleVersion,data.bundleSymbolicName,
                         data.bundleExportPackage,data.bundleExportService,data.bundleDescription,data.bundleName,
                         data.bundleLicense,data.bundleDocUrl,
                         data.bundleImportPackage,data.bundleRequireBundle,data.classifier,data.packaging,data.fileExtension);
+    }
+    return null;
   }
 
   SearchRequest=function(){

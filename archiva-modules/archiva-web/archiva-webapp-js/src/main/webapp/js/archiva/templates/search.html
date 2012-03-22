@@ -607,7 +607,8 @@
         </table>
   	  </div>
 
-      <div id="artifact-details-dependency-tree-content" class="tab-pane"></div>
+      <div id="artifact-details-dependency-tree-content" class="tab-pane">
+      </div>
 
       <div id="artifact-details-used-by-content" class="tab-pane">
         used by
@@ -677,7 +678,22 @@
 <script id="dependency_tree_tmpl" type="text/html">
   <ul>
   {{each(i,treeEntry) treeEntries}}
-    <li>${treeEntry.artifact.groupId}:${treeEntry.artifact.artifactId}:${treeEntry.artifact.version}</li>
+    <li>
+        {{var entries=treeEntry.artifact.crumbEntries()}}
+        {{each(j,crumbEntry) entries}}
+          {{if j < entries.length - 2}}
+            <a href="#" onclick="dependencyTreeDisplayGroup('${crumbEntry.groupId}')">${crumbEntry.displayValue}</a>
+          {{else j == entries.length - 2}}
+            <a href="#" onclick="dependencyTreeDisplayArtifactDetailView('${crumbEntry.groupId}','${crumbEntry.artifactId}')">${crumbEntry.displayValue}</a>
+          {{else j == entries.length - 1}}
+            &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+             <a href="#" onclick="dependencyTreeDisplayArtifactVersionDetailViewModel('${crumbEntry.groupId}','${crumbEntry.artifactId}','${crumbEntry.version}')">${crumbEntry.version}</a>&nbsp;
+          {{/if}}
+          {{if j < entries.length - 2}}
+             &nbsp;/&nbsp;
+          {{/if}}
+        {{/each}}
+    </li>
     {{if treeEntry.childs.length>0}}
       {{tmpl({treeEntries:treeEntry.childs}) "#dependency_tree_tmpl"}}
     {{/if}}
