@@ -218,7 +218,7 @@
         </executions>
         <configuration>
           <descriptor>src/main/assembly/bin.xml</descriptor>
-          <finalName>apache-archiva-${project.version}</finalName>
+          <finalName>apache-archiva-js-${project.version}</finalName>
         </configuration>
       </plugin>
       <plugin>
