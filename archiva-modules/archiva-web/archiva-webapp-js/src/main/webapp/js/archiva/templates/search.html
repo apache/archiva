@@ -368,27 +368,42 @@
 <script id="search-results-view-grid-tmpl" type="text/html">
     <thead>
         <tr>
-          {{each(i, columnDefinition) columns}}
-            <th title="${ columnDefinition.title }">${ columnDefinition.headerText }</th>
-          {{/each}}
+
+            <th title="${$.i18n.prop('search.artifact.results.groupId')}">${$.i18n.prop('search.artifact.results.groupId')}</th>
+            <th title="${$.i18n.prop('search.artifact.results.artifactId')}">${$.i18n.prop('search.artifact.results.artifactId')}</th>
+            <th title="${$.i18n.prop('search.artifact.results.version')}">${$.i18n.prop('search.artifact.results.version')}</th>
+            <th title="${$.i18n.prop('search.artifact.results.classifier')}">${$.i18n.prop('search.artifact.results.classifier')}</th>
         </tr>
         <tr>
-          {{each(i, columnDefinition) columns}}
-            <th title="${ columnDefinition.title }">
-              <input type="text" class="form-search" id="search-filter-auto-${ columnDefinition.id }"
+
+            <th title="${$.i18n.prop('search.artifact.results.groupId')}">
+              <input type="text" class="form-search" id="search-filter-auto-groupId"
                      placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
             </th>
-          {{/each}}
+            <th title="${$.i18n.prop('search.artifact.results.artifactId')}">
+              <input type="text" class="form-search" id="search-filter-auto-artifactId"
+                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+            </th>
+            <th title="${$.i18n.prop('search.artifact.results.version')}">
+              <input type="text" class="form-search" id="search-filter-auto-version"
+                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+            </th>
+            <th title="${$.i18n.prop('search.artifact.results.classifier')}">
+              <input type="text" class="form-search" id="search-filter-auto-classifier"
+                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+            </th>
+
         </tr>
     </thead>
     <tbody>
-        {{each(i, row) itemsOnCurrentPage()}}
+    {{each(i, row) itemsOnCurrentPage()}}
             <tr>
-              {{each(j, columnDefinition) columns}}
-                <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
-              {{/each}}
+                <td>${row.groupId}</td>
+                <td>${row.artifactId}</td>
+                <td>${row.version}</td>
+                <td>${row.classifier}</td>
             </tr>
-        {{/each}}
+    {{/each}}
     </tbody>
 </script>
 
