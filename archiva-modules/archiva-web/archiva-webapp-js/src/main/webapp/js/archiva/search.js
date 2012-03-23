@@ -217,13 +217,31 @@ $(function() {
                       dataType: 'json',
                       success: function(data) {
                         var treeEntries = mapTreeEntries(data);
-                        treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: treeEntries}));//[data[0]]
+                        treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: treeEntries}));
                       }
                     });
                   //}
                 }
                 if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
-                  $.log("#artifact-details-used-by-content");
+                  var dependeesContentDiv=mainContent.find("#artifact-details-used-by-content" );
+                  //if( $.trim(dependeesContentDiv.html()).length<1){
+                    dependeesContentDiv.html(mediumSpinnerImg());
+                    var dependeesUrl="restServices/archivaServices/browseService/dependees/"+encodeURIComponent(groupId);
+                    dependeesUrl+="/"+encodeURIComponent(artifactId);
+                    dependeesUrl+="/"+encodeURIComponent(version);
+                    var selectedRepo=getSelectedBrowsingRepository();
+                    if (selectedRepo){
+                      dependeesUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+                    }
+                    $.ajax(dependeesUrl, {
+                      type: "GET",
+                      dataType: 'json',
+                      success: function(data) {
+                        var artifacts=mapArtifacts(data);
+                        dependeesContentDiv.html($("#dependees_tmpl" ).tmpl({artifacts: artifacts}));
+                      }
+                    });
+                  //}
                 }
 
               });

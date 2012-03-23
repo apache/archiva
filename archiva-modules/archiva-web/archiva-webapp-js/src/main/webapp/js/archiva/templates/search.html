@@ -610,9 +610,7 @@
       <div id="artifact-details-dependency-tree-content" class="tab-pane">
       </div>
 
-      <div id="artifact-details-used-by-content" class="tab-pane">
-        used by
-      </div>
+      <div id="artifact-details-used-by-content" class="tab-pane"></div>
 
       <div id="artifact-details-mailing-list-content" class="tab-pane">
         {{if projectVersionMetadata.mailingLists && projectVersionMetadata.mailingLists.length>0}}
@@ -699,4 +697,27 @@
     {{/if}}
   {{/each}}
   </ul>
+</script>
+
+<script id="dependees_tmpl" type="text/html">
+    <ul>
+    {{each(i,artifact) artifacts}}
+      <li>
+          {{var entries=artifact.crumbEntries()}}
+          {{each(j,crumbEntry) entries}}
+            {{if j < entries.length - 2}}
+              <a href="#" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
+            {{else j == entries.length - 2}}
+              <a href="#" onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
+            {{else j == entries.length - 1}}
+              &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+               <a href="#" onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
+            {{/if}}
+            {{if j < entries.length - 2}}
+               &nbsp;/&nbsp;
+            {{/if}}
+          {{/each}}
+      </li>
+    {{/each}}
+    </ul>
 </script>
