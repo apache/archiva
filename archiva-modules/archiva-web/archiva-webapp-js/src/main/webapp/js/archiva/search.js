@@ -265,16 +265,16 @@ $(function() {
     })
   }
 
-  dependencyTreeDisplayGroup=function(groupId) {
+  generalDisplayGroup=function(groupId) {
     var parentBrowseViewModel=new BrowseViewModel(null,null,null);
     displayGroupDetail(groupId,parentBrowseViewModel,null);
   }
 
-  dependencyTreeDisplayArtifactDetailView=function(groupId, artifactId){
+  generalDisplayArtifactDetailView=function(groupId, artifactId){
     displayArtifactDetail(groupId, artifactId);
   }
 
-  dependencyTreeDisplayArtifactVersionDetailViewModel=function(groupId,artifactId,version){
+  generalDisplayArtifactVersionDetailViewModel=function(groupId,artifactId,version){
     var artifactVersionDetailViewModel = new ArtifactVersionDetailViewModel (groupId,artifactId,version)
     artifactVersionDetailViewModel.display();
   }
