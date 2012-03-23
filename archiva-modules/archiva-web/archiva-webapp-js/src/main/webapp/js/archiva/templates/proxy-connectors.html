@@ -101,6 +101,7 @@
           <a href="#" class="btn btn-info" data-bind="click: function(){ displayOrderEdit(row)}">
               ${$.i18n.prop('proxy-connectors.order.edit')}
           </a>
+          <span class="badge badge-info">${row.order()}</span>
         {{/if}}
       </td>
     </tr>
@@ -271,7 +272,9 @@
             <br/>
             ${remoteRepository.name()}&nbsp;(<a href="${remoteRepository.url()}" target="_blank">${remoteRepository.url()}</a>)
         </blockquote>
-        <!--<p>${order}</p>-->
+      </div>
+      <div class="span2">
+        <span class="badge badge-info">${order}</span>
       </div>
     </div>
   </div>
