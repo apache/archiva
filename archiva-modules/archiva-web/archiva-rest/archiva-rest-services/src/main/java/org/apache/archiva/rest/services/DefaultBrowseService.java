@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -565,6 +566,43 @@ public class DefaultBrowseService
             throw new ArchivaRestServiceException( "repositories.read.observable.error",
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
+    }
+
+    public List<Artifact> getDependees( String groupId, String artifactId, String version, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        // TODO: what if we get duplicates across repositories?
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataResolver metadataResolver = repositorySession.getResolver();
+            for ( String repoId : getObservableRepos() )
+            {
+                // TODO: what about if we want to see this irrespective of version?
+                references.addAll(
+                    metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId, artifactId,
+                                                               version ) );
+            }
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+
+        List<Artifact> artifacts = new ArrayList<Artifact>( references.size() );
+
+        for ( ProjectVersionReference projectVersionReference : references )
+        {
+            artifacts.add( new Artifact( projectVersionReference.getNamespace(), projectVersionReference.getProjectId(),
+                                         projectVersionReference.getProjectVersion() ) );
+        }
+        return artifacts;
     }
 
     //---------------------------

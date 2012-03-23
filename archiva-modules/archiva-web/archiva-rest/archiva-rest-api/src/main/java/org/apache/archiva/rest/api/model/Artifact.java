@@ -129,6 +129,7 @@ public class Artifact
 
     /**
      * file extension of the artifact
+     *
      * @since 1.4-M2
      */
     private String fileExtension;
@@ -137,6 +138,13 @@ public class Artifact
     public Artifact()
     {
         // no op
+    }
+
+    public Artifact( String groupId, String artifactId, String version )
+    {
+        this.artifactId = artifactId;
+        this.groupId = groupId;
+        this.version = version;
     }
 
     public String getGroupId()
