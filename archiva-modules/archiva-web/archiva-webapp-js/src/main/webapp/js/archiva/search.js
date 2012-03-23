@@ -1027,34 +1027,34 @@ $(function() {
     });
 
     groupIdView=function(artifact){
-      $.log("groupIdView:"+artifact.groupId);
       displayBrowseGroupId(artifact.groupId);
     }
     artifactIdView=function(artifact){
-      $.log("artifactIdView:"+artifact.groupId);
       displayBrowseArtifactDetail(artifact.groupId,artifact.artifactId,null,null);
     }
     artifactDetailView=function(artifact){
-      $.log("artifactDetailView:"+artifact.groupId);
-      var mainContent=$("#main-content");
-      mainContent.html($("#browse-tmpl" ).tmpl());
-      mainContent.find("#browse_result" ).hide();
-      mainContent.find("#browse_artifact_detail").show();
-      mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
-      mainContent.find("#browse_breadcrumb" ).show();
-      mainContent.find("#browse_breadcrumb" ).html(mediumSpinnerImg());
-      $.ajax("restServices/archivaServices/browseService/userRepositories", {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:null}));
-            var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(artifact.groupId,artifact.artifactId,artifact.version);
-            artifactVersionDetailViewModel.display(true);
-          }
-      });
+      generaldisplayArtifactDetailsVersionView(artifact.groupId,artifact.artifactId,artifact.version,null);
     }
   }
 
+  generaldisplayArtifactDetailsVersionView=function(groupId,artifactId,version,repositoryId){
+    var mainContent=$("#main-content");
+    mainContent.html($("#browse-tmpl" ).tmpl());
+    mainContent.find("#browse_result" ).hide();
+    mainContent.find("#browse_artifact_detail").show();
+    mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
+    mainContent.find("#browse_breadcrumb" ).show();
+    mainContent.find("#browse_breadcrumb" ).html(mediumSpinnerImg());
+    $.ajax("restServices/archivaServices/browseService/userRepositories", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
+          var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(groupId,artifactId,version);
+          artifactVersionDetailViewModel.display(true);
+        }
+    });
+  }
 
   SearchViewModel=function(){
     var self=this;
