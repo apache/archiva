@@ -397,12 +397,12 @@
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
-            <tr>
-                <td>${row.groupId}</td>
-                <td>${row.artifactId}</td>
-                <td>${row.version}</td>
-                <td>${row.classifier}</td>
-            </tr>
+      <tr>
+        <td><a href="#" data-bind="click: function(){groupIdView(row)}">${row.groupId}</a></td>
+        <td><a href="#" data-bind="click: function(){artifactIdView(row)}">${row.artifactId}</a></td>
+        <td><a href="#" data-bind="click: function(){artifactDetailView(row)}">${row.version}</a></td>
+        <td>${row.classifier}</td>
+      </tr>
     {{/each}}
     </tbody>
 </script>
