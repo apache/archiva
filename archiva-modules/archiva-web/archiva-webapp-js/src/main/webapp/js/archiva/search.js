@@ -779,26 +779,7 @@ $(function() {
     this.version=version;
 
     this.crumbEntries=function(){
-      var splitted = self.groupId.split(".");
-      var breadCrumbEntries=[];
-      var curGroupId="";
-      for (var i=0;i<splitted.length;i++){
-        curGroupId+=splitted[i];
-        breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
-        curGroupId+="."
-      }
-      var crumbEntryArtifact=new BreadCrumbEntry(self.groupId,self.artifactId);
-      crumbEntryArtifact.artifactId=self.artifactId;
-      crumbEntryArtifact.artifact=true;
-      breadCrumbEntries.push(crumbEntryArtifact);
-
-      var crumbEntryVersion=new BreadCrumbEntry(self.groupId,self.version);
-      crumbEntryVersion.artifactId=self.artifactId;
-      crumbEntryVersion.artifact=false;
-      crumbEntryVersion.version=self.version;
-      breadCrumbEntries.push(crumbEntryVersion);
-
-      return breadCrumbEntries;
+      return calculateCrumbEntries(self.groupId,self.artifactId,self.version);
     }
 
   }
@@ -887,30 +868,33 @@ $(function() {
     //private String fileExtension;
     this.fileExtension=fileExtension;
 
-    // FIXME it's a copy an paste from Dependency we must extract an "abstract" class with common fields
     this.crumbEntries=function(){
-      var splitted = self.groupId.split(".");
-      var breadCrumbEntries=[];
-      var curGroupId="";
-      for (var i=0;i<splitted.length;i++){
-        curGroupId+=splitted[i];
-        breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
-        curGroupId+="."
-      }
-      var crumbEntryArtifact=new BreadCrumbEntry(self.groupId,self.artifactId);
-      crumbEntryArtifact.artifactId=self.artifactId;
-      crumbEntryArtifact.artifact=true;
-      breadCrumbEntries.push(crumbEntryArtifact);
-
-      var crumbEntryVersion=new BreadCrumbEntry(self.groupId,self.version);
-      crumbEntryVersion.artifactId=self.artifactId;
-      crumbEntryVersion.artifact=false;
-      crumbEntryVersion.version=self.version;
-      breadCrumbEntries.push(crumbEntryVersion);
-
-      return breadCrumbEntries;
+      return calculateCrumbEntries(self.groupId,self.artifactId,self.version);
     }
 
+  }
+
+  calculateCrumbEntries=function(groupId,artifactId,version){
+    var splitted = groupId.split(".");
+    var breadCrumbEntries=[];
+    var curGroupId="";
+    for (var i=0;i<splitted.length;i++){
+      curGroupId+=splitted[i];
+      breadCrumbEntries.push(new BreadCrumbEntry(curGroupId,splitted[i]));
+      curGroupId+="."
+    }
+    var crumbEntryArtifact=new BreadCrumbEntry(groupId,artifactId);
+    crumbEntryArtifact.artifactId=artifactId;
+    crumbEntryArtifact.artifact=true;
+    breadCrumbEntries.push(crumbEntryArtifact);
+
+    var crumbEntryVersion=new BreadCrumbEntry(groupId,version);
+    crumbEntryVersion.artifactId=artifactId;
+    crumbEntryVersion.artifact=false;
+    crumbEntryVersion.version=version;
+    breadCrumbEntries.push(crumbEntryVersion);
+
+    return breadCrumbEntries;
   }
 
   mapArtifacts=function(data){
