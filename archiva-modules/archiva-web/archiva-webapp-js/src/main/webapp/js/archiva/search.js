@@ -265,20 +265,42 @@ $(function() {
     })
   }
 
+  /**
+   * display groupId note #main-content must contains browse-tmpl
+   * @param groupId
+   */
   generalDisplayGroup=function(groupId) {
     var parentBrowseViewModel=new BrowseViewModel(null,null,null);
     displayGroupDetail(groupId,parentBrowseViewModel,null);
   }
 
+  /**
+   * display groupId/artifactId detail note #main-content must contains browse-tmpl
+   * @param groupId
+   * @param artifactId
+   */
   generalDisplayArtifactDetailView=function(groupId, artifactId){
     displayArtifactDetail(groupId, artifactId);
   }
 
+  /**
+   * display groupId/artifactId/version detail  note #main-content must contains browse-tmpl
+   * @param groupId
+   * @param artifactId
+   * @param version
+   */
   generalDisplayArtifactVersionDetailViewModel=function(groupId,artifactId,version){
     var artifactVersionDetailViewModel = new ArtifactVersionDetailViewModel (groupId,artifactId,version)
     artifactVersionDetailViewModel.display();
   }
 
+  /**
+   *
+   * @param groupId
+   * @param artifactId
+   * @param parentBrowseViewModel
+   * @param restUrl
+   */
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
     var artifactDetailViewModel=new ArtifactDetailViewModel(groupId,artifactId);
     var mainContent = $("#main-content");
