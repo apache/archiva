@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id='redback/user-edit-tmpl' type='text/x-jquery-tmpl'>
+<script id='redback/user-edit-tmpl' type='text/html'>
 <div id="edit-user-details-pills">
   <ul id="edit_user_details_pills_headers" class="nav nav-pills" data-target="#edit-user-details-pills-content">
     <li class="active" id="user-view-detail-li">
@@ -102,7 +102,7 @@
 </div>
 </script>
 
-<script id="user_view_roles_list_tmpl" type="text/x-jquery-tmpl">
+<script id="user_view_roles_list_tmpl" type="text/html">
   <div class="page-header">
     <h3>${$.i18n.prop('effective.roles')}</h3>
   </div>
@@ -115,7 +115,7 @@
   </div>
 </script>
 
-<script id="user_edit_roles_tmpl" type="text/x-jquery-tmpl">
+<script id="user_edit_roles_tmpl" type="text/html">
 
   <div>
     {{each $data.applicationRoles}}

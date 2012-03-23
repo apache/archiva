@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id='ko_usersGrid_grid' type='text/x-jquery-tmpl'>
+<script id='ko_usersGrid_grid' type='text/html'>
   <thead>
       <tr>
         {{each(i, columnDefinition) columns}}
@@ -84,7 +84,7 @@
 
 </script>
 
-<script id="usersGrid"  type="text/x-jquery-tmpl">
+<script id="usersGrid"  type="text/html">
     <div class="page-header">
       <h3><img src="images/system-users-32-32.png"/>${$.i18n.prop('users.list')}</h3>
     </div>
@@ -110,7 +110,7 @@
     </div>
 </script>
 
-<script id="user-delete-warning-tmpl" type='text/x-jquery-tmpl'>
+<script id="user-delete-warning-tmpl" type='text/html'>
     <div>
       <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
     </div>

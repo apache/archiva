@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id="proxyConnectorsMain" type="text/x-jquery-tmpl">
+<script id="proxyConnectorsMain" type="text/html">
   <div class="page-header">
     <h2><img src="images/preferences-system-network-proxy-32-32.png"/>${$.i18n.prop('proxy-connectors.list')}</h2>
   </div>
@@ -51,7 +51,7 @@
 
 </script>
 
-<script id='ko-proxy-connectors-grid' type='text/x-jquery-tmpl'>
+<script id='ko-proxy-connectors-grid' type='text/html'>
     <thead>
       <tr>
         <th title="${$.i18n.prop('proxy-connectors.grid.managedrepo.title')}">
@@ -110,7 +110,7 @@
     <div id="proxy-connectors-grid-remoterepo-settings-content-${val}-${targetRepoId}" style="display:none"></div>
 </script>
 
-<script id='proxy-connectors-remote-settings-popover-tmpl' type='text/x-jquery-tmpl'>
+<script id='proxy-connectors-remote-settings-popover-tmpl' type='text/html'>
   <div>
     {{if proxyId}}
       ${$.i18n.prop('proxy-connectors.remoterepo.settings.networkproxy')}: ${proxyConnector.proxyId}
@@ -134,7 +134,7 @@
   </div>
 </script>
 
-<script id="proxy-connector-edit-form-tmpl" type='text/x-jquery-tmpl'>
+<script id="proxy-connector-edit-form-tmpl" type='text/html'>
 
     <form id="proxy-connector-edit-form" class="well form-horizontal">
       <fieldset id="remote-repository-edit-fieldset">
@@ -246,7 +246,7 @@
     </form>
 
 </script>
-<script id="proxy-connectors-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+<script id="proxy-connectors-bulk-save-tmpl" type='text/html'>
   {{if bulkSave()}}
     <a data-bind="click: updateModifiedProxyConnectors" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
@@ -302,7 +302,7 @@
   </div>
 </script>
 
-<script id="proxy-connector-delete-warning-tmpl" type='text/x-jquery-tmpl'>
+<script id="proxy-connector-delete-warning-tmpl" type='text/html'>
     <div>
       <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
     </div>

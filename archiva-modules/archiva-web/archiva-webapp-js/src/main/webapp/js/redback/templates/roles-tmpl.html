@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id="rolesTabs" type="text/x-jquery-tmpl">
+<script id="rolesTabs" type="text/html">
   <div class="page-header">
     <h2>${$.i18n.prop('roles.management.header')}</h2>
   </div>
@@ -45,7 +45,7 @@
 
 </script>
 
-<script id="editRoleTab" type="text/x-jquery-tmpl">
+<script id="editRoleTab" type="text/html">
   <div class="accordion" id="edit-role-accordion">
     <div class="accordion-group">
       <div class="accordion-heading">
@@ -196,7 +196,7 @@
   </div>
 </script>
 
-<script id='ko_rolesGrid' type='text/x-jquery-tmpl'>
+<script id='ko_rolesGrid' type='text/html'>
   <thead>
       <tr>
         {{each(i, columnDefinition) columns}}

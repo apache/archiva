@@ -16,7 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id="repositoriesMain" type="text/x-jquery-tmpl">
+<script id="repositoriesMain" type="text/html">
     <div class="page-header">
       <h2><img src="images/system-file-manager-32-32.png"/>${$.i18n.prop('administration.repositories')}</h2>
     </div>
@@ -78,7 +78,7 @@
       </div>
 </script>
 
-<script id='ko_managed-repositoriesGrid' type='text/x-jquery-tmpl'>
+<script id='ko_managed-repositoriesGrid' type='text/html'>
   <thead>
       <tr>
         {{each(i, columnDefinition) columns}}
@@ -153,7 +153,7 @@
 
 </script>
 
-<script id="managed-repository-edit-tmpl" type='text/x-jquery-tmpl'>
+<script id="managed-repository-edit-tmpl" type='text/html'>
     <form id="managed-repository-edit-form" class="well form-horizontal">
       <fieldset id="managed-repository-edit-fieldset">
         <div class="control-group">
@@ -254,7 +254,7 @@
     </form>
 </script>
 
-<script id="managed-repository-delete-warning-tmpl" type='text/x-jquery-tmpl'>
+<script id="managed-repository-delete-warning-tmpl" type='text/html'>
   <div>
     <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
     <div>
@@ -274,7 +274,7 @@
     </div>
 </script>
 
-<script id="managed-repository-location-warning-tmpl" type='text/x-jquery-tmpl'>
+<script id="managed-repository-location-warning-tmpl" type='text/html'>
   <div>
     <span class="label label-warning">${$.i18n.prop('managedrepository.location.already.exists')}</span>
     <div>
@@ -284,12 +284,12 @@
     </div>
   </div>
 </script>
-<script id="managed-repository-scan-now-modal-tmpl" type='text/x-jquery-tmpl'>
+<script id="managed-repository-scan-now-modal-tmpl" type='text/html'>
   <div>
     ${$.i18n.prop('managedrepository.scan.all')}: <input type="checkbox" id="managed-repository-scan-now-all">
   </div>
 </script>
-<script id="managed-repository-stats-tmpl" type='text/x-jquery-tmpl'>
+<script id="managed-repository-stats-tmpl" type='text/html'>
   <div id="managedrepository-stats-${managedRepository.id()}-popover" style="display:none">
     <div>${$.i18n.prop('managedrepository.stats.endTime')}: ${lastScanDate()}</div>
     <div>${$.i18n.prop('managedrepository.stats.duration')}: ${duration()}ms</div>
@@ -297,7 +297,7 @@
     <div>${$.i18n.prop('managedrepository.stats.newFileCount')}: ${newFileCount()}</div>
   </div>
 </script>
-<script id="pom-snippet-tmpl" type='text/x-jquery-tmpl'>
+<script id="pom-snippet-tmpl" type='text/html'>
   <div class="page-header">
     <h2>POM Snippet</h2></div>
   </div>
@@ -307,7 +307,7 @@
 
 <!-- remote part -->
 
-<script id='ko_remote-repositoriesGrid' type='text/x-jquery-tmpl'>
+<script id='ko_remote-repositoriesGrid' type='text/html'>
   <thead>
       <tr>
         {{each(i, columnDefinition) columns}}
@@ -354,7 +354,7 @@
 </script>
 
 
-<script id="remote-repository-edit-tmpl" type='text/x-jquery-tmpl'>
+<script id="remote-repository-edit-tmpl" type='text/html'>
     <form id="remote-repository-edit-form" class="well form-horizontal">
       <fieldset id="remote-repository-edit-fieldset">
         <div class="control-group">
@@ -461,7 +461,7 @@
     </form>
 </script>
 
-<script id="remote-repository-scan-modal-tmpl" type='text/x-jquery-tmpl'>
+<script id="remote-repository-scan-modal-tmpl" type='text/html'>
     <div>
       ${$.i18n.prop('remoterepository.download.remote.now')}: <input type="checkbox" id="remoterepository-scan-now">
     </div>
@@ -470,13 +470,13 @@
     </div>
 </script>
 
-<script id="managed-repositories-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+<script id="managed-repositories-bulk-save-tmpl" type='text/html'>
   {{if bulkSave()}}
     <a data-bind="click: updateModifiedManagedRepositories" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
 </script>
 
-<script id="remote-repositories-bulk-save-tmpl" type='text/x-jquery-tmpl'>
+<script id="remote-repositories-bulk-save-tmpl" type='text/html'>
   {{if bulkSave()}}
     <a data-bind="click: updateModifiedRemoteRepositories" class="btn btn-danger" href="#">${$.i18n.prop('save.all')}</a>
   {{/if}}
