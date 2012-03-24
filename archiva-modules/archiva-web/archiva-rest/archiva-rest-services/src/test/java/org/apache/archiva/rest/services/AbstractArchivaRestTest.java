@@ -22,6 +22,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
+import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
@@ -198,6 +199,26 @@ public abstract class AbstractArchivaRestTest
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         return service;
+    }
+
+    protected BrowseService getBrowseService( String authzHeader )
+    {
+        BrowseService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       BrowseService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+        // to add authentification
+        if ( authzHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authzHeader );
+        }
+
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
+        return service;
+
     }
 
     protected SearchService getSearchService( String authzHeader )

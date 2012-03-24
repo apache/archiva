@@ -26,13 +26,16 @@ import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -103,6 +106,33 @@ public interface BrowseService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<Artifact> getDependees( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
-                              @PathParam( "v" ) String version, @QueryParam( "repositoryId" ) String repositoryId )
+                                 @PathParam( "v" ) String version, @QueryParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
+    @Path( "metadatas/{g}/{a}/{v}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    Map<String, String> getMetadatas( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                                      @PathParam( "v" ) String version,
+                                      @QueryParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
+    @Path( "metadata/{g}/{a}/{v}/{key}/{value}" )
+    @PUT
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = false, noRestriction = false, permissions = "archiva-add-metadata" )
+    Boolean addMetadata( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                         @PathParam( "v" ) String version, @PathParam( "key" ) String key,
+                         @PathParam( "value" ) String value, @QueryParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
+    @Path( "metadata/{g}/{a}/{v}/{key}" )
+    @DELETE
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = false, noRestriction = false, permissions = "archiva-add-metadata" )
+    Boolean deleteMetadata( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                            @PathParam( "v" ) String version, @PathParam( "key" ) String key,
+                            @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 }

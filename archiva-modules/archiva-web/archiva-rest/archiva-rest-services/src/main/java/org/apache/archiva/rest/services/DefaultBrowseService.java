@@ -18,12 +18,15 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
+import org.apache.archiva.metadata.generic.GenericMetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -35,12 +38,11 @@ import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
+import org.apache.archiva.rest.services.utils.TreeDependencyNodeVisitor;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
-import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -48,8 +50,10 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -508,52 +512,6 @@ public class DefaultBrowseService
         return treeEntries;
     }
 
-    private static class TreeDependencyNodeVisitor
-        implements DependencyNodeVisitor
-    {
-
-        final List<TreeEntry> treeEntries;
-
-        private TreeEntry currentEntry;
-
-
-        private DependencyNode firstNode;
-
-
-        boolean firstChild = true;
-
-        private TreeDependencyNodeVisitor( List<TreeEntry> treeEntries )
-        {
-            this.treeEntries = treeEntries;
-        }
-
-        public boolean visit( DependencyNode node )
-        {
-            TreeEntry entry = new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) );
-            entry.setParent( currentEntry );
-            currentEntry = entry;
-
-            if ( firstNode == null )
-            {
-                firstNode = node;
-                treeEntries.add( currentEntry );
-            }
-            else
-            {
-                currentEntry.getParent().getChilds().add( currentEntry );
-            }
-            return true;
-        }
-
-        public boolean endVisit( DependencyNode node )
-        {
-            currentEntry = currentEntry.getParent();
-            firstChild = false;
-            return true;
-        }
-
-    }
-
     public List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException
     {
@@ -603,6 +561,127 @@ public class DefaultBrowseService
                                          projectVersionReference.getProjectVersion() ) );
         }
         return artifacts;
+    }
+
+    public Map<String, String> getMetadatas( String groupId, String artifactId, String version, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        ProjectVersionMetadata projectVersionMetadata =
+            getProjectMetadata( groupId, artifactId, version, repositoryId );
+        if ( projectVersionMetadata == null )
+        {
+            return Collections.emptyMap();
+        }
+        MetadataFacet metadataFacet = projectVersionMetadata.getFacet( GenericMetadataFacet.FACET_ID );
+
+        if ( metadataFacet == null )
+        {
+            return Collections.emptyMap();
+        }
+
+        return metadataFacet.toProperties();
+    }
+
+    public Boolean addMetadata( String groupId, String artifactId, String version, String key, String value,
+                                String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        ProjectVersionMetadata projectVersionMetadata =
+            getProjectMetadata( groupId, artifactId, version, repositoryId );
+
+        if ( projectVersionMetadata == null )
+        {
+            return Boolean.FALSE;
+        }
+
+        Map<String, String> properties = new HashMap<String, String>();
+
+        MetadataFacet metadataFacet = projectVersionMetadata.getFacet( GenericMetadataFacet.FACET_ID );
+
+        if ( metadataFacet != null && metadataFacet.toProperties() != null )
+        {
+            properties.putAll( metadataFacet.toProperties() );
+        }
+        else
+        {
+            metadataFacet = new GenericMetadataFacet();
+        }
+
+        properties.put( key, value );
+
+        metadataFacet.fromProperties( properties );
+
+        projectVersionMetadata.addFacet( metadataFacet );
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectVersionMetadata );
+
+            repositorySession.save();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+        return Boolean.TRUE;
+    }
+
+    public Boolean deleteMetadata( String groupId, String artifactId, String version, String key, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        ProjectVersionMetadata projectVersionMetadata =
+            getProjectMetadata( groupId, artifactId, version, repositoryId );
+
+        if ( projectVersionMetadata == null )
+        {
+            return Boolean.FALSE;
+        }
+
+        GenericMetadataFacet metadataFacet =
+            (GenericMetadataFacet) projectVersionMetadata.getFacet( GenericMetadataFacet.FACET_ID );
+
+        if ( metadataFacet != null && metadataFacet.toProperties() != null )
+        {
+            Map<String, String> properties = metadataFacet.toProperties();
+            properties.remove( key );
+            metadataFacet.setAdditionalProperties( properties );
+        }
+        else
+        {
+            return Boolean.TRUE;
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            metadataRepository.updateProjectVersion( repositoryId, groupId, artifactId, projectVersionMetadata );
+
+            repositorySession.save();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+        return Boolean.TRUE;
     }
 
     //---------------------------
