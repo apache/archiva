@@ -17,7 +17,6 @@
  * under the License.
  */
 require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
-          "text!js/archiva/templates/topbar.html"+appendTemplateUrl(),
           "text!js/archiva/templates/message.html"+appendTemplateUrl(),
           "text!js/archiva/templates/modal.html"+appendTemplateUrl(),
           "text!js/archiva/templates/grids-generics.html"+appendTemplateUrl(),
@@ -27,13 +26,12 @@ require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
           "text!js/archiva/templates/repository-groups.html"+appendTemplateUrl(),
           "text!js/archiva/templates/search.html"+appendTemplateUrl(),
           "text!js/archiva/templates/general-admin.html"+appendTemplateUrl()],
-  function(menu,topbar,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
+  function(menu,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
            repository_groups,search,general_admin) {
 
     var htmlFragment=$("#html-fragments");
     // template loading
-    $.tmpl( menu ).appendTo(htmlFragment);
-    $.tmpl( topbar ).appendTo(htmlFragment);
+    htmlFragment.append(menu);
     htmlFragment.append(message);
     $.tmpl( modal ).appendTo(htmlFragment);
     htmlFragment.append(grids_generics);

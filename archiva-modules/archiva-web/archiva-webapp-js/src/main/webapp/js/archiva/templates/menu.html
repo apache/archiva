@@ -16,6 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
+<script type="text/html" id="main_menu_tmpl">
   <div id="main-menu">
 
     <ul class="nav nav-list">
@@ -72,3 +73,52 @@
     </ul>
 
   </div>
+</script>
+
+<script id="topbar_menu_tmpl" type="text/html">
+    <div id="topbar-menu">
+    <div class="navbar navbar-fixed-top">
+
+      <div style="max-height: 40px" class="navbar-inner">
+        <div class="container-fluid">
+          <div id="organisation-logo" class="pull-left"></div>
+          <div class="nav-collapse">
+          <ul class="nav pull-right">
+            <li id="create-admin-link" class="pull-right" style="display: none">
+              <a href="#" onclick="adminCreateBox();" id="create-admin-link-a">
+                <span class="label label-important">${$.i18n.prop('create.admin.page.link')}</span>
+              </a>
+            </li>
+            <li id="login-link" class="pull-right" style="display: none">
+              <a href="#" onclick="loginBox();" id="login-link-a">
+                <span class="label label-success force-upper-case">${$.i18n.prop('login')}</span>
+              </a>
+            </li>
+            <li id="change-password-link" class="pull-right" style="">
+              <a href="#" onclick="editUserDetailsBox();">${$.i18n.prop('edit.details')}</a>
+            </li>
+            <li id="logout-link" class="pull-right" style="display: none">
+              <a href="#" onclick="logout(true);" id="logout-link-a">
+                <span class="label label-important force-upper-case">${$.i18n.prop('logout')}</span>
+              </a>
+            </li>
+            <li id="register-link" class="pull-right" style="display: none">
+              <a href="#" onclick="registerBox();" id="register-link-a">
+                <span class="label label-info force-upper-case">${$.i18n.prop('register')}</span>
+              </a>
+            </li>
+            <li class="pull-right">
+              <div class="ui-widget">
+                <input type="text" class="ui-autocomplete-input" id="quick-search-autocomplete"
+                       placeholder="${$.i18n.prop('menu.topbar.quicksearch')}" />
+              </div>
+            </li>
+          </ul>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+</script>
