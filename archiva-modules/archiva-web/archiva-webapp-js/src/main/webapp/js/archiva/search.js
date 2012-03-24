@@ -203,7 +203,7 @@ $(function() {
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
                 if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
                   var treeContentDiv=mainContent.find("#artifact-details-dependency-tree-content" );
-                  //if( $.trim(treeContentDiv.html()).length<1){
+                  if( $.trim(treeContentDiv.html()).length<1){
                     treeContentDiv.html(mediumSpinnerImg());
                     var treeDependencyUrl="restServices/archivaServices/browseService/treeEntries/"+encodeURIComponent(groupId);
                     treeDependencyUrl+="/"+encodeURIComponent(artifactId);
@@ -220,11 +220,11 @@ $(function() {
                         treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: treeEntries}));
                       }
                     });
-                  //}
+                  }
                 }
                 if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
                   var dependeesContentDiv=mainContent.find("#artifact-details-used-by-content" );
-                  //if( $.trim(dependeesContentDiv.html()).length<1){
+                  if( $.trim(dependeesContentDiv.html()).length<1){
                     dependeesContentDiv.html(mediumSpinnerImg());
                     var dependeesUrl="restServices/archivaServices/browseService/dependees/"+encodeURIComponent(groupId);
                     dependeesUrl+="/"+encodeURIComponent(artifactId);
@@ -241,7 +241,7 @@ $(function() {
                         dependeesContentDiv.html($("#dependees_tmpl" ).tmpl({artifacts: artifacts}));
                       }
                     });
-                  //}
+                  }
                 }
 
               });
