@@ -89,6 +89,9 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
+    /**
+     * @return List of managed repositories current user can read
+     */
     List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException;
 
@@ -96,6 +99,10 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
+    /**
+     * return the dependency Tree for an artifacts
+     * <b>the List result has only one entry</b>
+     */
     List<TreeEntry> getTreeEntries( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
                                     @PathParam( "v" ) String version,
                                     @QueryParam( "repositoryId" ) String repositoryId )
@@ -105,6 +112,9 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
+    /**
+     * List of artifacts using the artifact passed in parameter.
+     */
     List<Artifact> getDependees( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
                                  @PathParam( "v" ) String version, @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
