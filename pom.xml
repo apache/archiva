@@ -69,8 +69,8 @@
   </issueManagement>
 
   <ciManagement>
-    <system>continuum</system>
-    <url>http://vmbuild.apache.org/continuum</url>
+    <system>jenkins</system>
+    <url>https://builds.apache.org/view/A-F/view/Archiva/</url>
   </ciManagement>
 
   <properties>
