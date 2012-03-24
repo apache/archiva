@@ -18,6 +18,10 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.rest.api.model.BrowseResult;
+import org.apache.archiva.rest.api.model.BrowseResultEntry;
+import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.fest.assertions.MapAssert;
 import org.junit.Test;
@@ -46,7 +50,7 @@ public class BrowseServiceTest
 
         createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
-        BrowseService browseService = getBrowseService( authorizationHeader );
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         Map<String, String> metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
 
@@ -77,7 +81,7 @@ public class BrowseServiceTest
 
         createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
-        BrowseService browseService = getBrowseService( authorizationHeader );
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         Map<String, String> metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
 
@@ -97,5 +101,106 @@ public class BrowseServiceTest
 
         deleteTestRepo( testRepoId );
 
+    }
+
+    @Test
+    public void browserootGroups()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        BrowseResult browseResult = browseService.getRootGroups( testRepoId );
+        assertThat( browseResult ).isNotNull();
+        assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 3 ).contains(
+            new BrowseResultEntry( "commons-cli", false ), new BrowseResultEntry( "commons-logging", false ),
+            new BrowseResultEntry( "org.apache", false ) );
+
+        deleteTestRepo( testRepoId );
+
+    }
+
+    @Test
+    public void browsegroupId()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        BrowseResult browseResult = browseService.browseGroupId( "org.apache", testRepoId );
+        assertThat( browseResult ).isNotNull();
+        assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
+            new BrowseResultEntry( "org.apache.felix", false ),
+            new BrowseResultEntry( "org.apache.karaf.features", false ) );
+
+        deleteTestRepo( testRepoId );
+
+    }
+
+    @Test
+    public void versionsList()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        VersionsList versions =
+            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core", testRepoId );
+        assertThat( versions ).isNotNull();
+        assertThat( versions.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "2.2.1", "2.2.2" );
+
+        deleteTestRepo( testRepoId );
+
+    }
+
+    @Test
+    public void getProjectVersionMetadata()
+        throws Exception
+    {
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        ProjectVersionMetadata metadata =
+            browseService.getProjectVersionMetadata( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                     testRepoId );
+
+        assertThat( metadata ).isNotNull();
+
+        deleteTestRepo( testRepoId );
     }
 }

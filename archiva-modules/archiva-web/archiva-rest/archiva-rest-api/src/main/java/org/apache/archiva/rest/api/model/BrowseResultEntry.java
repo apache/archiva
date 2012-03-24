@@ -69,4 +69,49 @@ public class BrowseResultEntry
     {
         return this.name.compareTo( browseGroupResultEntry.name );
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "BrowseResultEntry" );
+        sb.append( "{name='" ).append( name ).append( '\'' );
+        sb.append( ", project=" ).append( project );
+        sb.append( '}' );
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof BrowseResultEntry ) )
+        {
+            return false;
+        }
+
+        BrowseResultEntry that = (BrowseResultEntry) o;
+
+        if ( project != that.project )
+        {
+            return false;
+        }
+        if ( !name.equals( that.name ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = name.hashCode();
+        result = 31 * result + ( project ? 1 : 0 );
+        return result;
+    }
 }

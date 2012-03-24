@@ -201,7 +201,7 @@ public abstract class AbstractArchivaRestTest
         return service;
     }
 
-    protected BrowseService getBrowseService( String authzHeader )
+    protected BrowseService getBrowseService( String authzHeader, boolean useXml )
     {
         BrowseService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
@@ -214,9 +214,16 @@ public abstract class AbstractArchivaRestTest
         }
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
-
-        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
-        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
+        if ( useXml )
+        {
+            WebClient.client( service ).accept( MediaType.APPLICATION_XML_TYPE );
+            WebClient.client( service ).type( MediaType.APPLICATION_XML_TYPE );
+        }
+        else
+        {
+            WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+            WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
+        }
         return service;
 
     }
@@ -348,7 +355,7 @@ public abstract class AbstractArchivaRestTest
 
     }
 
-    protected void createAndIndexRepo( String testRepoId, String repoPath )
+    protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan )
         throws Exception
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
@@ -378,9 +385,17 @@ public abstract class AbstractArchivaRestTest
 
         getRoleManagementService( authorizationHeader ).assignTemplatedRole(
             ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "guest" );
+        if ( scan )
+        {
+            getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
+        }
 
-        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
+    }
 
+    protected void createAndIndexRepo( String testRepoId, String repoPath )
+        throws Exception
+    {
+        createAndIndexRepo( testRepoId, repoPath, true );
     }
 
     protected void deleteTestRepo( String id )
