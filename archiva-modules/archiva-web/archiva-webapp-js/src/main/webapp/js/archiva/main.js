@@ -286,8 +286,8 @@ $(function() {
 
   startArchivaApplication=function(){
     $.log("startArchivaApplication");
-    $('#topbar-menu-container').html($("#topbar_menu_tmpl" ).tmpl());//$("#topbar-menu"));
-    $('#sidebar-content').html( $("#main_menu_tmpl").tmpl());
+    $('#topbar-menu-container').html($("#topbar_menu_tmpl" ).tmpl());
+    $('#sidebar-content').html($("#main_menu_tmpl").tmpl());
 
     hideElementWithKarma();
     checkSecurityLinks();

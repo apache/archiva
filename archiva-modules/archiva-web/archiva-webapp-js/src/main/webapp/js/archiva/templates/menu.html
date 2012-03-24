@@ -82,40 +82,38 @@
       <div style="max-height: 40px" class="navbar-inner">
         <div class="container-fluid">
           <div id="organisation-logo" class="pull-left"></div>
-          <div class="nav-collapse">
           <ul class="nav pull-right">
-            <li id="create-admin-link" class="pull-right" style="display: none">
+            <li id="create-admin-link" style="display: none">
               <a href="#" onclick="adminCreateBox();" id="create-admin-link-a">
                 <span class="label label-important">${$.i18n.prop('create.admin.page.link')}</span>
               </a>
             </li>
-            <li id="login-link" class="pull-right" style="display: none">
+            <li id="login-link" style="display: none">
               <a href="#" onclick="loginBox();" id="login-link-a">
                 <span class="label label-success force-upper-case">${$.i18n.prop('login')}</span>
               </a>
             </li>
-            <li id="change-password-link" class="pull-right" style="">
+            <li id="change-password-link">
               <a href="#" onclick="editUserDetailsBox();">${$.i18n.prop('edit.details')}</a>
             </li>
-            <li id="logout-link" class="pull-right" style="display: none">
+            <li id="logout-link" style="display: none">
               <a href="#" onclick="logout(true);" id="logout-link-a">
                 <span class="label label-important force-upper-case">${$.i18n.prop('logout')}</span>
               </a>
             </li>
-            <li id="register-link" class="pull-right" style="display: none">
+            <li id="register-link" style="display: none">
               <a href="#" onclick="registerBox();" id="register-link-a">
                 <span class="label label-info force-upper-case">${$.i18n.prop('register')}</span>
               </a>
             </li>
-            <li class="pull-right">
-              <div class="ui-widget">
-                <input type="text" class="ui-autocomplete-input" id="quick-search-autocomplete"
-                       placeholder="${$.i18n.prop('menu.topbar.quicksearch')}" />
+            <li>
+              <div class="ui-widget navbar-search">
+
+                <input type="text" class="ui-autocomplete-input search-query" id="quick-search-autocomplete"
+                                   placeholder="${$.i18n.prop('menu.topbar.quicksearch')}" />
               </div>
             </li>
           </ul>
-
-          </div>
         </div>
       </div>
 
