@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback-templates",["text!redback/templates/user-edit.html",
-          "text!redback/templates/user-grids.html",
-          "text!redback/templates/login.html",
-          "text!redback/templates/register-form.html",
-          "text!redback/templates/password-change-form.html",
-          "text!redback/templates/user-edit-form.html",
-          "text!redback/templates/roles-tmpl.html",
+define("redback-templates",["text!templates/redback/user-edit.html",
+          "text!templates/redback/user-grids.html",
+          "text!templates/redback/login.html",
+          "text!templates/redback/register-form.html",
+          "text!templates/redback/password-change-form.html",
+          "text!templates/redback/user-edit-form.html",
+          "text!templates/redback/roles-tmpl.html",
           "jquery_tmpl","utils"],
     function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
 
