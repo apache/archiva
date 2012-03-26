@@ -95,7 +95,6 @@ $(function() {
                .script("bootstrap.2.0.2.js" )
                .script(buildLoadJsUrl("knockout.simpleGrid.js"))
                .script(buildLoadJsUrl("knockout-sortable.js"))
-               //.script("knockout.mapping-latest.debug.js")
                .script(buildLoadJsUrl("redback/user.js")).wait()
                .script(buildLoadJsUrl("redback/users.js")).wait()
                .script(buildLoadJsUrl("redback/redback.js")).wait()
