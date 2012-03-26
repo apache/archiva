@@ -9,8 +9,6 @@
 
   <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
 
-  <script type="text/javascript" src="js/lab.js"></script>
-
   <script type="text/javascript" src="js/require.1.0.7.js"></script>
 
   <title>Apache Archiva</title>
@@ -75,7 +73,8 @@
                 "repository-groups": "archiva/repository-groups",
                 "roles": "redback/roles",
                 "user": "redback/user",
-                "users": "redback/users"
+                "users": "redback/users",
+                "archiva/main": "archiva/main"
             }
             // file upload dependencies
             //.script("jquery.iframe-transport-1.4.js").wait()
@@ -86,29 +85,21 @@
         require(['order!domReady','order!jquery','order!i18n','order!startup'], function (domReady) {
           domReady.withResources(function () {
               loadi18n();
-              $.ajax(
-                {
+              $.ajax({
                   url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
                   dataType: 'json',
                   success:function(data){
                       window.archivaDevMode=data.devMode;
                       window.archivaJavascriptLog=data.javascriptLog;
                       window.archivaRuntimeInfo=data;
-
-                      // CacheBust is for dev purpose use false in prod env !
-                      var options = {
-                          AlwaysPreserveOrder:true,
-                          BasePath:"js/",
-                          explicit_preloading:false,
-                          CacheBust:window.archivaDevMode
-                      };
-                      $LAB.setGlobalDefaults(options);
-                      $LAB
-                         .script(buildLoadJsUrl("archiva/main.js"));
-                  }
-                })
-
-          });
+                      require(['order!domReady','archiva/main'],function (domReady) {
+                          domReady.withResources(function () {
+                              startArchivaApplication();
+                          })
+                        })
+                  }}
+              )
+          })
         });
 
 

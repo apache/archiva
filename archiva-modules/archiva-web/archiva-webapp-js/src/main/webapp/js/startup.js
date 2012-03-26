@@ -17,7 +17,7 @@
  * under the License.
  */
 
-require(["jquery","utils"],
+define("startup",["jquery","utils"],
 function() {
 
 
@@ -29,8 +29,16 @@ function() {
     return srcScript+"?"+appendArchivaVersion()+"&_"+jQuery.now();
   }
 
-  $.ajaxSetup({
+
+  // define a container object with various datas
+  window.archivaModel = {};
+
+  $.log("devMode:"+window.archivaDevMode);
+
+  // no cache for ajax queries as we get datas from servers so preventing caching !!
+  jQuery.ajaxSetup( {
+    cache: false,//!window.archivaDevMode
     dataType: 'json'
-  });
+  } );
 
 });

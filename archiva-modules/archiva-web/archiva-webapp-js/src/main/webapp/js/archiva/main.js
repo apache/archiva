@@ -16,24 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require( ["order!jquery","jquery_ui","jquery_cookie","bootstrap","order!archiva/search",
+define("main",["order!jquery","jquery_ui","jquery_cookie","bootstrap","order!archiva/search",
          "jquery_validate","jquery_json","order!knockout","order!redback-templates","order!main-templates","order!roles",
           "order!redback","general-admin","repositories","network-proxies","proxy-connectors","repository-groups"],
 function() {
-
-
-
-  // define a container object with various datas
-  window.archivaModel = {};
-
-  $.log("devMode:"+window.archivaDevMode);
-
-  // no cache for ajax queries as we get datas from servers so preventing caching !!
-  jQuery.ajaxSetup( {
-    cache: false//!window.archivaDevMode
-  } );
-
-
 
   /**
    * reccord a cookie for session with the logged user
@@ -337,10 +323,10 @@ function() {
 								.data( "item.autocomplete", item )
 								.append( "<a>" + item.artifactId + "</a>" )
 								.appendTo( ul );
-						};;
+						};
     updateAppearanceToolBar();
   }
-  startArchivaApplication();
+
 
 });
 
