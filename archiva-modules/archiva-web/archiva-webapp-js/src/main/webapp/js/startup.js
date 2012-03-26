@@ -20,16 +20,6 @@
 define("startup",["jquery","utils"],
 function() {
 
-
-  appendArchivaVersion=function(){
-    return "_archivaVersion="+window.archivaRuntimeInfo.version;
-  }
-
-  buildLoadJsUrl=function(srcScript){
-    return srcScript+"?"+appendArchivaVersion()+"&_"+jQuery.now();
-  }
-
-
   // define a container object with various datas
   window.archivaModel = {};
 
@@ -39,6 +29,6 @@ function() {
   jQuery.ajaxSetup( {
     cache: false,//!window.archivaDevMode
     dataType: 'json'
-  } );
-
+  });
+  loadi18n();
 });

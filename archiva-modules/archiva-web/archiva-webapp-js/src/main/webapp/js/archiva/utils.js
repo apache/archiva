@@ -318,6 +318,14 @@ define("utils",["jquery","i18n","jquery_tmpl"], function() {
     }
   }
 
+  appendArchivaVersion=function(){
+    return "_archivaVersion="+window.archivaRuntimeInfo.version;
+  }
+
+  buildLoadJsUrl=function(srcScript){
+    return srcScript+"?"+appendArchivaVersion()+"&_"+jQuery.now();
+  }
+
   timestampNoCache=function(){
     if (!window.archivaDevMode){
       return "";
@@ -325,9 +333,6 @@ define("utils",["jquery","i18n","jquery_tmpl"], function() {
     return "&_="+jQuery.now();
   }
 
-  appendTemplateUrl=function(){
-    return "?"+appendArchivaVersion()+timestampNoCache();
-  }
 
   /**
    * mapping for a java Map entry

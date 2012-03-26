@@ -46,62 +46,96 @@
 
 <script type="text/javascript">
 
-        require.config({
-            baseUrl: "js/",
-            urlArgs: "_="+new Date().getTime(),
-            "paths": {
-                "i18n":"jquery.i18n.properties-1.0.9",
-                "jquery": "jquery-1.7.2",
-                "jquery_tmpl": "jquery.tmpl",
-                "utils": "archiva/utils",
-                "jquery_ui": "jquery-ui-1.8.16.custom.min",
-                "jquery_cookie": "jquery.cookie.1.0.0",
-                "bootstrap": "bootstrap.2.0.2",
-                "choosen": "chosen.jquery-0.9.7",
-                "jquery_validate": "jquery.validate-1.9.0",
-                "jquery_json": "jquery.json-2.3.min",
-                "knockout.simpleGrid": "knockout.simpleGrid",
-                "knockout": "knockout-2.0.0.debug",
-                "knockout.sortable": "knockout-sortable",
-                "redback": "redback/redback",
-                "general-admin":"archiva/general-admin",
-                "redback-templates": "redback/redback-tmpl",
-                "main-templates": "archiva/main-tmpl",
-                "repositories": "archiva/repositories",
-                "network-proxies": "archiva/network-proxies",
-                "proxy-connectors": "archiva/proxy-connectors",
-                "repository-groups": "archiva/repository-groups",
-                "roles": "redback/roles",
-                "user": "redback/user",
-                "users": "redback/users",
-                "archiva/main": "archiva/main"
-            }
-            // file upload dependencies
-            //.script("jquery.iframe-transport-1.4.js").wait()
-            //.script("jquery.fileupload-5.10.0.js").wait()
-            //.script("jquery.fileupload-ip-1.0.6.js").wait()
-            //.script("jquery.fileupload-ui-6.6.3.js" ).wait()
-        });
-        require(['order!domReady','order!jquery','order!i18n','order!startup'], function (domReady) {
-          domReady.withResources(function () {
-              loadi18n();
-              $.ajax({
-                  url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
-                  dataType: 'json',
-                  success:function(data){
-                      window.archivaDevMode=data.devMode;
-                      window.archivaJavascriptLog=data.javascriptLog;
-                      window.archivaRuntimeInfo=data;
-                      require(['order!domReady','archiva/main'],function (domReady) {
-                          domReady.withResources(function () {
-                              startArchivaApplication();
-                          })
-                        })
-                  }}
-              )
-          })
-        });
 
+    appendArchivaVersion=function(){
+      return "_archivaVersion="+window.archivaRuntimeInfo.version;
+    }
+
+    timestampNoCache=function(){
+      if (!window.archivaDevMode){
+        return "";
+      }
+      return "&_="+jQuery.now();
+    }
+
+    appendTemplateUrl=function(){
+      return appendArchivaVersion()+timestampNoCache();
+    }
+
+    $.ajax({
+        url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/en",
+        dataType: 'json',
+        success:function(data){
+
+            window.archivaDevMode=data.devMode;
+            window.archivaJavascriptLog=data.javascriptLog;
+            window.archivaRuntimeInfo=data;
+
+                require.config({
+                    baseUrl: "js/",
+                    urlArgs: ""+appendTemplateUrl(),
+                    paths: {
+                        "i18n":"jquery.i18n.properties-1.0.9",
+                        "jquery": "jquery-1.7.2",
+                        "jquery_tmpl": "jquery.tmpl",
+                        "utils": "archiva/utils",
+                        "jquery_ui": "jquery-ui-1.8.16.custom.min",
+                        "jquery_cookie": "jquery.cookie.1.0.0",
+                        "bootstrap": "bootstrap.2.0.2",
+                        "choosen": "chosen.jquery-0.9.7",
+                        "jquery_validate": "jquery.validate-1.9.0",
+                        "jquery_json": "jquery.json-2.3.min",
+                        "knockout.simpleGrid": "knockout.simpleGrid",
+                        "knockout": "knockout-2.0.0.debug",
+                        "knockout.sortable": "knockout-sortable",
+                        "redback": "redback/redback",
+                        "general-admin":"archiva/general-admin",
+                        "redback-templates": "redback/redback-tmpl",
+                        "main-templates": "archiva/main-tmpl",
+                        "repositories": "archiva/repositories",
+                        "network-proxies": "archiva/network-proxies",
+                        "proxy-connectors": "archiva/proxy-connectors",
+                        "repository-groups": "archiva/repository-groups",
+                        "roles": "redback/roles",
+                        "user": "redback/user",
+                        "users": "redback/users",
+                        "archiva/main": "archiva/main"
+                    }
+                    // file upload dependencies
+                    //.script("jquery.iframe-transport-1.4.js").wait()
+                    //.script("jquery.fileupload-5.10.0.js").wait()
+                    //.script("jquery.fileupload-ip-1.0.6.js").wait()
+                    //.script("jquery.fileupload-ui-6.6.3.js" ).wait()
+                });
+
+
+
+
+                require(['order!domReady','order!jquery','order!i18n','order!startup'], function (domReady) {
+                  domReady.withResources(function () {
+                      $.ajax({
+                          url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
+                          dataType: 'json',
+                          success:function(data){
+                              window.archivaDevMode=data.devMode;
+                              window.archivaJavascriptLog=data.javascriptLog;
+                              window.archivaRuntimeInfo=data;
+
+
+                              require(['order!domReady','archiva/main'],function (domReady) {
+                                  domReady.withResources(function () {
+                                      startArchivaApplication();
+                                  })
+                              })
+
+
+
+                          }
+                      })
+                  })
+                });
+        }
+    })
 
 
 </script>
