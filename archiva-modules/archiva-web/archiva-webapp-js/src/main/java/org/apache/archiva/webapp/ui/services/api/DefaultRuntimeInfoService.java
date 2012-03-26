@@ -20,6 +20,7 @@ package org.apache.archiva.webapp.ui.services.api;
 
 import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.archiva.webapp.ui.services.model.ApplicationRuntimeInfo;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,8 @@ public class DefaultRuntimeInfoService
         applicationRuntimeInfo.setVersion( this.archivaRuntimeInfo.getVersion() );
         applicationRuntimeInfo.setBaseUrl( getBaseUrl( httpServletRequest ) );
 
-        SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz", new Locale( locale ) );
+        SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz",
+                                                     new Locale( StringUtils.isEmpty( locale ) ? "en" : locale ) );
         applicationRuntimeInfo.setTimestampStr( sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) ) );
 
         return applicationRuntimeInfo;

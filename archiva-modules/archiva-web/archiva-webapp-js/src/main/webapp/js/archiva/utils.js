@@ -17,7 +17,7 @@
  * under the License.
  */
 
-define("utils",["jquery","i18n","js/jquery.tmpl.js"], function() {
+define("utils",["jquery","i18n","jquery_tmpl"], function() {
 
   /**
    * log message in the console

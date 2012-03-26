@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require( ["order!jquery" ,"order!redback/redback"],
+require( ["order!jquery" ,"order!redback/redback","jquery_ui"],
 function($) {
 
 $(function() {
