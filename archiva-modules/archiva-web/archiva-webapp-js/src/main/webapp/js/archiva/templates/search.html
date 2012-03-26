@@ -682,7 +682,12 @@
       </div>
 
       <div id="artifact-details-metadatas-content" class="tab-pane">
-        metadatas
+        <table class="table table-striped table-bordered" id="artifact-details-metadatas-content-table"
+               data-bind="simpleGrid: gridMetatadasViewModel,simpleGridTemplate:'artifact_metadata_properties_tmpl',pageLinksId:'artifactMetadata_Pagination'">
+
+        </table>
+        <div id="artifactMetadata_Pagination"></div>
+        <a href="#" class="btn btn-primary" data-bind="click: addProperty">${$.i18n.prop('browse.artifact.metadatas.add')}</a>
       </div>
 
     </div>
@@ -735,4 +740,36 @@
       </li>
     {{/each}}
     </ul>
+</script>
+
+<script id="artifact_metadata_properties_tmpl" type="text/html">
+    <thead>
+      <tr>
+        {{each(i, columnDefinition) columns}}
+          <th title="${columnDefinition.title }">${columnDefinition.headerText }</th>
+        {{/each}}
+        <th title="${$.i18n.prop('browse.artifact.metadatas.delete')}">${$.i18n.prop('browse.artifact.metadatas.delete')}</th>
+        <th title="${$.i18n.prop('browse.artifact.metadatas.delete')}">${$.i18n.prop('browse.artifact.metadatas.save')}</th>
+      </tr>
+
+    </thead>
+    <tbody>
+    {{each(i, row) itemsOnCurrentPage()}}
+      <tr>
+        {{each(j, columnDefinition) columns}}
+          {{if row.editable}}
+            <td><input type="text" data-bind="value: row[columnDefinition.rowText]"/></td>
+          {{else}}
+            <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+          {{/if}}
+        {{/each}}
+        <td><a href="#" class="btn btn-danger" data-bind="click: function(){deleteProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.delete')}</a></td>
+        <td>
+          {{if row.modified}}
+            <a href="#" class="btn btn-warning" data-bind="click: function(){saveProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.save')}</a>
+          {{/if}}
+        </td>
+      </tr>
+    {{/each}}
+    </tbody>
 </script>

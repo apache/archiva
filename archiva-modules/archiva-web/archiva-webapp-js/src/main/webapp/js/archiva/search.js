@@ -149,6 +149,7 @@ $(function() {
     artifactVersionDetailViewModel.display();
   }
 
+
   ArtifactVersionDetailViewModel=function(groupId,artifactId,version){
     var mainContent = $("#main-content");
     var self=this;
@@ -156,7 +157,7 @@ $(function() {
     this.artifactId=artifactId;
     this.version=version;
     this.projectVersionMetadata=null;
-
+    this.entries=ko.observableArray([]);
 
     displayGroupId=function(groupId){
       displayGroupDetail(groupId,null);
@@ -244,6 +245,29 @@ $(function() {
                   }
                 }
 
+                if ($(e.target).attr("href")=="#artifact-details-metadatas-content") {
+                  $.log("artifact metadata");
+                  var metadatasContentDiv=mainContent.find("#artifact-details-metadatas-content" );
+                  //if( $.trim(metadatasContentDiv.html()).length<1){
+                    //metadatasContentDiv.html(mediumSpinnerImg());
+                    var metadatasUrl="restServices/archivaServices/browseService/metadatas/"+encodeURIComponent(groupId);
+                    metadatasUrl+="/"+encodeURIComponent(artifactId);
+                    metadatasUrl+="/"+encodeURIComponent(version);
+                    var selectedRepo=getSelectedBrowsingRepository();
+                    if (selectedRepo){
+                      metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+                    }
+                    $.ajax(metadatasUrl, {
+                      type: "GET",
+                      dataType: 'json',
+                      success: function(data) {
+                        self.entries([new MetadataEntry("foo","bar")]);
+                      }
+                    });
+                  //}
+                }
+
+
               });
             }
           });
@@ -267,6 +291,69 @@ $(function() {
       var artifactVersionDetailViewModel = new ArtifactVersionDetailViewModel (groupId,artifactId,version)
       artifactVersionDetailViewModel.display();
     }
+
+
+    addProperty=function(){
+      self.entries.push(new MetadataEntry("","",true));
+    }
+
+    deleteProperty=function(entry){
+
+      self.entries.remove(entry);
+    }
+
+    saveProperty=function(entry){
+      var metadatasContentDiv=mainContent.find("#artifact-details-metadatas-content" );
+      //if( $.trim(metadatasContentDiv.html()).length<1){
+        //metadatasContentDiv.html(mediumSpinnerImg());
+        var metadatasUrl="restServices/archivaServices/browseService/metadatas/"+encodeURIComponent(groupId);
+        metadatasUrl+="/"+encodeURIComponent(artifactId);
+        metadatasUrl+="/"+encodeURIComponent(version);
+        metadatasUrl+="/"+encodeURIComponent(entry.key());
+        metadatasUrl+="/"+encodeURIComponent(entry.value());
+        var selectedRepo=getSelectedBrowsingRepository();
+        if (selectedRepo){
+          metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+        }
+        $.ajax(metadatasUrl, {
+          type: "PUT",
+          dataType: 'json',
+          success: function(data) {
+            displaySuccessMessage( $.i18n.prop("artifact.metadata.added"));
+            entry.modified(false);
+          }
+        });
+    }
+
+
+    this.gridMetatadasViewModel = new ko.simpleGrid.viewModel({
+      data: self.entries,
+      columns: [
+        {
+          headerText: $.i18n.prop('browse.artifact.metadata.key'),
+          rowText: "key",
+          id: "key"
+        },
+        {
+          headerText: $.i18n.prop('browse.artifact.metadata.value'),
+          rowText: "value",
+          id: "value"
+        }
+      ],
+      pageSize: 10
+    });
+
+  }
+
+
+  MetadataEntry=function(key,value,editable){
+    var self=this;
+    this.key=ko.observable(key);
+    this.key.subscribe(function(newValue){self.modified(true)});
+    this.value=ko.observable(value);
+    this.value.subscribe(function(newValue){self.modified(true)});
+    this.editable=ko.observable(editable);
+    this.modified=ko.observable(false)
   }
 
   TreeEntry=function(artifact,childs){
