@@ -313,6 +313,7 @@ $(function() {
         type: "DELETE",
         dataType: 'json',
         success: function(data) {
+          clearUserMessages();
           displaySuccessMessage( $.i18n.prop("artifact.metadata.deleted"));
           self.entries.remove(entry);
         }
@@ -321,6 +322,16 @@ $(function() {
     }
 
     saveProperty=function(entry){
+      if($.trim(entry.key() ).length<1){
+        clearUserMessages();
+        displayErrorMessage( $.i18n.prop("artifact.metadata.key.mandatory"));
+        return;
+      }
+      if($.trim(entry.value() ).length<1){
+        clearUserMessages();
+        displayErrorMessage( $.i18n.prop("artifact.metadata.value.mandatory"));
+        return;
+      }
       var metadatasUrl="restServices/archivaServices/browseService/metadata/"+encodeURIComponent(groupId);
       metadatasUrl+="/"+encodeURIComponent(artifactId);
       metadatasUrl+="/"+encodeURIComponent(version);
@@ -334,6 +345,7 @@ $(function() {
         type: "PUT",
         dataType: 'json',
         success: function(data) {
+          clearUserMessages();
           displaySuccessMessage( $.i18n.prop("artifact.metadata.added"));
           entry.editable(false);
           entry.modified(false);
