@@ -17,7 +17,7 @@
  * under the License.
  */
 
-require(["jquery","i18n","js/archiva/utils.js"],
+require(["jquery","utils"],
 function() {
 
 
@@ -32,10 +32,5 @@ function() {
   $.ajaxSetup({
     dataType: 'json'
   });
-
-
-
-
-
 
 });

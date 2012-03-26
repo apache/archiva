@@ -12,7 +12,6 @@
   <script type="text/javascript" src="js/lab.js"></script>
 
   <script type="text/javascript" src="js/require.1.0.7.js"></script>
-  <script type="text/javascript" src="js/jquery.i18n.properties-1.0.9.js"></script>
 
   <title>Apache Archiva</title>
 
@@ -57,12 +56,25 @@
                 "jquery": "jquery-1.7.2",
                 "jquery_tmpl": "jquery.tmpl",
                 "utils": "archiva/utils",
-                "jquery_ui": "jquery-ui-1.8.16.custom.min"
+                "jquery_ui": "jquery-ui-1.8.16.custom.min",
+                "jquery_cookie": "jquery.cookie.1.0.0",
+                "bootstrap": "bootstrap.2.0.2",
+                "choosen": "chosen.jquery-0.9.7",
+                "jquery_validate": "jquery.validate-1.9.0",
+                "jquery_json": "jquery.json-2.3.min",
+                "knockout.simpleGrid": "knockout.simpleGrid",
+                "knockout": "knockout-2.0.0.debug",
+                "knockout.sortable": "knockout-sortable"
             }
+            // file upload dependencies
+            //.script("jquery.iframe-transport-1.4.js").wait()
+            //.script("jquery.fileupload-5.10.0.js").wait()
+            //.script("jquery.fileupload-ip-1.0.6.js").wait()
+            //.script("jquery.fileupload-ui-6.6.3.js" ).wait()
         });
-        require(['domReady','startup','jquery'], function (domReady) {
+        require(['domReady','jquery','i18n','startup'], function (domReady) {
           domReady.withResources(function () {
-
+              loadi18n();
               $.ajax(
                 {
                   url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
@@ -74,9 +86,10 @@
 
                       require.config({
                           baseUrl: "js/",
+                          urlArgs: "_="+new Date().getTime(),
                           "paths": {
-                              "redback": buildLoadJsUrl("redback/redback.js"),
-                              "i18nLoad":  buildLoadJsUrl("archiva/i18nload.js")
+                              "redback": buildLoadJsUrl("redback/redback.js")
+
                           }
                       });
 
@@ -89,14 +102,6 @@
                       };
                       $LAB.setGlobalDefaults(options);
                       $LAB
-                         //.script(buildLoadJsUrl("jquery.tmpl.js")).wait()
-                         //.script(buildLoadJsUrl("archiva/utils.js")).wait()
-                         .script(buildLoadJsUrl("archiva/i18nload.js")).wait()
-                         .script("jquery.cookie.1.0.0.js").wait()
-                         .script("knockout-2.0.0.debug.js").wait()
-                         //.script("jquery-ui-1.8.16.custom.min.js").wait()
-                         .script("jquery.validate-1.9.0.js").wait()
-                         .script("jquery.json-2.3.min.js").wait()
                          .script(buildLoadJsUrl("archiva/main-tmpl.js")).wait()
                          .script(buildLoadJsUrl("archiva/general-admin.js"))
                          .script(buildLoadJsUrl("archiva/repositories.js")).wait()
@@ -104,19 +109,9 @@
                          .script(buildLoadJsUrl("archiva/proxy-connectors.js")).wait()
                          .script(buildLoadJsUrl("redback/operation.js")).wait()
                          .script(buildLoadJsUrl("archiva/repository-groups.js")).wait()
-                         .script(buildLoadJsUrl("archiva/search.js")).wait()
                          .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
-                         .script("chosen.jquery-0.9.7.js" )
-                         .script("bootstrap.2.0.2.js" )
-                         .script(buildLoadJsUrl("knockout.simpleGrid.js"))
-                         .script(buildLoadJsUrl("knockout-sortable.js"))
-                         //.script("jquery.iframe-transport-1.4.js").wait()
-                         //.script("jquery.fileupload-5.10.0.js").wait()
-                         //.script("jquery.fileupload-ip-1.0.6.js").wait()
-                         //.script("jquery.fileupload-ui-6.6.3.js" ).wait()
                          .script(buildLoadJsUrl("redback/user.js")).wait()
                          .script(buildLoadJsUrl("redback/users.js")).wait()
-                         //.script(buildLoadJsUrl("redback/redback.js")).wait()
                          .script(buildLoadJsUrl("redback/register.js")).wait()
                          .script(buildLoadJsUrl("redback/permission.js")).wait()
                          .script(buildLoadJsUrl("redback/resource.js")).wait()

@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require( ["order!jquery" ,"order!redback/redback","jquery_ui"],
-function($) {
+require( ["order!jquery","jquery_ui","jquery_cookie","bootstrap","order!archiva/search",
+         "jquery_validate","jquery_json","order!knockout","order!redback/redback"],
+function() {
 
-$(function() {
 
   // define a container object with various datas
   window.archivaModel = {};
@@ -340,6 +340,5 @@ $(function() {
   }
   startArchivaApplication();
 
-})
 });
 

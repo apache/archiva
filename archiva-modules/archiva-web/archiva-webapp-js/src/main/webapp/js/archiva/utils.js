@@ -19,6 +19,18 @@
 
 define("utils",["jquery","i18n","jquery_tmpl"], function() {
 
+  loadi18n=function(){
+    var browserLang = usedLang();
+    $.log("use browserLang:"+browserLang);
+
+    var options = {
+      cache:false,
+      mode: 'map',
+      encoding:'utf-8'
+    };
+    loadAndParseFile("restServices/archivaServices/commonServices/getAllI18nResources?locale="+browserLang,options );
+  }
+
   /**
    * log message in the console
    */

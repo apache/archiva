@@ -16,7 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("search",["jquery","i18n","jquery_tmpl","choosen","order!knockout","knockout.simpleGrid"], function() {
+
+
 
   //-----------------------------------------
   // browse part
