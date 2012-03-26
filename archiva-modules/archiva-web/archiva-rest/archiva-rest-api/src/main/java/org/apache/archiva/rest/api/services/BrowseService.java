@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.BrowseResult;
+import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
@@ -35,7 +36,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -123,9 +123,8 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    Map<String, String> getMetadatas( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
-                                      @PathParam( "v" ) String version,
-                                      @QueryParam( "repositoryId" ) String repositoryId )
+    List<Entry> getMetadatas( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                              @PathParam( "v" ) String version, @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "metadata/{g}/{a}/{v}/{key}/{value}" )

@@ -34,6 +34,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
+import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -563,23 +564,30 @@ public class DefaultBrowseService
         return artifacts;
     }
 
-    public Map<String, String> getMetadatas( String groupId, String artifactId, String version, String repositoryId )
+    public List<Entry> getMetadatas( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
         ProjectVersionMetadata projectVersionMetadata =
             getProjectMetadata( groupId, artifactId, version, repositoryId );
         if ( projectVersionMetadata == null )
         {
-            return Collections.emptyMap();
+            return Collections.emptyList();
         }
         MetadataFacet metadataFacet = projectVersionMetadata.getFacet( GenericMetadataFacet.FACET_ID );
 
         if ( metadataFacet == null )
         {
-            return Collections.emptyMap();
+            return Collections.emptyList();
+        }
+        Map<String, String> map = metadataFacet.toProperties();
+        List<Entry> entries = new ArrayList<Entry>( map.size() );
+
+        for ( Map.Entry<String, String> entry : map.entrySet() )
+        {
+            entries.add( new Entry( entry.getKey(), entry.getValue() ) );
         }
 
-        return metadataFacet.toProperties();
+        return entries;
     }
 
     public Boolean addMetadata( String groupId, String artifactId, String version, String key, String value,

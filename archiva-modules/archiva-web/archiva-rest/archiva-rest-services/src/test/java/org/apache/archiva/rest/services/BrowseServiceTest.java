@@ -21,11 +21,14 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
+import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.fest.assertions.MapAssert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -36,6 +39,19 @@ import static org.fest.assertions.Assertions.assertThat;
 public class BrowseServiceTest
     extends AbstractArchivaRestTest
 {
+
+    Map<String, String> toMap( List<Entry> entries )
+    {
+        Map<String, String> map = new HashMap<String, String>( entries.size() );
+
+        for ( Entry entry : entries )
+        {
+            map.put( entry.getKey(), entry.getValue() );
+        }
+
+        return map;
+    }
+
     @Test
     public void metadatagetthenadd()
         throws Exception
@@ -52,13 +68,14 @@ public class BrowseServiceTest
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
-        Map<String, String> metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
+        Map<String, String> metadatas =
+            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
         assertThat( metadatas ).isNotNull().isEmpty();
 
         browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", testRepoId );
 
-        metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
+        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
         assertThat( metadatas ).isNotNull().isNotEmpty().includes( MapAssert.entry( "wine", "bordeaux" ) );
 
@@ -83,19 +100,20 @@ public class BrowseServiceTest
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
-        Map<String, String> metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
+        Map<String, String> metadatas =
+            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
         assertThat( metadatas ).isNotNull().isEmpty();
 
         browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", testRepoId );
 
-        metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
+        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
         assertThat( metadatas ).isNotNull().isNotEmpty().includes( MapAssert.entry( "wine", "bordeaux" ) );
 
         browseService.deleteMetadata( "commons-cli", "commons-cli", "1.0", "wine", testRepoId );
 
-        metadatas = browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId );
+        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
         assertThat( metadatas ).isNotNull().isEmpty();
 
