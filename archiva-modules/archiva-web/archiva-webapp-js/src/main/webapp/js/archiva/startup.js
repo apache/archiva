@@ -78,7 +78,7 @@ $(function() {
                .script(buildLoadJsUrl("archiva/utils.js")).wait()
                .script(buildLoadJsUrl("archiva/i18nload.js")).wait()
                .script("jquery.cookie.1.0.0.js").wait()
-               .script(buildLoadJsUrl("knockout-debug.js")).wait()
+               .script("knockout-2.0.0.debug.js").wait()
                .script("jquery-ui-1.8.16.custom.min.js").wait()
                .script(buildLoadJsUrl("jquery.validate.js")).wait()
                .script("jquery.json-2.3.min.js").wait()
