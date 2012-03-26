@@ -17,343 +17,368 @@
  * under the License.
  */
 
-/**
- * log message in the console
- */
-$.log = (function(message) {
-  if ( !window.archivaJavascriptLog ){
-    return;
-  }
-  if (typeof window.console != 'undefined' && typeof window.console.log != 'undefined') {
-    console.log(message);
-  } else {
-    // do nothing no console
-  }
-});
+define("utils",["jquery","i18n","js/jquery.tmpl.js"], function() {
 
-/**
- * display a success message
- * @param text the success text
- * @param idToAppend the id to append the success box
- */
-displaySuccessMessage=function(text,idToAppend){
-  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
-  $.tmpl($("#alert-message-success").html(), { "message" : text }).appendTo( textId );
-  $(textId).focus();
-}
-
-/**
- * display an error message
- * @param text the success text
- * @param idToAppend the id to append the success box
- */
-displayErrorMessage=function(text,idToAppend){
-  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
-  $.tmpl($("#alert-message-error").html(), { "message" : text }).appendTo( textId );
-  $(textId).focus();
-}
-
-/**
- * display a warning message
- * @param text the success text
- * @param idToAppend the id to append the success box
- */
-displayWarningMessage=function(text,idToAppend){
-  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
-  $.tmpl($("#alert-message-warning").html(), { "message" : text }).appendTo( textId );
-  $(textId).focus();
-}
-
-displayInfoMessage=function(text,idToAppend){
-  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
-  $.tmpl($("#alert-message-info").html(), { "message" : text }).appendTo( textId );
-  $(textId).focus();
-}
-
-/**
- * clear #main-content and call clearUserMessages
-  */
-screenChange=function(){
-  $("#main-content").html("");
-  $("#main-content").removeAttr("data-bind");
-  clearUserMessages();
-}
-
-/**
- * clear content of id if none clear content of #user-messages
-  * @param idToAppend
- */
-clearUserMessages=function(idToAppend){
-  var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
-  $(textId).html('');
-}
-
-/**
- * clear all input text and password found in the the selector
- * @param selectorStr
- */
-clearForm=function(selectorStr){
-  $(selectorStr).find("input[type='text']").each(function(ele){
-    $(this).val("");
-  });
-  $(selectorStr).find("input[type='password']").each(function(ele){
-    $(this).val("");
-  });
-
-}
-
-/**
- * open a confirm dialog based on bootstrap modal
- * @param okFn callback function to call on ok confirm
- * @param okMessage
- * @param cancelMessage
- * @param title
- */
-openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
-  if (window.modalConfirmDialog==null) {
-    window.modalConfirmDialog = $("#dialog-confirm-modal").modal();//{backdrop:'static',show:false}
-    window.modalConfirmDialog.bind('hidden', function () {
-      $("#dialog-confirm-modal-header-title").html("");
-      $("#dialog-confirm-modal-body-text").html("");
-    })
-    $("#dialog-confirm-modal-cancel").on("click", function(){
-      window.modalConfirmDialog.modal('hide');
-    });
-  }
-  $("#dialog-confirm-modal-header-title").html(title);
-  $("#dialog-confirm-modal-body-text").html(bodyText);
-  if (okMessage){
-    $("#dialog-confirm-modal-ok").html(okMessage);
-  }
-  if (cancelMessage){
-    $("#dialog-confirm-modal-cancel").html(cancelMessage);
-  }
-  window.modalConfirmDialog.modal('show');
-
-  // unbind previous events !!
-  $("#dialog-confirm-modal-ok").off( );
-  $("#dialog-confirm-modal-ok").on("click", okFn);
-
-}
-
-/**
- * return a small spinner html img element
- */
-smallSpinnerImg=function(){
-  return "<img id=\"small-spinner\" src=\"images/small-spinner.gif\"/>";
-};
-
-removeSmallSpinnerImg=function(){
-  $("#small-spinner").remove();
-}
-
-mediumSpinnerImg=function(){
-  return "<img id=\"medium-spinner\" src=\"images/medium-spinner.gif\"/>";
-};
-
-removeMediumSpinnerImg=function(){
-  $("#medium-spinner").remove();
-}
-
-removeMediumSpinnerImg=function(selector){
-  $(selector+" #medium-spinner").remove();
-}
-
-closeDialogConfirm=function(){
-  window.modalConfirmDialog.modal('hide');
-}
-
-closeDialogConfirmui=function(){
-  $("#dialog-confirm" ).dialog("close");
-}
-
-/**
- * open a confirm dialog with jqueryui
- * @param okFn callback function to call on ok confirm
- * @param okMessage
- * @param cancelMessage
- * @param title
- */
-openDialogConfirmui=function(okFn, okMessage, cancelMessage, title){
-  $("#dialog-confirm" ).dialog({
-    resizable: false,
-    title: title,
-    modal: true,
-    show: 'slide',
-    buttons: [{
-      text: okMessage,
-      click: okFn},
-      {
-      text: cancelMessage,
-      click:function() {
-        $(this).dialog( "close" );
-      }
-    }]
-  });
-}
-
-mapStringArray=function(data){
-  if (data) {
-    if ($.isArray(data)){
-      return $.map(data,function(item){
-        return item;
-      });
-    } else {
-      return new Array(data);
-    }
-  }
-  return null;
-}
-
-/**
- * display redback error from redback json error response
- * {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
- * @param obj
- * @param idToAppend
- */
-displayRedbackError=function(obj,idToAppend) {
-  if ($.isArray(obj.errorMessages)) {
-    $.log("displayRedbackError with array");
-    for(var i=0; i<obj.errorMessages.length; i++ ) {
-      if(obj.errorMessages[i].errorKey) {
-        $.log("displayRedbackError with array loop");
-        displayErrorMessage($.i18n.prop( obj.errorMessages[i].errorKey, obj.errorMessages[i].args ),idToAppend);
-      }
-    }
-  } else {
-    $.log("displayRedbackError no array");
-    displayErrorMessage($.i18n.prop( obj.errorMessages.errorKey, obj.errorMessages.args ),idToAppend);
-  }
-}
-
-/*
- * generic function to display error return by rest service
- * if fieldName is here the function will try to find a field with this name and add a span on it
- * if not error is displayed in #user-messages div
- */
-displayRestError=function(data,idToAppend){
-
-  if (data.redbackRestError){
-    displayRedbackError(archivaRestError,idToAppend)
-  }
-  // if we have the fieldName display error on it
-  if (data && data.fieldName){
-    var mainContent=$("#main-content");
-
-    if (mainContent.find("#"+data.fieldName)){
-      var message=null;
-      if (data.errorKey) {
-        message=$.i18n.prop('data.errorKey');
-      } else {
-        message=data.errorMessage;
-      }
-      mainContent.find("div.clearfix" ).removeClass( "error" );
-      mainContent.find("span.help-inline" ).remove();
-      mainContent.find("#"+data.fieldName).parents( "div.clearfix" ).addClass( "error" );
-      mainContent.find("#"+data.fieldName).parent().append( "<span class=\"help-inline\">" + message + "</span>" );
+  /**
+   * log message in the console
+   */
+  $.log = (function(message) {
+    if ( !window.archivaJavascriptLog ){
       return;
     }
-    // we don't have any id with this fieldName so continue
-  }
-
-  if (data.errorKey && data.errorKey.length>0){
-      displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
+    if (typeof window.console != 'undefined' && typeof window.console.log != 'undefined') {
+      console.log(message);
     } else {
-      $.log("data.errorMessage:"+data.errorMessage);
-      displayErrorMessage(data.errorMessage,idToAppend);
-  }
-
-}
-
-/**
- * used by validation error to customize error display in the ui
- * @param selector
- * @param validator
- * @param errorMap
- * @param errorList
- */
-customShowError=function(selector, validator, errorMap, errorList) {
-  $(selector).find("div.control-group" ).removeClass( "error" );
-  $(selector).find("span.help-inline").remove();
-  for ( var i = 0; errorList[i]; i++ ) {
-    var error = errorList[i];
-    var field = $(selector).find("#"+error.element.id);
-    field.parents( "div.control-group" ).addClass( "error" );
-    field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
-  }
-}
-
-timestampNoCache=function(){
-  if (!window.archivaDevMode){
-    return "";
-  }
-  return "&_="+jQuery.now();
-}
-
-appendTemplateUrl=function(){
-  return "?"+appendArchivaVersion()+timestampNoCache();
-}
-
-/**
- * mapping for a java Map entry
- * @param key
- * @param value
- */
-Entry=function(key,value){
-  var self=this;
-  this.key=ko.observable(key);
-  this.value=ko.observable(value);
-}
-
-/**
- * map {"strings":["snapshots","internal"]} to an array
- * @param data
- */
-mapStringList=function(data){
-  if (data && data.strings){
-  return $.isArray(data.strings) ?
-      $.map(data.strings,function(item){return item}): [data.strings];
-  }
-  return [];
-}
-
-/**
- * return an array with removing duplicate strings
- * @param strArray an array of string
- * @param sorted to sort or not
- */
-unifyArray=function(strArray,sorted){
-  var res = [];
-  $(strArray).each(function(idx,str){
-    if ( $.inArray(str,res)<0){
-      res.push(str);
+      // do nothing no console
     }
   });
-  return sorted?res.sort():res;
-}
 
-//------------------------------------
-// utils javascript string extensions
-//------------------------------------
+  /**
+   * return value of a param in the url
+   * @param name
+   */
+  $.urlParam = function(name){
+      var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+      if (results) {
+        return results[1] || 0;
+      }
+      return null;
+  }
 
-String.prototype.endsWith = function(str) {
-  return (this.match(str+"$")==str)
-}
-
-String.prototype.startsWith = function(str) {
-  return (this.match("^"+str)==str)
-}
-
-String.prototype.substringBeforeLast = function(str) {
-  return this.substring(0,this.lastIndexOf(str));
-}
-
-//-----------------------------------------
-// extends jquery tmpl to support var def
-//-----------------------------------------
-
-$.extend($.tmpl.tag, {
-    "var": {
-        open: "var $1;"
+  usedLang=function(){
+    var browserLang = $.i18n.browserLang();
+    var requestLang = $.urlParam('request_lang');
+    if (requestLang) {
+      browserLang=requestLang;
     }
+    return browserLang;
+  }
+
+  /**
+   * display a success message
+   * @param text the success text
+   * @param idToAppend the id to append the success box
+   */
+  displaySuccessMessage=function(text,idToAppend){
+    var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+    $.tmpl($("#alert-message-success").html(), { "message" : text }).appendTo( textId );
+    $(textId).focus();
+  }
+
+  /**
+   * display an error message
+   * @param text the success text
+   * @param idToAppend the id to append the success box
+   */
+  displayErrorMessage=function(text,idToAppend){
+    var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+    $.tmpl($("#alert-message-error").html(), { "message" : text }).appendTo( textId );
+    $(textId).focus();
+  }
+
+  /**
+   * display a warning message
+   * @param text the success text
+   * @param idToAppend the id to append the success box
+   */
+  displayWarningMessage=function(text,idToAppend){
+    var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+    $.tmpl($("#alert-message-warning").html(), { "message" : text }).appendTo( textId );
+    $(textId).focus();
+  }
+
+  displayInfoMessage=function(text,idToAppend){
+    var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+    $.tmpl($("#alert-message-info").html(), { "message" : text }).appendTo( textId );
+    $(textId).focus();
+  }
+
+  /**
+   * clear #main-content and call clearUserMessages
+    */
+  screenChange=function(){
+    $("#main-content").html("");
+    $("#main-content").removeAttr("data-bind");
+    clearUserMessages();
+  }
+
+  /**
+   * clear content of id if none clear content of #user-messages
+    * @param idToAppend
+   */
+  clearUserMessages=function(idToAppend){
+    var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
+    $(textId).html('');
+  }
+
+  /**
+   * clear all input text and password found in the the selector
+   * @param selectorStr
+   */
+  clearForm=function(selectorStr){
+    $(selectorStr).find("input[type='text']").each(function(ele){
+      $(this).val("");
+    });
+    $(selectorStr).find("input[type='password']").each(function(ele){
+      $(this).val("");
+    });
+
+  }
+
+  /**
+   * open a confirm dialog based on bootstrap modal
+   * @param okFn callback function to call on ok confirm
+   * @param okMessage
+   * @param cancelMessage
+   * @param title
+   */
+  openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
+    if (window.modalConfirmDialog==null) {
+      window.modalConfirmDialog = $("#dialog-confirm-modal").modal();//{backdrop:'static',show:false}
+      window.modalConfirmDialog.bind('hidden', function () {
+        $("#dialog-confirm-modal-header-title").html("");
+        $("#dialog-confirm-modal-body-text").html("");
+      })
+      $("#dialog-confirm-modal-cancel").on("click", function(){
+        window.modalConfirmDialog.modal('hide');
+      });
+    }
+    $("#dialog-confirm-modal-header-title").html(title);
+    $("#dialog-confirm-modal-body-text").html(bodyText);
+    if (okMessage){
+      $("#dialog-confirm-modal-ok").html(okMessage);
+    }
+    if (cancelMessage){
+      $("#dialog-confirm-modal-cancel").html(cancelMessage);
+    }
+    window.modalConfirmDialog.modal('show');
+
+    // unbind previous events !!
+    $("#dialog-confirm-modal-ok").off( );
+    $("#dialog-confirm-modal-ok").on("click", okFn);
+
+  }
+
+  /**
+   * return a small spinner html img element
+   */
+  smallSpinnerImg=function(){
+    return "<img id=\"small-spinner\" src=\"images/small-spinner.gif\"/>";
+  };
+
+  removeSmallSpinnerImg=function(){
+    $("#small-spinner").remove();
+  }
+
+  mediumSpinnerImg=function(){
+    return "<img id=\"medium-spinner\" src=\"images/medium-spinner.gif\"/>";
+  };
+
+  removeMediumSpinnerImg=function(){
+    $("#medium-spinner").remove();
+  }
+
+  removeMediumSpinnerImg=function(selector){
+    $(selector+" #medium-spinner").remove();
+  }
+
+  closeDialogConfirm=function(){
+    window.modalConfirmDialog.modal('hide');
+  }
+
+  closeDialogConfirmui=function(){
+    $("#dialog-confirm" ).dialog("close");
+  }
+
+  /**
+   * open a confirm dialog with jqueryui
+   * @param okFn callback function to call on ok confirm
+   * @param okMessage
+   * @param cancelMessage
+   * @param title
+   */
+  openDialogConfirmui=function(okFn, okMessage, cancelMessage, title){
+    $("#dialog-confirm" ).dialog({
+      resizable: false,
+      title: title,
+      modal: true,
+      show: 'slide',
+      buttons: [{
+        text: okMessage,
+        click: okFn},
+        {
+        text: cancelMessage,
+        click:function() {
+          $(this).dialog( "close" );
+        }
+      }]
+    });
+  }
+
+  mapStringArray=function(data){
+    if (data) {
+      if ($.isArray(data)){
+        return $.map(data,function(item){
+          return item;
+        });
+      } else {
+        return new Array(data);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * display redback error from redback json error response
+   * {"redbackRestError":{"errorMessages":{"args":1,"errorKey":"user.password.violation.numeric"}}}
+   * @param obj
+   * @param idToAppend
+   */
+  displayRedbackError=function(obj,idToAppend) {
+    if ($.isArray(obj.errorMessages)) {
+      $.log("displayRedbackError with array");
+      for(var i=0; i<obj.errorMessages.length; i++ ) {
+        if(obj.errorMessages[i].errorKey) {
+          $.log("displayRedbackError with array loop");
+          displayErrorMessage($.i18n.prop( obj.errorMessages[i].errorKey, obj.errorMessages[i].args ),idToAppend);
+        }
+      }
+    } else {
+      $.log("displayRedbackError no array");
+      displayErrorMessage($.i18n.prop( obj.errorMessages.errorKey, obj.errorMessages.args ),idToAppend);
+    }
+  }
+
+  /*
+   * generic function to display error return by rest service
+   * if fieldName is here the function will try to find a field with this name and add a span on it
+   * if not error is displayed in #user-messages div
+   */
+  displayRestError=function(data,idToAppend){
+
+    if (data.redbackRestError){
+      displayRedbackError(archivaRestError,idToAppend)
+    }
+    // if we have the fieldName display error on it
+    if (data && data.fieldName){
+      var mainContent=$("#main-content");
+
+      if (mainContent.find("#"+data.fieldName)){
+        var message=null;
+        if (data.errorKey) {
+          message=$.i18n.prop('data.errorKey');
+        } else {
+          message=data.errorMessage;
+        }
+        mainContent.find("div.clearfix" ).removeClass( "error" );
+        mainContent.find("span.help-inline" ).remove();
+        mainContent.find("#"+data.fieldName).parents( "div.clearfix" ).addClass( "error" );
+        mainContent.find("#"+data.fieldName).parent().append( "<span class=\"help-inline\">" + message + "</span>" );
+        return;
+      }
+      // we don't have any id with this fieldName so continue
+    }
+
+    if (data.errorKey && data.errorKey.length>0){
+        displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
+      } else {
+        $.log("data.errorMessage:"+data.errorMessage);
+        displayErrorMessage(data.errorMessage,idToAppend);
+    }
+
+  }
+
+  /**
+   * used by validation error to customize error display in the ui
+   * @param selector
+   * @param validator
+   * @param errorMap
+   * @param errorList
+   */
+  customShowError=function(selector, validator, errorMap, errorList) {
+    $(selector).find("div.control-group" ).removeClass( "error" );
+    $(selector).find("span.help-inline").remove();
+    for ( var i = 0; errorList[i]; i++ ) {
+      var error = errorList[i];
+      var field = $(selector).find("#"+error.element.id);
+      field.parents( "div.control-group" ).addClass( "error" );
+      field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
+    }
+  }
+
+  timestampNoCache=function(){
+    if (!window.archivaDevMode){
+      return "";
+    }
+    return "&_="+jQuery.now();
+  }
+
+  appendTemplateUrl=function(){
+    return "?"+appendArchivaVersion()+timestampNoCache();
+  }
+
+  /**
+   * mapping for a java Map entry
+   * @param key
+   * @param value
+   */
+  Entry=function(key,value){
+    var self=this;
+    this.key=ko.observable(key);
+    this.value=ko.observable(value);
+  }
+
+  /**
+   * map {"strings":["snapshots","internal"]} to an array
+   * @param data
+   */
+  mapStringList=function(data){
+    if (data && data.strings){
+    return $.isArray(data.strings) ?
+        $.map(data.strings,function(item){return item}): [data.strings];
+    }
+    return [];
+  }
+
+  /**
+   * return an array with removing duplicate strings
+   * @param strArray an array of string
+   * @param sorted to sort or not
+   */
+  unifyArray=function(strArray,sorted){
+    var res = [];
+    $(strArray).each(function(idx,str){
+      if ( $.inArray(str,res)<0){
+        res.push(str);
+      }
+    });
+    return sorted?res.sort():res;
+  }
+
+  //------------------------------------
+  // utils javascript string extensions
+  //------------------------------------
+
+  String.prototype.endsWith = function(str) {
+    return (this.match(str+"$")==str)
+  }
+
+  String.prototype.startsWith = function(str) {
+    return (this.match("^"+str)==str)
+  }
+
+  String.prototype.substringBeforeLast = function(str) {
+    return this.substring(0,this.lastIndexOf(str));
+  }
+
+  //-----------------------------------------
+  // extends jquery tmpl to support var def
+  //-----------------------------------------
+
+  $.extend($.tmpl.tag, {
+      "var": {
+          open: "var $1;"
+      }
+  });
+
 });

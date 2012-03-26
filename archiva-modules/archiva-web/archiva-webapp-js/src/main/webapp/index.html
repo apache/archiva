@@ -10,9 +10,17 @@
   <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
 
   <script type="text/javascript" src="js/lab.js"></script>
+    <script type="text/javascript">
+        var require = {
+            config:{
+                urlArgs: "timeStampCache="+new Date().getTime()
+            },
+            deps: ["js/jquery-1.7.2.js","js/jquery.tmpl.js","js/archiva/utils.js","js/startup.js"]
+        };
+    </script>
   <script type="text/javascript" src="js/require.1.0.7.js"></script>
   <script type="text/javascript" src="js/jquery.i18n.properties-1.0.9.js"></script>
-  <script type="text/javascript" src="js/archiva/startup.js"></script>
+
   <title>Apache Archiva</title>
 
 </head>
@@ -48,18 +56,22 @@
 
 <script type="text/javascript">
 
-    $(function() {
+
 
         require.config({
             baseUrl: "js/",
+            urlArgs: "timeStampCache="+new Date().getTime(),
             "paths": {
                 "i18n":"jquery.i18n.properties-1.0.9",
                 "jquery": "jquery-1.7.2"
             }
         });
+        require(['domReady'], function (domReady) {
+          domReady.withResources(function () {
+              loadJs();
+          });
+        });
 
-        loadJs();
-    });
 
 
 </script>
