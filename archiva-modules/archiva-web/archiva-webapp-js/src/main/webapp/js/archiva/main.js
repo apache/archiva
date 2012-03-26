@@ -18,7 +18,8 @@
  */
 define("main",["order!jquery","jquery_ui","jquery_cookie","bootstrap","order!archiva/search",
          "jquery_validate","jquery_json","order!knockout","order!redback-templates","order!main-templates","order!roles",
-          "order!redback","general-admin","repositories","network-proxies","proxy-connectors","repository-groups"],
+          "order!redback","general-admin","repositories","network-proxies","proxy-connectors","repository-groups",
+          "order!knockout.simpleGrid"],
 function() {
 
   /**
