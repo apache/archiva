@@ -687,7 +687,9 @@
 
         </table>
         <div id="artifactMetadata_Pagination"></div>
-        <a href="#" class="btn btn-primary" data-bind="click: addProperty">${$.i18n.prop('browse.artifact.metadatas.add')}</a>
+        {{if hasSavePropertyKarma()}}
+          <a href="#" class="btn btn-primary" data-bind="click: addProperty">${$.i18n.prop('browse.artifact.metadatas.add')}</a>
+        {{/if}}
       </div>
 
     </div>
@@ -755,15 +757,25 @@
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
       <tr>
-        {{if row.editable}}
+        {{if row.editable && hasSavePropertyKarma()}}
           <td><input type="text" data-bind="value: row.key"/></td>
         {{else}}
           <td>${row.key}</td>
         {{/if}}
-        <td><input type="text" data-bind="value: row.value"/></td>
-        <td><a href="#" class="btn btn-danger" data-bind="click: function(){deleteProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.delete')}</a></td>
         <td>
-          {{if row.modified}}
+          {{if hasSavePropertyKarma()}}
+            <input type="text" data-bind="value: row.value"/>
+          {{else}}
+            ${row.value}
+          {{/if}}
+        </td>
+        <td>
+          {{if hasDeletePropertyKarma()}}
+          <a href="#" class="btn btn-danger" data-bind="click: function(){deleteProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.delete')}</a>
+          {{/if}}
+        </td>
+        <td>
+          {{if row.modified && hasSavePropertyKarma()}}
             <a href="#" class="btn btn-warning" data-bind="click: function(){saveProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.save')}</a>
           {{/if}}
         </td>

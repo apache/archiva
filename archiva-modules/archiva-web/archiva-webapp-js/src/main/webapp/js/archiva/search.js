@@ -321,6 +321,14 @@ $(function() {
 
     }
 
+    hasSavePropertyKarma=function(){
+      return hasKarma("archiva-add-metadata");
+    }
+
+    hasDeletePropertyKarma=function(){
+      return hasKarma("archiva-delete-metadata");
+    }
+
     saveProperty=function(entry){
       if($.trim(entry.key() ).length<1){
         clearUserMessages();
