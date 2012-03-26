@@ -745,24 +745,22 @@
 <script id="artifact_metadata_properties_tmpl" type="text/html">
     <thead>
       <tr>
-        {{each(i, columnDefinition) columns}}
-          <th title="${columnDefinition.title }">${columnDefinition.headerText }</th>
-        {{/each}}
+        <th title="${$.i18n.prop('browse.artifact.metadatas.key')}">${$.i18n.prop('browse.artifact.metadatas.key')}</th>
+        <th title="${$.i18n.prop('browse.artifact.metadatas.value')}">${$.i18n.prop('browse.artifact.metadatas.value')}</th>
         <th title="${$.i18n.prop('browse.artifact.metadatas.delete')}">${$.i18n.prop('browse.artifact.metadatas.delete')}</th>
-        <th title="${$.i18n.prop('browse.artifact.metadatas.delete')}">${$.i18n.prop('browse.artifact.metadatas.save')}</th>
+        <th title="${$.i18n.prop('browse.artifact.metadatas.save')}">${$.i18n.prop('browse.artifact.metadatas.save')}</th>
       </tr>
 
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
       <tr>
-        {{each(j, columnDefinition) columns}}
-          {{if row.editable}}
-            <td><input type="text" data-bind="value: row[columnDefinition.rowText]"/></td>
-          {{else}}
-            <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
-          {{/if}}
-        {{/each}}
+        {{if row.editable}}
+          <td><input type="text" data-bind="value: row.key"/></td>
+        {{else}}
+          <td>${row.key}</td>
+        {{/if}}
+        <td><input type="text" data-bind="value: row.value"/></td>
         <td><a href="#" class="btn btn-danger" data-bind="click: function(){deleteProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.delete')}</a></td>
         <td>
           {{if row.modified}}

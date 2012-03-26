@@ -261,7 +261,10 @@ $(function() {
                       type: "GET",
                       dataType: 'json',
                       success: function(data) {
-                        self.entries([new MetadataEntry("foo","bar")]);
+                        var entries= $.map(data,function(e,i){
+                          return new MetadataEntry( e.key, e.value,false);
+                        });
+                        self.entries(entries);
                       }
                     });
                   //}
@@ -298,48 +301,49 @@ $(function() {
     }
 
     deleteProperty=function(entry){
+      var metadatasUrl="restServices/archivaServices/browseService/metadata/"+encodeURIComponent(groupId);
+      metadatasUrl+="/"+encodeURIComponent(artifactId);
+      metadatasUrl+="/"+encodeURIComponent(version);
+      metadatasUrl+="/"+encodeURIComponent(entry.key());
+      var selectedRepo=getSelectedBrowsingRepository();
+      if (selectedRepo){
+        metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+      }
+      $.ajax(metadatasUrl, {
+        type: "DELETE",
+        dataType: 'json',
+        success: function(data) {
+          displaySuccessMessage( $.i18n.prop("artifact.metadata.deleted"));
+          self.entries.remove(entry);
+        }
+      });
 
-      self.entries.remove(entry);
     }
 
     saveProperty=function(entry){
-      var metadatasContentDiv=mainContent.find("#artifact-details-metadatas-content" );
-      //if( $.trim(metadatasContentDiv.html()).length<1){
-        //metadatasContentDiv.html(mediumSpinnerImg());
-        var metadatasUrl="restServices/archivaServices/browseService/metadatas/"+encodeURIComponent(groupId);
-        metadatasUrl+="/"+encodeURIComponent(artifactId);
-        metadatasUrl+="/"+encodeURIComponent(version);
-        metadatasUrl+="/"+encodeURIComponent(entry.key());
-        metadatasUrl+="/"+encodeURIComponent(entry.value());
-        var selectedRepo=getSelectedBrowsingRepository();
-        if (selectedRepo){
-          metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+      var metadatasUrl="restServices/archivaServices/browseService/metadata/"+encodeURIComponent(groupId);
+      metadatasUrl+="/"+encodeURIComponent(artifactId);
+      metadatasUrl+="/"+encodeURIComponent(version);
+      metadatasUrl+="/"+encodeURIComponent(entry.key());
+      metadatasUrl+="/"+encodeURIComponent(entry.value());
+      var selectedRepo=getSelectedBrowsingRepository();
+      if (selectedRepo){
+        metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+      }
+      $.ajax(metadatasUrl, {
+        type: "PUT",
+        dataType: 'json',
+        success: function(data) {
+          displaySuccessMessage( $.i18n.prop("artifact.metadata.added"));
+          entry.editable(false);
+          entry.modified(false);
         }
-        $.ajax(metadatasUrl, {
-          type: "PUT",
-          dataType: 'json',
-          success: function(data) {
-            displaySuccessMessage( $.i18n.prop("artifact.metadata.added"));
-            entry.modified(false);
-          }
-        });
+      });
     }
 
 
     this.gridMetatadasViewModel = new ko.simpleGrid.viewModel({
       data: self.entries,
-      columns: [
-        {
-          headerText: $.i18n.prop('browse.artifact.metadata.key'),
-          rowText: "key",
-          id: "key"
-        },
-        {
-          headerText: $.i18n.prop('browse.artifact.metadata.value'),
-          rowText: "value",
-          id: "value"
-        }
-      ],
       pageSize: 10
     });
 
