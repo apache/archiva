@@ -80,7 +80,7 @@ $(function() {
                .script("jquery.cookie.1.0.0.js").wait()
                .script("knockout-2.0.0.debug.js").wait()
                .script("jquery-ui-1.8.16.custom.min.js").wait()
-               .script(buildLoadJsUrl("jquery.validate.js")).wait()
+               .script("jquery.validate-1.9.0.js").wait()
                .script("jquery.json-2.3.min.js").wait()
                .script(buildLoadJsUrl("archiva/main-tmpl.js")).wait()
                .script(buildLoadJsUrl("archiva/general-admin.js"))
