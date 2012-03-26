@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("general-admin",["jquery","i18n","order!utils","order!jquery_tmpl","order!knockout","jquery_validate","bootstrap"]
+define("general-admin",["jquery","i18n","order!utils","order!jquery_tmpl","order!knockout","order!knockout.simpleGrid",
+  "jquery_validate","bootstrap"]
     , function() {
 
   //-------------------------
