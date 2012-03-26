@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("users",["jquery","order!utils","i18n","jquery_validate","order!knockout","order!knockout.simpleGrid"], function() {
 
   /**
    * view model used for users grid

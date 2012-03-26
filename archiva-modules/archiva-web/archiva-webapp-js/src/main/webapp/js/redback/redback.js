@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("redback",["jquery","order!utils","jquery_validate","jquery_json","roles","user","users"], function() {
 
   // define a container object with various datas
   window.redbackModel = {userOperationNames:null,key:null,i18n:$.i18n.map};
@@ -48,6 +48,148 @@ $(function() {
         }
       }
     });
+  }
+
+  Operation=function(name) {
+    this.name=ko.observable(name);
+  }
+
+  /**
+   * @param data Operation response from redback rest api
+   */
+  mapOperation=function(data) {
+    return new Operation(data.name,null);
+  }
+
+  Permission=function(name,operation,resource) {
+    this.name=ko.observable(name);
+    this.operation=ko.observable(operation);
+    this.resource=ko.observable(resource);
+  }
+
+  /**
+   * @param data Permission response from redback rest api
+   */
+  mapPermission=function(data) {
+    return new Permission(data.name,
+                          data.operation?mapOperation(data.operation):null,
+                          data.resource?mapResource(data.resource):null);
+  }
+
+  Resource=function(identifier,pattern) {
+    this.identifier=ko.observable(identifier);
+    this.pattern=ko.observable(pattern);
+  }
+
+  /**
+   * @param data Resource response from redback rest api
+   */
+  mapResource=function(data) {
+    return new Resource(data.identifier,data.pattern);
+  }
+
+  //---------------------------------------
+  // register part
+  //---------------------------------------
+
+  /**
+   * open the register modal box
+   */
+  registerBox=function(){
+    if (window.modalRegisterWindow==null) {
+      window.modalRegisterWindow = $("#modal-register").modal({backdrop:'static',show:false});
+      window.modalRegisterWindow.bind('hidden', function () {
+        $("#modal-register-err-message").hide();
+      })
+    }
+    window.modalRegisterWindow.modal('show');
+    $("#user-register-form").validate({
+      showErrors: function(validator, errorMap, errorList) {
+        customShowError("#user-register-form",validator,errorMap,errorMap);
+      }
+    });
+    $("#modal-register").delegate("#modal-register-ok", "click keydown keypress", function(e) {
+      e.preventDefault();
+      register();
+    });
+    //$("#modal-register").focus();
+  }
+
+  /**
+   * validate the register form and call REST service
+   */
+  register=function(){
+    $.log("register.js#register");
+    var valid = $("#user-register-form").valid();
+    if (!valid) {
+        return;
+    }
+    clearUserMessages();
+    $("#modal-register-ok").attr("disabled","disabled");
+
+    $('#modal-register-footer').append(smallSpinnerImg());
+
+    var user = {};
+    user.username = $("#user-register-form-username").val();
+    user.fullName = $("#user-register-form-fullname").val();
+    user.email = $("#user-register-form-email").val();
+    jQuery.ajax({
+      url:  'restServices/redbackServices/userService/registerUser',
+      data:  JSON.stringify(user),
+      type: 'POST',
+      contentType: "application/json",
+      success: function(result){
+        var registered = false;
+        if (result == "-1") {
+          registered = false;
+        } else {
+          registered = true;
+        }
+
+        if (registered == true) {
+          window.modalRegisterWindow.modal('hide');
+          $("#register-link").hide();
+          // FIXME i18n
+          displaySuccessMessage("registered your key has been sent");
+        }
+      },
+      complete: function(){
+        $("#modal-register-ok").removeAttr("disabled");
+        removeSmallSpinnerImg();
+      },
+      error: function(result) {
+        var obj = jQuery.parseJSON(result.responseText);
+        displayRedbackError(obj);
+        window.modalRegisterWindow.modal('hide');
+      }
+    })
+
+  }
+
+  /**
+   * validate a registration key and go to change password key
+   * @param key
+   */
+  validateKey=function(key,registration) {
+    // FIXME spinner display
+    $.ajax({
+      url: 'restServices/redbackServices/userService/validateKey/'+key,
+      type: 'GET',
+       success: function(result){
+         window.redbackModel.key=key;
+         $.log("validateKey#sucess");
+         changePasswordBox(false,registration?registration:true,null);
+       },
+       complete: function(){
+         // hide spinner
+       },
+       error: function(result) {
+         $.log("validateKey#error");
+         var obj = jQuery.parseJSON(result.responseText);
+         $.log("validateKey#error response:"+obj);
+         displayRedbackError(obj);
+       }
+    })
   }
 
 });

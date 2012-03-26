@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("network-proxies",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate"], function() {
 
 
   NetworkProxy=function(id,protocol,host,port,username,password,useNtlm){

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("proxy-connectors",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate"], function() {
 
   ProxyConnector=function(sourceRepoId,targetRepoId,proxyId,blackListPatterns,whiteListPatterns,policiesEntries,propertiesEntries,
                           disabled,order){

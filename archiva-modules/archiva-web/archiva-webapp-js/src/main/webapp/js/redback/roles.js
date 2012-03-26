@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("roles",["jquery","order!utils","i18n","jquery_validate","order!knockout","order!knockout.simpleGrid"], function() {
 
   Role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
 

@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(["text!js/redback/templates/user-edit.html"+appendTemplateUrl(),
+define("redback-templates",["text!js/redback/templates/user-edit.html"+appendTemplateUrl(),
           "text!js/redback/templates/user-grids.html"+appendTemplateUrl(),
           "text!js/redback/templates/login.html"+appendTemplateUrl(),
           "text!js/redback/templates/register-form.html"+appendTemplateUrl(),
           "text!js/redback/templates/password-change-form.html"+appendTemplateUrl(),
           "text!js/redback/templates/user-edit-form.html"+appendTemplateUrl(),
-          "text!js/redback/templates/roles-tmpl.html"+appendTemplateUrl()],
+          "text!js/redback/templates/roles-tmpl.html"+appendTemplateUrl(),
+          "jquery_tmpl","utils"],
     function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
 
       var htmlFragment=$("#html-fragments");

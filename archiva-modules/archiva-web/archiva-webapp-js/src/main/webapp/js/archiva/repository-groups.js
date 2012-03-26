@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("repository-groups",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate","jquery_ui"],
+function() {
 
   RepositoryGroup=function(id,repositories){
 

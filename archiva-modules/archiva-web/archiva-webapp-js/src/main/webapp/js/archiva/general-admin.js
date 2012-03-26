@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("general-admin",["jquery","i18n","order!utils","order!jquery_tmpl","order!knockout","jquery_validate","bootstrap"]
+    , function() {
 
   //-------------------------
   // legacy path part
@@ -822,4 +823,5 @@ $(function() {
       }
     });
   }
+
 });

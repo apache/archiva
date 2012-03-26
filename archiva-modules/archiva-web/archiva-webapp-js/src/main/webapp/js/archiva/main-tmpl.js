@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
+define("main-templates",["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
           "text!js/archiva/templates/message.html"+appendTemplateUrl(),
           "text!js/archiva/templates/modal.html"+appendTemplateUrl(),
           "text!js/archiva/templates/grids-generics.html"+appendTemplateUrl(),
@@ -25,7 +25,8 @@ require(["text!js/archiva/templates/menu.html"+appendTemplateUrl(),
           "text!js/archiva/templates/proxy-connectors.html"+appendTemplateUrl(),
           "text!js/archiva/templates/repository-groups.html"+appendTemplateUrl(),
           "text!js/archiva/templates/search.html"+appendTemplateUrl(),
-          "text!js/archiva/templates/general-admin.html"+appendTemplateUrl()],
+          "text!js/archiva/templates/general-admin.html"+appendTemplateUrl(),
+          "jquery_tmpl","utils"],
   function(menu,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
            repository_groups,search,general_admin) {
 

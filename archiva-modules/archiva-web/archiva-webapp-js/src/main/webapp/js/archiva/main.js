@@ -17,8 +17,10 @@
  * under the License.
  */
 require( ["order!jquery","jquery_ui","jquery_cookie","bootstrap","order!archiva/search",
-         "jquery_validate","jquery_json","order!knockout","order!redback/redback"],
+         "jquery_validate","jquery_json","order!knockout","order!redback-templates","order!main-templates","order!roles",
+          "order!redback","general-admin","repositories","network-proxies","proxy-connectors","repository-groups"],
 function() {
+
 
 
   // define a container object with various datas

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-$(function() {
+define("repositories",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate"], function() {
 
   // FIXME this must be dynamic if we do a plugin mechanism with dynamic repositories types
   // FIXME i18n

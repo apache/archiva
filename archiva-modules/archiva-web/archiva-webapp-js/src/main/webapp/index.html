@@ -64,7 +64,18 @@
                 "jquery_json": "jquery.json-2.3.min",
                 "knockout.simpleGrid": "knockout.simpleGrid",
                 "knockout": "knockout-2.0.0.debug",
-                "knockout.sortable": "knockout-sortable"
+                "knockout.sortable": "knockout-sortable",
+                "redback": "redback/redback",
+                "general-admin":"archiva/general-admin",
+                "redback-templates": "redback/redback-tmpl",
+                "main-templates": "archiva/main-tmpl",
+                "repositories": "archiva/repositories",
+                "network-proxies": "archiva/network-proxies",
+                "proxy-connectors": "archiva/proxy-connectors",
+                "repository-groups": "archiva/repository-groups",
+                "roles": "redback/roles",
+                "user": "redback/user",
+                "users": "redback/users"
             }
             // file upload dependencies
             //.script("jquery.iframe-transport-1.4.js").wait()
@@ -72,7 +83,7 @@
             //.script("jquery.fileupload-ip-1.0.6.js").wait()
             //.script("jquery.fileupload-ui-6.6.3.js" ).wait()
         });
-        require(['domReady','jquery','i18n','startup'], function (domReady) {
+        require(['order!domReady','order!jquery','order!i18n','order!startup'], function (domReady) {
           domReady.withResources(function () {
               loadi18n();
               $.ajax(
@@ -84,15 +95,6 @@
                       window.archivaJavascriptLog=data.javascriptLog;
                       window.archivaRuntimeInfo=data;
 
-                      require.config({
-                          baseUrl: "js/",
-                          urlArgs: "_="+new Date().getTime(),
-                          "paths": {
-                              "redback": buildLoadJsUrl("redback/redback.js")
-
-                          }
-                      });
-
                       // CacheBust is for dev purpose use false in prod env !
                       var options = {
                           AlwaysPreserveOrder:true,
@@ -102,20 +104,6 @@
                       };
                       $LAB.setGlobalDefaults(options);
                       $LAB
-                         .script(buildLoadJsUrl("archiva/main-tmpl.js")).wait()
-                         .script(buildLoadJsUrl("archiva/general-admin.js"))
-                         .script(buildLoadJsUrl("archiva/repositories.js")).wait()
-                         .script(buildLoadJsUrl("archiva/network-proxies.js")).wait()
-                         .script(buildLoadJsUrl("archiva/proxy-connectors.js")).wait()
-                         .script(buildLoadJsUrl("redback/operation.js")).wait()
-                         .script(buildLoadJsUrl("archiva/repository-groups.js")).wait()
-                         .script(buildLoadJsUrl("redback/redback-tmpl.js")).wait()
-                         .script(buildLoadJsUrl("redback/user.js")).wait()
-                         .script(buildLoadJsUrl("redback/users.js")).wait()
-                         .script(buildLoadJsUrl("redback/register.js")).wait()
-                         .script(buildLoadJsUrl("redback/permission.js")).wait()
-                         .script(buildLoadJsUrl("redback/resource.js")).wait()
-                         .script(buildLoadJsUrl("redback/roles.js")).wait()
                          .script(buildLoadJsUrl("archiva/main.js"));
                   }
                 })
