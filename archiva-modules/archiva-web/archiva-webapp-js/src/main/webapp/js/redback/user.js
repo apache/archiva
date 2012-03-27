@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("user",["jquery","order!utils","i18n","jquery_validate","order!knockout","order!knockout.simpleGrid"], function() {
+define("user",["jquery","order!utils","i18n","jquery.validate","order!knockout","order!knockout.simpleGrid"], function() {
 
   /**
    * object model for user with some function to create/update/delete users

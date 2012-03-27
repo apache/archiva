@@ -26,7 +26,7 @@ define("main-templates",["text!templates/archiva/menu.html",
           "text!templates/archiva/repository-groups.html",
           "text!templates/archiva/search.html",
           "text!templates/archiva/general-admin.html",
-          "jquery_tmpl","utils"],
+          "jquery.tmpl","utils"],
   function(menu,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
            repository_groups,search,general_admin) {
 

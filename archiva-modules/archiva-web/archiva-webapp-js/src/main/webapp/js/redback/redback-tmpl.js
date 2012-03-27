@@ -23,7 +23,7 @@ define("redback-templates",["text!templates/redback/user-edit.html",
           "text!templates/redback/password-change-form.html",
           "text!templates/redback/user-edit-form.html",
           "text!templates/redback/roles-tmpl.html",
-          "jquery_tmpl","utils"],
+          "jquery.tmpl","utils"],
     function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
 
       var htmlFragment=$("#html-fragments");

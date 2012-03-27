@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback",["jquery","order!utils","jquery_validate","jquery_json","order!knockout",
+define("redback",["jquery","order!utils","jquery.validate","jquery.json","order!knockout",
   "order!knockout.simpleGrid","roles","user","users"], function() {
 
   // define a container object with various datas

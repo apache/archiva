@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("repositories",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate","order!knockout","order!knockout.simpleGrid"],
+define("repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","order!knockout","order!knockout.simpleGrid"],
        function() {
 
   // FIXME this must be dynamic if we do a plugin mechanism with dynamic repositories types

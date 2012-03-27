@@ -17,7 +17,7 @@
  * under the License.
  */
 
-define("utils",["jquery","i18n","jquery_tmpl"], function() {
+define("utils",["jquery","i18n","jquery.tmpl"], function() {
 
   loadi18n=function(){
     var browserLang = usedLang();

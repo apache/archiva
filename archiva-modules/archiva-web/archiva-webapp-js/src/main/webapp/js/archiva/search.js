@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("search",["jquery","i18n","jquery_tmpl","choosen","order!knockout","knockout.simpleGrid"], function() {
+define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid"], function() {
 
 
 
