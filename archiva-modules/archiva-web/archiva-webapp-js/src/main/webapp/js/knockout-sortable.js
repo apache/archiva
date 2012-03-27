@@ -1,4 +1,6 @@
 //knockout-sortable | (c) 2012 Ryan Niemeyer | http://www.opensource.org/licenses/mit-license
+define("knockout.sortable",["jquery","order!utils","order!knockout"], function() {
+
 (function(ko, $, undefined) {
 var prepareTemplateOptions = function(valueAccessor) {
     var result = {},
@@ -134,3 +136,5 @@ ko.bindingHandlers.sortable = {
     options: {}
 };
 })(ko, jQuery);
+
+})
