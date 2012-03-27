@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("main-templates",["text!templates/archiva/menu.html",
+define("archiva.templates",["text!templates/archiva/menu.html",
           "text!templates/archiva/message.html",
           "text!templates/archiva/modal.html",
           "text!templates/archiva/grids-generics.html",

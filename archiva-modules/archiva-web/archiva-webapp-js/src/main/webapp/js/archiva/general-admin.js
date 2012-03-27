@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("general-admin",["jquery","i18n","order!utils","order!jquery.tmpl","order!knockout","order!knockout.simpleGrid",
+define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl","order!knockout","order!knockout.simpleGrid",
   "jquery.validate","bootstrap"]
     , function() {
 

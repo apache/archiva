@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback-templates",["text!templates/redback/user-edit.html",
+define("redback.templates",["text!templates/redback/user-edit.html",
           "text!templates/redback/user-grids.html",
           "text!templates/redback/login.html",
           "text!templates/redback/register-form.html",

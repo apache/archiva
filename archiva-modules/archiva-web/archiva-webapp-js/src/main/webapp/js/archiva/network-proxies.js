@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","order!knockout"
+define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","order!knockout"
   ,"order!knockout.simpleGrid"], function() {
 
 
