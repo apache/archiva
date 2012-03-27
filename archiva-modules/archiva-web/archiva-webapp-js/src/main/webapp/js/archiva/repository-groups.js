@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("repository-groups",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate","jquery_ui"],
+define("repository-groups",["jquery","i18n","jquery_tmpl","bootstrap","jquery_validate","jquery_ui","order!knockout"
+  ,"order!knockout.simpleGrid","knockout.sortable"],
 function() {
 
   RepositoryGroup=function(id,repositories){
