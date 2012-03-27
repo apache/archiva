@@ -11,7 +11,7 @@
 
 
 define("knockout.simpleGrid",["jquery","order!utils","i18n","order!knockout"], function() {
-  (function () {
+(function (ko, $) {
 
 
       ko.simpleGrid = {
@@ -71,6 +71,6 @@ define("knockout.simpleGrid",["jquery","order!utils","i18n","order!knockout"], f
             if (viewModel.pageLinksUpdateCallBack) viewModel.pageLinksUpdateCallBack();
           }
       };
-  })();
+})(ko, jQuery);
 
 })
