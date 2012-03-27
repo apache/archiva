@@ -482,6 +482,8 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     if(freshView){
       mainContent.html($("#browse-tmpl" ).tmpl());
     }
+    mainContent.find("#browse_artifact_detail").hide();
+    mainContent.find("#browse_artifact" ).hide();
     mainContent.find("#browse_result").html(mediumSpinnerImg());
 
     $.ajax("restServices/archivaServices/browseService/userRepositories", {
@@ -1146,11 +1148,11 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       displayBrowseArtifactDetail(artifact.groupId,artifact.artifactId,null,null);
     }
     artifactDetailView=function(artifact){
-      generaldisplayArtifactDetailsVersionView(artifact.groupId,artifact.artifactId,artifact.version,null);
+      generalDisplayArtifactDetailsVersionView(artifact.groupId,artifact.artifactId,artifact.version,null);
     }
   }
 
-  generaldisplayArtifactDetailsVersionView=function(groupId,artifactId,version,repositoryId){
+  generalDisplayArtifactDetailsVersionView=function(groupId,artifactId,version,repositoryId){
     var mainContent=$("#main-content");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result" ).hide();

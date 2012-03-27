@@ -86,7 +86,7 @@ function() {
           displayBrowseArtifactDetail(splitted[0],splitted[1],null,null);
           return;
         } else if (splitted.length==3) {
-          generaldisplayArtifactDetailsVersionView(splitted[0],splitted[1],splitted[2],repositoryId);
+          generalDisplayArtifactDetailsVersionView(splitted[0],splitted[1],splitted[2],repositoryId);
           return;
         } else {
           displayWarningMessage( $.i18n.prop("shortcut.artifact.illegal"));
