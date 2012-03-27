@@ -90,3 +90,13 @@ Apache Archiva Database
   database documentation for backup instructions.
   
 ~~TODO: link to wiki location that does others
+
+* MySql setup
+
++------+
+  create database archiva character set utf8;
+
+  GRANT ALL PRIVILEGES ON archiva.* TO 'archivauser'@'localhost' IDENTIFIED BY 'archivauserpassword'
++------+
+
+  Replace "archivauser" and "archivauserpassword" with a username and password of your choice. If Archiva is not running on the same server as your MySQL database server, replace "localhost" with the hostname or IP address of the Archiva server.
