@@ -26,9 +26,10 @@ define("archiva.templates",["text!templates/archiva/menu.html",
           "text!templates/archiva/repository-groups.html",
           "text!templates/archiva/search.html",
           "text!templates/archiva/general-admin.html",
+          "text!templates/archiva/artifacts-management.html",
           "jquery.tmpl","utils"],
   function(menu,message,modal,grids_generics,repositories,network_proxies,proxies_connectors,
-           repository_groups,search,general_admin) {
+           repository_groups,search,general_admin,artifacts_management) {
 
     var htmlFragment=$("#html-fragments");
     // template loading
@@ -42,6 +43,7 @@ define("archiva.templates",["text!templates/archiva/menu.html",
     htmlFragment.append(repository_groups);
     htmlFragment.append(search);
     htmlFragment.append(general_admin);
+    htmlFragment.append(artifacts_management);
     $.log("main-tmpl.js loaded");
   }
 );

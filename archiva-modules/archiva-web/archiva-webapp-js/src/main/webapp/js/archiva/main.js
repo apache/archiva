@@ -16,12 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.main",["order!jquery","jquery.ui.widget","jquery.cookie","bootstrap","order!archiva/search",
+define("archiva.main",["order!jquery","jquery.ui","jquery.cookie","bootstrap","order!archiva/search",
          "jquery.validate","jquery.json","order!knockout","order!redback.templates","order!archiva.templates",
-          "order!redback.roles",
-          "order!redback","archiva.general-admin","archiva.repositories","archiva.network-proxies","archiva.proxy-connectors",
-          "archiva.repository-groups",
-          "order!knockout.simpleGrid"],
+          "order!redback.roles","order!redback","archiva.general-admin","archiva.repositories",
+          "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
 function() {
 
   /**
