@@ -134,9 +134,10 @@
                     template,
                     preview;
                 if (data.context) {
-                    data.context.each(function (index) {
+
+                    data.context.each(function (index, e) {
                         var file = ($.isArray(data.result) &&
-                                data.result[index]) || {error: 'emptyResult'};
+                                data.result[index]) || data.result ||  {error: 'emptyResult'};
                         if (file.error) {
                             that._adjustMaxNumberOfFiles(1);
                         }

@@ -18,8 +18,8 @@ package org.apache.archiva.webapp.ui.services.model;
  * under the License.
  */
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement( name = "fileMetadata" )
 public class FileMetadata
+    implements Serializable
 {
     private String name;
 
@@ -82,7 +83,6 @@ public class FileMetadata
         this.url = url;
     }
 
-    @XmlElement( name = "delete_url" )
     public String getDeleteUrl()
     {
         return deleteUrl;
@@ -94,7 +94,6 @@ public class FileMetadata
         this.deleteUrl = deleteUrl;
     }
 
-    @XmlElement( name = "delete_type" )
     public String getDeleteType()
     {
         return deleteType;
