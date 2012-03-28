@@ -21,6 +21,7 @@ package org.apache.archiva.webapp.ui.services.api;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.webapp.ui.services.model.FileMetadata;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -46,19 +49,36 @@ public class DefaultFileUploadService
     @Context
     private HttpServletResponse httpServletResponse;
 
-    public FileMetadata post()
+    public FileMetadata post( String groupId, String artifactId, String version, String packaging, String classifier,
+                              String repositoryId, String generatePom )
         throws ArchivaRestServiceException
     {
-        log.info( "uploading file" );
+        log.info( "uploading file:" + groupId + ":" + artifactId + ":" + version );
         try
         {
-            byte[] bytes = IOUtils.toByteArray( httpServletRequest.getInputStream() );
-            return new FileMetadata( "thefile", bytes.length, "theurl" );
+            File file = File.createTempFile( "upload-artifact", "tmp" );
+            file.deleteOnExit();
+            IOUtils.copy( httpServletRequest.getInputStream(), new FileOutputStream( file ) );
+            FileMetadata fileMetadata = new FileMetadata( "thefile", file.length(), "theurl" );
+            fileMetadata.setDeleteUrl( file.getName() );
+            return fileMetadata;
         }
         catch ( IOException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
+    }
+
+    public Boolean deleteFile( String fileName )
+        throws ArchivaRestServiceException
+    {
+        File file = new File( SystemUtils.getJavaIoTmpDir(), fileName );
+        log.debug( "delete file:{},exists:{}", file.getPath(), file.exists() );
+        if ( file.exists() )
+        {
+            return file.delete();
+        }
+        return Boolean.FALSE;
     }
 }

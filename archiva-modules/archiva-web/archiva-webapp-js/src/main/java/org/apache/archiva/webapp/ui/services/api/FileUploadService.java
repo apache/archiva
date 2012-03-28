@@ -23,8 +23,12 @@ import org.apache.archiva.webapp.ui.services.model.FileMetadata;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -35,10 +39,21 @@ import javax.ws.rs.core.MediaType;
 public interface FileUploadService
 {
 
-    @Path( "upload" )
+    //@Path( "upload" )
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    FileMetadata post()
+    FileMetadata post( @QueryParam( "g" ) String groupId, @QueryParam( "a" ) String artifactId,
+                       @QueryParam( "v" ) String version, @QueryParam( "p" ) String packaging,
+                       @QueryParam( "c" ) String classifier, @QueryParam( "r" ) String repositoryId,
+                       @QueryParam( "generatePom" ) String generatePom )
+        throws ArchivaRestServiceException;
+
+    @Path( "{fileName}" )
+    @DELETE
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true )
+    Boolean deleteFile( @PathParam( "fileName" ) String fileName )
         throws ArchivaRestServiceException;
 }

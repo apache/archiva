@@ -39,6 +39,8 @@ public class FileMetadata
 
     private String deleteType;
 
+    private String errorKey;
+
     public FileMetadata()
     {
         // no op
