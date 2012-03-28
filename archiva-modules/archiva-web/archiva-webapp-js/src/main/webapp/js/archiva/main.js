@@ -131,7 +131,12 @@ function() {
       }
       if (screen=='appearance-configuration'&& hasKarma('archiva-manage-configuration')){
         displayAppearanceConfiguration();
-        return
+        return;
+      }
+
+      if (screen=='artifact-upload' && hasKarma('archiva-upload-repository')){
+        displayUploadArtifact();
+        return;
       }
     }
     // by default display search screen

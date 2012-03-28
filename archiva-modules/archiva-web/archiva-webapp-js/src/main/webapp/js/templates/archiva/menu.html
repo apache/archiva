@@ -28,7 +28,9 @@
         <a href="#" id="menu-find-browse-a" onclick="displayBrowse(true)">${$.i18n.prop('menu.artifacts.browse')}</a>
       </li>
       <li>
-        <a href="#" id="menu-find-upload-a" onclick="displayUploadArtifact(true)">${$.i18n.prop('menu.artifacts.upload')}</a>
+        <a href="#" id="menu-find-upload-a" redback-permissions="{permissions: ['archiva-upload-repository']}" onclick="displayUploadArtifact(true)">
+          ${$.i18n.prop('menu.artifacts.upload')}
+        </a>
       </li>
     </ul>
 

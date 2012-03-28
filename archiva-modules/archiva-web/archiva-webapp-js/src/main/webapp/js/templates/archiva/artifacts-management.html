@@ -1,5 +1,5 @@
 <script id="file-upload-tmpl" type="text/html">
-<form id="fileupload" action="../server/php/" method="POST" enctype="multipart/form-data">
+<form id="fileupload" action="restServices/archivaUiServices/fileUploadService/upload" method="POST" enctype="multipart/form-data">
     <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
     <div class="row fileupload-buttonbar">
         <div class="span7">
@@ -47,7 +47,7 @@
         <td class="name"><span>{%=file.name%}</span></td>
         <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
         {% if (file.error) { %}
-            <td class="error" colspan="2"><span class="label label-important">{%=$.i18n.prop('locale.fileupload.error')%}</span> {%=$.i18n.prop('locale.fileupload.errors',[file.error]) || file.error%}</td>
+            <td class="error" colspan="2"><span class="label label-important">{%=$.i18n.prop('fileupload.error')%}</span> {%=$.i18n.prop('fileupload.errors.'+[file.error]) || file.error%}</td>
         {% } else if (o.files.valid && !i) { %}
             <td>
                 <div class="progress progress-success progress-striped active"><div class="bar" style="width:0%;"></div></div>
@@ -55,7 +55,7 @@
             <td class="start">{% if (!o.options.autoUpload) { %}
                 <button class="btn btn-primary">
                     <i class="icon-upload icon-white"></i>
-                    <span>{%=$.i18n.prop('locale.fileupload.start')%}</span>
+                    <span>{%=$.i18n.prop('fileupload.start')%}</span>
                 </button>
             {% } %}</td>
         {% } else { %}
@@ -64,7 +64,7 @@
         <td class="cancel">{% if (!i) { %}
             <button class="btn btn-warning">
                 <i class="icon-ban-circle icon-white"></i>
-                <span>{%=$.i18n.prop('locale.fileupload.cancel')%}</span>
+                <span>{%=$.i18n.prop('fileupload.cancel')%}</span>
             </button>
         {% } %}</td>
     </tr>
@@ -78,7 +78,7 @@
             <td></td>
             <td class="name"><span>{%=file.name%}</span></td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
-            <td class="error" colspan="2"><span class="label label-important">{%=$.i18n.prop('locale.fileupload.error')%}</span> {%=$.i18n.prop('locale.fileupload.errors',[file.error]) || file.error%}</td>
+            <td class="error" colspan="2"><span class="label label-important">{%=$.i18n.prop('fileupload.error')%}</span> {%=$.i18n.prop('fileupload.errors.'+[file.error]) || file.error%}</td>
         {% } else { %}
             <td class="preview">{% if (file.thumbnail_url) { %}
                 <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
@@ -92,7 +92,7 @@
         <td class="delete">
             <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
                 <i class="icon-trash icon-white"></i>
-                <span>{%=$.i18n.prop('locale.fileupload.destroy')%}</span>
+                <span>{%=$.i18n.prop('fileupload.destroy')%}</span>
             </button>
             <input type="checkbox" name="delete" value="1">
         </td>
