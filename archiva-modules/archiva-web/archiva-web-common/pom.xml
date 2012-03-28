@@ -255,6 +255,37 @@
 
   <profiles>
     <profile>
+      <id>svn-1.7-buildnumber</id>
+      <activation>
+        <file>
+          <exists>../../../.svn/</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+              <!--providerImplementations>
+                <svn>javasvn</svn>
+              </providerImplementations-->
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>svn-buildnumber</id>
       <activation>
         <file>
