@@ -35,11 +35,16 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
       self.modified(true);
     });
 
+    this.previousProxyId=proxyId;
+
     //private String proxyId;
     this.proxyId=ko.observable(proxyId);
     this.proxyId.subscribe(function(newValue){
-      $.log("proxyId modified");
-      self.modified(true);
+      if(newValue!=self.previousProxyId){
+        $.log("proxyId modified:"+newValue+",previous:"+self.previousProxyId);
+        self.previousProxyId=newValue;
+        self.modified(true);
+      }
     });
 
     //private List<String> blackListPatterns;
@@ -433,7 +438,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
         data: self.proxyConnectors,
         pageSize: 5,
         gridUpdateCallBack: function(){
-          //$("#main-content #proxyConnectorsTable [title]").tooltip();
+          $("#main-content #proxyConnectorsTable [title]").tooltip();
         }
       });
       var mainContent = $("#main-content");
