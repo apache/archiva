@@ -172,10 +172,9 @@
                   <tr>
                     <td data-bind="text: name"></td>
                     <td>
-                      <select
-                              data-bind="options: getPolicyOptions(id()),value:getSelectedPolicyOption(id()),
-                              attr: { id: 'policy-'+id() },event: { change: function(){ changePolicyOption(id())},}"
-                              ></select>
+                      <select data-bind="options: getPolicyOptions(id()),value:getSelectedPolicyOption(id()),
+                              attr: { id: 'policy-'+id() },event: { change: function(){ changePolicyOption(id())},}">
+                      </select>
                     </td>
                   </tr>
               </tbody>
