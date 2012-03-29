@@ -98,3 +98,7 @@
 .ui-autocomplete-loading{
   background:url('../images/small-spinner.gif') no-repeat right center;
 }
+
+.nav .archiva-nav-header{
+  font-size: 12px;
+}
