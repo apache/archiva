@@ -41,6 +41,22 @@ public class FileMetadata
 
     private String errorKey;
 
+    private String groupId;
+
+    private String artifactId;
+
+    private String version;
+
+    private String packaging;
+
+    private boolean generatePom;
+
+    private String classifier;
+
+    private String repositoryId;
+
+    private boolean pomFile;
+
     public FileMetadata()
     {
         // no op
@@ -104,5 +120,95 @@ public class FileMetadata
     public void setDeleteType( String deleteType )
     {
         this.deleteType = deleteType;
+    }
+
+    public String getErrorKey()
+    {
+        return errorKey;
+    }
+
+    public void setErrorKey( String errorKey )
+    {
+        this.errorKey = errorKey;
+    }
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public String getArtifactId()
+    {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( String version )
+    {
+        this.version = version;
+    }
+
+    public String getPackaging()
+    {
+        return packaging;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        this.packaging = packaging;
+    }
+
+    public boolean isGeneratePom()
+    {
+        return generatePom;
+    }
+
+    public void setGeneratePom( boolean generatePom )
+    {
+        this.generatePom = generatePom;
+    }
+
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
+    public boolean isPomFile()
+    {
+        return pomFile;
+    }
+
+    public void setPomFile( boolean pomFile )
+    {
+        this.pomFile = pomFile;
     }
 }

@@ -88,11 +88,17 @@ public class DefaultFileUploadService
             String packaging =
                 IOUtils.toString( multipartBody.getAttachment( "packaging" ).getDataHandler().getInputStream() );
 
+            String repositoryId =
+                IOUtils.toString( multipartBody.getAttachment( "repositoryId" ).getDataHandler().getInputStream() );
+
             boolean generatePom = BooleanUtils.toBoolean(
                 IOUtils.toString( multipartBody.getAttachment( "generatePom" ).getDataHandler().getInputStream() ) );
 
             String classifier =
                 IOUtils.toString( multipartBody.getAttachment( "classifier" ).getDataHandler().getInputStream() );
+
+            boolean pomFile = BooleanUtils.toBoolean(
+                IOUtils.toString( multipartBody.getAttachment( "pomFile" ).getDataHandler().getInputStream() ) );
 
             log.info( "uploading file:" + groupId + ":" + artifactId + ":" + version );
             Attachment file = multipartBody.getAttachment( "files[]" );
@@ -100,7 +106,16 @@ public class DefaultFileUploadService
             tmpFile.deleteOnExit();
             IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile ) );
             FileMetadata fileMetadata = new FileMetadata( "thefile", tmpFile.length(), "theurl" );
+            fileMetadata.setGroupId( groupId );
+            fileMetadata.setArtifactId( artifactId );
+            fileMetadata.setVersion( version );
+            fileMetadata.setVersion( version );
+            fileMetadata.setPackaging( packaging );
+            fileMetadata.setGeneratePom( generatePom );
+            fileMetadata.setClassifier( classifier );
             fileMetadata.setDeleteUrl( tmpFile.getName() );
+            fileMetadata.setRepositoryId( repositoryId );
+            fileMetadata.setPomFile( pomFile );
             return fileMetadata;
         }
         catch ( IOException e )
