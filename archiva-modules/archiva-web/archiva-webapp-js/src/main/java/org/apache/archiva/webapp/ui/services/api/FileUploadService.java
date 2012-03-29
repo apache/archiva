@@ -20,6 +20,7 @@ package org.apache.archiva.webapp.ui.services.api;
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.webapp.ui.services.model.FileMetadata;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
@@ -28,7 +29,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -39,15 +39,15 @@ import javax.ws.rs.core.MediaType;
 public interface FileUploadService
 {
 
-    //@Path( "upload" )
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    FileMetadata post( @QueryParam( "g" ) String groupId, @QueryParam( "a" ) String artifactId,
-                       @QueryParam( "v" ) String version, @QueryParam( "p" ) String packaging,
-                       @QueryParam( "c" ) String classifier, @QueryParam( "r" ) String repositoryId,
-                       @QueryParam( "generatePom" ) String generatePom )
+        //FileMetadata post( @FormParam( "groupId" ) String groupId, @FormParam( "artifactId" ) String artifactId,
+        //                   @FormParam( "version" ) String version, @FormParam( "packaging" ) String packaging,
+        //                   @FormParam( "classifier" ) String classifier, @FormParam( "repositoryId" ) String repositoryId,
+        //                   @FormParam( "generatePom" ) String generatePom )
+    FileMetadata post( MultipartBody multipartBody )// @Multipart( value = "files[]", type = "*/*" ) Attachment file )
         throws ArchivaRestServiceException;
 
     @Path( "{fileName}" )

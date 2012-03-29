@@ -27,7 +27,14 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
         dataType: 'json',
         success: function(data) {
           mainContent.html($("#file-upload-tmpl" ).tmpl({managedRepositories: data}));
-          $('#fileupload').fileupload();
+          $('#fileupload').fileupload({
+              add: function (e, data) {
+                data.timeStamp = $.now();
+                $.blueimpUI.fileupload.prototype
+                    .options.add.call(this, e, data);
+              }
+            }
+          );
         }
     });
 

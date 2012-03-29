@@ -21,7 +21,10 @@ package org.apache.archiva.webapp.ui.services.api;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.webapp.ui.services.model.FileMetadata;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -68,6 +71,44 @@ public class DefaultFileUploadService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
+    }
+
+    public FileMetadata post( MultipartBody multipartBody )
+        throws ArchivaRestServiceException
+    {
+
+        try
+        {
+            String groupId =
+                IOUtils.toString( multipartBody.getAttachment( "groupId" ).getDataHandler().getInputStream() );
+            String artifactId =
+                IOUtils.toString( multipartBody.getAttachment( "artifactId" ).getDataHandler().getInputStream() );
+            String version =
+                IOUtils.toString( multipartBody.getAttachment( "version" ).getDataHandler().getInputStream() );
+            String packaging =
+                IOUtils.toString( multipartBody.getAttachment( "packaging" ).getDataHandler().getInputStream() );
+
+            boolean generatePom = BooleanUtils.toBoolean(
+                IOUtils.toString( multipartBody.getAttachment( "generatePom" ).getDataHandler().getInputStream() ) );
+
+            String classifier =
+                IOUtils.toString( multipartBody.getAttachment( "classifier" ).getDataHandler().getInputStream() );
+
+            log.info( "uploading file:" + groupId + ":" + artifactId + ":" + version );
+            Attachment file = multipartBody.getAttachment( "files[]" );
+            File tmpFile = File.createTempFile( "upload-artifact", "tmp" );
+            tmpFile.deleteOnExit();
+            IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile ) );
+            FileMetadata fileMetadata = new FileMetadata( "thefile", tmpFile.length(), "theurl" );
+            fileMetadata.setDeleteUrl( tmpFile.getName() );
+            return fileMetadata;
+        }
+        catch ( IOException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+
     }
 
     public Boolean deleteFile( String fileName )

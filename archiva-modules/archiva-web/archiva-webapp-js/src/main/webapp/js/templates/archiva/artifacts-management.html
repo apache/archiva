@@ -94,7 +94,7 @@
   {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-upload">
       <td class="name"><span>{%=file.name%}</span></td>
-      <td><input type="text" placeholder="classifier"></td>
+      <td><input type="text" id="classifier" name="classifier" placeholder="classifier" value=""></td>
       <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
       {% if (file.error) { %}
       <td class="error" colspan="2">
