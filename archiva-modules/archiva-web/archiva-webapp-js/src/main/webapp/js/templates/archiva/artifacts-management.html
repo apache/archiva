@@ -7,6 +7,16 @@
 
     <fieldset id="network-proxy-edit-fieldset">
       <div class="control-group">
+        <label class="control-label" for="repositoryId">${$.i18n.prop('fileupload.repositoryId')}</label>
+        <div class="controls">
+          <select id="repositoryId" name="repositoryId">
+            {{each(i,repository) managedRepositories}}
+              <option value="${repository.id}">${repository.name}</option>
+            {{/each}}
+          </select>
+         </div>
+        </div>
+      <div class="control-group">
         <label class="control-label" for="groupId">${$.i18n.prop('fileupload.groupId')}</label>
         <div class="controls">
           <input type="text" class="xlarge required" id="groupId" name="groupId" size="10" />
@@ -24,6 +34,20 @@
         <label class="control-label" for="artifactId">${$.i18n.prop('fileupload.version')}</label>
         <div class="controls">
           <input type="text" class="xlarge required" id="version" name="version" size="10" />
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="artifactId">${$.i18n.prop('fileupload.packaging')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required" id="packaging" name="packaging" size="10" />
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="generatePom">${$.i18n.prop('fileupload.generatePom')}</label>
+        <div class="controls">
+          <input type="checkbox" class="xlarge required" id="generatePom" name="generatePom" />
           </div>
         </div>
       </div>
@@ -70,6 +94,7 @@
   {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-upload">
       <td class="name"><span>{%=file.name%}</span></td>
+      <td><input type="text" placeholder="classifier"></td>
       <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
       {% if (file.error) { %}
       <td class="error" colspan="2">

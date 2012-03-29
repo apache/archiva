@@ -21,8 +21,16 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
     , function() {
   displayUploadArtifact=function(){
     var mainContent=$("#main-content");
-    mainContent.html($("#file-upload-tmpl" ).tmpl());
-    $('#fileupload').fileupload();
+    mainContent.html(mediumSpinnerImg());
+    $.ajax("restServices/archivaServices/browseService/userRepositories", {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          mainContent.html($("#file-upload-tmpl" ).tmpl({managedRepositories: data}));
+          $('#fileupload').fileupload();
+        }
+    });
+
   }
 
 });
