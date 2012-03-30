@@ -338,12 +338,16 @@
             {{/each}}
             <td>
               <a href="#" data-bind="click: function(){ editRemoteRepository(row) }">
-                <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+                <span class="btn btn-primary">
+                  <i class="icon-pencil icon-white"/>
+                </span>
               </a>
             </td>
             <td>
               <a href="#" data-bind="click: function(){ removeRemoteRepository(row) }">
-                <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
+                <span class="btn btn-danger">
+                  <i class="icon-trash icon-white"/>
+                </span>
               </a>
             </td>
             {{if row.modified()}}
@@ -355,7 +359,9 @@
             {{/if}}
             <td>
               <a href="#" data-bind="click: function(){ scheduleDownloadRemoteIndex(row) }">
-                <img src="images/view-refresh-22-22.png" title="${$.i18n.prop('remoterepository.downloadremoteindex.now')}"/>
+                <span class="btn btn-success">
+                  <i class="icon-refresh icon-white"/>
+                </span>
               </a>
             </td>
           </tr>
