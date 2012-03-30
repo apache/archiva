@@ -162,3 +162,109 @@
   </div>
 </script>
 
+<script id='ko_usersGrid_grid' type='text/html'>
+  <thead>
+      <tr>
+        {{each(i, columnDefinition) columns}}
+          <th>${ columnDefinition.headerText }</th>
+        {{/each}}
+        <th>${$.i18n.prop('edit')}</th>
+        <th>${$.i18n.prop('delete')}</th>
+        <th>${$.i18n.prop('user.list.locked')}</th>
+        <th>${$.i18n.prop('user.change.password.required')}</th>
+      </tr>
+  </thead>
+  <tbody>
+      {{each(i, row) itemsOnCurrentPage()}}
+        <tr data-bind="css:{ 'modified': row.modified()}">
+          {{each(j, columnDefinition) columns}}
+          <td>${ typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText] }</td>
+          {{/each}}
+          <td id="users-grid-user-id-${row.username()}">
+            <a href="#" data-bind="click: function(){ editUserBox(row) }">
+              <span class="btn btn-primary">
+                <i class="icon-pencil icon-white"/>
+              </span>
+            </a>
+          </td>
+          {{if row.username()=="admin" || row.username()=="guest"}}
+            <td></td>
+          {{else}}
+            <td>
+              <a href="#" data-bind="click: function(){ deleteUser(row) }" id="users-grid-delete-${row.username()}">
+                <span class="btn btn-danger">
+                  <i class="icon-trash icon-white"/>
+                </span>
+              </a>
+            </td>
+          {{/if}}
+          {{if row.username()=="admin"}}
+            <td></td>
+          {{else}}
+            {{if row.locked()==true}}
+              <td>
+                <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen-22-22.png"/></a>
+              </td>
+            {{else}}
+              <td>
+                <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear-22-22.png"/></a>
+              </td>
+            {{/if}}
+          {{/if}}
+          {{if row.username()=="admin"}}
+            <td></td>
+          {{else}}
+            {{if row.passwordChangeRequired()==true}}
+              <td>
+                <a href="#" data-bind="click: function(){ passwordChangeRequire(row,false) }">
+                  <img src="images/dialog-error-22-22.png"/>
+                </a>
+              </td>
+            {{else}}
+            <td>
+              <a href="#" data-bind="click: function(){ passwordChangeRequire(row,true) }">
+                <img src="images/weather-clear-22-22.png"/>
+              </a>
+            </td>
+            {{/if}}
+          {{/if}}
+        </tr>
+      {{/each}}
+  </tbody>
+
+</script>
+
+<script id="usersGrid"  type="text/html">
+    <div class="page-header">
+      <h3><img src="images/system-users-32-32.png"/>${$.i18n.prop('users.list')}</h3>
+    </div>
+    <ul id="users-view-tabs" class="nav nav-tabs" data-target="#users-view-tabs-content">
+      <li class="active" id="users-view-tabs-li-users-grid">
+        <a data-toggle="tab" href="#users-view">${$.i18n.prop('users.grid.tab.title')}</a>
+      </li>
+      <li id="users-view-tabs-li-user-edit">
+        <a data-toggle="tab" href="#createUserForm" id="users-view-tabs-li-user-edit-a">${$.i18n.prop('add')}</a>
+      </li>
+    </ul>
+    <div id="users-view-tabs-content" class="tab-content">
+      <div id="users-view" class="tab-pane">
+        <button data-bind='click: sortByName'  class="btn">
+            ${$.i18n.prop('users.sort.byname')}
+        </button>
+        <table class="table table-striped table-bordered" id="usersTable"
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',pageLinksId:'usersPagination'">
+        </table>
+        <div id="usersPagination"></div>
+      </div>
+      <div id="createUserForm" class="tab-pane"></div>
+    </div>
+</script>
+
+<script id="user-delete-warning-tmpl" type='text/html'>
+    <div>
+      <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
+    </div>
+</script>
+
+
+

@@ -17,22 +17,19 @@
  * under the License.
  */
 define("redback.templates",["text!templates/redback/user-edit.html",
-          "text!templates/redback/user-grids.html",
           "text!templates/redback/login.html",
           "text!templates/redback/register-form.html",
           "text!templates/redback/password-change-form.html",
           "text!templates/redback/user-edit-form.html",
           "text!templates/redback/roles-tmpl.html",
           "jquery.tmpl","utils"],
-    function(useredit, usergrids, login,register,passwordchange,usereditform,roles) {
+    function(useredit, login,register,passwordchange,usereditform,roles) {
 
       var htmlFragment=$("#html-fragments");
 
       // template loading
 
       htmlFragment.append(useredit);
-
-      htmlFragment.append(usergrids);
 
       $.tmpl(login).appendTo("#html-fragments");
 

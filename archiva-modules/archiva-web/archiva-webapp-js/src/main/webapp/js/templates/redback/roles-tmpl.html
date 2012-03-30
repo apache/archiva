@@ -217,7 +217,9 @@
               {{/each}}
               <td>
                 <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ editRole(row) }">
-                  <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+                  <span class="btn btn-primary">
+                    <i class="icon-pencil icon-white"/>
+                  </span>
                 </a>
               </td>
               <td>
