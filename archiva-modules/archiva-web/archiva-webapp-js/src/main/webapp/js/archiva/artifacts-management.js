@@ -19,6 +19,23 @@
 define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jquery.tmpl","order!knockout",
   "order!knockout.simpleGrid","jquery.validate","bootstrap","jquery.fileupload","jquery.fileupload.ui"]
     , function() {
+
+  ArtifactUpload=function(classifier,pomFile){
+    this.classifier=classifier;
+    this.pomFile=pomFile;
+  }
+
+  ArtifactUploadViewModel=function(managedRepositories){
+    this.managedRepositories=ko.observableArray(managedRepositories);
+    this.repositoryId=ko.observable();
+    this.groupId=ko.observable();
+    this.artifactId=ko.observable();
+    this.version=ko.observable();
+    this.packaging=ko.observable();
+    this.generatePom=ko.observable();
+
+  }
+
   displayUploadArtifact=function(){
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
@@ -27,11 +44,17 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
         dataType: 'json',
         success: function(data) {
           mainContent.html($("#file-upload-tmpl" ).tmpl({managedRepositories: data}));
+          var artifactUploadViewModel=new ArtifactUploadViewModel(data);
+          ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
+          mainContent.find("#fileupload-save-files" ).on("click",function(){
+            $.log("fileupload-save-files click");
+          });
+
           $('#fileupload').fileupload({
               add: function (e, data) {
                 data.timeStamp = $.now();
-                $.blueimpUI.fileupload.prototype
-                    .options.add.call(this, e, data);
+                $.log("fileupload add file");
+                $.blueimpUI.fileupload.prototype.options.add.call(this, e, data);
               }
             }
           );

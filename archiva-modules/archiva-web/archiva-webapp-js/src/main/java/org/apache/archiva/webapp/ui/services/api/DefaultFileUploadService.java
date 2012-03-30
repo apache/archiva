@@ -91,14 +91,21 @@ public class DefaultFileUploadService
             String repositoryId =
                 IOUtils.toString( multipartBody.getAttachment( "repositoryId" ).getDataHandler().getInputStream() );
 
-            boolean generatePom = BooleanUtils.toBoolean(
-                IOUtils.toString( multipartBody.getAttachment( "generatePom" ).getDataHandler().getInputStream() ) );
+            Attachment generatePomAttachment = multipartBody.getAttachment( "generatePom" );
+            boolean generatePom = BooleanUtils.toBoolean( generatePomAttachment == null
+                                                              ? Boolean.FALSE.toString()
+                                                              : IOUtils.toString(
+                                                                  generatePomAttachment.getDataHandler().getInputStream() ) );
 
             String classifier =
                 IOUtils.toString( multipartBody.getAttachment( "classifier" ).getDataHandler().getInputStream() );
 
-            boolean pomFile = BooleanUtils.toBoolean(
-                IOUtils.toString( multipartBody.getAttachment( "pomFile" ).getDataHandler().getInputStream() ) );
+            Attachment pomFileAttachment = multipartBody.getAttachment( "pomFile" );
+
+            boolean pomFile = BooleanUtils.toBoolean( pomFileAttachment == null
+                                                          ? Boolean.FALSE.toString()
+                                                          : IOUtils.toString(
+                                                              pomFileAttachment.getDataHandler().getInputStream() ) );
 
             log.info( "uploading file:" + groupId + ":" + artifactId + ":" + version );
             Attachment file = multipartBody.getAttachment( "files[]" );

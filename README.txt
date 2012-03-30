@@ -55,3 +55,7 @@ This file must contains:
           mail.smtp.socketFactory.class="javax.net.ssl.SSLSocketFactory"/>
 
 </Context>
+
+jrebel
+generate files:  mvn org.zeroturnaround:jrebel-maven-plugin:1.1.3:generate -Pjs
+

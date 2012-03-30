@@ -1,3 +1,7 @@
+<script id="file-upload-screen" type="text/html">
+  <div id="file-upload-main" ddata-bind='template:{name:"file-upload-tmpl"}'></div>
+</script>
+
 <script id="file-upload-tmpl" type="text/html">
   <div class="page-header">
     <h3>${$.i18n.prop('fileupload.header')}</h3>
@@ -9,45 +13,43 @@
       <div class="control-group">
         <label class="control-label" for="repositoryId">${$.i18n.prop('fileupload.repositoryId')}</label>
         <div class="controls">
-          <select id="repositoryId" name="repositoryId">
-            {{each(i,repository) managedRepositories}}
-              <option value="${repository.id}">${repository.name}</option>
-            {{/each}}
-          </select>
+          <select id="repositoryId"
+                    data-bind="options: managedRepositories, optionsText: 'name',optionsValue:'id',
+                     value: repositoryId"></select>
          </div>
         </div>
       <div class="control-group">
         <label class="control-label" for="groupId">${$.i18n.prop('fileupload.groupId')}</label>
         <div class="controls">
-          <input type="text" class="xlarge required" id="groupId" name="groupId" size="10" />
+          <input type="text" class="xlarge required" data-bind="value: groupId" id="groupId" name="groupId" size="10" />
           </div>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="artifactId">${$.i18n.prop('fileupload.artifactId')}</label>
         <div class="controls">
-          <input type="text" class="xlarge required" id="artifactId" name="artifactId" size="10" />
+          <input type="text" class="xlarge required" data-bind="value: artifactId" id="artifactId" name="artifactId" size="10" />
           </div>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="artifactId">${$.i18n.prop('fileupload.version')}</label>
         <div class="controls">
-          <input type="text" class="xlarge required" id="version" name="version" size="10" />
+          <input type="text" class="xlarge required" data-bind="value: version" id="version" name="version" size="10" />
           </div>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="artifactId">${$.i18n.prop('fileupload.packaging')}</label>
         <div class="controls">
-          <input type="text" class="xlarge required" id="packaging" name="packaging" size="10" />
+          <input type="text" class="xlarge required" data-bind="value: packaging" id="packaging" name="packaging" size="10" />
           </div>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="generatePom">${$.i18n.prop('fileupload.generatePom')}</label>
         <div class="controls">
-          <input type="checkbox" class="xlarge required" id="generatePom" name="generatePom" />
+          <input type="checkbox" class="xlarge required" data-bind="value: generatePom" id="generatePom" name="generatePom" />
           </div>
         </div>
       </div>
@@ -79,6 +81,14 @@
           <div class="bar" style="width:0%;"></div>
         </div>
       </div>
+    </div>
+    <div>
+      <a href="#" id="fileupload-save-files">
+        <span class="btn btn-info">
+          <i class="icon-file icon-white"></i>
+          <span>${$.i18n.prop('fileupload.save')}</span>
+        </span>
+      </a>
     </div>
     <div class="fileupload-loading"></div>
     <br>
