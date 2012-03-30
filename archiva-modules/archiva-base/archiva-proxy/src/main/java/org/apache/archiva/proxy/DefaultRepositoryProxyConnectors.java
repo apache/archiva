@@ -51,7 +51,9 @@ import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -285,6 +287,12 @@ public class DefaultRepositoryProxyConnectors
             requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
             String targetPath = targetRepository.toPath( artifact );
+
+            if ( SystemUtils.IS_OS_WINDOWS )
+            {
+                // toPath use system PATH_SEPARATOR so on windows url are \ which doesn't work very well :-)
+                targetPath = FilenameUtils.separatorsToUnix( targetPath );
+            }
 
             try
             {
