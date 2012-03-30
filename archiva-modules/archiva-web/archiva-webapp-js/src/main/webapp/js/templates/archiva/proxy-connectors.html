@@ -81,12 +81,16 @@
       </td>
       <td>
         <a data-bind="click: function(){ editProxyConnector(row)}" href="#">
-          <img src="images/edit-find-22-22.png" title="${$.i18n.prop('edit')}">
+          <span class="btn btn-primary">
+            <i class="icon-pencil icon-white"/>
+          </span>
         </a>
       </td>
       <td>
         <a href="#" data-bind="click: function(){ deleteProxyConnector(row)}">
-          <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
+          <span class="btn btn-danger">
+            <i class="icon-trash icon-white"/>
+          </span>
         </a>
       </td>
       <td>
@@ -98,8 +102,12 @@
       </td>
       <td>
         {{if orderChangeAware(row)}}
-          <a href="#" class="btn btn-info" data-bind="click: function(){ displayOrderEdit(row)}">
-              ${$.i18n.prop('proxy-connectors.order.edit')}
+          <a href="#" data-bind="click: function(){ displayOrderEdit(row)}">
+            <span class="btn btn-info">
+              <i class="icon-resize-vertical icon-white"/>
+               ${$.i18n.prop('proxy-connectors.order.edit')}
+            </span>
+
           </a>
           <span class="badge badge-info">${row.order()}</span>
         {{/if}}
