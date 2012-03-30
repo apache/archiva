@@ -26,6 +26,7 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
   }
 
   ArtifactUploadViewModel=function(managedRepositories){
+    var self=this;
     this.managedRepositories=ko.observableArray(managedRepositories);
     this.repositoryId=ko.observable();
     this.groupId=ko.observable();
@@ -34,8 +35,17 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
     this.packaging=ko.observable();
     this.generatePom=ko.observable();
 
+    this.artifactUploads=[];
+
     saveArtifacts=function(){
-      $.log("saveArtifacts");
+
+      if(!$("#main-content #fileupload" ).valid()){
+        return;
+      }
+      if(this.artifactUploads.length<1){
+        displayErrorMessage( $.i18n.prop("fileupload.upload.required"));
+        return;
+      }
     }
 
   }
@@ -50,7 +60,11 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
         success: function(data) {
           var artifactUploadViewModel=new ArtifactUploadViewModel(data);
           ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
-
+          var validator =  $("#main-content #fileupload" ).validate({
+            showErrors: function(validator, errorMap, errorList) {
+             customShowError("#main-content #fileupload",validator,errorMap,errorMap);
+            }
+          });
           $('#fileupload').fileupload({
               add: function (e, data) {
                 data.formData = {
@@ -61,16 +75,20 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
                   generatePom: artifactUploadViewModel.generatePom(),
                   repositoryId: artifactUploadViewModel.repositoryId()
                 };
-                $.log("fileupload add file");
                 $.blueimpUI.fileupload.prototype.options.add.call(this, e, data);
+              },
+              submit: function (e, data) {
+                var $this = $(this);
+
+                $this.fileupload('send', data);
+                artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile));
+                return false;
               }
             }
           );
           $('#fileupload').bind('fileuploadsubmit', function (e, data) {
             var pomFile = data.context.find('#pomFile' ).val();
             var classifier = data.context.find('#classifier' ).val();
-
-            $.log("pomFile:"+pomFile+",classifier:"+classifier);
             data.formData.pomFile = pomFile;
             data.formData.classifier = classifier;
           });

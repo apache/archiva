@@ -113,7 +113,6 @@ public class FileMetadata
         return deleteUrl;
     }
 
-
     public void setDeleteUrl( String deleteUrl )
     {
         this.deleteUrl = deleteUrl;
@@ -279,4 +278,5 @@ public class FileMetadata
         sb.append( '}' );
         return sb.toString();
     }
+
 }
