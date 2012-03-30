@@ -138,6 +138,11 @@ function() {
         displayUploadArtifact();
         return;
       }
+
+      if (screen=='manage-users' && hasKarma('archiva-manage-users')){
+        displayUsersGrid();
+        return;
+      }
     }
     // by default display search screen
     displaySearch();
