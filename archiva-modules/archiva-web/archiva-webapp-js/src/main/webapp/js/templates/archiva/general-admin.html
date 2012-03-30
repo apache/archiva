@@ -62,7 +62,9 @@
         {{/each}}
           <td>
             <a href="#" data-bind="click: function(){ removeLegacyArtifactPath(row) }">
-              <img src="images/edit-cut.png" title="${$.i18n.prop('delete')}"/>
+              <span class="btn btn-danger">
+                <i class="icon-trash icon-white"/>
+              </span>
             </a>
           </td>
     </tr>
@@ -180,7 +182,9 @@
         <td>${pattern}</td>
         <td>
           <a href="#" data-bind="click: function(){ removeFileTypePattern(fileType.id(),pattern) }">
-            <img src="images/edit-cut-22-22.png" title="${$.i18n.prop('delete')}"/>
+            <span class="btn btn-danger">
+              <i class="icon-trash icon-white"/>
+            </span>
           </a>
         </td>
       </tr>
@@ -189,7 +193,9 @@
         <td><input type="text" id="pattern-${fileType.id}"/></td>
         <td>
           <a href="#" data-bind="click: function(){addFileTypePattern(fileType.id())}">
-            <img src="images/list-add-22-22.png" title="${$.i18n.prop('add')}"/>
+            <span class="btn btn-success">
+              <i class="icon-plus-sign icon-white"/>
+            </span>
           </a>
         </td>
       </tr>
