@@ -19,17 +19,20 @@ package org.apache.archiva.webapp.ui.services.api;
  */
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.webapp.ui.services.model.FileMetadata;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -39,21 +42,27 @@ import javax.ws.rs.core.MediaType;
 public interface FileUploadService
 {
 
+    String FILES_SESSION_KEY = FileUploadService.class.getName() + "files_session_key";
+
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true )
-        //FileMetadata post( @FormParam( "groupId" ) String groupId, @FormParam( "artifactId" ) String artifactId,
-        //                   @FormParam( "version" ) String version, @FormParam( "packaging" ) String packaging,
-        //                   @FormParam( "classifier" ) String classifier, @FormParam( "repositoryId" ) String repositoryId,
-        //                   @FormParam( "generatePom" ) String generatePom )
-    FileMetadata post( MultipartBody multipartBody )// @Multipart( value = "files[]", type = "*/*" ) Attachment file )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    FileMetadata post( MultipartBody multipartBody )
         throws ArchivaRestServiceException;
 
     @Path( "{fileName}" )
     @DELETE
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
     Boolean deleteFile( @PathParam( "fileName" ) String fileName )
+        throws ArchivaRestServiceException;
+
+
+    @Path( "sessionFileMetadatas" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    List<FileMetadata> getSessionFileMetadatas()
         throws ArchivaRestServiceException;
 }

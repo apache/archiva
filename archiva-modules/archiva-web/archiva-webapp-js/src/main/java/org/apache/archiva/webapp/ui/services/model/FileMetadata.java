@@ -31,6 +31,8 @@ public class FileMetadata
 {
     private String name;
 
+    private String serverFileName;
+
     private long size;
 
     private String url;
@@ -62,9 +64,14 @@ public class FileMetadata
         // no op
     }
 
-    public FileMetadata( String filename, long size, String url )
+    public FileMetadata( String serverFileName )
     {
-        this.name = filename;
+        this.serverFileName = serverFileName;
+    }
+
+    public FileMetadata( String name, long size, String url )
+    {
+        this.name = name;
         this.size = size;
         this.url = url;
         this.deleteUrl = url;
@@ -210,5 +217,66 @@ public class FileMetadata
     public void setPomFile( boolean pomFile )
     {
         this.pomFile = pomFile;
+    }
+
+    public String getServerFileName()
+    {
+        return serverFileName;
+    }
+
+    public void setServerFileName( String serverFileName )
+    {
+        this.serverFileName = serverFileName;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof FileMetadata ) )
+        {
+            return false;
+        }
+
+        FileMetadata that = (FileMetadata) o;
+
+        if ( !serverFileName.equals( that.serverFileName ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return serverFileName.hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "FileMetadata" );
+        sb.append( "{name='" ).append( name ).append( '\'' );
+        sb.append( ", size=" ).append( size );
+        sb.append( ", url='" ).append( url ).append( '\'' );
+        sb.append( ", deleteUrl='" ).append( deleteUrl ).append( '\'' );
+        sb.append( ", deleteType='" ).append( deleteType ).append( '\'' );
+        sb.append( ", errorKey='" ).append( errorKey ).append( '\'' );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
+        sb.append( ", packaging='" ).append( packaging ).append( '\'' );
+        sb.append( ", generatePom=" ).append( generatePom );
+        sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
+        sb.append( ", pomFile=" ).append( pomFile );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

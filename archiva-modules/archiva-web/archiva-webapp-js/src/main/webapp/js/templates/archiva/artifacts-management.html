@@ -1,5 +1,5 @@
 <script id="file-upload-screen" type="text/html">
-  <div id="file-upload-main" ddata-bind='template:{name:"file-upload-tmpl"}'></div>
+  <div id="file-upload-main" data-bind='template:{name:"file-upload-tmpl"}'></div>
 </script>
 
 <script id="file-upload-tmpl" type="text/html">
@@ -84,7 +84,7 @@
     </div>
     <div>
       <a href="#" id="fileupload-save-files">
-        <span class="btn btn-info">
+        <span class="btn btn-info" data-bind='click: saveArtifacts'>
           <i class="icon-file icon-white"></i>
           <span>${$.i18n.prop('fileupload.save')}</span>
         </span>

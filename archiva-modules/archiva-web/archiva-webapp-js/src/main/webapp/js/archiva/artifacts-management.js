@@ -34,30 +34,46 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
     this.packaging=ko.observable();
     this.generatePom=ko.observable();
 
+    saveArtifacts=function(){
+      $.log("saveArtifacts");
+    }
+
   }
 
   displayUploadArtifact=function(){
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
+    mainContent.html($("#file-upload-screen" ).html());
     $.ajax("restServices/archivaServices/browseService/userRepositories", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          mainContent.html($("#file-upload-tmpl" ).tmpl({managedRepositories: data}));
           var artifactUploadViewModel=new ArtifactUploadViewModel(data);
           ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
-          mainContent.find("#fileupload-save-files" ).on("click",function(){
-            $.log("fileupload-save-files click");
-          });
 
           $('#fileupload').fileupload({
               add: function (e, data) {
-                data.timeStamp = $.now();
+                data.formData = {
+                  groupId: artifactUploadViewModel.groupId(),
+                  artifactId: artifactUploadViewModel.artifactId(),
+                  version: artifactUploadViewModel.version(),
+                  packaging: artifactUploadViewModel.packaging(),
+                  generatePom: artifactUploadViewModel.generatePom(),
+                  repositoryId: artifactUploadViewModel.repositoryId()
+                };
                 $.log("fileupload add file");
                 $.blueimpUI.fileupload.prototype.options.add.call(this, e, data);
               }
             }
           );
+          $('#fileupload').bind('fileuploadsubmit', function (e, data) {
+            var pomFile = data.context.find('#pomFile' ).val();
+            var classifier = data.context.find('#classifier' ).val();
+
+            $.log("pomFile:"+pomFile+",classifier:"+classifier);
+            data.formData.pomFile = pomFile;
+            data.formData.classifier = classifier;
+          });
         }
     });
 
