@@ -38,7 +38,7 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
     this.artifactUploads=[];
 
     saveArtifacts=function(){
-
+      clearUserMessages();
       if(!$("#main-content #fileupload" ).valid()){
         return;
       }
@@ -55,6 +55,10 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
           dataType: 'json',
           success: function(data) {
 
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
           }
         }
       );
@@ -66,46 +70,53 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
   displayUploadArtifact=function(){
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
-    mainContent.html($("#file-upload-screen" ).html());
-    $.ajax("restServices/archivaServices/browseService/userRepositories", {
+
+
+    $.ajax("restServices/archivaUiServices/fileUploadService/clearUploadedFiles", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var artifactUploadViewModel=new ArtifactUploadViewModel(data);
-          ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
-          var validator =  $("#main-content #fileupload" ).validate({
-            showErrors: function(validator, errorMap, errorList) {
-             customShowError("#main-content #fileupload",validator,errorMap,errorMap);
-            }
-          });
-          $('#fileupload').fileupload({
-              add: function (e, data) {
-                data.formData = {
-                  groupId: artifactUploadViewModel.groupId(),
-                  artifactId: artifactUploadViewModel.artifactId(),
-                  version: artifactUploadViewModel.version(),
-                  packaging: artifactUploadViewModel.packaging()
-                };
-                $.blueimpUI.fileupload.prototype.options.add.call(this, e, data);
-              },
-              submit: function (e, data) {
-                var $this = $(this);
+          mainContent.html($("#file-upload-screen" ).html());
+          $.ajax("restServices/archivaServices/browseService/userRepositories", {
+              type: "GET",
+              dataType: 'json',
+              success: function(data) {
+                var artifactUploadViewModel=new ArtifactUploadViewModel(data);
+                ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
+                var validator =  $("#main-content #fileupload" ).validate({
+                  showErrors: function(validator, errorMap, errorList) {
+                   customShowError("#main-content #fileupload",validator,errorMap,errorMap);
+                  }
+                });
+                $('#fileupload').fileupload({
+                    add: function (e, data) {
+                      data.formData = {
+                        groupId: artifactUploadViewModel.groupId(),
+                        artifactId: artifactUploadViewModel.artifactId(),
+                        version: artifactUploadViewModel.version(),
+                        packaging: artifactUploadViewModel.packaging()
+                      };
+                      $.blueimpUI.fileupload.prototype.options.add.call(this, e, data);
+                    },
+                    submit: function (e, data) {
+                      var $this = $(this);
 
-                $this.fileupload('send', data);
-                artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile));
-                return false;
+                      $this.fileupload('send', data);
+                      artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile));
+                      return false;
+                    }
+                  }
+                );
+                $('#fileupload').bind('fileuploadsubmit', function (e, data) {
+                  var pomFile = data.context.find('#pomFile' ).attr("checked");
+                  var classifier = data.context.find('#classifier' ).val();
+                  data.formData.pomFile = pomFile;
+                  data.formData.classifier = classifier;
+                });
               }
-            }
-          );
-          $('#fileupload').bind('fileuploadsubmit', function (e, data) {
-            var pomFile = data.context.find('#pomFile' ).attr("checked");
-            var classifier = data.context.find('#classifier' ).val();
-            data.formData.pomFile = pomFile;
-            data.formData.classifier = classifier;
           });
-        }
+      }
     });
-
   }
 
 });

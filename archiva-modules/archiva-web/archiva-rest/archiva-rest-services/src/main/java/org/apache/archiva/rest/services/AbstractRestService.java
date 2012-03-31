@@ -147,7 +147,7 @@ public abstract class AbstractRestService
 
     protected void triggerAuditEvent( String repositoryId, String filePath, String action )
     {
-        AuditEvent auditEvent = new AuditEvent();
+        AuditEvent auditEvent = new AuditEvent( action, repositoryId );
         auditEvent.setAction( action );
         auditEvent.setRepositoryId( repositoryId );
         auditEvent.setResource( filePath );

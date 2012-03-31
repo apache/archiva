@@ -75,4 +75,12 @@ public interface FileUploadService
                   @PathParam( "artifactId" ) String artifactId, @QueryParam( "generatePom" ) boolean generatePom )
         throws ArchivaRestServiceException;
 
+
+    @Path( "clearUploadedFiles" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    Boolean clearUploadedFiles()
+        throws ArchivaRestServiceException;
+
 }

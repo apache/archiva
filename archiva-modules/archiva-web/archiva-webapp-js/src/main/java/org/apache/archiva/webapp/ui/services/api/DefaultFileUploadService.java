@@ -187,6 +187,17 @@ public class DefaultFileUploadService
         return Boolean.FALSE;
     }
 
+    public Boolean clearUploadedFiles()
+        throws ArchivaRestServiceException
+    {
+        List<FileMetadata> fileMetadatas = getSessionFileMetadatas();
+        for ( FileMetadata fileMetadata : fileMetadatas )
+        {
+            deleteFile( fileMetadata.getServerFileName() );
+        }
+        return Boolean.TRUE;
+    }
+
     public List<FileMetadata> getSessionFileMetadatas()
         throws ArchivaRestServiceException
     {
