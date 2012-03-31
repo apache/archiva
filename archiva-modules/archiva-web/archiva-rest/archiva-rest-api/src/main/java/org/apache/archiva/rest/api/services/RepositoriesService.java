@@ -115,7 +115,7 @@ public interface RepositoriesService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true )
     /**
-     * permissions are checked in impl
+     * <b>permissions are checked in impl</b>
      * @since 1.4-M2
      */
     Boolean deleteArtifact( @QueryParam( "" ) Artifact artifact, @QueryParam( "repositoryId" ) String repositoryId )

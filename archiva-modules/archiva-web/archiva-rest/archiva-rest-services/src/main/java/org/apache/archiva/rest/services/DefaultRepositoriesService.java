@@ -871,21 +871,6 @@ public class DefaultRepositoriesService
         checksum.fixChecksums( algorithms );
     }
 
-    protected void triggerAuditEvent( String repositoryId, String filePath, String action )
-    {
-        AuditEvent auditEvent = new AuditEvent();
-        auditEvent.setAction( action );
-        auditEvent.setRepositoryId( repositoryId );
-        auditEvent.setResource( filePath );
-        AuditInformation auditInformation = getAuditInformation();
-        auditEvent.setUserId( auditInformation.getUser() == null ? "" : auditInformation.getUser().getUsername() );
-        auditEvent.setRemoteIP( auditInformation.getRemoteAddr() );
-        for ( AuditListener auditListener : getAuditListeners() )
-        {
-            auditListener.auditEvent( auditEvent );
-        }
-    }
-
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()
     {
         return managedRepositoryAdmin;

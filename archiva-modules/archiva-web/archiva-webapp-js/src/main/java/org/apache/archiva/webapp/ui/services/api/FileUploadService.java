@@ -31,6 +31,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -65,4 +66,13 @@ public interface FileUploadService
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
     List<FileMetadata> getSessionFileMetadatas()
         throws ArchivaRestServiceException;
+
+    @Path( "save/{repositoryId}/{groupId}/{artifactId}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    Boolean save( @PathParam( "repositoryId" ) String repositoryId, @PathParam( "groupId" ) String groupId,
+                  @PathParam( "artifactId" ) String artifactId, @QueryParam( "generatePom" ) boolean generatePom )
+        throws ArchivaRestServiceException;
+
 }

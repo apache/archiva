@@ -46,6 +46,19 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
         displayErrorMessage( $.i18n.prop("fileupload.upload.required"));
         return;
       }
+      var url="restServices/archivaUiServices/fileUploadService/save/"+this.repositoryId()+"/"+this.groupId()+"/"+this.artifactId();
+      if (this.generatePom()){
+        url+="?generatePom=true";
+      }
+      $.ajax(url, {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+
+          }
+        }
+      );
+
     }
 
   }
@@ -71,9 +84,7 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
                   groupId: artifactUploadViewModel.groupId(),
                   artifactId: artifactUploadViewModel.artifactId(),
                   version: artifactUploadViewModel.version(),
-                  packaging: artifactUploadViewModel.packaging(),
-                  generatePom: artifactUploadViewModel.generatePom(),
-                  repositoryId: artifactUploadViewModel.repositoryId()
+                  packaging: artifactUploadViewModel.packaging()
                 };
                 $.blueimpUI.fileupload.prototype.options.add.call(this, e, data);
               },
@@ -87,7 +98,7 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
             }
           );
           $('#fileupload').bind('fileuploadsubmit', function (e, data) {
-            var pomFile = data.context.find('#pomFile' ).val();
+            var pomFile = data.context.find('#pomFile' ).attr("checked");
             var classifier = data.context.find('#classifier' ).val();
             data.formData.pomFile = pomFile;
             data.formData.classifier = classifier;

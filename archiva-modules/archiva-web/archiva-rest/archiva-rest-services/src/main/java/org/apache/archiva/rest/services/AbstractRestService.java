@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.AuditInformation;
+import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.security.AccessDeniedException;
@@ -142,5 +143,20 @@ public abstract class AbstractRestService
             beans.put( key, entry.getValue() );
         }
         return beans;
+    }
+
+    protected void triggerAuditEvent( String repositoryId, String filePath, String action )
+    {
+        AuditEvent auditEvent = new AuditEvent();
+        auditEvent.setAction( action );
+        auditEvent.setRepositoryId( repositoryId );
+        auditEvent.setResource( filePath );
+        AuditInformation auditInformation = getAuditInformation();
+        auditEvent.setUserId( auditInformation.getUser() == null ? "" : auditInformation.getUser().getUsername() );
+        auditEvent.setRemoteIP( auditInformation.getRemoteAddr() );
+        for ( AuditListener auditListener : getAuditListeners() )
+        {
+            auditListener.auditEvent( auditEvent );
+        }
     }
 }

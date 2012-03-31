@@ -18,38 +18,97 @@ package org.apache.archiva.webapp.ui.services.api;
  * under the License.
  */
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.common.utils.VersionComparator;
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.model.SnapshotVersion;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.rest.services.AbstractRestService;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.webapp.ui.services.model.FileMetadata;
+import org.apache.archiva.xml.XMLException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author Olivier Lamy
  */
 @Service( "fileUploadService#rest" )
 public class DefaultFileUploadService
+    extends AbstractRestService
     implements FileUploadService
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Context
     private HttpServletRequest httpServletRequest;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private RepositoryContentFactory repositoryFactory;
+
+    @Inject
+    private ArchivaAdministration archivaAdministration;
+
+    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+
+    @Inject
+    @Named( value = "archivaTaskScheduler#repository" )
+    private ArchivaTaskScheduler scheduler;
 
     private String getStringValue( MultipartBody multipartBody, String attachmentId )
         throws IOException
@@ -72,10 +131,6 @@ public class DefaultFileUploadService
 
             String packaging = getStringValue( multipartBody, "packaging" );
 
-            String repositoryId = getStringValue( multipartBody, "repositoryId" );
-
-            boolean generatePom = BooleanUtils.toBoolean( getStringValue( multipartBody, "generatePom" ) );
-
             String classifier = getStringValue( multipartBody, "classifier" );
             boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
 
@@ -88,16 +143,14 @@ public class DefaultFileUploadService
             tmpFile.deleteOnExit();
             IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile ) );
             FileMetadata fileMetadata = new FileMetadata( fileName, tmpFile.length(), "theurl" );
-            fileMetadata.setServerFileName( tmpFile.getName() );
+            fileMetadata.setServerFileName( tmpFile.getPath() );
             fileMetadata.setGroupId( groupId );
             fileMetadata.setArtifactId( artifactId );
             fileMetadata.setVersion( version );
             fileMetadata.setVersion( version );
             fileMetadata.setPackaging( packaging );
-            fileMetadata.setGeneratePom( generatePom );
             fileMetadata.setClassifier( classifier );
             fileMetadata.setDeleteUrl( tmpFile.getName() );
-            fileMetadata.setRepositoryId( repositoryId );
             fileMetadata.setPomFile( pomFile );
 
             log.info( "uploading file:{}", fileMetadata );
@@ -142,5 +195,444 @@ public class DefaultFileUploadService
 
         return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
     }
+
+    public Boolean save( String repositoryId, final String groupId, final String artifactId, final boolean generatePom )
+        throws ArchivaRestServiceException
+    {
+        List<FileMetadata> fileMetadatas =
+            (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
+        if ( fileMetadatas == null || fileMetadatas.isEmpty() )
+        {
+            return Boolean.FALSE;
+        }
+        // get from the session file with groupId/artifactId
+
+        Iterable<FileMetadata> filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
+        {
+            public boolean apply( FileMetadata fileMetadata )
+            {
+                if ( fileMetadata == null )
+                {
+                    return false;
+                }
+                return StringUtils.equals( groupId, fileMetadata.getGroupId() ) && StringUtils.equals( artifactId,
+                                                                                                       fileMetadata.getArtifactId() )
+                    && !fileMetadata.isPomFile();
+            }
+        } );
+        Iterator<FileMetadata> iterator = filesToAdd.iterator();
+        boolean pomGenerated = false;
+        while ( iterator.hasNext() )
+        {
+            FileMetadata fileMetadata = iterator.next();
+            log.debug( "fileToAdd: {}", fileMetadata );
+            saveFile( repositoryId, fileMetadata, generatePom && !pomGenerated );
+            pomGenerated = true;
+        }
+
+        filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
+        {
+            public boolean apply( @Nullable FileMetadata fileMetadata )
+            {
+                return fileMetadata.isPomFile();
+            }
+        } );
+
+        iterator = filesToAdd.iterator();
+        while ( iterator.hasNext() )
+        {
+            FileMetadata fileMetadata = iterator.next();
+            log.debug( "fileToAdd: {}", fileMetadata );
+            savePomFile( repositoryId, fileMetadata );
+        }
+
+        return Boolean.TRUE;
+    }
+
+    protected void savePomFile( String repositoryId, FileMetadata fileMetadata )
+        throws ArchivaRestServiceException
+    {
+
+        try
+        {
+            boolean fixChecksums =
+                !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
+
+            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            ArtifactReference artifactReference = new ArtifactReference();
+            artifactReference.setArtifactId( fileMetadata.getArtifactId() );
+            artifactReference.setGroupId( fileMetadata.getGroupId() );
+            artifactReference.setVersion( fileMetadata.getVersion() );
+            artifactReference.setClassifier( fileMetadata.getClassifier() );
+            artifactReference.setType( fileMetadata.getPackaging() );
+
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            String artifactPath = repository.toPath( artifactReference );
+
+            int lastIndex = artifactPath.lastIndexOf( '/' );
+
+            String path = artifactPath.substring( 0, lastIndex );
+            File targetPath = new File( repoConfig.getLocation(), path );
+
+            String pomFilename = artifactPath.substring( lastIndex + 1 );
+            if ( StringUtils.isNotEmpty( fileMetadata.getClassifier() ) )
+            {
+                pomFilename = StringUtils.remove( pomFilename, "-" + fileMetadata.getClassifier() );
+            }
+            pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
+
+            copyFile( new File( fileMetadata.getServerFileName() ), targetPath, pomFilename, fixChecksums );
+            triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
+            queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
+        }
+        catch ( IOException ie )
+        {
+            throw new ArchivaRestServiceException( "Error encountered while uploading pom file: " + ie.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        catch ( RepositoryException rep )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + rep.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+    }
+
+    protected void saveFile( String repositoryId, FileMetadata fileMetadata, boolean generatePom )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+
+            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            ArtifactReference artifactReference = new ArtifactReference();
+            artifactReference.setArtifactId( fileMetadata.getArtifactId() );
+            artifactReference.setGroupId( fileMetadata.getGroupId() );
+            artifactReference.setVersion( fileMetadata.getVersion() );
+            artifactReference.setClassifier( fileMetadata.getClassifier() );
+            artifactReference.setType( fileMetadata.getPackaging() );
+
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            String artifactPath = repository.toPath( artifactReference );
+
+            int lastIndex = artifactPath.lastIndexOf( '/' );
+
+            String path = artifactPath.substring( 0, lastIndex );
+            File targetPath = new File( repoConfig.getLocation(), path );
+
+            log.debug( "artifactPath: {} found targetPath: {}", artifactPath, targetPath );
+
+            Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
+            int newBuildNumber = -1;
+            String timestamp = null;
+
+            File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
+            ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
+
+            if ( VersionUtil.isSnapshot( fileMetadata.getVersion() ) )
+            {
+                TimeZone timezone = TimeZone.getTimeZone( "UTC" );
+                DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+                fmt.setTimeZone( timezone );
+                timestamp = fmt.format( lastUpdatedTimestamp );
+                if ( versionMetadata.getSnapshotVersion() != null )
+                {
+                    newBuildNumber = versionMetadata.getSnapshotVersion().getBuildNumber() + 1;
+                }
+                else
+                {
+                    newBuildNumber = 1;
+                }
+            }
+
+            if ( !targetPath.exists() )
+            {
+                targetPath.mkdirs();
+            }
+
+            String filename = artifactPath.substring( lastIndex + 1 );
+            if ( VersionUtil.isSnapshot( fileMetadata.getVersion() ) )
+            {
+                filename = filename.replaceAll( "SNAPSHOT", timestamp + "-" + newBuildNumber );
+            }
+
+            boolean fixChecksums =
+                !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
+
+            try
+            {
+                File targetFile = new File( targetPath, filename );
+                if ( targetFile.exists() && !VersionUtil.isSnapshot( fileMetadata.getVersion() )
+                    && repoConfig.isBlockRedeployments() )
+                {
+                    throw new ArchivaRestServiceException(
+                        "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
+                        Response.Status.BAD_REQUEST.getStatusCode() );
+                }
+                else
+                {
+                    copyFile( new File( fileMetadata.getServerFileName() ), targetPath, filename, fixChecksums );
+                    triggerAuditEvent( repository.getId(), path + "/" + filename, AuditEvent.UPLOAD_FILE );
+                    queueRepositoryTask( repository.getId(), targetFile );
+                }
+            }
+            catch ( IOException ie )
+            {
+                throw new ArchivaRestServiceException(
+                    "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+            }
+
+            if ( generatePom )
+            {
+                String pomFilename = filename;
+                if ( StringUtils.isNotEmpty( fileMetadata.getClassifier() ) )
+                {
+                    pomFilename = StringUtils.remove( pomFilename, "-" + fileMetadata.getClassifier() );
+                }
+                pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
+
+                try
+                {
+                    File generatedPomFile = createPom( targetPath, pomFilename, fileMetadata );
+                    triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
+                    if ( fixChecksums )
+                    {
+                        fixChecksums( generatedPomFile );
+                    }
+                    queueRepositoryTask( repoConfig.getId(), generatedPomFile );
+                }
+                catch ( IOException ie )
+                {
+                    throw new ArchivaRestServiceException(
+                        "Error encountered while writing pom file: " + ie.getMessage(),
+                        Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                }
+            }
+
+            // explicitly update only if metadata-updater consumer is not enabled!
+            if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
+            {
+                updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
+                                       fixChecksums, fileMetadata );
+
+                if ( VersionUtil.isSnapshot( fileMetadata.getVersion() ) )
+                {
+                    updateVersionMetadata( versionMetadata, versionMetadataFile, lastUpdatedTimestamp, timestamp,
+                                           newBuildNumber, fixChecksums, fileMetadata );
+                }
+            }
+        }
+        catch ( RepositoryNotFoundException re )
+        {
+            throw new ArchivaRestServiceException( "Target repository cannot be found: " + re.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        catch ( RepositoryException rep )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + rep.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+        }
+    }
+
+    private ArchivaRepositoryMetadata getMetadata( File metadataFile )
+        throws RepositoryMetadataException
+    {
+        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
+        if ( metadataFile.exists() )
+        {
+            try
+            {
+                metadata = MavenMetadataReader.read( metadataFile );
+            }
+            catch ( XMLException e )
+            {
+                throw new RepositoryMetadataException( e.getMessage(), e );
+            }
+        }
+        return metadata;
+    }
+
+    private File createPom( File targetPath, String filename, FileMetadata fileMetadata )
+        throws IOException
+    {
+        Model projectModel = new Model();
+        projectModel.setModelVersion( "4.0.0" );
+        projectModel.setGroupId( fileMetadata.getGroupId() );
+        projectModel.setArtifactId( fileMetadata.getArtifactId() );
+        projectModel.setVersion( fileMetadata.getVersion() );
+        projectModel.setPackaging( fileMetadata.getPackaging() );
+
+        File pomFile = new File( targetPath, filename );
+        MavenXpp3Writer writer = new MavenXpp3Writer();
+        FileWriter w = new FileWriter( pomFile );
+        try
+        {
+            writer.write( w, projectModel );
+        }
+        finally
+        {
+            IOUtil.close( w );
+        }
+
+        return pomFile;
+    }
+
+    private void fixChecksums( File file )
+    {
+        ChecksummedFile checksum = new ChecksummedFile( file );
+        checksum.fixChecksums( algorithms );
+    }
+
+    private void queueRepositoryTask( String repositoryId, File localFile )
+    {
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repositoryId );
+        task.setResourceFile( localFile );
+        task.setUpdateRelatedArtifacts( true );
+        task.setScanAll( false );
+
+        try
+        {
+            scheduler.queueTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
+                           + "']." );
+        }
+    }
+
+    private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
+        throws IOException
+    {
+        FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
+        FileInputStream input = new FileInputStream( sourceFile );
+
+        try
+        {
+            IOUtils.copy( input, out );
+        }
+        finally
+        {
+            out.close();
+            input.close();
+        }
+
+        if ( fixChecksums )
+        {
+            fixChecksums( new File( targetPath, targetFilename ) );
+        }
+    }
+
+    /**
+     * Update artifact level metadata. If it does not exist, create the metadata and fix checksums if necessary.
+     */
+    private void updateProjectMetadata( String targetPath, Date lastUpdatedTimestamp, String timestamp, int buildNumber,
+                                        boolean fixChecksums, FileMetadata fileMetadata )
+        throws RepositoryMetadataException
+    {
+        List<String> availableVersions = new ArrayList<String>();
+        String latestVersion = fileMetadata.getVersion();
+
+        File projectDir = new File( targetPath ).getParentFile();
+        File projectMetadataFile = new File( projectDir, MetadataTools.MAVEN_METADATA );
+
+        ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
+
+        if ( projectMetadataFile.exists() )
+        {
+            availableVersions = projectMetadata.getAvailableVersions();
+
+            Collections.sort( availableVersions, VersionComparator.getInstance() );
+
+            if ( !availableVersions.contains( fileMetadata.getVersion() ) )
+            {
+                availableVersions.add( fileMetadata.getVersion() );
+            }
+
+            latestVersion = availableVersions.get( availableVersions.size() - 1 );
+        }
+        else
+        {
+            availableVersions.add( fileMetadata.getVersion() );
+
+            projectMetadata.setGroupId( fileMetadata.getGroupId() );
+            projectMetadata.setArtifactId( fileMetadata.getArtifactId() );
+        }
+
+        if ( projectMetadata.getGroupId() == null )
+        {
+            projectMetadata.setGroupId( fileMetadata.getGroupId() );
+        }
+
+        if ( projectMetadata.getArtifactId() == null )
+        {
+            projectMetadata.setArtifactId( fileMetadata.getArtifactId() );
+        }
+
+        projectMetadata.setLatestVersion( latestVersion );
+        projectMetadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
+        projectMetadata.setAvailableVersions( availableVersions );
+
+        if ( !VersionUtil.isSnapshot( fileMetadata.getVersion() ) )
+        {
+            projectMetadata.setReleasedVersion( latestVersion );
+        }
+
+        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile );
+
+        if ( fixChecksums )
+        {
+            fixChecksums( projectMetadataFile );
+        }
+    }
+
+    /**
+     * Update version level metadata for snapshot artifacts. If it does not exist, create the metadata and fix checksums
+     * if necessary.
+     */
+    private void updateVersionMetadata( ArchivaRepositoryMetadata metadata, File metadataFile,
+                                        Date lastUpdatedTimestamp, String timestamp, int buildNumber,
+                                        boolean fixChecksums, FileMetadata fileMetadata )
+        throws RepositoryMetadataException
+    {
+        if ( !metadataFile.exists() )
+        {
+            metadata.setGroupId( fileMetadata.getGroupId() );
+            metadata.setArtifactId( fileMetadata.getArtifactId() );
+            metadata.setVersion( fileMetadata.getVersion() );
+        }
+
+        if ( metadata.getSnapshotVersion() == null )
+        {
+            metadata.setSnapshotVersion( new SnapshotVersion() );
+        }
+
+        metadata.getSnapshotVersion().setBuildNumber( buildNumber );
+        metadata.getSnapshotVersion().setTimestamp( timestamp );
+        metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
+
+        RepositoryMetadataWriter.write( metadata, metadataFile );
+
+        if ( fixChecksums )
+        {
+            fixChecksums( metadataFile );
+        }
+    }
+
 
 }

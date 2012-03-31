@@ -51,11 +51,7 @@ public class FileMetadata
 
     private String packaging;
 
-    private boolean generatePom;
-
     private String classifier;
-
-    private String repositoryId;
 
     private boolean pomFile;
 
@@ -178,16 +174,6 @@ public class FileMetadata
         this.packaging = packaging;
     }
 
-    public boolean isGeneratePom()
-    {
-        return generatePom;
-    }
-
-    public void setGeneratePom( boolean generatePom )
-    {
-        this.generatePom = generatePom;
-    }
-
     public String getClassifier()
     {
         return classifier;
@@ -198,15 +184,6 @@ public class FileMetadata
         this.classifier = classifier;
     }
 
-    public String getRepositoryId()
-    {
-        return repositoryId;
-    }
-
-    public void setRepositoryId( String repositoryId )
-    {
-        this.repositoryId = repositoryId;
-    }
 
     public boolean isPomFile()
     {
@@ -262,6 +239,7 @@ public class FileMetadata
         final StringBuilder sb = new StringBuilder();
         sb.append( "FileMetadata" );
         sb.append( "{name='" ).append( name ).append( '\'' );
+        sb.append( ", serverFileName='" ).append( serverFileName ).append( '\'' );
         sb.append( ", size=" ).append( size );
         sb.append( ", url='" ).append( url ).append( '\'' );
         sb.append( ", deleteUrl='" ).append( deleteUrl ).append( '\'' );
@@ -271,12 +249,9 @@ public class FileMetadata
         sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
         sb.append( ", version='" ).append( version ).append( '\'' );
         sb.append( ", packaging='" ).append( packaging ).append( '\'' );
-        sb.append( ", generatePom=" ).append( generatePom );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
-        sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
         sb.append( ", pomFile=" ).append( pomFile );
         sb.append( '}' );
         return sb.toString();
     }
-
 }
