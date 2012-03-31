@@ -190,7 +190,7 @@ public class DefaultFileUploadService
     public Boolean clearUploadedFiles()
         throws ArchivaRestServiceException
     {
-        List<FileMetadata> fileMetadatas = getSessionFileMetadatas();
+        List<FileMetadata> fileMetadatas = new ArrayList( getSessionFileMetadatas() );
         for ( FileMetadata fileMetadata : fileMetadatas )
         {
             deleteFile( fileMetadata.getServerFileName() );
@@ -222,13 +222,7 @@ public class DefaultFileUploadService
         {
             public boolean apply( FileMetadata fileMetadata )
             {
-                if ( fileMetadata == null )
-                {
-                    return false;
-                }
-                return StringUtils.equals( groupId, fileMetadata.getGroupId() ) && StringUtils.equals( artifactId,
-                                                                                                       fileMetadata.getArtifactId() )
-                    && !fileMetadata.isPomFile();
+                return fileMetadata != null && !fileMetadata.isPomFile();
             }
         } );
         Iterator<FileMetadata> iterator = filesToAdd.iterator();
@@ -245,7 +239,7 @@ public class DefaultFileUploadService
         {
             public boolean apply( @Nullable FileMetadata fileMetadata )
             {
-                return fileMetadata.isPomFile();
+                return fileMetadata != null && fileMetadata.isPomFile();
             }
         } );
 

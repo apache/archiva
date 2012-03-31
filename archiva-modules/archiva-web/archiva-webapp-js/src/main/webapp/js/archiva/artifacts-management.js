@@ -90,6 +90,9 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
                 });
                 $('#fileupload').fileupload({
                     add: function (e, data) {
+                      if(!mainContent.find("#fileupload" ).valid()){
+                        return;
+                      }
                       data.formData = {
                         groupId: artifactUploadViewModel.groupId(),
                         artifactId: artifactUploadViewModel.artifactId(),
