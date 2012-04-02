@@ -136,7 +136,8 @@ public class ManagedRepositoriesServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
+        createAndIndexRepo( testRepoId,
+                            new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).getAbsolutePath() );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
 
