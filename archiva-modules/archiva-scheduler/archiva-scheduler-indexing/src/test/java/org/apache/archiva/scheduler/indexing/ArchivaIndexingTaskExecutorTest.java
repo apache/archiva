@@ -88,7 +88,8 @@ public class ArchivaIndexingTaskExecutorTest
 
         repositoryConfig = new ManagedRepository();
         repositoryConfig.setId( "test-repo" );
-        repositoryConfig.setLocation( "target/test-classes/test-repo" );
+        repositoryConfig.setLocation(
+            new File( System.getProperty( "basedir" ), "target/test-classes/test-repo" ).getAbsolutePath() );
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setName( "Test Repository" );
         repositoryConfig.setScanned( true );
