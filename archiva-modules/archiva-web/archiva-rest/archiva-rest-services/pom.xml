@@ -352,6 +352,7 @@
             <test.useTomcat>${test.useTomcat}</test.useTomcat>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <basedir>${basedir}</basedir>
           </systemPropertyVariables>
         </configuration>
       </plugin>

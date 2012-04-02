@@ -27,6 +27,7 @@ import org.apache.archiva.rest.api.services.BrowseService;
 import org.fest.assertions.MapAssert;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath() );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -96,7 +97,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath() );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -133,7 +134,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -159,7 +160,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -185,7 +186,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -209,7 +210,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi", false );
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
 
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 

@@ -407,4 +407,9 @@ public abstract class AbstractArchivaRestTest
         }
 
     }
+
+    public String getBasedir()
+    {
+        return System.getProperty( "basedir" );
+    }
 }
