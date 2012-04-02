@@ -1009,19 +1009,6 @@ public class DefaultRepositoryProxyConnectors
      */
     private File createWorkingDirectory( ManagedRepositoryContent repository )
     {
-        // TODO: This is ugly - lets actually clean this up when we get the new repository api
-        /*
-        try
-        {
-            File tmpDir = File.createTempFile( ".workingdirectory", null );
-            tmpDir.delete();
-            tmpDir.mkdirs();
-            return tmpDir;
-        }
-        catch ( IOException e )
-        {
-            throw new RuntimeException( "Could not create working directory for this request", e );
-        } */
         return Files.createTempDir();
     }
 

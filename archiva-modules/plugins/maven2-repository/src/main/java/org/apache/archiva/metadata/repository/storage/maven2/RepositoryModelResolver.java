@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import com.google.common.io.Files;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
@@ -424,17 +425,7 @@ public class RepositoryModelResolver
 
     private File createWorkingDirectory( String targetRepository )
     {
-        try
-        {
-            File tmpDir = File.createTempFile( ".workingdirectory", null, new File( targetRepository ) );
-            tmpDir.delete();
-            tmpDir.mkdirs();
-            return tmpDir;
-        }
-        catch ( IOException e )
-        {
-            throw new RuntimeException( "Could not create working directory for this request", e );
-        }
+        return Files.createTempDir();
     }
 
     private void moveFileIfExists( File fileToMove, File directory )
