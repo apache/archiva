@@ -102,7 +102,7 @@ public class EditManagedRepositoryActionTest
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
 
-        location = new File( "target/test/location" );
+        location = new File( System.getProperty( "basedir", "target/test/location" ) );
 
         metadataRepository = mock( MetadataRepository.class );
         RepositorySession repositorySession = mock( RepositorySession.class );
@@ -308,6 +308,9 @@ public class EditManagedRepositoryActionTest
 
         roleManagerControl.replay();
 
+        registry.getString( "appserver.base" );
+        registryControl.setReturnValue( "target/test", 1, 3 );
+
         registry.getString( "appserver.base", "${appserver.base}" );
         registryControl.setReturnValue( "target/test", 1, 3 );
         registry.getString( "appserver.home", "${appserver.home}" );
@@ -326,6 +329,7 @@ public class EditManagedRepositoryActionTest
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
+
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfigurationControl.setReturnValue( configuration );
