@@ -17,19 +17,19 @@
  * under the License.
  */
 define("archiva.templates",["text!templates/archiva/menu.html",
-          "text!templates/archiva/message.html",
+          "text!templates/archiva/generics.html",
           "text!templates/archiva/modal.html",
           "text!templates/archiva/repositories.html",
           "text!templates/archiva/search.html",
           "text!templates/archiva/general-admin.html",
           "jquery.tmpl","utils"],
-  function(menu,message,modal,repositories,
+  function(menu,generics,modal,repositories,
            search,general_admin) {
 
     var htmlFragment=$("#html-fragments");
     // template loading
     htmlFragment.append(menu);
-    htmlFragment.append(message);
+    htmlFragment.append(generics);
     $.tmpl( modal ).appendTo(htmlFragment);
     htmlFragment.append(repositories);
     htmlFragment.append(search);
