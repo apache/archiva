@@ -568,6 +568,7 @@ public class DefaultManagedRepositoryAdmin
                 if ( !indexDirectory.isAbsolute() )
                 {
                     indexDirectory = new File( managedRepository, repository.getIndexDirectory() );
+                    repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
                 }
             }
             else
@@ -579,6 +580,7 @@ public class DefaultManagedRepositoryAdmin
                         getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories"
                             + File.separatorChar +
                             repository.getLocation(), ".indexer" );
+                    repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
                 }
             }
 

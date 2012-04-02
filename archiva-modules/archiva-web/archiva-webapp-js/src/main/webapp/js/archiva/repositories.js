@@ -211,8 +211,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
           dataType: 'json',
           success: function(data) {
             if (data){
+              var completeCallbackFn = function(){window.modalConfirmDialog.modal('hide')};
               openDialogConfirm(
-                  function(){addManagedRepository(self.managedRepository),function(){window.modalConfirmDialog.modal('hide')}},
+                  function(){addManagedRepository(self.managedRepository,completeCallbackFn)},
                   $.i18n.prop('ok'), $.i18n.prop('cancel'),
                   $.i18n.prop('managedrepository.add.title'),
                   $("#managed-repository-location-warning-tmpl").tmpl(self.managedRepository));
@@ -225,7 +226,6 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     }
 
     addManagedRepository=function(managedRepository,completeCallbackFn){
-      $.log("add managedRepo");
       var curManagedRepository=managedRepository;
       var callbackFn = completeCallbackFn;
       $.ajax("restServices/archivaServices/managedRepositoriesService/addManagedRepository",
@@ -235,9 +235,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
           data: ko.toJSON(managedRepository),
           dataType: 'json',
           success: function(data) {
-            curManagedRepository.location(data.managedRepository.location);
+            curManagedRepository.location(data.location);
             self.managedRepositoriesViewModel.managedRepositories.push(curManagedRepository);
-            displaySuccessMessage($.i18n.prop('managedrepository.added'));
+            displaySuccessMessage($.i18n.prop('managedrepository.added',curManagedRepository.id()));
             curManagedRepository.modified(false);
             activateManagedRepositoriesGridTab();
           },
@@ -247,7 +247,10 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
           },
           complete:function(data){
             if(callbackFn){
+              $.log("complete with callback");
               callbackFn();
+            } else {
+              $.log("complete with no callback");
             }
           }
         }
