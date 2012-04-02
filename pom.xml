@@ -75,8 +75,8 @@
 
   <properties>
     <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
-    <snapshotsDeployUrl>http://vmbuild.apache.org/archiva/repository/snapshots</snapshotsDeployUrl>
-    <snapshotsDeployId>vmbuild.snapshots</snapshotsDeployId>
+    <snapshotsDeployUrl>http://archiva-repository.apache.org/archiva/repository/snapshots</snapshotsDeployUrl>
+    <snapshotsDeployId>archiva-repository.snapshots</snapshotsDeployId>
   </properties>
 
   <!-- Developers listed by PMC Chair, PMC, Committers, Contributors, Emeritus all alphabetical-->
