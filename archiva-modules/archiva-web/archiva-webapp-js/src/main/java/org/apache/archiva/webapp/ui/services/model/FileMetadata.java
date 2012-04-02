@@ -43,14 +43,6 @@ public class FileMetadata
 
     private String errorKey;
 
-    private String groupId;
-
-    private String artifactId;
-
-    private String version;
-
-    private String packaging;
-
     private String classifier;
 
     private boolean pomFile;
@@ -134,46 +126,6 @@ public class FileMetadata
         this.errorKey = errorKey;
     }
 
-    public String getGroupId()
-    {
-        return groupId;
-    }
-
-    public void setGroupId( String groupId )
-    {
-        this.groupId = groupId;
-    }
-
-    public String getArtifactId()
-    {
-        return artifactId;
-    }
-
-    public void setArtifactId( String artifactId )
-    {
-        this.artifactId = artifactId;
-    }
-
-    public String getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( String version )
-    {
-        this.version = version;
-    }
-
-    public String getPackaging()
-    {
-        return packaging;
-    }
-
-    public void setPackaging( String packaging )
-    {
-        this.packaging = packaging;
-    }
-
     public String getClassifier()
     {
         return classifier;
@@ -245,10 +197,6 @@ public class FileMetadata
         sb.append( ", deleteUrl='" ).append( deleteUrl ).append( '\'' );
         sb.append( ", deleteType='" ).append( deleteType ).append( '\'' );
         sb.append( ", errorKey='" ).append( errorKey ).append( '\'' );
-        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
-        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
-        sb.append( ", version='" ).append( version ).append( '\'' );
-        sb.append( ", packaging='" ).append( packaging ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( ", pomFile=" ).append( pomFile );
         sb.append( '}' );
