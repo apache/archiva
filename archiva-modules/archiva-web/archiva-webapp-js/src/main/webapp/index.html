@@ -121,7 +121,8 @@
 
 
                 require(['order!domReady','order!jquery','order!i18n','order!startup'], function (domReady) {
-                  domReady.withResources(function () {
+                  domReady.withResources(
+                    loadi18n(function () {
                       $.ajax({
                           url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
                           dataType: 'json',
@@ -140,8 +141,9 @@
 
 
                           }
-                      })
-                  })
+                        })
+                    })
+                  );
                 });
         }
     })

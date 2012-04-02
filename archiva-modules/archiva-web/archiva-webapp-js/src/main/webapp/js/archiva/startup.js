@@ -30,5 +30,5 @@ function() {
     cache: false,//!window.archivaDevMode
     dataType: 'json'
   });
-  loadi18n();
+
 });
