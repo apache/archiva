@@ -21,13 +21,12 @@ define("archiva.templates",["text!templates/archiva/menu.html",
           "text!templates/archiva/modal.html",
           "text!templates/archiva/grids-generics.html",
           "text!templates/archiva/repositories.html",
-          "text!templates/archiva/proxy-connectors.html",
           "text!templates/archiva/repository-groups.html",
           "text!templates/archiva/search.html",
           "text!templates/archiva/general-admin.html",
           "text!templates/archiva/artifacts-management.html",
           "jquery.tmpl","utils"],
-  function(menu,message,modal,grids_generics,repositories,proxies_connectors,
+  function(menu,message,modal,grids_generics,repositories,
            repository_groups,search,general_admin,artifacts_management) {
 
     var htmlFragment=$("#html-fragments");
@@ -37,7 +36,6 @@ define("archiva.templates",["text!templates/archiva/menu.html",
     $.tmpl( modal ).appendTo(htmlFragment);
     htmlFragment.append(grids_generics);
     htmlFragment.append(repositories);
-    htmlFragment.append(proxies_connectors);
     htmlFragment.append(repository_groups);
     htmlFragment.append(search);
     htmlFragment.append(general_admin);
