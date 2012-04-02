@@ -81,6 +81,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Olivier Lamy
@@ -123,13 +124,6 @@ public class DefaultFileUploadService
 
         try
         {
-            String groupId = getStringValue( multipartBody, "groupId" );
-
-            String artifactId = getStringValue( multipartBody, "artifactId" );
-
-            String version = getStringValue( multipartBody, "version" );
-
-            String packaging = getStringValue( multipartBody, "packaging" );
 
             String classifier = getStringValue( multipartBody, "classifier" );
             boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
@@ -148,17 +142,12 @@ public class DefaultFileUploadService
             fileMetadata.setDeleteUrl( tmpFile.getName() );
             fileMetadata.setPomFile( pomFile );
 
-            log.info( "uploading file:{}", fileMetadata );
+            log.info( "uploading file: {}", fileMetadata );
 
-            List<FileMetadata> fileMetadatas =
-                (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
+            List<FileMetadata> fileMetadatas = getSessionFilesList();
 
-            if ( fileMetadatas == null )
-            {
-                fileMetadatas = new ArrayList<FileMetadata>( 1 );
-            }
             fileMetadatas.add( fileMetadata );
-            httpServletRequest.getSession().setAttribute( FILES_SESSION_KEY, fileMetadatas );
+
             return fileMetadata;
         }
         catch ( IOException e )
@@ -167,6 +156,23 @@ public class DefaultFileUploadService
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
         }
 
+    }
+
+    /**
+     * FIXME must be per session synchronized not globally
+     *
+     * @return
+     */
+    protected synchronized List<FileMetadata> getSessionFilesList()
+    {
+        List<FileMetadata> fileMetadatas =
+            (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
+        if ( fileMetadatas == null )
+        {
+            fileMetadatas = new CopyOnWriteArrayList<FileMetadata>();
+            httpServletRequest.getSession().setAttribute( FILES_SESSION_KEY, fileMetadatas );
+        }
+        return fileMetadatas;
     }
 
     public Boolean deleteFile( String fileName )
@@ -206,8 +212,7 @@ public class DefaultFileUploadService
                          String packaging, final boolean generatePom )
         throws ArchivaRestServiceException
     {
-        List<FileMetadata> fileMetadatas =
-            (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
+        List<FileMetadata> fileMetadatas = getSessionFilesList();
         if ( fileMetadatas == null || fileMetadatas.isEmpty() )
         {
             return Boolean.FALSE;
@@ -230,6 +235,7 @@ public class DefaultFileUploadService
             saveFile( repositoryId, fileMetadata, generatePom && !pomGenerated, groupId, artifactId, version,
                       packaging );
             pomGenerated = true;
+            deleteFile( fileMetadata.getServerFileName() );
         }
 
         filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
@@ -246,6 +252,7 @@ public class DefaultFileUploadService
             FileMetadata fileMetadata = iterator.next();
             log.debug( "fileToAdd: {}", fileMetadata );
             savePomFile( repositoryId, fileMetadata, groupId, artifactId, version, packaging );
+            deleteFile( fileMetadata.getServerFileName() );
         }
 
         return Boolean.TRUE;

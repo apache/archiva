@@ -55,7 +55,7 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
           type: "GET",
           dataType: 'json',
           success: function(data) {
-
+            displaySuccessMessage($.i18n.prop("fileupload.artifacts.saved"));
           },
           error: function(data) {
             var res = $.parseJSON(data.responseText);
