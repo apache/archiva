@@ -1000,7 +1000,7 @@ public class DefaultRepositoryProxyConnectors
     }
 
     /**
-     * Creates a working directory in the repository root for this request
+     * Creates a working directory
      *
      * @param repository
      * @return file location of working directory
@@ -1011,7 +1011,7 @@ public class DefaultRepositoryProxyConnectors
         // TODO: This is ugly - lets actually clean this up when we get the new repository api
         try
         {
-            File tmpDir = File.createTempFile( ".workingdirectory", null, new File( repository.getRepoRoot() ) );
+            File tmpDir = File.createTempFile( ".workingdirectory", null );
             tmpDir.delete();
             tmpDir.mkdirs();
             return tmpDir;
