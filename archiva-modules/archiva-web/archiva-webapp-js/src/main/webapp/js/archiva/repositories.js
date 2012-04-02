@@ -247,10 +247,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
           },
           complete:function(data){
             if(callbackFn){
-              $.log("complete with callback");
               callbackFn();
-            } else {
-              $.log("complete with no callback");
             }
           }
         }
