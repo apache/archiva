@@ -19,12 +19,11 @@
 define("archiva.templates",["text!templates/archiva/menu.html",
           "text!templates/archiva/message.html",
           "text!templates/archiva/modal.html",
-          "text!templates/archiva/grids-generics.html",
           "text!templates/archiva/repositories.html",
           "text!templates/archiva/search.html",
           "text!templates/archiva/general-admin.html",
           "jquery.tmpl","utils"],
-  function(menu,message,modal,grids_generics,repositories,
+  function(menu,message,modal,repositories,
            search,general_admin) {
 
     var htmlFragment=$("#html-fragments");
@@ -32,7 +31,6 @@ define("archiva.templates",["text!templates/archiva/menu.html",
     htmlFragment.append(menu);
     htmlFragment.append(message);
     $.tmpl( modal ).appendTo(htmlFragment);
-    htmlFragment.append(grids_generics);
     htmlFragment.append(repositories);
     htmlFragment.append(search);
     htmlFragment.append(general_admin);
