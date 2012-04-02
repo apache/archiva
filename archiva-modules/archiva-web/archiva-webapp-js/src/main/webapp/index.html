@@ -54,19 +54,24 @@
     }
 
     timestampNoCache=function(){
-      if (!window.archivaDevMode){
-        return "";
+      if (window.archivaRuntimeInfo.version.match("SNAPSHOT$")=="SNAPSHOT"){
+        return "&archivaTimestamp="+window.archivaRuntimeInfo.timestamp+(window.archivaRuntimeInfo.devMode?"&_="+jQuery.now():"");
       }
-      return "&_="+jQuery.now();
+      return "";
     }
 
     appendTemplateUrl=function(){
       return appendArchivaVersion()+timestampNoCache();
     }
 
+    appendJsNoCacheUrl=function(){
+      return appendArchivaVersion()+timestampNoCache();
+    }
+
     $.ajax({
         url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/en",
         dataType: 'json',
+        cache: false,
         success:function(data){
 
             window.archivaDevMode=data.devMode;
@@ -75,7 +80,7 @@
 
                 require.config({
                     baseUrl: "js/",
-                    urlArgs: ""+appendTemplateUrl(),
+                    urlArgs: ""+appendJsNoCacheUrl(),
                     paths: {
                         "i18n":"jquery.i18n.properties-1.0.9",
                         "jquery": "jquery-1.7.2",
