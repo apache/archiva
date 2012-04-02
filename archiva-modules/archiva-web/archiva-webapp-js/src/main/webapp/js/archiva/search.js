@@ -470,7 +470,12 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
   }
 
   browseRoot=function(){
-    displayGroupDetail(null,null,"restServices/archivaServices/browseService/rootGroups");
+    var url="restServices/archivaServices/browseService/rootGroups";
+    var selectedRepo=getSelectedBrowsingRepository();
+    if (selectedRepo){
+      url+="?repositoryId="+encodeURIComponent(selectedRepo);
+    }
+    displayGroupDetail(null,null,url);
   }
 
   /**
