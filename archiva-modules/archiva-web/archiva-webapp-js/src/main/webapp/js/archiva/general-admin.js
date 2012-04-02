@@ -241,13 +241,13 @@ define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl
   displayLegacyArtifactPathSupport=function(){
     clearUserMessages();
     var mainContent=$("#main-content");
-
-    mainContent.html($("#legacy-artifact-path-main").tmpl());
+    mainContent.html(mediumSpinnerImg());
 
     $.ajax("restServices/archivaServices/archivaAdministrationService/getLegacyArtifactPaths", {
         type: "GET",
         dataType: 'json',
         success: function(data){
+          mainContent.html($("#legacy-artifact-path-main").tmpl());
           var legacyArtifactPathsViewModel=new LegacyArtifactPathsViewModel();
           var legacyPaths=mapLegacyArtifactPaths(data);
           $.log("legacyPaths:"+legacyPaths.length);
