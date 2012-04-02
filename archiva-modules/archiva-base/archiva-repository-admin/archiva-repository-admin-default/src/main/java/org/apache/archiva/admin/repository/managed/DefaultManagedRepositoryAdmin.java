@@ -573,6 +573,13 @@ public class DefaultManagedRepositoryAdmin
             else
             {
                 indexDirectory = new File( managedRepository, ".indexer" );
+                if ( !managedRepository.isAbsolute() )
+                {
+                    indexDirectory = new File(
+                        getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories"
+                            + File.separatorChar +
+                            repository.getLocation(), ".indexer" );
+                }
             }
 
             if ( !indexDirectory.exists() )
