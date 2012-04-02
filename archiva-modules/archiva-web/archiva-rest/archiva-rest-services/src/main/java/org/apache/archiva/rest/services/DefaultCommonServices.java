@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Olivier Lamy
@@ -52,8 +54,20 @@ public class DefaultCommonServices
     @Inject
     private UtilServices utilServices;
 
+    private Map<String, String> cachei18n = new ConcurrentHashMap<String, String>();
+
     @Inject
     protected CronExpressionValidator cronExpressionValidator;
+
+    @PostConstruct
+    public void init()
+        throws ArchivaRestServiceException
+    {
+
+        // preload i18n en and fr
+        getAllI18nResources( "en" );
+        getAllI18nResources( "fr" );
+    }
 
     public String getI18nResources( String locale )
         throws ArchivaRestServiceException
@@ -133,6 +147,13 @@ public class DefaultCommonServices
     public String getAllI18nResources( String locale )
         throws ArchivaRestServiceException
     {
+
+        String cachedi18n = cachei18n.get( StringUtils.isEmpty( locale ) ? "en" : StringUtils.lowerCase( locale ) );
+        if ( cachedi18n != null )
+        {
+            return cachedi18n;
+        }
+
         try
         {
 
@@ -140,7 +161,9 @@ public class DefaultCommonServices
             StringBuilder resourceName = new StringBuilder( RESOURCE_NAME );
             loadResource( all, resourceName, locale );
 
-            return fromProperties( all );
+            String i18n = fromProperties( all );
+            cachei18n.put( StringUtils.isEmpty( locale ) ? "en" : StringUtils.lowerCase( locale ), i18n );
+            return i18n;
         }
         catch ( IOException e )
         {
