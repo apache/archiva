@@ -144,11 +144,6 @@ public class DefaultFileUploadService
             IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile ) );
             FileMetadata fileMetadata = new FileMetadata( fileName, tmpFile.length(), "theurl" );
             fileMetadata.setServerFileName( tmpFile.getPath() );
-            fileMetadata.setGroupId( groupId );
-            fileMetadata.setArtifactId( artifactId );
-            fileMetadata.setVersion( version );
-            fileMetadata.setVersion( version );
-            fileMetadata.setPackaging( packaging );
             fileMetadata.setClassifier( classifier );
             fileMetadata.setDeleteUrl( tmpFile.getName() );
             fileMetadata.setPomFile( pomFile );
