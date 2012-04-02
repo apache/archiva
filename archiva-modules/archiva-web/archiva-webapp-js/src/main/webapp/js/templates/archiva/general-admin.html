@@ -513,3 +513,170 @@
 </script>
 
 
+<script id="file-upload-screen" type="text/html">
+  <div id="file-upload-main" data-bind='template:{name:"file-upload-tmpl"}'></div>
+</script>
+
+<script id="file-upload-tmpl" type="text/html">
+  <div class="page-header">
+    <h3>${$.i18n.prop('fileupload.header')}</h3>
+  </div>
+  <form id="fileupload" action="restServices/archivaUiServices/fileUploadService" method="POST"
+        enctype="multipart/form-data" class="well form-horizontal">
+
+    <fieldset id="network-proxy-edit-fieldset">
+      <div class="control-group">
+        <label class="control-label" for="repositoryId">${$.i18n.prop('fileupload.repositoryId')}</label>
+        <div class="controls">
+          <select id="repositoryId"
+                    data-bind="options: managedRepositories, optionsText: 'name',optionsValue:'id',
+                     value: repositoryId"></select>
+         </div>
+        </div>
+      <div class="control-group">
+        <label class="control-label" for="groupId">${$.i18n.prop('fileupload.groupId')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required" data-bind="value: groupId" id="groupId" name="groupId" size="10" />
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="artifactId">${$.i18n.prop('fileupload.artifactId')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required" data-bind="value: artifactId" id="artifactId" name="artifactId" size="10" />
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="version">${$.i18n.prop('fileupload.version')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required" data-bind="value: version" id="version" name="version" size="10" />
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="packaging">${$.i18n.prop('fileupload.packaging')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required" data-bind="value: packaging" id="packaging" name="packaging" size="10" />
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="generatePom">${$.i18n.prop('fileupload.generatePom')}</label>
+        <div class="controls">
+          <input type="checkbox" class="xlarge" data-bind="value: generatePom" id="generatePom" name="generatePom" />
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="row fileupload-buttonbar">
+      <div class="span7">
+        <span class="btn btn-success fileinput-button">
+          <i class="icon-plus icon-white"></i>
+          <span>${$.i18n.prop('fileupload.file.choose')}</span>
+          <input type="file" name="files[]" multiple="">
+        </span>
+        <button type="submit" class="btn btn-primary start">
+          <i class="icon-upload icon-white"></i>
+          <span>${$.i18n.prop('fileupload.start')}</span>
+        </button>
+        <button type="reset" class="btn btn-warning cancel">
+          <i class="icon-ban-circle icon-white"></i>
+          <span>${$.i18n.prop('fileupload.cancel')}</span>
+        </button>
+        <button type="button" class="btn btn-danger delete">
+          <i class="icon-trash icon-white"></i>
+          <span>${$.i18n.prop('fileupload.delete')}</span>
+        </button>
+        <input type="checkbox" class="toggle">
+      </div>
+      <div class="span5">
+        <div class="progress progress-success progress-striped active">
+          <div class="bar" style="width:0%;"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <a href="#" id="fileupload-save-files">
+        <span class="btn btn-info" data-bind='click: saveArtifacts'>
+          <i class="icon-file icon-white"></i>
+          <span>${$.i18n.prop('fileupload.save')}</span>
+        </span>
+      </a>
+    </div>
+    <div class="fileupload-loading"></div>
+    <br>
+    <table class="table table-striped">
+      <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+    </table>
+</form>
+
+</script>
+
+
+<script id="template-upload" type="text/html">
+  {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload">
+      <td class="name"><span>{%=file.name%}</span></td>
+      <td><input type="text" id="classifier" name="classifier" placeholder="classifier" value=""/></td>
+      <td><span>pomFile:</span><input type="checkbox" id="pomFile" name="pomFile"/></td>
+      <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+      {% if (file.error) { %}
+      <td class="error" colspan="2">
+        <span class="label label-important">{%=$.i18n.prop('fileupload.error')%}</span>
+        {%=$.i18n.prop('fileupload.errors.'+[file.error]) || file.error%}
+      </td>
+      {% } else if (o.files.valid && !i) { %}
+      <td>
+        <div class="progress progress-success progress-striped active">
+          <div class="bar" style="width:0%;"></div>
+        </div>
+      </td>
+      <td class="start">
+        {% if (!o.options.autoUpload) { %}
+        <button class="btn btn-primary">
+          <i class="icon-upload icon-white"></i>
+          <span>{%=$.i18n.prop('fileupload.start')%}</span>
+        </button>
+        {% } %}
+      </td>
+      {% } else { %}
+      <td colspan="2"></td>
+      {% } %}
+      <td class="cancel">
+      {% if (!i) { %}
+        <button class="btn btn-warning">
+          <i class="icon-ban-circle icon-white"></i>
+          <span>{%=$.i18n.prop('fileupload.cancel')%}</span>
+        </button>
+      {% } %}
+      </td>
+    </tr>
+  {% } %}
+</script>
+
+<script id="template-download" type="text/html">
+  {% for (var i=0, file; file=o.files[i]; i++) { %}
+  <tr class="template-download">
+      <td class="name"><span>{%=file.name%}</span></td>
+      <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+    {% if (file.error) { %}
+      <td class="error" colspan="2">
+        <span class="label label-important">{%=$.i18n.prop('fileupload.error')%}</span>
+        {%=$.i18n.prop('fileupload.errors.'+[file.error]) || file.error%}
+      </td>
+    {% } else { %}
+      <td colspan="2"></td>
+    {% } %}
+      <td class="delete">
+        <button class="btn btn-danger" data-type="{%=file.deleteType%}"
+                data-url="restServices/archivaUiServices/fileUploadService/{%=file.deleteUrl%}">
+          <i class="icon-trash icon-white"></i>
+          <span>{%=$.i18n.prop('fileupload.destroy')%}</span>
+        </button>
+        <input type="checkbox" name="delete" value="1">
+      </td>
+    </tr>
+{% } %}
+</script>
