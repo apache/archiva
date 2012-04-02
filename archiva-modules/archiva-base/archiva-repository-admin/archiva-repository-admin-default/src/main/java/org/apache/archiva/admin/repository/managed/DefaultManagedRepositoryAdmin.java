@@ -523,6 +523,12 @@ public class DefaultManagedRepositoryAdmin
     {
         // Normalize the path
         File file = new File( repository.getLocation() );
+        if ( !file.isAbsolute() )
+        {
+            // add appserver.base/repositories
+            file = new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
+                             repository.getLocation() );
+        }
         repository.setLocation( file.getCanonicalPath() );
         if ( !file.exists() )
         {
