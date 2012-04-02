@@ -46,3 +46,132 @@
   </div>
 </div>
 
+<div id="modal-register" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>${$.i18n.prop('register.section.title')}</h3>
+  </div>
+  <div class="modal-body" id="modal-register-content">
+      <form id="user-register-form" class="form-horizontal">
+        <div id="modal-register-err-message" class="alert-message error" style="display:none"></div>
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label" for="user-register-form-username">${$.i18n.prop('username')}</label>
+            <div class="controls">
+              <input type="text" id="user-register-form-username" name="user-register-form-username" class="required" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="user-register-form-fullname">${$.i18n.prop('full.name')}</label>
+            <div class="controls">
+              <input type="text" id="user-register-form-fullname" name="user-register-form-fullname" class="required" />
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="user-register-form-email">${$.i18n.prop('email')}</label>
+            <div class="controls">
+              <input type="text" id="user-register-form-email" name="user-register-form-email" class="required email" />
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+  </div>
+  <div class="modal-footer" id="modal-register-footer">
+      <button class="btn btn-primary" id="modal-register-ok">${$.i18n.prop('register')}</button>
+  </div>
+</div>
+
+<div id="modal-password-change" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>${$.i18n.prop('password.section.title')}</h3>
+  </div>
+  <div class="modal-body" id="modal-password-change-content">
+      <form id="password-change-form" class="form-horizontal">
+        <div id="modal-password-change-err-message" class="alert-message error" style="display:none"></div>
+        <fieldset>
+          <!-- part displayed only when a logged user want to change password will be hide when validate user registration -->
+          <div class="control-group" id="password-change-form-current-password-div">
+            <label class="control-label" for="password-change-form-current-password">${$.i18n.prop('password.existing')}</label>
+            <div class="controls">
+              <input type="password" id="password-change-form-current-password" name="password-change-form-current-password" class="required" value=""/>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="passwordChangeFormNewPassword">${$.i18n.prop('password.new')}</label>
+            <div class="controls">
+              <input type="password" id="passwordChangeFormNewPassword" name="passwordChangeFormNewPassword" class="required" value=""/>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label"  for="passwordChangeFormNewPasswordConfirm">${$.i18n.prop('password.new.confirm')}</label>
+            <div class="controls">
+              <input type="password" id="passwordChangeFormNewPasswordConfirm" name="passwordChangeFormNewPasswordConfirm" class="required" value=""/>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+  <div class="modal-footer" id="modal-password-change-footer">
+    <button class="btn btn-primary" onclick="return" id="modal-change-password-ok">${$.i18n.prop('ok')}</button>
+  </div>
+</div>
+
+<div id="modal-user-edit" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>${$.i18n.prop('password.section.title')}</h3>
+  </div>
+  <div class="modal-body" id="modal-user-edit-content">
+      <form id="user-edit-form" class="form-horizontal">
+        <div id="modal-user-edit-err-message" class="alert-message error" style="display:none"></div>
+        <fieldset>
+          <div class="control-group">
+            <label class="control-label" for="username">${$.i18n.prop('username')}</label>
+            <div class="controls" id="username-div">
+              <span class="uneditable-input" id="username"></span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="fullname">${$.i18n.prop('full.name')}</label>
+            <div class="controls">
+              <input type="text" id="fullname" name="fullname" size="30" class="required"/>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="email">${$.i18n.prop('email.address')}</label>
+            <div class="controls">
+              <input type="text" id="email" name="email" size="30" class="required email"/>
+            </div>
+          </div>
+          <div class="control-group" id="user-edit-form-current-password-div">
+            <label class="control-label" for="userEditFormCurrentPassword">${$.i18n.prop('password.existing')}</label>
+            <div class="controls">
+              <input type="password" id="userEditFormCurrentPassword" name="userEditFormCurrentPassword" class="required" value=""/>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="userEditFormNewPassword">${$.i18n.prop('password.new')}</label>
+            <div class="controls">
+              <input type="password" id="userEditFormNewPassword" name="userEditFormNewPassword" class="" value=""/>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="userEditFormNewPasswordConfirm">${$.i18n.prop('password.new.confirm')}</label>
+            <div class="controls">
+              <input type="password" id="userEditFormNewPasswordConfirm" name="userEditFormNewPasswordConfirm" class="" value=""/>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+  </div>
+  <div class="modal-footer" id="modal-user-edit-footer">
+    <button class="btn primary" onclick="return" id="modal-user-edit-ok">${$.i18n.prop('ok')}</button>
+  </div>
+</div>
+

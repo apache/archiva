@@ -18,29 +18,14 @@
  */
 define("redback.templates",["text!templates/redback/user-edit.html",
           "text!templates/redback/login.html",
-          "text!templates/redback/register-form.html",
-          "text!templates/redback/password-change-form.html",
-          "text!templates/redback/user-edit-form.html",
-          "text!templates/redback/roles-tmpl.html",
           "jquery.tmpl","utils"],
-    function(useredit, login,register,passwordchange,usereditform,roles) {
+    function(useredit, login) {
 
       var htmlFragment=$("#html-fragments");
 
       // template loading
-
       htmlFragment.append(useredit);
-
       $.tmpl(login).appendTo("#html-fragments");
-
-      $.tmpl(register).appendTo("#html-fragments");
-
-      $.tmpl(passwordchange).appendTo("#html-fragments");
-
-      $.tmpl(usereditform).appendTo("#html-fragments");
-
-      htmlFragment.append(roles);
-
       $.log("redback-tmpl.js loaded");
     }
 );
