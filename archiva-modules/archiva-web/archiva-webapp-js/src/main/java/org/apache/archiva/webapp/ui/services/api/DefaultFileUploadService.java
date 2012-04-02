@@ -180,7 +180,8 @@ public class DefaultFileUploadService
     {
         File file = new File( SystemUtils.getJavaIoTmpDir(), fileName );
         log.debug( "delete file:{},exists:{}", file.getPath(), file.exists() );
-        boolean removed = getSessionFileMetadatas().remove( new FileMetadata( fileName ) );
+        boolean removed = getSessionFileMetadatas().remove(
+            new FileMetadata( SystemUtils.getJavaIoTmpDir().getPath() + "/" + fileName ) );
         if ( file.exists() )
         {
             return file.delete();
@@ -194,7 +195,7 @@ public class DefaultFileUploadService
         List<FileMetadata> fileMetadatas = new ArrayList( getSessionFileMetadatas() );
         for ( FileMetadata fileMetadata : fileMetadatas )
         {
-            deleteFile( fileMetadata.getServerFileName() );
+            deleteFile( new File( fileMetadata.getServerFileName() ).getName() );
         }
         return Boolean.TRUE;
     }
