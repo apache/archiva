@@ -147,10 +147,7 @@ public abstract class AbstractRestService
 
     protected void triggerAuditEvent( String repositoryId, String filePath, String action )
     {
-        AuditEvent auditEvent = new AuditEvent( action, repositoryId );
-        auditEvent.setAction( action );
-        auditEvent.setRepositoryId( repositoryId );
-        auditEvent.setResource( filePath );
+        AuditEvent auditEvent = new AuditEvent( repositoryId, getPrincipal(), filePath, action );
         AuditInformation auditInformation = getAuditInformation();
         auditEvent.setUserId( auditInformation.getUser() == null ? "" : auditInformation.getUser().getUsername() );
         auditEvent.setRemoteIP( auditInformation.getRemoteAddr() );

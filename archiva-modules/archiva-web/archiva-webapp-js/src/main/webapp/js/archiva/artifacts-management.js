@@ -101,6 +101,9 @@ define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jque
                 $('#fileupload').bind('fileuploadsubmit', function (e, data) {
                   var pomFile = data.context.find('#pomFile' ).attr("checked");
                   var classifier = data.context.find('#classifier' ).val();
+                  if (!data.formData){
+                    data.formData={};
+                  }
                   data.formData.pomFile = pomFile;
                   data.formData.classifier = classifier;
                 });
