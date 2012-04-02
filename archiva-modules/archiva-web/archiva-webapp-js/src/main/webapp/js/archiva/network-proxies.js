@@ -204,60 +204,59 @@ define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jqu
     clearUserMessages();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
-    mainContent.html($("#networkProxiesMain").tmpl());
-    mainContent.find("#network-proxies-view-tabs a:first").tab('show');
-
-    var networkProxiesViewModel = new NetworkProxiesViewModel();
-
-    mainContent.find("#network-proxies-view-tabs").on('show', function (e) {
-      if ($(e.target).attr("href")=="#network-proxies-edit") {
-        var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
-        ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
-        activateNetworkProxyFormValidation();
-        clearUserMessages();
-      }
-      if ($(e.target).attr("href")=="#network-proxies-view") {
-        $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
-        clearUserMessages();
-      }
-
-    });
 
 
 
     loadNetworkProxies( function(data) {
-          networkProxiesViewModel.networkProxies(mapNetworkProxies(data));
-          networkProxiesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
-            data: networkProxiesViewModel.networkProxies,
-            columns: [
-              {
-                headerText: $.i18n.prop('identifier'),
-                rowText: "id"
-              },
-              {
-                headerText: $.i18n.prop('protocol'),
-                rowText: "protocol"
-              },
-              {
-              headerText: $.i18n.prop('host'),
-              rowText: "host"
-              },
-              {
-              headerText: $.i18n.prop('port'),
-              rowText: "port"
-              },
-              {
-              headerText: $.i18n.prop('username'),
-              rowText: "username"
-              }
-            ],
-            pageSize: 5,
-            gridUpdateCallBack: function(networkProxy){
-              $("#main-content #networkProxiesTable [title]").tooltip();
+        var networkProxiesViewModel = new NetworkProxiesViewModel();
+        mainContent.html($("#networkProxiesMain").tmpl());
+        mainContent.find("#network-proxies-view-tabs a:first").tab('show');
+
+        mainContent.find("#network-proxies-view-tabs").on('show', function (e) {
+          if ($(e.target).attr("href")=="#network-proxies-edit") {
+            var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
+            ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
+            activateNetworkProxyFormValidation();
+            clearUserMessages();
+          }
+          if ($(e.target).attr("href")=="#network-proxies-view") {
+            $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
+            clearUserMessages();
+          }
+
+        });
+        networkProxiesViewModel.networkProxies(mapNetworkProxies(data));
+        networkProxiesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
+          data: networkProxiesViewModel.networkProxies,
+          columns: [
+            {
+              headerText: $.i18n.prop('identifier'),
+              rowText: "id"
+            },
+            {
+              headerText: $.i18n.prop('protocol'),
+              rowText: "protocol"
+            },
+            {
+            headerText: $.i18n.prop('host'),
+            rowText: "host"
+            },
+            {
+            headerText: $.i18n.prop('port'),
+            rowText: "port"
+            },
+            {
+            headerText: $.i18n.prop('username'),
+            rowText: "username"
             }
-          });
-          ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-view").get(0));
-        }
+          ],
+          pageSize: 5,
+          gridUpdateCallBack: function(networkProxy){
+            $("#main-content #networkProxiesTable [title]").tooltip();
+          }
+        });
+        ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-view").get(0));
+      }
     )
   }
 
