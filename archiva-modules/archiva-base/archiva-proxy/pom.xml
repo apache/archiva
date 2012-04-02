@@ -190,6 +190,7 @@
               org.apache.maven.wagon.authentication,
               org.apache.maven.wagon.proxy,
               org.apache.maven.wagon.repository,
+              com.google.common.io,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
