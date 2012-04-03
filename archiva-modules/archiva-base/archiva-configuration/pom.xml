@@ -77,6 +77,10 @@
         </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.redback.components</groupId>
       <artifactId>spring-utils</artifactId>
     </dependency>
@@ -191,6 +195,7 @@
               org.codehaus.plexus.evaluator*,
               org.codehaus.plexus.registry,
               org.codehaus.plexus.util,
+              org.apache.tools.ant.types.selectors,
               org.codehaus.redback.components.registry.commons,
               org.codehaus.redback.components.springutils,
               org.springframework.stereotype;version="[3,4)",

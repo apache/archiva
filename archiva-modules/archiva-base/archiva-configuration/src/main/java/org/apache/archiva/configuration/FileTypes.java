@@ -25,10 +25,10 @@ import org.apache.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
+import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry;
 import org.springframework.stereotype.Service;
 
