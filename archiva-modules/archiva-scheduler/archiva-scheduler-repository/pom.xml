@@ -33,6 +33,10 @@
       <artifactId>archiva-scheduler-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.redback.components</groupId>
       <artifactId>spring-quartz</artifactId>
     </dependency>

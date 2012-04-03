@@ -56,7 +56,6 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
-import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -499,7 +498,7 @@ public class DefaultFileUploadService
         }
         finally
         {
-            IOUtil.close( w );
+            IOUtils.closeQuietly( w );
         }
 
         return pomFile;
