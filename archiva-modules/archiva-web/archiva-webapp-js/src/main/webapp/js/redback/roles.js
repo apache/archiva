@@ -165,12 +165,8 @@ define("redback.roles",["jquery","order!utils","i18n","jquery.validate","order!k
     }
 
     updateModifiedRoles=function(){
-
-
       var modifiedRoles = getModifiedRoles();
       $.log("modifiedRoles:"+modifiedRoles);
-
-
       openDialogConfirm(function(){
                           for(i=0;i<modifiedRoles.length;i++){
                             var modifiedRole=modifiedRoles[i];
@@ -225,7 +221,6 @@ define("redback.roles",["jquery","order!utils","i18n","jquery.validate","order!k
           mainContent.find("#roles-view-tabs #roles-view-tabs-a-roles-grid").tab("show");
           activateRolesGridTab();
           removeMediumSpinnerImg();
-
         }
       }
     );
@@ -244,24 +239,28 @@ define("redback.roles",["jquery","order!utils","i18n","jquery.validate","order!k
       for (var i = 0; i < removed.length; i++) {
         $.log("add user:"+removed[i].username());
         currentRole.users.push(removed[i]);
-        //role.modified(true);
         role.usersModified(true);
       }
       selectedOtherUsers([]);
+      $("#role-collapse" ).removeClass("in");
+      $("#role-users-collapse" ).addClass("in");
       activateRoleUsersEditTab();
     }
 
     removeUser=function(){
+      $.log("removeUser");
       var added = currentRole.users.removeAll(selectedUsers());
       for (var i = 0; i < added.length; i++) {
         currentRole.otherUsers.push(added[i]);
         currentRole.removedUsers.push(added[i]);
-        //role.modified(true);
         role.usersModified(true);
       }
       selectedUsers([]);
-      activateRoleUsersEditTab()
+      $("#role-collapse" ).removeClass("in");
+      $("#role-users-collapse" ).addClass("in");
+      activateRoleUsersEditTab();
     }
+
     saveRoleDescription=function(){
       currentRole.updateDescription();
     }
