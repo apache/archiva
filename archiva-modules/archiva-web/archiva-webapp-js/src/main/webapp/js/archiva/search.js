@@ -42,24 +42,23 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       }
     }
 
-    displayProjectEntry=function(id){
-      // value org.apache.maven/maven-archiver
-      // split this org.apache.maven and maven-archiver
-      var values = id.split(".");
-      var groupId="";
-      for (var i = 0;i<values.length-1;i++){
-        groupId+=values[i];
-        if (i<values.length-2)groupId+=".";
-      }
-      var artifactId=values[values.length-1];
-      displayArtifactDetail(groupId,artifactId,self);
-
-    }
-
     breadCrumbEntries=function(){
       // root level ?
       if (!self.parentBrowseViewModel) return [];
       return calculateBreadCrumbEntries(self.groupId);
+    }
+
+    displayProjectEntry=function(id){
+
+      // value org.apache.maven/maven-archiver
+      // artifactId can contains .
+      // value org.apache.aries/org.apache.aries.util
+      // split this org.apache.maven and maven-archiver
+      var values = id.substring((self.groupId+'.').length,id.length);//.split(".");
+      $.log("displayProjectEntry:"+id+",groupId:"+self.groupId+",values:"+values);
+
+      displayArtifactDetail(self.groupId,values,self);
+
     }
 
     displayEntry=function(value){
@@ -109,7 +108,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
             type: "GET",
             dataType: 'json',
             success: function(data) {
-              var browseResultEntries = mapbrowseResultEntries(data);
+              var browseResultEntries = mapBrowseResultEntries(data);
               var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId);
               ko.applyBindings(browseViewModel,browseBreadCrumb.get(0));
               ko.applyBindings(browseViewModel,browseResult.get(0));
@@ -501,7 +500,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
               type: "GET",
               dataType: 'json',
               success: function(data) {
-                var browseResultEntries = mapbrowseResultEntries(data);
+                var browseResultEntries = mapBrowseResultEntries(data);
                 $.log("size:"+browseResultEntries.length);
                 var browseViewModel = new BrowseViewModel(browseResultEntries,null,null);
                 ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
@@ -546,7 +545,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
           // try with rootGroups then filtered
           $.get(url,
              function(data) {
-               var browseResultEntries = mapbrowseResultEntries(data);
+               var browseResultEntries = mapBrowseResultEntries(data);
 
                var filetered = [];
                for(var i=0;i<browseResultEntries.length;i++){
@@ -588,7 +587,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
         }
         $.get(browseUrl,
            function(data) {
-             var browseResultEntries = mapbrowseResultEntries(data);
+             var browseResultEntries = mapBrowseResultEntries(data);
              if (dotEnd){
               response(browseResultEntries);
              } else {
@@ -667,8 +666,8 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     displayArtifactDetail(groupId,artifactId,null,null);
   }
 
-  mapbrowseResultEntries=function(data){
-    $.log("mapbrowseResultEntries");
+  mapBrowseResultEntries=function(data){
+    $.log("mapBrowseResultEntries");
     if (data.browseResultEntries) {
       return $.isArray(data.browseResultEntries) ?
          $.map(data.browseResultEntries,function(item){
