@@ -88,7 +88,9 @@ define("redback.roles",["jquery","order!utils","i18n","jquery.validate","order!k
           data: ko.toJSON(self),
           success: function(data) {
             clearUserMessages();
-            displaySuccessMessage($.i18n.prop("role.users.updated",this.name));
+            displaySuccessMessage($.i18n.prop("role.users.updated",self.name()));
+            self.usersModified(false);
+
           },
           error: function(data){
             clearUserMessages();
