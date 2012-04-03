@@ -41,6 +41,10 @@
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -59,7 +63,8 @@
               org.apache.archiva.common*;version=${project.version},
               org.apache.commons.collections;version="[3.2,4)",
               org.apache.commons.io;version="[1.4,2)",
-              org.codehaus.plexus.util
+              org.codehaus.plexus.util,
+              org.apache.tools.ant.types.selectors
             </Import-Package>
           </instructions>
         </configuration>

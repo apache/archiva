@@ -25,7 +25,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
-import org.codehaus.plexus.util.SelectorUtils;
+import org.apache.tools.ant.types.selectors.SelectorUtils;
 
 /**
  * ConsumerWantsFilePredicate 
