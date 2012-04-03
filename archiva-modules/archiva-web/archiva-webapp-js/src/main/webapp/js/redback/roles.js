@@ -90,7 +90,7 @@ define("redback.roles",["jquery","order!utils","i18n","jquery.validate","order!k
             clearUserMessages();
             displaySuccessMessage($.i18n.prop("role.users.updated",self.name()));
             self.usersModified(false);
-
+            self.modified(false);
           },
           error: function(data){
             clearUserMessages();
