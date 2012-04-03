@@ -214,7 +214,7 @@ public class DefaultManagedRepositoriesService
         snippet.append( "    <" ).append( distRepoName ).append( ">\n" );
         snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
         snippet.append( "      <url>" );
-        snippet.append( getBaseUrl( httpServletRequest ) + "repository" );
+        snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
         snippet.append( "/" ).append( repo.getId() ).append( "/" ).append( "</url>\n" );
 
         if ( !"default".equals( repo.getLayout() ) )
@@ -232,7 +232,7 @@ public class DefaultManagedRepositoriesService
         snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
 
         snippet.append( "      <url>" );
-        snippet.append( getBaseUrl( httpServletRequest ) + "repository" );
+        snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
         snippet.append( "/" ).append( repo.getId() ).append( "/" );
 
         snippet.append( "</url>\n" );
@@ -256,7 +256,7 @@ public class DefaultManagedRepositoriesService
         snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
 
         snippet.append( "      <url>" );
-        snippet.append( getBaseUrl( httpServletRequest ) + "repository" );
+        snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
         snippet.append( "/" ).append( repo.getId() ).append( "/" );
 
         snippet.append( "</url>\n" );
