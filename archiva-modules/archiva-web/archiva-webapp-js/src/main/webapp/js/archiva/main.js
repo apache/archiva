@@ -143,6 +143,10 @@ function() {
         displayUsersGrid();
         return;
       }
+      if (screen=='roles-grid' && hasKarma('archiva-manage-users')){
+        displayRolesGrid();
+        return;
+      }
     }
     // by default display search screen
     displaySearch();
