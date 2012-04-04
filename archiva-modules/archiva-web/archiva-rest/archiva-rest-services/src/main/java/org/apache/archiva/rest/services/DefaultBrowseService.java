@@ -32,6 +32,7 @@ import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
@@ -690,6 +691,13 @@ public class DefaultBrowseService
             repositorySession.close();
         }
         return Boolean.TRUE;
+    }
+
+    public List<ArtifactContentEntry> getArtifactContentEntries( String groupId, String artifactId, String version,
+                                                                 String path, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        return null;
     }
 
     //---------------------------

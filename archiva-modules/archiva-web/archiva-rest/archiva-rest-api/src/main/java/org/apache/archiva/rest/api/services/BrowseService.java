@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.TreeEntry;
@@ -143,5 +144,12 @@ public interface BrowseService
     Boolean deleteMetadata( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
                             @PathParam( "v" ) String version, @PathParam( "key" ) String key,
                             @QueryParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
+
+    List<ArtifactContentEntry> getArtifactContentEntries( @PathParam( "g" ) String groupId,
+                                                          @PathParam( "a" ) String artifactId,
+                                                          @PathParam( "v" ) String version,
+                                                          @PathParam( "" ) String path,
+                                                          @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 }
