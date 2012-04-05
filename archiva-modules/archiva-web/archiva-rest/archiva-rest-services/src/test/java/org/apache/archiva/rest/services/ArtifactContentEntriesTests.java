@@ -63,7 +63,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 2 ) );
+            new ArtifactContentEntry( "org/apache", false, 1 ) );
 
     }
 
@@ -82,6 +82,25 @@ public class ArtifactContentEntriesTests
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 16 ).contains(
             new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5 ) );
+
+    }
+
+    @Test
+    public void readArtifactContentEntriesDirectoryAndFiles()
+        throws Exception
+    {
+
+        File file = new File( getBasedir(),
+                              "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
+
+        List<ArtifactContentEntry> artifactContentEntries =
+            browseService.readFileEntries( file, "org/apache/commons/logging/" );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 10 ).contains(
+            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4 ),
+            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4 ) );
 
     }
 

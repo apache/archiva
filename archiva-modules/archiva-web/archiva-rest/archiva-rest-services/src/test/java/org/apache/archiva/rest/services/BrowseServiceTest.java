@@ -246,7 +246,7 @@ public class BrowseServiceTest
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 1 ), new ArtifactContentEntry( "META-INF", false, 1 ) );
+            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
         deleteTestRepo( testRepoId );
     }
 
@@ -272,7 +272,7 @@ public class BrowseServiceTest
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 2 ) );
+            new ArtifactContentEntry( "org/apache", false, 1 ) );
         deleteTestRepo( testRepoId );
     }
 }

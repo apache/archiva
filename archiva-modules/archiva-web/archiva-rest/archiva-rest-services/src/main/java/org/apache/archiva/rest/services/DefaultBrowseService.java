@@ -670,37 +670,33 @@ public class DefaultBrowseService
             Enumeration<JarEntry> jarEntryEnumeration = jarFile.entries();
             while ( jarEntryEnumeration.hasMoreElements() )
             {
-                JarEntry entry = jarEntryEnumeration.nextElement();
-                String entryName = entry.getName();
-                String entryRootPath = getRootPath( entryName );
-                int depth = StringUtils.countMatches( entryName, "/" );
+                JarEntry currentEntry = jarEntryEnumeration.nextElement();
+                String cleanedEntryName =
+                    StringUtils.endsWith( currentEntry.getName(), "/" ) ? StringUtils.substringBeforeLast(
+                        currentEntry.getName(), "/" ) : currentEntry.getName();
+                String entryRootPath = getRootPath( cleanedEntryName );
+                int depth = StringUtils.countMatches( cleanedEntryName, "/" );
                 if ( StringUtils.isEmpty( filterPath ) && !artifactContentEntryMap.containsKey( entryRootPath ) )
                 {
 
                     artifactContentEntryMap.put( entryRootPath,
-                                                 new ArtifactContentEntry( entryRootPath, !entry.isDirectory(),
+                                                 new ArtifactContentEntry( entryRootPath, !currentEntry.isDirectory(),
                                                                            depth ) );
                 }
                 else
                 {
-                    if ( StringUtils.startsWith( entryName, filterPath ) && ( depth > filterDepth || (
-                        !entry.isDirectory() && depth == filterDepth ) ) )
+                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) && ( depth >= filterDepth || (
+                        !currentEntry.isDirectory() && depth == filterDepth ) ) )
                     {
-                        // remove last /
-                        String cleanedEntryName = StringUtils.endsWith( entryName, "/" )
-                            ? StringUtils.substringBeforeLast( entryName, "/" )
-                            : entryName;
-                        artifactContentEntryMap.put( cleanedEntryName,
-                                                     new ArtifactContentEntry( cleanedEntryName, !entry.isDirectory(),
-                                                                               depth ) );
+                        artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,
+                                                                                                 !currentEntry.isDirectory(),
+                                                                                                 depth ) );
                     }
                 }
             }
 
             if ( StringUtils.isNotEmpty( filterPath ) )
             {
-                // apply more filtering here
-                // search entries filterPath/blabla
                 Map<String, ArtifactContentEntry> filteredArtifactContentEntryMap =
                     new HashMap<String, ArtifactContentEntry>();
 
