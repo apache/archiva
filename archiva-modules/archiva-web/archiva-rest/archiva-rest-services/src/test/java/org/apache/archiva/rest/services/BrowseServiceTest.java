@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
@@ -220,6 +221,58 @@ public class BrowseServiceTest
 
         assertThat( metadata ).isNotNull();
 
+        deleteTestRepo( testRepoId );
+    }
+
+    @Test
+    public void readArtifactContentEntries()
+        throws Exception
+    {
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<ArtifactContentEntry> artifactContentEntries =
+            browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null, null,
+                                                     testRepoId );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
+            new ArtifactContentEntry( "org", false, 1 ), new ArtifactContentEntry( "META-INF", false, 1 ) );
+        deleteTestRepo( testRepoId );
+    }
+
+    @Test
+    public void readArtifactContentEntriesRootPath()
+        throws Exception
+    {
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<ArtifactContentEntry> artifactContentEntries =
+            browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null, "org",
+                                                     testRepoId );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
+            new ArtifactContentEntry( "org/apache", false, 2 ) );
         deleteTestRepo( testRepoId );
     }
 }

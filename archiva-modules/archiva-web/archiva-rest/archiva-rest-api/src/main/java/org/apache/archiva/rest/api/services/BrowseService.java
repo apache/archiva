@@ -146,10 +146,16 @@ public interface BrowseService
                             @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
+    @Path( "artifactContentEntries/{g}/{a}/{v}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<ArtifactContentEntry> getArtifactContentEntries( @PathParam( "g" ) String groupId,
                                                           @PathParam( "a" ) String artifactId,
                                                           @PathParam( "v" ) String version,
-                                                          @PathParam( "" ) String path,
+                                                          @QueryParam( "c" ) String classifier,
+                                                          @QueryParam( "t" ) String type,
+                                                          @QueryParam( "p" ) String path,
                                                           @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 }

@@ -31,15 +31,18 @@ public class ArtifactContentEntry
 
     private boolean file;
 
+    private int depth;
+
     public ArtifactContentEntry()
     {
         // no op
     }
 
-    public ArtifactContentEntry( String name, boolean file )
+    public ArtifactContentEntry( String name, boolean file, int depth )
     {
         this.name = name;
         this.file = file;
+        this.depth = depth;
     }
 
     public String getName()
@@ -62,6 +65,16 @@ public class ArtifactContentEntry
         this.file = file;
     }
 
+    public int getDepth()
+    {
+        return depth;
+    }
+
+    public void setDepth( int depth )
+    {
+        this.depth = depth;
+    }
+
     @Override
     public String toString()
     {
@@ -69,7 +82,47 @@ public class ArtifactContentEntry
         sb.append( "ArtifactContentEntry" );
         sb.append( "{name='" ).append( name ).append( '\'' );
         sb.append( ", file=" ).append( file );
+        sb.append( ", depth=" ).append( depth );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof ArtifactContentEntry ) )
+        {
+            return false;
+        }
+
+        ArtifactContentEntry that = (ArtifactContentEntry) o;
+
+        if ( depth != that.depth )
+        {
+            return false;
+        }
+        if ( file != that.file )
+        {
+            return false;
+        }
+        if ( !name.equals( that.name ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = name.hashCode();
+        result = 31 * result + ( file ? 1 : 0 );
+        result = 31 * result + depth;
+        return result;
     }
 }
