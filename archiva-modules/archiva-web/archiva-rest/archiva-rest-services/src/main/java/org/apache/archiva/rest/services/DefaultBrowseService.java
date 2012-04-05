@@ -74,23 +74,7 @@ public class DefaultBrowseService
     public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
     {
-        List<String> selectedRepos = getObservableRepos();
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
-            // FIXME 403 ???
-            return new BrowseResult();
-        }
-
-        if ( StringUtils.isNotEmpty( repositoryId ) )
-        {
-            // check user has karma on the repository
-            if ( !selectedRepos.contains( repositoryId ) )
-            {
-                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
-            }
-            selectedRepos = Collections.singletonList( repositoryId );
-        }
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
 
         Set<String> namespaces = new LinkedHashSet<String>();
 
@@ -137,24 +121,7 @@ public class DefaultBrowseService
     public BrowseResult browseGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
-
-        List<String> selectedRepos = getObservableRepos();
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
-            // FIXME 403 ???
-            return new BrowseResult();
-        }
-
-        if ( StringUtils.isNotEmpty( repositoryId ) )
-        {
-            // check user has karma on the repository
-            if ( !selectedRepos.contains( repositoryId ) )
-            {
-                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
-            }
-            selectedRepos = Collections.singletonList( repositoryId );
-        }
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
 
         Set<String> projects = new LinkedHashSet<String>();
 
@@ -210,23 +177,7 @@ public class DefaultBrowseService
     public VersionsList getVersionsList( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
-        List<String> selectedRepos = getObservableRepos();
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
-            // FIXME 403 ???
-            return new VersionsList();
-        }
-
-        if ( StringUtils.isNotEmpty( repositoryId ) )
-        {
-            // check user has karma on the repository
-            if ( !selectedRepos.contains( repositoryId ) )
-            {
-                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
-            }
-            selectedRepos = Collections.singletonList( repositoryId );
-        }
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
 
         try
         {
@@ -273,24 +224,7 @@ public class DefaultBrowseService
                                                       String repositoryId )
         throws ArchivaRestServiceException
     {
-        List<String> selectedRepos = getObservableRepos();
-
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
-            // FIXME 403 ???
-            return null;
-        }
-
-        if ( StringUtils.isNotEmpty( repositoryId ) )
-        {
-            // check user has karma on the repository
-            if ( !selectedRepos.contains( repositoryId ) )
-            {
-                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
-            }
-            selectedRepos = Collections.singletonList( repositoryId );
-        }
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
 
         RepositorySession repositorySession = null;
         try
@@ -335,24 +269,7 @@ public class DefaultBrowseService
         throws ArchivaRestServiceException
     {
 
-        List<String> selectedRepos = getObservableRepos();
-
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
-            // FIXME 403 ???
-            return null;
-        }
-
-        if ( StringUtils.isNotEmpty( repositoryId ) )
-        {
-            // check user has karma on the repository
-            if ( !selectedRepos.contains( repositoryId ) )
-            {
-                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
-            }
-            selectedRepos = Collections.singletonList( repositoryId );
-        }
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
 
         RepositorySession repositorySession = null;
         try
@@ -480,24 +397,7 @@ public class DefaultBrowseService
     public List<TreeEntry> getTreeEntries( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
-        List<String> selectedRepos = getObservableRepos();
-
-        if ( CollectionUtils.isEmpty( selectedRepos ) )
-        {
-            // FIXME 403 ???
-            return null;
-        }
-
-        if ( StringUtils.isNotEmpty( repositoryId ) )
-        {
-            // check user has karma on the repository
-            if ( !selectedRepos.contains( repositoryId ) )
-            {
-                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
-            }
-            selectedRepos = Collections.singletonList( repositoryId );
-        }
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
 
         List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
         TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
@@ -703,6 +603,31 @@ public class DefaultBrowseService
     //---------------------------
     // internals
     //---------------------------
+
+    private List<String> getSelectedRepos( String repositoryId )
+        throws ArchivaRestServiceException
+    {
+
+        List<String> selectedRepos = getObservableRepos();
+
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            // FIXME 403 ???
+            return null;
+        }
+
+        if ( StringUtils.isNotEmpty( repositoryId ) )
+        {
+            // check user has karma on the repository
+            if ( !selectedRepos.contains( repositoryId ) )
+            {
+                throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
+                                                       Response.Status.FORBIDDEN.getStatusCode() );
+            }
+            selectedRepos = Collections.singletonList( repositoryId );
+        }
+        return selectedRepos;
+    }
 
     private List<String> getSortedList( Set<String> set )
     {
