@@ -1,22 +1,23 @@
 package org.codehaus.plexus.redback.authentication.keystore;
 
 /*
-* Copyright 2005 The Codehaus.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
-import javax.annotation.Resource;
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -36,23 +37,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * KeyStoreAuthenticator:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  * @version: $Id$
- *
  */
-@Service("authenticator#keystore")
+@Service( "authenticator#keystore" )
 public class KeyStoreAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
-    
-    @Resource(name="keyManager#cached")
+
+    @Resource( name = "keyManager#cached" )
     private KeyManager keystore;
-    
-    @Resource(name="userManager#configurable")
+
+    @Resource( name = "userManager#configurable" )
     private UserManager userManager;
 
     public String getId()
@@ -74,22 +76,23 @@ public class KeyStoreAuthenticator
             if ( authKey != null )
             {
                 User user = userManager.findUser( dataSource.getPrincipal() );
-                
+
                 if ( user.isLocked() )
                 {
                     throw new AccountLockedException( "Account " + source.getPrincipal() + " is locked.", user );
                 }
-                
+
                 if ( user.isPasswordChangeRequired() && source.isEnforcePasswordChange() )
                 {
                     throw new MustChangePasswordException( "Password expired.", user );
                 }
-                
+
                 return new AuthenticationResult( true, dataSource.getPrincipal(), null );
             }
             else
             {
-                return new AuthenticationResult( false, dataSource.getPrincipal(), new AuthenticationException("unable to find key") );
+                return new AuthenticationResult( false, dataSource.getPrincipal(),
+                                                 new AuthenticationException( "unable to find key" ) );
             }
         }
         catch ( KeyNotFoundException ne )
