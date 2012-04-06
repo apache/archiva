@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.management;
  */
 
 import junit.framework.TestCase;
+import org.apache.commons.lang.SystemUtils;
 import org.codehaus.plexus.redback.common.jdo.UserConfigurableJdoFactory;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManager;
@@ -34,6 +35,7 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +46,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -133,8 +136,8 @@ public class DataManagementTest
 
         IOUtil.copy( getClass().getResourceAsStream( "/expected-rbac.xml" ), sw );
 
-        assertEquals( "Check database content", convertLineEndings( sw.toString() ).trim(),
-                      fixXmlQuotes( FileUtils.fileRead( backupFile ) ).trim() );
+        XMLAssert.assertXMLEqual( new StringReader( sw.toString() ),
+                                  new StringReader( FileUtils.fileRead( backupFile ) ) );
 
     }
 
@@ -174,8 +177,9 @@ public class DataManagementTest
 
         String actual = FileUtils.fileRead( backupFile ).trim();
         String expected = sw.toString().trim();
-        assertEquals( "Check database content", convertLineEndings( removeTimestampVariance( expected ) ),
-                      fixXmlQuotes( removeTimestampVariance( actual ) ) );
+
+        XMLAssert.assertXMLEqual( removeTimestampVariance( expected ), removeTimestampVariance( actual ) );
+
     }
 
     private void createUserDatabase( UserManager manager )
@@ -215,8 +219,9 @@ public class DataManagementTest
 
         String actual = FileUtils.fileRead( backupFile ).trim();
         String expected = sw.toString().trim();
-        assertEquals( "Check database content", convertLineEndings( removeKeyAndTimestampVariance( expected ) ),
-                      fixXmlQuotes( removeKeyAndTimestampVariance( actual ) ) );
+
+        XMLAssert.assertXMLEqual( removeKeyAndTimestampVariance( expected ), removeKeyAndTimestampVariance( actual ) );
+
     }
 
     private static void createKeyDatabase( KeyManager manager )
@@ -252,47 +257,46 @@ public class DataManagementTest
         assertEquals( 1, manager.getAllResources().size() );
         assertEquals( 6, manager.getAllPermissions().size() );
 
-        Role role = (Role) roles.get( 0 );
+        Role role = roles.get( 0 );
         assertEquals( "User Administrator", role.getName() );
         assertTrue( role.isAssignable() );
         assertEquals( 2, role.getPermissions().size() );
-        assertPermission( (Permission) role.getPermissions().get( 0 ), "Edit All Users", "edit-all-users", "*" );
-        assertPermission( (Permission) role.getPermissions().get( 1 ), "Remove Roles", "remove-roles", "*" );
+        assertPermission( role.getPermissions().get( 0 ), "Edit All Users", "edit-all-users", "*" );
+        assertPermission( role.getPermissions().get( 1 ), "Remove Roles", "remove-roles", "*" );
 
-        role = (Role) roles.get( 1 );
+        role = roles.get( 1 );
         assertEquals( "System Administrator", role.getName() );
         assertTrue( role.isAssignable() );
         assertEquals( 1, role.getChildRoleNames().size() );
         assertEquals( "User Administrator", role.getChildRoleNames().get( 0 ) );
         assertEquals( 4, role.getPermissions().size() );
-        assertPermission( (Permission) role.getPermissions().get( 0 ), "Edit Configuration", "edit-configuration",
-                          "*" );
-        assertPermission( (Permission) role.getPermissions().get( 1 ), "Run Indexer", "run-indexer", "*" );
-        assertPermission( (Permission) role.getPermissions().get( 2 ), "Add Repository", "add-repository", "*" );
-        assertPermission( (Permission) role.getPermissions().get( 3 ), "Regenerate Index", "regenerate-index", "*" );
+        assertPermission( role.getPermissions().get( 0 ), "Edit Configuration", "edit-configuration", "*" );
+        assertPermission( role.getPermissions().get( 1 ), "Run Indexer", "run-indexer", "*" );
+        assertPermission( role.getPermissions().get( 2 ), "Add Repository", "add-repository", "*" );
+        assertPermission( role.getPermissions().get( 3 ), "Regenerate Index", "regenerate-index", "*" );
 
-        role = (Role) roles.get( 2 );
+        role = roles.get( 2 );
         assertEquals( "Trusted Developer", role.getName() );
         assertTrue( role.isAssignable() );
         assertEquals( 1, role.getChildRoleNames().size() );
         assertEquals( "System Administrator", role.getChildRoleNames().get( 0 ) );
         assertEquals( 1, role.getPermissions().size() );
-        assertPermission( (Permission) role.getPermissions().get( 0 ), "Run Indexer", "run-indexer", "*" );
+        assertPermission( role.getPermissions().get( 0 ), "Run Indexer", "run-indexer", "*" );
 
-        role = (Role) roles.get( 3 );
+        role = roles.get( 3 );
         assertEquals( "Developer", role.getName() );
         assertTrue( role.isAssignable() );
         assertEquals( 1, role.getChildRoleNames().size() );
         assertEquals( "Trusted Developer", role.getChildRoleNames().get( 0 ) );
         assertEquals( 1, role.getPermissions().size() );
-        assertPermission( (Permission) role.getPermissions().get( 0 ), "Run Indexer", "run-indexer", "*" );
+        assertPermission( role.getPermissions().get( 0 ), "Run Indexer", "run-indexer", "*" );
 
-        UserAssignment assignment = (UserAssignment) assignments.get( 0 );
+        UserAssignment assignment = assignments.get( 0 );
         assertEquals( "bob", assignment.getPrincipal() );
         assertEquals( 1, assignment.getRoleNames().size() );
         assertEquals( "Developer", assignment.getRoleNames().get( 0 ) );
 
-        assignment = (UserAssignment) assignments.get( 1 );
+        assignment = assignments.get( 1 );
         assertEquals( "betty", assignment.getPrincipal() );
         assertEquals( 1, assignment.getRoleNames().size() );
         assertEquals( "System Administrator", assignment.getRoleNames().get( 0 ) );
@@ -327,7 +331,7 @@ public class DataManagementTest
         List<User> users = manager.getUsers();
         assertEquals( 3, users.size() );
 
-        User user = (User) users.get( 0 );
+        User user = users.get( 0 );
         assertEquals( "smcqueen", user.getUsername() );
         assertEquals( "bKE9UspwyIPg8LsQHkJaiehiTeUdstI5JZOvaoQRgJA=", user.getEncodedPassword() );
         assertEquals( "Steve McQueen", user.getFullName() );
@@ -336,7 +340,7 @@ public class DataManagementTest
         assertEquals( Arrays.asList( new String[]{ "bKE9UspwyIPg8LsQHkJaiehiTeUdstI5JZOvaoQRgJA=" } ),
                       user.getPreviousEncodedPasswords() );
 
-        user = (User) users.get( 1 );
+        user = users.get( 1 );
         assertEquals( "bob", user.getUsername() );
         assertEquals( "A0MR+q0lm554bD6Uft60ztlYZ8N1pEqXhKNM9H7SlS8=", user.getEncodedPassword() );
         assertEquals( "Sideshow Bob", user.getFullName() );
@@ -345,7 +349,7 @@ public class DataManagementTest
         assertEquals( Arrays.asList( new String[]{ "A0MR+q0lm554bD6Uft60ztlYZ8N1pEqXhKNM9H7SlS8=" } ),
                       user.getPreviousEncodedPasswords() );
 
-        user = (User) users.get( 2 );
+        user = users.get( 2 );
         assertEquals( "betty", user.getUsername() );
         assertEquals( "L/mA/suWallwvYzw4wyRYkn5y8zWxAITuv4sLhJLN1E=", user.getEncodedPassword() );
         assertEquals( "Betty", user.getFullName() );
@@ -380,21 +384,21 @@ public class DataManagementTest
         List<AuthenticationKey> keys = manager.getAllKeys();
         assertEquals( 3, keys.size() );
 
-        AuthenticationKey key = (AuthenticationKey) keys.get( 0 );
+        AuthenticationKey key = keys.get( 0 );
         assertEquals( "248df0fec5d54e3eb11339f5e81d8bd7", key.getKey() );
         assertEquals( "bob", key.getForPrincipal() );
         assertEquals( "Testing", key.getPurpose() );
         assertEquals( 1164426311921L, key.getDateCreated().getTime() );
         assertEquals( 1164427211921L, key.getDateExpires().getTime() );
 
-        key = (AuthenticationKey) keys.get( 1 );
+        key = keys.get( 1 );
         assertEquals( "a98dddc2ae614a7c82f8afd3ba6e39fb", key.getKey() );
         assertEquals( "betty", key.getForPrincipal() );
         assertEquals( "Something", key.getPurpose() );
         assertEquals( 1164426315657L, key.getDateCreated().getTime() );
         assertEquals( 1164427815657L, key.getDateExpires().getTime() );
 
-        key = (AuthenticationKey) keys.get( 2 );
+        key = keys.get( 2 );
         assertEquals( "1428d2ca3a0246f0a1d979504e351388", key.getKey() );
         assertEquals( "fred", key.getForPrincipal() );
         assertEquals( "Else", key.getPurpose() );
@@ -433,24 +437,10 @@ public class DataManagementTest
     {
         String timestamp = new SimpleDateFormat( "yyyyMMdd.HHmmss", Locale.US ).format( new Date() );
 
-        File targetDirectory = new File( "./target/backups/" + timestamp );
+        File targetDirectory = new File( SystemUtils.getJavaIoTmpDir(), "./target/backups/" + timestamp );
         targetDirectory.mkdirs();
 
         return targetDirectory;
     }
 
-    private static String fixXmlQuotes( String s )
-    {
-        if ( s.startsWith( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ) )
-        {
-            return "<?xml version='1.0' encoding='UTF-8'?>" + s.substring(
-                "<?xml version='1.0' encoding='UTF-8'?>".length() );
-        }
-        return s;
-    }
-
-    private String convertLineEndings( String s )
-    {
-        return s.replaceAll( "\r\n", "\n" );
-    }
 }
