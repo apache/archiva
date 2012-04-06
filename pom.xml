@@ -125,28 +125,48 @@
 
   <mailingLists>
     <mailingList>
-      <name>Redback User List</name>
-      <subscribe>http://xircles.codehaus.org/manage_email/user%40redback.codehaus.org</subscribe>
-      <unsubscribe>http://xircles.codehaus.org/manage_email/user%40redback.codehaus.org</unsubscribe>
-      <archive>http://archive.hausfoundation.org/lists/org.codehaus.redback.user</archive>
+      <name>Archiva User List</name>
+      <subscribe>users-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>users-unsubscribe@archiva.apache.org</unsubscribe>
+      <post>users@archiva.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-users/</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/users@archiva.apache.org</otherArchive>
+        <otherArchive>http://old.nabble.com/archiva-users-f16426.html</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.users</otherArchive>
+      </otherArchives>
     </mailingList>
     <mailingList>
-      <name>Redback Developer List</name>
-      <subscribe>http://xircles.codehaus.org/manage_email/dev%40redback.codehaus.org</subscribe>
-      <unsubscribe>http://xircles.codehaus.org/manage_email/dev%40redback.codehaus.org</unsubscribe>
-      <archive>http://archive.hausfoundation.org/lists/org.codehaus.redback.dev</archive>
+      <name>Archiva Developer List</name>
+      <subscribe>dev-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@archiva.apache.org</unsubscribe>
+      <post>dev@archiva.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-dev</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/dev@archiva.apache.org</otherArchive>
+        <otherArchive>http://old.nabble.com/archiva-dev-f16427.html</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.dev</otherArchive>
+      </otherArchives>
     </mailingList>
     <mailingList>
-      <name>Redback Announce List</name>
-      <subscribe>http://xircles.codehaus.org/manage_email/announce%40redback.codehaus.org</subscribe>
-      <unsubscribe>http://xircles.codehaus.org/manage_email/announce%40redback.codehaus.org</unsubscribe>
-      <archive>http://archive.hausfoundation.org/lists/org.codehaus.redback.announce</archive>
+      <name>Archiva Commits List</name>
+      <subscribe>commits-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>commits-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-commits</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/commits@archiva.apache.org</otherArchive>
+        <otherArchive>http://markmail.org/list/org.apache.archiva.commits</otherArchive>
+      </otherArchives>
     </mailingList>
     <mailingList>
-      <name>Redback Commit List</name>
-      <subscribe>http://xircles.codehaus.org/manage_email/scm%40redback.codehaus.org</subscribe>
-      <unsubscribe>http://xircles.codehaus.org/manage_email/scm%40redback.codehaus.org</unsubscribe>
-      <archive>http://archive.hausfoundation.org/lists/org.codehaus.redback.scm</archive>
+      <name>Archiva Issues List</name>
+      <subscribe>issues-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>issues-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-issues</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/issues@archiva.apache.org</otherArchive>
+        <otherArchive>http://old.nabble.com/Archiva---Issues-f29617.html</otherArchive>
+      </otherArchives>
     </mailingList>
   </mailingLists>
 
@@ -206,28 +226,17 @@
   </properties>
 
   <repositories>
-    <!-- only needed for these two artifacts that can't be redistributed
-         javax.transaction:jta:jar:1.0.1B
-         javax.resource:connector:jar:1.0
     <repository>
-      <id>java.net</id>
-      <url>http://download.java.net/maven/2</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    -->
-    <repository>
-      <id>snapshots.codehaus.org</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
+       <id>archiva.snapshots</id>
+       <name>Archiva VM Snapshots Repository</name>
+       <url>https://archiva-repository.apache.org/archiva/repository/snapshots</url>
+       <releases>
+         <enabled>false</enabled>
+       </releases>
+       <snapshots>
+         <enabled>true</enabled>
+       </snapshots>
+     </repository>
 
     <repository>
       <id>apache.snapshots</id>
