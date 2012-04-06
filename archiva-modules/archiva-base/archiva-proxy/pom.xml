@@ -139,7 +139,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-cached</artifactId>
       <scope>test</scope>
     </dependency>
@@ -153,7 +153,7 @@
       <artifactId>archiva-security-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>

@@ -470,16 +470,16 @@
     <!-- Redback Dependencies -->
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-struts2-integration</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-integrations</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <exclusions>
         <exclusion>
@@ -490,7 +490,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
       <exclusions>
         <exclusion>
@@ -537,7 +537,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-struts2-content</artifactId>
       <scope>runtime</scope>
       <type>war</type>
@@ -841,7 +841,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -949,7 +949,7 @@
           <overlays>
             <overlay>
               <id>redback-contents</id>
-              <groupId>org.codehaus.redback</groupId>
+              <groupId>org.apache.archiva.redback</groupId>
               <artifactId>redback-struts2-content</artifactId>
               <excludes>
                 <exclude>WEB-INF/lib/**.jar</exclude>
@@ -1148,7 +1148,7 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.codehaus.redback</groupId>
+                  <groupId>org.apache.archiva.redback</groupId>
                   <artifactId>redback-struts2-content</artifactId>
                   <version>${redback.version}</version>
                   <type>war</type>
@@ -1311,7 +1311,7 @@
                 <configuration>
                   <artifactItems combine.self="override">
                     <artifactItem>
-                      <groupId>org.codehaus.redback</groupId>
+                      <groupId>org.apache.archiva.redback</groupId>
                       <artifactId>redback-struts2-content</artifactId>
                       <version>${redback.version}</version>
                       <type>war</type>
@@ -1388,7 +1388,7 @@
                 <configuration>
                   <artifactItems combine.self="override">
                     <artifactItem>
-                      <groupId>org.codehaus.redback</groupId>
+                      <groupId>org.apache.archiva.redback</groupId>
                       <artifactId>redback-struts2-content</artifactId>
                       <version>${redback.version}</version>
                       <type>war</type>

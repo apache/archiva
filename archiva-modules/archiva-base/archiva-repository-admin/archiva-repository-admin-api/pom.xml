@@ -46,7 +46,7 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-api</artifactId>
     </dependency>
     <dependency>

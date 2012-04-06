@@ -52,7 +52,7 @@
       <artifactId>archiva-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-integrations</artifactId>
       <exclusions>
         <exclusion>
@@ -70,15 +70,15 @@
       <artifactId>archiva-scheduler-repository</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-role-manager</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-system</artifactId>
     </dependency>
     <dependency>

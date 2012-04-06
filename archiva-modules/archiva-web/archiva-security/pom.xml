@@ -55,11 +55,11 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-system</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.codehaus.redback</groupId>
+          <groupId>org.apache.archiva.redback</groupId>
           <artifactId>plexus-spring</artifactId>
         </exclusion>
         <exclusion>
@@ -89,7 +89,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-model</artifactId>
       <exclusions>
         <exclusion>
@@ -99,7 +99,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-role-manager</artifactId>
     </dependency>
     <dependency>
@@ -108,7 +108,7 @@
     </dependency>
     <!-- Test Scoped -->
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-authorization-rbac</artifactId>
       <scope>test</scope>
       <exclusions>
@@ -127,17 +127,17 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-memory</artifactId>
       <scope>test</scope>
     </dependency>
@@ -157,7 +157,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>

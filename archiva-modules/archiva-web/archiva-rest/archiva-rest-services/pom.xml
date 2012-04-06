@@ -82,7 +82,7 @@
       <artifactId>archiva-repository-scanner</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-authorization-api</artifactId>
         <exclusions>
           <exclusion>
@@ -92,7 +92,7 @@
         </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-authentication-api</artifactId>
         <exclusions>
           <exclusion>
@@ -102,7 +102,7 @@
         </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-integrations</artifactId>
       <exclusions>
         <exclusion>
@@ -120,11 +120,11 @@
       <artifactId>archiva-rest-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-api</artifactId>
     </dependency>
 
@@ -184,14 +184,14 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>
@@ -257,13 +257,13 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-authentication-memory</artifactId>
       <scope>test</scope>
       <version>${redback.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <scope>test</scope>
       <version>${redback.version}</version>
