@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>redback-rest</artifactId>
-    <groupId>org.codehaus.redback</groupId>
+    <groupId>org.apache.archiva.redback</groupId>
     <version>1.5-SNAPSHOT</version>
   </parent>
   <artifactId>redback-rest-services</artifactId>
@@ -35,7 +35,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-api</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -49,7 +49,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-integrations</artifactId>
     </dependency>
 
@@ -65,15 +65,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-cached</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
     </dependency>
     <dependency>
@@ -127,7 +127,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>

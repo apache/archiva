@@ -21,7 +21,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>redback-integrations</artifactId>
-    <groupId>org.codehaus.redback</groupId>
+    <groupId>org.apache.archiva.redback</groupId>
     <version>1.5-SNAPSHOT</version>
   </parent>
   <artifactId>redback-integrations-security</artifactId>

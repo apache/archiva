@@ -27,7 +27,7 @@
     <relativePath />
   </parent>
 
-  <groupId>org.codehaus.redback</groupId>
+  <groupId>org.apache.archiva.redback</groupId>
   <artifactId>redback</artifactId>
   <version>1.5-SNAPSHOT</version>
 
@@ -271,173 +271,173 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-configuration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-system</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-policy</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-common-jdo</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-common-ldap</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authentication-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-keys-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-keys-tests</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-keys-cached</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-keys-memory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-keys-jdo</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authentication-users</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authentication-ldap</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authentication-memory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authentication-keys</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authorization-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-jdo</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-memory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-configurable</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-ldap</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-cached</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-tests</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-authorization-rbac</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-tests</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-cached</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-jdo</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-role-manager</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-common-test-resources</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-data-management</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-struts2-content</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-struts2-integration</artifactId>
         <version>${project.version}</version>
         <exclusions>
@@ -448,12 +448,12 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-common-integrations</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-integrations-security</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -464,7 +464,7 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>plexus-spring</artifactId>
         <version>${project.version}</version>
         <exclusions>
@@ -694,12 +694,12 @@
         <version>1</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rest-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback</groupId>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rest-services</artifactId>
         <version>${project.version}</version>
       </dependency>

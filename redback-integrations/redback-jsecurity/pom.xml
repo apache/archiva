@@ -22,24 +22,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>redback-integrations</artifactId>
-    <groupId>org.codehaus.redback</groupId>
+    <groupId>org.apache.archiva.redback</groupId>
     <version>1.5-SNAPSHOT</version>
   </parent>
-  <groupId>org.codehaus.redback</groupId>
+  <groupId>org.apache.archiva.redback</groupId>
   <artifactId>redback-jsecurity</artifactId>
   <version>1.5-SNAPSHOT</version>
   <name>Redback :: Integration :: JSecurity Integration</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-system</artifactId>
     </dependency>
     <dependency>
@@ -50,12 +50,12 @@
 
     <!-- Test Dependencies -->
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback</groupId>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-memory</artifactId>
       <scope>test</scope>
     </dependency>
