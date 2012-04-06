@@ -61,7 +61,6 @@
   <modules>
     <module>redback-struts2-integration</module>
     <module>redback-struts2-content</module>
-    <module>redback-struts2-example</module>
   </modules>
 
 </project>
