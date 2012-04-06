@@ -1810,9 +1810,9 @@
 
   <repositories>
     <repository>
-      <id>redback.snapshots</id>
-      <name>Codehaus Redback Snapshots Repository</name>
-      <url>http://snapshots.repository.codehaus.org/</url>
+      <id>archiva.snapshots</id>
+      <name>Archiva VM Snapshots Repository</name>
+      <url>https://archiva-repository.apache.org/archiva/repository/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>

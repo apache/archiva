@@ -203,6 +203,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
               mainContent.find("#browse-autocomplete" ).hide();
               mainContent.find("#browse-autocomplete-divider" ).hide();
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
+
                 if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
                   var treeContentDiv=mainContent.find("#artifact-details-dependency-tree-content" );
                   if( $.trim(treeContentDiv.html()).length<1){
@@ -249,8 +250,6 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                 if ($(e.target).attr("href")=="#artifact-details-metadatas-content") {
                   $.log("artifact metadata");
                   var metadatasContentDiv=mainContent.find("#artifact-details-metadatas-content" );
-                  //if( $.trim(metadatasContentDiv.html()).length<1){
-                    //metadatasContentDiv.html(mediumSpinnerImg());
                     var metadatasUrl="restServices/archivaServices/browseService/metadatas/"+encodeURIComponent(groupId);
                     metadatasUrl+="/"+encodeURIComponent(artifactId);
                     metadatasUrl+="/"+encodeURIComponent(version);
@@ -268,7 +267,11 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                         self.entries(entries);
                       }
                     });
-                  //}
+                }
+
+                if ($(e.target).attr("href")=="#artifact-details-pom-data-content") {
+                  $.log("pom content");
+
                 }
 
 
