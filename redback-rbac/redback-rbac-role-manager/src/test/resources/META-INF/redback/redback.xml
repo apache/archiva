@@ -1,0 +1,36 @@
+<redback-role-model>
+  <modelVersion>1.0.0</modelVersion>
+  <applications>
+    <application>
+      <id>test app</id>
+      <version>1.0</version>
+      <operations>
+        <operation>
+          <id>test-operation-2</id>
+          <name>Test Operation 2</name>
+          <description>fake test operation 2</description>
+        </operation>
+      </operations>
+      <roles>
+        <role>
+          <id>test-role-2</id>
+          <name>Test Role 2</name>
+          <permissions>
+            <permission>
+              <id>test-permission-2</id>
+              <name>Test Permission 2</name>
+              <operation>test-operation-2</operation>
+              <resource>global</resource>
+            </permission>
+          </permissions>
+          <childRoles>
+            <childRole>test-role</childRole>
+          </childRoles>
+          <parentRoles>
+            <parentRole>test-role-1</parentRole>
+          </parentRoles>
+        </role>
+      </roles>
+    </application>
+  </applications>
+</redback-role-model>

@@ -1,0 +1,454 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+-->
+
+<model>
+  <id>redback-role-model</id>
+  <name>RedbackRoleModel</name>
+  <description></description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.codehaus.plexus.redback.role.model</value>
+    </default>
+  </defaults>
+
+  <classes>
+    <class rootElement="true" xml.tagName="redback-role-model">
+      <name>RedbackRoleModel</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>modelVersion</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>          
+        </field>
+        <field>
+          <name>applications</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelApplication</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class xml.tagName="application">
+      <name>ModelApplication</name>
+      <description>
+        container for applications
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>          
+        </field>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>          
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>          
+        </field>
+        <field>
+          <name>longDescription</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>          
+        </field>
+        <field>
+          <name>resources</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelResource</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>operations</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelOperation</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>roles</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelRole</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>templates</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelTemplate</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class xml.tagName="role">
+      <name>ModelRole</name>
+      <description>
+        model roles specify a role and its corresponding permissions,
+        child roles and parent roles to link to
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>name</name>
+          <description>
+            either a normal name, or 'name - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+        </field>
+        <field>
+          <name>description</name>
+          <description>description of this role</description>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>assignable</name>
+          <description>
+            boolean specifying if a given role can assigned
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>permanent</name>
+          <description>
+            boolean specifying if a given role can be removed once
+            created
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>permissions</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelPermission</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>parentRoles</name>
+          <description>
+            the id of other role profiles to have create a child
+            relationship to this role, can accept 'foo - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>childRoles</name>
+          <description>
+            the id of other role profiles to assign as children to this
+            role, can accept 'foo - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>ModelTemplate</name>
+      <description>
+        model templates specify a role and its corresponding
+        permissions, child roles and parent roles to link to, however
+        they are generated at runtime with additional input
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>namePrefix</name>
+          <description></description>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>delimiter</name>
+          <description></description>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue> - </defaultValue>
+        </field>
+        <field>
+          <name>description</name>
+          <description>description of this role</description>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>assignable</name>
+          <description>
+            boolean specifying if a given role can assigned
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>permanent</name>
+          <description>
+            boolean specifying if a given role can be removed once
+            created
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>permanentResource</name>
+          <description>
+            boolean specifying if the resource generated with this template can be removed once
+            created
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>permissions</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModelPermission</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>parentRoles</name>
+          <description>
+            the id of other role profiles to have create a child
+            relationship to this role, can accept 'foo - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>childRoles</name>
+          <description>
+            the id of other role profiles to assign as children to this
+            role, can accept 'foo - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>parentTemplates</name>
+          <description>
+            the id of other templates to have create a child
+            relationship to this role, can accept 'foo - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>childTemplates</name>
+          <description>
+            the id of other templates to assign as children to this
+            role, can accept 'foo - ${resource}'
+          </description>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>ModelResource</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>name</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+        </field>
+        <field>
+          <name>permanent</name>
+          <description>
+            this resource should persist even if all referring
+            permissions are removed
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>pattern</name>
+          <description>
+            this resource is a pattern, currently unsupported
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>ModelOperation</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>name</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>permanent</name>
+          <description>
+            this operation should persist even if all referring
+            permissions are removed
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>ModelPermission</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>name</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>permanent</name>
+          <description>
+            this permission should persist even if referring roles are
+            removed
+          </description>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>operation</name>
+          <description>
+            the id of the operation for this permission
+          </description>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+        </field>
+        <field>
+          <name>resource</name>
+          <description>
+            the id of the resource for this permission, can accept
+            ${resource} for templates
+          </description>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+        </field>
+      </fields>
+    </class>
+  </classes>
+</model>
+

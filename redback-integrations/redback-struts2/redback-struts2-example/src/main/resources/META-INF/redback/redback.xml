@@ -1,0 +1,73 @@
+<redback-role-model>
+  <modelVersion>1.0.0</modelVersion>
+  <applications>
+    <application>
+      <id>Redback</id>
+      <version>1.0</version>
+      <operations>
+        <operation>
+          <id>redback-operation-1</id>
+          <name>redback-operation-1</name>
+          <description>Redback Operation 1</description>
+        </operation>
+        <operation>
+          <id>redback-operation-2</id>
+          <name>redback-operation-2</name>
+          <description>Redback Operation 2</description>
+        </operation>
+        <operation>
+          <id>redback-operation-3</id>
+          <name>redback-operation-3</name>
+          <description>Redback Operation 3</description>
+        </operation>
+      </operations>
+      <templates>
+        <template>
+          <id>template1</id>
+          <namePrefix>Template1</namePrefix>
+          <assignable>true</assignable>
+          <permissions>
+            <permission>
+              <id>permission-1</id>
+              <name>Permission 1</name>
+              <operation>redback-operation-1</operation>
+              <resource>${resource}</resource>
+            </permission>
+          </permissions>
+        </template>
+        <template>
+          <id>template2</id>
+          <namePrefix>Template2</namePrefix>
+          <assignable>true</assignable>
+          <permissions>
+            <permission>
+              <id>permission-2</id>
+              <name>Permission 2</name>
+              <operation>redback-operation-2</operation>
+              <resource>${resource}</resource>
+            </permission>
+          </permissions>
+          <childTemplates>
+            <childTemplate>template1</childTemplate>
+          </childTemplates>
+        </template>
+        <template>
+          <id>template3</id>
+          <namePrefix>Template3</namePrefix>
+          <assignable>true</assignable>
+          <permissions>
+            <permission>
+              <id>permission-3</id>
+              <name>Permission 3</name>
+              <operation>redback-operation-3</operation>
+              <resource>${resource}</resource>
+            </permission>
+          </permissions>
+          <childTemplates>
+            <childTemplate>template2</childTemplate>
+          </childTemplates>
+        </template>
+      </templates>
+    </application>
+  </applications>
+</redback-role-model>

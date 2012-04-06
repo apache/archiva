@@ -1,0 +1,109 @@
+<redback-role-model>
+	<modelVersion>1.0.0</modelVersion>
+	<applications>
+		<application>
+			<resources>
+				<resource>
+					<id>cornflakes</id>
+					<name>cornflakes</name>
+					<permanent>true</permanent>
+					<description>my breakfast cereal</description>
+				</resource>
+				<resource>
+					<id>milk</id>
+					<name>milk</name>
+					<permanent>true</permanent>
+					<description>the milk in the bowl</description>
+				</resource>
+			</resources>
+			<operations>
+				<operation>
+					<id>eat-cornflakes</id>
+					<name>Eat Cornflakes</name>
+					<description>eat cornflakes</description>
+				</operation>
+				<operation>
+					<id>drink-milk</id>
+					<name>Drink Milk</name>
+					<description>drink the milk</description>
+				</operation>
+			</operations>
+			<roles>
+				<role>
+					<id>can-eat-cornflakes</id>
+					<name>Role for happy cornflake eaters</name>
+					<permissions>
+						<permission>
+							<id>eat-cornflakes-permission</id>
+							<operation>eat-cornflakes</operation>
+							<resource>cornflakes</resource>
+						</permission>
+					</permissions>
+					<childRoles>
+						<childRole>can-drink-the-milk</childRole>
+					</childRoles>
+				</role>
+				<role>
+					<id>can-drink-the-milk</id>
+					<name>
+						Role for cornflake eaters drinking milk in the
+						bowl
+					</name>
+					<permissions>
+						<permission>
+							<id>drink-milk-permission</id>
+							<operation>drink-milk</operation>
+							<resource>milk</resource>
+						</permission>
+					</permissions>
+					<parentRoles>
+						<parentRole>can-eat-cornflakes</parentRole>
+					</parentRoles>
+					<childRoles>
+						<childRole>can-eat-cornflakes</childRole>
+					</childRoles>
+				</role>
+			</roles>
+			<templates>
+				<template>
+					<id>test-template</id>
+					<namePrefix>Foo</namePrefix>
+					<permissions>
+						<permission>
+							<id>eat-cornflakes-permission</id>
+							<operation>eat-cornflakes</operation>
+							<resource>cornflakes</resource>
+						</permission>
+					</permissions>
+					<childRoles>
+						<childRole>
+							can-drink-the-milk-missing-child-role
+						</childRole>
+					</childRoles>
+					<childTemplates>
+						<childTemplate>test-template-2</childTemplate>
+					</childTemplates>
+				</template>
+				<template>
+					<id>test-template-2</id>
+					<namePrefix>Foo</namePrefix>
+					<permissions>
+						<permission>
+							<id>eat-cornflakes-permission</id>
+							<operation>
+								eat-cornflakes-missing-operation-in-template
+							</operation>
+							<resource>cornflakes3</resource>
+						</permission>
+					</permissions>
+					<childTemplates>
+						<childTemplate>
+							test-template-missing-child-template
+						</childTemplate>
+						<childTemplate>test-template</childTemplate>
+					</childTemplates>
+				</template>
+			</templates>
+		</application>
+	</applications>
+</redback-role-model>

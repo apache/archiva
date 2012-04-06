@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
+
+  <appender name="outputLog" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="${appserver.base}/logs/redback.log" />
+    <param name="append" value="true" />
+    <param name="datePattern" value="'.'yyyy-MM-dd" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c %x - %m%n"/>
+    </layout>
+  </appender>
+ 
+  <appender name="auditLog" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="file" value="${appserver.base}/logs/redback-audit.log" />
+    <param name="append" value="true" />
+    <param name="datePattern" value="'.'yyyy-MM-dd" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n"/>
+    </layout>
+  </appender>
+ 
+  <logger name="org.codehaus.plexus.redback.struts2.action.AuditEvent" additivity="false">
+    <level value="info" />
+    <appender-ref ref="auditLog" />
+  </logger>
+
+  <root>
+    <priority value="info" />
+    <appender-ref ref="outputLog" />
+  </root>
+
+</log4j:configuration>
+

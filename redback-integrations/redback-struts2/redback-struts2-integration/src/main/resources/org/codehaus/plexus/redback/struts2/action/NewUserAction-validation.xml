@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+
+<!--
+  ~ Copyright 2005-2006 The Codehaus.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+  <field name="username">
+    <field-validator type="requiredstring">
+      <message>You must provide a user name.</message>
+    </field-validator>
+  </field>
+
+  <field name="fullName">
+    <field-validator type="requiredstring">
+      <message>You must provide your full name.</message>
+    </field-validator>
+  </field>
+
+  <field name="email">
+    <field-validator type="required">
+      <message>You must provide your email address.</message>
+    </field-validator>
+    <field-validator type="email">
+      <message>The email address you entered is invalid.</message>
+    </field-validator>
+  </field>
+
+  <field name="password">
+    <field-validator type="expression">
+      <param name="expression">passaword.equals(passwordConfirm)</param>
+      <message>Passwords are not the same.</message>
+    </field-validator>
+  </field>
+</validators>

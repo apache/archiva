@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<authenticationKeyDatabase>
+  <keys>
+    <key>
+      <key>248df0fec5d54e3eb11339f5e81d8bd7</key>
+      <forPrincipal>bob</forPrincipal>
+      <purpose>Testing</purpose>
+      <dateCreated>1164426311921</dateCreated>
+      <dateExpires>1164427211921</dateExpires>
+    </key>
+    <key>
+      <key>a98dddc2ae614a7c82f8afd3ba6e39fb</key>
+      <forPrincipal>betty</forPrincipal>
+      <purpose>Something</purpose>
+      <dateCreated>1164426315657</dateCreated>
+      <dateExpires>1164427815657</dateExpires>
+    </key>
+    <key>
+      <key>1428d2ca3a0246f0a1d979504e351388</key>
+      <forPrincipal>fred</forPrincipal>
+      <purpose>Else</purpose>
+      <dateCreated>1164426315664</dateCreated>
+      <dateExpires>1164428115664</dateExpires>
+    </key>
+  </keys>
+</authenticationKeyDatabase>

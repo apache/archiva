@@ -1,0 +1,51 @@
+<redback-role-model>
+	<modelVersion>1.0.0</modelVersion>
+	<applications>
+		<application>
+			<resources>
+				<resource>
+					<id>global</id>
+					<name>*</name>
+					<permanent>true</permanent>
+					<description>
+						global resource implies full access for
+						authorization
+					</description>
+				</resource>
+			</resources>
+			<operations>
+				<operation>
+					<id>test-operation</id>
+					<name>Test Operation</name>
+					<description>fake test operation</description>
+				</operation>
+			</operations>
+			<roles>
+				<role>
+					<id>test-role</id>
+					<name>Test Role</name>
+					<permissions>
+						<permission>
+							<id>test-permission</id>
+							<operation>test-operation</operation>
+							<resource>global</resource>
+						</permission>
+					</permissions>
+				</role>
+			</roles>
+			<templates>
+				<template>
+					<id>test-template</id>
+					<namePrefix>Test Template</namePrefix>
+					<permissions>
+						<permission>
+							<id>test-permission</id>
+							<operation>test-operation</operation>
+							<resource>${resource}</resource>
+						</permission>
+					</permissions>
+				</template>
+			</templates>
+		</application>
+	</applications>
+</redback-role-model>

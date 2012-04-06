@@ -1,0 +1,36 @@
+<redback-role-model>
+	<modelVersion>1.0.0</modelVersion>
+	<applications>
+		<application>
+			<id>test</id>
+			<resources>
+				<resource>
+					<id>cornflakes</id>
+					<name>cornflakes</name>
+					<permanent>true</permanent>
+					<description>my breakfast cereal</description>
+				</resource>
+			</resources>
+			<operations>
+				<operation>
+					<id>eat-cornflakes</id>
+					<name>Eat Cornflakes</name>
+					<description>eat cornflakes</description>
+				</operation>
+			</operations>
+			<roles>
+				<role>
+					<id>can-eat-cornflakes</id>
+					<name>Role for happy cornflake eaters</name>
+					<permissions>
+						<permission>
+							<id>eat-cornflakes-permission</id>
+							<operation>eat-cornflakes</operation>
+							<resource>cornflakes</resource>
+						</permission>
+					</permissions>
+				</role>
+			</roles>
+		</application>
+	</applications>
+</redback-role-model>

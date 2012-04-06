@@ -1,0 +1,101 @@
+<redback-role-model>
+  <modelVersion>1.0.0</modelVersion>
+  <applications>
+    <application>
+      <id>Continuum</id>
+      <version>1.0</version>
+      <operations>
+        <operation>
+          <id>continuum-manage-users</id>
+          <name>continuum-manage-users</name>
+          <description>Manage Continuum Users</description>
+        </operation>
+      </operations>
+      <roles>
+        <role>
+          <id>continuum-group-project-administrator</id>
+          <name>Continuum Group Project Administrator</name>
+          <assignable>true</assignable>
+          <permanent>true</permanent>
+        </role>
+        <role>
+          <id>global-grant-administrator</id>
+          <name>Global Grant Administrator</name>
+          <assignable>true</assignable>
+          <permissions>
+            <permission>
+              <id>continuum-manage-users-roles</id>
+              <name>Continuum Manage User Roles</name>
+              <operation>user-management-user-role</operation>
+              <resource>global</resource>
+            </permission>
+            <permission>
+              <id>continuum-group-role-grant</id>
+              <name>Continuum Grant Group Roles</name>
+              <operation>user-management-role-grant</operation>
+              <resource>global</resource>
+            </permission>
+          </permissions>
+        </role>
+        <role>
+          <id>continuum-user-administrator</id>
+          <name>Continuum User Administrator</name>
+          <permanent>true</permanent>
+          <assignable>false</assignable>
+          <permissions>
+            <permission>
+              <id>continuum-manage-users</id>
+              <name>continuum-manage-users</name>
+              <operation>continuum-manage-users</operation>
+              <resource>global</resource>
+              <permanent>true</permanent>
+            </permission>
+          </permissions>
+          <parentRoles>
+            <parentRole>user-administrator</parentRole>
+          </parentRoles>
+        </role>
+      </roles>
+      <templates>
+        <template>
+          <id>project-administrator</id>
+          <namePrefix>Project Administrator</namePrefix>
+          <assignable>true</assignable>
+          <permissions>
+            <permission>
+              <id>continuum-manage-users-roles</id>
+              <name>Continuum Manage User Roles</name>
+              <operation>user-management-user-role</operation>
+              <resource>global</resource>
+            </permission>
+            <permission>
+              <id>continuum-group-role-grant</id>
+              <name>Continuum Grant Group Roles</name>
+              <operation>user-management-role-grant</operation>
+              <resource>${resource}</resource>
+            </permission>
+          </permissions>
+          <parentRoles>
+            <parentRole>continuum-group-project-administrator</parentRole>
+          </parentRoles>
+        </template>
+        <template>
+          <id>project-grant-only</id>
+          <namePrefix>Grant Administrator</namePrefix>
+          <assignable>true</assignable>
+          <permissions>
+            <permission>
+              <id>continuum-group-role-grant</id>
+              <name>Continuum Grant Group Roles</name>
+              <operation>user-management-role-grant</operation>
+              <resource>${resource}</resource>
+            </permission>
+          </permissions>
+          <parentRoles>
+            <parentRole>continuum-group-project-administrator</parentRole>
+          </parentRoles>
+        </template>
+      </templates>
+    </application>
+  </applications>
+</redback-role-model>

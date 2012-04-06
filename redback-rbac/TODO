@@ -1,0 +1,22 @@
+
+* allow resources and role names of be sourced from different items for dynamic roles
+* wrap user assignment logic as well to make using rbac that much easier
+* expand scope of role profiles to include more rbac utility, perhaps catching some of the runtime exceptions that can come out of the rbac manager (until maybe we go back and make them checked)
+* change sourcing mechanism of profiles, they are just too convoluted the way this turned out
+* fix merging of roles to make more sense, axe merging all together and use role hierarchy
+* make changing role names easy
+* rethink dynmaic role profiles, they introduce too much confusion in the inheritance model
+
+
+
+Perhaps:
+
+* leverage the rbac model to source
+* provide tooling to click through role/perm/op/resource generation for an app
+* automate graph generation of whole rbac structure
+* provide debug mode for webapps and log all authn/authz requests for page generation and render in debug output (in jsp?)
+* easy configuration to turn role assignablity on and off
+* easy to indicate roles need to be checked for existence by an app, like continuum with dynamic roles for each project and then archiva with repositories
+* try to avoid composition over inheritance, its a touch confusing not to mention makes plexus-maven-plugin cry
+* get rid of the database requirement all together, if we are doing role precalculation we should be able to swizzle the hierarchy in and out of xml when we need it and then we don't need to mess with the database at all, just need to understand the editting of the file and the internal relationships better
+* User Assignments should not be a part of the rbac store or whatever we do there, they should be a seperate fooManager, that can be either stored on the User object/store kinda like acegi, or anywhere else keyed off of the username.

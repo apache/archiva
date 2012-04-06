@@ -1,0 +1,330 @@
+<?xml version="1.0" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd"> 
+
+<!-- ==================================================================
+     Plexus Security Tools
+
+     This should contain the /security namespaced action configurations.
+
+     These configurations will likely not need changing.
+
+     These configurations point to the overlaid jsp files.
+     ==================================================================  -->
+
+<struts>
+  <!-- ==================================================================
+       Security Tools for Users
+
+       All Users should be able to access and use the actions contained
+       within this package.
+       ==================================================================  -->
+
+  <package name="security" extends="struts-default" namespace="/security">
+    <result-types>
+      <result-type name="security-external" class="securityExternalResult" />
+    </result-types>
+
+    <interceptors>
+      <interceptor name="redbackForceAdminUser" class="redbackForceAdminUserInterceptor"/>
+      <interceptor name="redbackEnvCheck" class="redbackEnvironmentCheckInterceptor"/>
+      <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
+      <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
+      <interceptor name="redbackSecureActions" class="redbackSecureActionInterceptor"/>
+
+      <!--
+      Stacks are order dependent and fail silently by not running the referenced stack.
+      Make sure that redbackCommonStack remains above is usages.
+      -->
+      <interceptor-stack name="redbackCommonStack">
+         <interceptor-ref name="redbackEnvCheck"/>
+         <interceptor-ref name="redbackForceAdminUser"/>
+         <interceptor-ref name="redbackAutoLogin"/>
+         <interceptor-ref name="redbackPolicyEnforcement"/>
+         <interceptor-ref name="redbackSecureActions">
+           <param name="enableReferrerCheck">true</param>
+         </interceptor-ref>
+      </interceptor-stack>
+
+      <interceptor-stack name="securedStack">
+        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="redbackCommonStack"/>
+        <interceptor-ref name="tokenSession">
+          <param name="excludeMethods">*</param>  
+        </interceptor-ref>
+      </interceptor-stack>
+      
+      <interceptor-stack name="securedPrepareParamsStack">
+        <interceptor-ref name="paramsPrepareParamsStack"/>
+        <interceptor-ref name="redbackCommonStack"/>
+      </interceptor-stack>
+
+    </interceptors>
+
+    <default-interceptor-ref name="securedStack"/>
+
+    <global-results>
+      <result name="security-admin-user-needed" type="redirectAction">
+        <param name="actionName">addadmin</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="requires-authentication">/WEB-INF/jsp/redback/requiresAuthentication.jsp</result>
+      <result name="requires-authorization">/WEB-INF/jsp/redback/accessDenied.jsp</result>
+      <result name="security-must-change-password" type="redirectAction">
+        <param name="actionName">password</param>
+        <param name="namespace">/security</param>        
+      </result>
+      <result name="security-resend-validation-email" type="redirectAction">
+        <param name="actionName">userlist</param>
+        <param name="namespace">/security</param>        
+      </result>
+      <result name="invalid.token">/WEB-INF/jsp/redback/invalidToken.jsp</result>
+    </global-results>
+
+    <action name="login" class="redback-login" method="show">
+      <result name="input">/WEB-INF/jsp/redback/login.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/login.jsp</result>
+      <result name="security-login-success" type="security-external">
+        <param name="externalResult">security-login-success</param>
+      </result>
+      <result name="cancel" type="security-external">
+        <param name="externalResult">security-login-cancel</param>
+      </result>
+      <result name="security-login-locked" type="security-external">
+        <param name="externalResult">security-login-locked</param>
+      </result>
+    </action>
+
+    <action name="logout" class="redback-logout" method="logout">
+      <result name="security-logout" type="security-external">
+        <param name="externalResult">security-logout</param>
+      </result>
+    </action>
+
+    <action name="register" class="redback-register" method="show">
+      <result name="input">/WEB-INF/jsp/redback/register.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/register.jsp</result>
+      <result name="validation-note">/WEB-INF/jsp/redback/validationNotification.jsp</result>
+      <result name="security-register-success" type="security-external">
+        <param name="externalResult">security-register-success</param>
+      </result>
+      <result name="cancel" type="security-external">
+        <param name="externalResult">security-register-cancel</param>
+      </result>
+    </action>
+
+    <action name="account" class="redback-account" method="show">
+      <result name="input">/WEB-INF/jsp/redback/account.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/account.jsp</result>
+      <result name="security-account-success" type="security-external">
+        <param name="externalResult">security-account-success</param>
+      </result>
+      <result name="cancel" type="security-external">
+        <param name="externalResult">security-account-cancel</param>
+      </result>
+    </action>
+
+    <action name="password" class="redback-password" method="show">
+      <result name="input">/WEB-INF/jsp/redback/password.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/password.jsp</result>
+      <result name="security-login-success" type="security-external">
+        <param name="externalResult">security-login-success</param>
+      </result>
+      <result name="security-register-success" type="security-external">
+        <param name="externalResult">security-register-success</param>
+      </result>      
+      <result name="success" type="redirect">${targetUrl}</result>
+      <result name="cancel" type="redirectAction">
+        <param name="actionName">logout</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-change-password-success">/WEB-INF/jsp/redback/changePasswordSuccess.jsp</result>
+    </action>
+
+    <action name="passwordReset" class="redback-password-reset" method="show">
+      <result name="input">/WEB-INF/jsp/redback/requestPasswordReset.jsp</result>
+      <result name="none">/WEB-INF/jsp/redback/login.jsp</result>
+    </action>
+
+    <action name="addadmin" class="redback-admin-account" method="show">
+      <interceptor-ref name="defaultStack"/>
+      <result name="input">/WEB-INF/jsp/redback/admin/createAdmin.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/createAdmin.jsp</result>
+      <result name="login-error">/WEB-INF/jsp/redback/login.jsp</result>
+      <result name="security-login-success" type="security-external">
+        <param name="externalResult">security-login-success</param>
+      </result>
+      <result name="security-login-locked" type="security-external">
+        <param name="externalResult">security-login-locked</param>
+      </result>
+    </action>
+
+  <!-- ==================================================================
+       Security Tools for Administrators
+
+       Only Administrators should be able to access and use these actions
+       ==================================================================  -->
+
+    <action name="systeminfo" class="redback-sysinfo" method="show">
+      <result>/WEB-INF/jsp/redback/admin/systemInformation.jsp</result>
+    </action>
+
+    <action name="adminConsole" class="redback-admin-console" method="show">
+      <result>/WEB-INF/jsp/redback/admin/console.jsp</result>
+    </action>
+
+    <action name="report" class="redback-report" method="generate">
+      <result name="error" type="redirectAction">userlist</result>
+    </action>
+
+    <action name="userlist" class="redback-admin-user-list" method="show">
+      <result name="input">/WEB-INF/jsp/redback/admin/userList.jsp</result>
+      <result name="success">/WEB-INF/jsp/redback/admin/userList.jsp</result>
+    </action>
+
+    <action name="useredit" class="redback-admin-user-edit" method="edit">
+      <result name="input">/WEB-INF/jsp/redback/admin/userEdit.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/userEdit.jsp</result>
+      <result name="confirm">/WEB-INF/jsp/redback/admin/confirmUserAdministrator.jsp</result>
+      <result name="confirmError">/WEB-INF/jsp/redback/admin/confirmUserAdministrator.jsp</result>
+      <result name="success" type="redirectAction">userlist</result>
+      <result name="cancel" type="redirectAction">userlist</result>
+    </action>
+
+    <action name="usercreate" class="redback-admin-user-create" method="show">
+      <result name="input">/WEB-INF/jsp/redback/admin/userCreate.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/userCreate.jsp</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">assignments</param>
+        <param name="principal">${user.username}</param>
+      </result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="userdelete" class="redback-admin-user-delete" method="confirm">
+      <result name="input">/WEB-INF/jsp/redback/admin/userDelete.jsp</result>
+      <result name="error" type="redirectAction">userlist</result>
+      <result name="success" type="redirectAction">userlist</result>
+      <result name="cancel" type="redirectAction">userlist</result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <!-- ==== RBAC Actions ========================================== -->
+
+    <!-- This action is meant to be embedded within the User Edit action output jsp.
+         It is injected using the <ww:action> taglib -->
+    <action name="assignments" class="redback-assignments" method="show">
+      <interceptor-ref name="securedStack"/>
+      <result name="input">/WEB-INF/jsp/redback/admin/assignments.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/include/error.jsp</result>
+      <result name="success">/WEB-INF/jsp/redback/admin/assignments.jsp</result>
+    </action>
+
+    <action name="addRolesToUser" class="redback-assignments" method="edituser">
+      <result name="success" type="redirectAction">userlist</result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="removeRolesFromUser" class="redback-assignments" method="edituser">
+      <result name="success" type="redirectAction">userlist</result>
+    </action>
+
+    <action name="rolecreate" class="redback-role-create" method="show">
+      <result name="input">/WEB-INF/jsp/redback/admin/roleCreate.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/roleCreate.jsp</result>
+      <result name="success" type="redirectAction">userlist</result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="role" class="redback-role-edit" method="input">
+      <result name="input">/WEB-INF/jsp/redback/admin/role.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/role.jsp</result>
+      <result name="success" type="redirectAction">roles</result>
+    </action>
+
+    <action name="roleedit" class="redback-role-edit" method="edit">
+      <result name="input">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="success" type="redirectAction">roles</result>
+    </action>
+
+    <action name="rolesave" class="redback-role-edit" method="save">
+      <result name="input">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="success" type="redirectAction">roles</result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="roleusersadd" class="redback-role-edit" method="addUsers">
+      <result name="input">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="success">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="roleusersremove" class="redback-role-edit" method="removeUsers">
+      <result name="input">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="error">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <result name="success">/WEB-INF/jsp/redback/admin/roleEdit.jsp</result>
+      <interceptor-ref name="securedStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="roleSummary" class="redback-roles" method="list">
+       <result name="list">/WEB-INF/jsp/redback/admin/roleSummary.jsp</result>
+    </action>
+
+    <action name="roles" class="redback-roles" method="list">
+      <result name="list">/WEB-INF/jsp/redback/admin/roleList.jsp</result>
+    </action>
+
+    <action name="permissions" class="redback-permissions" method="list">
+      <result name="list">/WEB-INF/jsp/redback/admin/permissionList.jsp</result>
+    </action>
+
+    <action name="operations" class="redback-operations" method="list">
+      <result name="list">/WEB-INF/jsp/redback/admin/operationList.jsp</result>
+    </action>
+
+    <action name="resources" class="redback-resources" method="list">
+      <result name="list">/WEB-INF/jsp/redback/admin/resourceList.jsp</result>
+    </action>
+
+    <action name="roleModel" class="redback-role-model" method="view">
+      <result name="success">/WEB-INF/jsp/redback/admin/roleModel.jsp</result>
+    </action>
+
+    <!--
+      Backup Restore actions 
+     -->
+
+    <action name="backupRestore" class="backup-restore" method="view">
+      <result>/WEB-INF/jsp/redback/admin/backupRestore.jsp</result>
+    </action>
+       
+    <action name="backup" class="backup-restore" method="backup">
+      <result name="custom_error">/WEB-INF/jsp/redback/admin/backupRestore.jsp</result>
+      <result type="redirectAction">backupRestore</result>
+    </action>
+
+    <action name="restore" class="backup-restore" method="restore">
+      <result name="custom_error">/WEB-INF/jsp/redback/admin/backupRestore.jsp</result>      
+      <result name="success" type="redirectAction">backupRestore</result>
+    </action>
+    
+  </package>
+
+</struts>

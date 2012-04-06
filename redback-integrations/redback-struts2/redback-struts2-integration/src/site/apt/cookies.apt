@@ -1,0 +1,67 @@
+ -----
+ Cookie Handling in Redback Web Integration
+ -----
+ Brett Porter
+ -----
+ 29 December 2006
+ -----
+
+Cookie Handling in Redback Web Integration
+
+  There are 2 types of cookies used in the web integration:
+
+    * signon (session) cookie: this cookie is required and is set for the duration of the session. It's name is
+      <<<rbkSignon>>>.
+
+    * remember me (permanent) cookie: this cookies is set when the remember me checkbox is checked on log in. It's
+      default duration is 1 year, but this is configurable. It's name is <<<rbkRememberMe>>>.
+
+  Each cookie's value is the UUID of the authentication key in use. Loaded from the database, this authentication key
+  establishes the validity of the session, and the user that is logged in.
+
+  Should the combination of cookies and current session get into an inconsistent state (possible multiple logins, or
+  a missing session cookie), then the user is logged out entirely.
+
+* Single Sign On
+
+  By default, Redback does not use single sign on. The cookies are set on the domain of the request, with the path of
+  the current web application context, meaning that other Redback-enabled web applications in the container will not
+  use the same cookies.
+
+  To share cookies across multiple web applications, the path should be configured to a common base, most often <<</>>>.
+  Place the following in your security configuration properties file:
+
+----
+security.signon.path=/
+security.rememberme.path=/
+----
+
+  It is recommended that the same path be used for both cookies for consistency in single sign on across both techniques.
+
+  Care must be taken to ensure that the same authentication key store is being used by both web applications, otherwise
+  a user will be regularly logged out when they switch applications due to the rules in the previous section.
+
+  It may also be necessary to share cookies across multiple host names, whether they be virtual servers or different
+  servers altogether. This can be done by configuring the cookie to set a domain that is common to all the hosts, for
+  example:
+
+-----
+security.signon.domain=.codehaus.org
+security.rememberme.domain=.codehaus.org
+-----
+
+  Care must be taken when setting these values. It is recommended that they be set identically for consistency. In
+  addition, it should be noted that any other Redback-enabled applications on the shared domain will also use these
+  cookies which can lead to the following problems if they are not participating in the single sign on:
+
+    [[1]] If they use a different authnetication key store (or user database), then the user will regularly be logged
+          out from other services due to the rules stated earlier.
+
+    [[2]] It may be impossible to log out (or it may behave inconsistently). This is due to logging out from an
+          application configured to use a more specific domain, which will not remove the more general domain and
+          still receive the existing cookies on future requests (until the authentication key expires or is no longer
+          valid in the database).
+
+  <Note:> It is currently only possible to share across hosts on a common domain. It is not possible to set a cookie
+  that targets an alternative domain, so this would require a shared authentication server to be installed (either
+  consulted via web service, or by a redirect to consult it's own client-side cookie from it's known domain).

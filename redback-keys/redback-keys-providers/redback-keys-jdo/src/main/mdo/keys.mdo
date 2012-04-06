@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<model>
+  <id>redback-keys-jdo</id>
+  <name>RedbackKeyManagementJdo</name>
+  <version>1.0.1</version>
+  <description>Plexus Redback :: Key Management JDO Store.</description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.codehaus.plexus.redback.keys.jdo</value>
+    </default>
+  </defaults>
+
+  <classes>
+    <class stash.storable="false" rootElement="true">
+      <name>AuthenticationKeyDatabase</name>
+      <version>1.0.1+</version>
+      <fields>
+        <field jpox.column="AUTH_KEYS">
+          <name>keys</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoAuthenticationKey</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class stash.storable="true" jpox.use-identifiers-as-primary-key="false">
+      <name>JdoAuthenticationKey</name>
+      <version>1.0.0+</version>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.keys.AuthenticationKey</interface>
+      </interfaces>
+      <description>
+        @plexus.component role="org.codehaus.plexus.redback.keys.AuthenticationKey"
+        role-hint="jdo"
+      </description>
+      <fields>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="AUTHKEY">
+          <name>key</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>forPrincipal</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>purpose</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>dateCreated</name>
+          <version>1.0.0+</version>
+          <type>Date</type>
+        </field>
+        <field>
+          <name>dateExpires</name>
+          <version>1.0.0+</version>
+          <type>Date</type>
+        </field>
+      </fields>
+    </class>
+  </classes>
+</model>

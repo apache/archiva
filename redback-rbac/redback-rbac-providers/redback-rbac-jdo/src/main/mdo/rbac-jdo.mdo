@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+<model jpox.mapping-in-package="true"
+       jpox.table-prefix="SECURITY_">
+  <!-- TODO: there is no reason this model is JDO specific. Shouldn't it be the basis for the various providers? It would dramatically reduce the code in -memory, for example -->
+  <id>rbac-jdo</id>
+  <name>RbacJdoModel</name>
+  <version>1.0.1</version>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.codehaus.plexus.redback.rbac.jdo</value>
+    </default>
+  </defaults>
+  <classes>
+    <class rootElement="true"
+           jpox.stashable="false">
+      <name>RbacDatabase</name>
+      <version>1.0.1+</version>
+      <fields>
+        <field jpox.column="RBAC_ROLES">
+          <name>roles</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoRole</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>permissions</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoPermission</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>operations</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoOperation</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>resources</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoResource</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>userAssignments</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoUserAssignment</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+
+    <class jpox.stashable="true" 
+           jpox.table="ROLES"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>JdoRole</name>
+      <version>1.0.0+</version>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.rbac.Role</interface>
+      </interfaces>
+      <superClass>org.codehaus.plexus.redback.rbac.AbstractRole</superClass>
+      <fields>
+        <field jpox.primary-key="true" jpox.value-strategy="off">
+          <name>name</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>assignable</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if this role is available to be assigned to a user
+          </description>
+        </field>
+        <field>
+          <name>permanent</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if this object is permanent.
+          </description>
+        </field>
+        <field jpox.persistence-modifier="persistent" 
+               jpox.fetch-groups="role-child-detail"
+               jpox.join-table="ROLE_CHILDROLE_MAP">
+          <name>childRoleNames</name>
+          <version>1.0.0+</version>
+          <association stash.part="true" 
+                       jpox.join="true"
+                       java.init="field" 
+                       jpox.dependent="false"
+                       java.generate-break="false" 
+                       java.generate-create="false"
+                       zjava.use-interface="org.codehaus.plexus.redback.rbac.Role">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            roles that will inherit the permissions of this role
+          </description>
+        </field>
+        <field jpox.fetch-groups="role-child-detail"
+               jpox.join-table="ROLE_PERMISSION_MAP">
+          <name>permissions</name>
+          <version>1.0.0+</version>
+          <association stash.part="true"
+                       xml.reference="true"
+                       jpox.join="true"
+                       jpox.dependent="false"
+                       java.init="field"
+                       java.generate-break="false"
+                       java.generate-create="false"
+                       java.use-interface="org.codehaus.plexus.redback.rbac.Permission">
+            <type>JdoPermission</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+
+    <class jpox.stashable="true" 
+           jpox.table="PERMISSIONS"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>JdoPermission</name>
+      <version>1.0.0+</version>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.rbac.Permission</interface>
+      </interfaces>
+      <fields>
+        <field jpox.primary-key="true" jpox.value-strategy="off">
+          <name>name</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>permanent</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if this object is permanent.
+          </description>
+        </field>
+        <field jpox.indexed="true" 
+               jpox.persistence-modifier="persistent"
+               jpox.column="RBAC_OPERATION">
+          <name>operation</name>
+          <version>1.0.0+</version>
+          <association stash.part="true" 
+                       xml.reference="true"
+                       java.use-interface="org.codehaus.plexus.redback.rbac.Operation"
+                       jpox.dependent="false">
+            <type>JdoOperation</type>
+            <multiplicity>1</multiplicity>
+          </association>
+        </field>
+        <field jpox.indexed="true" 
+               jpox.persistence-modifier="persistent"
+               jpox.column="RBAC_RESOURCE">
+          <name>resource</name>
+          <version>1.0.0+</version>
+          <association stash.part="true" 
+                       xml.reference="true"
+                       java.use-interface="org.codehaus.plexus.redback.rbac.Resource"
+                       jpox.dependent="false">
+            <type>JdoResource</type>
+            <multiplicity>1</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+
+    <class jpox.stashable="true" 
+           jpox.table="OPERATIONS"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>JdoOperation</name>
+      <version>1.0.0+</version>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.rbac.Operation</interface>
+      </interfaces>
+      <fields>
+        <field jpox.primary-key="true" jpox.value-strategy="off">
+          <name>name</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>permanent</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if this object is permanent.
+          </description>
+        </field>
+        <field>
+          <name>resourceRequired</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if the resource is required for authorization to be granted
+          </description>
+        </field>
+      </fields>
+    </class>
+
+    <class jpox.stashable="true" 
+           jpox.table="RESOURCES"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>JdoResource</name>
+      <version>1.0.0+</version>
+      <description>
+        In RBAC terms, this is the entity which an operation is associated with that which permissions are based on.
+      </description>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.rbac.Resource</interface>
+      </interfaces>
+      <fields>
+        <field jpox.primary-key="true" jpox.value-strategy="off">
+          <name>identifier</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The string identifier for a resource.
+          </description>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>pattern</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if the identifer is a pattern that is to be evaluated, for example x.* could match x.a or x.b and x.**
+            could match x.foo
+          </description>
+        </field>
+        <field>
+          <name>permanent</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if this object is permanent.
+          </description>
+        </field>
+      </fields>
+    </class>
+
+    <class jpox.stashable="true" 
+           jpox.table="USER_ASSIGNMENTS"
+           jpox.not-persisted-fields="modelEncoding">
+      <name>JdoUserAssignment</name>
+      <description>binding of a principal to a role</description>
+      <version>1.0.0+</version>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.rbac.UserAssignment</interface>
+      </interfaces>
+      <superClass>org.codehaus.plexus.redback.rbac.AbstractUserAssignment</superClass>
+      <fields>
+        <field jpox.primary-key="true" jpox.value-strategy="off">
+          <name>principal</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field jpox.column="LAST_UPDATED">
+          <name>timestamp</name>
+          <version>1.0.0+</version>
+          <type>Date</type>
+        </field>
+        <field>
+          <name>permanent</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            true if this object is permanent.
+          </description>
+        </field>
+        <field java.adder="false"
+               jpox.persistence-modifier="persistent" 
+               jpox.indexed="false"
+               jpox.join-table="USERASSIGNMENT_ROLENAMES">
+          <name>roleNames</name>
+          <version>1.0.0+</version>
+          <association stash.part="true" 
+                       jpox.join="true"
+                       java.init="field"
+                       java.generate-break="false"
+                       java.generate-create="false">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+  </classes>
+</model>

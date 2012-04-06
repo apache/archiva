@@ -1,0 +1,143 @@
+<?xml version="1.0" ?>
+<model>
+  <id>redback-users-jdo</id>
+  <name>UsersManagement</name>
+  <version>1.0.1</version>
+  <description>Plexus Redback Users object model.</description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.codehaus.plexus.redback.users.jdo</value>
+    </default>
+  </defaults>
+
+  <classes>
+    <class stash.storable="false" rootElement="true">
+      <name>UserDatabase</name>
+      <version>1.0.1+</version>
+      <fields>
+        <field>
+          <name>users</name>
+          <version>1.0.1+</version>
+          <association>
+            <type>JdoUser</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class stash.storable="true" jpox.use-identifiers-as-primary-key="false">
+      <name>JdoUser</name>
+      <version>1.0.0+</version>
+      <interfaces>
+        <interface>org.codehaus.plexus.redback.users.User</interface>
+      </interfaces>
+      <description></description>
+      <fields>
+        <field jpox.primary-key="true" jpox.value-strategy="off" jpox.persistence-modifier="persistent">
+          <name>username</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field jpox.column="USER_PASSWORD">
+          <name>password</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>encodedPassword</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>fullName</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>email</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>lastPasswordChange</name>
+          <version>1.0.0+</version>
+          <type>Date</type>
+        </field>
+        <field>
+          <name>lastLoginDate</name>
+          <version>1.0.0+</version>
+          <type>Date</type>
+        </field>
+        <field>
+          <name>countFailedLoginAttempts</name>
+          <version>1.0.0+</version>
+          <type>int</type>
+        </field>
+        <field>
+          <name>locked</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>permanent</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>validated</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>passwordChangeRequired</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <identifier>true</identifier>
+        </field>
+        <field>
+          <name>previousEncodedPasswords</name>
+          <version>1.0.0+</version>
+          <association stash.part="true">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>accountCreationDate</name>
+          <version>1.0.0+</version>
+          <type>Date</type>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+              public JdoUser()
+              {
+                 // Intentionally initialize List to avoid JPOX NullPointerException Issues.
+              	 previousEncodedPasswords = new java.util.ArrayList();
+              }
+
+              public Object getPrincipal()
+              {
+                 return username;
+              }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+  </classes>
+</model>

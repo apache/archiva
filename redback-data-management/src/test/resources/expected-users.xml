@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<userDatabase>
+  <users>
+    <user>
+      <username>smcqueen</username>
+      <encodedPassword>bKE9UspwyIPg8LsQHkJaiehiTeUdstI5JZOvaoQRgJA=</encodedPassword>
+      <fullName>Steve McQueen</fullName>
+      <email>the cooler king</email>
+      <lastPasswordChange>1164424661686</lastPasswordChange>
+      <passwordChangeRequired>true</passwordChangeRequired>
+      <previousEncodedPasswords>
+        <previousEncodedPassword>bKE9UspwyIPg8LsQHkJaiehiTeUdstI5JZOvaoQRgJA=</previousEncodedPassword>
+      </previousEncodedPasswords>
+      <accountCreationDate>1164424661686</accountCreationDate>
+    </user>
+    <user>
+      <username>bob</username>
+      <encodedPassword>A0MR+q0lm554bD6Uft60ztlYZ8N1pEqXhKNM9H7SlS8=</encodedPassword>
+      <fullName>Sideshow Bob</fullName>
+      <email>bob_862@hotmail.com</email>
+      <lastPasswordChange>1164424669526</lastPasswordChange>
+      <passwordChangeRequired>true</passwordChangeRequired>
+      <previousEncodedPasswords>
+        <previousEncodedPassword>A0MR+q0lm554bD6Uft60ztlYZ8N1pEqXhKNM9H7SlS8=</previousEncodedPassword>
+      </previousEncodedPasswords>
+      <accountCreationDate>1164424661686</accountCreationDate>
+    </user>
+    <user>
+      <username>betty</username>
+      <encodedPassword>L/mA/suWallwvYzw4wyRYkn5y8zWxAITuv4sLhJLN1E=</encodedPassword>
+      <fullName>Betty</fullName>
+      <email>betty@aol.com</email>
+      <lastPasswordChange>1164424669536</lastPasswordChange>
+      <passwordChangeRequired>true</passwordChangeRequired>
+      <previousEncodedPasswords>
+        <previousEncodedPassword>L/mA/suWallwvYzw4wyRYkn5y8zWxAITuv4sLhJLN1E=</previousEncodedPassword>
+      </previousEncodedPasswords>
+      <accountCreationDate>1164424661686</accountCreationDate>
+    </user>
+  </users>
+</userDatabase>

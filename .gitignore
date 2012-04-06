@@ -1,0 +1,17 @@
+target
+*.iml
+out
+.idea
+.project
+.settings
+.classpath
+derby.log
+redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/META-INF/
+redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/WEB-INF/classes/
+redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/WEB-INF/jsp/redback/
+redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/css/redback/
+redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/images/
+redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/template/
+redback-integrations/redback-struts2/redback-struts2-example/appserver-base
+redback-integrations/redback-struts2/redback-struts2-example/overlays/
+.DS_Store

@@ -1,0 +1,149 @@
+<redback-role-model>
+  <modelVersion>1.0.0</modelVersion>
+  <applications>
+    <application>
+      <id>test code</id>
+      <version>1.0</version>
+      <resources>
+        <resource>
+          <id>global</id>
+          <name>*</name>
+          <permanent>true</permanent>
+          <description>
+            global resource implies full access for
+            authorization
+          </description>
+        </resource>
+        <resource>
+          <id>cornflakes</id>
+          <name>cornflakes</name>
+          <permanent>true</permanent>
+          <description>my breakfast cereal</description>
+        </resource>
+        <resource>
+          <id>milk</id>
+          <name>milk</name>
+          <permanent>true</permanent>
+          <description>the milk in the bowl</description>
+        </resource>
+      </resources>
+      <operations>
+        <operation>
+          <id>test-operation</id>
+          <name>Test Operation</name>
+          <description>fake test operation</description>
+        </operation>
+        <operation>
+          <id>eat-cornflakes</id>
+          <name>Eat Cornflakes</name>
+          <description>eat cornflakes</description>
+        </operation>
+        <operation>
+          <id>drink-milk</id>
+          <name>Drink Milk</name>
+          <description>drink the milk</description>
+        </operation>
+      </operations>
+      <roles>
+        <role>
+          <id>test-role</id>
+          <name>Test Role</name>
+          <permissions>
+            <permission>
+              <id>test-permission</id>
+              <name>Test Permission</name>
+              <operation>test-operation</operation>
+              <resource>global</resource>
+            </permission>
+          </permissions>
+        </role>
+        <role>
+          <id>test-role-1</id>
+          <name>Test Role 1</name>
+          <permissions>
+            <permission>
+              <id>test-permission-1</id>
+              <name>Test Permission 1</name>
+              <operation>test-operation</operation>
+              <resource>global</resource>
+            </permission>
+          </permissions>
+        </role>
+        <role>
+          <id>can-eat-cornflakes</id>
+          <name>Role for happy cornflake eaters</name>
+          <permissions>
+            <permission>
+              <id>eat-cornflakes-permission</id>
+              <name>Eat Cornflakes</name>
+              <operation>eat-cornflakes</operation>
+              <resource>cornflakes</resource>
+            </permission>
+          </permissions>
+          <childRoles>
+            <childRole>can-drink-the-milk</childRole>
+          </childRoles>
+        </role>
+        <role>
+          <id>can-drink-the-milk</id>
+          <name>Role for cornflake eaters drinking milk in the bowl</name>
+          <permissions>
+            <permission>
+              <id>drink-milk-permission</id>
+              <name>Drink Milk</name>
+              <operation>drink-milk</operation>
+              <resource>milk</resource>
+            </permission>
+          </permissions>
+          <parentRoles>
+            <parentRole>can-eat-cornflakes</parentRole>
+          </parentRoles>
+        </role>
+      </roles>
+      <templates>
+        <template>
+          <id>test-template</id>
+          <namePrefix>Foo 1</namePrefix>
+          <permissions>
+            <permission>
+              <id>eat-cornflakes-permission</id>
+              <name>Eat Cornflakes</name>
+              <operation>eat-cornflakes</operation>
+              <resource>cornflakes</resource>
+            </permission>
+          </permissions>
+          <childRoles>
+            <childRole>can-drink-the-milk</childRole>
+          </childRoles>
+        </template>
+        <template>
+          <id>test-template-2</id>
+          <namePrefix>Foo 2</namePrefix>
+          <permissions>
+            <permission>
+              <id>eat-cornflakes-permission</id>
+              <name>Eat 1 Cornflakes</name>
+              <operation>eat-cornflakes</operation>
+              <resource>cornflakes</resource>
+            </permission>
+            <permission>
+              <id>eat-cornflakes-permission-2</id>
+              <name>Eat 2 Cornflakes</name>
+              <operation>eat-cornflakes</operation>
+              <resource>global</resource>
+            </permission>
+            <permission>
+              <id>eat-cornflakes-permission-3</id>
+              <name>Eat 3 Cornflakes</name>
+              <operation>eat-cornflakes</operation>
+              <resource>${resource}</resource>
+            </permission>
+          </permissions>
+          <childTemplates>
+            <childTemplate>test-template</childTemplate>
+          </childTemplates>
+        </template>
+      </templates>
+    </application>
+  </applications>
+</redback-role-model>

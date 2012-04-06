@@ -1,0 +1,14 @@
+<configuration debug="false">
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%-5p %c{2} : %m%n</pattern>
+    </encoder>
+  </appender>
+
+ <logger name="org.springframework" level="ERROR"/>
+ <logger name="com.opensymphony.xwork2" level="debug"/>
+ <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+ </root>
+</configuration>

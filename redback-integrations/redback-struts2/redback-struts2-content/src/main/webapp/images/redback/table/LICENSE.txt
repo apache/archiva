@@ -1,0 +1,6 @@
+The images in this directory are from the eXtremecomponents 1.0.1 distribution.
+http://www.extremecomponents.org/
+
+eXtremecomponents is licensed under the Apache Source License.
+http://extremecomp.cvs.sourceforge.net/extremecomp/eXtremeComponents/LICENSE.txt?view=markup
+

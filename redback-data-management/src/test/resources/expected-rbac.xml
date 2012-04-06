@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rbacDatabase>
+  <roles>
+    <role>
+      <name>User Administrator</name>
+      <assignable>true</assignable>
+      <permissions>
+        <permission name="Edit All Users"></permission>
+        <permission name="Remove Roles"></permission>
+      </permissions>
+    </role>
+    <role>
+      <name>System Administrator</name>
+      <assignable>true</assignable>
+      <childRoleNames>
+        <childRoleName>User Administrator</childRoleName>
+      </childRoleNames>
+      <permissions>
+        <permission name="Edit Configuration"></permission>
+        <permission name="Run Indexer"></permission>
+        <permission name="Add Repository"></permission>
+        <permission name="Regenerate Index"></permission>
+      </permissions>
+    </role>
+    <role>
+      <name>Trusted Developer</name>
+      <assignable>true</assignable>
+      <childRoleNames>
+        <childRoleName>System Administrator</childRoleName>
+      </childRoleNames>
+      <permissions>
+        <permission name="Run Indexer"></permission>
+      </permissions>
+    </role>
+    <role>
+      <name>Developer</name>
+      <assignable>true</assignable>
+      <childRoleNames>
+        <childRoleName>Trusted Developer</childRoleName>
+      </childRoleNames>
+      <permissions>
+        <permission name="Run Indexer"></permission>
+      </permissions>
+    </role>
+  </roles>
+  <permissions>
+    <permission>
+      <name>Edit Configuration</name>
+      <operation name="edit-configuration"></operation>
+      <resource identifier="*"></resource>
+    </permission>
+    <permission>
+      <name>Run Indexer</name>
+      <operation name="run-indexer"></operation>
+      <resource identifier="*"></resource>
+    </permission>
+    <permission>
+      <name>Add Repository</name>
+      <operation name="add-repository"></operation>
+      <resource identifier="*"></resource>
+    </permission>
+    <permission>
+      <name>Edit All Users</name>
+      <operation name="edit-all-users"></operation>
+      <resource identifier="*"></resource>
+    </permission>
+    <permission>
+      <name>Remove Roles</name>
+      <operation name="remove-roles"></operation>
+      <resource identifier="*"></resource>
+    </permission>
+    <permission>
+      <name>Regenerate Index</name>
+      <operation name="regenerate-index"></operation>
+      <resource identifier="*"></resource>
+    </permission>
+  </permissions>
+  <operations>
+    <operation>
+      <name>add-repository</name>
+    </operation>
+    <operation>
+      <name>edit-repository</name>
+    </operation>
+    <operation>
+      <name>delete-repository</name>
+    </operation>
+    <operation>
+      <name>edit-configuration</name>
+    </operation>
+    <operation>
+      <name>run-indexer</name>
+    </operation>
+    <operation>
+      <name>regenerate-index</name>
+    </operation>
+    <operation>
+      <name>get-reports</name>
+    </operation>
+    <operation>
+      <name>regenerate-reports</name>
+    </operation>
+    <operation>
+      <name>edit-user</name>
+    </operation>
+    <operation>
+      <name>edit-all-users</name>
+    </operation>
+    <operation>
+      <name>remove-roles</name>
+    </operation>
+  </operations>
+  <resources>
+    <resource>
+      <identifier>*</identifier>
+      <permanent>true</permanent>
+    </resource>
+  </resources>
+  <userAssignments>
+    <userAssignment>
+      <principal>bob</principal>
+      <roleNames>
+        <roleName>Developer</roleName>
+      </roleNames>
+    </userAssignment>
+    <userAssignment>
+      <principal>betty</principal>
+      <roleNames>
+        <roleName>System Administrator</roleName>
+      </roleNames>
+    </userAssignment>
+  </userAssignments>
+</rbacDatabase>
