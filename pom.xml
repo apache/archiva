@@ -164,9 +164,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/redback/redback/trunk</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/redback/redback/trunk</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/redback/redback/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/redback/redback-core/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/redback/redback-core/trunk/</developerConnection>
+    <url>http://svn.apache.org/viewvc/archiva/redback/redback-core/trunk/</url>
   </scm>
   
   <distributionManagement>
