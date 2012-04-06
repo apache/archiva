@@ -56,7 +56,6 @@
     <module>redback-common-integrations</module>
     <module>redback-rest</module>
     <module>redback-struts2</module>
-    <module>redback-jee</module>
     <module>redback-jsecurity</module>
     <module>redback-integrations-security</module>
   </modules>
