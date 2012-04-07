@@ -20,7 +20,7 @@ package org.apache.archiva.redback.rbac.memory;
  */
 
 import org.apache.archiva.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.tests.AbstractRbacManagerTestCase;
+import org.apache.archiva.redback.tests.AbstractRbacManagerTestCase;
 import org.junit.Before;
 
 import javax.inject.Inject;

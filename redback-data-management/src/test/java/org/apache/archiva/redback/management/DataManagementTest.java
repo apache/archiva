@@ -31,7 +31,7 @@ import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.tests.utils.RBACDefaults;
+import org.apache.archiva.redback.tests.utils.RBACDefaults;
 import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;

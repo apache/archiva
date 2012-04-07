@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.tests;
+package org.apache.archiva.redback.tests;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

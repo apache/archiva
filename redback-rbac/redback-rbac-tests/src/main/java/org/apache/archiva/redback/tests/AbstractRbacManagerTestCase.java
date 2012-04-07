@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.tests;
+package org.apache.archiva.redback.tests;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -25,7 +25,7 @@ import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RbacPermanentException;
-import org.codehaus.plexus.redback.tests.utils.RBACDefaults;
+import org.apache.archiva.redback.tests.utils.RBACDefaults;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

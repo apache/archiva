@@ -21,11 +21,10 @@ package org.apache.archiva.redback.rbac.jdo;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.apache.archiva.redback.rbac.jdo.JdoRbacManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
 import org.apache.archiva.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.tests.AbstractRbacManagerTestCase;
+import org.apache.archiva.redback.tests.AbstractRbacManagerTestCase;
 import org.jpox.AbstractPersistenceManagerFactory;
 import org.jpox.SchemaTool;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.tests.utils;
+package org.apache.archiva.redback.tests.utils;
 
 /*
  * Copyright 2006 The Apache Software Foundation.

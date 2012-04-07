@@ -20,8 +20,7 @@ package org.apache.archiva.redback.rbac.cached;
  */
 
 import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.rbac.cached.CachedRbacManager;
-import org.codehaus.plexus.redback.tests.AbstractRbacManagerPerformanceTestCase;
+import org.apache.archiva.redback.tests.AbstractRbacManagerPerformanceTestCase;
 import org.junit.After;
 import org.junit.Before;
 

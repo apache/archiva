@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.tests;
+package org.apache.archiva.redback.tests;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,7 +26,7 @@ import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.rbac.Operation;
-import org.codehaus.plexus.redback.tests.utils.RBACDefaults;
+import org.apache.archiva.redback.tests.utils.RBACDefaults;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
