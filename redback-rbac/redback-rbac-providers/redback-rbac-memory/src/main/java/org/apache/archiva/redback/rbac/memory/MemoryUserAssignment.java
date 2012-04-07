@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac.memory;
+package org.apache.archiva.redback.rbac.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,33 +19,33 @@ package org.codehaus.plexus.redback.rbac.memory;
  * under the License.
  */
 
-import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.AbstractUserAssignment;
+import org.apache.archiva.redback.rbac.UserAssignment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * MemoryOperation 
+ * MemoryUserAssignment
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class MemoryOperation
-    implements Operation, java.io.Serializable
+public class MemoryUserAssignment
+    extends AbstractUserAssignment
+    implements UserAssignment, java.io.Serializable
 {
 
     /**
-     * Field name
+     * Field principal
      */
-    private String name;
+    private String principal;
 
     /**
-     * Field description
+     * Field roles
      */
-    private String description;
+    private List<String> roles = new ArrayList<String>( 0 );
 
-    /**
-     * Field resourceRequired
-     */
-    private boolean resourceRequired = false;
-    
     /**
      * Field permanent
      */
@@ -53,7 +53,7 @@ public class MemoryOperation
 
     /**
      * Method equals
-     * 
+     *
      * @param other
      */
     public boolean equals( Object other )
@@ -63,31 +63,38 @@ public class MemoryOperation
             return true;
         }
 
-        if ( !( other instanceof MemoryOperation ) )
+        if ( !( other instanceof MemoryUserAssignment ) )
         {
             return false;
         }
 
-        MemoryOperation that = (MemoryOperation) other;
+        MemoryUserAssignment that = (MemoryUserAssignment) other;
         boolean result = true;
-        result = result && ( getName() == null ? that.getName() == null : getName().equals( that.getName() ) );
+        result = result && ( getPrincipal() == null
+            ? that.getPrincipal() == null
+            : getPrincipal().equals( that.getPrincipal() ) );
         return result;
     }
 
     /**
      * Get null
      */
-    public String getDescription()
+    public String getPrincipal()
     {
-        return this.description;
+        return this.principal;
     }
 
     /**
-     * Get null
+     * Method getRoles
      */
-    public String getName()
+    public List<String> getRoleNames()
     {
-        return this.name;
+        if ( this.roles == null )
+        {
+            this.roles = new ArrayList<String>( 0 );
+        }
+
+        return this.roles;
     }
 
     /**
@@ -96,62 +103,38 @@ public class MemoryOperation
     public int hashCode()
     {
         int result = 17;
-        result = 37 * result + ( name != null ? name.hashCode() : 0 );
+        result = 37 * result + ( principal != null ? principal.hashCode() : 0 );
         return result;
     }
 
     /**
-     * Get 
-     *             true if the resource is required for
-     * authorization to be granted
-     *           
+     * Set null
+     *
+     * @param principal
      */
-    public boolean isResourceRequired()
+    public void setPrincipal( String principal )
     {
-        return this.resourceRequired;
+        this.principal = principal;
     }
 
     /**
      * Set null
-     * 
-     * @param description
+     *
+     * @param roles
      */
-    public void setDescription( String description )
+    public void setRoleNames( List<String> roles )
     {
-        this.description = description;
-    }
-
-    /**
-     * Set null
-     * 
-     * @param name
-     */
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    /**
-     * Set 
-     *             true if the resource is required for
-     * authorization to be granted
-     *           
-     * 
-     * @param resourceRequired
-     */
-    public void setResourceRequired( boolean resourceRequired )
-    {
-        this.resourceRequired = resourceRequired;
+        this.roles = roles;
     }
 
     /**
      * Method toString
      */
-    public String toString()
+    public java.lang.String toString()
     {
         StringBuffer buf = new StringBuffer();
-        buf.append( "name = '" );
-        buf.append( getName() + "'" );
+        buf.append( "principal = '" );
+        buf.append( getPrincipal() + "'" );
         return buf.toString();
     }
 

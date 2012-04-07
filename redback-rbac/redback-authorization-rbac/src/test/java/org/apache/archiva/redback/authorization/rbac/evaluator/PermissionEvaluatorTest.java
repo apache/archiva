@@ -20,14 +20,12 @@ package org.apache.archiva.redback.authorization.rbac.evaluator;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluationException;
-import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluator;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.memory.MemoryOperation;
-import org.codehaus.plexus.redback.rbac.memory.MemoryPermission;
-import org.codehaus.plexus.redback.rbac.memory.MemoryResource;
+import org.apache.archiva.redback.rbac.memory.MemoryOperation;
+import org.apache.archiva.redback.rbac.memory.MemoryPermission;
+import org.apache.archiva.redback.rbac.memory.MemoryResource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

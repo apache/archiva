@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac.memory;
+package org.apache.archiva.redback.rbac.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

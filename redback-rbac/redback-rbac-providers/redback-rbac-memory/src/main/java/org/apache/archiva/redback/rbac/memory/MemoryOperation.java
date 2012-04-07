@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac.memory;
+package org.apache.archiva.redback.rbac.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,17 +20,15 @@ package org.codehaus.plexus.redback.rbac.memory;
  */
 
 import org.apache.archiva.redback.rbac.Operation;
-import org.apache.archiva.redback.rbac.Resource;
-import org.apache.archiva.redback.rbac.Permission;
 
 /**
- * MemoryPermission 
+ * MemoryOperation 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class MemoryPermission
-    implements Permission, java.io.Serializable
+public class MemoryOperation
+    implements Operation, java.io.Serializable
 {
 
     /**
@@ -44,14 +42,9 @@ public class MemoryPermission
     private String description;
 
     /**
-     * Field operation
+     * Field resourceRequired
      */
-    private MemoryOperation operation;
-
-    /**
-     * Field resource
-     */
-    private MemoryResource resource;
+    private boolean resourceRequired = false;
     
     /**
      * Field permanent
@@ -70,12 +63,12 @@ public class MemoryPermission
             return true;
         }
 
-        if ( !( other instanceof MemoryPermission ) )
+        if ( !( other instanceof MemoryOperation ) )
         {
             return false;
         }
 
-        MemoryPermission that = (MemoryPermission) other;
+        MemoryOperation that = (MemoryOperation) other;
         boolean result = true;
         result = result && ( getName() == null ? that.getName() == null : getName().equals( that.getName() ) );
         return result;
@@ -98,22 +91,6 @@ public class MemoryPermission
     }
 
     /**
-     * Get null
-     */
-    public Operation getOperation()
-    {
-        return (Operation) this.operation;
-    }
-
-    /**
-     * Get null
-     */
-    public Resource getResource()
-    {
-        return (Resource) this.resource;
-    }
-
-    /**
      * Method hashCode
      */
     public int hashCode()
@@ -121,6 +98,17 @@ public class MemoryPermission
         int result = 17;
         result = 37 * result + ( name != null ? name.hashCode() : 0 );
         return result;
+    }
+
+    /**
+     * Get 
+     *             true if the resource is required for
+     * authorization to be granted
+     *           
+     */
+    public boolean isResourceRequired()
+    {
+        return this.resourceRequired;
     }
 
     /**
@@ -144,33 +132,16 @@ public class MemoryPermission
     }
 
     /**
-     * Set null
+     * Set 
+     *             true if the resource is required for
+     * authorization to be granted
+     *           
      * 
-     * @param operation
+     * @param resourceRequired
      */
-    public void setOperation( Operation operation )
+    public void setResourceRequired( boolean resourceRequired )
     {
-        if ( !( operation instanceof Operation ) )
-        {
-            throw new ClassCastException( "MemoryPermission.setOperation(operation) parameter must be instanceof "
-                + Operation.class.getName() );
-        }
-        this.operation = (MemoryOperation) operation;
-    }
-
-    /**
-     * Set null
-     * 
-     * @param resource
-     */
-    public void setResource( Resource resource )
-    {
-        if ( !( resource instanceof Resource ) )
-        {
-            throw new ClassCastException( "MemoryPermission.setResource(resource) parameter must be instanceof "
-                + Resource.class.getName() );
-        }
-        this.resource = (MemoryResource) resource;
+        this.resourceRequired = resourceRequired;
     }
 
     /**
