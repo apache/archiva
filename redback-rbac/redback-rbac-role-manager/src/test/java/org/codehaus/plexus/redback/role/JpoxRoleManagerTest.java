@@ -19,12 +19,8 @@ package org.codehaus.plexus.redback.role;
  * under the License.
  */
 
-import net.sf.ehcache.CacheManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.jdo.JdoRbacManager;
-import org.codehaus.plexus.redback.rbac.jdo.JdoTool;
-import org.jpox.SchemaTool;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,10 +30,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import java.io.File;
-import java.net.URL;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * RoleManagerTest:

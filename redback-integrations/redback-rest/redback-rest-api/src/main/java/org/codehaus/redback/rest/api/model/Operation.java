@@ -40,7 +40,7 @@ public class Operation
         // no op
     }
 
-    public Operation( org.codehaus.plexus.redback.rbac.Operation operation )
+    public Operation( org.apache.archiva.redback.rbac.Operation operation )
     {
         this.name = operation.getName();
         this.description = operation.getDescription();

@@ -19,13 +19,12 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.model.ModelApplication;
 import org.codehaus.plexus.redback.struts2.action.AbstractUserCredentialsAction;
@@ -128,7 +127,7 @@ public class AssignmentsAction
      * Duplicate role assignment needs to be taken care of.
      * 
      * @throws RbacManagerException
-     * @throws RbacObjectNotFoundException
+     * @throws org.apache.archiva.redback.rbac.RbacObjectNotFoundException
      */
     @SuppressWarnings( "unchecked" )
     public String show()

@@ -19,10 +19,10 @@ package org.codehaus.redback.integration.checks.security;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;

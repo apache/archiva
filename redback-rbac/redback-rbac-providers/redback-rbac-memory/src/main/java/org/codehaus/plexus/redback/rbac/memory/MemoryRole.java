@@ -19,9 +19,9 @@ package org.codehaus.plexus.redback.rbac.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.AbstractRole;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.AbstractRole;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Role;
 
 import java.util.ArrayList;
 import java.util.List;

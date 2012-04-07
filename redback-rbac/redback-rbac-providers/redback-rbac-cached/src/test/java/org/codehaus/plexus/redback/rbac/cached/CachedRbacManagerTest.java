@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.rbac.cached;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.tests.AbstractRbacManagerTestCase;
 import org.junit.Before;
 

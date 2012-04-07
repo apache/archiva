@@ -19,10 +19,10 @@ package org.codehaus.plexus.redback.tests;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManagerListener;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.RBACManagerListener;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.UserAssignment;
 
 import java.util.ArrayList;
 import java.util.List;

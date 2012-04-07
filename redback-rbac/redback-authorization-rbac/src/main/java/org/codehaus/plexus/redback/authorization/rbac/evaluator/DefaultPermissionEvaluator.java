@@ -19,10 +19,10 @@ package org.codehaus.plexus.redback.authorization.rbac.evaluator;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Permission;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

@@ -19,9 +19,9 @@ package org.codehaus.redback.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.configuration.UserConfiguration;
-import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.redback.rest.api.services.UserService;
 

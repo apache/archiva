@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac;
+package org.apache.archiva.redback.rbac;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -17,53 +17,73 @@ package org.codehaus.plexus.redback.rbac;
  */
 
 /**
- * Operation
+ * Permission
  * <p/>
- * In RBAC the operation is an action or functionality that can be linked with a
- * particular resource into an assignable Permission.  Operations don't exist outside
- * Permissions.
+ * A permission is the wrapper for an operation and a resource effectively saying
+ * that the operation is authorized for that resource.
+ * <p/>
+ * P(Operation, Resource)
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface Operation
+public interface Permission
 {
 
-
     /**
-     * Long description of an operation.
-     *
-     * @return String
+     * Long description of the Permission
      */
     String getDescription();
 
     /**
-     * name of the operation that is used in the act of authorization
-     * <p/>
-     * 'modify-foo', 'change-password'
+     * Get the short name of the permission.
      * <p/>
      * NOTE: This field is considered the Primary Key for this object.
      *
-     * @return the name of the operation.
+     * @return the short name for this permission.
      */
     String getName();
 
     /**
+     * Operation that this permission is authorizing
+     */
+    Operation getOperation();
+
+    /**
+     * This is the resource associated with this permission.
+     * <p/>
+     * Implementors must always supply a Resource.
+     *
+     * @return the Resource.
+     */
+    Resource getResource();
+
+    /**
+     * Set null
+     *
      * @param description
      */
     void setDescription( String description );
 
     /**
-     * Set name of the operation that is used in the act of authorization
-     * <p/>
-     * 'modify-foo', 'change-password'
-     * <p/>
-     * NOTE: This field is considered the Primary Key for this object.
+     * Set the short name for this permission.
      *
      * @param name
      */
     void setName( String name );
+
+    /**
+     * Set null
+     *
+     * @param operation
+     */
+    void setOperation( Operation operation );
+
+    /**
+     * @param resource
+     */
+    void setResource( Resource resource );
 
     /**
      * Test to see if the object is a permanent object or not.

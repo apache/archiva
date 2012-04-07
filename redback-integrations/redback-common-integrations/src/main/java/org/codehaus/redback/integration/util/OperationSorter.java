@@ -21,7 +21,7 @@ package org.codehaus.redback.integration.util;
 
 import java.util.Comparator;
 
-import org.codehaus.plexus.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Operation;
 
 /**
  * OperationSorter

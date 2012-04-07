@@ -20,11 +20,11 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  */
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.management.DataManagementTool;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.redback.integration.interceptor.SecureAction;

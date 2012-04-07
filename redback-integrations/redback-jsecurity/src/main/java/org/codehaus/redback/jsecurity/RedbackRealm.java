@@ -25,12 +25,12 @@ import java.util.Set;
 
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.users.UserManager;
 import org.jsecurity.authc.AuthenticationException;
 import org.jsecurity.authc.AuthenticationInfo;

@@ -19,12 +19,12 @@ package org.codehaus.plexus.redback.role;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.commons.lang.SystemUtils;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.plexus.redback.role.model.ModelApplication;
 import org.codehaus.plexus.redback.role.model.ModelRole;
 import org.codehaus.plexus.redback.role.model.ModelTemplate;

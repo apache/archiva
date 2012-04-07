@@ -20,9 +20,9 @@ package org.codehaus.plexus.redback.authorization.rbac.evaluator;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.redback.rbac.Operation;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.plexus.redback.rbac.memory.MemoryOperation;
 import org.codehaus.plexus.redback.rbac.memory.MemoryPermission;
 import org.codehaus.plexus.redback.rbac.memory.MemoryResource;

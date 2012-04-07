@@ -21,7 +21,7 @@ package org.codehaus.redback.integration.util;
 
 import java.util.Comparator;
 
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.Role;
 
 /**
  * RoleSorter

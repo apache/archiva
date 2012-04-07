@@ -19,9 +19,9 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.struts2.action.AbstractUserCredentialsAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;

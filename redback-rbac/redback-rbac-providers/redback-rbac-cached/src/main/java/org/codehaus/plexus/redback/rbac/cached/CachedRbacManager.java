@@ -19,17 +19,17 @@ package org.codehaus.plexus.redback.rbac.cached;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.RBACManagerListener;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.RbacObjectInvalidException;
+import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.codehaus.plexus.cache.Cache;
-import org.codehaus.plexus.redback.rbac.Operation;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RBACManagerListener;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectInvalidException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -160,7 +160,7 @@ public class CachedRbacManager
     }
 
     /**
-     * @see org.codehaus.plexus.redback.rbac.RBACManager#getAllAssignableRoles()
+     * @see org.apache.archiva.redback.rbac.RBACManager#getAllAssignableRoles()
      */
     public List<Role> getAllAssignableRoles()
         throws RbacManagerException, RbacObjectNotFoundException
@@ -205,7 +205,7 @@ public class CachedRbacManager
     }
 
     /**
-     * @see org.codehaus.plexus.redback.rbac.RBACManager#getAssignedPermissionMap(java.lang.String)
+     * @see org.apache.archiva.redback.rbac.RBACManager#getAssignedPermissionMap(java.lang.String)
      */
     @SuppressWarnings( "unchecked" )
     public Map getAssignedPermissionMap( String principal )

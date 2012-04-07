@@ -21,13 +21,13 @@
 <component-set>
   <components>
     <component>
-      <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
+      <role>org.apache.archiva.redback.rbac.RBACManager</role>
       <role-hint>cached</role-hint>
       <implementation>org.codehaus.plexus.redback.rbac.cached.CachedRbacManager</implementation>
       <description>CachedRbacManager is a wrapped RBACManager with caching.</description>
       <requirements>
         <requirement>
-          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
+          <role>org.apache.archiva.redback.rbac.RBACManager</role>
           <role-hint>memory</role-hint>
           <field-name>rbacImpl</field-name>
         </requirement>

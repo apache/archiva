@@ -22,7 +22,7 @@ package org.codehaus.redback.integration.interceptor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Resource;
 
 /**
  * SecureActionBundle:

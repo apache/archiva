@@ -1,4 +1,6 @@
-package org.codehaus.plexus.redback.rbac;
+package org.apache.archiva.redback.rbac;
+
+import java.util.List;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -17,37 +19,37 @@ package org.codehaus.plexus.redback.rbac;
  */
 
 /**
- * RbacObjectInvalidException 
+ * AbstractUserAssignment useful for common logic that implementors can use. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RbacObjectInvalidException
-    extends RbacManagerException
+public abstract class AbstractUserAssignment
+    implements UserAssignment
 {
 
-    public RbacObjectInvalidException()
+    public void addRoleName( Role role )
     {
-        super();
+        addRoleName( role.getName() );
     }
 
-    public RbacObjectInvalidException( String message, Throwable cause )
+    public void addRoleName( String roleName )
     {
-        super( message, cause );
+        List<String> names = getRoleNames();
+        if ( !names.contains( roleName ) )
+        {
+            names.add( roleName );
+        }
+        setRoleNames( names );
     }
 
-    public RbacObjectInvalidException( String message )
+    public void removeRoleName( Role role )
     {
-        super( message );
-    }
-    
-    public RbacObjectInvalidException( String scope, String message )
-    {
-        super( ( ( scope != null ) ? scope + ": " : "" ) + message );
+        removeRoleName( role.getName() );
     }
 
-    public RbacObjectInvalidException( Throwable cause )
+    public void removeRoleName( String roleName )
     {
-        super( cause );
+        getRoleNames().remove( roleName );
     }
 }

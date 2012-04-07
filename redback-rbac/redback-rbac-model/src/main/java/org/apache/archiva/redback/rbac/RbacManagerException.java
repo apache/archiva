@@ -1,6 +1,4 @@
-package org.codehaus.plexus.redback.rbac;
-
-import java.util.List;
+package org.apache.archiva.redback.rbac;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -19,37 +17,33 @@ import java.util.List;
  */
 
 /**
- * AbstractUserAssignment useful for common logic that implementors can use. 
+ * RbacManagerException used by {@link RBACManager} methods to indicate
+ * a fundamental persistence or store issue. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractUserAssignment
-    implements UserAssignment
+public class RbacManagerException
+    extends Exception
 {
-
-    public void addRoleName( Role role )
+    public RbacManagerException()
     {
-        addRoleName( role.getName() );
+        super();
     }
 
-    public void addRoleName( String roleName )
+    public RbacManagerException( String message, Throwable cause )
     {
-        List<String> names = getRoleNames();
-        if ( !names.contains( roleName ) )
-        {
-            names.add( roleName );
-        }
-        setRoleNames( names );
+        super( message, cause );
     }
 
-    public void removeRoleName( Role role )
+    public RbacManagerException( String message )
     {
-        removeRoleName( role.getName() );
+        super( message );
     }
 
-    public void removeRoleName( String roleName )
+    public RbacManagerException( Throwable cause )
     {
-        getRoleNames().remove( roleName );
+        super( cause );
     }
+
 }

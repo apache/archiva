@@ -31,8 +31,8 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.TestCase;
 
-import org.codehaus.plexus.redback.rbac.Operation;
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.plexus.redback.rbac.jdo.io.stax.RbacJdoModelStaxReader;
 import org.codehaus.plexus.redback.rbac.jdo.io.stax.RbacJdoModelStaxWriter;
 

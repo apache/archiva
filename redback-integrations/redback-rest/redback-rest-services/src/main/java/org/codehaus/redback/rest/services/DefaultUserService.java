@@ -24,6 +24,8 @@ import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
@@ -35,10 +37,8 @@ import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.SecuritySystem;
@@ -733,11 +733,11 @@ public class DefaultUserService
     {
         try
         {
-            Set<org.codehaus.plexus.redback.rbac.Permission> permissions =
+            Set<org.apache.archiva.redback.rbac.Permission> permissions =
                 rbacManager.getAssignedPermissions( userName );
             // FIXME return guest permissions !!
             List<Permission> userPermissions = new ArrayList<Permission>( permissions.size() );
-            for ( org.codehaus.plexus.redback.rbac.Permission p : permissions )
+            for ( org.apache.archiva.redback.rbac.Permission p : permissions )
             {
                 Permission permission = new Permission();
                 permission.setName( p.getName() );

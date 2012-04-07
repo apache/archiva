@@ -19,9 +19,9 @@ package org.codehaus.plexus.redback.rbac.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Operation;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Permission;
 
 /**
  * MemoryPermission 

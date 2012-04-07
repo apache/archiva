@@ -44,7 +44,7 @@ public class Permission
         // no op
     }
 
-    public Permission( org.codehaus.plexus.redback.rbac.Permission permission )
+    public Permission( org.apache.archiva.redback.rbac.Permission permission )
     {
         this.name = permission.getName();
         this.description = permission.getDescription();

@@ -19,6 +19,9 @@ package org.codehaus.plexus.redback.authorization.rbac;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authorization.AuthorizationDataSource;
 import org.apache.archiva.redback.authorization.AuthorizationException;
@@ -27,10 +30,7 @@ import org.apache.archiva.redback.authorization.Authorizer;
 import org.apache.archiva.redback.authorization.NotAuthorizedException;
 import org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluationException;
 import org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluator;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
+import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.slf4j.Logger;

@@ -22,7 +22,7 @@ package org.codehaus.plexus.redback.struts2.action.admin;
 import java.util.Arrays;
 
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.plexus.redback.struts2.action.AbstractUserCredentialsAction;
 import org.codehaus.plexus.redback.struts2.action.AuditEvent;
 import org.apache.archiva.redback.users.User;

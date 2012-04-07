@@ -20,14 +20,14 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  */
 
 import org.apache.archiva.redback.policy.PasswordEncoder;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.archiva.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.Role;
 import org.codehaus.plexus.redback.struts2.action.AuditEvent;
 import org.codehaus.plexus.redback.struts2.action.CancellableAction;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
@@ -70,7 +70,7 @@ public class UserEditAction
     private RBACManager rbacManager;
 
     /**
-     * A List of {@link org.codehaus.plexus.redback.rbac.Role} objects.
+     * A List of {@link org.apache.archiva.redback.rbac.Role} objects.
      */
     private List<Role> effectivelyAssignedRoles;
 

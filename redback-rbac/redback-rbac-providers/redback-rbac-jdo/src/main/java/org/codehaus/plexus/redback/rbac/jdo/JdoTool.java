@@ -19,12 +19,12 @@ package org.codehaus.plexus.redback.rbac.jdo;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManagerListener;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
+import org.apache.archiva.redback.rbac.Role;
 import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManagerListener;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
-import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.stereotype.Service;
 

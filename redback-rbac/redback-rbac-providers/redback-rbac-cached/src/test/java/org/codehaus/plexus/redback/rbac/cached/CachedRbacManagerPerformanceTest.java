@@ -19,9 +19,7 @@ package org.codehaus.plexus.redback.rbac.cached;
  * under the License.
  */
 
-import net.sf.ehcache.CacheManager;
-
-import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.tests.AbstractRbacManagerPerformanceTestCase;
 import org.junit.After;
 import org.junit.Before;

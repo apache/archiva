@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;

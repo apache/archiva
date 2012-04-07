@@ -20,11 +20,11 @@ package org.codehaus.plexus.redback.role;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.model.ModelPermission;
 import org.codehaus.plexus.redback.role.model.ModelTemplate;
 import org.codehaus.plexus.redback.role.util.RoleModelUtils;

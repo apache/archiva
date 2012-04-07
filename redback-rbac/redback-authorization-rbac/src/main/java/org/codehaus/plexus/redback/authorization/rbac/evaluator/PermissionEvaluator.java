@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.authorization.rbac.evaluator;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Permission;
 
 
 /**

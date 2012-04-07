@@ -20,9 +20,9 @@ package org.codehaus.plexus.redback.role.processor;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.Role;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
 import org.codehaus.plexus.redback.role.model.io.stax.RedbackRoleModelStaxReader;

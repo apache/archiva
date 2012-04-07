@@ -19,13 +19,13 @@ package org.codehaus.redback.integration.checks.security;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.configuration.UserConfiguration;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.Role;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.SecuritySession;

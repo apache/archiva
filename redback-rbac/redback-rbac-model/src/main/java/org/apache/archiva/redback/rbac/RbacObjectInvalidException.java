@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac;
+package org.apache.archiva.redback.rbac;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -17,33 +17,37 @@ package org.codehaus.plexus.redback.rbac;
  */
 
 /**
- * RbacManagerException used by {@link RBACManager} methods to indicate
- * a fundamental persistence or store issue. 
+ * RbacObjectInvalidException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RbacManagerException
-    extends Exception
+public class RbacObjectInvalidException
+    extends RbacManagerException
 {
-    public RbacManagerException()
+
+    public RbacObjectInvalidException()
     {
         super();
     }
 
-    public RbacManagerException( String message, Throwable cause )
+    public RbacObjectInvalidException( String message, Throwable cause )
     {
         super( message, cause );
     }
 
-    public RbacManagerException( String message )
+    public RbacObjectInvalidException( String message )
     {
         super( message );
     }
+    
+    public RbacObjectInvalidException( String scope, String message )
+    {
+        super( ( ( scope != null ) ? scope + ": " : "" ) + message );
+    }
 
-    public RbacManagerException( Throwable cause )
+    public RbacObjectInvalidException( Throwable cause )
     {
         super( cause );
     }
-
 }

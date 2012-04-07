@@ -40,7 +40,7 @@ public class Resource
         // no op
     }
 
-    public Resource( org.codehaus.plexus.redback.rbac.Resource resource )
+    public Resource( org.apache.archiva.redback.rbac.Resource resource )
     {
         this.identifier = resource.getIdentifier();
         this.pattern = resource.isPattern();

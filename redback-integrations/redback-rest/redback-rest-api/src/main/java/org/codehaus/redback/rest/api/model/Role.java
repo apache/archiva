@@ -99,7 +99,7 @@ public class Role
         this.name = name;
     }
 
-    public Role( org.codehaus.plexus.redback.rbac.Role role )
+    public Role( org.apache.archiva.redback.rbac.Role role )
     {
         this.name = role.getName();
         this.description = role.getDescription();
@@ -114,7 +114,7 @@ public class Role
         }
         else
         {
-            for ( org.codehaus.plexus.redback.rbac.Permission p : role.getPermissions() )
+            for ( org.apache.archiva.redback.rbac.Permission p : role.getPermissions() )
             {
                 this.permissions.add( new Permission( p ) );
             }

@@ -19,13 +19,13 @@ package org.codehaus.plexus.redback.struts2.action;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.redback.integration.model.UserCredentials;
@@ -170,7 +170,7 @@ public abstract class AbstractUserCredentialsAction
      *
      * @param roleList
      * @return
-     * @throws org.codehaus.plexus.redback.rbac.RbacManagerException
+     * @throws org.apache.archiva.redback.rbac.RbacManagerException
      *
      */
     protected List<Role> filterRolesForCurrentUserAccess( List<Role> roleList )

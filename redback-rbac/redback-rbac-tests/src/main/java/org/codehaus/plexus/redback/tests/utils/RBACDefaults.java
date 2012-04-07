@@ -16,11 +16,11 @@ package org.codehaus.plexus.redback.tests.utils;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Operation;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 
 public class RBACDefaults
 {

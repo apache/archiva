@@ -85,9 +85,9 @@
       <name>JdoRole</name>
       <version>1.0.0+</version>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.rbac.Role</interface>
+        <interface>org.apache.archiva.redback.rbac.Role</interface>
       </interfaces>
-      <superClass>org.codehaus.plexus.redback.rbac.AbstractRole</superClass>
+      <superClass>org.apache.archiva.redback.rbac.AbstractRole</superClass>
       <fields>
         <field jpox.primary-key="true" jpox.value-strategy="off">
           <name>name</name>
@@ -127,7 +127,7 @@
                        jpox.dependent="false"
                        java.generate-break="false" 
                        java.generate-create="false"
-                       zjava.use-interface="org.codehaus.plexus.redback.rbac.Role">
+                       zjava.use-interface="org.apache.archiva.redback.rbac.Role">
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -146,7 +146,7 @@
                        java.init="field"
                        java.generate-break="false"
                        java.generate-create="false"
-                       java.use-interface="org.codehaus.plexus.redback.rbac.Permission">
+                       java.use-interface="org.apache.archiva.redback.rbac.Permission">
             <type>JdoPermission</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -160,7 +160,7 @@
       <name>JdoPermission</name>
       <version>1.0.0+</version>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.rbac.Permission</interface>
+        <interface>org.apache.archiva.redback.rbac.Permission</interface>
       </interfaces>
       <fields>
         <field jpox.primary-key="true" jpox.value-strategy="off">
@@ -189,7 +189,7 @@
           <version>1.0.0+</version>
           <association stash.part="true" 
                        xml.reference="true"
-                       java.use-interface="org.codehaus.plexus.redback.rbac.Operation"
+                       java.use-interface="org.apache.archiva.redback.rbac.Operation"
                        jpox.dependent="false">
             <type>JdoOperation</type>
             <multiplicity>1</multiplicity>
@@ -202,7 +202,7 @@
           <version>1.0.0+</version>
           <association stash.part="true" 
                        xml.reference="true"
-                       java.use-interface="org.codehaus.plexus.redback.rbac.Resource"
+                       java.use-interface="org.apache.archiva.redback.rbac.Resource"
                        jpox.dependent="false">
             <type>JdoResource</type>
             <multiplicity>1</multiplicity>
@@ -217,7 +217,7 @@
       <name>JdoOperation</name>
       <version>1.0.0+</version>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.rbac.Operation</interface>
+        <interface>org.apache.archiva.redback.rbac.Operation</interface>
       </interfaces>
       <fields>
         <field jpox.primary-key="true" jpox.value-strategy="off">
@@ -259,7 +259,7 @@
         In RBAC terms, this is the entity which an operation is associated with that which permissions are based on.
       </description>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.rbac.Resource</interface>
+        <interface>org.apache.archiva.redback.rbac.Resource</interface>
       </interfaces>
       <fields>
         <field jpox.primary-key="true" jpox.value-strategy="off">
@@ -298,9 +298,9 @@
       <description>binding of a principal to a role</description>
       <version>1.0.0+</version>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.rbac.UserAssignment</interface>
+        <interface>org.apache.archiva.redback.rbac.UserAssignment</interface>
       </interfaces>
-      <superClass>org.codehaus.plexus.redback.rbac.AbstractUserAssignment</superClass>
+      <superClass>org.apache.archiva.redback.rbac.AbstractUserAssignment</superClass>
       <fields>
         <field jpox.primary-key="true" jpox.value-strategy="off">
           <name>principal</name>

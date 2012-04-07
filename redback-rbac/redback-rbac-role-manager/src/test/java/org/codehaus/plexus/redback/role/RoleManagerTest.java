@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.role;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.junit.Before;
 
 import javax.inject.Inject;

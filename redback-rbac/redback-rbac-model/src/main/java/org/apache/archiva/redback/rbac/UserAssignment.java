@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac;
+package org.apache.archiva.redback.rbac;
 
 import java.util.List;
 

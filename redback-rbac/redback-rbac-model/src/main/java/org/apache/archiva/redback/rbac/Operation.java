@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac;
+package org.apache.archiva.redback.rbac;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -17,73 +17,53 @@ package org.codehaus.plexus.redback.rbac;
  */
 
 /**
- * Permission
+ * Operation
  * <p/>
- * A permission is the wrapper for an operation and a resource effectively saying
- * that the operation is authorized for that resource.
- * <p/>
- * P(Operation, Resource)
+ * In RBAC the operation is an action or functionality that can be linked with a
+ * particular resource into an assignable Permission.  Operations don't exist outside
+ * Permissions.
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface Permission
+public interface Operation
 {
 
+
     /**
-     * Long description of the Permission
+     * Long description of an operation.
+     *
+     * @return String
      */
     String getDescription();
 
     /**
-     * Get the short name of the permission.
+     * name of the operation that is used in the act of authorization
+     * <p/>
+     * 'modify-foo', 'change-password'
      * <p/>
      * NOTE: This field is considered the Primary Key for this object.
      *
-     * @return the short name for this permission.
+     * @return the name of the operation.
      */
     String getName();
 
     /**
-     * Operation that this permission is authorizing
-     */
-    Operation getOperation();
-
-    /**
-     * This is the resource associated with this permission.
-     * <p/>
-     * Implementors must always supply a Resource.
-     *
-     * @return the Resource.
-     */
-    Resource getResource();
-
-    /**
-     * Set null
-     *
      * @param description
      */
     void setDescription( String description );
 
     /**
-     * Set the short name for this permission.
+     * Set name of the operation that is used in the act of authorization
+     * <p/>
+     * 'modify-foo', 'change-password'
+     * <p/>
+     * NOTE: This field is considered the Primary Key for this object.
      *
      * @param name
      */
     void setName( String name );
-
-    /**
-     * Set null
-     *
-     * @param operation
-     */
-    void setOperation( Operation operation );
-
-    /**
-     * @param resource
-     */
-    void setResource( Resource resource );
 
     /**
      * Test to see if the object is a permanent object or not.

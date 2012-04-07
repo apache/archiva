@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.struts2.model;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.Role;
 import org.codehaus.plexus.redback.role.model.ModelApplication;
 import org.codehaus.plexus.redback.role.model.ModelRole;
 import org.codehaus.plexus.redback.role.model.ModelTemplate;

@@ -19,13 +19,13 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.struts2.action.AbstractUserCredentialsAction;
 import org.codehaus.plexus.redback.struts2.action.AuditEvent;
 import org.apache.archiva.redback.users.UserManager;

@@ -19,8 +19,8 @@ package org.codehaus.redback.integration.model;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Permission;
-import org.codehaus.plexus.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.Role;
 
 /**
  * EditRoleDetails - Existing user Role Details.

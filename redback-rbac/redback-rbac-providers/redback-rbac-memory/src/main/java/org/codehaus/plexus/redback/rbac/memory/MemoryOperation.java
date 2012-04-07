@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.rbac.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Operation;
 
 /**
  * MemoryOperation 
