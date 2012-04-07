@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.taglib.jsp;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

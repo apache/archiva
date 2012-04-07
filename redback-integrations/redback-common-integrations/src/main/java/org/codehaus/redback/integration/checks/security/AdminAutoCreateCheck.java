@@ -22,7 +22,7 @@ package org.codehaus.redback.integration.checks.security;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.Role;

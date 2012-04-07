@@ -19,11 +19,10 @@ package org.codehaus.plexus.redback.policy;
  * under the License.
  */
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 
 /**
  * Base class for cookie settings. These will only differ by their configuration keys.

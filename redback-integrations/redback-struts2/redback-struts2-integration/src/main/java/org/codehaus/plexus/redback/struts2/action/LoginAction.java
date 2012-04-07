@@ -27,7 +27,7 @@ import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManagerException;
 import org.codehaus.plexus.redback.keys.KeyNotFoundException;

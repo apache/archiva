@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.policy;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

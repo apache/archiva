@@ -25,9 +25,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.struts2.ServletActionContext;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;

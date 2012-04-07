@@ -24,7 +24,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

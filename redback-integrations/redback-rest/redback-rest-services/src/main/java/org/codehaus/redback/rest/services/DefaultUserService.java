@@ -20,13 +20,13 @@ package org.codehaus.redback.rest.services;
  */
 
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.cache.Cache;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.KeyManagerException;

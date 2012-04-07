@@ -21,6 +21,7 @@ package org.apache.archiva.redback.authentication.ldap;
 
 import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -29,7 +30,6 @@ import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

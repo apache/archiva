@@ -16,7 +16,7 @@ package org.codehaus.plexus.redback.policy.rules;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.policy.PasswordRule;
 
 import javax.inject.Inject;

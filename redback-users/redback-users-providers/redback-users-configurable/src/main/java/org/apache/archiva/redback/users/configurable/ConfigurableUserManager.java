@@ -20,7 +20,7 @@ import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.UserQuery;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;

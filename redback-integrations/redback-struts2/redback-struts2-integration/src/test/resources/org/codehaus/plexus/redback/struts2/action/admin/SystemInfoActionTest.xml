@@ -77,7 +77,7 @@
       </configuration>
       <requirements>
         <requirement>
-          <role>org.codehaus.plexus.redback.configuration.UserConfiguration</role>
+          <role>org.apache.archiva.redback.configuration.UserConfiguration</role>
           <field-name>userConf</field-name>
         </requirement>
       </requirements>

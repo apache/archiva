@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.configuration;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;

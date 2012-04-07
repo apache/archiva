@@ -27,6 +27,6 @@
        default-lazy-init="true">
 
   <context:annotation-config />
-  <context:component-scan base-package="org.codehaus.plexus.redback.configuration"/>
+  <context:component-scan base-package="org.apache.archiva.redback.configuration"/>
  
 </beans>

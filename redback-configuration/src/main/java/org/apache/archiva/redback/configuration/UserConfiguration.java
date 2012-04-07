@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.configuration;
+package org.apache.archiva.redback.configuration;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -44,7 +44,7 @@ import java.util.List;
 @Service( "userConfiguration" )
 public class UserConfiguration
 {
-    private static final String DEFAULT_CONFIG_RESOURCE = "org/codehaus/plexus/redback/config-defaults.properties";
+    private static final String DEFAULT_CONFIG_RESOURCE = "org/apache/archiva/redback/config-defaults.properties";
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -57,7 +57,7 @@ public class UserConfiguration
 
     private Registry lookupRegistry;
 
-    private static final String PREFIX = "org.codehaus.plexus.redback";
+    private static final String PREFIX = "org.apache.archiva.redback";
 
     @Inject
     @Named( value = "commons-configuration" )
