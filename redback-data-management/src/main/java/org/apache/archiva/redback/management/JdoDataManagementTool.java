@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.management;
+package org.apache.archiva.redback.management;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.archiva.redback.management.DataManagementTool;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManager;

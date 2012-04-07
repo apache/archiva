@@ -22,7 +22,7 @@ package org.codehaus.plexus.redback.struts2.action.admin;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.management.DataManagementTool;
+import org.apache.archiva.redback.management.DataManagementTool;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;

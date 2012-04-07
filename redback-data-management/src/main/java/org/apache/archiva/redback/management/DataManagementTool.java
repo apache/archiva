@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.management;
+package org.apache.archiva.redback.management;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

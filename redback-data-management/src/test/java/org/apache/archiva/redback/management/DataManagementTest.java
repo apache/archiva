@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.management;
+package org.apache.archiva.redback.management;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,7 @@ package org.codehaus.plexus.redback.management;
 
 import junit.framework.TestCase;
 import org.apache.archiva.redback.common.jdo.UserConfigurableJdoFactory;
+import org.apache.archiva.redback.management.DataManagementTool;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.SystemUtils;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
