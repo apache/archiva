@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.jdo;
+package org.apache.archiva.redback.users.jdo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,7 @@ package org.codehaus.plexus.redback.users.jdo;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.jdo.JdoUserManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.redback.common.jdo.test.StoreManagerDebug;
 import org.codehaus.plexus.redback.users.provider.test.AbstractUserManagerTestCase;

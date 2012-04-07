@@ -28,6 +28,6 @@
         default-lazy-init="true">
 
   <context:annotation-config />
-  <context:component-scan base-package="org.codehaus.plexus.redback.users.jdo"/>
+  <context:component-scan base-package="org.apache.archiva.redback.users.jdo"/>
 
 </beans>

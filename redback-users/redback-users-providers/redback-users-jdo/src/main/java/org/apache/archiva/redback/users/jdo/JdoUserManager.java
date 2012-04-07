@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.jdo;
+package org.apache.archiva.redback.users.jdo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,6 +30,8 @@ import org.codehaus.plexus.jdo.PlexusStoreException;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.UserQuery;
+import org.codehaus.plexus.redback.users.jdo.JdoUser;
+import org.codehaus.plexus.redback.users.jdo.UsersManagementModelloMetadata;
 import org.codehaus.plexus.util.StringUtils;
 import org.jpox.JDOClassLoaderResolver;
 import org.springframework.stereotype.Service;
