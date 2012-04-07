@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication.ldap;
+package org.apache.archiva.redback.authentication.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

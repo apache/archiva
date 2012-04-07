@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication.ldap;
+package org.apache.archiva.redback.authentication.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,6 +22,7 @@ package org.codehaus.plexus.redback.authentication.ldap;
 import junit.framework.TestCase;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.ldap.LdapBindAuthenticator;
 import org.codehaus.plexus.redback.policy.PasswordEncoder;
 import org.codehaus.plexus.redback.policy.encoders.SHA1PasswordEncoder;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
