@@ -26,7 +26,7 @@ import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.keys.memory.MemoryKeyManager;
+import org.apache.archiva.redback.keys.memory.MemoryKeyManager;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
