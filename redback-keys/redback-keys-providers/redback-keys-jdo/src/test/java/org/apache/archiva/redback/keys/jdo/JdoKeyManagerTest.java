@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys.jdo;
+package org.apache.archiva.redback.keys.jdo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
