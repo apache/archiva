@@ -29,6 +29,6 @@
 
   <context:annotation-config />
   <context:component-scan 
-    base-package="org.codehaus.plexus.redback.authentication.keystore"/>
+    base-package="org.apache.archiva.redback.authentication.keystore"/>
  
 </beans>
