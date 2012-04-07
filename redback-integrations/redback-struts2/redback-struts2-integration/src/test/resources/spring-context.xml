@@ -117,14 +117,14 @@
     </component>
   -->
 
-  <bean name="keyManager#cached" class="org.codehaus.plexus.redback.keys.cached.CachedKeyManager">
+  <bean name="keyManager#cached" class="org.apache.archiva.redback.keys.cached.CachedKeyManager">
     <property name="keyImpl" ref="keyManager#memory"/>
   </bean>
   <!--
     <component>
       <role>org.apache.archiva.redback.keys.KeyManager</role>
       <role-hint>cached</role-hint>
-      <implementation>org.codehaus.plexus.redback.keys.cached.CachedKeyManager</implementation>
+      <implementation>org.apache.archiva.redback.keys.cached.CachedKeyManager</implementation>
       <description>CachedKeyManager</description>
       <requirements>
         <requirement>

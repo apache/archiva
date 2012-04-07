@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys.cached;
+package org.apache.archiva.redback.keys.cached;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,7 @@ package org.codehaus.plexus.redback.keys.cached;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.cached.CachedKeyManager;
 import org.codehaus.plexus.redback.keys.KeyManagerTestCase;
 import org.junit.Before;
 
