@@ -73,7 +73,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;

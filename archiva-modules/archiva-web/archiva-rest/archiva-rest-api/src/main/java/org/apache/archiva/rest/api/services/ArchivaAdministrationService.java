@@ -25,7 +25,7 @@ import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

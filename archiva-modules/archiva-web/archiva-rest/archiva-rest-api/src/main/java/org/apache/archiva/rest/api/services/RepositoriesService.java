@@ -23,7 +23,7 @@ import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

@@ -26,7 +26,7 @@ import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

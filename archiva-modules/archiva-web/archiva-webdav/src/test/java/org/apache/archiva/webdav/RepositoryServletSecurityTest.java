@@ -40,7 +40,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.memory.SimpleUser;

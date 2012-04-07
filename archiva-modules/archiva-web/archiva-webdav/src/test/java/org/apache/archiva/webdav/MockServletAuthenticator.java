@@ -20,7 +20,7 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.security.ArchivaServletAuthenticator;
-import org.codehaus.plexus.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
 
 public class MockServletAuthenticator
     extends ArchivaServletAuthenticator

@@ -19,7 +19,7 @@ package org.apache.archiva.webapp.ui.services.api;
  */
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

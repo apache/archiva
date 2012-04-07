@@ -24,7 +24,7 @@ import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.easymock.MockControl;

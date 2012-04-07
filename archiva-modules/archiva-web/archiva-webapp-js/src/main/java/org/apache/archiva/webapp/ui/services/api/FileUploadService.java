@@ -22,7 +22,7 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.webapp.ui.services.model.FileMetadata;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;

@@ -24,9 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;

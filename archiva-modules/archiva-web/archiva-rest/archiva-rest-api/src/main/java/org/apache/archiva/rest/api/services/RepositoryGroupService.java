@@ -20,7 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

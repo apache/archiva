@@ -24,7 +24,7 @@ import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.model.StringList;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
