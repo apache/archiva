@@ -82,7 +82,7 @@ import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;

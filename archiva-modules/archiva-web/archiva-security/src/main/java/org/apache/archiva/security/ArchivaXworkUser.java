@@ -22,8 +22,8 @@ package org.apache.archiva.security;
 import java.util.Map;
 
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystemConstants;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.User;
 
 /**

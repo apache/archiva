@@ -31,7 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.redback.rbac.UserAssignment;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserManager;
 import org.junit.Before;
 import org.junit.runner.RunWith;

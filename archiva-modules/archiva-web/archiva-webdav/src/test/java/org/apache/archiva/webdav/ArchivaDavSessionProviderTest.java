@@ -32,7 +32,7 @@ import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.codehaus.plexus.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySession;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 
 import javax.servlet.RequestDispatcher;

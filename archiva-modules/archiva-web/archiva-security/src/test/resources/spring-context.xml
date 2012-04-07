@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-  <bean name="securitySystem#testable" class="org.codehaus.plexus.redback.system.DefaultSecuritySystem">
+  <bean name="securitySystem#testable" class="org.apache.archiva.redback.system.DefaultSecuritySystem">
     <property name="userManager" ref="userManager#memory"/>
     <property name="keyManager" ref="keyManager#memory"/>
   </bean>

@@ -174,7 +174,7 @@
    PLXREDBACK-81 bad role hint, redefining here until redback alpha-2 is released.
 
     <component>
-      <role>org.codehaus.plexus.redback.system.check.EnvironmentCheck</role>
+      <role>org.apache.archiva.redback.system.check.EnvironmentCheck</role>
       <role-hint>locked-admin-check</role-hint>
       <implementation>org.codehaus.redback.integration.checks.security.LockedAdminEnvironmentCheck</implementation>
       <description>LockedAdminEnvironmentCheck: checks if accounts marked as system administrator are locked

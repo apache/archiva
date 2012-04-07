@@ -27,7 +27,7 @@ import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySession;
 
 /**
  * @version
