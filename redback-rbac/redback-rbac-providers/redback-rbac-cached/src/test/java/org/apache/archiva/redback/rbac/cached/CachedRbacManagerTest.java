@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac.cached;
+package org.apache.archiva.redback.rbac.cached;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,7 @@ package org.codehaus.plexus.redback.rbac.cached;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.cached.CachedRbacManager;
 import org.codehaus.plexus.redback.tests.AbstractRbacManagerTestCase;
 import org.junit.Before;
 

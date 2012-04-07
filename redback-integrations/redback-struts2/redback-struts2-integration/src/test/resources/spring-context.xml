@@ -37,7 +37,7 @@
     <property name="password" value=""/>
   </bean>
 
-  <bean name="rBACManager#cached" class="org.codehaus.plexus.redback.rbac.cached.CachedRbacManager">
+  <bean name="rBACManager#cached" class="org.apache.archiva.redback.rbac.cached.CachedRbacManager">
     <property name="rbacImpl" ref="rBACManager#memory"/>
   </bean>
 
@@ -46,7 +46,7 @@
     <component>
       <role>org.apache.archiva.redback.rbac.RBACManager</role>
       <role-hint>cached</role-hint>
-      <implementation>org.codehaus.plexus.redback.rbac.cached.CachedRbacManager</implementation>
+      <implementation>org.apache.archiva.redback.rbac.cached.CachedRbacManager</implementation>
       <description>CachedRbacManager is a wrapped RBACManager with caching.</description>
       <requirements>
         <requirement>
