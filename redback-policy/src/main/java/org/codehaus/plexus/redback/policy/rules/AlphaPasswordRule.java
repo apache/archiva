@@ -18,7 +18,7 @@ package org.codehaus.plexus.redback.policy.rules;
 
 import org.codehaus.plexus.redback.policy.PasswordRuleViolations;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 

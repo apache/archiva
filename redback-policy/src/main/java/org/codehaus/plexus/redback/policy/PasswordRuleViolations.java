@@ -16,7 +16,7 @@ package org.codehaus.plexus.redback.policy;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.redback.users.Messages;
+import org.apache.archiva.redback.users.Messages;
 
 import java.util.ArrayList;
 import java.util.List;

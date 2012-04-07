@@ -32,7 +32,7 @@ import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.util.AutoLoginCookies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

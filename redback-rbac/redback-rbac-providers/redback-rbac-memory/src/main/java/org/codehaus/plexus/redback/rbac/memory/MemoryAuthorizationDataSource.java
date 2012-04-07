@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.rbac.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 /**
  * MemoryAuthorizationDataSource:

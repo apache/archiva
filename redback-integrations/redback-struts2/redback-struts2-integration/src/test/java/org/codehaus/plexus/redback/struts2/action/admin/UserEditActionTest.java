@@ -20,6 +20,8 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  */
 
 import com.opensymphony.xwork2.Action;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
@@ -31,8 +33,6 @@ import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.codehaus.redback.integration.model.AdminEditUserCredentials;
 import org.junit.After;

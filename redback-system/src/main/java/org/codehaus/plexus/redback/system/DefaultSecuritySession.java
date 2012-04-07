@@ -19,8 +19,8 @@ package org.codehaus.plexus.redback.system;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.users.User;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;

@@ -18,14 +18,14 @@ package org.codehaus.redback.integration.reports;
  * specific language governing permissions and limitations
  * under the License.
  */
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.redback.integration.util.RoleSorter;
 import org.codehaus.redback.integration.util.UserComparator;
 import org.springframework.stereotype.Service;

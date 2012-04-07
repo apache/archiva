@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.struts2.ServletActionContext;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
@@ -32,8 +33,7 @@ import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,13 +20,13 @@ package org.codehaus.plexus.redback.users.ldap;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory;
 import org.codehaus.plexus.redback.policy.PasswordEncoder;
 import org.codehaus.plexus.redback.policy.encoders.SHA1PasswordEncoder;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.ldap.service.LdapCacheService;
 import org.codehaus.redback.components.apacheds.ApacheDs;
 import org.junit.After;

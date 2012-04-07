@@ -19,6 +19,7 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.struts2.ServletActionContext;
 import org.codehaus.plexus.redback.authentication.AuthenticationConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
@@ -32,9 +33,8 @@ import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.struts2.action.AuditEvent;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
 import org.codehaus.redback.integration.model.EditUserCredentials;

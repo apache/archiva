@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.common.ldap;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 import javax.naming.directory.Attributes;
 import java.io.Serializable;

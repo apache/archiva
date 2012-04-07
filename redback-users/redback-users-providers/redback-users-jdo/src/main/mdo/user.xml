@@ -49,7 +49,7 @@
       <name>JdoUser</name>
       <version>1.0.0+</version>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.users.User</interface>
+        <interface>org.apache.archiva.redback.users.User</interface>
       </interfaces>
       <description></description>
       <fields>

@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.users.ldap;
  */
 
 import org.codehaus.plexus.redback.common.ldap.UserMapper;
-import org.codehaus.plexus.redback.users.AbstractUserQuery;
+import org.apache.archiva.redback.users.AbstractUserQuery;
 
 public class LdapUserQuery
     extends AbstractUserQuery

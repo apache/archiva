@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.model;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.redback.integration.util.DateUtils;
 
 /**

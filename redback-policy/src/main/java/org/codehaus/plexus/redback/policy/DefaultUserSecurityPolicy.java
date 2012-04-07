@@ -19,9 +19,9 @@ package org.codehaus.plexus.redback.policy;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.policy.rules.MustHavePasswordRule;
-import org.codehaus.plexus.redback.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

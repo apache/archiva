@@ -69,13 +69,13 @@
       </requirements>
     </component>
     <component>
-      <role>org.codehaus.plexus.redback.users.UserManager</role>
+      <role>org.apache.archiva.redback.users.UserManager</role>
       <role-hint>cached</role-hint>
       <implementation>org.codehaus.plexus.redback.users.cached.CachedUserManager</implementation>
       <description>CachedUserManager</description>
       <requirements>
         <requirement>
-          <role>org.codehaus.plexus.redback.users.UserManager</role>
+          <role>org.apache.archiva.redback.users.UserManager</role>
           <role-hint>memory</role-hint>
           <field-name>userImpl</field-name>
         </requirement>

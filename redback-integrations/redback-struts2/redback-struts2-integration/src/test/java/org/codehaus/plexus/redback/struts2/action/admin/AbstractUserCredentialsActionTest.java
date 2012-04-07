@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  */
 
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.struts2.StrutsSpringTestCase;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
@@ -34,14 +35,12 @@ import org.codehaus.plexus.redback.struts2.action.AbstractUserCredentialsAction;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.memory.SimpleUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.JUnit4;
 
 import java.util.Collections;

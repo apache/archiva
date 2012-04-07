@@ -19,15 +19,15 @@ package org.codehaus.redback.integration.filter.authentication.digest;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authentication.TokenBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticationException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;

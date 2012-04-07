@@ -20,16 +20,16 @@ package org.codehaus.plexus.redback.users.ldap;
  */
 
 
+import org.apache.archiva.redback.users.AbstractUserManager;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.codehaus.plexus.redback.common.ldap.MappingException;
 import org.codehaus.plexus.redback.common.ldap.UserMapper;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapException;
-import org.codehaus.plexus.redback.users.AbstractUserManager;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.UserQuery;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.redback.users.ldap.ctl.LdapController;
 import org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerException;
 import org.codehaus.plexus.redback.users.ldap.service.LdapCacheService;
@@ -343,7 +343,7 @@ public class LdapUserManager
     }
 
     /**
-     * @see org.codehaus.plexus.redback.users.UserManager#findUsersByUsernameKey(java.lang.String, boolean)
+     * @see org.apache.archiva.redback.users.UserManager#findUsersByUsernameKey(java.lang.String, boolean)
      */
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
     {
@@ -360,7 +360,7 @@ public class LdapUserManager
     }
 
     /**
-     * @see org.codehaus.plexus.redback.users.UserManager#getUsers()
+     * @see org.apache.archiva.redback.users.UserManager#getUsers()
      */
     public List<User> getUsers()
     {

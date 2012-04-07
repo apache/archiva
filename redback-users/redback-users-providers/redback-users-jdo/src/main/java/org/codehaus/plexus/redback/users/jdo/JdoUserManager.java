@@ -19,23 +19,22 @@ package org.codehaus.plexus.redback.users.jdo;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.AbstractUserManager;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.jdo.PlexusJdoUtils;
 import org.codehaus.plexus.jdo.PlexusObjectNotFoundException;
 import org.codehaus.plexus.jdo.PlexusStoreException;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.redback.users.AbstractUserManager;
-import org.codehaus.plexus.redback.users.PermanentUserException;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManagerException;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.UserQuery;
+import org.apache.archiva.redback.users.PermanentUserException;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.util.StringUtils;
 import org.jpox.JDOClassLoaderResolver;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jdo.Extent;

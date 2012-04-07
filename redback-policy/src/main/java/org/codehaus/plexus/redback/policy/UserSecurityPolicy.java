@@ -16,8 +16,7 @@ package org.codehaus.plexus.redback.policy;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
 
 import java.util.List;
 
@@ -174,7 +173,7 @@ public interface UserSecurityPolicy
      * anonymous users needs to occur before calling this method.
      * <p/>
      * This method does not persist the newly changed user password.
-     * That will require a call to {@link UserManager#updateUser(User)}.
+     * That will require a call to {@link org.apache.archiva.redback.users.UserManager#updateUser(User)}.
      *
      * @param user the user password to validate, remember, and encode.
      * @throws PasswordRuleViolationException if the new password violates the password rules

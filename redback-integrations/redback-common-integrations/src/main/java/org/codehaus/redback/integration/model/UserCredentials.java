@@ -19,8 +19,8 @@ package org.codehaus.redback.integration.model;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.Serializable;

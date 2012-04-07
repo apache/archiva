@@ -19,8 +19,8 @@ package org.codehaus.plexus.redback.users.provider.test;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManagerListener;
+import org.apache.archiva.redback.users.UserManagerListener;
+import org.apache.archiva.redback.users.User;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -26,7 +26,7 @@ import org.codehaus.plexus.redback.management.DataManagementTool;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;

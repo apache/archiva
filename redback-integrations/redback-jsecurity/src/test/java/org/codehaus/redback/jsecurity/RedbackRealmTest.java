@@ -20,6 +20,7 @@ package org.codehaus.redback.jsecurity;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.rbac.Operation;
 import org.codehaus.plexus.redback.rbac.Permission;
@@ -27,8 +28,7 @@ import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManager;
 import org.jsecurity.authc.IncorrectCredentialsException;
 import org.jsecurity.authc.UsernamePasswordToken;
 import org.jsecurity.mgt.DefaultSecurityManager;

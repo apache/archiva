@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.NamingEnumeration;
@@ -34,12 +33,12 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.codehaus.plexus.redback.common.ldap.LdapUserMapper;
 import org.codehaus.plexus.redback.common.ldap.MappingException;
 import org.codehaus.plexus.redback.common.ldap.UserMapper;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.ldap.LdapUserQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +69,7 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#updateUser(org.codehaus.plexus.redback.users.User, javax.naming.directory.DirContext)
+	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#updateUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext)
 	 */
     public void updateUser( User user, DirContext context )
         throws LdapControllerException, MappingException
@@ -233,7 +232,7 @@ public class DefaultLdapController
    }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#createUser(org.codehaus.plexus.redback.users.User, javax.naming.directory.DirContext, boolean)
+	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#createUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext, boolean)
 	 */
     public void createUser( User user, DirContext context, boolean encodePasswordIfChanged )
         throws LdapControllerException, MappingException

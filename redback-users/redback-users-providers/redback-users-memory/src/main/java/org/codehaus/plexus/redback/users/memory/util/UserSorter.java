@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.users.memory.util;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 import java.util.Comparator;
 

@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.authorization;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 /**
  * @author Jason van Zyl

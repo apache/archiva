@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.management;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.SystemUtils;
 import org.codehaus.plexus.redback.common.jdo.UserConfigurableJdoFactory;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
@@ -31,8 +32,7 @@ import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.tests.utils.RBACDefaults;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.custommonkey.xmlunit.XMLAssert;

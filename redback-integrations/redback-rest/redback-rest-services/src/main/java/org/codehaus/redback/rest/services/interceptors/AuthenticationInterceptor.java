@@ -20,6 +20,8 @@ package org.codehaus.redback.rest.services.interceptors;
  */
 
 
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
@@ -29,9 +31,7 @@ import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticationException;
 import org.codehaus.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
 import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;

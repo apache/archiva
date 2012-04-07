@@ -16,7 +16,7 @@ package org.codehaus.plexus.redback.policy;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 /**
  * AccountLockedException 

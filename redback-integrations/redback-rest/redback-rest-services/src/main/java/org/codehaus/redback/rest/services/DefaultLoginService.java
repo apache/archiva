@@ -18,6 +18,7 @@ package org.codehaus.redback.rest.services;
  * specific language governing permissions and limitations
  * under the License.
  */
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
@@ -29,7 +30,6 @@ import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.rest.api.model.User;
 import org.codehaus.redback.rest.api.services.LoginService;
@@ -130,7 +130,7 @@ public class DefaultLoginService
             SecuritySession securitySession = securitySystem.authenticate( authDataSource );
             if ( securitySession.getAuthenticationResult().isAuthenticated() )
             {
-                org.codehaus.plexus.redback.users.User user = securitySession.getUser();
+                org.apache.archiva.redback.users.User user = securitySession.getUser();
                 if ( !user.isValidated() )
                 {
                     log.info( "user {} not validated", user.getUsername() );
@@ -186,7 +186,7 @@ public class DefaultLoginService
         return Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
     }
 
-    private User buildRestUser( org.codehaus.plexus.redback.users.User user )
+    private User buildRestUser( org.apache.archiva.redback.users.User user )
     {
         User restUser = new User();
         restUser.setEmail( user.getEmail() );

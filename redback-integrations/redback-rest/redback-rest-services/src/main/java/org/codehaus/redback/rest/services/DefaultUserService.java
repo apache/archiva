@@ -20,6 +20,8 @@ package org.codehaus.redback.rest.services;
  */
 
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -40,8 +42,6 @@ import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.integration.mail.Mailer;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
@@ -143,7 +143,7 @@ public class DefaultUserService
 
         try
         {
-            org.codehaus.plexus.redback.users.User u = userManager.findUser( user.getUsername() );
+            org.apache.archiva.redback.users.User u = userManager.findUser( user.getUsername() );
             if ( u != null )
             {
                 throw new RedbackServiceException(
@@ -172,7 +172,7 @@ public class DefaultUserService
             throw new RedbackServiceException( new ErrorMessage( "email cannot be empty" ) );
         }
 
-        org.codehaus.plexus.redback.users.User u =
+        org.apache.archiva.redback.users.User u =
             userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
         u.setPassword( user.getPassword() );
         u.setLocked( user.isLocked() );
@@ -246,7 +246,7 @@ public class DefaultUserService
     {
         try
         {
-            org.codehaus.plexus.redback.users.User user = userManager.findUser( username );
+            org.apache.archiva.redback.users.User user = userManager.findUser( username );
             return getSimpleUser( user );
         }
         catch ( UserNotFoundException e )
@@ -258,10 +258,10 @@ public class DefaultUserService
     public List<User> getUsers()
         throws RedbackServiceException
     {
-        List<org.codehaus.plexus.redback.users.User> users = userManager.getUsers();
+        List<org.apache.archiva.redback.users.User> users = userManager.getUsers();
         List<User> simpleUsers = new ArrayList<User>( users.size() );
 
-        for ( org.codehaus.plexus.redback.users.User user : users )
+        for ( org.apache.archiva.redback.users.User user : users )
         {
             simpleUsers.add( getSimpleUser( user ) );
         }
@@ -339,7 +339,7 @@ public class DefaultUserService
     {
         try
         {
-            org.codehaus.plexus.redback.users.User rawUser = userManager.findUser( user.getUsername() );
+            org.apache.archiva.redback.users.User rawUser = userManager.findUser( user.getUsername() );
             rawUser.setFullName( user.getFullName() );
             rawUser.setEmail( user.getEmail() );
             rawUser.setValidated( user.isValidated() );
@@ -391,7 +391,7 @@ public class DefaultUserService
     {
         try
         {
-            org.codehaus.plexus.redback.users.User user = userManager.getGuestUser();
+            org.apache.archiva.redback.users.User user = userManager.getGuestUser();
             return getSimpleUser( user );
         }
         catch ( Exception e )
@@ -412,7 +412,7 @@ public class DefaultUserService
         try
         {
             securitySystem.getPolicy().setEnabled( false );
-            org.codehaus.plexus.redback.users.User user = userManager.createGuestUser();
+            org.apache.archiva.redback.users.User user = userManager.createGuestUser();
             user.setPasswordChangeRequired( false );
             user = userManager.updateUser( user, false );
             roleManager.assignRole( "guest", user.getPrincipal().toString() );
@@ -445,7 +445,7 @@ public class DefaultUserService
         return Boolean.TRUE;
     }
 
-    private User getSimpleUser( org.codehaus.plexus.redback.users.User user )
+    private User getSimpleUser( org.apache.archiva.redback.users.User user )
     {
         if ( user == null )
         {
@@ -462,7 +462,7 @@ public class DefaultUserService
             return Boolean.FALSE;
         }
 
-        org.codehaus.plexus.redback.users.User user =
+        org.apache.archiva.redback.users.User user =
             userManager.createUser( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, adminUser.getFullName(),
                                     adminUser.getEmail() );
         user.setPassword( adminUser.getPassword() );
@@ -514,7 +514,7 @@ public class DefaultUserService
 
         try
         {
-            org.codehaus.plexus.redback.users.User user = userManager.findUser( username );
+            org.apache.archiva.redback.users.User user = userManager.findUser( username );
 
             AuthenticationKey authkey = keyManager.createKey( username, "Password Reset Request",
                                                               policy.getUserValidationSettings().getEmailValidationTimeout() );
@@ -567,7 +567,7 @@ public class DefaultUserService
                 new ErrorMessage( "user.already.exists", new String[]{ user.getUsername() } ) );
         }
 
-        org.codehaus.plexus.redback.users.User u =
+        org.apache.archiva.redback.users.User u =
             userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
         u.setPassword( user.getPassword() );
         u.setValidated( false );
@@ -633,7 +633,7 @@ public class DefaultUserService
         {
             AuthenticationKey authkey = securitySystem.getKeyManager().findKey( key );
 
-            org.codehaus.plexus.redback.users.User user =
+            org.apache.archiva.redback.users.User user =
                 securitySystem.getUserManager().findUser( authkey.getForPrincipal() );
 
             user.setValidated( true );
@@ -827,7 +827,7 @@ public class DefaultUserService
     {
         validateCredentialsLoose( user );
 
-        org.codehaus.plexus.redback.users.User tmpuser =
+        org.apache.archiva.redback.users.User tmpuser =
             userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
 
         user.setPassword( user.getPassword() );

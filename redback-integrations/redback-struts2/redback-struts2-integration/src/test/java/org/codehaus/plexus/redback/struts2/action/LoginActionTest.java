@@ -27,6 +27,7 @@ import static org.easymock.EasyMock.verify;
 
 import java.util.HashMap;
 
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -38,7 +39,6 @@ import org.codehaus.plexus.redback.policy.UserValidationSettings;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.XWorkTestCase;

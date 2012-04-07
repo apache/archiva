@@ -19,12 +19,12 @@ package org.codehaus.plexus.redback.users.cached;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerListener;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.cache.Cache;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserManagerListener;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.UserQuery;
+import org.apache.archiva.redback.users.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

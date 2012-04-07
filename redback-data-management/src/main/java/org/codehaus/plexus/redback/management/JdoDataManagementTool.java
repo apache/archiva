@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.KeyManagerException;
@@ -50,8 +51,7 @@ import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.rbac.jdo.RbacDatabase;
 import org.codehaus.plexus.redback.rbac.jdo.io.stax.RbacJdoModelStaxReader;
 import org.codehaus.plexus.redback.rbac.jdo.io.stax.RbacJdoModelStaxWriter;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.users.jdo.UserDatabase;
 import org.codehaus.plexus.redback.users.jdo.io.stax.UsersManagementStaxReader;
 import org.codehaus.plexus.redback.users.jdo.io.stax.UsersManagementStaxWriter;

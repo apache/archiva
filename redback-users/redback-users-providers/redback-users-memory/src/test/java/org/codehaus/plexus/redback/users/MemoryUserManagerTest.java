@@ -19,6 +19,7 @@ package org.codehaus.plexus.redback.users;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
 import org.codehaus.plexus.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.junit.Before;

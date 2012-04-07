@@ -21,8 +21,6 @@ package org.codehaus.plexus.redback.users.jdo;
 
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.redback.common.jdo.test.StoreManagerDebug;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.jpox.AbstractPersistenceManagerFactory;
 import org.jpox.SchemaTool;
@@ -33,8 +31,6 @@ import javax.inject.Named;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 

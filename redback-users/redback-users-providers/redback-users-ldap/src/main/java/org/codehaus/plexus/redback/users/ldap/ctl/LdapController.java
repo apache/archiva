@@ -19,9 +19,9 @@ package org.codehaus.plexus.redback.users.ldap.ctl;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.codehaus.plexus.redback.common.ldap.MappingException;
-import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.ldap.LdapUserQuery;
 
 import javax.naming.directory.DirContext;

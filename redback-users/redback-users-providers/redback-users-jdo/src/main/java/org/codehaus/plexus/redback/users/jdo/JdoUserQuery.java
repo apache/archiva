@@ -19,8 +19,8 @@ package org.codehaus.plexus.redback.users.jdo;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.AbstractUserQuery;
-import org.codehaus.plexus.redback.users.UserQuery;
+import org.apache.archiva.redback.users.AbstractUserQuery;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.util.ArrayList;

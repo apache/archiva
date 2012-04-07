@@ -18,7 +18,7 @@ package org.codehaus.redback.rest.services;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 /**
  * @author Olivier Lamy

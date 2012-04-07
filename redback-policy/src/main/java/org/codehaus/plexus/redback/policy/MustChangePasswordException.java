@@ -1,6 +1,6 @@
 package org.codehaus.plexus.redback.policy;
 
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.

@@ -19,8 +19,8 @@ package org.codehaus.plexus.redback.common.ldap;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
-import org.codehaus.plexus.redback.users.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 

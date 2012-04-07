@@ -16,11 +16,11 @@ package org.codehaus.plexus.redback.policy.encoders;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.users.Messages;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.policy.PasswordEncoder;
 import org.codehaus.plexus.redback.policy.PasswordEncodingException;
-import org.codehaus.plexus.redback.users.Messages;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

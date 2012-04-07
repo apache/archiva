@@ -82,7 +82,7 @@ public class User
         this.locked = locked;
     }
 
-    public User( org.codehaus.plexus.redback.users.User user )
+    public User( org.apache.archiva.redback.users.User user )
     {
         setUsername( user.getUsername() );
         this.setEmail( user.getEmail() );

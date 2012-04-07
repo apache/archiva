@@ -20,12 +20,12 @@ package org.codehaus.plexus.redback.users.provider.test;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.redback.users.PermanentUserException;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.UserQuery;
+import org.apache.archiva.redback.users.PermanentUserException;
+import org.apache.archiva.redback.users.UserManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

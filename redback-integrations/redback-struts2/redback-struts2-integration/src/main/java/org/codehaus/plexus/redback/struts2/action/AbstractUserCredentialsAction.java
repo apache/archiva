@@ -19,6 +19,7 @@ package org.codehaus.plexus.redback.struts2.action;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.policy.PasswordRuleViolationException;
 import org.codehaus.plexus.redback.rbac.Permission;
 import org.codehaus.plexus.redback.rbac.RBACManager;
@@ -26,10 +27,8 @@ import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.redback.integration.model.UserCredentials;
-import org.codehaus.redback.integration.role.RoleConstants;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.integration.util.RoleSorter;
 

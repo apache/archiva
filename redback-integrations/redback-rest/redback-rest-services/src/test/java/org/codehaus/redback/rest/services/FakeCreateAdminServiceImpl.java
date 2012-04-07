@@ -19,13 +19,10 @@ package org.codehaus.redback.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.api.services.UserService;
 
 import javax.inject.Inject;
