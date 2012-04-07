@@ -57,7 +57,7 @@
     <property name="templateProcessor" ref="roleTemplateProcessor#test"/>
   </bean>
 
-  <bean name="rBACManager#cached" class="org.codehaus.plexus.redback.rbac.cached.CachedRbacManager">
+  <bean name="rBACManager#cached" class="org.apache.archiva.redback.rbac.cached.CachedRbacManager">
     <property name="rbacImpl" ref="rBACManager#memory"/>
   </bean>
 
