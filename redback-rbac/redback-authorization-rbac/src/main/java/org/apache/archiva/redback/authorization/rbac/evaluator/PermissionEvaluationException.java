@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization.rbac.evaluator;
+package org.apache.archiva.redback.authorization.rbac.evaluator;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,17 +19,23 @@ package org.codehaus.plexus.redback.authorization.rbac.evaluator;
  * under the License.
  */
 
-import org.apache.archiva.redback.rbac.Permission;
-
-
 /**
- * PermissionEvaluator:
+ * PermissionEvaluationException:
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @version $Id$
  */
-public interface PermissionEvaluator
+public class PermissionEvaluationException
+    extends Exception
 {
-    boolean evaluate( Permission permission, Object operation, Object resource, Object principal )
-        throws PermissionEvaluationException;
+    public PermissionEvaluationException( String string )
+    {
+        super( string );
+    }
+
+    public PermissionEvaluationException( String string, Throwable throwable )
+    {
+        super( string, throwable );
+    }
+
 }

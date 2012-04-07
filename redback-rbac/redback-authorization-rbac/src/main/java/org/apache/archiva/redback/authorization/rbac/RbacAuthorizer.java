@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization.rbac;
+package org.apache.archiva.redback.authorization.rbac;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,8 +28,8 @@ import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.authorization.Authorizer;
 import org.apache.archiva.redback.authorization.NotAuthorizedException;
-import org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluationException;
-import org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluator;
+import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluationException;
+import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluator;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;

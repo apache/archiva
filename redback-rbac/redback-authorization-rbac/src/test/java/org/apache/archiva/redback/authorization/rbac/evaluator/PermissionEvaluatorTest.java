@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization.rbac.evaluator;
+package org.apache.archiva.redback.authorization.rbac.evaluator;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,8 @@ package org.codehaus.plexus.redback.authorization.rbac.evaluator;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluationException;
+import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluator;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Resource;

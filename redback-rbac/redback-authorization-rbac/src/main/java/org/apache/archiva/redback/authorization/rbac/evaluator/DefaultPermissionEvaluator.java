@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization.rbac.evaluator;
+package org.apache.archiva.redback.authorization.rbac.evaluator;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
