@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.jdo.test;
+package org.apache.archiva.redback.common.jdo.test;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

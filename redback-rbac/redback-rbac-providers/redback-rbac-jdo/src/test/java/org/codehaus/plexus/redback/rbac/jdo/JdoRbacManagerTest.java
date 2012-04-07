@@ -21,7 +21,7 @@ package org.codehaus.plexus.redback.rbac.jdo;
 
 import net.sf.ehcache.CacheManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.redback.common.jdo.test.StoreManagerDebug;
+import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.tests.AbstractRbacManagerTestCase;

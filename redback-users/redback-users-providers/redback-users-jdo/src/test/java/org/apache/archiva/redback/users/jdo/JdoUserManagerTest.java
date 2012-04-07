@@ -20,7 +20,7 @@ package org.apache.archiva.redback.users.jdo;
  */
 
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.redback.common.jdo.test.StoreManagerDebug;
+import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
 import org.apache.archiva.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.jpox.AbstractPersistenceManagerFactory;
 import org.jpox.SchemaTool;

@@ -20,9 +20,9 @@ package org.codehaus.plexus.redback.management;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.common.jdo.UserConfigurableJdoFactory;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.SystemUtils;
-import org.codehaus.plexus.redback.common.jdo.UserConfigurableJdoFactory;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.KeyManagerException;
