@@ -26,7 +26,7 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;

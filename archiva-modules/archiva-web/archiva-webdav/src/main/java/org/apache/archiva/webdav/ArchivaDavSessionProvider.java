@@ -19,6 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
@@ -26,8 +27,7 @@ import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;

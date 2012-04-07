@@ -19,10 +19,10 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.keys.KeyManager;
