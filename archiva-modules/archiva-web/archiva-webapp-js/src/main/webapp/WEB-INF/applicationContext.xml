@@ -212,7 +212,7 @@
      -->
 
     <!--
-    <bean name="ldapConnectionFactory" class="org.codehaus.plexus.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
+    <bean name="ldapConnectionFactory" class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
       <property name="userConf" ref="userConfiguration"/>
     </bean>
     -->
@@ -242,7 +242,7 @@
      -->
     
     <!--
-    <bean name="ldapUserMapper" class="org.codehaus.plexus.redback.common.ldap.LdapUserMapper">
+    <bean name="ldapUserMapper" class="org.apache.archiva.redback.common.ldap.LdapUserMapper">
       <property name="emailAttribute" value="email"/>
       <property name="fullNameAttribute" value="givenName"/>
       <property name="passwordAttribute" value="userPassword"/>
