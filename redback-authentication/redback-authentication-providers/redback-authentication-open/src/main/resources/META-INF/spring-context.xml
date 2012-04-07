@@ -29,6 +29,6 @@
 
   <context:annotation-config />
   <context:component-scan 
-    base-package="org.codehaus.plexus.redback.authentication.open"/>
+    base-package="org.apache.archiva.redback.authentication.open"/>
  
 </beans>
