@@ -33,7 +33,7 @@ import org.codehaus.plexus.redback.rbac.Role;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.users.memory.SimpleUser;
+import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.codehaus.redback.integration.model.AdminEditUserCredentials;
 import org.junit.After;
 import org.junit.Before;

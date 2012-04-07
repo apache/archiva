@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.memory;
+package org.apache.archiva.redback.users.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,7 +26,7 @@ import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.UserQuery;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.memory.util.UserSorter;
+import org.apache.archiva.redback.users.memory.util.UserSorter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 

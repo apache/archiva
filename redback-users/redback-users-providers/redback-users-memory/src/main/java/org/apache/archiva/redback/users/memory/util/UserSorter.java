@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.memory.util;
+package org.apache.archiva.redback.users.memory.util;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

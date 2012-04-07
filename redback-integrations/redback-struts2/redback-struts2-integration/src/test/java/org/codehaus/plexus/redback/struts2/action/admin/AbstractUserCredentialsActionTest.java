@@ -37,7 +37,7 @@ import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.memory.SimpleUser;
+import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;

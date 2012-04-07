@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users;
+package org.apache.archiva.redback.users;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.users;
  */
 
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
+import org.apache.archiva.redback.users.memory.MemoryUserManager;
 import org.codehaus.plexus.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.junit.Before;
 
