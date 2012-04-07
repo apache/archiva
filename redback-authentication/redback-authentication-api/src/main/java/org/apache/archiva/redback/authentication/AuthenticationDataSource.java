@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication;
+package org.apache.archiva.redback.authentication;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,20 @@ package org.codehaus.plexus.redback.authentication;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-
 /**
- * Authenticator:
+ * Just a tag to indicate that the implementing class is an AuthenticationDataSource.
+ * <p/>
+ * todo which this back to an interface and use the mojo style expression evaluation to populate the particular required fields
  *
- * @author Jesse McConnell
  * @version $Id$
+ * @see PasswordBasedAuthenticationDataSource
+ * @see TokenBasedAuthenticationDataSource
  */
-public interface Authenticator
+public interface AuthenticationDataSource
 {
-    String getId();
+    public String ROLE = AuthenticationDataSource.class.getName();
 
-    boolean supportsDataSource( AuthenticationDataSource source );
+    String getPrincipal();
 
-    AuthenticationResult authenticate( AuthenticationDataSource source )
-        throws AccountLockedException, AuthenticationException, MustChangePasswordException;
+    boolean isEnforcePasswordChange();
 }

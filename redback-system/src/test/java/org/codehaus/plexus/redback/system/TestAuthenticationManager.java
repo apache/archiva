@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.system;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.redback.authentication.AuthenticationManager;
+import org.apache.archiva.redback.authentication.AuthenticationManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

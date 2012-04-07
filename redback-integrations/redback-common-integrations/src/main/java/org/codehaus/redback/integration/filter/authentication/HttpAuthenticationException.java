@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.filter.authentication;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationException;
 
 /**
  * HttpAuthenticationException

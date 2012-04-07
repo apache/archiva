@@ -18,9 +18,9 @@ package org.codehaus.redback.rest.services;
  * specific language governing permissions and limitations
  * under the License.
  */
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.jdo.JdoAuthenticationKey;

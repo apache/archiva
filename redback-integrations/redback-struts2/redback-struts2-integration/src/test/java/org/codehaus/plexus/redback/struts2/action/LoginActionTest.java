@@ -28,9 +28,9 @@ import static org.easymock.EasyMock.verify;
 import java.util.HashMap;
 
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;

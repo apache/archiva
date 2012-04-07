@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.system;
  */
 
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;

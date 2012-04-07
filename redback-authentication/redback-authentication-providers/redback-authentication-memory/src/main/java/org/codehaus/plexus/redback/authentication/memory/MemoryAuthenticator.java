@@ -19,11 +19,11 @@ package org.codehaus.plexus.redback.authentication.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authentication.Authenticator;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.Authenticator;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.springframework.stereotype.Service;
 
 /**

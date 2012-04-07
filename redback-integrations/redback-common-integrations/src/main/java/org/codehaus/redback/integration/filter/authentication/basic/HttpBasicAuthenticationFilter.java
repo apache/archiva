@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.filter.authentication.basic;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.codehaus.redback.integration.filter.authentication.AbstractHttpAuthenticationFilter;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 

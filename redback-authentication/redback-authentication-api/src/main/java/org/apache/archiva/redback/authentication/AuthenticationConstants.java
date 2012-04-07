@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication;
+package org.apache.archiva.redback.authentication;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,23 +19,14 @@ package org.codehaus.plexus.redback.authentication;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-
-import java.util.List;
-
 /**
- * AuthenticationManager:
- *
- * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ * Contants class used for authentication
+ * @version $Id$
  */
-public interface AuthenticationManager
+public class AuthenticationConstants
 {
-    String getId();
 
-    List<Authenticator> getAuthenticators();
+    // for User Manager Authenticator
+    public static final String AUTHN_NO_SUCH_USER = "1";
 
-    AuthenticationResult authenticate( AuthenticationDataSource source )
-        throws AccountLockedException, AuthenticationException, MustChangePasswordException;
 }

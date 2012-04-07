@@ -20,8 +20,8 @@ package org.codehaus.plexus.redback.system;
  */
 
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.keys.KeyManager;

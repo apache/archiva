@@ -19,13 +19,13 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.struts2.ServletActionContext;
-import org.codehaus.plexus.redback.authentication.AuthenticationConstants;
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationConstants;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;

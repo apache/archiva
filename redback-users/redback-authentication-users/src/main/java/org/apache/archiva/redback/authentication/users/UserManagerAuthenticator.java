@@ -19,14 +19,14 @@ package org.apache.archiva.redback.authentication.users;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authentication.AuthenticationConstants;
-import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authentication.Authenticator;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationConstants;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.PasswordEncoder;
@@ -72,7 +72,7 @@ public class UserManagerAuthenticator
      * @throws MustChangePasswordException
      * @throws MustChangePasswordException
      * @throws PolicyViolationException
-     * @see org.codehaus.plexus.redback.authentication.Authenticator#authenticate(org.codehaus.plexus.redback.authentication.AuthenticationDataSource)
+     * @see org.apache.archiva.redback.authentication.Authenticator#authenticate(org.apache.archiva.redback.authentication.AuthenticationDataSource)
      */
     public AuthenticationResult authenticate( AuthenticationDataSource ds )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException
@@ -158,7 +158,7 @@ public class UserManagerAuthenticator
     }
 
     /**
-     * Returns the wrapped {@link UserManager} used by this {@link Authenticator}
+     * Returns the wrapped {@link UserManager} used by this {@link org.apache.archiva.redback.authentication.Authenticator}
      * implementation for authentication.
      *
      * @return the userManager

@@ -20,9 +20,9 @@ package org.codehaus.plexus.redback.authentication.memory;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authentication.Authenticator;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.Authenticator;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

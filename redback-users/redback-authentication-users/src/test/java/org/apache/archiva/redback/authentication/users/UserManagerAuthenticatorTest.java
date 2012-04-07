@@ -20,14 +20,13 @@ package org.apache.archiva.redback.authentication.users;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.authentication.users.UserManagerAuthenticator;
+import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authentication.AuthenticationException;
-import org.codehaus.plexus.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.authentication.Authenticator;
-import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;

@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication;
+package org.apache.archiva.redback.authentication;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,34 +19,41 @@ package org.codehaus.plexus.redback.authentication;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-
 /**
- * TokenBasedAuthenticationDataSource
+ * PasswordBasedAuthenticationDataSource: the username is considered the principal with this data source
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
  */
-@Service( "authenticationDataSource#token" )
-@Scope( "prototype" )
-public class TokenBasedAuthenticationDataSource
+@Service("authenticationDataSource#password")
+@Scope("prototype")
+public class PasswordBasedAuthenticationDataSource
     implements AuthenticationDataSource
 {
-    private String token;
+    private String password;
 
     private String principal;
 
-    private boolean enforcePasswordChange = true;
-
-    public TokenBasedAuthenticationDataSource( String principal )
+    public PasswordBasedAuthenticationDataSource()
     {
-        this.principal = principal;
+
     }
 
-    public TokenBasedAuthenticationDataSource()
+    public PasswordBasedAuthenticationDataSource( String principal, String password )
     {
+        this.principal = principal;
+        this.password = password;
+    }
+
+    public String getPassword()
+    {
+        return password;
     }
 
     public String getPrincipal()
@@ -54,9 +61,9 @@ public class TokenBasedAuthenticationDataSource
         return principal;
     }
 
-    public String getToken()
+    public void setPassword( String password )
     {
-        return token;
+        this.password = password;
     }
 
     public void setPrincipal( String principal )
@@ -64,28 +71,23 @@ public class TokenBasedAuthenticationDataSource
         this.principal = principal;
     }
 
-    public void setToken( String token )
-    {
-        this.token = token;
-    }
-
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
-        sb.append( "TokenBasedAuthenticationDataSource[" );
+        sb.append( "PasswordBasedAuthenticationDataSource[" );
         sb.append( "principal=" ).append( principal );
-        sb.append( ",token=" ).append( token );
+        sb.append( ",password=" );
+        if ( StringUtils.isNotEmpty( password ) )
+        {
+            // Intentionally not showing real password 
+            sb.append( "***" );
+        }
         sb.append( ']' );
         return sb.toString();
     }
 
-    public void setEnforcePasswordChange( boolean enforcePasswordChange )
-    {
-        this.enforcePasswordChange = enforcePasswordChange;
-    }
-
     public boolean isEnforcePasswordChange()
     {
-        return enforcePasswordChange;
+        return true;
     }
 }
