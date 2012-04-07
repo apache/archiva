@@ -29,8 +29,8 @@ import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 

@@ -283,7 +283,7 @@
     in the security.properties
     -->
     <!--
-    <bean name="userSecurityPolicy" class="org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy">
+    <bean name="userSecurityPolicy" class="org.apache.archiva.redback.policy.DefaultUserSecurityPolicy">
       <property name="config" ref="userConfiguration"/>
       <property name="passwordEncoder" ref="passwordEncoder#sha1"/>
       <property name="userValidationSettings" ref="userValidationSettings"/>
