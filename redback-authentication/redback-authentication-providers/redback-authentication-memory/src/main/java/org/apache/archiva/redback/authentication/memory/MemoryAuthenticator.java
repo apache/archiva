@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication.memory;
+package org.apache.archiva.redback.authentication.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
