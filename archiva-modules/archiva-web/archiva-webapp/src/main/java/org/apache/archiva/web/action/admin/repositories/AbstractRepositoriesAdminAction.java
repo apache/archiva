@@ -21,11 +21,10 @@ package org.apache.archiva.web.action.admin.repositories;
 
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.action.AbstractActionSupport;
-import org.codehaus.plexus.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;

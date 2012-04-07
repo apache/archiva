@@ -19,12 +19,12 @@ package org.apache.archiva.web.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.web.action.AbstractActionSupport;
 import org.codehaus.plexus.cache.Cache;
-import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.redback.integration.interceptor.SecureAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
