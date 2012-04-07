@@ -19,6 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -33,8 +34,7 @@ import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.DefaultSecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
 import org.springframework.stereotype.Service;
 

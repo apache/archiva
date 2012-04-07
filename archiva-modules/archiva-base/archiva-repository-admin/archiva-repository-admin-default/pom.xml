@@ -236,7 +236,7 @@
               org.apache.maven.index*,
               org.apache.maven.wagon*,
               org.codehaus.plexus.redback.role,
-              org.codehaus.plexus.redback.users,
+              org.apache.archiva.redback.users,
               org.codehaus.plexus.registry,
               org.codehaus.plexus.taskqueue,
               org.codehaus.redback.components.scheduler,

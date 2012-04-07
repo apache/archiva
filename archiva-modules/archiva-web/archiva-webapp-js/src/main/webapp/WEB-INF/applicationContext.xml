@@ -161,7 +161,7 @@
       </description>
       <requirements>
         <requirement>
-          <role>org.codehaus.plexus.redback.users.UserManager</role>
+          <role>org.apache.archiva.redback.users.UserManager</role>
           <role-hint>cached</role-hint>
           <field-name>userManager</field-name>
         </requirement>

@@ -1056,7 +1056,7 @@
                     org.codehaus.plexus.redback.authorization,
                     org.codehaus.plexus.redback.policy,
                     org.codehaus.plexus.redback.system,
-                    org.codehaus.plexus.redback.users,
+                    org.apache.archiva.redback.users,
                     org.codehaus.plexus.registry,
                     org.codehaus.plexus.taskqueue,
                     org.codehaus.plexus.util,

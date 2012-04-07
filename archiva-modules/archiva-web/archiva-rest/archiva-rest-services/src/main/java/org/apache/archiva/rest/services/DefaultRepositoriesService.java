@@ -19,13 +19,11 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
@@ -42,6 +40,8 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
@@ -77,8 +77,6 @@ import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -26,7 +26,7 @@ import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.codehaus.plexus.redback.users.User;
+import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.slf4j.Logger;

@@ -19,6 +19,11 @@ package org.apache.archiva.web.rss;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerListener;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.redback.authentication.AuthenticationDataSource;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -30,11 +35,6 @@ import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
-import org.codehaus.plexus.redback.users.UserManagerListener;
-import org.codehaus.plexus.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.UserQuery;
 import org.codehaus.plexus.redback.users.jdo.JdoUser;
 
 import java.util.ArrayList;

@@ -20,6 +20,7 @@ package org.apache.archiva.webdav;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.users.User;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
 import org.apache.jackrabbit.webdav.WebdavRequestImpl;
@@ -32,7 +33,6 @@ import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.users.User;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 
 import javax.servlet.RequestDispatcher;

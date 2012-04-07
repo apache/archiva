@@ -19,14 +19,14 @@ package org.apache.archiva.security;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
 import org.easymock.MockControl;
 import org.junit.Before;
 import org.junit.Test;

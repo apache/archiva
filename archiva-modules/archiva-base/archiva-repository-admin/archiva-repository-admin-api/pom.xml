@@ -101,7 +101,7 @@
               javax.xml.bind.annotation,
               org.apache.commons.collections;version="[3.2,4)",
               org.apache.commons.lang;version="[2.4,3)",
-              org.codehaus.plexus.redback.users,
+              org.apache.archiva.redback.users,
               org.apache.maven.index.context;resolution:=optional,
               org.codehaus.jackson.annotate
             </Import-Package>

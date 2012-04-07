@@ -21,10 +21,10 @@ package org.apache.archiva.security;
 
 import java.util.Map;
 
+import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
-import org.codehaus.plexus.redback.users.User;
-import org.codehaus.plexus.redback.users.UserManager;
+import org.apache.archiva.redback.users.User;
 
 /**
  * ArchivaXworkUser
