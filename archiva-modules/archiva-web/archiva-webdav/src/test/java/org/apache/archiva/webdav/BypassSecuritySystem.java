@@ -35,7 +35,7 @@ import org.codehaus.plexus.redback.system.DefaultSecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.memory.MemoryUserManager;
+import org.apache.archiva.redback.users.memory.MemoryUserManager;
 import org.springframework.stereotype.Service;
 
 /**

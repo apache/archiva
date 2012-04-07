@@ -30,7 +30,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.users.memory.SimpleUser;
+import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

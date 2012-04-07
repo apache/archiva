@@ -43,7 +43,7 @@ import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.UnauthorizedException;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.users.memory.SimpleUser;
+import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
 import org.easymock.MockControl;
