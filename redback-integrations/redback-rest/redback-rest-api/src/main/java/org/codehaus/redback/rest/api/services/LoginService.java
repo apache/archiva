@@ -19,8 +19,7 @@ package org.codehaus.redback.rest.api.services;
  * under the License.
  */
 
-import org.apache.cxf.jaxrs.model.wadl.Description;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.codehaus.redback.rest.api.model.User;
 
 import javax.ws.rs.GET;

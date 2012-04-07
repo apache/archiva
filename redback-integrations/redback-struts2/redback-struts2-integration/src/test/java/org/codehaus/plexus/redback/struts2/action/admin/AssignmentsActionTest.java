@@ -24,7 +24,7 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionProxy;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;

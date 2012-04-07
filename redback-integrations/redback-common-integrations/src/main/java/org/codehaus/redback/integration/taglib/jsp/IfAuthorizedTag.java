@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.taglib.jsp;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;

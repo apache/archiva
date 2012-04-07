@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization;
+package org.apache.archiva.redback.authorization;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

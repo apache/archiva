@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization;
+package org.apache.archiva.redback.authorization;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,31 +19,20 @@ package org.codehaus.plexus.redback.authorization;
  * under the License.
  */
 
-
 /**
- * EntityAuthenticationException.java
+ * The exception thrown if an entity is unauthorized to access a resource.
  *
- * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $ID:$
+ * @author <a href="mailto:dan@envoisolutions.com">Dan Diephouse</a>
+ * @since Mar 1, 2003
  */
-public class AuthorizationException
+public class UnauthorizedException
     extends Exception
 {
     /**
-     *
      * @param message
      */
-    public AuthorizationException( String message )
+    public UnauthorizedException( String message )
     {
         super( message );
-    }
-
-    /**
-     * @param message
-     * @param cause
-     */
-    public AuthorizationException( String message, Exception cause )
-    {
-        super( message, cause );
     }
 }

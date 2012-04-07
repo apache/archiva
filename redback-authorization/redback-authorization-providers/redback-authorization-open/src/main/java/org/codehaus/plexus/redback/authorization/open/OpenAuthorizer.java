@@ -16,10 +16,10 @@ package org.codehaus.plexus.redback.authorization.open;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.redback.authorization.AuthorizationDataSource;
-import org.codehaus.plexus.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.authorization.Authorizer;
+import org.apache.archiva.redback.authorization.AuthorizationDataSource;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.authorization.Authorizer;
 import org.springframework.stereotype.Service;
 
 /**

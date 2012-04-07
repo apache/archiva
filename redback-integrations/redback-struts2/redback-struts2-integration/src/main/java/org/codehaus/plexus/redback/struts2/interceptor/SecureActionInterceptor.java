@@ -26,7 +26,7 @@ import com.opensymphony.xwork2.ActionInvocation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.struts2.ServletActionContext;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;

@@ -20,11 +20,11 @@ package org.codehaus.plexus.redback.authorization.rbac;
  */
 
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.authorization.AuthorizationDataSource;
-import org.codehaus.plexus.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.authorization.Authorizer;
-import org.codehaus.plexus.redback.authorization.NotAuthorizedException;
+import org.apache.archiva.redback.authorization.AuthorizationDataSource;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.authorization.Authorizer;
+import org.apache.archiva.redback.authorization.NotAuthorizedException;
 import org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluationException;
 import org.codehaus.plexus.redback.authorization.rbac.evaluator.PermissionEvaluator;
 import org.codehaus.plexus.redback.rbac.Permission;

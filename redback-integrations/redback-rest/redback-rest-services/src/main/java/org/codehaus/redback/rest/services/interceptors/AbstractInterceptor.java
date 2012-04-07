@@ -21,7 +21,7 @@ package org.codehaus.redback.rest.services.interceptors;
 
 import org.apache.cxf.jaxrs.model.OperationResourceInfo;
 import org.apache.cxf.message.Message;
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

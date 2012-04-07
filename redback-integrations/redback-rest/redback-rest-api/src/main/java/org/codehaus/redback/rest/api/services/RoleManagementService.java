@@ -18,7 +18,7 @@ package org.codehaus.redback.rest.api.services;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.api.model.Application;
 import org.codehaus.redback.rest.api.model.ApplicationRoles;

@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization;
+package org.apache.archiva.redback.authorization;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,11 +19,14 @@ package org.codehaus.plexus.redback.authorization;
  * under the License.
  */
 
+import org.apache.archiva.redback.authorization.AuthorizationDataSource;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.AuthorizationResult;
+
 /**
  * Authorizer:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $ID:$
  * @todo chain of command rule processing
  */
 public interface Authorizer

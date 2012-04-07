@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization;
+package org.apache.archiva.redback.authorization;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,42 +19,31 @@ package org.codehaus.plexus.redback.authorization;
  * under the License.
  */
 
+
 /**
- * AuthorizationResult: wrapper object for results from the authorization system
+ * EntityAuthenticationException.java
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  * @version: $ID:$
  */
-public class AuthorizationResult
+public class AuthorizationException
+    extends Exception
 {
-    private boolean isAuthorized;
-
-    private Object principal;
-
-    private Exception exception;
-
-
-    public AuthorizationResult( boolean authorized,
-                                Object principal,
-                                Exception exception )
+    /**
+     *
+     * @param message
+     */
+    public AuthorizationException( String message )
     {
-        isAuthorized = authorized;
-        this.principal = principal;
-        this.exception = exception;
+        super( message );
     }
 
-    public boolean isAuthorized()
+    /**
+     * @param message
+     * @param cause
+     */
+    public AuthorizationException( String message, Exception cause )
     {
-        return isAuthorized;
-    }
-
-    public Object getPrincipal()
-    {
-        return principal;
-    }
-
-    public Exception getException()
-    {
-        return exception;
+        super( message, cause );
     }
 }

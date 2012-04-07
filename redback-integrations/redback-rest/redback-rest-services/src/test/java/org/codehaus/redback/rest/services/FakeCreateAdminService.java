@@ -18,7 +18,7 @@ package org.codehaus.redback.rest.services;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
