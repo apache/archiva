@@ -20,10 +20,10 @@ package org.codehaus.redback.integration.checks.security;
  */
 
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.RoleManager;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.UserManager;

@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  */
 
 import org.apache.archiva.redback.rbac.Resource;
-import org.codehaus.plexus.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;

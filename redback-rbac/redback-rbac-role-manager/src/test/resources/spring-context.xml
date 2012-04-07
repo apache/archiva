@@ -20,11 +20,8 @@
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-           http://www.springframework.org/schema/context 
-           http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
        default-lazy-init="false">
 
 
@@ -51,7 +48,7 @@
 
   <alias name="commons-configuration" alias="test-conf"/>
 
-  <bean name="roleManager" class="org.codehaus.plexus.redback.role.DefaultRoleManager">
+  <bean name="roleManager" class="org.apache.archiva.redback.role.DefaultRoleManager">
     <property name="modelValidator" ref="roleModelValidator"/>
     <property name="modelProcessor" ref="modelProcessor#memory"/>
     <property name="templateProcessor" ref="templateProcessor#memory"/>
@@ -60,13 +57,13 @@
 
 
 
-  <bean name="modelProcessor#memory" class="org.codehaus.plexus.redback.role.processor.DefaultRoleModelProcessor">
+  <bean name="modelProcessor#memory" class="org.apache.archiva.redback.role.processor.DefaultRoleModelProcessor">
     <property name="rbacManager" ref="rBACManager#memory"/>
   </bean>
 
 
 
-  <bean name="templateProcessor#memory" class="org.codehaus.plexus.redback.role.template.DefaultRoleTemplateProcessor">
+  <bean name="templateProcessor#memory" class="org.apache.archiva.redback.role.template.DefaultRoleTemplateProcessor">
     <property name="rbacManager" ref="rBACManager#memory"/>
   </bean>
 

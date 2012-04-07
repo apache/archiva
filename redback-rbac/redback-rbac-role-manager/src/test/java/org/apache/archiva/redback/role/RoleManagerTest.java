@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.services;
+package org.apache.archiva.redback.role;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,41 +19,41 @@ package org.codehaus.redback.rest.services;
  * under the License.
  */
 
+import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.configuration.UserConfiguration;
-import org.apache.archiva.redback.role.RoleManager;
-import org.codehaus.redback.rest.api.services.UserService;
+import org.junit.Before;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * @author Olivier Lamy
+ * RoleManagerTest:
+ *
+ * @author: Jesse McConnell <jesse@codehaus.org>
  */
-//Service( "fakeCreateAdminService" )
-public class FakeCreateAdminServiceImpl
-    implements FakeCreateAdminService
+public class RoleManagerTest
+    extends AbstractRoleManagerTest
 {
-    @Inject
-    @Named( value = "rBACManager#jdo" )
-    private RBACManager rbacManager;
+
+    @Inject @Named(value = "rBACManager#memory")
+    RBACManager rbacManagerMemory;
 
     @Inject
-    @Named( value = "userManager#jdo" )
-    private UserManager userManager;
-
-    @Inject
-    private UserConfiguration config;
-
-    @Inject
-    private RoleManager roleManager;
-
-    @Inject
-    private UserService userService;
-
-    public Boolean testAuthzWithoutKarmasNeededButAuthz()
+    RoleManager roleManagerInjected;
+    /**
+     * Creates a new RbacStore which contains no data.
+     */
+    @Before
+    public void setUp()
+        throws Exception
     {
-        return Boolean.TRUE;
+        CacheManager.getInstance().clearAll();
+        super.setUp();
+
+        rbacManager = rbacManagerMemory;
+
+        roleManager = roleManagerInjected;
     }
+ 
+ 
 }

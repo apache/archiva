@@ -21,12 +21,10 @@ package org.codehaus.redback.integration.checks.security;
 
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
