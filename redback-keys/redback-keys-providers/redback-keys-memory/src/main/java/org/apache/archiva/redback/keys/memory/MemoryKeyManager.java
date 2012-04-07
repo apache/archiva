@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys.memory;
+package org.apache.archiva.redback.keys.memory;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,6 +23,7 @@ import org.apache.archiva.redback.keys.AbstractKeyManager;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;
+import org.apache.archiva.redback.keys.memory.MemoryAuthenticationKey;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.stereotype.Service;
 

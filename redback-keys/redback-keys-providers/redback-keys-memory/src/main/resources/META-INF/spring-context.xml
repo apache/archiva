@@ -29,6 +29,6 @@
 
   <context:annotation-config />
   <context:component-scan 
-    base-package="org.codehaus.plexus.redback.keys.memory"/>
+    base-package="org.apache.archiva.redback.keys.memory"/>
  
 </beans>
