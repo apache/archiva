@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.configurable;
+package org.apache.archiva.redback.users.configurable;
 
 /*
  * Copyright 2001-2007 The Apache Software Foundation.
