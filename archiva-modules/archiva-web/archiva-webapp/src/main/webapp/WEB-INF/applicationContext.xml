@@ -284,7 +284,7 @@
     -->
      
     <!--
-    <bean name="userManager#cached" class="org.codehaus.plexus.redback.users.cached.CachedUserManager">
+    <bean name="userManager#cached" class="org.apache.archiva.redback.users.cached.CachedUserManager">
       <property name="userImpl" ref="userMapper#ldap"/>
       <property name="usersCache" ref="cache#users"/>
     </bean>     
