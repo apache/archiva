@@ -19,6 +19,7 @@ package org.apache.archiva.web.rss;
  * under the License.
  */
 
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerListener;
@@ -29,7 +30,6 @@ import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.system.DefaultSecuritySession;

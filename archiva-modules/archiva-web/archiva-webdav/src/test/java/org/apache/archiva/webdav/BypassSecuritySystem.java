@@ -20,12 +20,12 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.memory.MemoryKeyManager;
 import org.codehaus.plexus.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.policy.DefaultUserSecurityPolicy;
