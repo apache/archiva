@@ -19,15 +19,15 @@ package org.codehaus.plexus.redback.system;
  * under the License.
  */
 
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.UserManager;
 
 /**

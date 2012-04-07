@@ -19,8 +19,8 @@ package org.apache.archiva.redback.authentication;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 
 import java.util.List;
 

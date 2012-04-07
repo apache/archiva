@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.struts2.action;
  */
 
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolationException;
+import org.apache.archiva.redback.policy.PasswordRuleViolationException;
 import org.codehaus.plexus.redback.rbac.Permission;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;

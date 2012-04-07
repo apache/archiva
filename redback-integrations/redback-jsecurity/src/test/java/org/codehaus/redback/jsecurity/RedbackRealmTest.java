@@ -20,8 +20,8 @@ package org.codehaus.redback.jsecurity;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.rbac.Operation;
 import org.codehaus.plexus.redback.rbac.Permission;
 import org.codehaus.plexus.redback.rbac.RBACManager;

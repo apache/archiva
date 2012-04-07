@@ -35,8 +35,8 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.redback.policy.UserValidationSettings;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.policy.UserValidationSettings;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;

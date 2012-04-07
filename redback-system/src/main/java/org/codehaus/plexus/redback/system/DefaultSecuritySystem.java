@@ -20,6 +20,8 @@ package org.codehaus.plexus.redback.system;
  */
 
 import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
@@ -31,9 +33,7 @@ import org.apache.archiva.redback.authorization.AuthorizationDataSource;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.authorization.Authorizer;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -91,7 +91,7 @@ public class DefaultSecuritySystem
      * @throws AuthenticationException
      * @throws UserNotFoundException
      * @throws MustChangePasswordException
-     * @throws AccountLockedException
+     * @throws org.apache.archiva.redback.policy.AccountLockedException
      * @throws MustChangePasswordException
      */
     public SecuritySession authenticate( AuthenticationDataSource source )

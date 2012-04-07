@@ -20,11 +20,11 @@ package org.apache.archiva.redback.users.ldap;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
-import org.codehaus.plexus.redback.policy.PasswordEncoder;
-import org.codehaus.plexus.redback.policy.encoders.SHA1PasswordEncoder;
+import org.apache.archiva.redback.policy.encoders.SHA1PasswordEncoder;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;

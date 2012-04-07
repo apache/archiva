@@ -19,9 +19,9 @@ package org.codehaus.redback.integration.checks.security;
  * under the License.
  */
 
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.SecuritySystem;

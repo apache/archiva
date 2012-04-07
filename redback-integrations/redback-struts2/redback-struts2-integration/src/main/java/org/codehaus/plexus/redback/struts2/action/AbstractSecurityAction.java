@@ -23,8 +23,8 @@ package org.codehaus.plexus.redback.struts2.action;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolations;
+import org.apache.archiva.redback.policy.PasswordRuleViolationException;
+import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.redback.integration.interceptor.SecureAction;

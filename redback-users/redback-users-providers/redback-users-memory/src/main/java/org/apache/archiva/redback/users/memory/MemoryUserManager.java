@@ -21,7 +21,7 @@ package org.apache.archiva.redback.users.memory;
 
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.UserQuery;

@@ -18,8 +18,8 @@ package org.codehaus.redback.rest.services.interceptors;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolations;
+import org.apache.archiva.redback.policy.PasswordRuleViolationException;
+import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.codehaus.redback.rest.api.model.ErrorMessage;
 import org.codehaus.redback.rest.api.model.RedbackRestError;
 import org.springframework.stereotype.Service;

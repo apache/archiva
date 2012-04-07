@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.struts2.action;
  */
 
 import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.users.User;
 import org.apache.struts2.ServletActionContext;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
@@ -31,8 +32,7 @@ import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSou
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserNotFoundException;

@@ -20,12 +20,12 @@ package org.codehaus.plexus.redback.struts2.action.admin;
  */
 
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.struts2.StrutsSpringTestCase;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.RbacObjectInvalidException;

@@ -28,7 +28,7 @@ import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;
-import org.codehaus.plexus.redback.policy.CookieSettings;
+import org.apache.archiva.redback.policy.CookieSettings;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;

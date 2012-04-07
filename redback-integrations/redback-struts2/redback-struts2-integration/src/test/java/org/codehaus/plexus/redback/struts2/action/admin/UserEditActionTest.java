@@ -21,11 +21,11 @@ package org.codehaus.plexus.redback.struts2.action.admin;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.RbacObjectInvalidException;
 import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;

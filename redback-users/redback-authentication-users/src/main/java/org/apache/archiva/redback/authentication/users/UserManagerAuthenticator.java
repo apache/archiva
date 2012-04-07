@@ -20,6 +20,9 @@ package org.apache.archiva.redback.authentication.users;
  */
 
 import org.apache.archiva.redback.authentication.Authenticator;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.PasswordEncoder;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
@@ -27,11 +30,8 @@ import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
-import org.codehaus.plexus.redback.policy.PasswordEncoder;
-import org.codehaus.plexus.redback.policy.PolicyViolationException;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.PolicyViolationException;
 import org.apache.archiva.redback.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ public class UserManagerAuthenticator
     }
 
     /**
-     * @throws org.codehaus.plexus.redback.policy.AccountLockedException
+     * @throws org.apache.archiva.redback.policy.AccountLockedException
      *
      * @throws MustChangePasswordException
      * @throws MustChangePasswordException

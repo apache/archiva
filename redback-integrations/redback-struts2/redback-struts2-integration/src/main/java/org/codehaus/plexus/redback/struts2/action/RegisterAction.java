@@ -20,9 +20,9 @@ package org.codehaus.plexus.redback.struts2.action;
  */
 
 import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.keys.KeyManagerException;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.apache.archiva.redback.users.UserManager;

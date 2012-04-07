@@ -19,10 +19,10 @@ package org.codehaus.plexus.redback.struts2.action;
  * under the License.
  */
 
+import org.apache.archiva.redback.policy.PasswordEncoder;
+import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.redback.policy.PasswordEncoder;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolations;
+import org.apache.archiva.redback.policy.PasswordRuleViolationException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserNotFoundException;

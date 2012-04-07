@@ -24,7 +24,7 @@ import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.springframework.stereotype.Service;
 
 /**

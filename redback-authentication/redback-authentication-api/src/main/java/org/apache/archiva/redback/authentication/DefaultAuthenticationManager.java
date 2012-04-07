@@ -19,13 +19,8 @@ package org.apache.archiva.redback.authentication;
  * under the License.
  */
 
-import org.apache.archiva.redback.authentication.AuthenticationDataSource;
-import org.apache.archiva.redback.authentication.AuthenticationException;
-import org.apache.archiva.redback.authentication.AuthenticationManager;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authentication.Authenticator;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 

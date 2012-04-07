@@ -25,8 +25,7 @@ import com.opensymphony.xwork2.ActionProxy;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.RbacObjectInvalidException;
 import org.codehaus.plexus.redback.rbac.Role;
@@ -489,7 +488,7 @@ public class AssignmentsActionTest
      * Check security - show should succeed and display all roles, even without 'user-management-role-grant' or
      * 'user-management-user-role' for the user administrators.
      *
-     * @throws MustChangePasswordException
+     * @throws org.apache.archiva.redback.policy.MustChangePasswordException
      */
     @Test
     public void testSystemAdminCanShowRoles()

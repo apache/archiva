@@ -20,12 +20,12 @@ package org.codehaus.redback.integration.filter.authentication.digest;
  */
 
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.util.StringUtils;

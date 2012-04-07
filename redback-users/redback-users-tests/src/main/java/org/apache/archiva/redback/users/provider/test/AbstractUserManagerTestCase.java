@@ -20,10 +20,10 @@ package org.apache.archiva.redback.users.provider.test;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.UserManager;
 import org.junit.Test;

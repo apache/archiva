@@ -18,11 +18,11 @@ package org.codehaus.redback.rest.services.utils;
  * under the License.
  */
 
+import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.policy.PasswordEncoder;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.policy.PasswordRuleViolations;
+import org.apache.archiva.redback.policy.PasswordEncoder;
+import org.apache.archiva.redback.policy.PasswordRuleViolationException;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.redback.rest.api.model.ErrorMessage;
 import org.codehaus.redback.rest.api.services.RedbackServiceException;
