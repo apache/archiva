@@ -37,7 +37,7 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;

@@ -29,7 +29,7 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

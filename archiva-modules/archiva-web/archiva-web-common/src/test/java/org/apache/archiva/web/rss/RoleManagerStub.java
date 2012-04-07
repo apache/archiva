@@ -18,18 +18,12 @@ package org.apache.archiva.web.rss;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.security.UserRepositories;
-import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Olivier Lamy

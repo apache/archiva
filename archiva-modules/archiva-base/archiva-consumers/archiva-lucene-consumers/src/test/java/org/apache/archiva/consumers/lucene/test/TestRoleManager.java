@@ -18,8 +18,8 @@ package org.apache.archiva.consumers.lucene.test;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
 import org.springframework.stereotype.Service;
 

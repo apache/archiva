@@ -20,7 +20,7 @@ package org.apache.archiva.security;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

@@ -51,7 +51,7 @@
     <property name="userManager" ref="userManager#memory"/>
   </bean>
 
-  <bean name="roleManager" class="org.codehaus.plexus.redback.role.DefaultRoleManager">
+  <bean name="roleManager" class="org.apache.archiva.redback.role.DefaultRoleManager">
     <property name="rbacManager" ref="rBACManager#memory"/>
     <property name="modelProcessor" ref="roleModelProcessor"/>
     <property name="templateProcessor" ref="roleTemplateProcessor#test"/>
@@ -61,13 +61,13 @@
     <property name="rbacImpl" ref="rBACManager#memory"/>
   </bean>
 
-  <bean name="roleModelProcessor" class="org.codehaus.plexus.redback.role.processor.DefaultRoleModelProcessor">
+  <bean name="roleModelProcessor" class="org.apache.archiva.redback.role.processor.DefaultRoleModelProcessor">
     <property name="rbacManager" ref="rBACManager#memory"/>
   </bean>
 
   <alias name="roleModelProcessor" alias="roleModelProcessor#test"/>
 
-  <bean name="roleTemplateProcessor" class="org.codehaus.plexus.redback.role.template.DefaultRoleTemplateProcessor">
+  <bean name="roleTemplateProcessor" class="org.apache.archiva.redback.role.template.DefaultRoleTemplateProcessor">
     <property name="rbacManager" ref="rBACManager#memory"/>
   </bean>
 
