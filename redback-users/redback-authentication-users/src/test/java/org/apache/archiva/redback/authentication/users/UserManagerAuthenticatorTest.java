@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authentication.users;
+package org.apache.archiva.redback.authentication.users;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.authentication.users;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.authentication.users.UserManagerAuthenticator;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
@@ -42,7 +43,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Tests for {@link UserManagerAuthenticator} implementation.
+ * Tests for {@link org.apache.archiva.redback.authentication.users.UserManagerAuthenticator} implementation.
  *
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
  */
