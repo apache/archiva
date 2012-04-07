@@ -19,10 +19,10 @@ package org.codehaus.redback.rest.services;
  * under the License.
  */
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.codehaus.plexus.redback.keys.jdo.JdoAuthenticationKey;
 import org.codehaus.plexus.redback.keys.memory.MemoryAuthenticationKey;
 import org.codehaus.plexus.redback.keys.memory.MemoryKeyManager;

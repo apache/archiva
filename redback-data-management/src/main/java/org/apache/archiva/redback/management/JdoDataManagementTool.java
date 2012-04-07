@@ -34,11 +34,10 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.archiva.redback.management.DataManagementTool;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyManagerException;
 import org.codehaus.plexus.redback.keys.jdo.AuthenticationKeyDatabase;
 import org.codehaus.plexus.redback.keys.jdo.io.stax.RedbackKeyManagementJdoStaxReader;
 import org.codehaus.plexus.redback.keys.jdo.io.stax.RedbackKeyManagementJdoStaxWriter;

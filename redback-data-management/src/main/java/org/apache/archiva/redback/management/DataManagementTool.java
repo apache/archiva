@@ -20,7 +20,7 @@ package org.apache.archiva.redback.management;
  */
 
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 

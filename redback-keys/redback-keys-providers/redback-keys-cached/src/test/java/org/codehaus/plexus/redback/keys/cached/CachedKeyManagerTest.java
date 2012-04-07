@@ -20,7 +20,7 @@ package org.codehaus.plexus.redback.keys.cached;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.codehaus.plexus.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.KeyManagerTestCase;
 import org.junit.Before;
 

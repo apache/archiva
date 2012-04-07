@@ -19,10 +19,10 @@ package org.codehaus.plexus.redback.keys.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.keys.AbstractKeyManager;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
-import org.codehaus.plexus.redback.keys.KeyNotFoundException;
+import org.apache.archiva.redback.keys.AbstractKeyManager;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyNotFoundException;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.stereotype.Service;
 

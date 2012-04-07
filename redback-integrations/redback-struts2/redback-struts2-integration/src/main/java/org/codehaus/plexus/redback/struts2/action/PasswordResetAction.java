@@ -19,11 +19,11 @@ package org.codehaus.plexus.redback.struts2.action;
  * under the License.
  */
 
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManagerException;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;

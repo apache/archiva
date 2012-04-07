@@ -24,10 +24,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
-import org.codehaus.plexus.redback.keys.KeyNotFoundException;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyNotFoundException;
 import org.codehaus.plexus.redback.policy.CookieSettings;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.util.StringUtils;

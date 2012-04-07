@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.keys.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.codehaus.plexus.redback.keys.KeyManagerTestCase;
 import org.junit.Before;
 

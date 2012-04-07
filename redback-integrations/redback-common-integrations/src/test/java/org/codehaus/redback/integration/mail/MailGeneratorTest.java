@@ -21,11 +21,10 @@ package org.codehaus.redback.integration.mail;
 
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyManagerException;
 import org.codehaus.plexus.redback.policy.UserSecurityPolicy;
 import org.jpox.SchemaTool;
 import org.junit.Before;

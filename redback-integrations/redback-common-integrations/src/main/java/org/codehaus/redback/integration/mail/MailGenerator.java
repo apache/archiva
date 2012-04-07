@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.mail;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.AuthenticationKey;
 
 /**
  * Mail generator component.

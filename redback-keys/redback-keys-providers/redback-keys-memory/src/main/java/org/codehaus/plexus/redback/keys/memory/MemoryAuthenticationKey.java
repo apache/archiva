@@ -19,7 +19,7 @@ package org.codehaus.plexus.redback.keys.memory;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.AuthenticationKey;
 
 import java.util.Date;
 

@@ -19,13 +19,13 @@ package org.codehaus.redback.integration.mail;
  * under the License.
  */
 
+import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

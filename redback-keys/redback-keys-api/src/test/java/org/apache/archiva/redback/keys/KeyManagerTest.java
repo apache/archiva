@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys;
+package org.apache.archiva.redback.keys;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,6 +22,10 @@ package org.codehaus.plexus.redback.keys;
 import java.util.List;
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.keys.AbstractKeyManager;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyNotFoundException;
 
 public class KeyManagerTest
     extends TestCase

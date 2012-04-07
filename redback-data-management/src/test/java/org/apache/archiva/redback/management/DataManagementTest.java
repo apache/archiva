@@ -21,12 +21,11 @@ package org.apache.archiva.redback.management;
 
 import junit.framework.TestCase;
 import org.apache.archiva.redback.common.jdo.UserConfigurableJdoFactory;
-import org.apache.archiva.redback.management.DataManagementTool;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.SystemUtils;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyManagerException;
 import org.codehaus.plexus.redback.rbac.Permission;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;

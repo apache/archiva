@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys;
+package org.apache.archiva.redback.keys;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
@@ -15,6 +15,8 @@ package org.codehaus.plexus.redback.keys;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.archiva.redback.keys.KeyManagerException;
 
 /**
  * KeyNotFoundException 

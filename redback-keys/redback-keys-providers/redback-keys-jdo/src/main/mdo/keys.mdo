@@ -50,10 +50,10 @@
       <name>JdoAuthenticationKey</name>
       <version>1.0.0+</version>
       <interfaces>
-        <interface>org.codehaus.plexus.redback.keys.AuthenticationKey</interface>
+        <interface>org.apache.archiva.redback.keys.AuthenticationKey</interface>
       </interfaces>
       <description>
-        @plexus.component role="org.codehaus.plexus.redback.keys.AuthenticationKey"
+        @plexus.component role="org.apache.archiva.redback.keys.AuthenticationKey"
         role-hint="jdo"
       </description>
       <fields>

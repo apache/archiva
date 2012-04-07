@@ -87,13 +87,13 @@
       </requirements>
     </component>
     <component>
-      <role>org.codehaus.plexus.redback.keys.KeyManager</role>
+      <role>org.apache.archiva.redback.keys.KeyManager</role>
       <role-hint>cached</role-hint>
       <implementation>org.codehaus.plexus.redback.keys.cached.CachedKeyManager</implementation>
       <description>CachedKeyManager</description>
       <requirements>
         <requirement>
-          <role>org.codehaus.plexus.redback.keys.KeyManager</role>
+          <role>org.apache.archiva.redback.keys.KeyManager</role>
           <role-hint>memory</role-hint>
           <field-name>keyImpl</field-name>
         </requirement>

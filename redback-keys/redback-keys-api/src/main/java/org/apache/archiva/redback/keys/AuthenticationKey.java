@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys;
+package org.apache.archiva.redback.keys;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,32 +22,39 @@ package org.codehaus.plexus.redback.keys;
 import java.util.Date;
 
 /**
- * AuthenticationKey is an object representing a key established to 
+ * AuthenticationKey is an object representing a key established to
  * automatically authenticate a user without the user providing typical
- * login credentials.  
+ * login credentials.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface AuthenticationKey
 {
-    public Date getDateCreated();
-    public Date getDateExpires();
-    public String getForPrincipal();
-    public String getKey();
-    
+    Date getDateCreated();
+
+    Date getDateExpires();
+
+    String getForPrincipal();
+
+    String getKey();
+
     /**
      * A String representation of what the purpose of existence is for this key.
-     * 
+     * <p/>
      * Examples: "selfservice password reset", "inter system communications", "remember me"
-     * 
+     *
      * @return
      */
-    public String getPurpose();
-    
-    public void setDateCreated( Date dateCreated );
-    public void setDateExpires( Date dateExpires );
-    public void setForPrincipal( String forPrincipal );
-    public void setKey( String key );
-    public void setPurpose( String requestedFrom );
+    String getPurpose();
+
+    void setDateCreated( Date dateCreated );
+
+    void setDateExpires( Date dateExpires );
+
+    void setForPrincipal( String forPrincipal );
+
+    void setKey( String key );
+
+    void setPurpose( String requestedFrom );
 }

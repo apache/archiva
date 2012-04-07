@@ -21,16 +21,15 @@ package org.codehaus.plexus.redback.keys.cached;
 
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.codehaus.plexus.cache.Cache;
-import org.codehaus.plexus.redback.keys.AbstractKeyManager;
-import org.codehaus.plexus.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerException;
-import org.codehaus.plexus.redback.keys.KeyNotFoundException;
+import org.apache.archiva.redback.keys.AbstractKeyManager;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**

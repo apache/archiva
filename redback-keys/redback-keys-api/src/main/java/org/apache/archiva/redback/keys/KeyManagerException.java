@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys;
+package org.apache.archiva.redback.keys;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
