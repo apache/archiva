@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac.jdo;
+package org.apache.archiva.redback.rbac.jdo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,6 +25,7 @@ import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.Role;
 import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.redback.rbac.jdo.JdoRole;
 import org.codehaus.plexus.util.StringUtils;
 import org.springframework.stereotype.Service;
 

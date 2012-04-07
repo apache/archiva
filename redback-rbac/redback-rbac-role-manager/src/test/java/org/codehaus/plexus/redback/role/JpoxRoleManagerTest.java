@@ -19,8 +19,8 @@ package org.codehaus.plexus.redback.role;
  * under the License.
  */
 
+import org.apache.archiva.redback.rbac.jdo.JdoRbacManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.redback.rbac.jdo.JdoRbacManager;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

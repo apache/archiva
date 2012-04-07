@@ -49,7 +49,7 @@
   <alias name="roleManager" alias="roleManager#jpox"/>
 
 
-  <bean name="rBACManager#jdo" class="org.codehaus.plexus.redback.rbac.jdo.JdoRbacManager">
+  <bean name="rBACManager#jdo" class="org.apache.archiva.redback.rbac.jdo.JdoRbacManager">
     <property name="jdo" ref="jdoTool"/>
     <property name="enableCache" value="false"/>
   </bean>

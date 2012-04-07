@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.rbac.jdo;
+package org.apache.archiva.redback.rbac.jdo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,7 @@ package org.codehaus.plexus.redback.rbac.jdo;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.jdo.JdoRbacManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
 import org.apache.archiva.redback.rbac.RBACManager;
