@@ -29,7 +29,7 @@
 
   <context:annotation-config />
   <context:component-scan 
-    base-package="org.codehaus.plexus.redback.users.cached"/>
+    base-package="org.apache.archiva.redback.users.cached"/>
 
   <bean name="cache#users" class="org.codehaus.plexus.cache.ehcache.EhcacheCache"
       init-method="initialize">
