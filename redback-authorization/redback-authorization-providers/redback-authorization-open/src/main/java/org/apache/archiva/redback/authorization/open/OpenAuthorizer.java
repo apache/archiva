@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.authorization.open;
+package org.apache.archiva.redback.authorization.open;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.
