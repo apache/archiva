@@ -18,7 +18,7 @@ package org.codehaus.redback.rest.services.utils;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
+import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

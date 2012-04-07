@@ -20,9 +20,9 @@ package org.codehaus.redback.integration.taglib.jsp;
  */
 
 import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.system.SecuritySystemConstants;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.system;
+package org.apache.archiva.redback.system;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,7 +22,7 @@ package org.codehaus.plexus.redback.system;
 /**
  * @author Jason van Zyl
  */
-public interface SecureApplication
+public class DefaultSecureApplication
+    implements SecureApplication
 {
-    String ROLE = SecureApplication.class.getName();
 }

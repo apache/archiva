@@ -22,7 +22,7 @@ package org.codehaus.plexus.redback.struts2.checks;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
+import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.codehaus.redback.integration.checks.xwork.XworkPackageConfig;
 
 import com.opensymphony.xwork2.config.Configuration;

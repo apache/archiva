@@ -24,8 +24,8 @@ import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.role.RoleManager;
-import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
+import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.UserManager;
 import org.springframework.stereotype.Service;
 

@@ -21,7 +21,7 @@ package org.codehaus.redback.integration.checks;
 
 import java.util.List;
 
-import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
+import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.springframework.stereotype.Service;
 
 /**

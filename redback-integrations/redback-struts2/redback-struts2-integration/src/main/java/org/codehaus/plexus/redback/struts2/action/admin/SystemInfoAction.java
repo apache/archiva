@@ -25,7 +25,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;

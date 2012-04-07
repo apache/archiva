@@ -32,7 +32,7 @@ import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.codehaus.plexus.redback.struts2.action.AuditEvent;
-import org.codehaus.plexus.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;

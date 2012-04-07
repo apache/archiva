@@ -25,7 +25,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManagerException;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.rest.api.model.ErrorMessage;

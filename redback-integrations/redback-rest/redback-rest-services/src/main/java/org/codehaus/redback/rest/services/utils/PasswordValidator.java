@@ -23,7 +23,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.codehaus.redback.rest.api.model.ErrorMessage;
 import org.codehaus.redback.rest.api.services.RedbackServiceException;
 import org.slf4j.Logger;

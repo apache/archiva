@@ -21,7 +21,7 @@ package org.codehaus.plexus.redback.struts2.checks;
 
 import java.util.List;
 
-import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
+import org.apache.archiva.redback.system.check.EnvironmentCheck;
 
 /**
  * ExpectedXworkActions

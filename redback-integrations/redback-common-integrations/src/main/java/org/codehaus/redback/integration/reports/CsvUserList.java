@@ -23,7 +23,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.codehaus.redback.integration.util.UserComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

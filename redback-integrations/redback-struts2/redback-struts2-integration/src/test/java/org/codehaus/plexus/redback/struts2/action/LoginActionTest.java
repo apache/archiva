@@ -36,9 +36,9 @@ import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.policy.AccountLockedException;
-import org.codehaus.plexus.redback.system.DefaultSecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.DefaultSecuritySession;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.XWorkTestCase;

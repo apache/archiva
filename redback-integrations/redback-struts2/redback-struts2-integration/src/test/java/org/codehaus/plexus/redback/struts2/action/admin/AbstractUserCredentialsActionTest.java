@@ -32,9 +32,9 @@ import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationData
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.struts2.action.AbstractUserCredentialsAction;
-import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.system.SecuritySystemConstants;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.memory.SimpleUser;

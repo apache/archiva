@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.system;
+package org.apache.archiva.redback.system;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,20 +20,9 @@ package org.codehaus.plexus.redback.system;
  */
 
 /**
- * SecuritySystemConstants - constants for use with contexts that use plexus-security. 
- *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ * @author Jason van Zyl
  */
-public class SecuritySystemConstants
+public interface SecureApplication
 {
-    /**
-     * Key in the sessionScope for the {@link SecuritySession} object. 
-     */
-    public static final String SECURITY_SESSION_KEY = "securitySession";
-
-    private SecuritySystemConstants()
-    {
-        // no op
-    }
+    String ROLE = SecureApplication.class.getName();
 }

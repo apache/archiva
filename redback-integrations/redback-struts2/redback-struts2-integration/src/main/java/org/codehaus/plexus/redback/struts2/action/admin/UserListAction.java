@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.util.StringUtils;

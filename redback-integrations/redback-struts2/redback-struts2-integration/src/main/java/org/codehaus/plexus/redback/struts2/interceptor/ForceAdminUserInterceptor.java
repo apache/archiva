@@ -29,9 +29,9 @@ import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationData
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
-import org.codehaus.plexus.redback.system.SecuritySession;
-import org.codehaus.plexus.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.system.SecuritySystemConstants;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.redback.integration.checks.security.AdminAutoCreateCheck;
 import org.codehaus.redback.integration.util.AutoLoginCookies;

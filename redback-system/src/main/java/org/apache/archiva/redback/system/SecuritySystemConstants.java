@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.system.check;
+package org.apache.archiva.redback.system;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,21 @@ package org.codehaus.plexus.redback.system.check;
  * under the License.
  */
 
-import java.util.List;
-
 /**
- * EnvironmentCheck - Perform an Environment Check.
+ * SecuritySystemConstants - constants for use with contexts that use plexus-security. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface EnvironmentCheck
+public class SecuritySystemConstants
 {
-
     /**
-     * Validate the environment.
-     *
-     * @param violations list to populate with environment violations.
+     * Key in the sessionScope for the {@link SecuritySession} object. 
      */
-    void validateEnvironment( List<String> violations );
+    public static final String SECURITY_SESSION_KEY = "securitySession";
+
+    private SecuritySystemConstants()
+    {
+        // no op
+    }
 }

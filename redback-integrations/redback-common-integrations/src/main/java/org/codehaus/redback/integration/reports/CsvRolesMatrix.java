@@ -24,7 +24,7 @@ import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
 import org.codehaus.redback.integration.util.RoleSorter;
 import org.codehaus.redback.integration.util.UserComparator;

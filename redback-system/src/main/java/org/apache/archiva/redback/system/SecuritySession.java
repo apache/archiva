@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.system;
+package org.apache.archiva.redback.system;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,10 +19,25 @@ package org.codehaus.plexus.redback.system;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.users.User;
+
+import java.io.Serializable;
+
 /**
  * @author Jason van Zyl
  */
-public class DefaultSecureApplication
-    implements SecureApplication
+public interface SecuritySession
+    extends Serializable
 {
+
+    static final String SESSION_KEY = SecuritySession.class.getName();
+
+    static final String USERKEY = "SecuritySessionUser";
+
+    AuthenticationResult getAuthenticationResult();
+
+    User getUser();
+
+    boolean isAuthenticated();
 }
