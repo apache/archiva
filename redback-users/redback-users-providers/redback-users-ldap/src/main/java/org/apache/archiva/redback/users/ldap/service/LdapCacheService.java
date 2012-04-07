@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap.service;
+package org.apache.archiva.redback.users.ldap.service;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

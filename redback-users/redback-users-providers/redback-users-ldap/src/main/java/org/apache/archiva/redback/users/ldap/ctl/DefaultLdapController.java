@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap.ctl;
+package org.apache.archiva.redback.users.ldap.ctl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -39,7 +39,7 @@ import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.codehaus.plexus.redback.common.ldap.LdapUserMapper;
 import org.codehaus.plexus.redback.common.ldap.MappingException;
 import org.codehaus.plexus.redback.common.ldap.UserMapper;
-import org.codehaus.plexus.redback.users.ldap.LdapUserQuery;
+import org.apache.archiva.redback.users.ldap.LdapUserQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -191,7 +191,7 @@ public class DefaultLdapController
     }
     
    /**
-    * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#getUsersByQuery(org.codehaus.plexus.redback.users.ldap.LdapUserQuery, javax.naming.directory.DirContext)
+    * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#getUsersByQuery(org.apache.archiva.redback.users.ldap.LdapUserQuery, javax.naming.directory.DirContext)
     */
    public List<User> getUsersByQuery( LdapUserQuery query, DirContext context )
        throws LdapControllerException, MappingException

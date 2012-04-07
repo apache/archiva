@@ -20,14 +20,11 @@ package org.codehaus.plexus.redback.authentication.ldap;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.cache.builder.CacheBuilder;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.common.ldap.LdapUser;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
 import org.codehaus.plexus.redback.policy.PasswordEncoder;
 import org.codehaus.plexus.redback.policy.encoders.SHA1PasswordEncoder;
-import org.codehaus.plexus.redback.users.ldap.service.LdapCacheService;
+import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.codehaus.redback.components.apacheds.ApacheDs;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +43,6 @@ import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import java.util.Calendar;
-import java.util.Date;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = "classpath*:/META-INF/spring-context.xml" )

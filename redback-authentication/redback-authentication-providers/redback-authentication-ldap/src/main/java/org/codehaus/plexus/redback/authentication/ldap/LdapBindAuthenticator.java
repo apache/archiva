@@ -30,7 +30,7 @@ import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapException;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
-import org.codehaus.plexus.redback.users.ldap.service.LdapCacheService;
+import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

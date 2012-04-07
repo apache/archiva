@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap.ctl;
+package org.apache.archiva.redback.users.ldap.ctl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,7 +22,7 @@ package org.codehaus.plexus.redback.users.ldap.ctl;
 import org.apache.archiva.redback.users.User;
 import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.codehaus.plexus.redback.common.ldap.MappingException;
-import org.codehaus.plexus.redback.users.ldap.LdapUserQuery;
+import org.apache.archiva.redback.users.ldap.LdapUserQuery;
 
 import javax.naming.directory.DirContext;
 import java.util.Collection;

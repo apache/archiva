@@ -29,7 +29,7 @@
 
   <context:annotation-config />
   <context:component-scan 
-    base-package="org.codehaus.plexus.redback.users.ldap"/>
+    base-package="org.apache.archiva.redback.users.ldap"/>
 
   <!-- REDBACK-289/MRM-1488 -->
   <!-- Cache for LDAP users. Data is refreshed every 3 mins. -->

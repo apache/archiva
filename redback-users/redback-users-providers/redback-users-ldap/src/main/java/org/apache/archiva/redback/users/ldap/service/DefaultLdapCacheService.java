@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap.service;
+package org.apache.archiva.redback.users.ldap.service;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,7 @@ package org.codehaus.plexus.redback.users.ldap.service;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.codehaus.plexus.cache.builder.CacheBuilder;
 import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.springframework.stereotype.Service;
@@ -97,7 +98,7 @@ public class DefaultLdapCacheService
     }
 
     /**
-     * @see org.codehaus.plexus.redback.users.ldap.service.LdapCacheService#removeAllLdapUserDn()
+     * @see org.apache.archiva.redback.users.ldap.service.LdapCacheService#removeAllLdapUserDn()
      */
     public void removeAllLdapUserDn()
     {

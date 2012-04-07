@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap.service;
+package org.apache.archiva.redback.users.ldap.service;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.users.ldap.service;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.junit.After;
 import org.junit.Test;

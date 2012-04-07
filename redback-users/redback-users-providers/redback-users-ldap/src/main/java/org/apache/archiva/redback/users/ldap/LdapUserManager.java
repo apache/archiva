@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap;
+package org.apache.archiva.redback.users.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,9 +30,9 @@ import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory;
 import org.codehaus.plexus.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.codehaus.plexus.redback.users.ldap.ctl.LdapController;
-import org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerException;
-import org.codehaus.plexus.redback.users.ldap.service.LdapCacheService;
+import org.apache.archiva.redback.users.ldap.ctl.LdapController;
+import org.apache.archiva.redback.users.ldap.ctl.LdapControllerException;
+import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

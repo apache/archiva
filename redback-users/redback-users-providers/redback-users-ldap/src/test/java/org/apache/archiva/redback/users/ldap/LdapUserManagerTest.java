@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.ldap;
+package org.apache.archiva.redback.users.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,7 +27,7 @@ import org.codehaus.plexus.redback.policy.PasswordEncoder;
 import org.codehaus.plexus.redback.policy.encoders.SHA1PasswordEncoder;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.users.ldap.service.LdapCacheService;
+import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.codehaus.redback.components.apacheds.ApacheDs;
 import org.junit.After;
 import org.junit.Before;
