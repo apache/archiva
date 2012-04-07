@@ -19,9 +19,8 @@ package org.apache.archiva.redback.users.ldap.service;
  * under the License.
  */
 
-import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
+import org.apache.archiva.redback.common.ldap.LdapUser;
 import org.codehaus.plexus.cache.builder.CacheBuilder;
-import org.codehaus.plexus.redback.common.ldap.LdapUser;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -66,7 +65,7 @@ public class DefaultLdapCacheService
     }
 
     /**
-     * @see LdapCacheService#addUser(org.codehaus.plexus.redback.common.ldap.LdapUser)
+     * @see LdapCacheService#addUser(org.apache.archiva.redback.common.ldap.LdapUser)
      */
     public void addUser( LdapUser user )
     {

@@ -36,7 +36,7 @@
     <property name="password" value="secret"/>
   </bean>
 
-  <bean name="ldapConnectionFactory#configurable" class="org.codehaus.plexus.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
+  <bean name="ldapConnectionFactory#configurable" class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
     <property name="hostname" value="localhost"/>
     <property name="port" value="${ldapPort}"/>
     <property name="baseDn" value="dc=redback,dc=plexus,dc=codehaus,dc=org"/>
@@ -46,7 +46,7 @@
     <property name="userConf" ref="userConfiguration"/>
   </bean>
 
-  <bean name="userMapper#ldap" class="org.codehaus.plexus.redback.common.ldap.LdapUserMapper">
+  <bean name="userMapper#ldap" class="org.apache.archiva.redback.common.ldap.LdapUserMapper">
     <property name="emailAttribute" value="mail"/>
     <property name="fullNameAttribute" value="givenName"/>
     <property name="passwordAttribute" value="userPassword"/>

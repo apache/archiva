@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.ldap.connection;
+package org.apache.archiva.redback.common.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,7 @@ package org.codehaus.plexus.redback.common.ldap.connection;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.common.ldap.LdapUserMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,18 +31,15 @@ import javax.inject.Named;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-public class ConfigurableLdapConnectionFactoryTest
+public class LdapUserMapperTest
     extends TestCase
 {
-
-    @Inject
-    @Named( value = "ldapConnectionFactory#configurable" )
-    ConfigurableLdapConnectionFactory factory;
+    @Inject @Named(value = "userMapper#ldap")
+    LdapUserMapper mapper;
 
     @Test
     public void testConfiguration()
     {
-        assertEquals( "dc=codehaus,dc=org", factory.getConfiguration().getBaseDn().toString() );
-        assertEquals( "uid=user,dc=codehaus,dc=org", factory.getConfiguration().getBindDn().toString() );
+        assertEquals( "o=People,dc=codehaus,dc=org", mapper.getUserBaseDn() );
     }
 }

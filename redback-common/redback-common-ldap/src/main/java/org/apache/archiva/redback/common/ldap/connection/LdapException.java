@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.ldap;
+package org.apache.archiva.redback.common.ldap.connection;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,26 +19,23 @@ package org.codehaus.plexus.redback.common.ldap;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import javax.naming.NamingException;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-public class LdapUserMapperTest
-    extends TestCase
+/**
+ * @author <a href="mailto:trygvis@inamo.no">trygvis</a>
+ * @version $Id$
+ */
+public class LdapException
+    extends NamingException
 {
-    @Inject @Named(value = "userMapper#ldap")
-    LdapUserMapper mapper;
-
-    @Test
-    public void testConfiguration()
+    public LdapException( String message )
     {
-        assertEquals( "o=People,dc=codehaus,dc=org", mapper.getUserBaseDn() );
+        super( message );
+    }
+
+    public LdapException( String message, Throwable t )
+    {
+        super( message );
+        setRootCause( t );
     }
 }

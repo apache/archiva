@@ -63,9 +63,9 @@
       </configuration>
     </component>
            <component>
-      <role>org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory</role>
+      <role>org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory</role>
       <role-hint>configurable</role-hint>
-      <implementation>org.codehaus.plexus.redback.common.ldap.connection.ConfigurableLdapConnectionFactory</implementation>
+      <implementation>org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory</implementation>
       <description></description>
       <configuration>
         <hostname>localhost</hostname>

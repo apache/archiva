@@ -33,12 +33,12 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.archiva.redback.common.ldap.LdapUser;
+import org.apache.archiva.redback.common.ldap.LdapUserMapper;
+import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.redback.common.ldap.LdapUser;
-import org.codehaus.plexus.redback.common.ldap.LdapUserMapper;
-import org.codehaus.plexus.redback.common.ldap.MappingException;
-import org.codehaus.plexus.redback.common.ldap.UserMapper;
+import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.users.ldap.LdapUserQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,7 +139,7 @@ public class DefaultLdapController
         ctls.setDerefLinkFlag( true );
         ctls.setSearchScope( SearchControls.SUBTREE_SCOPE );
         ctls.setReturningAttributes( mapper.getReturningAttributes() );
-        ctls.setCountLimit( ( ( LdapUserMapper ) mapper ).getMaxResultCount() );
+        ctls.setCountLimit( ( (LdapUserMapper) mapper ).getMaxResultCount() );
 
         String finalFilter = "(&(objectClass=" + mapper.getUserObjectClass() + ")" +
             ( mapper.getUserFilter() != null ? mapper.getUserFilter() : "" ) + query.getLdapFilter(mapper) + ")";

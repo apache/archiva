@@ -20,15 +20,15 @@ package org.apache.archiva.redback.users.ldap;
  */
 
 
+import org.apache.archiva.redback.common.ldap.LdapUser;
+import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.plexus.redback.common.ldap.LdapUser;
-import org.codehaus.plexus.redback.common.ldap.MappingException;
-import org.codehaus.plexus.redback.common.ldap.UserMapper;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapException;
+import org.apache.archiva.redback.common.ldap.MappingException;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
+import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.users.UserQuery;
 import org.apache.archiva.redback.users.ldap.ctl.LdapController;
 import org.apache.archiva.redback.users.ldap.ctl.LdapControllerException;

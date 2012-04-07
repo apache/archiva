@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.ldap;
+package org.apache.archiva.redback.common.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,46 +19,52 @@ package org.codehaus.plexus.redback.common.ldap;
  * under the License.
  */
 
-import org.apache.archiva.redback.users.User;
-
 import javax.naming.directory.Attributes;
 
 /**
  * @version $Id$
  */
-public interface UserMapper
+public class UserUpdate
 {
-    LdapUser getUser( Attributes attributes )
-        throws MappingException;
 
-    Attributes getCreationAttributes( User user, boolean encodePasswordIfChanged )
-        throws MappingException;
+    private final Attributes created;
 
-    UserUpdate getUpdate( LdapUser user )
-        throws MappingException;
+    private final Attributes modified;
 
-    String[] getUserAttributeNames();
+    private final Attributes removed;
 
-    String getEmailAddressAttribute();
+    public UserUpdate( Attributes created, Attributes modified, Attributes removed )
+    {
+        this.created = created;
+        this.modified = modified;
+        this.removed = removed;
+    }
 
-    String getUserFullNameAttribute();
+    public Attributes getAddedAttributes()
+    {
+        return created;
+    }
 
-    String getPasswordAttribute();
+    public Attributes getModifiedAttributes()
+    {
+        return modified;
+    }
 
-    String getUserIdAttribute();
+    public Attributes getRemovedAttributes()
+    {
+        return removed;
+    }
 
-    String getEmailAttribute();
+    public boolean hasAdditions()
+    {
+        return ( created != null ) && ( created.size() > 0 );
+    }
 
-    String getUserBaseDn();
+    public boolean hasModifications()
+    {
+        return ( modified != null ) && ( modified.size() > 0 );
+    }
 
-    String getUserObjectClass();
 
-    String getUserFilter();
-
-    LdapUser newUserInstance( String username, String fullName, String email );
-
-    LdapUser newTemplateUserInstance();
-
-    String[] getReturningAttributes();
 
 }

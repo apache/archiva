@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.ldap.connection;
+package org.apache.archiva.redback.common.ldap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,23 +19,21 @@ package org.codehaus.plexus.redback.common.ldap.connection;
  * under the License.
  */
 
-import javax.naming.NamingException;
-
 /**
- * @author <a href="mailto:trygvis@inamo.no">trygvis</a>
  * @version $Id$
  */
-public class LdapException
-    extends NamingException
+public class MappingException
+    extends Exception
 {
-    public LdapException( String message )
+
+    public MappingException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
+    public MappingException( String message )
     {
         super( message );
     }
 
-    public LdapException( String message, Throwable t )
-    {
-        super( message );
-        setRootCause( t );
-    }
 }

@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.ldap.connection;
+package org.apache.archiva.redback.common.ldap.connection;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

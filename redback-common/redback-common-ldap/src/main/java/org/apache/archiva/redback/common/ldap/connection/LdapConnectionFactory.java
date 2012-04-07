@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.common.ldap;
+package org.apache.archiva.redback.common.ldap.connection;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,34 @@ package org.codehaus.plexus.redback.common.ldap;
  * under the License.
  */
 
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+import javax.naming.spi.ObjectFactory;
+import javax.naming.spi.StateFactory;
+
+
 /**
+ * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @version $Id$
  */
-public class MappingException
-    extends Exception
+public interface LdapConnectionFactory
 {
+    String ROLE = LdapConnectionFactory.class.getName();
 
-    public MappingException( String message, Throwable cause )
-    {
-        super( message, cause );
-    }
+    LdapConnection getConnection()
+        throws LdapException;
 
-    public MappingException( String message )
-    {
-        super( message );
-    }
+    LdapConnection getConnection( Rdn subRdn )
+        throws LdapException;
+
+    LdapConnection getConnection( String bindDn, String password )
+        throws LdapException;
+
+    LdapName getBaseDnLdapName()
+        throws LdapException;
+
+    void addObjectFactory( Class<? extends ObjectFactory> objectFactoryClass );
+
+    void addStateFactory( Class<? extends StateFactory> objectFactoryClass );
 
 }

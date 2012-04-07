@@ -19,16 +19,16 @@ package org.apache.archiva.redback.authentication.ldap;
  * under the License.
  */
 
+import org.apache.archiva.redback.common.ldap.UserMapper;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.codehaus.plexus.redback.common.ldap.UserMapper;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapConnection;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapConnectionFactory;
-import org.codehaus.plexus.redback.common.ldap.connection.LdapException;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.codehaus.plexus.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.slf4j.Logger;
