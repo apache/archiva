@@ -19,9 +19,8 @@ package org.apache.archiva.redback.users;
  * under the License.
  */
 
-import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.memory.MemoryUserManager;
-import org.codehaus.plexus.redback.users.provider.test.AbstractUserManagerTestCase;
+import org.apache.archiva.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.junit.Before;
 
 import javax.inject.Inject;
