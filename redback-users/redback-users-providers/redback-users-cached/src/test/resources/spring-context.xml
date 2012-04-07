@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-  <bean name="userManager#cached" class="org.codehaus.plexus.redback.users.cached.CachedUserManager">
+  <bean name="userManager#cached" class="org.apache.archiva.redback.users.cached.CachedUserManager">
     <property name="userImpl" ref="userManager#memory"/>
     <property name="usersCache" ref="cache#users"/>
   </bean>

@@ -71,7 +71,7 @@
     <component>
       <role>org.apache.archiva.redback.users.UserManager</role>
       <role-hint>cached</role-hint>
-      <implementation>org.codehaus.plexus.redback.users.cached.CachedUserManager</implementation>
+      <implementation>org.apache.archiva.redback.users.cached.CachedUserManager</implementation>
       <description>CachedUserManager</description>
       <requirements>
         <requirement>

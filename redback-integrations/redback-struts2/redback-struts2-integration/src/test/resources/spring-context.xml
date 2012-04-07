@@ -92,7 +92,7 @@
       </requirements>
     </component>
   -->
-  <bean name="userManager#cached" class="org.codehaus.plexus.redback.users.cached.CachedUserManager">
+  <bean name="userManager#cached" class="org.apache.archiva.redback.users.cached.CachedUserManager">
     <property name="userImpl" ref="userManager#memory"/>
   </bean>
 
@@ -100,7 +100,7 @@
     <component>
       <role>org.apache.archiva.redback.users.UserManager</role>
       <role-hint>cached</role-hint>
-      <implementation>org.codehaus.plexus.redback.users.cached.CachedUserManager</implementation>
+      <implementation>org.apache.archiva.redback.users.cached.CachedUserManager</implementation>
       <description>CachedUserManager</description>
       <requirements>
         <requirement>

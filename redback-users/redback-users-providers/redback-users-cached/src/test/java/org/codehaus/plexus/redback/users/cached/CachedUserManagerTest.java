@@ -22,6 +22,7 @@ package org.codehaus.plexus.redback.users.cached;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.cached.CachedUserManager;
 import org.codehaus.plexus.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.junit.After;
 import org.junit.AfterClass;

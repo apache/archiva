@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.users.cached;
+package org.apache.archiva.redback.users.cached;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
