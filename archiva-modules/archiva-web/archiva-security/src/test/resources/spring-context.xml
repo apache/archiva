@@ -41,13 +41,13 @@
 
 
 
-  <bean name="authorizer#rbac" class="org.codehaus.plexus.redback.authorization.rbac.RbacAuthorizer">
+  <bean name="authorizer#rbac" class="org.apache.archiva.redback.authorization.rbac.RbacAuthorizer">
     <property name="manager" ref="rBACManager#memory"/>
     <property name="userManager" ref="userManager#memory"/>
     <property name="evaluator" ref="permissionEvaluator"/>
   </bean>
 
-  <bean name="permissionEvaluator" class="org.codehaus.plexus.redback.authorization.rbac.evaluator.DefaultPermissionEvaluator">
+  <bean name="permissionEvaluator" class="org.apache.archiva.redback.authorization.rbac.evaluator.DefaultPermissionEvaluator">
     <property name="userManager" ref="userManager#memory"/>
   </bean>
 
