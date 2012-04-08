@@ -23,7 +23,7 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.redback.rest.api.services.RoleManagementService;
+import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
