@@ -29,6 +29,6 @@
 
   <context:annotation-config />
   <context:component-scan 
-    base-package="org.codehaus.plexus.redback.struts2"/>
+    base-package="org.apache.archiva.redback.struts2"/>
  
 </beans>
