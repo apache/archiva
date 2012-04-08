@@ -21,6 +21,7 @@ package org.codehaus.plexus.redback.struts2.interceptor;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
+import org.apache.archiva.redback.integration.checks.security.AdminAutoCreateCheck;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
@@ -33,8 +34,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.redback.integration.checks.security.AdminAutoCreateCheck;
-import org.codehaus.redback.integration.util.AutoLoginCookies;
+import org.apache.archiva.redback.integration.util.AutoLoginCookies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;

@@ -1,6 +1,6 @@
 package org.codehaus.redback.rest.api.model;
 
-import org.codehaus.redback.integration.util.DateUtils;
+import org.apache.archiva.redback.integration.util.DateUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;

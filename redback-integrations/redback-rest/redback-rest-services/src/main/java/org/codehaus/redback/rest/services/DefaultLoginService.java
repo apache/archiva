@@ -30,7 +30,7 @@ import org.apache.archiva.redback.keys.memory.MemoryAuthenticationKey;
 import org.apache.archiva.redback.keys.memory.MemoryKeyManager;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
-import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.rest.api.model.User;
 import org.codehaus.redback.rest.api.services.LoginService;
 import org.codehaus.redback.rest.api.services.RedbackServiceException;

@@ -27,10 +27,10 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.struts2.action.AbstractSecurityAction;
 import org.codehaus.plexus.redback.struts2.action.AuditEvent;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.redback.integration.model.SimplePermission;
-import org.codehaus.redback.integration.role.RoleConstants;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.model.SimplePermission;
+import org.apache.archiva.redback.integration.role.RoleConstants;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

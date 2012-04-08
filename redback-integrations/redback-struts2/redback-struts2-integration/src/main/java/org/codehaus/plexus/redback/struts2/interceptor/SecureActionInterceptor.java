@@ -30,9 +30,9 @@ import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.system.SecuritySystemConstants;
-import org.codehaus.redback.integration.interceptor.SecureAction;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureAction;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

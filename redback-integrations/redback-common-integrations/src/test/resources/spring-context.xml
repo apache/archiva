@@ -50,7 +50,7 @@
     </property>
   </bean>
 
-  <bean name="mailGenerator#custom-url" class="org.codehaus.redback.integration.mail.VelocityMailGenerator">
+  <bean name="mailGenerator#custom-url" class="org.apache.archiva.redback.integration.mail.VelocityMailGenerator">
     <property name="config" ref="userConfiguration#custom-url"/>
     <property name="velocityEngine" ref="velocityEngine#redback"/>
   </bean>

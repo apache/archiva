@@ -24,10 +24,10 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.Resource;
 import org.codehaus.plexus.redback.struts2.action.RedbackActionSupport;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.redback.integration.role.RoleConstants;
-import org.codehaus.redback.integration.util.OperationSorter;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.role.RoleConstants;
+import org.apache.archiva.redback.integration.util.OperationSorter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

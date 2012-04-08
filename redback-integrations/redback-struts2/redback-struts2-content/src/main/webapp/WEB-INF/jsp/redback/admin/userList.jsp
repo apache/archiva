@@ -53,8 +53,8 @@
     filterable="true"
     showTitle="false"
     showExports="false"
-    view="org.codehaus.redback.integration.eXc.views.SecurityView" 
-    sortRowsCallback="org.codehaus.redback.integration.eXc.ProcessUserRowsCallback"
+    view="org.apache.archiva.redback.integration.eXc.views.SecurityView"
+    sortRowsCallback="org.apache.archiva.redback.integration.eXc.ProcessUserRowsCallback"
     cellspacing="2"
     cellpadding="3"
     >
@@ -71,7 +71,7 @@
        tooltip="Export Table to Excel format."/>
     <ec:row>          
         <ec:column property="username" title="${username}" 
-        	filterCell="org.codehaus.redback.integration.eXc.SecurityFilterCell">
+        	filterCell="org.apache.archiva.redback.integration.eXc.SecurityFilterCell">
           <img src="<c:url value="/images/redback/icon-user.gif"/>" />
           <redback:ifAuthorized permission="user-management-user-edit" resource="${user.username}">
             <s:url id="usereditUrl" action="useredit" includeParams="none">
@@ -92,16 +92,16 @@
           </redback:elseAuthorized>
         </ec:column>
         <ec:column property="fullName" title="${fullName}" alias="fullname" 
-        	filterCell="org.codehaus.redback.integration.eXc.SecurityFilterCell">
+        	filterCell="org.apache.archiva.redback.integration.eXc.SecurityFilterCell">
           <c:out value="${user.fullName}" />
         </ec:column>
-        <ec:column property="email" title="${email}" cell="org.codehaus.redback.integration.eXc.MailtoCell" 
-        	filterCell="org.codehaus.redback.integration.eXc.SecurityFilterCell" />
-        <ec:column property="permanent" cell="org.codehaus.redback.integration.eXc.CheckboxImageCell" 
+        <ec:column property="email" title="${email}" cell="org.apache.archiva.redback.integration.eXc.MailtoCell"
+        	filterCell="org.apache.archiva.redback.integration.eXc.SecurityFilterCell" />
+        <ec:column property="permanent" cell="org.apache.archiva.redback.integration.eXc.CheckboxImageCell"
         	style="text-align: center" title="${permanent}" filterable="false"/> <%-- Boolean's can't be filtered --%>
-        <ec:column property="validated" cell="org.codehaus.redback.integration.eXc.CheckboxImageCell" 
+        <ec:column property="validated" cell="org.apache.archiva.redback.integration.eXc.CheckboxImageCell"
         	style="text-align: center" title="${validated}" filterable="false"/> <%-- Boolean's can't be filtered --%>
-        <ec:column property="locked" cell="org.codehaus.redback.integration.eXc.CheckboxImageCell" 
+        <ec:column property="locked" cell="org.apache.archiva.redback.integration.eXc.CheckboxImageCell"
         	style="text-align: center" title="${locked}" filterable="false"/> <%-- Boolean's can't be filtered --%>
         
         <ec:column title="${tasks}" alias="tasks" sortable="false" filterable="false" styleClass="tasks">

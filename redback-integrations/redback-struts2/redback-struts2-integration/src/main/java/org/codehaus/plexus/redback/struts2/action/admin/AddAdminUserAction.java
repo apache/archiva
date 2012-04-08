@@ -35,10 +35,10 @@ import org.codehaus.plexus.redback.struts2.action.AuditEvent;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.redback.integration.model.EditUserCredentials;
-import org.codehaus.redback.integration.util.AutoLoginCookies;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.model.EditUserCredentials;
+import org.apache.archiva.redback.integration.util.AutoLoginCookies;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

@@ -33,7 +33,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.codehaus.redback.integration.util.AutoLoginCookies;
+import org.apache.archiva.redback.integration.util.AutoLoginCookies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;

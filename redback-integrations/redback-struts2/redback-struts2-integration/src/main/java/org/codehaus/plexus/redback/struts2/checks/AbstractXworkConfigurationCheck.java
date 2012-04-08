@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.redback.integration.checks.xwork.XworkActionConfig;
-import org.codehaus.redback.integration.checks.xwork.XworkPackageConfig;
+import org.apache.archiva.redback.integration.checks.xwork.XworkActionConfig;
+import org.apache.archiva.redback.integration.checks.xwork.XworkPackageConfig;
 
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.entities.ActionConfig;

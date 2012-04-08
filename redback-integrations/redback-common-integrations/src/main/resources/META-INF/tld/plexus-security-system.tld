@@ -24,7 +24,7 @@
 
   <tag>
     <name>ifConfigured</name>
-    <tag-class>org.codehaus.redback.integration.taglib.jsp.IfConfiguredTag</tag-class>
+    <tag-class>org.apache.archiva.redback.integration.taglib.jsp.IfConfiguredTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>option</name>
@@ -40,19 +40,19 @@
 
   <tag>
     <name>isReadOnlyUserManager</name>
-    <tag-class>org.codehaus.redback.integration.taglib.jsp.IsReadOnlyUserManagerTag</tag-class>
+    <tag-class>org.apache.archiva.redback.integration.taglib.jsp.IsReadOnlyUserManagerTag</tag-class>
     <body-content>JSP</body-content>
   </tag>
   
   <tag>
     <name>isNotReadOnlyUserManager</name>
-    <tag-class>org.codehaus.redback.integration.taglib.jsp.IsNotReadOnlyUserManagerTag</tag-class>
+    <tag-class>org.apache.archiva.redback.integration.taglib.jsp.IsNotReadOnlyUserManagerTag</tag-class>
     <body-content>JSP</body-content>
   </tag>
 
   <tag>
     <name>ifAuthorized</name>
-    <tag-class>org.codehaus.redback.integration.taglib.jsp.IfAuthorizedTag</tag-class>
+    <tag-class>org.apache.archiva.redback.integration.taglib.jsp.IfAuthorizedTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>permission</name>
@@ -68,7 +68,7 @@
   
   <tag>
     <name>ifAnyAuthorized</name>
-    <tag-class>org.codehaus.redback.integration.taglib.jsp.IfAnyAuthorizedTag</tag-class>
+    <tag-class>org.apache.archiva.redback.integration.taglib.jsp.IfAnyAuthorizedTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>permissions</name>
@@ -84,7 +84,7 @@
 
   <tag>
     <name>elseAuthorized</name>
-    <tag-class>org.codehaus.redback.integration.taglib.jsp.ElseAuthorizedTag</tag-class>
+    <tag-class>org.apache.archiva.redback.integration.taglib.jsp.ElseAuthorizedTag</tag-class>
     <body-content>JSP</body-content>
   </tag>
 

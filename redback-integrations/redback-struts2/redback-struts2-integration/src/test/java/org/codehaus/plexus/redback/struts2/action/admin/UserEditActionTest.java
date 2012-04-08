@@ -34,7 +34,7 @@ import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.memory.SimpleUser;
-import org.codehaus.redback.integration.model.AdminEditUserCredentials;
+import org.apache.archiva.redback.integration.model.AdminEditUserCredentials;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -28,9 +28,9 @@ import org.apache.archiva.redback.policy.PasswordRuleViolationException;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.redback.integration.model.UserCredentials;
+import org.apache.archiva.redback.integration.model.UserCredentials;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
-import org.codehaus.redback.integration.util.RoleSorter;
+import org.apache.archiva.redback.integration.util.RoleSorter;
 
 import javax.inject.Inject;
 import javax.inject.Named;

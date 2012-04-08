@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
-import org.codehaus.redback.integration.checks.xwork.XworkPackageConfig;
+import org.apache.archiva.redback.integration.checks.xwork.XworkPackageConfig;
 
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;

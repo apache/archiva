@@ -35,10 +35,10 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystemConstants;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.redback.integration.model.AdminEditUserCredentials;
-import org.codehaus.redback.integration.role.RoleConstants;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.model.AdminEditUserCredentials;
+import org.apache.archiva.redback.integration.role.RoleConstants;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
