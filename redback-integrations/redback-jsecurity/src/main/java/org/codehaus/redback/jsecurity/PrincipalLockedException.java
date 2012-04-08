@@ -21,20 +21,21 @@ package org.codehaus.redback.jsecurity;
 
 import org.jsecurity.authc.AuthenticationException;
 
-public class PrincipalLockedException extends AuthenticationException
+public class PrincipalLockedException
+    extends AuthenticationException
 {
-    public PrincipalLockedException(String message, Throwable cause)
+    public PrincipalLockedException( String message, Throwable cause )
     {
-        super(message, cause);
+        super( message, cause );
     }
 
-    public PrincipalLockedException(String message)
+    public PrincipalLockedException( String message )
     {
-        super(message);
+        super( message );
     }
 
-    public PrincipalLockedException(Throwable cause)
+    public PrincipalLockedException( Throwable cause )
     {
-         super(cause);
+        super( cause );
     }
 }

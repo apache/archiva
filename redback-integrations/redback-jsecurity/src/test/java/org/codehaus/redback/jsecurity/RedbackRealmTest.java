@@ -21,13 +21,13 @@ package org.codehaus.redback.jsecurity;
 
 import junit.framework.TestCase;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.apache.archiva.redback.rbac.Role;
-import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Resource;
+import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.jsecurity.authc.IncorrectCredentialsException;
 import org.jsecurity.authc.UsernamePasswordToken;
@@ -74,8 +74,6 @@ public class RedbackRealmTest
     {
         super.setUp();
         securityManager = new DefaultSecurityManager();
-
-
 
         realm = new RedbackRealm( userManager, rbacManager, userSecurityPolicy );
         securityManager.setRealm( realm );

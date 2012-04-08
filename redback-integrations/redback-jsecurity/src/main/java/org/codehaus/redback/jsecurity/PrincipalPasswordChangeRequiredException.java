@@ -21,20 +21,21 @@ package org.codehaus.redback.jsecurity;
 
 import org.jsecurity.authc.AuthenticationException;
 
-public class PrincipalPasswordChangeRequiredException extends AuthenticationException
+public class PrincipalPasswordChangeRequiredException
+    extends AuthenticationException
 {
-    public PrincipalPasswordChangeRequiredException(String message, Throwable cause)
+    public PrincipalPasswordChangeRequiredException( String message, Throwable cause )
     {
-        super(message, cause);
+        super( message, cause );
     }
 
-    public PrincipalPasswordChangeRequiredException(String message)
+    public PrincipalPasswordChangeRequiredException( String message )
     {
-        super(message);
+        super( message );
     }
 
-    public PrincipalPasswordChangeRequiredException(Throwable cause)
+    public PrincipalPasswordChangeRequiredException( Throwable cause )
     {
-         super(cause);
+        super( cause );
     }
 }
