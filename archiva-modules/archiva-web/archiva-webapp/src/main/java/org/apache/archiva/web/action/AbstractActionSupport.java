@@ -32,7 +32,7 @@ import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.SessionAware;
-import org.codehaus.redback.rest.services.RedbackRequestInformation;
+import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

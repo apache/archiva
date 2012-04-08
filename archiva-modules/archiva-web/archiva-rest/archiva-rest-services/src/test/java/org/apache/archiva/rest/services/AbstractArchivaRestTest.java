@@ -38,7 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
-import org.codehaus.redback.rest.services.AbstractRestServicesTest;
+import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.junit.Before;
 
 import javax.ws.rs.core.MediaType;

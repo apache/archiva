@@ -33,7 +33,7 @@ import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.redback.rest.services.RedbackAuthenticationThreadLocal;
+import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

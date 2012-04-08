@@ -36,7 +36,7 @@ import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.redback.rest.api.services.UserService;
-import org.codehaus.redback.rest.services.FakeCreateAdminService;
+import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.session.SessionHandler;
