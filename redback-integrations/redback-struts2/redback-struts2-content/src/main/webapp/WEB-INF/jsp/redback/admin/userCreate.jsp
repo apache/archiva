@@ -18,7 +18,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <html>
-<s:i18n name="org.codehaus.plexus.redback.struts2.default">
+<s:i18n name="org.apache.archiva.redback.struts2.default">
 <head>
   <title><s:text name="user.create.page.title"/></title>
 </head>

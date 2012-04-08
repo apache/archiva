@@ -18,7 +18,7 @@
 <%@ taglib uri="http://www.extremecomponents.org" prefix="ec" %>
 
 <html>
-<s:i18n name="org.codehaus.plexus.redback.struts2.default">
+<s:i18n name="org.apache.archiva.redback.struts2.default">
 <head>
   <title><s:text name="role.page.title"/></title>
 </head>

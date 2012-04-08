@@ -20,7 +20,7 @@
 <%@ taglib uri="http://www.extremecomponents.org" prefix="ec" %>
 
 <html> 
-<s:i18n name="org.codehaus.plexus.redback.struts2.default">
+<s:i18n name="org.apache.archiva.redback.struts2.default">
 <head>
   <title><s:text name="user.list.page.title"/></title>
   <link rel="stylesheet" type="text/css" href="<s:url value="/css/redback/table.css"/>" media="screen"/>

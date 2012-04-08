@@ -17,7 +17,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <html>
-<s:i18n name="org.codehaus.plexus.redback.struts2.default">
+<s:i18n name="org.apache.archiva.redback.struts2.default">
   <head>
     <title><s:text name="backupRestore.page.title"/></title>
   </head>

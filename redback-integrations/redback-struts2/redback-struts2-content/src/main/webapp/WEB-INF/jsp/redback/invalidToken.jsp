@@ -17,7 +17,7 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
 
 <html>
-<s:i18n name="org.codehaus.plexus.redback.struts2.default">
+<s:i18n name="org.apache.archiva.redback.struts2.default">
 <head>
   <title><s:text name="invalid.token.page.title"/></title>
 </head>

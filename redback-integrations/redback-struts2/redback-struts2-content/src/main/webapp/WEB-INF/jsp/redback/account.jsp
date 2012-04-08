@@ -19,7 +19,7 @@
 <%@ taglib prefix="redback" uri="/redback/taglib-1.0"%>
 
 <html>
-<s:i18n name="org.codehaus.plexus.redback.struts2.default">
+<s:i18n name="org.apache.archiva.redback.struts2.default">
 <head>
   <title><s:text name="account.details.page.title"/></title>
 </head>
