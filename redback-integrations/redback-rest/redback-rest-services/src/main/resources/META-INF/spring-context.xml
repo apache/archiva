@@ -37,7 +37,7 @@
 
   <context:annotation-config />
   <context:component-scan
-    base-package="org.codehaus.redback.rest.services"/>
+    base-package="org.apache.archiva.redback.rest.services"/>
 
   <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
     <property name="mapper" ref="redbackJacksonMapper"/>
