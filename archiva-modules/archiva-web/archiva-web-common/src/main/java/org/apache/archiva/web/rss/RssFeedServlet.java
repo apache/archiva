@@ -44,7 +44,7 @@ import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.system.SecuritySession;
-import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;

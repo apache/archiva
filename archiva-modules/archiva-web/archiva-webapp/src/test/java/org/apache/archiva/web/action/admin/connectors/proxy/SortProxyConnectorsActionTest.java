@@ -33,7 +33,7 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.Collections;

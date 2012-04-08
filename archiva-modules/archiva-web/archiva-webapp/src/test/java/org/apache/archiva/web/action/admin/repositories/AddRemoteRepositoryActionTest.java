@@ -25,7 +25,7 @@ import org.apache.archiva.admin.repository.remote.DefaultRemoteRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.web.action.AbstractActionTestCase;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.Collections;

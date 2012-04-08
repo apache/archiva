@@ -38,7 +38,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.List;

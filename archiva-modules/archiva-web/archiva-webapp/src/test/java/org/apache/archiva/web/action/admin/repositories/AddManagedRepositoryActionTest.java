@@ -32,8 +32,8 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.registry.Registry;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 

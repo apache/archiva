@@ -25,9 +25,9 @@ import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.action.AbstractActionSupport;
 import org.apache.archiva.redback.rbac.Resource;
-import org.codehaus.redback.integration.interceptor.SecureAction;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureAction;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 
 import javax.inject.Inject;
 

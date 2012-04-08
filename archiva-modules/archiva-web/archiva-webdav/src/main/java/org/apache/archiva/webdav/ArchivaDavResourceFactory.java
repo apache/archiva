@@ -86,7 +86,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

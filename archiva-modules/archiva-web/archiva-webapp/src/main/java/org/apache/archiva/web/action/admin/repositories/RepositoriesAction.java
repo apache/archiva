@@ -37,9 +37,9 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.util.ContextUtils;
 import org.apache.archiva.web.action.AbstractActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
-import org.codehaus.redback.integration.interceptor.SecureAction;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureAction;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

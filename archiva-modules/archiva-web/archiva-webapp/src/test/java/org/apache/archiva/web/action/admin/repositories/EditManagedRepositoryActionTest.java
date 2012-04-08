@@ -39,8 +39,8 @@ import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.redback.role.RoleManager;
 import org.codehaus.plexus.registry.Registry;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 

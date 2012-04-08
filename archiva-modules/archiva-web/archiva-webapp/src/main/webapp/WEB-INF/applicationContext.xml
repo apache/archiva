@@ -176,7 +176,7 @@
     <component>
       <role>org.apache.archiva.redback.system.check.EnvironmentCheck</role>
       <role-hint>locked-admin-check</role-hint>
-      <implementation>org.codehaus.redback.integration.checks.security.LockedAdminEnvironmentCheck</implementation>
+      <implementation>org.apache.archiva.redback.integration.checks.security.LockedAdminEnvironmentCheck</implementation>
       <description>LockedAdminEnvironmentCheck: checks if accounts marked as system administrator are locked
         and unlocks them on startup.
       </description>

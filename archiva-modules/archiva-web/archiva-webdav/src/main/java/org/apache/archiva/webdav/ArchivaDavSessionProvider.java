@@ -32,7 +32,7 @@ import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 
 /**
  */

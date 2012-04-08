@@ -44,8 +44,8 @@ import org.apache.archiva.web.action.AuditEventArgumentsMatcher;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
 import java.io.File;

@@ -31,9 +31,9 @@ import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.archiva.web.action.AbstractActionSupport;
 import org.apache.struts2.interceptor.ServletRequestAware;
-import org.codehaus.redback.integration.interceptor.SecureAction;
-import org.codehaus.redback.integration.interceptor.SecureActionBundle;
-import org.codehaus.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.integration.interceptor.SecureAction;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
