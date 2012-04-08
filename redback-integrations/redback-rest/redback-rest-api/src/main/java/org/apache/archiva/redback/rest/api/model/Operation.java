@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,32 +25,26 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4
  */
-@XmlRootElement( name = "permission" )
-public class Permission
+@XmlRootElement( name = "operation" )
+public class Operation
     implements Serializable
 {
     private String name;
 
     private String description;
 
-    private Operation operation;
-
-    private Resource resource;
-
     private boolean permanent;
 
-    public Permission()
+    public Operation()
     {
         // no op
     }
 
-    public Permission( org.apache.archiva.redback.rbac.Permission permission )
+    public Operation( org.apache.archiva.redback.rbac.Operation operation )
     {
-        this.name = permission.getName();
-        this.description = permission.getDescription();
-        this.operation = permission.getOperation() == null ? null : new Operation( permission.getOperation() );
-        this.resource = permission.getResource() == null ? null : new Resource( permission.getResource() );
-        this.permanent = permission.isPermanent();
+        this.name = operation.getName();
+        this.description = operation.getDescription();
+        this.permanent = operation.isPermanent();
     }
 
     public String getName()
@@ -63,35 +57,33 @@ public class Permission
         this.name = name;
     }
 
-    public Operation getOperation()
+    public String getDescription()
     {
-        return operation;
+        return description;
     }
 
-    public void setOperation( Operation operation )
+    public void setDescription( String description )
     {
-        this.operation = operation;
+        this.description = description;
     }
 
-    public Resource getResource()
+    public boolean isPermanent()
     {
-        return resource;
+        return permanent;
     }
 
-    public void setResource( Resource resource )
+    public void setPermanent( boolean permanent )
     {
-        this.resource = resource;
+        this.permanent = permanent;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append( "Permission" );
+        sb.append( "Operation" );
         sb.append( "{name='" ).append( name ).append( '\'' );
         sb.append( ", description='" ).append( description ).append( '\'' );
-        sb.append( ", operation=" ).append( operation );
-        sb.append( ", resource=" ).append( resource );
         sb.append( ", permanent=" ).append( permanent );
         sb.append( '}' );
         return sb.toString();

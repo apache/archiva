@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -23,73 +23,52 @@ import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
+ * @since 1.4
  */
-@XmlRootElement( name = "application" )
-public class Application
+@XmlRootElement( name = "errorMessage" )
+public class ErrorMessage
     implements Serializable
 {
-    /**
-     * Field version
-     */
-    private String version;
+    private String errorKey;
 
-    /**
-     * Field id
-     */
-    private String id;
+    private String[] args;
 
-    /**
-     * Field description
-     */
-    private String description;
+    private static final String[] EMPTY = new String[0];
 
-    /**
-     * Field longDescription
-     */
-    private String longDescription;
-
-    public Application()
+    public ErrorMessage()
     {
         // no op
     }
 
-    public String getVersion()
+    public ErrorMessage( String errorKey )
     {
-        return version;
+        this.errorKey = errorKey;
+        this.args = EMPTY;
     }
 
-    public void setVersion( String version )
+    public ErrorMessage( String errorKey, String[] args )
     {
-        this.version = version;
+        this.errorKey = errorKey;
+        this.args = args;
     }
 
-    public String getId()
+    public String getErrorKey()
     {
-        return id;
+        return errorKey;
     }
 
-    public void setId( String id )
+    public void setErrorKey( String errorKey )
     {
-        this.id = id;
+        this.errorKey = errorKey;
     }
 
-    public String getDescription()
+    public String[] getArgs()
     {
-        return description;
+        return args;
     }
 
-    public void setDescription( String description )
+    public void setArgs( String[] args )
     {
-        this.description = description;
-    }
-
-    public String getLongDescription()
-    {
-        return longDescription;
-    }
-
-    public void setLongDescription( String longDescription )
-    {
-        this.longDescription = longDescription;
+        this.args = args;
     }
 }

@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,57 +18,52 @@ package org.codehaus.redback.rest.api.model;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-@XmlRootElement( name = "errorMessage" )
-public class ErrorMessage
+@XmlRootElement( name = "redbackRestError" )
+public class RedbackRestError
     implements Serializable
 {
-    private String errorKey;
 
-    private String[] args;
+    private List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>( 1 );
 
-    private static final String[] EMPTY = new String[0];
-
-    public ErrorMessage()
+    public RedbackRestError()
     {
         // no op
     }
 
-    public ErrorMessage( String errorKey )
+    public RedbackRestError( RedbackServiceException e )
     {
-        this.errorKey = errorKey;
-        this.args = EMPTY;
+        errorMessages.addAll( e.getErrorMessages() );
+        if ( e.getErrorMessages().isEmpty() && StringUtils.isNotEmpty( e.getMessage() ) )
+        {
+            errorMessages.add( new ErrorMessage( e.getMessage(), null ) );
+        }
     }
 
-    public ErrorMessage( String errorKey, String[] args )
+
+    public List<ErrorMessage> getErrorMessages()
     {
-        this.errorKey = errorKey;
-        this.args = args;
+        return errorMessages;
     }
 
-    public String getErrorKey()
+    public void setErrorMessages( List<ErrorMessage> errorMessages )
     {
-        return errorKey;
+        this.errorMessages = errorMessages;
     }
 
-    public void setErrorKey( String errorKey )
+    public void addErrorMessage( ErrorMessage errorMessage )
     {
-        this.errorKey = errorKey;
-    }
-
-    public String[] getArgs()
-    {
-        return args;
-    }
-
-    public void setArgs( String[] args )
-    {
-        this.args = args;
+        this.errorMessages.add( errorMessage );
     }
 }

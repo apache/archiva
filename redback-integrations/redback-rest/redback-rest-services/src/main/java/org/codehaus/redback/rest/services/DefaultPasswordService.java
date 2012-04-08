@@ -28,9 +28,9 @@ import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
-import org.codehaus.redback.rest.api.model.ErrorMessage;
-import org.codehaus.redback.rest.api.services.PasswordService;
-import org.codehaus.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.rest.api.model.ErrorMessage;
+import org.apache.archiva.redback.rest.api.services.PasswordService;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.codehaus.redback.rest.services.utils.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class DefaultPasswordService
         this.passwordValidator = passwordValidator;
     }
 
-    public org.codehaus.redback.rest.api.model.User changePasswordWithKey( String password, String passwordConfirmation,
+    public org.apache.archiva.redback.rest.api.model.User changePasswordWithKey( String password, String passwordConfirmation,
                                                                            String key )
         throws RedbackServiceException
     {
@@ -112,7 +112,7 @@ public class DefaultPasswordService
             user.setEncodedPassword( encodedPassword );
             user = securitySystem.getUserManager().updateUser( user );
 
-            return new org.codehaus.redback.rest.api.model.User( user );
+            return new org.apache.archiva.redback.rest.api.model.User( user );
 
         }
         catch ( KeyManagerException e )
@@ -146,7 +146,7 @@ public class DefaultPasswordService
 
     }
 
-    public org.codehaus.redback.rest.api.model.User changePassword( String userName, String previousPassword,
+    public org.apache.archiva.redback.rest.api.model.User changePassword( String userName, String previousPassword,
                                                                     String password, String passwordConfirmation )
         throws RedbackServiceException
     {
@@ -196,7 +196,7 @@ public class DefaultPasswordService
             u.setPassword( password );
 
             u = securitySystem.getUserManager().updateUser( u );
-            return new org.codehaus.redback.rest.api.model.User( u );
+            return new org.apache.archiva.redback.rest.api.model.User( u );
         }
         catch ( UserNotFoundException e )
         {

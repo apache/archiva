@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.services;
+package org.apache.archiva.redback.rest.api.services;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,10 +21,10 @@ package org.codehaus.redback.rest.api.services;
 
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
-import org.codehaus.redback.rest.api.model.Operation;
-import org.codehaus.redback.rest.api.model.Permission;
-import org.codehaus.redback.rest.api.model.RegistrationKey;
-import org.codehaus.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.model.Operation;
+import org.apache.archiva.redback.rest.api.model.Permission;
+import org.apache.archiva.redback.rest.api.model.RegistrationKey;
+import org.apache.archiva.redback.rest.api.model.User;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

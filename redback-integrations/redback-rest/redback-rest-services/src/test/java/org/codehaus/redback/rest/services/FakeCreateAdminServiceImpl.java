@@ -23,7 +23,7 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.role.RoleManager;
-import org.codehaus.redback.rest.api.services.UserService;
+import org.apache.archiva.redback.rest.api.services.UserService;
 
 import javax.inject.Inject;
 import javax.inject.Named;

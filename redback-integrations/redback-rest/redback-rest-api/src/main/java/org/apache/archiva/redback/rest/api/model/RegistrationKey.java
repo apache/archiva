@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file

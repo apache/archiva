@@ -35,13 +35,13 @@ import org.codehaus.plexus.redback.role.model.ModelTemplate;
 import org.apache.archiva.redback.integration.model.AdminEditUserCredentials;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.integration.util.RoleSorter;
-import org.codehaus.redback.rest.api.model.Application;
-import org.codehaus.redback.rest.api.model.ApplicationRoles;
-import org.codehaus.redback.rest.api.model.ErrorMessage;
-import org.codehaus.redback.rest.api.model.Role;
-import org.codehaus.redback.rest.api.model.RoleTemplate;
-import org.codehaus.redback.rest.api.services.RedbackServiceException;
-import org.codehaus.redback.rest.api.services.RoleManagementService;
+import org.apache.archiva.redback.rest.api.model.Application;
+import org.apache.archiva.redback.rest.api.model.ApplicationRoles;
+import org.apache.archiva.redback.rest.api.model.ErrorMessage;
+import org.apache.archiva.redback.rest.api.model.Role;
+import org.apache.archiva.redback.rest.api.model.RoleTemplate;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -384,7 +384,7 @@ public class DefaultRoleManagementService
                     try
                     {
                         User user = userManager.findUser( userAssignment.getPrincipal() );
-                        role.getUsers().add( new org.codehaus.redback.rest.api.model.User( user ) );
+                        role.getUsers().add( new org.apache.archiva.redback.rest.api.model.User( user ) );
                     }
                     catch ( UserNotFoundException e )
                     {
@@ -404,7 +404,7 @@ public class DefaultRoleManagementService
                         try
                         {
                             User user = userManager.findUser( userAssignment.getPrincipal() );
-                            role.getParentsRolesUsers().add( new org.codehaus.redback.rest.api.model.User( user ) );
+                            role.getParentsRolesUsers().add( new org.apache.archiva.redback.rest.api.model.User( user ) );
                         }
                         catch ( UserNotFoundException e )
                         {
@@ -414,11 +414,12 @@ public class DefaultRoleManagementService
                 }
             }
 
-            List<org.codehaus.redback.rest.api.model.User> otherUsers =
-                new ArrayList<org.codehaus.redback.rest.api.model.User>();
+            List<org.apache.archiva.redback.rest.api.model.User> otherUsers =
+                new ArrayList<org.apache.archiva.redback.rest.api.model.User>();
             for ( User u : userManager.getUsers() )
             {
-                org.codehaus.redback.rest.api.model.User user = new org.codehaus.redback.rest.api.model.User( u );
+                org.apache.archiva.redback.rest.api.model.User
+                    user = new org.apache.archiva.redback.rest.api.model.User( u );
                 if ( role.getParentsRolesUsers().contains( user ) )
                 {
                     continue;
@@ -460,7 +461,7 @@ public class DefaultRoleManagementService
         throws RedbackServiceException
     {
 
-        for ( org.codehaus.redback.rest.api.model.User user : role.getUsers() )
+        for ( org.apache.archiva.redback.rest.api.model.User user : role.getUsers() )
         {
             String username = user.getUsername();
             if ( !userManager.userExists( username ) )
@@ -494,7 +495,7 @@ public class DefaultRoleManagementService
             }
         }
 
-        for ( org.codehaus.redback.rest.api.model.User user : role.getRemovedUsers() )
+        for ( org.apache.archiva.redback.rest.api.model.User user : role.getRemovedUsers() )
         {
             String username = user.getUsername();
             if ( !userManager.userExists( username ) )
@@ -623,7 +624,7 @@ public class DefaultRoleManagementService
         }
     }
 
-    public Boolean updateUserRoles( org.codehaus.redback.rest.api.model.User user )
+    public Boolean updateUserRoles( org.apache.archiva.redback.rest.api.model.User user )
         throws RedbackServiceException
     {
 

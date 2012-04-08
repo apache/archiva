@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.services;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,42 +18,65 @@ package org.codehaus.redback.rest.api.model;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.rest.api.model.ErrorMessage;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
+ * @since 1.3
  */
-@XmlRootElement( name = "redbackRestError" )
-public class RedbackRestError
-    implements Serializable
+public class RedbackServiceException
+    extends Exception
 {
+    private int httpErrorCode = 500;
 
-    private List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>( 1 );
+    private List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>(0);
 
-    public RedbackRestError()
+    public RedbackServiceException( String s )
     {
-        // no op
+        super( s );
     }
 
-    public RedbackRestError( RedbackServiceException e )
+    public RedbackServiceException( String s, int httpErrorCode )
     {
-        errorMessages.addAll( e.getErrorMessages() );
-        if ( e.getErrorMessages().isEmpty() && StringUtils.isNotEmpty( e.getMessage() ) )
-        {
-            errorMessages.add( new ErrorMessage( e.getMessage(), null ) );
-        }
+        super( s );
+        this.httpErrorCode = httpErrorCode;
     }
 
+    public RedbackServiceException( ErrorMessage errorMessage )
+    {
+        errorMessages.add( errorMessage );
+    }
+
+    public RedbackServiceException( ErrorMessage errorMessage, int httpErrorCode )
+    {
+        this.httpErrorCode = httpErrorCode;
+        errorMessages.add( errorMessage );
+    }
+
+    public RedbackServiceException( List<ErrorMessage> errorMessage )
+    {
+        errorMessages.addAll( errorMessage );
+    }
+
+    public int getHttpErrorCode()
+    {
+        return httpErrorCode;
+    }
+
+    public void setHttpErrorCode( int httpErrorCode )
+    {
+        this.httpErrorCode = httpErrorCode;
+    }
 
     public List<ErrorMessage> getErrorMessages()
     {
+        if ( errorMessages == null )
+        {
+            this.errorMessages = new ArrayList<ErrorMessage>();
+        }
         return errorMessages;
     }
 

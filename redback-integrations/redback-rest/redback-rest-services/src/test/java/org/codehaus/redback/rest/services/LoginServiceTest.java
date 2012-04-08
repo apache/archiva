@@ -19,8 +19,8 @@ package org.codehaus.redback.rest.services;
  */
 
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
-import org.codehaus.redback.rest.api.model.User;
-import org.codehaus.redback.rest.api.services.UserService;
+import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.services.UserService;
 import org.junit.Test;
 
 /**

@@ -20,8 +20,8 @@ package org.codehaus.redback.rest.services.interceptors;
 
 import org.apache.archiva.redback.policy.PasswordRuleViolationException;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
-import org.codehaus.redback.rest.api.model.ErrorMessage;
-import org.codehaus.redback.rest.api.model.RedbackRestError;
+import org.apache.archiva.redback.rest.api.model.ErrorMessage;
+import org.apache.archiva.redback.rest.api.model.RedbackRestError;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;

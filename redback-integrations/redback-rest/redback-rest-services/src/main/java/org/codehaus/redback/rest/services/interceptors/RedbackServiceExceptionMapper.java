@@ -18,9 +18,8 @@ package org.codehaus.redback.rest.services.interceptors;
  * under the License.
  */
 
-import org.codehaus.redback.rest.api.model.ErrorMessage;
-import org.codehaus.redback.rest.api.model.RedbackRestError;
-import org.codehaus.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.rest.api.model.RedbackRestError;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;

@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.model;
 
 import org.apache.archiva.redback.integration.util.DateUtils;
 

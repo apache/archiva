@@ -1,4 +1,4 @@
-package org.codehaus.redback.rest.api.model;
+package org.apache.archiva.redback.rest.api.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -23,38 +23,54 @@ import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
- * @since 1.4
  */
-@XmlRootElement( name = "operation" )
-public class Operation
+@XmlRootElement( name = "application" )
+public class Application
     implements Serializable
 {
-    private String name;
+    /**
+     * Field version
+     */
+    private String version;
 
+    /**
+     * Field id
+     */
+    private String id;
+
+    /**
+     * Field description
+     */
     private String description;
 
-    private boolean permanent;
+    /**
+     * Field longDescription
+     */
+    private String longDescription;
 
-    public Operation()
+    public Application()
     {
         // no op
     }
 
-    public Operation( org.apache.archiva.redback.rbac.Operation operation )
+    public String getVersion()
     {
-        this.name = operation.getName();
-        this.description = operation.getDescription();
-        this.permanent = operation.isPermanent();
+        return version;
     }
 
-    public String getName()
+    public void setVersion( String version )
     {
-        return name;
+        this.version = version;
     }
 
-    public void setName( String name )
+    public String getId()
     {
-        this.name = name;
+        return id;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
     }
 
     public String getDescription()
@@ -67,25 +83,13 @@ public class Operation
         this.description = description;
     }
 
-    public boolean isPermanent()
+    public String getLongDescription()
     {
-        return permanent;
+        return longDescription;
     }
 
-    public void setPermanent( boolean permanent )
+    public void setLongDescription( String longDescription )
     {
-        this.permanent = permanent;
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "Operation" );
-        sb.append( "{name='" ).append( name ).append( '\'' );
-        sb.append( ", description='" ).append( description ).append( '\'' );
-        sb.append( ", permanent=" ).append( permanent );
-        sb.append( '}' );
-        return sb.toString();
+        this.longDescription = longDescription;
     }
 }

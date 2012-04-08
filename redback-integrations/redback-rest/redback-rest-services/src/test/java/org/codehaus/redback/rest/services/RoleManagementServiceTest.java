@@ -20,11 +20,11 @@ package org.codehaus.redback.rest.services;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
-import org.codehaus.redback.rest.api.model.ApplicationRoles;
-import org.codehaus.redback.rest.api.model.Role;
-import org.codehaus.redback.rest.api.model.User;
-import org.codehaus.redback.rest.api.services.RoleManagementService;
-import org.codehaus.redback.rest.api.services.UserService;
+import org.apache.archiva.redback.rest.api.model.ApplicationRoles;
+import org.apache.archiva.redback.rest.api.model.Role;
+import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.services.RoleManagementService;
+import org.apache.archiva.redback.rest.api.services.UserService;
 import org.junit.Test;
 
 import java.util.Arrays;
