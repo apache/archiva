@@ -1,4 +1,4 @@
-package org.codehaus.redback.jsecurity;
+package org.apache.archiva.redback.jsecurity;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

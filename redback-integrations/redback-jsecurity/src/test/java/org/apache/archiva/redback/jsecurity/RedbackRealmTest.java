@@ -1,4 +1,4 @@
-package org.codehaus.redback.jsecurity;
+package org.apache.archiva.redback.jsecurity;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,9 @@ package org.codehaus.redback.jsecurity;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.jsecurity.PrincipalLockedException;
+import org.apache.archiva.redback.jsecurity.PrincipalPasswordChangeRequiredException;
+import org.apache.archiva.redback.jsecurity.RedbackRealm;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Permission;
