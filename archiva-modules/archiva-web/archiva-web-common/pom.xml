@@ -218,7 +218,7 @@
               org.apache.archiva.redback.policy,
               org.apache.archiva.redback.system,
               org.apache.archiva.redback.users,
-              org.codehaus.redback.integration.filter.authentication
+              org.apache.archiva.redback.integration.filter.authentication
             </Import-Package>
           </instructions>
         </configuration>
