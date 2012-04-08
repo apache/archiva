@@ -29,7 +29,7 @@ import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.redback.integration.model.UserCredentials;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.integration.util.RoleSorter;
 
 import javax.inject.Inject;

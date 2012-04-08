@@ -20,7 +20,7 @@ package org.codehaus.redback.rest.api.services;
  */
 
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.api.model.Operation;
 import org.codehaus.redback.rest.api.model.Permission;
 import org.codehaus.redback.rest.api.model.RegistrationKey;

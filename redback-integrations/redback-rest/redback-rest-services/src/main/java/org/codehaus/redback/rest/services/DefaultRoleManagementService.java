@@ -33,7 +33,7 @@ import org.codehaus.plexus.redback.role.model.ModelApplication;
 import org.codehaus.plexus.redback.role.model.ModelRole;
 import org.codehaus.plexus.redback.role.model.ModelTemplate;
 import org.codehaus.redback.integration.model.AdminEditUserCredentials;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.integration.util.RoleSorter;
 import org.codehaus.redback.rest.api.model.Application;
 import org.codehaus.redback.rest.api.model.ApplicationRoles;

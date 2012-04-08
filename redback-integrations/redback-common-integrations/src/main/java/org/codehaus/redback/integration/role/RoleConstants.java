@@ -19,7 +19,7 @@ package org.codehaus.redback.integration.role;
  * under the License.
  */
 
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 
 /**
  * RoleConstants:

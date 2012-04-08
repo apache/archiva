@@ -33,7 +33,7 @@ import org.apache.archiva.redback.users.UserNotFoundException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.redback.integration.interceptor.SecureActionBundle;
 import org.codehaus.redback.integration.interceptor.SecureActionException;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

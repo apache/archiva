@@ -44,7 +44,7 @@ import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.codehaus.redback.integration.filter.authentication.HttpAuthenticator;
 import org.codehaus.redback.integration.mail.Mailer;
-import org.codehaus.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.codehaus.redback.rest.api.model.ErrorMessage;
 import org.codehaus.redback.rest.api.model.Operation;
 import org.codehaus.redback.rest.api.model.Permission;

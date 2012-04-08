@@ -1,4 +1,4 @@
-package org.codehaus.redback.integration.security.role;
+package org.apache.archiva.redback.integration.security.role;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
