@@ -49,6 +49,6 @@ Archiva Logs
      \|     \|           \__________________________________/
 
 
-2009-07-13 16:04:55,129 [WrapperSimpleAppMain] INFO  org.codehaus.plexus.redback.struts2.interceptor.SecureActionInterceptor  -
-  org.codehaus.plexus.redback.struts2.interceptor.SecureActionInterceptor initialized!
+2009-07-13 16:04:55,129 [WrapperSimpleAppMain] INFO  org.apache.archiva.redback.struts2.interceptor.SecureActionInterceptor  -
+  org.apache.archiva.redback.struts2.interceptor.SecureActionInterceptor initialized!
 ------

@@ -48,7 +48,7 @@
     </layout>
   </appender>
 
-  <logger name="org.codehaus.plexus.redback.struts2.action.AuditEvent" additivity="false">
+  <logger name="org.apache.archiva.redback.struts2.action.AuditEvent" additivity="false">
     <level value="info" />
     <appender-ref ref="redbackAuditLog" />
   </logger>
