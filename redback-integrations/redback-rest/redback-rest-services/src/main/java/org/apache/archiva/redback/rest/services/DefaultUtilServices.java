@@ -72,26 +72,26 @@ public class DefaultUtilServices
         {
 
             // load default first then requested locale
-            loadResource( properties, "org/codehaus/plexus/redback/users/messages", null );
-            loadResource( properties, "org/codehaus/plexus/redback/users/messages", locale );
+            loadResource( properties, "org/apache/archiva/redback/users/messages", null );
+            loadResource( properties, "org/apache/archiva/redback/users/messages", locale );
 
         }
         catch ( IOException e )
         {
-            log.warn( "skip error loading properties {}", "org/codehaus/plexus/redback/users/messages" );
+            log.warn( "skip error loading properties {}", "org/apache/archiva/redback/users/messages" );
         }
 
         try
         {
 
             // load default first then requested locale
-            loadResource( properties, "org/codehaus/redback/i18n/default", null );
-            loadResource( properties, "org/codehaus/redback/i18n/default", locale );
+            loadResource( properties, "org/apache/archiva/redback/i18n/default", null );
+            loadResource( properties, "org/apache/archiva/redback/i18n/default", locale );
 
         }
         catch ( IOException e )
         {
-            log.warn( "skip error loading properties {}", "org/codehaus/redback/i18n/default" );
+            log.warn( "skip error loading properties {}", "org/apache/archiva/redback/i18n/default" );
         }
 
         StringBuilder output = new StringBuilder();
@@ -114,11 +114,11 @@ public class DefaultUtilServices
         {
             Properties properties = new Properties();
             // load default first then requested locale
-            loadResource( properties, "org/codehaus/plexus/redback/users/messages", null );
-            loadResource( properties, "org/codehaus/plexus/redback/users/messages", locale );
+            loadResource( properties, "org/apache/archiva/redback/users/messages", null );
+            loadResource( properties, "org/apache/archiva/redback/users/messages", locale );
 
-            loadResource( properties, "org/codehaus/redback/i18n/default", null );
-            loadResource( properties, "org/codehaus/redback/i18n/default", locale );
+            loadResource( properties, "org/apache/archiva/redback/i18n/default", null );
+            loadResource( properties, "org/apache/archiva/redback/i18n/default", locale );
             return properties;
         }
         catch ( IOException e )
