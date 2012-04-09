@@ -18,9 +18,9 @@ package org.apache.archiva.consumers.lucene.test;
  * under the License.
  */
 
-import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -29,7 +29,8 @@ import java.net.URL;
  * @author Olivier Lamy
  */
 @Service( "roleManager#test" )
-public class TestRoleManager implements RoleManager
+public class TestRoleManager
+    implements RoleManager
 {
     public void loadRoleModel( URL resourceLocation )
         throws RoleManagerException

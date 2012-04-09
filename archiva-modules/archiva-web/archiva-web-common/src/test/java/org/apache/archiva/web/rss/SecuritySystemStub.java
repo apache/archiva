@@ -35,7 +35,7 @@ import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
-import org.codehaus.plexus.redback.users.jdo.JdoUser;
+import org.apache.archiva.redback.users.jdo.JdoUser;
 
 import java.util.ArrayList;
 import java.util.Date;

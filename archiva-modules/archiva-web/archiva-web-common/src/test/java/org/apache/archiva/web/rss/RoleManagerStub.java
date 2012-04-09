@@ -20,7 +20,7 @@ package org.apache.archiva.web.rss;
 
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
