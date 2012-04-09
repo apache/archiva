@@ -33,10 +33,6 @@ import java.io.IOException;
  */
 public interface DataManagementTool
 {
-    /**
-     * Plexus role.
-     */
-    String ROLE = DataManagementTool.class.getName();
 
     void backupRBACDatabase( RBACManager manager, File backupDirectory )
         throws RbacManagerException, IOException, XMLStreamException;

@@ -24,5 +24,5 @@ package org.apache.archiva.redback.system;
  */
 public interface SecureApplication
 {
-    String ROLE = SecureApplication.class.getName();
+    //
 }

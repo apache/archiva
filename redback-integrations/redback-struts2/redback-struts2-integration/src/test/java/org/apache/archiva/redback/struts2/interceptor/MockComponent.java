@@ -24,7 +24,5 @@ package org.apache.archiva.redback.struts2.interceptor;
  */
 public interface MockComponent
 {
-    String ROLE = MockComponent.class.getName();
-
     void displayResult( String result );
 }

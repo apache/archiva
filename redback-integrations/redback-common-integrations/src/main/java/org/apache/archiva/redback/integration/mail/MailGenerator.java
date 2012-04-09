@@ -29,7 +29,5 @@ import org.apache.archiva.redback.keys.AuthenticationKey;
  */
 public interface MailGenerator
 {
-    String ROLE = MailGenerator.class.getName();
-
     String generateMail( String templateName, AuthenticationKey authkey, String baseUrl );
 }

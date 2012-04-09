@@ -31,8 +31,6 @@ import javax.naming.spi.StateFactory;
  */
 public interface LdapConnectionFactory
 {
-    String ROLE = LdapConnectionFactory.class.getName();
-
     LdapConnection getConnection()
         throws LdapException;
 

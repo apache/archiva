@@ -30,8 +30,6 @@ package org.apache.archiva.redback.authentication;
  */
 public interface AuthenticationDataSource
 {
-    public String ROLE = AuthenticationDataSource.class.getName();
-
     String getPrincipal();
 
     boolean isEnforcePasswordChange();
