@@ -107,7 +107,7 @@
         <configuration>
           <version>1.0.1</version>
           <packageWithVersion>false</packageWithVersion>
-          <model>src/main/mdo/user.xml</model>
+          <model>src/main/mdo/user.mdo</model>
         </configuration>
         <executions>
           <execution>
