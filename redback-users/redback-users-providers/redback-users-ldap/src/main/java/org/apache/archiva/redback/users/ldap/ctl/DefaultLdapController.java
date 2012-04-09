@@ -60,7 +60,7 @@ public class DefaultLdapController
     private UserMapper mapper;
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#removeUser(java.lang.Object, javax.naming.directory.DirContext)
+	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#removeUser(java.lang.Object, javax.naming.directory.DirContext)
 	 */
     public void removeUser( Object principal, DirContext context )
         throws LdapControllerException
@@ -69,7 +69,7 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#updateUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext)
+	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#updateUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext)
 	 */
     public void updateUser( User user, DirContext context )
         throws LdapControllerException, MappingException
@@ -78,7 +78,7 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#userExists(java.lang.Object, javax.naming.directory.DirContext)
+	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#userExists(java.lang.Object, javax.naming.directory.DirContext)
 	 */
     public boolean userExists( Object key, DirContext context )
         throws LdapControllerException
@@ -150,7 +150,7 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#getUsers(javax.naming.directory.DirContext)
+	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUsers(javax.naming.directory.DirContext)
 	 */
     public Collection<User> getUsers( DirContext context )
         throws LdapControllerException, MappingException
@@ -191,7 +191,7 @@ public class DefaultLdapController
     }
     
    /**
-    * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#getUsersByQuery(org.apache.archiva.redback.users.ldap.LdapUserQuery, javax.naming.directory.DirContext)
+    * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUsersByQuery(org.apache.archiva.redback.users.ldap.LdapUserQuery, javax.naming.directory.DirContext)
     */
    public List<User> getUsersByQuery( LdapUserQuery query, DirContext context )
        throws LdapControllerException, MappingException
@@ -232,7 +232,7 @@ public class DefaultLdapController
    }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#createUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext, boolean)
+	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#createUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext, boolean)
 	 */
     public void createUser( User user, DirContext context, boolean encodePasswordIfChanged )
         throws LdapControllerException, MappingException
@@ -250,7 +250,7 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.codehaus.plexus.redback.users.ldap.ctl.LdapControllerI#getUser(java.lang.Object, javax.naming.directory.DirContext)
+	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUser(java.lang.Object, javax.naming.directory.DirContext)
 	 */
     public LdapUser getUser( Object key, DirContext context )
         throws LdapControllerException, MappingException

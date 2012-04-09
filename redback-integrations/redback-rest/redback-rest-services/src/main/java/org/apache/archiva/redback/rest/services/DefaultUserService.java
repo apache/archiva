@@ -377,7 +377,7 @@ public class DefaultUserService
         String[] caches = cacheManager.getCacheNames();
         for ( String cacheName : caches )
         {
-            if ( StringUtils.startsWith( cacheName, "org.codehaus.plexus.redback.rbac.jdo" ) )
+            if ( StringUtils.startsWith( cacheName, "org.apache.archiva.redback.rbac.jdo" ) )
             {
                 cacheManager.getCache( cacheName ).removeAll();
             }
