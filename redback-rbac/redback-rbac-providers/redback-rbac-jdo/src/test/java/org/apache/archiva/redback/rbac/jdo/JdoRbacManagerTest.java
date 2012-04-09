@@ -116,7 +116,7 @@ public class JdoRbacManagerTest
         }
 
         URL[] jdoFileUrls =
-            new URL[]{ getClass().getResource( "/org/codehaus/plexus/redback/rbac/jdo/package.jdo" ) }; //$NON-NLS-1$
+            new URL[]{ getClass().getResource( "/org/apache/archiva/redback/rbac/jdo/package.jdo" ) }; //$NON-NLS-1$
 
 
 

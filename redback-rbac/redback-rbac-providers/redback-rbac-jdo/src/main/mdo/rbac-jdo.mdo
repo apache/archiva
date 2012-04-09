@@ -27,7 +27,7 @@
   <defaults>
     <default>
       <key>package</key>
-      <value>org.codehaus.plexus.redback.rbac.jdo</value>
+      <value>org.apache.archiva.redback.rbac.jdo</value>
     </default>
   </defaults>
   <classes>

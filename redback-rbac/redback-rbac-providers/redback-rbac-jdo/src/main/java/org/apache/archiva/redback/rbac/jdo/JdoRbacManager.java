@@ -31,12 +31,6 @@ import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RBACObjectAssertions;
-import org.codehaus.plexus.redback.rbac.jdo.JdoOperation;
-import org.codehaus.plexus.redback.rbac.jdo.JdoPermission;
-import org.codehaus.plexus.redback.rbac.jdo.JdoResource;
-import org.codehaus.plexus.redback.rbac.jdo.JdoRole;
-import org.codehaus.plexus.redback.rbac.jdo.JdoUserAssignment;
-import org.codehaus.plexus.redback.rbac.jdo.RbacJdoModelModelloMetadata;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
