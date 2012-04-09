@@ -28,7 +28,7 @@ import org.apache.archiva.redback.policy.encoders.SHA1PasswordEncoder;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
-import org.codehaus.redback.components.apacheds.ApacheDs;
+import org.apache.archiva.redback.components.apacheds.ApacheDs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

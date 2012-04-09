@@ -25,7 +25,7 @@ import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationData
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.encoders.SHA1PasswordEncoder;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
-import org.codehaus.redback.components.apacheds.ApacheDs;
+import org.apache.archiva.redback.components.apacheds.ApacheDs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -28,7 +28,7 @@
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
-  <bean name="apacheDS#test" class="org.codehaus.redback.components.apacheds.DefaultApacheDs"
+  <bean name="apacheDS#test" class="org.apache.archiva.redback.components.apacheds.DefaultApacheDs"
       scope="prototype">
     <property name="basedir" value="${basedir}/target/apacheds"/>
     <property name="port" value="${ldapPort}"/>
