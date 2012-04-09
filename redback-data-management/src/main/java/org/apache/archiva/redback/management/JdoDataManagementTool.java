@@ -52,9 +52,9 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.redback.users.jdo.UserDatabase;
-import org.codehaus.plexus.redback.users.jdo.io.stax.UsersManagementStaxReader;
-import org.codehaus.plexus.redback.users.jdo.io.stax.UsersManagementStaxWriter;
+import org.apache.archiva.redback.users.jdo.UserDatabase;
+import org.apache.archiva.redback.users.jdo.io.stax.UsersManagementStaxReader;
+import org.apache.archiva.redback.users.jdo.io.stax.UsersManagementStaxWriter;
 import org.codehaus.plexus.util.IOUtil;
 import org.springframework.stereotype.Service;
 

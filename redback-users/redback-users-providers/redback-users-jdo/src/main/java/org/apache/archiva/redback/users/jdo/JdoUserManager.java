@@ -21,17 +21,15 @@ package org.apache.archiva.redback.users.jdo;
 
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.AbstractUserManager;
+import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserQuery;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.jdo.PlexusJdoUtils;
 import org.codehaus.plexus.jdo.PlexusObjectNotFoundException;
 import org.codehaus.plexus.jdo.PlexusStoreException;
-import org.apache.archiva.redback.users.PermanentUserException;
-import org.apache.archiva.redback.users.UserQuery;
-import org.codehaus.plexus.redback.users.jdo.JdoUser;
-import org.codehaus.plexus.redback.users.jdo.UsersManagementModelloMetadata;
 import org.codehaus.plexus.util.StringUtils;
 import org.jpox.JDOClassLoaderResolver;
 import org.springframework.stereotype.Service;
@@ -44,7 +42,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
-
 import java.util.Date;
 import java.util.List;
 
@@ -54,11 +51,12 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-@Service("userManager#jdo")
+@Service( "userManager#jdo" )
 public class JdoUserManager
     extends AbstractUserManager
 {
-    @Inject @Named(value="jdoFactory#users")
+    @Inject
+    @Named( value = "jdoFactory#users" )
     private JdoFactory jdoFactory;
 
     @Inject
@@ -107,7 +105,7 @@ public class JdoUserManager
         return getAllObjectsDetached( ordering );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private List<User> getAllObjectsDetached( String ordering )
     {
         return PlexusJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoUser.class, ordering, (String) null );
@@ -128,7 +126,7 @@ public class JdoUserManager
         return findUsers( "email", emailKey, orderAscending );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public List<User> findUsersByQuery( UserQuery userQuery )
     {
         JdoUserQuery uq = (JdoUserQuery) userQuery;
@@ -172,7 +170,7 @@ public class JdoUserManager
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private List<User> findUsers( String searchField, String searchKey, boolean ascendingUsername )
     {
         PersistenceManager pm = getPersistenceManager();
@@ -216,7 +214,7 @@ public class JdoUserManager
         if ( !( user instanceof JdoUser ) )
         {
             throw new UserManagerException( "Unable to Add User. User object " + user.getClass().getName() +
-                " is not an instance of " + JdoUser.class.getName() );
+                                                " is not an instance of " + JdoUser.class.getName() );
         }
 
         if ( StringUtils.isEmpty( user.getUsername() ) )
@@ -292,7 +290,7 @@ public class JdoUserManager
         if ( !( user instanceof JdoUser ) )
         {
             throw new UserManagerException( "Unable to Add User. User object " + user.getClass().getName() +
-                " is not an instance of " + JdoUser.class.getName() );
+                                                " is not an instance of " + JdoUser.class.getName() );
         }
 
         if ( StringUtils.isEmpty( user.getUsername() ) )
@@ -369,7 +367,7 @@ public class JdoUserManager
         if ( !( user instanceof JdoUser ) )
         {
             throw new UserManagerException( "Unable to Update User. User object " + user.getClass().getName() +
-                " is not an instance of " + JdoUser.class.getName() );
+                                                " is not an instance of " + JdoUser.class.getName() );
         }
 
         // If password is supplied, assume changing of password.
@@ -427,7 +425,7 @@ public class JdoUserManager
         catch ( PlexusStoreException e )
         {
             throw new UserManagerException( "Unable to get object '" + JdoUser.class.getName() + "', id '" + id +
-                "', fetch-group '" + fetchGroup + "' from jdo store." );
+                                                "', fetch-group '" + fetchGroup + "' from jdo store." );
         }
     }
 

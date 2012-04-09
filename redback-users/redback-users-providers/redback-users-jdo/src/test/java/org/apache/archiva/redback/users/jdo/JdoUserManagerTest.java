@@ -90,7 +90,7 @@ public class JdoUserManagerTest
         StoreManagerDebug.setup( (AbstractPersistenceManagerFactory) pmf );
 
         SchemaTool.createSchemaTables(
-            new URL[]{ getClass().getResource( "/org/codehaus/plexus/redback/users/jdo/package.jdo" ) }, new URL[]{ },
+            new URL[]{ getClass().getResource( "/org/apache/archiva/redback/users/jdo/package.jdo" ) }, new URL[]{ },
             null, false, null ); //$NON-NLS-1$
 
         PersistenceManager pm = pmf.getPersistenceManager();

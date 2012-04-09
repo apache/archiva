@@ -22,11 +22,11 @@
   <id>redback-users-jdo</id>
   <name>UsersManagement</name>
   <version>1.0.1</version>
-  <description>Plexus Redback Users object model.</description>
+  <description>Archiva Redback Users object model.</description>
   <defaults>
     <default>
       <key>package</key>
-      <value>org.codehaus.plexus.redback.users.jdo</value>
+      <value>org.apache.archiva.redback.users.jdo</value>
     </default>
   </defaults>
 
