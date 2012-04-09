@@ -26,20 +26,18 @@ import java.util.List;
 
 /**
  * Convert an entire repository.
- * 
  */
 public interface LegacyRepositoryConverter
 {
-    String ROLE = LegacyRepositoryConverter.class.getName();
 
     /**
      * Convert a legacy repository to a modern repository. This means a Maven 1.x repository
      * using v3 POMs to a Maven 2.x repository using v4.0.0 POMs.
      *
-     * @param legacyRepositoryDirectory the directory of the legacy repository. 
+     * @param legacyRepositoryDirectory      the directory of the legacy repository.
      * @param destinationRepositoryDirectory the directory of the modern repository.
-     * @param fileExclusionPatterns the list of patterns to exclude from the conversion.
-     * @throws RepositoryConversionException 
+     * @param fileExclusionPatterns          the list of patterns to exclude from the conversion.
+     * @throws RepositoryConversionException
      */
     void convertLegacyRepository( File legacyRepositoryDirectory, File destinationRepositoryDirectory,
                                   List<String> fileExclusionPatterns )

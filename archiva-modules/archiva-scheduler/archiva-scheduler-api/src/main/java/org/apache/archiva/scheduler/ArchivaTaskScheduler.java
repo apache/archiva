@@ -27,10 +27,6 @@ import org.codehaus.plexus.taskqueue.TaskQueueException;
  */
 public interface ArchivaTaskScheduler<T extends Task>
 {
-    /**
-     * The Plexus component role.
-     */
-    public final static String ROLE = ArchivaTaskScheduler.class.getName();
 
     /**
      * Adds the task to the scanning queue.
