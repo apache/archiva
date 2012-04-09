@@ -71,7 +71,7 @@
     <level value="info"/>
   </logger>
 
-  <logger name="org.codehaus.plexus.redback">
+  <logger name="org.apache.archiva.redback">
     <level value="info"/>
   </logger>
 

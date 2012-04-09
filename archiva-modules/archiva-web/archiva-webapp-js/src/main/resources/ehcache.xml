@@ -43,7 +43,7 @@
       timeToLiveSeconds="14400"
       memoryStoreEvictionPolicy="LFU" />
 
-  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoOperation"
+  <cache name="org.apache.archiva.redback.rbac.jdo.JdoOperation"
     maxElementsInMemory="10000"
     maxElementsOnDisk="0"
     eternal="false"
@@ -52,7 +52,7 @@
     timeToLiveSeconds="14400"
     memoryStoreEvictionPolicy="LFU" />
 
-  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoPermission"
+  <cache name="org.apache.archiva.redback.rbac.jdo.JdoPermission"
     maxElementsInMemory="10000"
     maxElementsOnDisk="0"
     eternal="false"
@@ -61,7 +61,7 @@
     timeToLiveSeconds="14400"
     memoryStoreEvictionPolicy="LFU" />
 
-  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoResource"
+  <cache name="org.apache.archiva.redback.rbac.jdo.JdoResource"
     maxElementsInMemory="10000"
     maxElementsOnDisk="0"
     eternal="false"
@@ -70,7 +70,7 @@
     timeToLiveSeconds="14400"
     memoryStoreEvictionPolicy="LFU" />
 
-  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoRole"
+  <cache name="org.apache.archiva.redback.rbac.jdo.JdoRole"
     maxElementsInMemory="10000"
     maxElementsOnDisk="0"
     eternal="false"
@@ -79,7 +79,7 @@
     timeToLiveSeconds="14400"
     memoryStoreEvictionPolicy="LFU" />
 
-  <cache name="org.codehaus.plexus.redback.rbac.jdo.JdoUserAssignment"
+  <cache name="org.apache.archiva.redback.rbac.jdo.JdoUserAssignment"
     maxElementsInMemory="10000"
     maxElementsOnDisk="0"
     eternal="false"
