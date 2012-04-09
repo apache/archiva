@@ -23,11 +23,11 @@
   <id>redback-keys-jdo</id>
   <name>RedbackKeyManagementJdo</name>
   <version>1.0.1</version>
-  <description>Plexus Redback :: Key Management JDO Store.</description>
+  <description>Archiva Redback :: Key Management JDO Store.</description>
   <defaults>
     <default>
       <key>package</key>
-      <value>org.codehaus.plexus.redback.keys.jdo</value>
+      <value>org.apache.archiva.redback.keys.jdo</value>
     </default>
   </defaults>
 

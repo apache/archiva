@@ -120,7 +120,7 @@
               <goal>jpox-jdo-mapping</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/classes/org/codehaus/plexus/redback/keys/jdo</outputDirectory>
+              <outputDirectory>${basedir}/target/classes/org/apache/archiva/redback/keys/jdo</outputDirectory>
             </configuration>
           </execution>
         </executions>

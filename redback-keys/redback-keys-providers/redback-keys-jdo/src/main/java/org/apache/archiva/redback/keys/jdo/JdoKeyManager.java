@@ -27,8 +27,6 @@ import org.codehaus.plexus.jdo.PlexusStoreException;
 import org.apache.archiva.redback.keys.AbstractKeyManager;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;
-import org.codehaus.plexus.redback.keys.jdo.JdoAuthenticationKey;
-import org.codehaus.plexus.redback.keys.jdo.RedbackKeyManagementJdoModelloMetadata;
 import org.codehaus.plexus.util.StringUtils;
 import org.jpox.PersistenceManagerFactoryImpl;
 import org.springframework.stereotype.Service;

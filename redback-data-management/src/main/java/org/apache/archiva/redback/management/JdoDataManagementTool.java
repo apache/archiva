@@ -36,15 +36,15 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.jdo.AuthenticationKeyDatabase;
+import org.apache.archiva.redback.keys.jdo.io.stax.RedbackKeyManagementJdoStaxReader;
+import org.apache.archiva.redback.keys.jdo.io.stax.RedbackKeyManagementJdoStaxWriter;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.keys.KeyManagerException;
-import org.codehaus.plexus.redback.keys.jdo.AuthenticationKeyDatabase;
-import org.codehaus.plexus.redback.keys.jdo.io.stax.RedbackKeyManagementJdoStaxReader;
-import org.codehaus.plexus.redback.keys.jdo.io.stax.RedbackKeyManagementJdoStaxWriter;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.UserAssignment;

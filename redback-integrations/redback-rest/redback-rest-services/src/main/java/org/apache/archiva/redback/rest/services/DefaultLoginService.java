@@ -20,12 +20,12 @@ package org.apache.archiva.redback.rest.services;
  */
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.jdo.JdoAuthenticationKey;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.redback.keys.jdo.JdoAuthenticationKey;
 import org.apache.archiva.redback.keys.memory.MemoryAuthenticationKey;
 import org.apache.archiva.redback.keys.memory.MemoryKeyManager;
 import org.apache.archiva.redback.system.SecuritySession;
