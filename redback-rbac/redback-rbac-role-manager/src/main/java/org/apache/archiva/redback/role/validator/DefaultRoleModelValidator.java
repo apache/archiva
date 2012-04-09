@@ -18,29 +18,29 @@ package org.apache.archiva.redback.role.validator;
  * specific language governing permissions and limitations
  * under the License.
  */
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.archiva.redback.role.RoleManagerException;
-import org.codehaus.plexus.redback.role.model.ModelApplication;
-import org.codehaus.plexus.redback.role.model.ModelOperation;
-import org.codehaus.plexus.redback.role.model.ModelPermission;
-import org.codehaus.plexus.redback.role.model.ModelResource;
-import org.codehaus.plexus.redback.role.model.ModelRole;
-import org.codehaus.plexus.redback.role.model.ModelTemplate;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.model.ModelApplication;
+import org.apache.archiva.redback.role.model.ModelOperation;
+import org.apache.archiva.redback.role.model.ModelPermission;
+import org.apache.archiva.redback.role.model.ModelResource;
+import org.apache.archiva.redback.role.model.ModelRole;
+import org.apache.archiva.redback.role.model.ModelTemplate;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.apache.archiva.redback.role.util.RoleModelUtils;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DefaultRoleModelValidator: validates completeness of the model
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  * @version: $Id$
- * 
  */
-@Service("roleModelValidator")
+@Service( "roleModelValidator" )
 public class DefaultRoleModelValidator
     implements RoleModelValidator
 {
@@ -79,7 +79,7 @@ public class DefaultRoleModelValidator
     {
         if ( validationErrors == null )
         {
-            validationErrors = new ArrayList<String>(0);
+            validationErrors = new ArrayList<String>( 0 );
         }
 
         validationErrors.add( error );
@@ -88,10 +88,10 @@ public class DefaultRoleModelValidator
     /**
      * FIXME this should be taken care of by <required/> in modello, figure out why its not
      * in the meantime, implement the basics
-     * 
+     *
      * @param model
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void validateRequiredStructure( RedbackRoleModel model )
     {
         // validate model has name
@@ -222,7 +222,7 @@ public class DefaultRoleModelValidator
      *
      * @param model
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void validateOperationClosure( RedbackRoleModel model )
     {
         List<String> operationIdList = RoleModelUtils.getOperationIdList( model );
@@ -239,7 +239,7 @@ public class DefaultRoleModelValidator
                         if ( !operationIdList.contains( permission.getOperation() ) )
                         {
                             addValidationError( "missing operation: " + permission.getOperation() + " in permission "
-                                + permission.getId() );
+                                                    + permission.getId() );
                         }
                     }
                 }
@@ -255,7 +255,7 @@ public class DefaultRoleModelValidator
                         if ( !operationIdList.contains( permission.getOperation() ) )
                         {
                             addValidationError( "missing operation: " + permission.getOperation() + " in permission "
-                                + permission.getId() );
+                                                    + permission.getId() );
                         }
                     }
                 }
@@ -263,7 +263,7 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void validateResourceClosure( RedbackRoleModel model )
     {
         List<String> resourceIdList = RoleModelUtils.getResourceIdList( model );
@@ -278,7 +278,7 @@ public class DefaultRoleModelValidator
                         if ( !resourceIdList.contains( permission.getResource() ) )
                         {
                             addValidationError( "missing operation: " + permission.getResource() + " in permission "
-                                + permission.getId() );
+                                                    + permission.getId() );
                         }
                     }
                 }
@@ -286,7 +286,7 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void validateChildRoleClosure( RedbackRoleModel model )
     {
         List<String> roleIdList = RoleModelUtils.getRoleIdList( model );
@@ -300,8 +300,8 @@ public class DefaultRoleModelValidator
                     {
                         if ( !roleIdList.contains( childRoleId ) )
                         {
-                            addValidationError( "missing role id: " + childRoleId + " in child roles of role "
-                                + role.getId() );
+                            addValidationError(
+                                "missing role id: " + childRoleId + " in child roles of role " + role.getId() );
                         }
                     }
                 }
@@ -315,8 +315,8 @@ public class DefaultRoleModelValidator
                     {
                         if ( !roleIdList.contains( childRoleId ) )
                         {
-                            addValidationError( "missing role id: " + childRoleId + " in child roles of template "
-                                + template.getId() );
+                            addValidationError(
+                                "missing role id: " + childRoleId + " in child roles of template " + template.getId() );
                         }
                     }
                 }
@@ -324,7 +324,7 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void validateParentRoleClosure( RedbackRoleModel model )
     {
         List roleIdList = RoleModelUtils.getRoleIdList( model );
@@ -339,8 +339,8 @@ public class DefaultRoleModelValidator
                     {
                         if ( !roleIdList.contains( parentRoleId ) )
                         {
-                            addValidationError( "missing role id: " + parentRoleId + " in parent roles of role "
-                                + role.getId() );
+                            addValidationError(
+                                "missing role id: " + parentRoleId + " in parent roles of role " + role.getId() );
                         }
                     }
                 }
@@ -355,7 +355,7 @@ public class DefaultRoleModelValidator
                         if ( !roleIdList.contains( parentRoleId ) )
                         {
                             addValidationError( "missing role id: " + parentRoleId + " in parent roles of template "
-                                + template.getId() );
+                                                    + template.getId() );
                         }
                     }
                 }
@@ -363,7 +363,7 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void validateTemplateClosure( RedbackRoleModel model )
     {
         List templateIdList = RoleModelUtils.getTemplateIdList( model );
@@ -381,8 +381,9 @@ public class DefaultRoleModelValidator
                     {
                         if ( !templateIdList.contains( parentTemplateId ) )
                         {
-                            addValidationError( "missing template id: " + parentTemplateId
-                                + " in parent templates of template " + template.getId() );
+                            addValidationError(
+                                "missing template id: " + parentTemplateId + " in parent templates of template "
+                                    + template.getId() );
                         }
                     }
                 }
@@ -393,8 +394,9 @@ public class DefaultRoleModelValidator
                     {
                         if ( !templateIdList.contains( childTemplateId ) )
                         {
-                            addValidationError( "missing template id: " + childTemplateId
-                                + " in child templates of template " + template.getId() );
+                            addValidationError(
+                                "missing template id: " + childTemplateId + " in child templates of template "
+                                    + template.getId() );
                         }
                     }
                 }
@@ -413,7 +415,7 @@ public class DefaultRoleModelValidator
 
     /**
      * We are not allowed to have cycles between roles, this method is to detect and raise a red flag when that happens.
-     * 
+     *
      * @param model
      */
     private void validateNoRoleCycles( RedbackRoleModel model )
@@ -429,13 +431,13 @@ public class DefaultRoleModelValidator
     }
 
     /**
-     * We are not allowed to have cycles between template either, this method is to detect and 
+     * We are not allowed to have cycles between template either, this method is to detect and
      * raise a red flag when that happens.  Templates are a bit more complex since they have both
      * child and parent roles, as well as runtime parent and child templates
-     * 
+     * <p/>
      * the id should be sufficient to test cycles here even though in runtime the id's do not need to be
      * unique since it is the binding of a namePrefix and a resource that makes them unique
-     * 
+     *
      * @param model
      */
     private void validateNoTemplateCycles( RedbackRoleModel model )

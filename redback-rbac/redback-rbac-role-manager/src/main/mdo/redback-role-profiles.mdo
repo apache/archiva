@@ -25,7 +25,7 @@
   <defaults>
     <default>
       <key>package</key>
-      <value>org.codehaus.plexus.redback.role.model</value>
+      <value>org.apache.archiva.redback.role.model</value>
     </default>
   </defaults>
 

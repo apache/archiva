@@ -20,7 +20,7 @@ package org.apache.archiva.redback.role.processor;
  */
 
 import org.apache.archiva.redback.role.RoleManagerException;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 
 /**
  * RoleModelValidator:

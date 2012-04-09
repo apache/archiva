@@ -19,7 +19,7 @@ package org.apache.archiva.redback.role;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 
 import java.net.URL;
 

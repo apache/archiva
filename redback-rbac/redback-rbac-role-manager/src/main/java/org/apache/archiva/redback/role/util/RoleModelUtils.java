@@ -19,12 +19,12 @@ package org.apache.archiva.redback.role.util;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.role.model.ModelApplication;
-import org.codehaus.plexus.redback.role.model.ModelOperation;
-import org.codehaus.plexus.redback.role.model.ModelResource;
-import org.codehaus.plexus.redback.role.model.ModelRole;
-import org.codehaus.plexus.redback.role.model.ModelTemplate;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.model.ModelApplication;
+import org.apache.archiva.redback.role.model.ModelOperation;
+import org.apache.archiva.redback.role.model.ModelResource;
+import org.apache.archiva.redback.role.model.ModelRole;
+import org.apache.archiva.redback.role.model.ModelTemplate;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;

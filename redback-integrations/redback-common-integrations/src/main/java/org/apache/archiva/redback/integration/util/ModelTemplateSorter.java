@@ -19,9 +19,9 @@ package org.apache.archiva.redback.integration.util;
  * under the License.
  */
 
-import java.util.Comparator;
+import org.apache.archiva.redback.role.model.ModelTemplate;
 
-import org.codehaus.plexus.redback.role.model.ModelTemplate;
+import java.util.Comparator;
 
 /**
  * ModelTemplateSorter

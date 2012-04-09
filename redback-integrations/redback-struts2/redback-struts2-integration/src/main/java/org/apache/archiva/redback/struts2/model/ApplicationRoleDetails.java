@@ -20,9 +20,9 @@ package org.apache.archiva.redback.struts2.model;
  */
 
 import org.apache.archiva.redback.rbac.Role;
-import org.codehaus.plexus.redback.role.model.ModelApplication;
-import org.codehaus.plexus.redback.role.model.ModelRole;
-import org.codehaus.plexus.redback.role.model.ModelTemplate;
+import org.apache.archiva.redback.role.model.ModelApplication;
+import org.apache.archiva.redback.role.model.ModelRole;
+import org.apache.archiva.redback.role.model.ModelTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +50,7 @@ public class ApplicationRoleDetails
 
     private List<List<RoleTableCell>> table;
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public ApplicationRoleDetails( ModelApplication application, Collection<Role> effectivelyAssignedRoles,
                                    Collection<Role> allAssignedRoles, List<Role> assignableRoles )
     {
@@ -104,7 +104,7 @@ public class ApplicationRoleDetails
         availableRoles = new ArrayList<String>();
         for ( Iterator<ModelRole> i = applicationRoles.iterator(); i.hasNext(); )
         {
-            ModelRole role =  i.next();
+            ModelRole role = i.next();
 
             if ( isInList( role.getName(), allAssignedRoles ) )
             {

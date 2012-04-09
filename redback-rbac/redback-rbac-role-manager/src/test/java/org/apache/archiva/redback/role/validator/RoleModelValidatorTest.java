@@ -20,9 +20,8 @@ package org.apache.archiva.redback.role.validator;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.role.validator.RoleModelValidator;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
-import org.codehaus.plexus.redback.role.model.io.stax.RedbackRoleModelStaxReader;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
+import org.apache.archiva.redback.role.model.io.stax.RedbackRoleModelStaxReader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

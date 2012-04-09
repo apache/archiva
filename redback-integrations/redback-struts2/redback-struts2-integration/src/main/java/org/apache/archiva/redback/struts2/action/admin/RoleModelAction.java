@@ -21,8 +21,8 @@ package org.apache.archiva.redback.struts2.action.admin;
 
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.apache.archiva.redback.struts2.action.AbstractSecurityAction;
-import org.codehaus.plexus.redback.role.model.RedbackRoleModel;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.apache.archiva.redback.integration.role.RoleConstants;
