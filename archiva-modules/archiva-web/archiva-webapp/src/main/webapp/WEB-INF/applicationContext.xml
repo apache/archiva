@@ -88,9 +88,9 @@
                config-name="org.apache.maven.shared.app.user" config-at="org.apache.maven.shared.app"
                config-forceCreate="true"/>
           <properties fileName="${user.home}/.m2/security.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.redback"/>
+                      config-at="org.apache.archiva.redback"/>
           <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.redback"/>
+                      config-at="org.apache.archiva.redback"/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
                config-name="org.apache.archiva.base"
                config-at="org.apache.archiva"/>
@@ -98,15 +98,15 @@
                config-name="org.apache.maven.shared.app.base" config-at="org.apache.maven.shared.app"/>
           <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
           <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.redback"/>
+                      config-at="org.apache.archiva.redback"/>
           <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
                config-at="org.apache.archiva"/>
           <xml fileName="${appserver.home}/conf/shared.xml" config-optional="true"
                config-at="org.apache.maven.shared.app"/>
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
           <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.redback"/>
-          <properties fileName="org/apache/archiva/security.properties" config-at="org.codehaus.plexus.redback"/>
+                      config-at="org.apache.archiva.redback"/>
+          <properties fileName="org/apache/archiva/security.properties" config-at="org.apache.archiva.redback"/>
         </configuration>
         ]]>
       </value>

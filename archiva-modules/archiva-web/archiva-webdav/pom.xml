@@ -232,7 +232,6 @@
               org.apache.maven.model*,
               org.codehaus.plexus.digest,
               org.apache.archiva.redback.*,
-              org.codehaus.plexus.redback.*,
               org.codehaus.plexus.taskqueue,
               org.codehaus.plexus.util*,
               org.codehaus.redback.integration.filter.authentication,
