@@ -21,8 +21,7 @@ package org.apache.archiva.redback.keys.cached;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.keys.KeyManager;
-import org.apache.archiva.redback.keys.cached.CachedKeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerTestCase;
+import org.apache.archiva.redback.keys.KeyManagerTestCase;
 import org.junit.Before;
 
 import javax.inject.Inject;

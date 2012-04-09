@@ -1,4 +1,4 @@
-package org.codehaus.plexus.redback.keys;
+package org.apache.archiva.redback.keys;
 
 /*
  * Copyright 2001-2006 The Apache Software Foundation.

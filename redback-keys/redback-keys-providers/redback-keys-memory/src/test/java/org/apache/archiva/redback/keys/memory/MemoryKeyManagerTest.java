@@ -20,7 +20,7 @@ package org.apache.archiva.redback.keys.memory;
  */
 
 import org.apache.archiva.redback.keys.KeyManager;
-import org.codehaus.plexus.redback.keys.KeyManagerTestCase;
+import org.apache.archiva.redback.keys.KeyManagerTestCase;
 import org.junit.Before;
 
 import javax.inject.Inject;

@@ -21,7 +21,7 @@ package org.apache.archiva.redback.keys.jdo;
 
 import org.apache.archiva.redback.keys.KeyManager;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.redback.keys.KeyManagerTestCase;
+import org.apache.archiva.redback.keys.KeyManagerTestCase;
 import org.jpox.SchemaTool;
 import org.junit.Before;
 
