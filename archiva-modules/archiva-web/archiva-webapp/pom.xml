@@ -440,7 +440,7 @@
       <artifactId>spring-registry-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components.cache</groupId>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
       <artifactId>spring-cache-api</artifactId>
     </dependency>
     <dependency>
@@ -448,7 +448,7 @@
       <artifactId>spring-jdo2</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components.cache</groupId>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
       <artifactId>spring-cache-ehcache</artifactId>
       <exclusions>
         <exclusion>
