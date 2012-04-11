@@ -124,7 +124,7 @@
               org.apache.archiva.common*;version=${project.version},
               org.apache.commons.lang;version="[2,3)",
               org.springframework.stereotype;version="[3,4)",
-              org.codehaus.plexus.cache,
+              org.apache.archiva.redback.components.cache,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
