@@ -127,7 +127,7 @@
       <artifactId>oro</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
+      <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-quartz</artifactId>
     </dependency>
     <dependency>
