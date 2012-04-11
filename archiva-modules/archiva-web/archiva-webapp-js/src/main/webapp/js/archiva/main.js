@@ -340,6 +340,7 @@ function() {
 								.appendTo( ul );
 						};
     updateAppearanceToolBar();
+
   }
 
 
