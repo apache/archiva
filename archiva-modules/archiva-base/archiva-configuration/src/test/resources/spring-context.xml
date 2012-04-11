@@ -320,7 +320,7 @@
     </property>
   </bean>
 
-  <bean name="cache#url-failures-cache" class="org.codehaus.plexus.cache.ehcache.EhcacheCache">
+  <bean name="cache#url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache">
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>

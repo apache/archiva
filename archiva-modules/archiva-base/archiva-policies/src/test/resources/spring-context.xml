@@ -29,7 +29,7 @@
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
-  <bean name="url-failures-cache" class="org.codehaus.plexus.cache.ehcache.EhcacheCache">
+  <bean name="url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache">
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
