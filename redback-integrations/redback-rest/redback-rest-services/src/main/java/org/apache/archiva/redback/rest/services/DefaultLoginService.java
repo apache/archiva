@@ -18,22 +18,24 @@ package org.apache.archiva.redback.rest.services;
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.keys.jdo.JdoAuthenticationKey;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.memory.MemoryAuthenticationKey;
 import org.apache.archiva.redback.keys.memory.MemoryKeyManager;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.system.SecuritySystem;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.rest.api.model.LoginRequest;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.services.LoginService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -120,9 +122,10 @@ public class DefaultLoginService
         return Boolean.TRUE;
     }
 
-    public User logIn( String userName, String password )
+    public User logIn( LoginRequest loginRequest )
         throws RedbackServiceException
     {
+        String userName = loginRequest.getUsername(), password = loginRequest.getPassword();
         PasswordBasedAuthenticationDataSource authDataSource =
             new PasswordBasedAuthenticationDataSource( userName, password );
         try

@@ -20,9 +20,11 @@ package org.apache.archiva.redback.rest.api.services;
  */
 
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.rest.api.model.LoginRequest;
 import org.apache.archiva.redback.rest.api.model.User;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -58,14 +60,14 @@ public interface LoginService
         throws RedbackServiceException;
 
     @Path( "logIn" )
-    @GET
+    @POST
     @RedbackAuthorization( noRestriction = true, noPermission = true )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     /**
      * check username/password and create a http session.
      * So no more need of reuse username/password for all ajaxRequest
      */
-    User logIn( @QueryParam( "userName" ) String userName, @QueryParam( "password" ) String password )
+    User logIn( LoginRequest loginRequest )
         throws RedbackServiceException;
 
     @Path( "isLogged" )

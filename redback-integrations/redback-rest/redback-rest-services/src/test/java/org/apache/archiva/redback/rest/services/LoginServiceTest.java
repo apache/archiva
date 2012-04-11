@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rest.services;
  */
 
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.rest.api.model.LoginRequest;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.services.UserService;
 import org.junit.Test;
@@ -30,15 +31,15 @@ public class LoginServiceTest
     extends AbstractRestServicesTest
 {
     @Test
-    public void loginAdmin( )
+    public void loginAdmin()
         throws Exception
     {
-        assertNotNull( getLoginService( null ).logIn( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME,
-                                                   FakeCreateAdminService.ADMIN_TEST_PWD ) );
+        assertNotNull( getLoginService( null ).logIn( new LoginRequest( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME,
+                                                                        FakeCreateAdminService.ADMIN_TEST_PWD ) ) );
     }
 
     @Test
-    public void createUserThenLog( )
+    public void createUserThenLog()
         throws Exception
     {
         try
@@ -56,9 +57,9 @@ public class LoginServiceTest
             // END SNIPPET: create-user
             user = userService.getUser( "toto" );
             assertNotNull( user );
-            assertEquals( "toto the king", user.getFullName( ) );
-            assertEquals( "toto@toto.fr", user.getEmail( ) );
-            getLoginService( encode( "toto", "foo123" ) ).pingWithAutz( );
+            assertEquals( "toto the king", user.getFullName() );
+            assertEquals( "toto@toto.fr", user.getEmail() );
+            getLoginService( encode( "toto", "foo123" ) ).pingWithAutz();
         }
         finally
         {
