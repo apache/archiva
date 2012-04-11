@@ -114,7 +114,7 @@
   </bean>
   <!-- END SNIPPET: configuration-files-list -->
 
-  <bean name="jdoFactory#users" class="org.codehaus.plexus.jdo.DataSourceConfigurableJdoFactory">
+  <bean name="jdoFactory#users" class="org.apache.archiva.redback.components.jdo.DataSourceConfigurableJdoFactory">
     <property name="connectionFactoryName" value="java:comp/env/jdbc/users"/>
     <property name="shutdownConnectionFactoryName" value="java:comp/env/jdbc/usersShutdown"/>
     <property name="persistenceManagerFactoryClass" value="org.jpox.PersistenceManagerFactoryImpl"/>
