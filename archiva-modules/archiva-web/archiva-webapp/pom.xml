@@ -432,11 +432,11 @@
       <version>${struts.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components.registry</groupId>
+      <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-registry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components.registry</groupId>
+      <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-registry-commons</artifactId>
     </dependency>
     <dependency>
