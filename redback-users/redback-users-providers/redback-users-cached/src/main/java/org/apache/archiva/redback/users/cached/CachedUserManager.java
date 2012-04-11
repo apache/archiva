@@ -19,11 +19,11 @@ package org.apache.archiva.redback.users.cached;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.codehaus.plexus.cache.Cache;
 import org.apache.archiva.redback.users.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

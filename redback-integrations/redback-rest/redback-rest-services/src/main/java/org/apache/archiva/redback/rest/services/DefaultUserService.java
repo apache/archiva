@@ -20,6 +20,7 @@ package org.apache.archiva.redback.rest.services;
  */
 
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.policy.AccountLockedException;
@@ -31,7 +32,6 @@ import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.cache.Cache;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
 import org.apache.archiva.redback.keys.KeyManager;

@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rbac.cached;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.RBACManagerListener;
 import org.apache.archiva.redback.rbac.RbacManagerException;
@@ -27,7 +28,6 @@ import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
-import org.codehaus.plexus.cache.Cache;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.slf4j.Logger;

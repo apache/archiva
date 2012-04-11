@@ -24,7 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.codehaus.plexus.cache.Cache;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.keys.AbstractKeyManager;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManager;

@@ -19,9 +19,9 @@ package org.apache.archiva.redback.struts2.action;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.SessionMap;
-import org.codehaus.plexus.cache.Cache;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.apache.archiva.redback.integration.util.AutoLoginCookies;

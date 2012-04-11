@@ -55,37 +55,37 @@
           <field-name>rbacImpl</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>operations</role-hint>
           <field-name>operationsCache</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>permissions</role-hint>
           <field-name>permissionsCache</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>resources</role-hint>
           <field-name>resourcesCache</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>roles</role-hint>
           <field-name>rolesCache</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>userAssignments</role-hint>
           <field-name>userAssignmentsCache</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>userPermissions</role-hint>
           <field-name>userPermissionsCache</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>effectiveRoleSet</role-hint>
           <field-name>effectiveRoleSetCache</field-name>
         </requirement>
@@ -109,7 +109,7 @@
           <field-name>userImpl</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>users</role-hint>
           <field-name>usersCache</field-name>
         </requirement>
@@ -133,7 +133,7 @@
           <field-name>keyImpl</field-name>
         </requirement>
         <requirement>
-          <role>org.codehaus.plexus.cache.Cache</role>
+          <role>org.apache.archiva.redback.components.cache.Cache</role>
           <role-hint>keys</role-hint>
           <field-name>keysCache</field-name>
         </requirement>
