@@ -31,7 +31,7 @@
   <context:component-scan 
     base-package="org.apache.archiva.redback.keys.cached"/>
 
-  <bean name="cache#keys" class="org.codehaus.plexus.cache.ehcache.EhcacheCache"
+  <bean name="cache#keys" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
       init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>

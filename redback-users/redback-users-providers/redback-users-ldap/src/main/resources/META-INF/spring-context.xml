@@ -33,7 +33,7 @@
 
   <!-- REDBACK-289/MRM-1488 -->
   <!-- Cache for LDAP users. Data is refreshed every 3 mins. -->
-  <bean name="cache#ldapUser" class="org.codehaus.plexus.cache.ehcache.EhcacheCache">
+  <bean name="cache#ldapUser" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache">
     <property name="diskExpiryThreadIntervalSeconds" value="180"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -46,7 +46,7 @@
   </bean>
 
   <!-- Cache for users' LDAP userDn. Data is refreshed every 3 mins. -->
-  <bean name="cache#ldapUserDn" class="org.codehaus.plexus.cache.ehcache.EhcacheCache">
+  <bean name="cache#ldapUserDn" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache">
     <property name="diskExpiryThreadIntervalSeconds" value="180"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
