@@ -49,7 +49,7 @@ import java.util.Properties;
 
 /**
  * @author Olivier Lamy
- * @since 1.5
+ * @since 2.0
  */
 @Service( "AdminAutoCreateCheck" )
 public class AdminAutoCreateCheck

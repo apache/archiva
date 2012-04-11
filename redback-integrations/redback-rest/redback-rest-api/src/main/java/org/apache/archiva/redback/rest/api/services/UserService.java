@@ -101,7 +101,7 @@ public interface UserService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
     /**
-     * @since 1.5
+     * @since 2.0
      */
     Boolean lockUser( @PathParam( "username" ) String username )
         throws RedbackServiceException;
@@ -111,7 +111,7 @@ public interface UserService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
     /**
-     * @since 1.5
+     * @since 2.0
      */
     Boolean unlockUser( @PathParam( "username" ) String username )
         throws RedbackServiceException;
@@ -122,7 +122,7 @@ public interface UserService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
     /**
-     * @since 1.5
+     * @since 2.0
      */
     Boolean passwordChangeRequired( @PathParam( "username" ) String username )
         throws RedbackServiceException;
@@ -132,7 +132,7 @@ public interface UserService
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
     /**
-     * @since 1.5
+     * @since 2.0
      */
     Boolean passwordChangeNotRequired( @PathParam( "username" ) String username )
         throws RedbackServiceException;

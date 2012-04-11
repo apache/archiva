@@ -30,7 +30,7 @@ import javax.inject.Inject;
  * to setup some ObjectMapper configuration
  *
  * @author Olivier Lamy
- * @since 1.5
+ * @since 2.0
  */
 @Service("redbackJacksonJsonConfigurator")
 public class JacksonJsonConfigurator

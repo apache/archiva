@@ -25,7 +25,7 @@ import java.util.Collection;
 
 /**
  * @author Olivier Lamy
- * @since 1.5
+ * @since 2.0
  */
 @XmlRootElement( name = "applicationRole" )
 public class ApplicationRoles

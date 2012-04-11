@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * @author Olivier Lamy
- * @since 1.5
+ * @since 2.0
  */
 @XmlRootElement( name = "roleTemplate" )
 public class RoleTemplate

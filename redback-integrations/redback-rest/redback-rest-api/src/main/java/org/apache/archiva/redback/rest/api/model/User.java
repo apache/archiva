@@ -64,7 +64,7 @@ public class User
     /**
      * for roles update only <b>not return on user read</b>
      *
-     * @since 1.5
+     * @since 2.0
      */
     private List<String> assignedRoles;
 
