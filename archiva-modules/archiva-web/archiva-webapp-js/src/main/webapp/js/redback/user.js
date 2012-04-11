@@ -496,9 +496,6 @@ define("redback.user",["jquery","order!utils","i18n","jquery.validate","order!kn
     //#modal-login-footer
     $('#modal-login-footer').append(smallSpinnerImg());
 
-    var url = 'restServices/redbackServices/loginService/logIn?userName='+$("#user-login-form-username").val();
-    url += "&password="+$("#user-login-form-password").val();
-
     loginCall($("#user-login-form-username").val(),$("#user-login-form-password").val()
         ,successLoginCallbackFn,errorLoginCallbackFn,completeLoginCallbackFn);
 
@@ -513,11 +510,14 @@ define("redback.user",["jquery","order!utils","i18n","jquery.validate","order!kn
    * @param completeCallbackFn
    */
   loginCall=function(username,password,successCallbackFn, errorCallbackFn, completeCallbackFn) {
-    var url = 'restServices/redbackServices/loginService/logIn?userName='+username;
-    url += "&password="+password;
+    var url = 'restServices/redbackServices/loginService/logIn';//?userName='+username;
+    //url += "&password="+password;
 
     $.ajax({
       url: url,
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({username:username,password:password}),
       success: successCallbackFn,
       error: errorCallbackFn,
       complete: completeCallbackFn
