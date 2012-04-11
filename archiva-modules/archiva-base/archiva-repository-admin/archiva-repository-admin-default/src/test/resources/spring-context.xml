@@ -29,7 +29,7 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.admin.mock"/>
 
-  <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
+  <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
       <props>
         <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>

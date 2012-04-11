@@ -24,7 +24,7 @@ import com.opensymphony.xwork2.Validateable;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
+import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

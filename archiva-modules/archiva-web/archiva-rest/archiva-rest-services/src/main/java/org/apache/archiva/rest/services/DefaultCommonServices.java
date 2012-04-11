@@ -22,7 +22,7 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
+import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.api.services.UtilServices;
 import org.slf4j.Logger;

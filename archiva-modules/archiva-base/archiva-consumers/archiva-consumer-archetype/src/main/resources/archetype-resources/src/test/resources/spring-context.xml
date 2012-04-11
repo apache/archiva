@@ -38,7 +38,7 @@
     <constructor-arg ref="jcr-config"/>
   </bean>
 
-  <bean name="scheduler" class="org.codehaus.redback.components.scheduler.DefaultScheduler">
+  <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
       <props>
         <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>

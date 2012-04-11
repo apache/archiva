@@ -25,10 +25,10 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.codehaus.plexus.registry.Registry;
-import org.codehaus.redback.components.scheduler.CronExpressionValidator;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

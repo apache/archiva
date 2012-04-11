@@ -44,7 +44,7 @@
   <!--
   olamy we can use this if one day we move away from the old plexus stuff :-)
   btw comment this as it breaks unit tests in web as depending on classloader loading
-  it override beans with same name but with type org.codehaus.redback.components.scheduler.DefaultScheduler
+  it override beans with same name but with type org.apache.archiva.redback.components.scheduler.DefaultScheduler
   <task:scheduler id="scheduler" pool-size="10"/>
   -->
 </beans>

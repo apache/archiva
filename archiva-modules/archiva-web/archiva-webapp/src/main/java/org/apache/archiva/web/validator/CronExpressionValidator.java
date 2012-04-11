@@ -34,8 +34,8 @@ public class CronExpressionValidator
     {
         String cron = (String) getFieldValue( "cron", obj );
 
-        org.codehaus.redback.components.scheduler.CronExpressionValidator cronExpressionValidator =
-            new org.codehaus.redback.components.scheduler.CronExpressionValidator();
+        org.apache.archiva.redback.components.scheduler.CronExpressionValidator cronExpressionValidator =
+            new org.apache.archiva.redback.components.scheduler.CronExpressionValidator();
 
         ValidatorContext ctxt = getValidatorContext();
         if ( !cronExpressionValidator.validate( String.valueOf( cron ) ) )
