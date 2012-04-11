@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.rest.api.model.CacheEntry;
@@ -27,8 +28,7 @@ import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
 import org.apache.archiva.rest.services.utils.ConsumerScanningStatisticsComparator;
-import org.codehaus.plexus.cache.Cache;
-import org.codehaus.plexus.cache.CacheStatistics;
+import org.apache.archiva.redback.components.cache.CacheStatistics;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.springframework.context.ApplicationContext;

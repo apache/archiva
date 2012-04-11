@@ -19,7 +19,7 @@ package org.apache.archiva.policies.urlcache;
  * under the License.
  */
 
-import org.codehaus.plexus.cache.Cache;
+import org.apache.archiva.redback.components.cache.Cache;
 
 import java.util.Date;
 
