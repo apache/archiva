@@ -24,7 +24,7 @@
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
        default-lazy-init="false">
 
-  <bean name="jdoFactory#users" class="org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory">
+  <bean name="jdoFactory#users" class="org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory">
     <property name="driverName" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:mem:redback-users-tests" />
     <property name="userName" value="sa"/>

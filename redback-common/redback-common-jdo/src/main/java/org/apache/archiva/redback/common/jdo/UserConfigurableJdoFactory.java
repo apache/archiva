@@ -19,12 +19,12 @@ package org.apache.archiva.redback.common.jdo;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
 import org.codehaus.plexus.interpolation.StringSearchInterpolator;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

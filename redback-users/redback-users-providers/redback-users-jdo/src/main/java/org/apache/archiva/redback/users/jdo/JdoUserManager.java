@@ -19,6 +19,8 @@ package org.apache.archiva.redback.users.jdo;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.jdo.JdoFactory;
+import org.apache.archiva.redback.components.jdo.PlexusJdoUtils;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.PermanentUserException;
@@ -26,10 +28,8 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.jdo.PlexusJdoUtils;
-import org.codehaus.plexus.jdo.PlexusObjectNotFoundException;
-import org.codehaus.plexus.jdo.PlexusStoreException;
+import org.apache.archiva.redback.components.jdo.PlexusObjectNotFoundException;
+import org.apache.archiva.redback.components.jdo.PlexusStoreException;
 import org.codehaus.plexus.util.StringUtils;
 import org.jpox.JDOClassLoaderResolver;
 import org.springframework.stereotype.Service;

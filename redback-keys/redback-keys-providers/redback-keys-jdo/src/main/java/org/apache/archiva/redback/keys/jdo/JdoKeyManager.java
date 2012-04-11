@@ -19,11 +19,11 @@ package org.apache.archiva.redback.keys.jdo;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.jdo.JdoFactory;
+import org.apache.archiva.redback.components.jdo.PlexusJdoUtils;
+import org.apache.archiva.redback.components.jdo.PlexusObjectNotFoundException;
+import org.apache.archiva.redback.components.jdo.PlexusStoreException;
 import org.apache.archiva.redback.keys.AuthenticationKey;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.jdo.PlexusJdoUtils;
-import org.codehaus.plexus.jdo.PlexusObjectNotFoundException;
-import org.codehaus.plexus.jdo.PlexusStoreException;
 import org.apache.archiva.redback.keys.AbstractKeyManager;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;

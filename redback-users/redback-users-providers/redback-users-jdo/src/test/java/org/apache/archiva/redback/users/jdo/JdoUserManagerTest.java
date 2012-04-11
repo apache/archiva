@@ -19,7 +19,7 @@ package org.apache.archiva.redback.users.jdo;
  * under the License.
  */
 
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
 import org.apache.archiva.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.jpox.AbstractPersistenceManagerFactory;

@@ -21,11 +21,10 @@ package org.apache.archiva.redback.integration.mail;
 
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.redback.integration.mail.MailGenerator;
+import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.jpox.SchemaTool;
 import org.junit.Before;

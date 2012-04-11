@@ -20,8 +20,8 @@ package org.apache.archiva.redback.rbac.jdo;
  */
 
 import net.sf.ehcache.CacheManager;
+import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.tests.AbstractRbacManagerTestCase;

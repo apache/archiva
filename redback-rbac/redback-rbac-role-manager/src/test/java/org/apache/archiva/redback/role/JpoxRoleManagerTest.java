@@ -20,7 +20,7 @@ package org.apache.archiva.redback.role;
  */
 
 import org.apache.archiva.redback.rbac.jdo.JdoRbacManager;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
