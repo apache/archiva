@@ -510,8 +510,7 @@ define("redback.user",["jquery","order!utils","i18n","jquery.validate","order!kn
    * @param completeCallbackFn
    */
   loginCall=function(username,password,successCallbackFn, errorCallbackFn, completeCallbackFn) {
-    var url = 'restServices/redbackServices/loginService/logIn';//?userName='+username;
-    //url += "&password="+password;
+    var url = 'restServices/redbackServices/loginService/logIn';
 
     $.ajax({
       url: url,

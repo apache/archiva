@@ -21,7 +21,7 @@
 
 Understanding Apache Archiva Security Roles
 
-  Archiva uses the {{{http://redback.codehaus.org/} Redback}} security framework for managing repository security. When the server is first started,
+  Archiva uses the {{{http://archiva.apache.org/redback/} Redback}} security framework for managing repository security. When the server is first started,
   you will be prompted to create an administration user. This user will be given permission to administer all aspects of the system (as well as
   access to all of the repositories). This user can then be used to grant permissions to other users.
 

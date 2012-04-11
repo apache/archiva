@@ -43,7 +43,7 @@ Archiva Security Configuration
 
  Following are some of the properties you can modify.  For a complete list,
  consult the default properties file in Redback's svn repo:
- {{{http://svn.codehaus.org/redback/redback/trunk/redback-configuration/src/main/resources/org/codehaus/plexus/redback/config-defaults.properties}
+ {{{http://svn.apache.org/repos/asf/archiva/redback/redback-core/trunk/redback-configuration/src/main/resources/org/apache/archiva/redback/config-defaults.properties}
  config-defaults.properties}}
 
 +-----+

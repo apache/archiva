@@ -85,7 +85,7 @@ Using REST Services
 
   You can use Redback Rest Services to control user creation/modification and add/remove roles.
 
-  See {{http://redback.codehaus.org/integration/rest.html}}
+  See {{http://archiva.apache.org/redback/integration/rest.html}}
 
 
 
