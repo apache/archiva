@@ -1067,12 +1067,12 @@
       <!-- redback components -->
 
       <dependency>
-        <groupId>org.apache.archiva.redback.components</groupId>
+        <groupId>org.apache.archiva.redback.components.registry</groupId>
         <artifactId>spring-registry-api</artifactId>
         <version>${redback.registry.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva.redback.components</groupId>
+        <groupId>org.apache.archiva.redback.components.registry</groupId>
         <artifactId>spring-registry-commons</artifactId>
         <version>${redback.registry.version}</version>
         <exclusions>

@@ -97,7 +97,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components</groupId>
+      <groupId>org.apache.archiva.redback.components.registry</groupId>
       <artifactId>spring-registry-commons</artifactId>
       <scope>test</scope>
     </dependency>
