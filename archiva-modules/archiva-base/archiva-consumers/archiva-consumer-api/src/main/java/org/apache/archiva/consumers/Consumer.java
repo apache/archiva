@@ -31,33 +31,33 @@ public abstract interface Consumer
      * 
      * @return the consumer id.
      */
-    public String getId();
+    String getId();
     
     /**
      * The human readable description for this consumer.
      * 
      * @return the human readable description for this consumer.
      */
-    public String getDescription();
+    String getDescription();
     
     /**
      * Flag indicating permanance of consumer. (if it can be disabled or not)
      * 
      * @return true indicating that consumer is permanent and cannot be disabled. 
      */
-    public boolean isPermanent();
+    boolean isPermanent();
 
     /**
      * Add a consumer monitor to the consumer.
      * 
      * @param monitor the monitor to add.
      */
-    public void addConsumerMonitor( ConsumerMonitor monitor );
+    void addConsumerMonitor( ConsumerMonitor monitor );
     
     /**
      * Remove a consumer monitor.
      * 
      * @param monitor the monitor to remove.
      */
-    public void removeConsumerMonitor( ConsumerMonitor monitor );
+    void removeConsumerMonitor( ConsumerMonitor monitor );
 }
