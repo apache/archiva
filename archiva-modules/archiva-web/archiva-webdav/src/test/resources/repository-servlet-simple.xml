@@ -37,7 +37,7 @@
 
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
 
-  <bean name="registry#default" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#default" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

@@ -34,7 +34,7 @@
   <alias name="archivaConfiguration#repo-request-test" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#repo-request-test" alias="archivaConfiguration"/>
 
-  <bean name="registry#configured" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#configured" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
       <![CDATA[

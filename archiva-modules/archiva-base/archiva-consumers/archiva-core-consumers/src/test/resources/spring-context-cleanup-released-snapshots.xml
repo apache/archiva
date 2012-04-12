@@ -33,7 +33,7 @@
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration"/>
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration#default"/>
 
-  <bean name="registry#cleanup-released-snapshots" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#cleanup-released-snapshots" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[
@@ -50,7 +50,7 @@
     <property name="archivaConfiguration" ref="archivaConfiguration#cleanup-released-snapshots"/>
   </bean>
 
-  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

@@ -29,7 +29,7 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.metadata.repository"/>
 
-  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

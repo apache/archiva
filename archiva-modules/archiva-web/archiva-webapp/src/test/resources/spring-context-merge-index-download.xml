@@ -31,7 +31,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
 
-  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

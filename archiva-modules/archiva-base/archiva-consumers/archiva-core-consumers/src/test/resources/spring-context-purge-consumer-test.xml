@@ -49,7 +49,7 @@
     <property name="archivaConfiguration" ref="archivaConfiguration#retention-count"/>
   </bean>
 
-  <bean name="registry#retention-count" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#retention-count" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[
@@ -83,7 +83,7 @@
     <property name="archivaConfiguration" ref="archivaConfiguration#days-old"/>
   </bean>
 
-  <bean name="registry#days-old" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#days-old" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[
@@ -100,7 +100,7 @@
     <property name="archivaConfiguration" ref="archivaConfiguration#days-old"/>
   </bean>
 
-  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

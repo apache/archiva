@@ -29,7 +29,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.apache.archiva.redback.components.registry.RegistryException;
-import org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry;
+import org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
