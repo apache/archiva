@@ -201,7 +201,7 @@
               org.codehaus.plexus.registry,
               org.codehaus.plexus.taskqueue,
               org.codehaus.plexus.taskqueue.execution,
-              org.codehaus.redback.components.scheduler,
+              org.apache.archiva.redback.components.scheduler,
               org.quartz;version="[2,3)",
               org.slf4j;resolution:=optional,
               org.springframework*;version="[3,4)",
