@@ -24,7 +24,7 @@ under the License.
   xmlns="http://maven.apache.org/SETTINGS/1.0.0">
   <mirrors>
     <mirror>
-      <mirrorOf>*</mirrorOf>
+      <mirrorOf>archiva.snapshots</mirrorOf>
       <id>local-mirror</id>
       <name>local-mirror</name>
       <url>@localRepositoryUrl@</url>
