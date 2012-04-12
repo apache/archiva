@@ -1940,6 +1940,17 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
+      <id>archiva.snapshots</id>
+      <name>Archiva VM Snapshots Repository</name>
+      <url>https://archiva-repository.apache.org/archiva/repository/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
       <id>apache.snapshots</id>
       <name>Apache Snapshots</name>
       <url>https://repository.apache.org/content/groups/snapshots/</url>
