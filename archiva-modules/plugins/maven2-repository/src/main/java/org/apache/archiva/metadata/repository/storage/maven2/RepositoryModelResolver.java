@@ -134,10 +134,17 @@ public class RepositoryModelResolver
                         break;
                     }
                 }
+                catch ( ResourceDoesNotExistException e )
+                {
+                    log.info( "An exception was caught while attempting to retrieve model '" + model.getAbsolutePath()
+                                  + "' from remote repository '" + remoteRepository.getId() + "'.Reason:"
+                                  + e.getMessage() );
+                }
                 catch ( Exception e )
                 {
                     log.warn( "An exception was caught while attempting to retrieve model '" + model.getAbsolutePath()
-                                  + "' from remote repository '" + remoteRepository.getId() + "'.", e );
+                                  + "' from remote repository '" + remoteRepository.getId() + "'.", e.getMessage() );
+
                     continue;
                 }
             }
