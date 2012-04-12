@@ -19,6 +19,7 @@ package org.apache.archiva.redback.struts2.action.admin;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -26,7 +27,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.struts2.action.AbstractSecurityAction;
 import org.apache.archiva.redback.system.SecuritySystem;
-import org.codehaus.plexus.registry.Registry;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.apache.archiva.redback.integration.role.RoleConstants;
