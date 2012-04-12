@@ -68,7 +68,7 @@
 
   </bean>
 
-  <bean name="registry#commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry"
+  <bean name="registry#commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
       init-method="initialize">
 
   </bean>

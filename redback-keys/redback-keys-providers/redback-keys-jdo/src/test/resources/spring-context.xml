@@ -40,7 +40,7 @@
     <property name="registry" ref="test-conf"/>
   </bean>
 
-  <bean name="commons-configuration" class="org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
   </bean>
 
   <alias name="commons-configuration" alias="test-conf"/>
