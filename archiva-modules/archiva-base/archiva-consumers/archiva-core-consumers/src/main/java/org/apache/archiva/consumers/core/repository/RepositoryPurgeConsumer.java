@@ -29,14 +29,14 @@ import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 

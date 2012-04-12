@@ -25,9 +25,9 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.easymock.MockControl;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +59,8 @@ public class MockConfiguration
 
     public MockConfiguration()
     {
-        registryControl = MockControl.createNiceControl( Registry.class );
-        registryMock = (Registry) registryControl.getMock();
+        registryControl = MockControl.createNiceControl( org.apache.archiva.redback.components.registry.Registry.class );
+        registryMock = (org.apache.archiva.redback.components.registry.Registry) registryControl.getMock();
     }
 
     @PostConstruct
@@ -81,7 +81,7 @@ public class MockConfiguration
         } );
     }
 
-    public void addChangeListener( RegistryListener listener )
+    public void addChangeListener( org.apache.archiva.redback.components.registry.RegistryListener listener )
     {
         registryListeners.add( listener );
     }
@@ -99,7 +99,7 @@ public class MockConfiguration
 
     public void triggerChange( String name, String value )
     {
-        for ( RegistryListener listener : registryListeners )
+        for ( org.apache.archiva.redback.components.registry.RegistryListener listener : registryListeners )
         {
             try
             {

@@ -1,7 +1,7 @@
 package org.apache.archiva.configuration;
 
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.stereotype.Service;
 
 /*

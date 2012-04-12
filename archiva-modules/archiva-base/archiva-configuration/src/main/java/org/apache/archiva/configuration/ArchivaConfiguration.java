@@ -19,8 +19,8 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 
 /**
  * Configuration holder for the model read from the registry.
@@ -38,7 +38,7 @@ public interface ArchivaConfiguration
      * Save any updated configuration.
      *
      * @param configuration the configuration to save
-     * @throws org.codehaus.plexus.registry.RegistryException
+     * @throws org.apache.archiva.redback.components.registry.RegistryException
      *          if there is a problem saving the registry data
      * @throws IndeterminateConfigurationException
      *          if the configuration cannot be saved because it was read from two sources

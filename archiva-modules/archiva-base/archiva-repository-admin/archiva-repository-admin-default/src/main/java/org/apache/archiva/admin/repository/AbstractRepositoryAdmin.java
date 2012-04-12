@@ -27,8 +27,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +80,7 @@ public abstract class AbstractRepositoryAdmin
         {
             getArchivaConfiguration().save( config );
         }
-        catch ( RegistryException e )
+        catch ( org.apache.archiva.redback.components.registry.RegistryException e )
         {
             throw new RepositoryAdminException( "Error occurred in the registry: " + e.getLocalizedMessage(), e );
         }
@@ -127,7 +126,7 @@ public abstract class AbstractRepositoryAdmin
         return registry;
     }
 
-    public void setRegistry( Registry registry )
+    public void setRegistry( org.apache.archiva.redback.components.registry.Registry registry )
     {
         this.registry = registry;
     }

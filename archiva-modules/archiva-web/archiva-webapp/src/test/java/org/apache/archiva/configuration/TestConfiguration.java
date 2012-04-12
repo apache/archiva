@@ -19,8 +19,7 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,7 @@ public class TestConfiguration
     }
 
     public void save( Configuration configuration )
-        throws RegistryException, IndeterminateConfigurationException
+        throws org.apache.archiva.redback.components.registry.RegistryException, IndeterminateConfigurationException
     {
         this.configuration = configuration;
     }

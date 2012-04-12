@@ -6,14 +6,13 @@ import java.util.List;
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,6 @@ import javax.inject.Inject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-
-import javax.annotation.PostConstruct;
 
 /**
  * <code>SimpleArtifactConsumer</code>
@@ -123,7 +120,7 @@ public class SimpleArtifactConsumer
         return super.isProcessUnmodified();
     }
 
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry, String propertyName, Object propertyValue )
     {
         if ( propertyNameTriggers.contains( propertyName ) )
         {

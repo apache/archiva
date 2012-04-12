@@ -33,8 +33,7 @@ import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -98,7 +97,7 @@ public class SecuritySynchronization
         return beans;
     }
 
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) && propertyName.endsWith( ".id" ) )
         {
@@ -109,7 +108,7 @@ public class SecuritySynchronization
         }
     }
 
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */
     }

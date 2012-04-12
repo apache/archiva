@@ -28,8 +28,8 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 

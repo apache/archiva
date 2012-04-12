@@ -37,7 +37,7 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.plexus.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
@@ -84,7 +84,7 @@ public class EditProxyConnectorActionTest
     }
 
     private void expectConfigurationRequests( int requestConfigCount )
-        throws RegistryException, IndeterminateConfigurationException
+        throws org.apache.archiva.redback.components.registry.RegistryException, IndeterminateConfigurationException
     {
         expectConfigurationRequests( requestConfigCount, 1 );
     }

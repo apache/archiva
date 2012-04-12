@@ -30,7 +30,6 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.web.action.AbstractActionTestCase;
-import org.codehaus.plexus.registry.RegistryException;
 import org.easymock.MockControl;
 
 import java.util.Collections;
@@ -94,7 +93,7 @@ public class DeleteRemoteRepositoryActionTest
     }
 
     public void testDeleteRemoteRepository()
-        throws RegistryException, IndeterminateConfigurationException, RepositoryAdminException
+        throws org.apache.archiva.redback.components.registry.RegistryException, IndeterminateConfigurationException, RepositoryAdminException
     {
         Configuration configuration = createConfigurationForEditing( createRepository() );
         configuration.addManagedRepository( createManagedRepository( "internal", "target/repo/internal" ) );

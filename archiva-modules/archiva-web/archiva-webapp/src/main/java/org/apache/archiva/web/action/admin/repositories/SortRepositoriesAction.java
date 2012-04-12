@@ -24,7 +24,6 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
-import org.codehaus.plexus.registry.RegistryException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -89,7 +88,7 @@ public class SortRepositoriesAction
      * @return the webwork result code to issue.
      * @throws java.io.IOException                   thrown if unable to save file to disk.
      * @throws org.apache.archiva.configuration.InvalidConfigurationException thrown if configuration is invalid.
-     * @throws org.codehaus.plexus.registry.RegistryException             thrown if configuration subsystem has a problem saving the configuration to disk.
+     * @throws org.apache.archiva.redback.components.registry.RegistryException             thrown if configuration subsystem has a problem saving the configuration to disk.
      */
     protected String saveConfiguration( Configuration configuration )
     {
@@ -103,7 +102,7 @@ public class SortRepositoriesAction
             addActionError( e.getMessage() );
             return INPUT;
         }
-        catch ( RegistryException e )
+        catch ( org.apache.archiva.redback.components.registry.RegistryException e )
         {
             addActionError( "Configuration Registry Exception: " + e.getMessage() );
             return INPUT;

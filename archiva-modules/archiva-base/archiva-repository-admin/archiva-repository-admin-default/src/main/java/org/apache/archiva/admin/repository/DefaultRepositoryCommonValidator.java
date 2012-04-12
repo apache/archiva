@@ -28,7 +28,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.GenericValidator;
-import org.codehaus.plexus.registry.Registry;
+import org.apache.archiva.redback.components.registry.Registry;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -51,7 +51,7 @@ public class DefaultRepositoryCommonValidator
 
     @Inject
     @Named( value = "commons-configuration" )
-    private Registry registry;
+    private org.apache.archiva.redback.components.registry.Registry registry;
 
     /**
      * @param abstractRepository
@@ -179,7 +179,7 @@ public class DefaultRepositoryCommonValidator
         return registry;
     }
 
-    public void setRegistry( Registry registry )
+    public void setRegistry( org.apache.archiva.redback.components.registry.Registry registry )
     {
         this.registry = registry;
     }

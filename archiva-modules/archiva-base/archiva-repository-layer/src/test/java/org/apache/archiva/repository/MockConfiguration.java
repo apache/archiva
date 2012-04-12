@@ -22,9 +22,9 @@ package org.apache.archiva.repository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.easymock.MockControl;
 import org.springframework.stereotype.Service;
 

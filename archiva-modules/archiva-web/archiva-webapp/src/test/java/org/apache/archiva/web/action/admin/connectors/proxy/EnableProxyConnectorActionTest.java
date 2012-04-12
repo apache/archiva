@@ -28,7 +28,6 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
-import org.codehaus.plexus.registry.RegistryException;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
@@ -61,7 +60,7 @@ public class EnableProxyConnectorActionTest
     }
 
     private void expectConfigurationRequests( int requestConfigCount )
-        throws RegistryException, IndeterminateConfigurationException
+        throws org.apache.archiva.redback.components.registry.RegistryException, IndeterminateConfigurationException
     {
         Configuration config = createInitialConfiguration();
 

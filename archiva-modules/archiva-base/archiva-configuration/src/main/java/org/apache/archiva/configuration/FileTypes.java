@@ -22,13 +22,13 @@ package org.apache.archiva.configuration;
 import org.apache.archiva.common.FileTypeUtils;
 import org.apache.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.archiva.configuration.io.registry.ConfigurationRegistryReader;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.RegistryException;
 import org.codehaus.redback.components.registry.commons.CommonsConfigurationRegistry;
 import org.springframework.stereotype.Service;
 

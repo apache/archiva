@@ -26,8 +26,8 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 

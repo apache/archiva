@@ -31,7 +31,6 @@ import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.registry.Registry;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
@@ -60,7 +59,7 @@ public class AddManagedRepositoryActionTest
 
     private MockControl archivaConfigurationControl;
 
-    private Registry registry;
+    private org.apache.archiva.redback.components.registry.Registry registry;
 
     private MockControl registryControl;
 
@@ -85,8 +84,8 @@ public class AddManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
 
-        registryControl = MockControl.createControl( Registry.class );
-        registry = (Registry) registryControl.getMock();
+        registryControl = MockControl.createControl( org.apache.archiva.redback.components.registry.Registry.class );
+        registry = (org.apache.archiva.redback.components.registry.Registry) registryControl.getMock();
         //action.setRegistry( registry );
 
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
