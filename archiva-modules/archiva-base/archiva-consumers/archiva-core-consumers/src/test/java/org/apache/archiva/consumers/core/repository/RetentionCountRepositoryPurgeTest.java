@@ -68,7 +68,20 @@ public class RetentionCountRepositoryPurgeTest
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.jar" );
+
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.zip" );
+
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" );
+
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.jar" );
+
+        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
+                                 "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.zip" );
+
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                                  "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
         listenerControl.replay();

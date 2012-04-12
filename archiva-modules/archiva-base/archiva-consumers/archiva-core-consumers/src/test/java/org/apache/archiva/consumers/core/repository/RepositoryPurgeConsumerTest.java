@@ -151,6 +151,8 @@ public class RepositoryPurgeConsumerTest
 
         // assert if removed from repo
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.zip" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.md5" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.sha1" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" );
@@ -158,6 +160,8 @@ public class RepositoryPurgeConsumerTest
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.sha1" );
 
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.zip" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.md5" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.sha1" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
@@ -166,6 +170,8 @@ public class RepositoryPurgeConsumerTest
 
         // assert if not removed from repo
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3-javadoc.jar" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3-javadoc.zip" );
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.md5" );
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.sha1" );
         assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom" );
