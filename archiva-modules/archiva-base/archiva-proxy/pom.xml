@@ -187,7 +187,7 @@
               org.apache.commons.io;version="[1.4,2)",
               org.apache.commons.lang;version="[2.4,3)",
               org.springframework.stereotype;version="[3,4)",
-              org.codehaus.plexus.registry,
+              org.apache.archiva.redback.components.registry,
               org.codehaus.plexus.taskqueue,
               org.apache.tools.ant.types.selectors,
               org.apache.maven.wagon,

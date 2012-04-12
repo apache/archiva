@@ -198,7 +198,7 @@
               org.apache.archiva.redback.rbac,
               org.apache.archiva.redback.role,
               org.apache.archiva.redback.system.check,
-              org.codehaus.plexus.registry,
+              org.apache.archiva.redback.components.registry,
               org.codehaus.plexus.taskqueue,
               org.codehaus.plexus.taskqueue.execution,
               org.apache.archiva.redback.components.scheduler,

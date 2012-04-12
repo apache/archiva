@@ -197,7 +197,7 @@
               org.codehaus.plexus.util,
               org.apache.tools.ant.types.selectors,
               org.apache.archiva.redback.components.registry,
-              org.codehaus.redback.components.registry.commons,
+              org.apache.archiva.redback.components.registry.commons,
               org.codehaus.redback.components.springutils,
               org.springframework.stereotype;version="[3,4)",
               org.slf4j;resolution:=optional
