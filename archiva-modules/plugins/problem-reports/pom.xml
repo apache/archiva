@@ -94,7 +94,7 @@
               org.apache.archiva.consumers;version=${project.version},
               org.apache.commons.collections;version="[3.2,4)",
               org.springframework.*;version="[3,4)",
-              org.codehaus.plexus.registry,
+              org.apache.archiva.redback.components.registry,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>

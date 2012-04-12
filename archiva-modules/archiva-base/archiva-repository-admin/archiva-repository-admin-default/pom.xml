@@ -237,7 +237,7 @@
               org.apache.maven.wagon*,
               org.apache.archiva.redback.role,
               org.apache.archiva.redback.users,
-              org.codehaus.plexus.registry,
+              org.apache.archiva.redback.components.registry,
               org.codehaus.plexus.taskqueue,
               org.apache.archiva.redback.components.scheduler,
               org.slf4j;resolution:=optional

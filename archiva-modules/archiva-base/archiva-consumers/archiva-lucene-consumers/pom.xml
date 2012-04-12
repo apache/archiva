@@ -127,7 +127,7 @@
               org.apache.archiva.scheduler*;version=${project.version},
               org.springframework*;version="[3,4)",
               org.apache.maven.index*,
-              org.codehaus.plexus.registry,
+              org.apache.archiva.redback.components.registry,
               org.codehaus.plexus.taskqueue,
               org.slf4j;resolution:=optional
             </Import-Package>

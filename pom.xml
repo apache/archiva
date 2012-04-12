@@ -1706,9 +1706,9 @@
           </configuration>
           <dependencies>
             <dependency>
-              <groupId>org.codehaus.modello</groupId>
-              <artifactId>modello-plugin-plexus-registry</artifactId>
-              <version>1.0-alpha-21</version>
+              <groupId>org.apache.archiva.redback.components.registry</groupId>
+              <artifactId>modello-plugin-redback-registry</artifactId>
+              <version>${redback.registry.version}</version>
             </dependency>
           </dependencies>
         </plugin>

@@ -171,7 +171,7 @@
               org.apache.commons.lang*;version="[2.4,3)",
               org.springframework*;version="[3,4)",
               org.codehaus.plexus.digest,
-              org.codehaus.plexus.registry,
+              org.apache.archiva.redback.components.registry,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
