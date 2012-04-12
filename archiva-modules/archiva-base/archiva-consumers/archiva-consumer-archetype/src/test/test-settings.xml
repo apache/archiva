@@ -19,8 +19,17 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<settings>
-
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"
+  xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+  <mirrors>
+    <mirror>
+      <mirrorOf>*</mirrorOf>
+      <id>local-mirror</id>
+      <name>local-mirror</name>
+      <url>@localRepositoryUrl@</url>
+    </mirror>
+  </mirrors>
   <profiles>
     <profile>
       <id>it-repo</id>
