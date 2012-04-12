@@ -239,7 +239,7 @@
               org.apache.archiva.redback.users,
               org.codehaus.plexus.registry,
               org.codehaus.plexus.taskqueue,
-              org.codehaus.redback.components.scheduler,
+              org.apache.archiva.redback.components.scheduler,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>

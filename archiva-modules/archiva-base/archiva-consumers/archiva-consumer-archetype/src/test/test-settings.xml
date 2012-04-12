@@ -20,6 +20,7 @@ under the License.
 -->
 
 <settings>
+
   <profiles>
     <profile>
       <id>it-repo</id>
