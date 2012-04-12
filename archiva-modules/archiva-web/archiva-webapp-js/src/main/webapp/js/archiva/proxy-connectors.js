@@ -449,8 +449,9 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
       mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
 
       mainContent.find("#proxy-connectors-view-tabs").on('show', function (e) {
-
+        $.log("on show:"+$(e.target).attr("href"));
         if ($(e.target).attr("href")=="#proxy-connectors-edit") {
+          $.log("#proxy-connectors-edit");
           var proxyConnector=new ProxyConnector();
           var defaultPolicies=new Array();
           // populate with defaut policies options

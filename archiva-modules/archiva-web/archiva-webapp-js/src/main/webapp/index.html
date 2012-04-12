@@ -12,7 +12,6 @@
   <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
 
   <script type="text/javascript" src="js/require.1.0.7.js"></script>
-  <script type="text/javascript" src="js/bootstrap.2.0.2.js"></script>
 
   <title>Apache Archiva</title>
 
@@ -73,9 +72,6 @@
         dataType: 'json',
         cache: false,
         success:function(data){
-
-            window.modalLoading=$("#dialog-spinner-modal").modal();
-            window.modalLoading.modal('show');
 
             window.archivaDevMode=data.devMode;
             window.archivaJavascriptLog=data.javascriptLog;
@@ -139,7 +135,6 @@
                               require(['order!domReady','archiva/main'],function (domReady) {
                                   domReady.withResources(function () {
                                       startArchivaApplication();
-                                      window.modalLoading.modal('hide');
                                   })
                               })
 
