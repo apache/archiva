@@ -81,7 +81,7 @@
       <artifactId>ant</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.redback.components</groupId>
+      <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-utils</artifactId>
     </dependency>
     <dependency>
