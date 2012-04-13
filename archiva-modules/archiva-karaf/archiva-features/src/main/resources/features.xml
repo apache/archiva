@@ -40,9 +40,9 @@
   <feature name="archiva-policies" description="Archiva Policies module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-checksum</feature>
     <feature version="[3,4)">spring</feature>
-    <bundle>wrap:mvn:org.codehaus.redback.components.cache/spring-cache-api/${redback.cache.version}</bundle>
+    <bundle>wrap:mvn:org.apache.archiva.redback.components.cache/spring-cache-api/${redback.cache.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ehcache/${ehcache.bundle.version}</bundle>
-    <bundle>wrap:mvn:org.codehaus.redback.components.cache/spring-cache-ehcache/${redback.cache.version}</bundle>
+    <bundle>wrap:mvn:org.apache.archiva.redback.components.cache/spring-cache-ehcache/${redback.cache.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-policies/${project.version}</bundle>
   </feature>
 
@@ -58,8 +58,8 @@
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-configuration/${commons-configuration.bundle.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-expression-evaluator/${plexus-expression-evaluator.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-interpolation/${plexus-interpolation.version}</bundle>
-    <bundle dependency="true">wrap:mvn:org.codehaus.redback.components.registry/spring-registry-api/${redback.registry.version}</bundle>
-    <bundle dependency="true">wrap:mvn:org.codehaus.redback.components.registry/spring-registry-commons/${redback.registry.version}</bundle>
+    <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components.registry/spring-registry-api/${redback.registry.version}</bundle>
+    <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components.registry/spring-registry-commons/${redback.registry.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-configuration/${project.version}</bundle>
   </feature>
 
@@ -201,7 +201,7 @@
   </feature>
 
   <feature name="archiva-scheduler-api" description="Archiva Scheduler API module" version="${project.version}" resolver="(obr)">
-    <bundle dependency="true">wrap:mvn:<groupId>org.apache.archiva.redback.components</groupId>/spring-taskqueue/${redback.taskqueue.version}</bundle>
+    <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components/spring-taskqueue/${redback.taskqueue.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-scheduler-api/${project.version}</bundle>
   </feature>
 
@@ -225,7 +225,7 @@
     <feature version="${project.version}">archiva-proxy-common</feature>
     <feature version="${project.version}">archiva-repository-scanner</feature>
     <feature version="${project.version}">archiva-repository-statistics</feature>
-    <bundle dependency="true">wrap:mvn:org.codehaus.redback.components/spring-quartz/${redback.quartz.version}</bundle>
+    <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components/spring-quartz/${redback.quartz.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.quartz/${quartz.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/${lucene.bundle.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.indexer/indexer-core/${maven.indexer.version}</bundle>
