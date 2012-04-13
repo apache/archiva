@@ -232,7 +232,7 @@
               org.apache.maven.model*,
               org.codehaus.plexus.digest,
               org.apache.archiva.redback.*,
-              org.codehaus.plexus.taskqueue,
+              org.apache.archiva.redback.components.taskqueue,
               org.codehaus.plexus.util*,
               org.codehaus.redback.integration.filter.authentication,
               org.slf4j;resolution:=optional

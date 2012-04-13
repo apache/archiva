@@ -1058,7 +1058,7 @@
                     org.apache.archiva.redback.system,
                     org.apache.archiva.redback.users,
                     org.codehaus.plexus.registry,
-                    org.codehaus.plexus.taskqueue,
+                    org.apache.archiva.redback.components.taskqueue,
                     org.codehaus.plexus.util,
                     org.codehaus.redback.components.scheduler,
                     org.apache.archiva.redback.integration.filter.authentication,

@@ -50,7 +50,7 @@
               org.apache.archiva.scheduler;version=${project.version}
             </Export-Package>
             <Import-Package>
-              org.codehaus.plexus.taskqueue
+              org.apache.archiva.redback.components.taskqueue,
             </Import-Package>
           </instructions>
         </configuration>

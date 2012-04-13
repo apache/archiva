@@ -128,7 +128,7 @@
               org.springframework*;version="[3,4)",
               org.apache.maven.index*,
               org.apache.archiva.redback.components.registry,
-              org.codehaus.plexus.taskqueue,
+              org.apache.archiva.redback.components.taskqueue,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>

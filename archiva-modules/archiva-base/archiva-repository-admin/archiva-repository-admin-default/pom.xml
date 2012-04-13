@@ -238,7 +238,7 @@
               org.apache.archiva.redback.role,
               org.apache.archiva.redback.users,
               org.apache.archiva.redback.components.registry,
-              org.codehaus.plexus.taskqueue,
+              org.apache.archiva.redback.components.taskqueue,
               org.apache.archiva.redback.components.scheduler,
               org.slf4j;resolution:=optional
             </Import-Package>
