@@ -29,7 +29,7 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

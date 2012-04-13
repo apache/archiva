@@ -20,8 +20,8 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.codehaus.plexus.taskqueue.TaskQueue;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.components.taskqueue.TaskQueue;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

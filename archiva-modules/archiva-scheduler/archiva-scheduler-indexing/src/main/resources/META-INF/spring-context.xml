@@ -38,10 +38,10 @@
     </constructor-arg>
   </bean>
 
-  <bean name="taskQueue#indexing" class="org.codehaus.plexus.taskqueue.DefaultTaskQueue"/>
+  <bean name="taskQueue#indexing" class="org.apache.archiva.redback.components.taskqueue.DefaultTaskQueue"/>
 
 
-  <bean name="taskQueueExecutor#indexing" class="org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor">
+  <bean name="taskQueueExecutor#indexing" class="org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor">
     <property name="executor" ref="taskExecutor#indexing"/>
     <property name="queue" ref="taskQueue#indexing"/>
     <property name="name" value="indexing"/>

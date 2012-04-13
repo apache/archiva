@@ -34,7 +34,7 @@ import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 

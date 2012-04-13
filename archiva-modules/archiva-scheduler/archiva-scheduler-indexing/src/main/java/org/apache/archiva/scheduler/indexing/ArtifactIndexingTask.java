@@ -21,7 +21,7 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.taskqueue.Task;
+import org.apache.archiva.redback.components.taskqueue.Task;
 
 import java.io.File;
 

@@ -19,8 +19,8 @@ package org.apache.archiva.scheduler;
  * under the License.
  */
 
-import org.codehaus.plexus.taskqueue.Task;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 
 /**
  * The component that takes care of scheduling in the application.

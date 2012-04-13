@@ -1,6 +1,6 @@
 package org.apache.archiva.scheduler.repository;
 
-import org.codehaus.plexus.taskqueue.Task;
+import org.apache.archiva.redback.components.taskqueue.Task;
 
 import java.io.File;
 

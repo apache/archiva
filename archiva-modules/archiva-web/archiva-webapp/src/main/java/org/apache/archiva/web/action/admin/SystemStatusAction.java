@@ -25,7 +25,7 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.web.action.AbstractActionSupport;
 import org.apache.archiva.redback.components.cache.Cache;
-import org.codehaus.plexus.taskqueue.TaskQueue;
+import org.apache.archiva.redback.components.taskqueue.TaskQueue;
 import org.apache.archiva.redback.integration.interceptor.SecureAction;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;

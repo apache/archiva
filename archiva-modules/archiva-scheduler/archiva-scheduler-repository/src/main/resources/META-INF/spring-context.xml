@@ -32,9 +32,9 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.scheduler.repository"/>
 
-  <bean name="taskQueue#repository-scanning" class="org.codehaus.plexus.taskqueue.DefaultTaskQueue"/>
+  <bean name="taskQueue#repository-scanning" class="org.apache.archiva.redback.components.taskqueue.DefaultTaskQueue"/>
 
-  <bean name="taskQueueExecutor#repository-scanning" class="org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor">
+  <bean name="taskQueueExecutor#repository-scanning" class="org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor">
     <property name="name" value="repository-scanning"/>
     <property name="executor" ref="taskExecutor#repository-scanning"/>
     <property name="queue" ref="taskQueue#repository-scanning"/>

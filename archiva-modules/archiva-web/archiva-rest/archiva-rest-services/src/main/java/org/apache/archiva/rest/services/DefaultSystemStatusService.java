@@ -29,8 +29,8 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
 import org.apache.archiva.rest.services.utils.ConsumerScanningStatisticsComparator;
 import org.apache.archiva.redback.components.cache.CacheStatistics;
-import org.codehaus.plexus.taskqueue.TaskQueue;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.components.taskqueue.TaskQueue;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
