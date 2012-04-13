@@ -29,15 +29,30 @@
     <version>1.2.1</version>
   </skin>
 
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>false</sideBarEnabled>
+      <googleSearch>
+        <sitesearch>http://archiva.apache.org/redback</sitesearch>
+      </googleSearch>
+      <twitter>
+        <user>archiva</user>
+        <showUser>true</showUser>
+        <showFollowers>false</showFollowers>
+      </twitter>
+      <ohloh>
+        <projectId>8659</projectId>
+        <widget>stats</widget>
+      </ohloh>
+    </fluidoSkin>
+
+  </custom>
+
   <publishDate format="yyyy-MM-dd" position="left" />
   <version position="left" />
  
   <body>
-    <links>
-      <item name="The Codehaus" href="http://codehaus.org" />
-      <item name="Redback" href="http://redback.codehaus.org"/>
-      <item name="Redback Components" href="http://redback.codehaus.org/components"/>
-    </links>
 
     <menu ref="reports" />
     <menu ref="modules" />
