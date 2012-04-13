@@ -32,7 +32,7 @@
   </listener>
   <context-param>
     <param-name>contextClass</param-name>
-    <param-value>org.codehaus.redback.components.springutils.CachingWebApplicationContext</param-value>
+    <param-value>org.apache.archiva.redback.components.springutils.CachingWebApplicationContext</param-value>
   </context-param>
   <context-param>
     <param-name>contextConfigLocation</param-name>

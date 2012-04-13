@@ -24,7 +24,7 @@ import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.redback.components.springutils.ComponentContainer;
+import org.apache.archiva.redback.components.springutils.ComponentContainer;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
 import org.junit.Test;
