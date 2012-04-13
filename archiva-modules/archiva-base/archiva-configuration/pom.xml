@@ -198,7 +198,7 @@
               org.apache.tools.ant.types.selectors,
               org.apache.archiva.redback.components.registry,
               org.apache.archiva.redback.components.registry.commons,
-              org.codehaus.redback.components.springutils,
+              org.apache.archiva.redback.components.springutils,
               org.springframework.stereotype;version="[3,4)",
               org.slf4j;resolution:=optional
             </Import-Package>
