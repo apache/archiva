@@ -60,7 +60,6 @@
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-interpolation/${plexus-interpolation.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.redback.components.registry/spring-registry-api/${redback.registry.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.redback.components.registry/spring-registry-commons/${redback.registry.version}</bundle>
-    <bundle dependency="true">wrap:mvn:org.codehaus.redback.components/spring-utils/${redback.spring-utils.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-configuration/${project.version}</bundle>
   </feature>
 
