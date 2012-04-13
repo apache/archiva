@@ -78,7 +78,7 @@
     <redback.quartz.version>2.0-SNAPSHOT</redback.quartz.version>
     <redback.registry.version>2.0-SNAPSHOT</redback.registry.version>
     <redback.spring-utils.version>2.0-SNAPSHOT</redback.spring-utils.version>
-    <redback.taskqueue.version>1.0</redback.taskqueue.version>
+    <redback.taskqueue.version>2.0-SNAPSHOT</redback.taskqueue.version>
     <slf4j.version>1.6.4</slf4j.version>
     <binder.version>0.11</binder.version>
     <spring.version>3.1.1.RELEASE</spring.version>
@@ -804,7 +804,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.redback.components</groupId>
+        <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-taskqueue</artifactId>
         <version>${redback.taskqueue.version}</version>
       </dependency>

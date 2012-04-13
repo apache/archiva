@@ -201,7 +201,7 @@
   </feature>
 
   <feature name="archiva-scheduler-api" description="Archiva Scheduler API module" version="${project.version}" resolver="(obr)">
-    <bundle dependency="true">wrap:mvn:org.codehaus.redback.components/spring-taskqueue/${redback.taskqueue.version}</bundle>
+    <bundle dependency="true">wrap:mvn:<groupId>org.apache.archiva.redback.components</groupId>/spring-taskqueue/${redback.taskqueue.version}</bundle>
     <bundle>mvn:org.apache.archiva/archiva-scheduler-api/${project.version}</bundle>
   </feature>
 
