@@ -28,8 +28,8 @@
   <name>Redback :: Configuration</name>
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-expression-evaluator</artifactId>
+      <groupId>org.apache.archiva.redback.components</groupId>
+      <artifactId>expression-evaluator</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback.components.registry</groupId>
