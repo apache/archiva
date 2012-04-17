@@ -767,7 +767,7 @@
         <version>${plexus-digest.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus</groupId>
+        <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>plexus-expression-evaluator</artifactId>
         <version>${plexus-expression-evaluator.version}</version>
         <exclusions>
