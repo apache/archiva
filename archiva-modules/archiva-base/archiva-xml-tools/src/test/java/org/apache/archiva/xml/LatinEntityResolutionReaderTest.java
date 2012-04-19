@@ -23,8 +23,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.net.URL;
+
+import junit.framework.Assert;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 
 /**
  * LatinEntityResolutionReaderTest 
@@ -193,6 +202,29 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 409600 );
     }
 
+    
+    
+    public void testReaderLeftOver()
+    throws IOException
+	{
+	    File inputFile = getExampleXml( "maven-metadata-leftover.xml" );
+	    //Bits from RepositoryMetadataReader.read
+		InputStream in = null;
+		SAXReader reader = new SAXReader();
+		URL url = inputFile.toURL();
+		in = url.openStream();
+		InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
+		LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
+		try {
+			reader.read( latinReader );
+		} catch (DocumentException e) {
+			Assert.fail("Should not have failed here." + e);
+			throw new IOException(e);
+		}
+	}
+
+
+    
     public void testNoLatinEntitiesHugeLine()
     {
         assertProperRead( "commons-codec-1.2.pom", "commons-codec-1.2.pom", 4096 );

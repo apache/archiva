@@ -69,12 +69,13 @@ public class LatinEntityResolutionReader
             {
                 // Copy partial leftover.
                 System.arraycopy( leftover, 0, destbuf, current_requested_offset, length );
+                int copyLeftOverLength = leftover.length - length;
 
                 // Create new leftover of remaining.
-                char tmp[] = new char[length];
-                System.arraycopy( leftover, length, tmp, 0, length );
+                char tmp[] = new char[copyLeftOverLength];
+                System.arraycopy( leftover, length, tmp, 0, copyLeftOverLength );
                 leftover = new char[tmp.length];
-                System.arraycopy( tmp, 0, leftover, 0, length );
+                System.arraycopy( tmp, 0, leftover, 0, copyLeftOverLength );
 
                 // Return len
                 return length;
