@@ -56,7 +56,7 @@
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-digester/${commons-digester.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-jxpath/${commons-jxpath.bundle.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-configuration/${commons-configuration.bundle.version}</bundle>
-    <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components/plexus-expression-evaluator/${plexus-expression-evaluator.version}</bundle>
+    <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components/expression-evaluator/${plexus-expression-evaluator.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-interpolation/${plexus-interpolation.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components.registry/spring-registry-api/${redback.registry.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.archiva.redback.components.registry/spring-registry-commons/${redback.registry.version}</bundle>

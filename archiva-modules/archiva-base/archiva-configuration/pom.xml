@@ -86,7 +86,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback.components</groupId>
-      <artifactId>plexus-expression-evaluator</artifactId>
+      <artifactId>expression-evaluator</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
