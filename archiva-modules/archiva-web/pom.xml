@@ -62,21 +62,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-command-line</artifactId>
-        <version>1.0-alpha-2</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>plexus-container-default</artifactId>
-            <groupId>org.codehaus.plexus</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>plexus-component-api</artifactId>
-            <groupId>org.codehaus.plexus</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-test-mocks</artifactId>
         <version>${project.version}</version>
