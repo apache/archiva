@@ -164,7 +164,7 @@
     <jacksonVersion>1.9.5</jacksonVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.useagent>true</gpg.useagent>
-    <cxfVersion>2.5.2</cxfVersion>
+    <cxfVersion>2.5.3</cxfVersion>
     <derbyVersion>10.8.2.2</derbyVersion>
 
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
