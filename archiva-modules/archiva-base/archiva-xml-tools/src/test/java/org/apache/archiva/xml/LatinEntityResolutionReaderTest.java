@@ -19,6 +19,10 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
+import junit.framework.Assert;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -29,14 +33,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
 
-import junit.framework.Assert;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
-
 /**
- * LatinEntityResolutionReaderTest 
+ * LatinEntityResolutionReaderTest
  *
  * @version $Id$
  */
@@ -46,10 +44,10 @@ public class LatinEntityResolutionReaderTest
     /**
      * A method to obtain the content of a reader as a String,
      * while allowing for specifing the buffer size of the operation.
-     * 
+     * <p/>
      * This method is only really useful for testing a Reader implementation.
-     * 
-     * @param input the reader to get the input from.
+     *
+     * @param input   the reader to get the input from.
      * @param bufsize the buffer size to use.
      * @return the contents of the reader as a String.
      * @throws IOException if there was an I/O error.
@@ -73,7 +71,7 @@ public class LatinEntityResolutionReaderTest
     /**
      * This reads a text file from the src/test/examples directory,
      * normalizes the end of lines, and returns the contents as a big String.
-     * 
+     *
      * @param examplePath the name of the file in the src/test/examples directory.
      * @return the contents of the provided file
      * @throws IOException if there was an I/O error.
@@ -202,29 +200,32 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 409600 );
     }
 
-    
-    
+
     public void testReaderLeftOver()
-    throws IOException
-	{
-	    File inputFile = getExampleXml( "maven-metadata-leftover.xml" );
-	    //Bits from RepositoryMetadataReader.read
-		InputStream in = null;
-		SAXReader reader = new SAXReader();
-		URL url = inputFile.toURL();
-		in = url.openStream();
-		InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
-		LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
-		try {
-			reader.read( latinReader );
-		} catch (DocumentException e) {
-			Assert.fail("Should not have failed here." + e);
-			throw new IOException(e);
-		}
-	}
+        throws IOException
+    {
+        File inputFile = getExampleXml( "maven-metadata-leftover.xml" );
+        //Bits from RepositoryMetadataReader.read
+        InputStream in = null;
+        SAXReader reader = new SAXReader();
+        URL url = inputFile.toURL();
+        in = url.openStream();
+        InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
+        LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
+        try
+        {
+            reader.read( latinReader );
+        }
+        catch ( DocumentException e )
+        {
+            Assert.fail( "Should not have failed here." + e );
+            IOException ioe = new IOException();
+            ioe.initCause( e );
+            throw ioe;
+        }
+    }
 
 
-    
     public void testNoLatinEntitiesHugeLine()
     {
         assertProperRead( "commons-codec-1.2.pom", "commons-codec-1.2.pom", 4096 );
