@@ -110,3 +110,26 @@ footer {
     padding-bottom: 30px;
     padding-top: 10px;
 }
+
+
+/* CSS for loading message */
+#loadingDiv {
+    position: absolute;
+    left: 45%;
+    bottom: 50%;
+    z-index: 20001;
+    height: auto;
+    border: 1px solid #ccc;
+}
+#loadingDiv a {
+    color: #225588;
+}
+
+#loadingDiv .loading-indicator {
+    background: white;
+    color: #444;
+    font: bold 12px tahoma;
+    padding: 10px;
+    margin: 0;
+    height: auto;
+}

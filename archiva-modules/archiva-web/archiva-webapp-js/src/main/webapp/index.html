@@ -29,7 +29,7 @@
     <div class="span10 columns">
       <div class="content">
         <div id="user-messages"></div>
-        <div id="main-content"><img src="images/medium-spinner.gif"/></div>
+        <div id="main-content"></div>
     </div>
   </div>
   </div>
@@ -135,6 +135,7 @@
                               require(['order!domReady','archiva/main'],function (domReady) {
                                   domReady.withResources(function () {
                                       startArchivaApplication();
+                                      $("#loadingDiv").hide();
                                   })
                               })
 
@@ -150,6 +151,14 @@
 
 
 </script>
+
+<div id="loadingDiv">
+  <div class="loading-indicator">
+    <img src="img/loading.gif" />
+    <span id="loading-msg">Loading</span>
+  </div>
+</div>
+
 <div id="dialog-spinner-modal" class="modal fade" style="display: block;">
   <div class="modal-header">
     <a class="close" href="#" data-dismiss="modal">&#215;</a>
