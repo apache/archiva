@@ -1735,6 +1735,14 @@
             <source>1.5</source>
             <target>1.5</target>
           </configuration>
+          <!-- remove with upgrade to m-c-p 2.4 -->
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-javac</artifactId>
+              <version>1.8.6</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
