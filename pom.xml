@@ -931,11 +931,10 @@
         <version>2.8.1</version>
         <inherited>false</inherited>
         <configuration>
-          <!--
           <docletArtifact>
             <groupId>com.google.doclava</groupId>
             <artifactId>doclava</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.5</version>
           </docletArtifact>
           <doclet>com.google.doclava.Doclava</doclet>
 
@@ -953,7 +952,6 @@
               <version>1.0.0.Final</version>
             </additionnalDependency>
           </additionnalDependencies>
-          -->
         </configuration>
         <reportSets>
           <reportSet>
