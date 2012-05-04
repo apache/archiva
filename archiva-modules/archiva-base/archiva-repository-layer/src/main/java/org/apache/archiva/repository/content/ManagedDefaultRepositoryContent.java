@@ -66,7 +66,6 @@ public class ManagedDefaultRepositoryContent
     }
 
     public void deleteVersion( VersionedReference reference )
-        throws ContentNotFoundException
     {
         String path = toMetadataPath( reference );
         File projectPath = new File( getRepoRoot(), path );
@@ -76,14 +75,9 @@ public class ManagedDefaultRepositoryContent
         {
             FileUtils.deleteQuietly( projectDir );
         }
-        else
-        {
-            throw new ContentNotFoundException( "Unable to delete non-existing project directory: " + projectDir );
-        }
     }
 
     public void deleteArtifact( ArtifactReference artifactReference )
-        throws ContentNotFoundException
     {
         String path = toPath( artifactReference );
         File filePath = new File( getRepoRoot(), path );
@@ -91,10 +85,6 @@ public class ManagedDefaultRepositoryContent
         if ( filePath.exists() )
         {
             FileUtils.deleteQuietly( filePath );
-        }
-        else
-        {
-            throw new ContentNotFoundException( "Unable to delete non-existing project artifact: " + filePath );
         }
     }
 
