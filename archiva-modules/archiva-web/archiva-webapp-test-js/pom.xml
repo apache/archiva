@@ -276,9 +276,6 @@
                     <copy todir="${project.build.directory}/local-repo">
                       <fileset dir="src/test/resources/local-repo"/>
                     </copy>
-                    <copy todir="${project.build.directory}/tomcat7x">
-                      <fileset dir="src/test/tomcat7x"/>
-                    </copy>
                   </tasks>
                 </configuration>
               </execution>
@@ -320,8 +317,6 @@
                 </goals>
                 <phase>pre-integration-test</phase>
                 <configuration>
-                  <additionalConfigFilesDir>${project.build.directory}/tomcat7x/conf</additionalConfigFilesDir>
-                  <configurationDir>${project.build.directory}/tomcat7x</configurationDir>
                   <path>/archiva</path>
                   <port>${container.test.port}</port>
                   <uriEncoding>UTF-8</uriEncoding>
@@ -334,9 +329,8 @@
                     <derby.system.home>${project.build.directory}</derby.system.home>
                     <archiva.devMode>true</archiva.devMode>
                   </systemProperties>
-                  <contextFile>src/test/${container.name}/Catalina/localhost/archiva.xml</contextFile>
+                  <contextFile>${project.build.testOutputDirectory}/archiva.xml</contextFile>
                   <useNaming>true</useNaming>
-                  <serverXml>${project.build.directory}/tomcat7x/conf/server.xml</serverXml>
                 </configuration>
               </execution>
               <execution>
