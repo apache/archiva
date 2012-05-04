@@ -30,7 +30,7 @@
   <name>Archiva Web :: Javascript Application Tests</name>
 
   <properties>
-    <webappDirectory>${project.build.directory}/tomcat6x/webapps/archiva</webappDirectory>
+    <webappDirectory>${project.build.directory}/tomcat7x/webapps/archiva</webappDirectory>
   </properties>
 
   <dependencies>
@@ -276,8 +276,8 @@
                     <copy todir="${project.build.directory}/local-repo">
                       <fileset dir="src/test/resources/local-repo"/>
                     </copy>
-                    <copy todir="${project.build.directory}/tomcat6x">
-                      <fileset dir="src/test/tomcat6x"/>
+                    <copy todir="${project.build.directory}/tomcat7x">
+                      <fileset dir="src/test/tomcat7x"/>
                     </copy>
                   </tasks>
                 </configuration>
@@ -299,7 +299,7 @@
           </plugin>
           <plugin>
             <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat6-maven-plugin</artifactId>
+            <artifactId>tomcat7-maven-plugin</artifactId>
             <dependencies>
               <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -320,8 +320,8 @@
                 </goals>
                 <phase>pre-integration-test</phase>
                 <configuration>
-                  <additionalConfigFilesDir>${project.build.directory}/tomcat6x/conf</additionalConfigFilesDir>
-                  <configurationDir>${project.build.directory}/tomcat6x</configurationDir>
+                  <additionalConfigFilesDir>${project.build.directory}/tomcat7x/conf</additionalConfigFilesDir>
+                  <configurationDir>${project.build.directory}/tomcat7x</configurationDir>
                   <path>/archiva</path>
                   <port>${container.test.port}</port>
                   <uriEncoding>UTF-8</uriEncoding>
@@ -336,7 +336,7 @@
                   </systemProperties>
                   <contextFile>src/test/${container.name}/Catalina/localhost/archiva.xml</contextFile>
                   <useNaming>true</useNaming>
-                  <serverXml>${project.build.directory}/tomcat6x/conf/server.xml</serverXml>
+                  <serverXml>${project.build.directory}/tomcat7x/conf/server.xml</serverXml>
                 </configuration>
               </execution>
               <execution>
