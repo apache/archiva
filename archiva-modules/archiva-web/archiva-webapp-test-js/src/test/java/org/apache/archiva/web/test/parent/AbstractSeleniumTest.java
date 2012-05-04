@@ -26,6 +26,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -48,7 +49,8 @@ public abstract class AbstractSeleniumTest
 
     public String browser = System.getProperty( "browser" );
 
-    public String baseUrl = System.getProperty( "baseUrl" );
+    public String baseUrl =
+        "http://localhost:" + System.getProperty( "tomcat.maven.http.port" ) + "/archiva/index.html?request_lang=en";
 
     public int maxWaitTimeInMs = Integer.getInteger( "maxWaitTimeInMs" );
 
@@ -70,6 +72,15 @@ public abstract class AbstractSeleniumTest
     {
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
+
+        Properties tomcatPortProperties = new Properties();
+        tomcatPortProperties.load(
+            new FileInputStream( new File( System.getProperty( "tomcat.propertiesPortFilePath" ) ) ) );
+
+        int tomcatPort = Integer.parseInt( tomcatPortProperties.getProperty( "tomcat.maven.http.port" ) );
+
+        baseUrl = "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en";
+
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
         archivaSeleniumExecutionRule.selenium = selenium;
         assertAdminCreated();

@@ -31,6 +31,8 @@
 
   <properties>
     <webappDirectory>${project.build.directory}/tomcat7x/webapps/archiva</webappDirectory>
+    <container.test.port>0</container.test.port>
+    <tomcat.propertiesPortFilePath>${project.build.directory}/tomcat-port.properties</tomcat.propertiesPortFilePath>
   </properties>
 
   <dependencies>
@@ -201,6 +203,7 @@
                 <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
                 <seleniumHost>${seleniumHost}</seleniumHost>
                 <seleniumPort>${seleniumPort}</seleniumPort>
+                <tomcat.propertiesPortFilePath>${tomcat.propertiesPortFilePath}</tomcat.propertiesPortFilePath>
               </systemPropertyVariables>
             </configuration>
           </execution>
@@ -279,7 +282,7 @@
                   </tasks>
                 </configuration>
               </execution>
-              <execution>
+              <!--execution>
                 <id>check-archiva-loaded</id>
                 <phase>integration-test</phase>
                 <configuration>
@@ -291,7 +294,7 @@
                 <goals>
                   <goal>run</goal>
                 </goals>
-              </execution>
+              </execution-->
             </executions>
           </plugin>
           <plugin>
@@ -330,6 +333,7 @@
                     <archiva.devMode>true</archiva.devMode>
                   </systemProperties>
                   <contextFile>${project.build.testOutputDirectory}/archiva.xml</contextFile>
+                  <propertiesPortFilePath>${tomcat.propertiesPortFilePath}</propertiesPortFilePath>
                   <useNaming>true</useNaming>
                 </configuration>
               </execution>
