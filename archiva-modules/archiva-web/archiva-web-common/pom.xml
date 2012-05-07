@@ -288,44 +288,11 @@
                 <artifactId>maven-scm-provider-svnjava</artifactId>
                 <version>2.0</version>
               </dependency>
-              <dependency>
-                <groupId>org.tmatesoft.svnkit</groupId>
-                <artifactId>svnkit</artifactId>
-                <version>1.7.4</version>
-              </dependency>
-              <dependency>
-                <groupId>de.regnis.q.sequence</groupId>
-                <artifactId>sequence-library</artifactId>
-                <version>1.0.0</version>
-                <scope>compile</scope>
-              </dependency>
             </dependencies>
           </plugin>
         </plugins>
       </build>
-      <pluginRepositories>
-        <!-- svnkit 1.7 -->
-        <pluginRepository>
-          <id>maven.tmatesoft.com.releases</id>
-          <url>http://maven.tmatesoft.com/content/repositories/releases</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <id>oss.sonatype.snapshots</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </pluginRepository>
-      </pluginRepositories>
+
     </profile>
     <profile>
       <id>svn-buildnumber</id>
