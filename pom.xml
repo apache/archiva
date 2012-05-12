@@ -1660,11 +1660,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5-SNAPSHOT</version>
-        </plugin>
-        <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <version>0.8</version>
@@ -1734,28 +1729,12 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>2.4.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>1.3</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>2.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.4</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.1</version>
           <configuration>
             <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
             <useReleaseProfile>false</useReleaseProfile>
@@ -1768,13 +1747,7 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>2.5</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.12</version>
           <configuration>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <runOrder>alphabetical</runOrder>
