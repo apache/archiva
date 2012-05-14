@@ -39,26 +39,26 @@ public class ArchivaRestServiceException
     private String fieldName;
 
 
-    public ArchivaRestServiceException( String message )
+    public ArchivaRestServiceException( String message, Throwable t )
     {
-        super( message );
+        super( message, t );
     }
 
-    public ArchivaRestServiceException( String message, String fieldName )
+    public ArchivaRestServiceException( String message, String fieldName, Throwable t )
     {
-        this( message );
+        this( message, t );
         this.fieldName = fieldName;
     }
 
-    public ArchivaRestServiceException( String s, int httpErrorCode )
+    public ArchivaRestServiceException( String s, int httpErrorCode, Throwable t )
     {
-        super( s );
+        super( s, t );
         this.httpErrorCode = httpErrorCode;
     }
 
-    public ArchivaRestServiceException( String s, int httpErrorCode, String fieldName )
+    public ArchivaRestServiceException( String s, int httpErrorCode, String fieldName, Throwable t )
     {
-        this( s, httpErrorCode );
+        this( s, httpErrorCode, t );
         this.fieldName = fieldName;
     }
 

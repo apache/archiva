@@ -19,6 +19,9 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.redback.components.cache.CacheStatistics;
+import org.apache.archiva.redback.components.taskqueue.TaskQueue;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.rest.api.model.CacheEntry;
@@ -28,9 +31,6 @@ import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
 import org.apache.archiva.rest.services.utils.ConsumerScanningStatisticsComparator;
-import org.apache.archiva.redback.components.cache.CacheStatistics;
-import org.apache.archiva.redback.components.taskqueue.TaskQueue;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -114,7 +114,7 @@ public class DefaultSystemStatusService
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 
@@ -142,7 +142,7 @@ public class DefaultSystemStatusService
         if ( cache == null )
         {
             throw new ArchivaRestServiceException( "no cache for key: " + cacheKey,
-                                                   Response.Status.BAD_REQUEST.getStatusCode() );
+                                                   Response.Status.BAD_REQUEST.getStatusCode(), null );
         }
 
         cache.clear();

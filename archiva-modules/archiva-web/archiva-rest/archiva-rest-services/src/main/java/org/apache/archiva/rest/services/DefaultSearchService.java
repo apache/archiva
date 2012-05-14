@@ -74,7 +74,7 @@ public class DefaultSearchService
         catch ( RepositorySearchException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -102,7 +102,7 @@ public class DefaultSearchService
         catch ( RepositorySearchException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -127,7 +127,7 @@ public class DefaultSearchService
         catch ( RepositorySearchException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -155,7 +155,7 @@ public class DefaultSearchService
         catch ( RepositorySearchException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -175,7 +175,7 @@ public class DefaultSearchService
         catch ( RepositorySearchException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
     }

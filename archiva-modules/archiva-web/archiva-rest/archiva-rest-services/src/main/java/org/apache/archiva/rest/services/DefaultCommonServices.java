@@ -18,13 +18,13 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.rest.api.services.UtilServices;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
-import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
-import org.apache.archiva.redback.rest.api.services.UtilServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -168,11 +168,11 @@ public class DefaultCommonServices
         catch ( IOException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         catch ( RedbackServiceException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e.getHttpErrorCode() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getHttpErrorCode(), e );
         }
     }
 
@@ -188,7 +188,7 @@ public class DefaultCommonServices
         catch ( IOException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {

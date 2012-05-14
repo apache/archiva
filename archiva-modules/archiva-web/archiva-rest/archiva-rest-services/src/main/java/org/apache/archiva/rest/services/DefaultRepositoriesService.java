@@ -40,6 +40,12 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.system.DefaultSecuritySession;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ContentNotFoundException;
@@ -72,12 +78,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.apache.archiva.redback.system.DefaultSecuritySession;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.system.SecuritySystem;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -219,7 +219,7 @@ public class DefaultRepositoriesService
         catch ( Exception e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -233,7 +233,7 @@ public class DefaultRepositoriesService
         catch ( DownloadRemoteIndexException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         return Boolean.TRUE;
     }
@@ -245,17 +245,17 @@ public class DefaultRepositoriesService
         String userName = getAuditInformation().getUser().getUsername();
         if ( StringUtils.isBlank( userName ) )
         {
-            throw new ArchivaRestServiceException( "copyArtifact call: userName not found" );
+            throw new ArchivaRestServiceException( "copyArtifact call: userName not found", null );
         }
 
         if ( StringUtils.isBlank( artifactTransferRequest.getRepositoryId() ) )
         {
-            throw new ArchivaRestServiceException( "copyArtifact call: sourceRepositoryId cannot be null" );
+            throw new ArchivaRestServiceException( "copyArtifact call: sourceRepositoryId cannot be null", null );
         }
 
         if ( StringUtils.isBlank( artifactTransferRequest.getTargetRepositoryId() ) )
         {
-            throw new ArchivaRestServiceException( "copyArtifact call: targetRepositoryId cannot be null" );
+            throw new ArchivaRestServiceException( "copyArtifact call: targetRepositoryId cannot be null", null );
         }
 
         ManagedRepository source = null;
@@ -265,13 +265,13 @@ public class DefaultRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
         if ( source == null )
         {
             throw new ArchivaRestServiceException(
-                "cannot find repository with id " + artifactTransferRequest.getRepositoryId() );
+                "cannot find repository with id " + artifactTransferRequest.getRepositoryId(), null );
         }
 
         ManagedRepository target = null;
@@ -281,33 +281,33 @@ public class DefaultRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
         if ( target == null )
         {
             throw new ArchivaRestServiceException(
-                "cannot find repository with id " + artifactTransferRequest.getTargetRepositoryId() );
+                "cannot find repository with id " + artifactTransferRequest.getTargetRepositoryId(), null );
         }
 
         if ( StringUtils.isBlank( artifactTransferRequest.getGroupId() ) )
         {
-            throw new ArchivaRestServiceException( "groupId is mandatory" );
+            throw new ArchivaRestServiceException( "groupId is mandatory", null );
         }
 
         if ( StringUtils.isBlank( artifactTransferRequest.getArtifactId() ) )
         {
-            throw new ArchivaRestServiceException( "artifactId is mandatory" );
+            throw new ArchivaRestServiceException( "artifactId is mandatory", null );
         }
 
         if ( StringUtils.isBlank( artifactTransferRequest.getVersion() ) )
         {
-            throw new ArchivaRestServiceException( "version is mandatory" );
+            throw new ArchivaRestServiceException( "version is mandatory", null );
         }
 
         if ( VersionUtil.isSnapshot( artifactTransferRequest.getVersion() ) )
         {
-            throw new ArchivaRestServiceException( "copy of SNAPSHOT not supported" );
+            throw new ArchivaRestServiceException( "copy of SNAPSHOT not supported", null );
         }
 
         // end check parameters
@@ -319,7 +319,7 @@ public class DefaultRepositoriesService
         }
         catch ( UserNotFoundException e )
         {
-            throw new ArchivaRestServiceException( "user " + userName + " not found" );
+            throw new ArchivaRestServiceException( "user " + userName + " not found", null );
         }
 
         // check karma on source : read
@@ -333,13 +333,13 @@ public class DefaultRepositoriesService
             if ( !authz )
             {
                 throw new ArchivaRestServiceException(
-                    "not authorized to access repo:" + artifactTransferRequest.getRepositoryId() );
+                    "not authorized to access repo:" + artifactTransferRequest.getRepositoryId(), null );
             }
         }
         catch ( AuthorizationException e )
         {
             log.error( "error reading permission: " + e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
         // check karma on target: write
@@ -351,13 +351,13 @@ public class DefaultRepositoriesService
             if ( !authz )
             {
                 throw new ArchivaRestServiceException(
-                    "not authorized to write to repo:" + artifactTransferRequest.getTargetRepositoryId() );
+                    "not authorized to write to repo:" + artifactTransferRequest.getTargetRepositoryId(), null );
             }
         }
         catch ( AuthorizationException e )
         {
             log.error( "error reading permission: " + e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
         // sounds good we can continue !
@@ -381,7 +381,8 @@ public class DefaultRepositoriesService
             if ( StringUtils.isEmpty( artifactSourcePath ) )
             {
                 log.error( "cannot find artifact " + artifactTransferRequest.toString() );
-                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString() );
+                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
+                                                       null );
             }
 
             File artifactFile = new File( source.getLocation(), artifactSourcePath );
@@ -389,7 +390,8 @@ public class DefaultRepositoriesService
             if ( !artifactFile.exists() )
             {
                 log.error( "cannot find artifact " + artifactTransferRequest.toString() );
-                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString() );
+                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
+                                                       null );
             }
 
             ManagedRepositoryContent targetRepository =
@@ -426,7 +428,7 @@ public class DefaultRepositoriesService
             {
                 throw new ArchivaRestServiceException(
                     "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId()
-                        + " and redeployment blocked" );
+                        + " and redeployment blocked", null );
             }
             else
             {
@@ -472,17 +474,17 @@ public class DefaultRepositoriesService
         catch ( RepositoryException e )
         {
             log.error( "RepositoryException: " + e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( RepositoryAdminException e )
         {
             log.error( "RepositoryAdminException: " + e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( IOException e )
         {
             log.error( "IOException: " + e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         return true;
     }
@@ -627,27 +629,27 @@ public class DefaultRepositoriesService
 
         if ( StringUtils.isEmpty( repositoryId ) )
         {
-            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400 );
+            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
         }
 
         if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
         {
-            throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403 );
+            throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
         }
 
         if ( artifact == null )
         {
-            throw new ArchivaRestServiceException( "artifact cannot be null", 400 );
+            throw new ArchivaRestServiceException( "artifact cannot be null", 400, null );
         }
 
         if ( StringUtils.isEmpty( artifact.getGroupId() ) )
         {
-            throw new ArchivaRestServiceException( "artifact.groupId cannot be null", 400 );
+            throw new ArchivaRestServiceException( "artifact.groupId cannot be null", 400, null );
         }
 
         if ( StringUtils.isEmpty( artifact.getArtifactId() ) )
         {
-            throw new ArchivaRestServiceException( "artifact.artifactId cannot be null", 400 );
+            throw new ArchivaRestServiceException( "artifact.artifactId cannot be null", 400, null );
         }
 
         // TODO more control on artifact fields
@@ -674,7 +676,7 @@ public class DefaultRepositoriesService
                 if ( StringUtils.isBlank( artifact.getPackaging() ) )
                 {
                     throw new ArchivaRestServiceException( "You must configure a type/packaging when using classifier",
-                                                           400 );
+                                                           400, null );
                 }
                 ArtifactReference artifactReference = new ArtifactReference();
                 artifactReference.setArtifactId( artifact.getArtifactId() );
@@ -740,27 +742,27 @@ public class DefaultRepositoriesService
 
         catch ( ContentNotFoundException e )
         {
-            throw new ArchivaRestServiceException( "Artifact does not exist: " + e.getMessage(), 400 );
+            throw new ArchivaRestServiceException( "Artifact does not exist: " + e.getMessage(), 400, e );
         }
         catch ( RepositoryNotFoundException e )
         {
-            throw new ArchivaRestServiceException( "Target repository cannot be found: " + e.getMessage(), 400 );
+            throw new ArchivaRestServiceException( "Target repository cannot be found: " + e.getMessage(), 400, e );
         }
         catch ( RepositoryException e )
         {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500 );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
         catch ( MetadataResolutionException e )
         {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500 );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
         catch ( MetadataRepositoryException e )
         {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500 );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(), 500 );
+            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(), 500, e );
         }
         finally
 
@@ -784,7 +786,7 @@ public class DefaultRepositoriesService
         catch ( ArchivaSecurityException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 
@@ -799,12 +801,12 @@ public class DefaultRepositoriesService
         catch ( RepositoryScannerException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500 );
+            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500, e );
         }
         catch ( RepositoryAdminException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500 );
+            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500, e );
         }
     }
 

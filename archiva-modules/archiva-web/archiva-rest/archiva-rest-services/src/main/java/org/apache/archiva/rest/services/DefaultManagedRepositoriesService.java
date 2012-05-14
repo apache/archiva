@@ -72,7 +72,7 @@ public class DefaultManagedRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -102,7 +102,7 @@ public class DefaultManagedRepositoriesService
         catch ( RepositoryAdminException e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
         }
     }
 
@@ -119,11 +119,11 @@ public class DefaultManagedRepositoriesService
             {
                 return getManagedRepository( managedRepository.getId() );
             }
-            throw new ArchivaRestServiceException( "fail to created managed Repository" );
+            throw new ArchivaRestServiceException( "fail to created managed Repository", null );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
         }
     }
 
@@ -141,7 +141,7 @@ public class DefaultManagedRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName() );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
         }
     }
 

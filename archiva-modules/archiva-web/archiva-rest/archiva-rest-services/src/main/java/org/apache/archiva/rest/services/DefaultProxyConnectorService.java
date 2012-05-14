@@ -62,7 +62,7 @@ public class DefaultProxyConnectorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -75,7 +75,7 @@ public class DefaultProxyConnectorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -92,7 +92,7 @@ public class DefaultProxyConnectorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -109,7 +109,7 @@ public class DefaultProxyConnectorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -121,7 +121,7 @@ public class DefaultProxyConnectorService
         {
             throw new ArchivaRestServiceException(
                 "proxyConnector with sourceRepoId:" + sourceRepoId + " and targetRepoId:" + targetRepoId
-                    + " not exists" );
+                    + " not exists", null );
         }
         return deleteProxyConnector( proxyConnector );
     }
@@ -139,7 +139,7 @@ public class DefaultProxyConnectorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 

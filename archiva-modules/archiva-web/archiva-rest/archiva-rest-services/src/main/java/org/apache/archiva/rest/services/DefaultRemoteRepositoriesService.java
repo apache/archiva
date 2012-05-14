@@ -53,7 +53,7 @@ public class DefaultRemoteRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 

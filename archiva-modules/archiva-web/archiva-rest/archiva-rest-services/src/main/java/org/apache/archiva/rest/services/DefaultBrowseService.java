@@ -115,7 +115,7 @@ public class DefaultBrowseService
         catch ( MetadataResolutionException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {
@@ -167,7 +167,7 @@ public class DefaultBrowseService
         catch ( MetadataResolutionException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {
@@ -200,7 +200,7 @@ public class DefaultBrowseService
         catch ( MetadataResolutionException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
 
     }
@@ -397,7 +397,7 @@ public class DefaultBrowseService
         catch ( MetadataResolutionException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {
@@ -423,7 +423,7 @@ public class DefaultBrowseService
         catch ( DependencyTreeBuilderException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         return treeEntries;
     }
@@ -438,7 +438,7 @@ public class DefaultBrowseService
         catch ( ArchivaSecurityException e )
         {
             throw new ArchivaRestServiceException( "repositories.read.observable.error",
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 
@@ -462,7 +462,7 @@ public class DefaultBrowseService
         catch ( MetadataResolutionException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {
@@ -550,7 +550,7 @@ public class DefaultBrowseService
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {
@@ -598,7 +598,7 @@ public class DefaultBrowseService
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         finally
         {
@@ -634,19 +634,19 @@ public class DefaultBrowseService
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         catch ( RepositoryNotFoundException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         catch ( RepositoryException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         return Collections.emptyList();
     }
@@ -789,19 +789,13 @@ public class DefaultBrowseService
             if ( !selectedRepos.contains( repositoryId ) )
             {
                 throw new ArchivaRestServiceException( "browse.root.groups.repositoy.denied",
-                                                       Response.Status.FORBIDDEN.getStatusCode() );
+                                                       Response.Status.FORBIDDEN.getStatusCode(), null );
             }
             selectedRepos = Collections.singletonList( repositoryId );
         }
         return selectedRepos;
     }
 
-    private List<String> getSortedList( Set<String> set )
-    {
-        List<String> list = new ArrayList<String>( set );
-        Collections.sort( list );
-        return list;
-    }
 
     private String collapseNamespaces( RepositorySession repositorySession, MetadataResolver metadataResolver,
                                        Collection<String> repoIds, String n )
