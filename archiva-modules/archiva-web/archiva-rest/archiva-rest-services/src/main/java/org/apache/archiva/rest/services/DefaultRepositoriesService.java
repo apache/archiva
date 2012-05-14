@@ -545,8 +545,8 @@ public class DefaultRepositoriesService
         }
         finally
         {
-            out.close();
-            input.close();
+            IOUtils.closeQuietly( out );
+            IOUtils.closeQuietly( input );
         }
 
         if ( fixChecksums )
