@@ -645,33 +645,12 @@ public class Maven2RepositoryStorage
         File[] files;
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
-            files = dir.listFiles( new FilenameFilter()
-            {
-                public boolean accept( File dir, String name )
-                {
-                    if ( name.startsWith( artifactId + "-" ) && name.endsWith( ".pom" ) )
-                    {
-                        String v = name.substring( artifactId.length() + 1, name.length() - 4 );
-                        v = VersionUtil.getBaseVersion( v );
-                        if ( v.equals( projectVersion ) )
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            } );
+            files = dir.listFiles( new PomFilenameFilter( artifactId, projectVersion ) );
         }
         else
         {
             final String pomFile = artifactId + "-" + projectVersion + ".pom";
-            files = dir.listFiles( new FilenameFilter()
-            {
-                public boolean accept( File dir, String name )
-                {
-                    return pomFile.equals( name );
-                }
-            } );
+            files = dir.listFiles( new PomFileFilter( pomFile ) );
         }
         if ( files != null && files.length > 0 )
         {
@@ -768,6 +747,49 @@ public class Maven2RepositoryStorage
                 return false;
             }
             return true;
+        }
+    }
+
+    private static class PomFilenameFilter
+        implements FilenameFilter
+    {
+
+        private final String artifactId, projectVersion;
+
+        private PomFilenameFilter( String artifactId, String projectVersion )
+        {
+            this.artifactId = artifactId;
+            this.projectVersion = projectVersion;
+        }
+
+        public boolean accept( File dir, String name )
+        {
+            if ( name.startsWith( artifactId + "-" ) && name.endsWith( ".pom" ) )
+            {
+                String v = name.substring( artifactId.length() + 1, name.length() - 4 );
+                v = VersionUtil.getBaseVersion( v );
+                if ( v.equals( projectVersion ) )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private static class PomFileFilter
+        implements FilenameFilter
+    {
+        private final String pomFile;
+
+        private PomFileFilter( String pomFile )
+        {
+            this.pomFile = pomFile;
+        }
+
+        public boolean accept( File dir, String name )
+        {
+            return pomFile.equals( name );
         }
     }
 }
