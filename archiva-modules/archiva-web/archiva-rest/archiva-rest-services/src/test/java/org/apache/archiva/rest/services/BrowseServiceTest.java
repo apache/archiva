@@ -275,4 +275,33 @@ public class BrowseServiceTest
             new ArtifactContentEntry( "org/apache", false, 1 ) );
         deleteTestRepo( testRepoId );
     }
+
+    @Test
+    public void readArtifactContentEntriesFilesAndDirectories()
+        throws Exception
+    {
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<ArtifactContentEntry> artifactContentEntries =
+            browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null,
+                                                     "org/apache/commons/logging/", testRepoId );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 10 ).contains(
+            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4 ),
+            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4 ) );
+        deleteTestRepo( testRepoId );
+    }
+
+
 }
