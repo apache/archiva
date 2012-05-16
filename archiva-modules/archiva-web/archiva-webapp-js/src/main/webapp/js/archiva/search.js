@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid"], function() {
+define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid","treeview"
+  ,"treeview.async","jquery.treeview.edit","jqueryFileTree"], function() {
 
 
 
@@ -272,6 +273,20 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
 
                 if ($(e.target).attr("href")=="#artifact-details-file-content") {
                   $.log("file content:"+self.groupId+":"+self.artifactId+":"+self.version);
+
+                  var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
+                  entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                  entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                  //entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
+
+                  $("#main-content #artifact_content_tree").fileTree({
+                    script: entriesUrl,
+                    root: ""
+              		},function(file) {
+              		  alert(file);
+              		});
+                  return;
+
                   var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
                   entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                   entriesUrl+="?repositoryId="+encodeURIComponent(self.repositoryId);
@@ -279,10 +294,12 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                     type: "GET",
                     dataType: 'json',
                     success: function(data) {
+                      //$("#artifact-details-file-content").html($("#artifact_content_tmpl").tmpl());//{artifactContentEntries:mapArtifactContentEntries(data)}));
+                      //artifact_content_tmpl
                       var artifactContentEntryViewModel=
-                          new ArtifactContentEntryViewModel(self.groupId,self.artifactId,self.version,mapArtifactContentEntries(data));
-                      $("#artifact-details-file-content").html($("#artifact_content_main_tmpl").tmpl());
-                      ko.applyBindings(artifactContentEntryViewModel,mainContent.find("#artifact_file_content_div").get(0));
+                          new ArtifactContentEntryViewModel(self.groupId,self.artifactId,self.version,[]);
+                      artifactContentEntryViewModel.show();
+                      //ko.applyBindings(artifactContentEntryViewModel,mainContent.find("#artifact_file_content_div").get(0));
                     }
                   });
                 }
@@ -386,10 +403,11 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
 
   }
 
-  ArtifactContentEntry=function(name,file,depth){
-    this.name=name;
+  ArtifactContentEntry=function(text,file,depth,id){
+    this.text=text;
     this.file=file;
     this.depth=depth;
+    this.id=id;
   }
 
   mapArtifactContentEntries=function(data){
@@ -398,10 +416,10 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     }
     if ( $.isArray(data)){
       return $.map(data,function(e){
-        return new ArtifactContentEntry(e.name,e.file,e.depth);
+        return new ArtifactContentEntry(e.text,e.file,e.depth,e.id);
       })
     }
-    return new ArtifactContentEntry(data.name,data.file,data.depth);
+    return new ArtifactContentEntry(data.text,data.file,data.depth,e.id);
   }
 
   ArtifactContentEntryViewModel=function(groupId,artifactId,version,artifactContentEntries){
@@ -410,7 +428,20 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     this.artifactId=artifactId;
     this.version=version;
     this.artifactContentEntries=ko.observableArray(artifactContentEntries);
-    $.log("size:"+this.artifactContentEntries().length);
+    this.currentPath=ko.observable();
+
+    this.show=function(){
+      var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
+      entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+      entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+      //entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
+
+      $("#main-content #artifact_content_tree").fileTree({
+        script: entriesUrl
+  		},function(file) {
+  		  alert(file);
+  		});
+    }
 
     entries=function(){
       return self.artifactContentEntries;
@@ -423,6 +454,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
       entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
       entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
+      self.currentPath(artifactContentEntry.name);
       $.ajax(entriesUrl,{
         type: "GET",
         dataType: 'json',

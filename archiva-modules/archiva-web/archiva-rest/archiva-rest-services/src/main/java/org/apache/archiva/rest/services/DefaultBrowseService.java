@@ -660,10 +660,10 @@ public class DefaultBrowseService
     {
         Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<String, ArtifactContentEntry>();
         int filterDepth = StringUtils.countMatches( filterPath, "/" );
-        if ( filterDepth == 0 )
+        /*if ( filterDepth == 0 )
         {
             filterDepth = 1;
-        }
+        }*/
         JarFile jarFile = new JarFile( file );
         try
         {
@@ -676,7 +676,8 @@ public class DefaultBrowseService
                         currentEntry.getName(), "/" ) : currentEntry.getName();
                 String entryRootPath = getRootPath( cleanedEntryName );
                 int depth = StringUtils.countMatches( cleanedEntryName, "/" );
-                if ( StringUtils.isEmpty( filterPath ) && !artifactContentEntryMap.containsKey( entryRootPath ) )
+                if ( StringUtils.isEmpty( filterPath ) && !artifactContentEntryMap.containsKey( entryRootPath )
+                    && depth == filterDepth )
                 {
 
                     artifactContentEntryMap.put( entryRootPath,
@@ -685,7 +686,7 @@ public class DefaultBrowseService
                 }
                 else
                 {
-                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) && ( depth >= filterDepth || (
+                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) && ( depth == filterDepth || (
                         !currentEntry.isDirectory() && depth == filterDepth ) ) )
                     {
                         artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,

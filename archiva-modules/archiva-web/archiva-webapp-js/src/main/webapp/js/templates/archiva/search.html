@@ -629,6 +629,8 @@
       </div>
 
       <div id="artifact-details-file-content" class="tab-pane">
+          <div id="artifact_content_tree">
+          </div>
       </div>
 
       <div id="artifact-details-used-by-content" class="tab-pane"></div>
@@ -796,11 +798,16 @@
 </script>
 
 <script id="artifact_content_tmpl" type="text/html">
-    <ul>
-      {{each(i, artifactContentEntry) artifactContentEntries()}}
-        <li data-bind="css: { 'browse-list': artifactContentEntry.file==false }">
-          <a href="#" data-bind="click: function(){displayPath(artifactContentEntry)}">${artifactContentEntry.name}</a>
-        </li>
-      {{/each}}
-    </ul>
+    <div id="artifact_content_tree">
+    </div>
+</script>
+
+<script id="artifact_content_tree_partial" type="text/html">
+  <ul class="jqueryFileTree" style="display: none;">
+    {{each artifactContentEntries}}
+    <li class="directory collapsed">
+      <a href="#" rel="${$value.text}/">${$value.text}</a>
+    </li>
+    {{/each}}
+  </ul>
 </script>

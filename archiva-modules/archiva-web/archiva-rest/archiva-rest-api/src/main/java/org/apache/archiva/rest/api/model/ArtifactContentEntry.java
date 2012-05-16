@@ -29,32 +29,40 @@ import java.io.Serializable;
 public class ArtifactContentEntry
     implements Serializable
 {
-    private String name;
+    private String text;
 
     private boolean file;
 
     private int depth;
+
+    private boolean hasChildren;
 
     public ArtifactContentEntry()
     {
         // no op
     }
 
-    public ArtifactContentEntry( String name, boolean file, int depth )
+    public ArtifactContentEntry( String text, boolean file, int depth, boolean hasChildren )
     {
-        this.name = name;
+        this.text = text;
         this.file = file;
         this.depth = depth;
+        this.hasChildren = hasChildren;
     }
 
-    public String getName()
+    public String getText()
     {
-        return name;
+        return text;
     }
 
-    public void setName( String name )
+    public String getId()
     {
-        this.name = name;
+        return text;
+    }
+
+    public void setText( String text )
+    {
+        this.text = text;
     }
 
     public boolean isFile()
@@ -77,17 +85,17 @@ public class ArtifactContentEntry
         this.depth = depth;
     }
 
-    @Override
-    public String toString()
+    public boolean isHasChildren()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "ArtifactContentEntry" );
-        sb.append( "{name='" ).append( name ).append( '\'' );
-        sb.append( ", file=" ).append( file );
-        sb.append( ", depth=" ).append( depth );
-        sb.append( '}' );
-        return sb.toString();
+        return hasChildren;
     }
+
+    public void setHasChildren( boolean hasChildren )
+    {
+        this.hasChildren = hasChildren;
+    }
+
+
 
     @Override
     public boolean equals( Object o )
@@ -103,6 +111,10 @@ public class ArtifactContentEntry
 
         ArtifactContentEntry that = (ArtifactContentEntry) o;
 
+        if ( hasChildren != that.hasChildren )
+        {
+            return false;
+        }
         if ( depth != that.depth )
         {
             return false;
@@ -111,7 +123,7 @@ public class ArtifactContentEntry
         {
             return false;
         }
-        if ( !name.equals( that.name ) )
+        if ( text != null ? !text.equals( that.text ) : that.text != null )
         {
             return false;
         }
@@ -122,9 +134,23 @@ public class ArtifactContentEntry
     @Override
     public int hashCode()
     {
-        int result = name.hashCode();
+        int result = text != null ? text.hashCode() : 0;
         result = 31 * result + ( file ? 1 : 0 );
         result = 31 * result + depth;
+        result = 31 * result + ( hasChildren ? 1 : 0 );
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "ArtifactContentEntry" );
+        sb.append( "{text='" ).append( text ).append( '\'' );
+        sb.append( ", file=" ).append( file );
+        sb.append( ", depth=" ).append( depth );
+        sb.append( ", children=" ).append( hasChildren );
+        sb.append( '}' );
+        return sb.toString();
     }
 }
