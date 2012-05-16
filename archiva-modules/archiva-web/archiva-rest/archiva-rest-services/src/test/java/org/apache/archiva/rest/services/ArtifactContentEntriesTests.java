@@ -51,6 +51,57 @@ public class ArtifactContentEntriesTests
     }
 
     @Test
+    public void readArtifactContentEntriesRootPathNull()
+        throws Exception
+    {
+
+        File file = new File( getBasedir(),
+                              "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
+
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, null );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
+            new ArtifactContentEntry( "org", false, 0, true ), new ArtifactContentEntry( "META-INF", false, 0, true ) );
+
+    }
+
+    @Test
+    public void readArtifactContentEntriesRootPathEmpty()
+        throws Exception
+    {
+
+        File file = new File( getBasedir(),
+                              "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
+
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "" );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
+            new ArtifactContentEntry( "org", false, 0, true ), new ArtifactContentEntry( "META-INF", false, 0, true ) );
+
+    }
+
+    @Test
+    public void readArtifactContentEntriesRootSlash()
+        throws Exception
+    {
+
+        File file = new File( getBasedir(),
+                              "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
+
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "/" );
+
+        log.info( "artifactContentEntries: {}", artifactContentEntries );
+
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
+            new ArtifactContentEntry( "org", false, 0, true ), new ArtifactContentEntry( "META-INF", false, 0, true ) );
+
+    }
+
+    @Test
     public void readArtifactContentEntriesSecondDepthOnlyOneDirectory()
         throws Exception
     {
@@ -63,7 +114,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 1 ) );
+            new ArtifactContentEntry( "org/apache", false, 1, true ) );
 
     }
 
@@ -81,7 +132,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 16 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5 ) );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5, true ) );
 
     }
 
@@ -99,8 +150,8 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 10 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4 ),
-            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4 ) );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4, true ),
+            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4, true ) );
 
     }
 

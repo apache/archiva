@@ -33,6 +33,6 @@ public class ArtifactContentEntryComparator
     public int compare( ArtifactContentEntry artifactContentEntry, ArtifactContentEntry artifactContentEntry1 )
     {
         // include depth too in comparaison ?
-        return artifactContentEntry.getName().compareTo( artifactContentEntry1.getName() );
+        return artifactContentEntry.getText().compareTo( artifactContentEntry1.getText() );
     }
 }
