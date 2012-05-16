@@ -387,6 +387,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     this.path=path;
     this.file=file;
     this.depth=depth;
+    this.text="";
   }
 
   mapArtifactContentEntries=function(data){

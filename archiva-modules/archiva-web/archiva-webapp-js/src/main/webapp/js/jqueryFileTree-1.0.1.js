@@ -53,7 +53,13 @@ if(jQuery) (function($){
 					$(".jqueryFileTree.start").remove();
 					$.get(o.script, { p: t }, function(data) {
             $(c).find('.start').html('');
-            var htmlContent = $("#artifact_content_tree_partial" ).tmpl({artifactContentEntries:mapArtifactContentEntries(data)});
+            var artifactContentEntries=mapArtifactContentEntries(data);
+            $(artifactContentEntries ).each(function(idx, elem){
+              elem.text=elem.path.substr( t.length, elem.path.length);
+            });
+            var htmlContent = $("#artifact_content_tree_partial" ).tmpl(
+                {artifactContentEntries:artifactContentEntries}
+            );
 						$(c).removeClass('wait').append(htmlContent);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
 						bindTree(c);

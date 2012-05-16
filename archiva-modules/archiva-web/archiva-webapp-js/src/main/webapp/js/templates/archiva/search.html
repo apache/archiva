@@ -795,9 +795,15 @@
 <script id="artifact_content_tree_partial" type="text/html">
   <ul class="jqueryFileTree" style="display: none;">
     {{each artifactContentEntries}}
-    <li class="directory collapsed">
-      <a href="#" rel="${$value.path}/">${$value.path}</a>
-    </li>
+      {{if $value.file == true}}
+        <li class="file">
+          <a href="#" rel="${$value.path}/">${$value.text}</a>
+        </li>
+      {{else}}
+        <li class="directory collapsed">
+          <a href="#" rel="${$value.path}/">${$value.text}</a>
+        </li>
+      {{/if}}
     {{/each}}
   </ul>
 </script>
