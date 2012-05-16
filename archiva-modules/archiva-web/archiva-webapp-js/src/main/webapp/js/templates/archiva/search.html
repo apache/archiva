@@ -433,7 +433,7 @@
         <a data-toggle="tab" href="#artifact-details-dependency-tree-content">${$.i18n.prop('artifact.detail.tab.header.dependency.tree')}</a>
       </li>
       <li>
-        <a data-toggle="tab" href="#artifact-details-pom-data-content">${$.i18n.prop('artifact.detail.tab.header.pom.content')}</a>
+        <a data-toggle="tab" href="#artifact-details-file-content">${$.i18n.prop('artifact.detail.tab.header.file.content')}</a>
       </li>
       <li>
         <a data-toggle="tab" href="#artifact-details-used-by-content">${$.i18n.prop('artifact.detail.tab.header.used.by')}</a>
@@ -628,7 +628,7 @@
       <div id="artifact-details-dependency-tree-content" class="tab-pane">
       </div>
 
-      <div id="artifact-details-pom-data-content" class="tab-pane">
+      <div id="artifact-details-file-content" class="tab-pane">
       </div>
 
       <div id="artifact-details-used-by-content" class="tab-pane"></div>
@@ -788,4 +788,19 @@
       </tr>
     {{/each}}
     </tbody>
+</script>
+
+<script id="artifact_content_main_tmpl" type="text/html">
+  <div id="artifact_file_content_div" data-bind='template:{name:"artifact_content_tmpl"}'>
+  </div>
+</script>
+
+<script id="artifact_content_tmpl" type="text/html">
+    <ul>
+      {{each(i, artifactContentEntry) artifactContentEntries()}}
+        <li data-bind="css: { 'browse-list': artifactContentEntry.file==false }">
+          <a href="#" data-bind="click: function(){displayPath(artifactContentEntry)}">${artifactContentEntry.name}</a>
+        </li>
+      {{/each}}
+    </ul>
 </script>
