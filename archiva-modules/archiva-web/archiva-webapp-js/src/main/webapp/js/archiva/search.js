@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid","treeview"
-  ,"treeview.async","jquery.treeview.edit","jqueryFileTree"], function() {
+define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid","jqueryFileTree"], function() {
 
 
 
