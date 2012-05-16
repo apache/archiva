@@ -266,7 +266,7 @@ public class BrowseServiceTest
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         List<ArtifactContentEntry> artifactContentEntries =
-            browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null, "org",
+            browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null, "org/",
                                                      testRepoId );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
