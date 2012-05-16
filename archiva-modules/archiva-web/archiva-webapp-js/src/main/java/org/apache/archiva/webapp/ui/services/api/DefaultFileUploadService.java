@@ -33,6 +33,7 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -55,7 +56,6 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -152,7 +152,7 @@ public class DefaultFileUploadService
         catch ( IOException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
 
     }
@@ -300,17 +300,17 @@ public class DefaultFileUploadService
         catch ( IOException ie )
         {
             throw new ArchivaRestServiceException( "Error encountered while uploading pom file: " + ie.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie );
         }
         catch ( RepositoryException rep )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + rep.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rep );
         }
         catch ( RepositoryAdminException e )
         {
             throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 
@@ -385,7 +385,7 @@ public class DefaultFileUploadService
                 {
                     throw new ArchivaRestServiceException(
                         "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
-                        Response.Status.BAD_REQUEST.getStatusCode() );
+                        Response.Status.BAD_REQUEST.getStatusCode(), null );
                 }
                 else
                 {
@@ -398,7 +398,7 @@ public class DefaultFileUploadService
             {
                 throw new ArchivaRestServiceException(
                     "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie );
             }
 
             if ( generatePom )
@@ -425,7 +425,7 @@ public class DefaultFileUploadService
                 {
                     throw new ArchivaRestServiceException(
                         "Error encountered while writing pom file: " + ie.getMessage(),
-                        Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                        Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie );
                 }
             }
 
@@ -446,17 +446,17 @@ public class DefaultFileUploadService
         catch ( RepositoryNotFoundException re )
         {
             throw new ArchivaRestServiceException( "Target repository cannot be found: " + re.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), re );
         }
         catch ( RepositoryException rep )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + rep.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rep );
         }
         catch ( RepositoryAdminException e )
         {
             throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() );
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 
