@@ -682,7 +682,7 @@ public class DefaultBrowseService
 
                     artifactContentEntryMap.put( entryRootPath,
                                                  new ArtifactContentEntry( entryRootPath, !currentEntry.isDirectory(),
-                                                                           depth, true ) );
+                                                                           depth ) );
                 }
                 else
                 {
@@ -691,7 +691,7 @@ public class DefaultBrowseService
                     {
                         artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,
                                                                                                  !currentEntry.isDirectory(),
-                                                                                                 depth, true ) );
+                                                                                                 depth ) );
                     }
                 }
             }

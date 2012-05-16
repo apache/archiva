@@ -29,40 +29,32 @@ import java.io.Serializable;
 public class ArtifactContentEntry
     implements Serializable
 {
-    private String text;
+    private String path;
 
     private boolean file;
 
     private int depth;
-
-    private boolean hasChildren;
 
     public ArtifactContentEntry()
     {
         // no op
     }
 
-    public ArtifactContentEntry( String text, boolean file, int depth, boolean hasChildren )
+    public ArtifactContentEntry( String path, boolean file, int depth )
     {
-        this.text = text;
+        this.path = path;
         this.file = file;
         this.depth = depth;
-        this.hasChildren = hasChildren;
     }
 
-    public String getText()
+    public String getPath()
     {
-        return text;
+        return path;
     }
 
-    public String getId()
+    public void setPath( String path )
     {
-        return text;
-    }
-
-    public void setText( String text )
-    {
-        this.text = text;
+        this.path = path;
     }
 
     public boolean isFile()
@@ -85,18 +77,6 @@ public class ArtifactContentEntry
         this.depth = depth;
     }
 
-    public boolean isHasChildren()
-    {
-        return hasChildren;
-    }
-
-    public void setHasChildren( boolean hasChildren )
-    {
-        this.hasChildren = hasChildren;
-    }
-
-
-
     @Override
     public boolean equals( Object o )
     {
@@ -111,10 +91,6 @@ public class ArtifactContentEntry
 
         ArtifactContentEntry that = (ArtifactContentEntry) o;
 
-        if ( hasChildren != that.hasChildren )
-        {
-            return false;
-        }
         if ( depth != that.depth )
         {
             return false;
@@ -123,7 +99,7 @@ public class ArtifactContentEntry
         {
             return false;
         }
-        if ( text != null ? !text.equals( that.text ) : that.text != null )
+        if ( path != null ? !path.equals( that.path ) : that.path != null )
         {
             return false;
         }
@@ -134,10 +110,9 @@ public class ArtifactContentEntry
     @Override
     public int hashCode()
     {
-        int result = text != null ? text.hashCode() : 0;
+        int result = path != null ? path.hashCode() : 0;
         result = 31 * result + ( file ? 1 : 0 );
         result = 31 * result + depth;
-        result = 31 * result + ( hasChildren ? 1 : 0 );
         return result;
     }
 
@@ -146,10 +121,9 @@ public class ArtifactContentEntry
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "ArtifactContentEntry" );
-        sb.append( "{text='" ).append( text ).append( '\'' );
+        sb.append( "{text='" ).append( path ).append( '\'' );
         sb.append( ", file=" ).append( file );
         sb.append( ", depth=" ).append( depth );
-        sb.append( ", children=" ).append( hasChildren );
         sb.append( '}' );
         return sb.toString();
     }

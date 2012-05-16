@@ -282,28 +282,9 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                     script: entriesUrl,
                     root: ""
               		},function(file) {
-              		  alert(file);
+              		  //alert(file);
               		});
-                  return;
-
-                  var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-                  entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
-                  entriesUrl+="?repositoryId="+encodeURIComponent(self.repositoryId);
-                  $.ajax(entriesUrl,{
-                    type: "GET",
-                    dataType: 'json',
-                    success: function(data) {
-                      //$("#artifact-details-file-content").html($("#artifact_content_tmpl").tmpl());//{artifactContentEntries:mapArtifactContentEntries(data)}));
-                      //artifact_content_tmpl
-                      var artifactContentEntryViewModel=
-                          new ArtifactContentEntryViewModel(self.groupId,self.artifactId,self.version,[]);
-                      artifactContentEntryViewModel.show();
-                      //ko.applyBindings(artifactContentEntryViewModel,mainContent.find("#artifact_file_content_div").get(0));
-                    }
-                  });
                 }
-
-
               });
             }
           });
@@ -402,11 +383,10 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
 
   }
 
-  ArtifactContentEntry=function(text,file,depth,id){
-    this.text=text;
+  ArtifactContentEntry=function(path,file,depth){
+    this.path=path;
     this.file=file;
     this.depth=depth;
-    this.id=id;
   }
 
   mapArtifactContentEntries=function(data){
@@ -415,54 +395,10 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     }
     if ( $.isArray(data)){
       return $.map(data,function(e){
-        return new ArtifactContentEntry(e.text,e.file,e.depth,e.id);
+        return new ArtifactContentEntry(e.path,e.file,e.depth);
       })
     }
-    return new ArtifactContentEntry(data.text,data.file,data.depth,e.id);
-  }
-
-  ArtifactContentEntryViewModel=function(groupId,artifactId,version,artifactContentEntries){
-    var self=this;
-    this.groupId=groupId;
-    this.artifactId=artifactId;
-    this.version=version;
-    this.artifactContentEntries=ko.observableArray(artifactContentEntries);
-    this.currentPath=ko.observable();
-
-    this.show=function(){
-      var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-      entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
-      entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
-      //entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
-
-      $("#main-content #artifact_content_tree").fileTree({
-        script: entriesUrl
-  		},function(file) {
-  		  alert(file);
-  		});
-    }
-
-    entries=function(){
-      return self.artifactContentEntries;
-    }
-
-    displayPath=function(artifactContentEntry){
-      $.log("ArtifactContentEntryViewModel#displayPath:"+artifactContentEntry.name);
-
-      var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-      entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
-      entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
-      entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
-      self.currentPath(artifactContentEntry.name);
-      $.ajax(entriesUrl,{
-        type: "GET",
-        dataType: 'json',
-        success: function(data) {
-          self.artifactContentEntries(mapArtifactContentEntries(data));
-        }
-      });
-
-    }
+    return new ArtifactContentEntry(data.path,data.file,data.depth);
   }
 
   MetadataEntry=function(key,value,editable){

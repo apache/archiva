@@ -63,7 +63,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0, true ), new ArtifactContentEntry( "META-INF", false, 0, true ) );
+            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
 
     }
 
@@ -80,7 +80,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0, true ), new ArtifactContentEntry( "META-INF", false, 0, true ) );
+            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
 
     }
 
@@ -97,7 +97,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0, true ), new ArtifactContentEntry( "META-INF", false, 0, true ) );
+            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
 
     }
 
@@ -114,7 +114,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 1, true ) );
+            new ArtifactContentEntry( "org/apache", false, 1 ) );
 
     }
 
@@ -132,7 +132,7 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 16 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5, true ) );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5 ) );
 
     }
 
@@ -150,8 +150,8 @@ public class ArtifactContentEntriesTests
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 10 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4, true ),
-            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4, true ) );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4 ),
+            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4 ) );
 
     }
 

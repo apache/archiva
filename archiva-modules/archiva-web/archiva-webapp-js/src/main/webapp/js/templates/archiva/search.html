@@ -792,21 +792,11 @@
     </tbody>
 </script>
 
-<script id="artifact_content_main_tmpl" type="text/html">
-  <div id="artifact_file_content_div" data-bind='template:{name:"artifact_content_tmpl"}'>
-  </div>
-</script>
-
-<script id="artifact_content_tmpl" type="text/html">
-    <div id="artifact_content_tree">
-    </div>
-</script>
-
 <script id="artifact_content_tree_partial" type="text/html">
   <ul class="jqueryFileTree" style="display: none;">
     {{each artifactContentEntries}}
     <li class="directory collapsed">
-      <a href="#" rel="${$value.text}/">${$value.text}</a>
+      <a href="#" rel="${$value.path}/">${$value.path}</a>
     </li>
     {{/each}}
   </ul>
