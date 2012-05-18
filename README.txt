@@ -22,9 +22,9 @@ export MAVEN_OPTS="-Xmx768m -Xms768m -XX:MaxPermSize=256m"
 Running webapp full js
 ========================
 As webapp js is in dev and won't probably be released soon, the module is not activated by default and it's included only in a profile
-mvn tomcat7:run -pl :archiva-webapp-js -Pjs -am -Pdev
+mvn tomcat7:run -pl :archiva-webapp-js -am -Pdev
 or
-mvn tomcat6:run -pl :archiva-webapp-js -Pjs -am -Pdev
+mvn tomcat6:run -pl :archiva-webapp-js -am -Pdev
 
 hit your browser: http://localhost:9091/archiva/index.html
 
