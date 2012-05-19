@@ -1201,7 +1201,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
         success: function(data) {
           mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
           var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(groupId,artifactId,version,repositoryId);
-          artifactVersionDetailViewModel.display(true);
+          artifactVersionDetailViewModel.display();
         }
     });
   }
