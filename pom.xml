@@ -50,6 +50,7 @@
     <module>archiva-modules</module>
     <module>archiva-docs</module>
     <module>archiva-jetty</module>
+    <module>archiva-jetty-js</module>
   </modules>
 
   <scm>
