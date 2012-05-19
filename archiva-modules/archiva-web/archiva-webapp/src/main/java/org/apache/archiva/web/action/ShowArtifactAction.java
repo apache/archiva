@@ -32,20 +32,18 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
+import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.inject.Inject;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +51,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -120,13 +117,22 @@ public class ShowArtifactAction
         {
             return handleArtifact( repositorySession );
         }
+        catch ( Exception e )
+        {
+            log.warn( "Unable to getProjectVersionMetadata: " + e.getMessage(), e );
+            addActionError( "Unable to getProjectVersionMetadata - consult application logs." );
+            return ERROR;
+        }
         finally
+
         {
             repositorySession.close();
         }
+
     }
 
     private String handleArtifact( RepositorySession session )
+        throws RepositoryNotFoundException, RepositoryException
     {
         // In the future, this should be replaced by the repository grouping mechanism, so that we are only making
         // simple resource requests here and letting the resolver take care of it
@@ -149,6 +155,7 @@ public class ShowArtifactAction
     }
 
     private ProjectVersionMetadata getProjectVersionMetadata( RepositorySession session )
+        throws RepositoryNotFoundException, RepositoryException
     {
         ProjectVersionMetadata versionMetadata = null;
         artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
@@ -223,7 +230,10 @@ public class ShowArtifactAction
                             l = new ArrayList<ArtifactDownloadInfo>();
                             this.artifacts.put( artifact.getVersion(), l );
                         }
-                        l.add( new ArtifactDownloadInfo( artifact ) );
+                        ArtifactDownloadInfoBuilder builder = new ArtifactDownloadInfoBuilder().forArtifactMetadata(
+                            artifact ).withManagedRepositoryContent(
+                            repositoryFactory.getManagedRepositoryContent( repositoryId ) );
+                        l.add( builder.build() );
                     }
                 }
             }
@@ -390,6 +400,12 @@ public class ShowArtifactAction
             // TODO: why re-retrieve?
             projectMetadata = getProjectVersionMetadata( repositorySession );
         }
+        catch ( Exception e )
+        {
+            log.warn( "Unable to getProjectVersionMetadata: " + e.getMessage(), e );
+            addActionError( "Unable to getProjectVersionMetadata - consult application logs." );
+            return ERROR;
+        }
         finally
         {
             repositorySession.close();
@@ -458,6 +474,13 @@ public class ShowArtifactAction
                 addActionError( "No generic metadata facet for this artifact." );
                 return ERROR;
             }
+        }
+        catch ( Exception e )
+        {
+            log.warn( "Unable to getProjectVersionMetadata: " + e.getMessage(), e );
+            addActionError( "Unable to getProjectVersionMetadata - consult application logs." );
+            return ERROR;
+
         }
         finally
         {
@@ -612,134 +635,5 @@ public class ShowArtifactAction
         this.repositoryFactory = repositoryFactory;
     }
 
-    // TODO: move this into the artifact metadata itself via facets where necessary
 
-    public class ArtifactDownloadInfo
-    {
-        private String type;
-
-        private String namespace;
-
-        private String project;
-
-        private String size;
-
-        private String id;
-
-        private String repositoryId;
-
-        private String version;
-
-        private String path;
-
-        private String classifier;
-
-        public ArtifactDownloadInfo( ArtifactMetadata artifact )
-        {
-            repositoryId = artifact.getRepositoryId();
-
-            // TODO: use metadata resolver capability instead - maybe the storage path could be stored in the metadata
-            // though keep in mind the request may not necessarily need to reflect the storage
-            ManagedRepositoryContent repo;
-            try
-            {
-                repo = repositoryFactory.getManagedRepositoryContent( repositoryId );
-            }
-            catch ( RepositoryException e )
-            {
-                throw new RuntimeException( e );
-            }
-
-            ArtifactReference ref = new ArtifactReference();
-            ref.setArtifactId( artifact.getProject() );
-            ref.setGroupId( artifact.getNamespace() );
-            ref.setVersion( artifact.getVersion() );
-            path = repo.toPath( ref );
-            path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifact.getId();
-
-            // TODO: need to accommodate Maven 1 layout too. Non-maven repository formats will need to generate this
-            // facet (perhaps on the fly) if wanting to display the Maven 2 elements on the Archiva pages
-            String type = null;
-            MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
-            if ( facet != null )
-            {
-                this.type = facet.getType();
-                this.classifier = facet.getClassifier();
-            }
-
-            namespace = artifact.getNamespace();
-            project = artifact.getProject();
-
-            // TODO: find a reusable formatter for this
-            double s = artifact.getSize();
-            String symbol = "b";
-            if ( s > 1024 )
-            {
-                symbol = "K";
-                s /= 1024;
-
-                if ( s > 1024 )
-                {
-                    symbol = "M";
-                    s /= 1024;
-
-                    if ( s > 1024 )
-                    {
-                        symbol = "G";
-                        s /= 1024;
-                    }
-                }
-            }
-
-            DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
-            size = df.format( s ) + " " + symbol;
-            id = artifact.getId();
-            version = artifact.getVersion();
-        }
-
-        public String getNamespace()
-        {
-            return namespace;
-        }
-
-        public String getType()
-        {
-            return type;
-        }
-
-        public String getProject()
-        {
-            return project;
-        }
-
-        public String getSize()
-        {
-            return size;
-        }
-
-        public String getId()
-        {
-            return id;
-        }
-
-        public String getVersion()
-        {
-            return version;
-        }
-
-        public String getRepositoryId()
-        {
-            return repositoryId;
-        }
-
-        public String getPath()
-        {
-            return path;
-        }
-
-        public String getClassifier()
-        {
-            return classifier;
-        }
-    }
 }
