@@ -29,6 +29,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.webtest.memory.TestMetadataResolver;
 import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
@@ -555,15 +556,15 @@ public class ShowArtifactActionTest
     }
 
     private void assertArtifacts( List<ArtifactMetadata> expectedArtifacts,
-                                  Map<String, List<ShowArtifactAction.ArtifactDownloadInfo>> artifactMap )
+                                  Map<String, List<ArtifactDownloadInfo>> artifactMap )
     {
         // assuming only one of each version at this point
         assertEquals( expectedArtifacts.size(), artifactMap.size() );
         for ( ArtifactMetadata artifact : expectedArtifacts )
         {
             assertTrue( artifactMap.containsKey( artifact.getVersion() ) );
-            List<ShowArtifactAction.ArtifactDownloadInfo> list = artifactMap.get( artifact.getVersion() );
-            ShowArtifactAction.ArtifactDownloadInfo actual = list.get( 0 );
+            List<ArtifactDownloadInfo> list = artifactMap.get( artifact.getVersion() );
+            ArtifactDownloadInfo actual = list.get( 0 );
             assertEquals( artifact.getNamespace(), actual.getNamespace() );
             assertEquals( artifact.getId(), actual.getId() );
             assertEquals( artifact.getProject(), actual.getProject() );
