@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
@@ -30,6 +31,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVersionComparator;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -38,6 +40,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
+import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
@@ -46,6 +49,7 @@ import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
+import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
 import org.apache.archiva.rest.services.utils.TreeDependencyNodeVisitor;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
@@ -651,6 +655,60 @@ public class DefaultBrowseService
         return Collections.emptyList();
     }
 
+    public List<ArtifactDownloadInfo> getArtifactDownloadInfos( String groupId, String artifactId, String version,
+                                                                String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
+
+        List<ArtifactDownloadInfo> artifactDownloadInfos = new ArrayList<ArtifactDownloadInfo>();
+
+        RepositorySession session = repositorySessionFactory.createSession();
+
+        MetadataResolver metadataResolver = session.getResolver();
+
+        try
+        {
+            for ( String repoId : selectedRepos )
+            {
+                List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+                    metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
+                Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
+
+                for ( ArtifactMetadata artifact : artifacts )
+                {
+
+                    ArtifactDownloadInfoBuilder builder =
+                        new ArtifactDownloadInfoBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
+                            repositoryContentFactory.getManagedRepositoryContent( repositoryId ) );
+                    artifactDownloadInfos.add( builder.build() );
+                }
+
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+        finally
+        {
+            if ( session != null )
+            {
+                session.close();
+            }
+        }
+
+        return artifactDownloadInfos;
+    }
+
     //---------------------------
     // internals
     //---------------------------
@@ -781,7 +839,7 @@ public class DefaultBrowseService
         if ( CollectionUtils.isEmpty( selectedRepos ) )
         {
             // FIXME 403 ???
-            return null;
+            return Collections.emptyList();
         }
 
         if ( StringUtils.isNotEmpty( repositoryId ) )

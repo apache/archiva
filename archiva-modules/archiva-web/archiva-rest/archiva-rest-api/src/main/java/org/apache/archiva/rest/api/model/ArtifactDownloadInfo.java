@@ -52,6 +52,11 @@ public class ArtifactDownloadInfo
 
     private String classifier;
 
+    public ArtifactDownloadInfo()
+    {
+        // no op
+    }
+
     public ArtifactDownloadInfo( ArtifactMetadata artifact, String path, String type, String classifier )
     {
         this.repositoryId = artifact.getRepositoryId();
@@ -197,4 +202,5 @@ public class ArtifactDownloadInfo
         sb.append( '}' );
         return sb.toString();
     }
+
 }
