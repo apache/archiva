@@ -32,6 +32,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVersionComparator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -39,7 +40,6 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -47,7 +47,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -209,18 +208,7 @@ public class ShowArtifactAction
                         addIncompleteModelWarning( "Error resolving artifact metadata: " + e.getMessage() );
                         artifacts = Collections.emptyList();
                     }
-                    Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
-                    {
-                        public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
-                        {
-                            // sort by version (reverse), then ID
-                            // TODO: move version sorting into repository handling (maven2 specific), and perhaps add a
-                            // way to get latest instead
-                            int result = new DefaultArtifactVersion( o2.getVersion() ).compareTo(
-                                new DefaultArtifactVersion( o1.getVersion() ) );
-                            return result != 0 ? result : o1.getId().compareTo( o2.getId() );
-                        }
-                    } );
+                    Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
 
                     for ( ArtifactMetadata artifact : artifacts )
                     {
