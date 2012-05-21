@@ -270,20 +270,28 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                   });
                 }
 
-                if ($(e.target).attr("href")=="#artifact-details-file-content") {
+                if ($(e.target).attr("href")=="#artifact-details-files-content") {
                   $.log("file content:"+self.groupId+":"+self.artifactId+":"+self.version);
 
-                  var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-                  entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
-                  entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
-                  //entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
+                  var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.groupId);
+                  artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                  artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
 
-                  $("#main-content #artifact_content_tree").fileTree({
-                    script: entriesUrl,
-                    root: ""
-              		},function(file) {
-              		  //alert(file);
-              		});
+                  $.get(artifactDownloadInfosUrl,function(data){
+                    $("#artifact-details-files-content" ).html($("#artifact-details-files-content_tmpl").tmpl({artifactDownloadInfos:data}));
+                    var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
+                    entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                    entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                    //entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
+
+                    $("#main-content #artifact_content_tree").fileTree({
+                      script: entriesUrl,
+                      root: ""
+                		  },function(file) {
+
+                		  });
+                  });
+
                 }
               });
             }
