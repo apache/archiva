@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid","jqueryFileTree"], function() {
-
-
+define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
+, function() {
 
   //-----------------------------------------
   // browse part
@@ -299,6 +298,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                             var text = data.replace(/</g,'&lt;');
                             text=text.replace(/>/g,"&gt;");
                             mainContent.find("#artifact-content-text" ).html(text);
+                            prettyPrint();
                             goToAnchor("artifact-content-text-header");
                           }
                         });
@@ -335,6 +335,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                              text=text.replace(/>/g,"&gt;");
                              mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
                              mainContent.find("#artifact-content-text" ).html(text);
+                             prettyPrint();
                              goToAnchor("artifact-content-text-header");
                            }
                           });
