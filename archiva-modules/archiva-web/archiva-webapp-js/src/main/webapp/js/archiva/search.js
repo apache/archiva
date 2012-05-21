@@ -280,6 +280,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                   $.get(artifactDownloadInfosUrl,function(data){
                     $("#artifact-details-files-content" ).html($("#artifact-details-files-content_tmpl").tmpl({artifactDownloadInfos:data}));
                     mainContent.find("#artifact-content-list-files li" ).on("click",function(){
+                      $("#main-content #artifact_content_tree").html("");
                       var idValue = $(this ).attr("id");
                       var classifier=idValue.substringBeforeLast(":");
                       var type = idValue.substringAfterLast(":");
@@ -314,6 +315,27 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                         root: ""
                   		  },function(file) {
                           $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
+                          var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(self.groupId);
+                          fileContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                          fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                          if(type){
+                            fileContentUrl+="&t="+type;
+                          }
+                          if(classifier){
+                            fileContentUrl+="&c="+classifier;
+                          }
+                          fileContentUrl+="&p="+file.substringBeforeLast("/");
+                          $.ajax({
+                           url: fileContentUrl,
+                           dataType: "text",
+                           success: function(data) {
+                             $.log("foo");
+                             $.log("data:"+data);
+                             var text = data.replace(/</g,'&lt;');
+                             text=text.replace(/>/g,"&gt;");
+                             mainContent.find("#artifact-content-text" ).html(text);
+                           }
+                          });
                   		  }
                       );
                     });
