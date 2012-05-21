@@ -282,14 +282,12 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                     var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
                     entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                     entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
-                    //entriesUrl+="&p="+encodeURIComponent(artifactContentEntry.name);
 
                     $("#main-content #artifact_content_tree").fileTree({
                       script: entriesUrl,
                       root: ""
                 		  },function(file) {
-
-                		  });
+                		});
                   });
 
                 }

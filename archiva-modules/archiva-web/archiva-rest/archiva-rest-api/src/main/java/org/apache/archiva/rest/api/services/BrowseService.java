@@ -169,4 +169,17 @@ public interface BrowseService
                                                          @PathParam( "v" ) String version,
                                                          @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
+
+    @Path( "artifactContentText/{g}/{a}/{v}" )
+    @GET
+    @Produces( MediaType.TEXT_PLAIN )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    /**
+     * if path is empty content of the file is returned (for pom view)
+     */
+    String getArtifactContentText( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                                   @PathParam( "v" ) String version, @QueryParam( "c" ) String classifier,
+                                   @QueryParam( "t" ) String type, @QueryParam( "p" ) String path,
+                                   @QueryParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
 }
