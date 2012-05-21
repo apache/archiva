@@ -295,11 +295,10 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                           url: pomContentUrl,
                           dataType: "text",
                           success: function(data) {
-                            $.log("foo");
-                            $.log("data:"+data);
                             var text = data.replace(/</g,'&lt;');
                             text=text.replace(/>/g,"&gt;");
                             mainContent.find("#artifact-content-text" ).html(text);
+                            goToAnchor("artifact-content-text-header");
                           }
                         });
                         return;
@@ -334,6 +333,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                              var text = data.replace(/</g,'&lt;');
                              text=text.replace(/>/g,"&gt;");
                              mainContent.find("#artifact-content-text" ).html(text);
+                             goToAnchor("artifact-content-text-header");
                            }
                           });
                   		  }

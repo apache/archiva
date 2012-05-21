@@ -373,6 +373,12 @@ define("utils",["jquery","i18n","jquery.tmpl"], function() {
     return sorted?res.sort():res;
   }
 
+  goToAnchor=function(anchor){
+    var curHref = window.location.href;
+    curHref=curHref.substringBeforeLast("#");
+    window.location.href=curHref+"#"+anchor;
+  }
+
   //------------------------------------
   // utils javascript string extensions
   //------------------------------------
