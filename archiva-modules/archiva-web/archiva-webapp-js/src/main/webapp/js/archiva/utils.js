@@ -389,6 +389,10 @@ define("utils",["jquery","i18n","jquery.tmpl"], function() {
     return this.substring(0,this.lastIndexOf(str));
   }
 
+  String.prototype.substringAfterLast = function(str) {
+    return this.substring(this.lastIndexOf(str)+1);
+  }
+
   //-----------------------------------------
   // extends jquery tmpl to support var def
   //-----------------------------------------

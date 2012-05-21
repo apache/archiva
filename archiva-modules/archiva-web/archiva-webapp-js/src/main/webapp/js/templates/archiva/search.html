@@ -810,9 +810,11 @@
 <script id="artifact-details-files-content_tmpl" type="text/html">
       <div class="row">
         <div class="span4">
-           <ul>
+           <ul id="artifact-content-list-files">
            {{each artifactDownloadInfos}}
-             <li>${$value.type}:${$value.classifier}</li>
+             <li id="${$value.classifier}:${$value.type}">
+               <a href="#">${$value.type}</a>
+             </li>
            {{/each}}
            </ul>
         </div>
@@ -820,5 +822,9 @@
           <div id="artifact_content_tree">
           </div>
         </div>
+      </div>
+      <h4>Content</h4>
+      <div>
+         <pre id="artifact-content-text"></pre>
       </div>
 </script>

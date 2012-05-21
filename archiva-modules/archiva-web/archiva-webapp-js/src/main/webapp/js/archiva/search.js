@@ -279,15 +279,45 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
 
                   $.get(artifactDownloadInfosUrl,function(data){
                     $("#artifact-details-files-content" ).html($("#artifact-details-files-content_tmpl").tmpl({artifactDownloadInfos:data}));
-                    var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-                    entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
-                    entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                    mainContent.find("#artifact-content-list-files li" ).on("click",function(){
+                      var idValue = $(this ).attr("id");
+                      var classifier=idValue.substringBeforeLast(":");
+                      var type = idValue.substringAfterLast(":");
+                      $.log("click:" + idValue + " -> " + classifier + ":" + type );
+                      if (type=="pom"){
+                        $.log("show pom");
+                        var pomContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(self.groupId);
+                        pomContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                        pomContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                        pomContentUrl+="&t=pom";
+                        $.ajax({
+                          url: pomContentUrl,
+                          dataType: "text",
+                          success: function(data) {
+                            $.log("foo");
+                            $.log("data:"+data);
+                            var text = data.replace(/</g,'&lt;');
+                            text=text.replace(/>/g,"&gt;");
+                            mainContent.find("#artifact-content-text" ).html(text);
+                          }
+                        });
+                        return;
+                      }
+                      var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
+                      entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                      entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                      if(classifier){
+                        entriesUrl+="&c="+classifier;
+                      }
+                      $("#main-content #artifact_content_tree").fileTree({
+                        script: entriesUrl,
+                        root: ""
+                  		  },function(file) {
+                          $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
+                  		  }
+                      );
+                    });
 
-                    $("#main-content #artifact_content_tree").fileTree({
-                      script: entriesUrl,
-                      root: ""
-                		  },function(file) {
-                		});
                   });
 
                 }
