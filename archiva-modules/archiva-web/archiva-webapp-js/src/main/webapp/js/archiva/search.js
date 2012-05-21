@@ -271,8 +271,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                 }
 
                 if ($(e.target).attr("href")=="#artifact-details-files-content") {
-                  $.log("file content:"+self.groupId+":"+self.artifactId+":"+self.version);
-
+                  mainContent.find("#artifact-details-files-content" ).html(smallSpinnerImg());
                   var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.groupId);
                   artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                   artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
@@ -292,6 +291,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                         pomContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                         pomContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                         pomContentUrl+="&t=pom";
+                        mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
                         $.ajax({
                           url: pomContentUrl,
                           dataType: "text",
@@ -333,6 +333,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                              $.log("data:"+data);
                              var text = data.replace(/</g,'&lt;');
                              text=text.replace(/>/g,"&gt;");
+                             mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
                              mainContent.find("#artifact-content-text" ).html(text);
                              goToAnchor("artifact-content-text-header");
                            }
