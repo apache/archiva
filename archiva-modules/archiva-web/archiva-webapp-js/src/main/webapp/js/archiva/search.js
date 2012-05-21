@@ -280,7 +280,8 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                   $.get(artifactDownloadInfosUrl,function(data){
                     $("#artifact-details-files-content" ).html($("#artifact-details-files-content_tmpl").tmpl({artifactDownloadInfos:data}));
                     mainContent.find("#artifact-content-list-files li" ).on("click",function(){
-                      $("#main-content #artifact_content_tree").html("");
+                      mainContent.find("#artifact_content_tree").html("");
+                      mainContent.find("#artifact-content-text" ).html("");
                       var idValue = $(this ).attr("id");
                       var classifier=idValue.substringBeforeLast(":");
                       var type = idValue.substringAfterLast(":");
