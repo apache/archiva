@@ -329,8 +329,6 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                            url: fileContentUrl,
                            dataType: "text",
                            success: function(data) {
-                             $.log("foo");
-                             $.log("data:"+data);
                              var text = data.replace(/</g,'&lt;');
                              text=text.replace(/>/g,"&gt;");
                              mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
