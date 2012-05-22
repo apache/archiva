@@ -630,7 +630,7 @@ public class DefaultBrowseService
                     repositoryContentFactory.getManagedRepositoryContent( repoId );
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
-                                                                       repositoryId );
+                                                                       repoId );
                 File file = managedRepositoryContent.toFile( archivaArtifact );
                 if ( file.exists() )
                 {
@@ -684,7 +684,7 @@ public class DefaultBrowseService
 
                     ArtifactDownloadInfoBuilder builder =
                         new ArtifactDownloadInfoBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
-                            repositoryContentFactory.getManagedRepositoryContent( repositoryId ) );
+                            repositoryContentFactory.getManagedRepositoryContent( repoId ) );
                     artifactDownloadInfos.add( builder.build() );
                 }
 
@@ -727,7 +727,7 @@ public class DefaultBrowseService
                     repositoryContentFactory.getManagedRepositoryContent( repoId );
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
-                                                                       repositoryId );
+                                                                       repoId );
                 File file = managedRepositoryContent.toFile( archivaArtifact );
                 if ( !file.exists() )
                 {
