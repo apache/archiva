@@ -39,6 +39,7 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.rest.api.model.BrowseResult;
@@ -635,7 +636,7 @@ public class DefaultBrowseService
                 File file = managedRepositoryContent.toFile( archivaArtifact );
                 if ( file.exists() )
                 {
-                    return readFileEntries( file, path );
+                    return readFileEntries( file, path, repoId );
                 }
             }
         }
@@ -714,8 +715,8 @@ public class DefaultBrowseService
         return artifactDownloadInfos;
     }
 
-    public String getArtifactContentText( String groupId, String artifactId, String version, String classifier,
-                                          String type, String path, String repositoryId )
+    public ArtifactContent getArtifactContentText( String groupId, String artifactId, String version, String classifier,
+                                                   String type, String path, String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
@@ -743,14 +744,14 @@ public class DefaultBrowseService
                     InputStream inputStream = jarFile.getInputStream( zipEntry );
                     try
                     {
-                        return IOUtils.toString( inputStream );
+                        return new ArtifactContent( IOUtils.toString( inputStream ), repoId );
                     }
                     finally
                     {
                         IOUtils.closeQuietly( inputStream );
                     }
                 }
-                return FileUtils.readFileToString( file );
+                return new ArtifactContent( FileUtils.readFileToString( file ), repoId );
             }
         }
         catch ( IOException e )
@@ -774,14 +775,14 @@ public class DefaultBrowseService
         log.debug( "artifact: {}:{}:{}:{}:{} not found",
                    Arrays.asList( groupId, artifactId, version, classifier, type ).toArray( new String[5] ) );
         // 404 ?
-        return "";
+        return new ArtifactContent();
     }
 
     //---------------------------
     // internals
     //---------------------------
 
-    protected List<ArtifactContentEntry> readFileEntries( File file, String filterPath )
+    protected List<ArtifactContentEntry> readFileEntries( File file, String filterPath, String repoId )
         throws IOException
     {
         Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<String, ArtifactContentEntry>();
@@ -808,7 +809,7 @@ public class DefaultBrowseService
 
                     artifactContentEntryMap.put( entryRootPath,
                                                  new ArtifactContentEntry( entryRootPath, !currentEntry.isDirectory(),
-                                                                           depth ) );
+                                                                           depth, repoId ) );
                 }
                 else
                 {
@@ -817,7 +818,7 @@ public class DefaultBrowseService
                     {
                         artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,
                                                                                                  !currentEntry.isDirectory(),
-                                                                                                 depth ) );
+                                                                                                 depth, repoId ) );
                     }
                 }
             }

@@ -58,12 +58,13 @@ public class ArtifactContentEntriesTests
         File file = new File( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, null );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, null, "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
+            new ArtifactContentEntry( "org", false, 0, "foo" ),
+            new ArtifactContentEntry( "META-INF", false, 0, "foo" ) );
 
     }
 
@@ -75,12 +76,13 @@ public class ArtifactContentEntriesTests
         File file = new File( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
+            new ArtifactContentEntry( "org", false, 0, "foo" ),
+            new ArtifactContentEntry( "META-INF", false, 0, "foo" ) );
 
     }
 
@@ -92,12 +94,13 @@ public class ArtifactContentEntriesTests
         File file = new File( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "/" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "/", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0 ), new ArtifactContentEntry( "META-INF", false, 0 ) );
+            new ArtifactContentEntry( "org", false, 0, "foo" ),
+            new ArtifactContentEntry( "META-INF", false, 0, "foo" ) );
 
     }
 
@@ -109,12 +112,12 @@ public class ArtifactContentEntriesTests
         File file = new File( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "org" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "org", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 1 ) );
+            new ArtifactContentEntry( "org/apache", false, 1, "foo" ) );
 
     }
 
@@ -127,12 +130,12 @@ public class ArtifactContentEntriesTests
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries =
-            browseService.readFileEntries( file, "org/apache/commons/logging/impl/" );
+            browseService.readFileEntries( file, "org/apache/commons/logging/impl/", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 16 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5 ) );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl/AvalonLogger.class", true, 5, "foo" ) );
 
     }
 
@@ -145,13 +148,13 @@ public class ArtifactContentEntriesTests
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries =
-            browseService.readFileEntries( file, "org/apache/commons/logging/" );
+            browseService.readFileEntries( file, "org/apache/commons/logging/", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 10 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4 ),
-            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4 ) );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4, "foo" ),
+            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4, "foo" ) );
 
     }
 

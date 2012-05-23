@@ -35,16 +35,21 @@ public class ArtifactContentEntry
 
     private int depth;
 
+    private String repositoryId;
+
     public ArtifactContentEntry()
     {
         // no op
     }
 
-    public ArtifactContentEntry( String path, boolean file, int depth )
+
+    public ArtifactContentEntry( String path, boolean file, int depth, String repositoryId )
     {
+
         this.path = path;
         this.file = file;
         this.depth = depth;
+        this.repositoryId = repositoryId;
     }
 
     public String getPath()
@@ -77,6 +82,17 @@ public class ArtifactContentEntry
         this.depth = depth;
     }
 
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
+
     @Override
     public boolean equals( Object o )
     {
@@ -99,7 +115,11 @@ public class ArtifactContentEntry
         {
             return false;
         }
-        if ( path != null ? !path.equals( that.path ) : that.path != null )
+        if ( !path.equals( that.path ) )
+        {
+            return false;
+        }
+        if ( !repositoryId.equals( that.repositoryId ) )
         {
             return false;
         }
@@ -110,20 +130,23 @@ public class ArtifactContentEntry
     @Override
     public int hashCode()
     {
-        int result = path != null ? path.hashCode() : 0;
+        int result = path.hashCode();
         result = 31 * result + ( file ? 1 : 0 );
         result = 31 * result + depth;
+        result = 31 * result + repositoryId.hashCode();
         return result;
     }
+
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "ArtifactContentEntry" );
-        sb.append( "{text='" ).append( path ).append( '\'' );
+        sb.append( "{path='" ).append( path ).append( '\'' );
         sb.append( ", file=" ).append( file );
         sb.append( ", depth=" ).append( depth );
+        sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
