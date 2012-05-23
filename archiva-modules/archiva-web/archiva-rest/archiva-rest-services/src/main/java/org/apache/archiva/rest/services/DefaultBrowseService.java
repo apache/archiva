@@ -65,6 +65,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -731,6 +732,7 @@ public class DefaultBrowseService
                 File file = managedRepositoryContent.toFile( archivaArtifact );
                 if ( !file.exists() )
                 {
+                    log.debug( "file: {} not exists for repository: {} try next repository", file, repoId );
                     continue;
                 }
                 if ( StringUtils.isNotBlank( path ) )
@@ -769,6 +771,8 @@ public class DefaultBrowseService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
+        log.debug( "artifact: {}:{}:{}:{}:{} not found",
+                   Arrays.asList( groupId, artifactId, version, classifier, type ).toArray( new String[5] ) );
         // 404 ?
         return "";
     }
