@@ -293,9 +293,8 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                         mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
                         $.ajax({
                           url: pomContentUrl,
-                          dataType: "text",
                           success: function(data) {
-                            var text = data.replace(/</g,'&lt;');
+                            var text = data.content.replace(/</g,'&lt;');
                             text=text.replace(/>/g,"&gt;");
                             mainContent.find("#artifact-content-text" ).html(text);
                             prettyPrint();
@@ -327,9 +326,8 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                           fileContentUrl+="&p="+encodeURIComponent(file.substringBeforeLast("/"));
                           $.ajax({
                            url: fileContentUrl,
-                           dataType: "text",
                            success: function(data) {
-                             var text = data.replace(/</g,'&lt;');
+                             var text = data.content.replace(/</g,'&lt;');
                              text=text.replace(/>/g,"&gt;");
                              mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
                              mainContent.find("#artifact-content-text" ).html(text);
