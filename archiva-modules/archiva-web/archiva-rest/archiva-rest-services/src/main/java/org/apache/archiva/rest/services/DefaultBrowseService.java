@@ -731,8 +731,7 @@ public class DefaultBrowseService
                 File file = managedRepositoryContent.toFile( archivaArtifact );
                 if ( !file.exists() )
                 {
-                    // 404 ?
-                    return "";
+                    continue;
                 }
                 if ( StringUtils.isNotBlank( path ) )
                 {
@@ -770,6 +769,7 @@ public class DefaultBrowseService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
+        // 404 ?
         return "";
     }
 
