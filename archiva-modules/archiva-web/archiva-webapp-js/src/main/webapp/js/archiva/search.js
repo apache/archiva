@@ -308,7 +308,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                       entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                       entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                       if(classifier){
-                        entriesUrl+="&c="+classifier;
+                        entriesUrl+="&c="+encodeURIComponent(classifier);
                       }
                       $("#main-content #artifact_content_tree").fileTree({
                         script: entriesUrl,
@@ -319,12 +319,12 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                           fileContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                           fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                           if(type){
-                            fileContentUrl+="&t="+type;
+                            fileContentUrl+="&t="+encodeURIComponent(type);
                           }
                           if(classifier){
-                            fileContentUrl+="&c="+classifier;
+                            fileContentUrl+="&c="+encodeURIComponent(classifier);
                           }
-                          fileContentUrl+="&p="+file.substringBeforeLast("/");
+                          fileContentUrl+="&p="+encodeURIComponent(file.substringBeforeLast("/"));
                           $.ajax({
                            url: fileContentUrl,
                            dataType: "text",
