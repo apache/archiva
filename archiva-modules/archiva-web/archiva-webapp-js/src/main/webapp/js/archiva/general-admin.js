@@ -521,7 +521,7 @@ define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl
     this.networkConfiguration=ko.observable(networkConfiguration);
 
     save=function(){
-      if (!$("#main-content #network-proxy-edit-form").valid()){
+      if (!$("#main-content #network-configuration-edit-form").valid()){
         return;
       }
       clearUserMessages();
@@ -550,9 +550,9 @@ define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl
           var networkConfiguration=new NetworkConfiguration(data.maxTotal,data.maxTotalPerHost,data.usePooling);
           var networkConfigurationViewModel=new NetworkConfigurationViewModel(networkConfiguration);
           ko.applyBindings(networkConfigurationViewModel,mainContent.get(0));
-          var validator = $("#main-content #network-proxy-edit-form").validate({
+          var validator = mainContent.find("#network-configuration-edit-form").validate({
             showErrors: function(validator, errorMap, errorList) {
-             customShowError(mainContent.find("#network-proxy-edit-form" ).get(0),validator,errorMap,errorMap);
+             customShowError(mainContent.find("#network-configuration-edit-form" ).get(0),validator,errorMap,errorMap);
             }
           });
         }
