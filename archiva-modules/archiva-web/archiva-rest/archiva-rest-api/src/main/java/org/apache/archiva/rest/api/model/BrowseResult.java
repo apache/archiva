@@ -54,4 +54,15 @@ public class BrowseResult
     {
         this.browseResultEntries = browseResultEntries;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "BrowseResult" );
+        sb.append( "{browseResultEntries=" ).append( browseResultEntries );
+        sb.append( ", rootLevel=" ).append( rootLevel );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

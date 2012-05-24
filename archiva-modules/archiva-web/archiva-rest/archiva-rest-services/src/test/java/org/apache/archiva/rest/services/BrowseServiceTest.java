@@ -57,6 +57,7 @@ public class BrowseServiceTest
         return map;
     }
 
+
     @Test
     public void metadatagetthenadd()
         throws Exception
@@ -173,6 +174,29 @@ public class BrowseServiceTest
         assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
             new BrowseResultEntry( "org.apache.felix", false ),
             new BrowseResultEntry( "org.apache.karaf.features", false ) );
+
+        deleteTestRepo( testRepoId );
+
+    }
+
+
+    @Test
+    public void browsegroupIdWithReleaseStartNumber()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+        BrowseResult browseResult = browseService.browseGroupId( "commons-logging.commons-logging", testRepoId );
+        log.info( "browseResult: {}", browseResult );
 
         deleteTestRepo( testRepoId );
 

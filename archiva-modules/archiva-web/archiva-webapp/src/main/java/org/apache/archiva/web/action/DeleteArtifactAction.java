@@ -226,10 +226,7 @@ public class DeleteArtifactAction
 
         if ( StringUtils.isNotEmpty( classifier ) )
         {
-
             msg.append( ":" ).append( classifier );
-
-
         }
         msg.append( ":" ).append( version ).append( "' was successfully deleted from repository '" ).append(
             repositoryId ).append( "'" );
