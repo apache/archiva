@@ -42,6 +42,11 @@ public class UiConfiguration
      */
     private boolean disableEasterEggs = false;
 
+    /**
+     * @since 1.4-M3
+     */
+    private String applicationUrl;
+
     public UiConfiguration()
     {
         // noop
@@ -75,5 +80,28 @@ public class UiConfiguration
     public void setDisableEasterEggs( boolean disableEasterEggs )
     {
         this.disableEasterEggs = disableEasterEggs;
+    }
+
+    public String getApplicationUrl()
+    {
+        return applicationUrl;
+    }
+
+    public void setApplicationUrl( String applicationUrl )
+    {
+        this.applicationUrl = applicationUrl;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "UiConfiguration" );
+        sb.append( "{showFindArtifacts=" ).append( showFindArtifacts );
+        sb.append( ", appletFindEnabled=" ).append( appletFindEnabled );
+        sb.append( ", disableEasterEggs=" ).append( disableEasterEggs );
+        sb.append( ", applicationUrl='" ).append( applicationUrl ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

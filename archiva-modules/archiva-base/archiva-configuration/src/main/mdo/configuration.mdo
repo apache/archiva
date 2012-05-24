@@ -1303,6 +1303,11 @@
           <type>boolean</type>
           <defaultValue>false</defaultValue>
         </field>
+        <field>
+          <name>applicationUrl</name>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
       </fields>
     </class>
 
