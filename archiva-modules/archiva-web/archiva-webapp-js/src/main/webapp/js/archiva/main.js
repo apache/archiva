@@ -124,6 +124,10 @@ function() {
         displayRepositoriesGrid();
         return;
       }
+      if (screen=='ui-configuration'&& hasKarma('archiva-manage-configuration')){
+        displayUiConfiguration();
+        return;
+      }
 
       if (screen=="browse"){
         displayBrowse(true);

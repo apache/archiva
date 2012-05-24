@@ -315,6 +315,28 @@
     </form>
 </script>
 
+<script id="ui-configuration-screen" type="text/html">
+  <div class="page-header">
+    <h4>${$.i18n.prop('ui-configuration.header')}</h4>
+  </div>
+  <div id="ui-configuration-form" data-bind='template: {name:"ui-configuration-form-tmpl"}'></div>
+</script>
+
+<script id="ui-configuration-form-tmpl" type="text/html">
+    <form id="ui-configuration-edit-form" class="well form-horizontal">
+      <fieldset id="ui-configuration-edit-fieldset">
+        <div class="control-group">
+          <label class="control-label" for="maxTotal">${$.i18n.prop('ui-configuration.applicationUrl')}</label>
+          <div class="controls">
+            <input type="text" class="xlarge required digits" id="applicationUrl" name="applicationUrl" size="8"
+                   data-bind="value: uiConfiguration().applicationUrl"/>
+          </div>
+        </div>
+      </fieldset>
+      <button id="ui-configuration-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+    </form>
+</script>
+
 <script id="system-status-main" type="text/html">
   <div class="page-header">
     <h4>${$.i18n.prop('system-status.header.version.info')}</h4>
