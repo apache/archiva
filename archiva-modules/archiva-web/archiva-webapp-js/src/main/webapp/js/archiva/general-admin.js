@@ -568,7 +568,7 @@ define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl
     screenChange();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
-    $.ajax("restServices/archivaServices/archivaAdministrationService/getNetworkConfiguration", {
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getUiConfiguration", {
         type: "GET",
         dataType: 'json',
         success: function(data){
