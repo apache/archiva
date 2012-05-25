@@ -25,6 +25,7 @@ import org.apache.archiva.redback.rest.api.model.Operation;
 import org.apache.archiva.redback.rest.api.model.Permission;
 import org.apache.archiva.redback.rest.api.model.RegistrationKey;
 import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.model.UserRegistrationRequest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -180,13 +181,13 @@ public interface UserService
 
     @Path( "registerUser" )
     @POST
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
     /**
      * if redback is not configured for email validation is required, -1 is returned as key
      * @since 1.4
      */
-    RegistrationKey registerUser( User user )
+    RegistrationKey registerUser( UserRegistrationRequest userRegistrationRequest )
         throws RedbackServiceException;
 
 

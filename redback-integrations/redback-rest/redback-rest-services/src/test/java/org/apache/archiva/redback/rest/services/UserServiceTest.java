@@ -19,22 +19,25 @@ package org.apache.archiva.redback.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.rest.api.model.Operation;
+import org.apache.archiva.redback.rest.api.model.Permission;
+import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.model.UserRegistrationRequest;
+import org.apache.archiva.redback.rest.api.services.UserService;
+import org.apache.archiva.redback.rest.services.mock.EmailMessage;
+import org.apache.archiva.redback.rest.services.mock.ServicesAssert;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
-import org.apache.archiva.redback.rest.api.model.Operation;
-import org.apache.archiva.redback.rest.api.model.Permission;
-import org.apache.archiva.redback.rest.api.model.User;
-import org.apache.archiva.redback.rest.api.services.UserService;
-import org.apache.archiva.redback.rest.services.mock.EmailMessage;
-import org.apache.archiva.redback.rest.services.mock.ServicesAssert;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -130,7 +133,7 @@ public class UserServiceTest
             u.setEmail( "toto@toto.fr" );
             u.setPassword( "toto123" );
             u.setConfirmPassword( "toto123" );
-            String key = service.registerUser( u ).getKey();
+            String key = service.registerUser( new UserRegistrationRequest( u, "http://wine.fr/bordeaux" ) ).getKey();
 
             assertFalse( key.equals( "-1" ) );
 
@@ -144,8 +147,12 @@ public class UserServiceTest
             assertEquals( "toto@toto.fr", emailMessages.get( 0 ).getTos().get( 0 ) );
 
             assertEquals( "Welcome", emailMessages.get( 0 ).getSubject() );
-            assertTrue(
-                emailMessages.get( 0 ).getText().contains( "Use the following URL to validate your account." ) );
+            String messageContent = emailMessages.get( 0 ).getText();
+
+            log.info( "messageContent: {}", messageContent );
+
+            assertThat( messageContent ).contains( "Use the following URL to validate your account." ).contains(
+                "http://wine.fr/bordeaux" ).containsIgnoringCase( "toto" );
 
             assertTrue( service.validateUserFromKey( key ) );
 
@@ -185,7 +192,7 @@ public class UserServiceTest
             u.setEmail( "toto@toto.fr" );
             u.setPassword( "toto123" );
             u.setConfirmPassword( "toto123" );
-            String key = service.registerUser( u ).getKey();
+            String key = service.registerUser( new UserRegistrationRequest( u, "http://wine.fr/bordeaux" ) ).getKey();
 
             assertFalse( key.equals( "-1" ) );
 

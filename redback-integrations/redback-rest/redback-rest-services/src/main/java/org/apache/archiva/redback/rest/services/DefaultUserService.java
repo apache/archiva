@@ -20,40 +20,41 @@ package org.apache.archiva.redback.rest.services;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.redback.components.cache.Cache;
-import org.apache.archiva.redback.configuration.UserConfiguration;
-import org.apache.archiva.redback.keys.AuthenticationKey;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.apache.archiva.redback.rbac.UserAssignment;
-import org.apache.archiva.redback.role.RoleManager;
-import org.apache.archiva.redback.role.RoleManagerException;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
-import org.apache.archiva.redback.keys.KeyManager;
-import org.apache.archiva.redback.keys.KeyManagerException;
-import org.apache.archiva.redback.keys.KeyNotFoundException;
-import org.apache.archiva.redback.policy.PasswordEncoder;
-import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
-import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.integration.mail.Mailer;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.keys.AuthenticationKey;
+import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.keys.KeyManagerException;
+import org.apache.archiva.redback.keys.KeyNotFoundException;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.PasswordEncoder;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
+import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.rest.api.model.ErrorMessage;
 import org.apache.archiva.redback.rest.api.model.Operation;
 import org.apache.archiva.redback.rest.api.model.Permission;
 import org.apache.archiva.redback.rest.api.model.RegistrationKey;
 import org.apache.archiva.redback.rest.api.model.Resource;
 import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.model.UserRegistrationRequest;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.api.services.UserService;
 import org.apache.archiva.redback.rest.services.utils.PasswordValidator;
+import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -537,9 +538,10 @@ public class DefaultUserService
         return Boolean.TRUE;
     }
 
-    public RegistrationKey registerUser( User user )
+    public RegistrationKey registerUser( UserRegistrationRequest userRegistrationRequest )
         throws RedbackServiceException
     {
+        User user = userRegistrationRequest.getUser();
         if ( user == null )
         {
             throw new RedbackServiceException( new ErrorMessage( "invalid.user.credentials", null ) );
@@ -593,7 +595,13 @@ public class DefaultUserService
                     securitySystem.getKeyManager().createKey( u.getPrincipal().toString(), "New User Email Validation",
                                                               securityPolicy.getUserValidationSettings().getEmailValidationTimeout() );
 
-                mailer.sendAccountValidationEmail( Arrays.asList( u.getEmail() ), authkey, getBaseUrl() );
+                String baseUrl = userRegistrationRequest.getApplicationUrl();
+                if ( StringUtils.isBlank( baseUrl ) )
+                {
+                    baseUrl = getBaseUrl();
+                }
+
+                mailer.sendAccountValidationEmail( Arrays.asList( u.getEmail() ), authkey, baseUrl );
 
                 securityPolicy.setEnabled( false );
                 userManager.addUser( u );
