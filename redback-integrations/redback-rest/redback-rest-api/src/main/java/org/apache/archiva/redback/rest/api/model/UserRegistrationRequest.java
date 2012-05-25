@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement( name = "userRegistrationRequest" )
 public class UserRegistrationRequest
+    implements Serializable
 {
     private User user;
 
