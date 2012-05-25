@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.SearchService;
@@ -212,7 +213,9 @@ public class SearchServiceTest
         {
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
-
+        UiConfiguration uiConfiguration = new UiConfiguration();
+        uiConfiguration.setApplicationUrl( null );
+        getArchivaAdministrationService().setUiConfiguration( uiConfiguration );
         createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
