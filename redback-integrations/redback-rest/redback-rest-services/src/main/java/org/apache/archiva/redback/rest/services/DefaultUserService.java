@@ -43,6 +43,7 @@ import org.apache.archiva.redback.rest.api.model.ErrorMessage;
 import org.apache.archiva.redback.rest.api.model.Operation;
 import org.apache.archiva.redback.rest.api.model.Permission;
 import org.apache.archiva.redback.rest.api.model.RegistrationKey;
+import org.apache.archiva.redback.rest.api.model.ResetPasswordRequest;
 import org.apache.archiva.redback.rest.api.model.Resource;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.model.UserRegistrationRequest;
@@ -501,9 +502,10 @@ public class DefaultUserService
         return Boolean.FALSE;
     }
 
-    public Boolean resetPassword( String username )
+    public Boolean resetPassword( ResetPasswordRequest resetPasswordRequest )
         throws RedbackServiceException
     {
+        String username = resetPasswordRequest.getUsername();
         if ( StringUtils.isEmpty( username ) )
         {
             throw new RedbackServiceException( new ErrorMessage( "username.cannot.be.empty" ) );
@@ -520,8 +522,13 @@ public class DefaultUserService
             AuthenticationKey authkey = keyManager.createKey( username, "Password Reset Request",
                                                               policy.getUserValidationSettings().getEmailValidationTimeout() );
 
-            mailer.sendPasswordResetEmail( Arrays.asList( user.getEmail() ), authkey, getBaseUrl() );
+            String applicationUrl = resetPasswordRequest.getApplicationUrl();
+            if ( StringUtils.isBlank( applicationUrl ) )
+            {
+                applicationUrl = getBaseUrl();
+            }
 
+            mailer.sendPasswordResetEmail( Arrays.asList( user.getEmail() ), authkey, applicationUrl );
             log.info( "password reset request for username {}", username );
         }
         catch ( UserNotFoundException e )

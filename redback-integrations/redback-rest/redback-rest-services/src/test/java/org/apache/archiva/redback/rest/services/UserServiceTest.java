@@ -21,6 +21,7 @@ package org.apache.archiva.redback.rest.services;
 
 import org.apache.archiva.redback.rest.api.model.Operation;
 import org.apache.archiva.redback.rest.api.model.Permission;
+import org.apache.archiva.redback.rest.api.model.ResetPasswordRequest;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.model.UserRegistrationRequest;
 import org.apache.archiva.redback.rest.api.services.UserService;
@@ -283,14 +284,16 @@ public class UserServiceTest
 
             assertTrue( service.validateUserFromKey( key ) );
 
-            assertTrue( service.resetPassword( "toto" ) );
+            assertTrue( service.resetPassword( new ResetPasswordRequest( "toto", "http://foo.fr/bar" ) ) );
 
             emailMessages = assertService.getEmailMessageSended();
             assertEquals( 2, emailMessages.size() );
             assertEquals( "toto@toto.fr", emailMessages.get( 1 ).getTos().get( 0 ) );
 
-            assertTrue( emailMessages.get( 1 ).getText().contains( "Password Reset" ) );
-            assertTrue( emailMessages.get( 1 ).getText().contains( "Username: toto" ) );
+            String messageContent = emailMessages.get( 1 ).getText();
+
+            assertThat( messageContent ).contains( "Password Reset" ).contains( "Username: toto" ).contains(
+                "http://foo.fr/bar" );
 
 
         }

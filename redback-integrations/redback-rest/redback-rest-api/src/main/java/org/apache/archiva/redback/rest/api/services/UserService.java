@@ -24,6 +24,7 @@ import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants
 import org.apache.archiva.redback.rest.api.model.Operation;
 import org.apache.archiva.redback.rest.api.model.Permission;
 import org.apache.archiva.redback.rest.api.model.RegistrationKey;
+import org.apache.archiva.redback.rest.api.model.ResetPasswordRequest;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.model.UserRegistrationRequest;
 
@@ -204,16 +205,17 @@ public interface UserService
     Boolean validateUserFromKey( @PathParam( "key" ) String key )
         throws RedbackServiceException;
 
-    @Path( "resetPassword/{user}" )
-    @GET
+    @Path( "resetPassword" )
+    @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
     /**
      *
      * @param user username for send a password reset email
      * @since 1.4
      */
-    Boolean resetPassword( @PathParam( "user" ) String user )
+    Boolean resetPassword( ResetPasswordRequest resetPasswordRequest )
         throws RedbackServiceException;
 
     @Path( "getUserPermissions/{userName}" )
