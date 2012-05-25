@@ -451,6 +451,11 @@ define("redback.user",["jquery","order!utils","i18n","jquery.validate","order!kn
     );
   }
 
+  ResetPasswordRequest=function(username,applicationUrl){
+    this.username=username;
+    this.applicationUrl=applicationUrl;
+  }
+
   passwordReset=function(){
     var username = $("#user-login-form-username" ).val();
     if(username.trim().length<1){
@@ -466,17 +471,28 @@ define("redback.user",["jquery","order!utils","i18n","jquery.validate","order!kn
       window.modalLoginWindow.modal('hide');
     }
     $("#user-messages" ).html(mediumSpinnerImg());
-    $.ajax("restServices/redbackServices/userService/resetPassword/"+encodeURIComponent(username), {
-      type: "GET",
-      success: function(result) {
-        clearUserMessages();
-        displayInfoMessage($.i18n.prop("password.reset.success"));
-      },
-      error: function(result) {
-        clearUserMessages();
-        var obj = jQuery.parseJSON(result.responseText);
-        displayRedbackError(obj);
-      }
+
+    $.ajax({
+        url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
+        type: "GET",
+        dataType: 'text',
+        success: function(data){
+
+          $.ajax("restServices/redbackServices/userService/resetPassword", {
+            type: "POST",
+            data:  JSON.stringify(new ResetPasswordRequest(username,data)),
+            contentType: "application/json",
+            success: function(result) {
+              clearUserMessages();
+              displayInfoMessage($.i18n.prop("password.reset.success"));
+            },
+            error: function(result) {
+              clearUserMessages();
+              var obj = jQuery.parseJSON(result.responseText);
+              displayRedbackError(obj);
+            }
+          });
+        }
     });
   }
 
