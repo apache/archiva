@@ -369,6 +369,19 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    public String getApplicationUrl()
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            return archivaAdministration.getUiConfiguration().getApplicationUrl();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+    }
+
     public NetworkConfiguration getNetworkConfiguration()
         throws ArchivaRestServiceException
     {

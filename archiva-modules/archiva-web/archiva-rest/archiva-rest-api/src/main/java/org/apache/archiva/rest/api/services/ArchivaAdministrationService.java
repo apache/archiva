@@ -23,9 +23,9 @@ import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -189,7 +189,7 @@ public interface ArchivaAdministrationService
     @Path( "getOrganisationInformation" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true)
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     OrganisationInformation getOrganisationInformation()
         throws ArchivaRestServiceException;
 
@@ -214,10 +214,20 @@ public interface ArchivaAdministrationService
     void setUiConfiguration( UiConfiguration uiConfiguration )
         throws ArchivaRestServiceException;
 
+    @Path( "applicationUrl" )
+    @GET
+    @Produces( MediaType.TEXT_PLAIN )
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
+    /**
+     * @since 1.4-M3
+     */
+    String getApplicationUrl()
+        throws ArchivaRestServiceException;
+
 
     @Path( "getNetworkConfiguration" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     NetworkConfiguration getNetworkConfiguration()
         throws ArchivaRestServiceException;

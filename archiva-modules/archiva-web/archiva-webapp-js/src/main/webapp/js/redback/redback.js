@@ -116,11 +116,17 @@ define("redback",["jquery","order!utils","jquery.validate","jquery.json","order!
     //$("#modal-register").focus();
   }
 
+  UserRegistrationRequest=function(user,applicationUrl){
+    this.user=user;
+    this.applicationUrl=applicationUrl;
+  }
+
   /**
    * validate the register form and call REST service
    */
   register=function(){
-    $.log("register.js#register");
+
+    $.log("redback.js#register");
     var valid = $("#user-register-form").valid();
     if (!valid) {
         return;
@@ -130,40 +136,52 @@ define("redback",["jquery","order!utils","jquery.validate","jquery.json","order!
 
     $('#modal-register-footer').append(smallSpinnerImg());
 
-    var user = {};
-    user.username = $("#user-register-form-username").val();
-    user.fullName = $("#user-register-form-fullname").val();
-    user.email = $("#user-register-form-email").val();
-    jQuery.ajax({
-      url:  'restServices/redbackServices/userService/registerUser',
-      data:  JSON.stringify(user),
-      type: 'POST',
-      contentType: "application/json",
-      success: function(result){
-        var registered = false;
-        if (result == "-1") {
-          registered = false;
-        } else {
-          registered = true;
-        }
+    $.ajax({
+        url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
+        type: "GET",
+        dataType: 'text',
+        success: function(data){
+          $.log("applicationUrl ok:"+data);
 
-        if (registered == true) {
-          window.modalRegisterWindow.modal('hide');
-          $("#register-link").hide();
-          // FIXME i18n
-          displaySuccessMessage("registered your key has been sent");
+          var user = {
+            username: $("#user-register-form-username").val(),
+            fullName: $("#user-register-form-fullname").val(),
+            email: $("#user-register-form-email").val()
+          };
+
+          var userRegistrationRequest=new UserRegistrationRequest(user,data);
+          $.ajax({
+            url:  'restServices/redbackServices/userService/registerUser',
+            data:  JSON.stringify(userRegistrationRequest),
+            type: 'POST',
+            contentType: "application/json",
+            success: function(result){
+              var registered = false;
+              if (result == "-1") {
+                registered = false;
+              } else {
+                registered = true;
+              }
+
+              if (registered == true) {
+                window.modalRegisterWindow.modal('hide');
+                $("#register-link").hide();
+                // FIXME i18n
+                displaySuccessMessage("registered your key has been sent");
+              }
+            },
+            complete: function(){
+              $("#modal-register-ok").removeAttr("disabled");
+              removeSmallSpinnerImg();
+            },
+            error: function(result) {
+              var obj = jQuery.parseJSON(result.responseText);
+              displayRedbackError(obj);
+              window.modalRegisterWindow.modal('hide');
+            }
+          });
         }
-      },
-      complete: function(){
-        $("#modal-register-ok").removeAttr("disabled");
-        removeSmallSpinnerImg();
-      },
-      error: function(result) {
-        var obj = jQuery.parseJSON(result.responseText);
-        displayRedbackError(obj);
-        window.modalRegisterWindow.modal('hide');
-      }
-    })
+    });
 
   }
 

@@ -576,11 +576,6 @@ define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl
           var uiConfiguration=new UiConfiguration(data.showFindArtifacts,data.appletFindEnabled,data.disableEasterEggs,data.applicationUrl);
           var uiConfigurationViewModel=new UiConfigurationViewModel(uiConfiguration);
           ko.applyBindings(uiConfigurationViewModel,mainContent.get(0));
-          /*var validator = mainContent.find("#network-configuration-edit-form").validate({
-            showErrors: function(validator, errorMap, errorList) {
-             customShowError(mainContent.find("#network-configuration-edit-form" ).get(0),validator,errorMap,errorMap);
-            }
-          });*/
         }
     });
   }
