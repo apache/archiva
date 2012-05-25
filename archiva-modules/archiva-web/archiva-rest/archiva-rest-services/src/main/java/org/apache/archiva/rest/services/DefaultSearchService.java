@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
  */
 
 import net.sf.beanlib.provider.replicator.BeanReplicator;
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -38,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -202,6 +204,7 @@ public class DefaultSearchService
     // internal
     //-------------------------------------
     protected List<Artifact> getArtifacts( SearchResults searchResults )
+        throws ArchivaRestServiceException
     {
 
         if ( searchResults == null || searchResults.isEmpty() )
@@ -240,42 +243,51 @@ public class DefaultSearchService
      * @return
      */
     private String getArtifactUrl( Artifact artifact, String version )
+        throws ArchivaRestServiceException
     {
-
-        if ( httpServletRequest == null )
+        try
         {
-            return null;
-        }
-        if ( StringUtils.isEmpty( artifact.getUrl() ) )
-        {
-            return null;
-        }
-        StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
 
-        sb.append( "/repository" );
+            if ( httpServletRequest == null )
+            {
+                return null;
+            }
+            if ( StringUtils.isEmpty( artifact.getUrl() ) )
+            {
+                return null;
+            }
+            StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
 
-        sb.append( '/' ).append( artifact.getContext() );
+            sb.append( "/repository" );
 
-        sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
-        sb.append( '/' ).append( artifact.getArtifactId() );
-        sb.append( '/' ).append( artifact.getVersion() );
-        sb.append( '/' ).append( artifact.getArtifactId() );
-        sb.append( '-' ).append( artifact.getVersion() );
-        if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
-        {
-            sb.append( '-' ).append( artifact.getClassifier() );
-        }
-        // maven-plugin packaging is a jar
-        if ( StringUtils.equals( "maven-plugin", artifact.getPackaging() ) )
-        {
-            sb.append( "jar" );
-        }
-        else
-        {
-            sb.append( '.' ).append( artifact.getPackaging() );
-        }
+            sb.append( '/' ).append( artifact.getContext() );
 
-        return sb.toString();
+            sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
+            sb.append( '/' ).append( artifact.getArtifactId() );
+            sb.append( '/' ).append( artifact.getVersion() );
+            sb.append( '/' ).append( artifact.getArtifactId() );
+            sb.append( '-' ).append( artifact.getVersion() );
+            if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
+            {
+                sb.append( '-' ).append( artifact.getClassifier() );
+            }
+            // maven-plugin packaging is a jar
+            if ( StringUtils.equals( "maven-plugin", artifact.getPackaging() ) )
+            {
+                sb.append( "jar" );
+            }
+            else
+            {
+                sb.append( '.' ).append( artifact.getPackaging() );
+            }
+
+            return sb.toString();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
     }
 
 

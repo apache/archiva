@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -199,85 +200,98 @@ public class DefaultManagedRepositoriesService
     }
 
     private String createSnippet( ManagedRepository repo )
+        throws ArchivaRestServiceException
     {
-        StringBuilder snippet = new StringBuilder();
-        snippet.append( "<project>\n" );
-        snippet.append( "  ...\n" );
-        snippet.append( "  <distributionManagement>\n" );
-
-        String distRepoName = "repository";
-        if ( repo.isSnapshots() )
+        try
         {
-            distRepoName = "snapshotRepository";
+            StringBuilder snippet = new StringBuilder();
+            snippet.append( "<project>\n" );
+            snippet.append( "  ...\n" );
+            snippet.append( "  <distributionManagement>\n" );
+
+            String distRepoName = "repository";
+            if ( repo.isSnapshots() )
+            {
+                distRepoName = "snapshotRepository";
+            }
+
+            snippet.append( "    <" ).append( distRepoName ).append( ">\n" );
+            snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
+            snippet.append( "      <url>" );
+            snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
+            snippet.append( "/" ).append( repo.getId() ).append( "/" ).append( "</url>\n" );
+
+            if ( !"default".equals( repo.getLayout() ) )
+            {
+                snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>" );
+            }
+
+            snippet.append( "    </" ).append( distRepoName ).append( ">\n" );
+            snippet.append( "  </distributionManagement>\n" );
+            snippet.append( "\n" );
+
+            snippet.append( "  <repositories>\n" );
+            snippet.append( "    <repository>\n" );
+            snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
+            snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
+
+            snippet.append( "      <url>" );
+            snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
+            snippet.append( "/" ).append( repo.getId() ).append( "/" );
+
+            snippet.append( "</url>\n" );
+
+            if ( !"default".equals( repo.getLayout() ) )
+            {
+                snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>\n" );
+            }
+
+            snippet.append( "      <releases>\n" );
+            snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isReleases() ) ).append(
+                "</enabled>\n" );
+            snippet.append( "      </releases>\n" );
+            snippet.append( "      <snapshots>\n" );
+            snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isSnapshots() ) ).append(
+                "</enabled>\n" );
+            snippet.append( "      </snapshots>\n" );
+            snippet.append( "    </repository>\n" );
+            snippet.append( "  </repositories>\n" );
+            snippet.append( "  <pluginRepositories>\n" );
+            snippet.append( "    <pluginRepository>\n" );
+            snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
+            snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
+
+            snippet.append( "      <url>" );
+            snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
+            snippet.append( "/" ).append( repo.getId() ).append( "/" );
+
+            snippet.append( "</url>\n" );
+
+            if ( !"default".equals( repo.getLayout() ) )
+            {
+                snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>\n" );
+            }
+
+            snippet.append( "      <releases>\n" );
+            snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isReleases() ) ).append(
+                "</enabled>\n" );
+            snippet.append( "      </releases>\n" );
+            snippet.append( "      <snapshots>\n" );
+            snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isSnapshots() ) ).append(
+                "</enabled>\n" );
+            snippet.append( "      </snapshots>\n" );
+            snippet.append( "    </pluginRepository>\n" );
+            snippet.append( "  </pluginRepositories>\n" );
+
+            snippet.append( "  ...\n" );
+            snippet.append( "</project>\n" );
+
+            return StringEscapeUtils.escapeXml( snippet.toString() );
         }
-
-        snippet.append( "    <" ).append( distRepoName ).append( ">\n" );
-        snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
-        snippet.append( "      <url>" );
-        snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
-        snippet.append( "/" ).append( repo.getId() ).append( "/" ).append( "</url>\n" );
-
-        if ( !"default".equals( repo.getLayout() ) )
+        catch ( RepositoryAdminException e )
         {
-            snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>" );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
-
-        snippet.append( "    </" ).append( distRepoName ).append( ">\n" );
-        snippet.append( "  </distributionManagement>\n" );
-        snippet.append( "\n" );
-
-        snippet.append( "  <repositories>\n" );
-        snippet.append( "    <repository>\n" );
-        snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
-        snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
-
-        snippet.append( "      <url>" );
-        snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
-        snippet.append( "/" ).append( repo.getId() ).append( "/" );
-
-        snippet.append( "</url>\n" );
-
-        if ( !"default".equals( repo.getLayout() ) )
-        {
-            snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>\n" );
-        }
-
-        snippet.append( "      <releases>\n" );
-        snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isReleases() ) ).append( "</enabled>\n" );
-        snippet.append( "      </releases>\n" );
-        snippet.append( "      <snapshots>\n" );
-        snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isSnapshots() ) ).append( "</enabled>\n" );
-        snippet.append( "      </snapshots>\n" );
-        snippet.append( "    </repository>\n" );
-        snippet.append( "  </repositories>\n" );
-        snippet.append( "  <pluginRepositories>\n" );
-        snippet.append( "    <pluginRepository>\n" );
-        snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
-        snippet.append( "      <name>" ).append( repo.getName() ).append( "</name>\n" );
-
-        snippet.append( "      <url>" );
-        snippet.append( getBaseUrl( httpServletRequest ) + "/repository" );
-        snippet.append( "/" ).append( repo.getId() ).append( "/" );
-
-        snippet.append( "</url>\n" );
-
-        if ( !"default".equals( repo.getLayout() ) )
-        {
-            snippet.append( "      <layout>" ).append( repo.getLayout() ).append( "</layout>\n" );
-        }
-
-        snippet.append( "      <releases>\n" );
-        snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isReleases() ) ).append( "</enabled>\n" );
-        snippet.append( "      </releases>\n" );
-        snippet.append( "      <snapshots>\n" );
-        snippet.append( "        <enabled>" ).append( Boolean.valueOf( repo.isSnapshots() ) ).append( "</enabled>\n" );
-        snippet.append( "      </snapshots>\n" );
-        snippet.append( "    </pluginRepository>\n" );
-        snippet.append( "  </pluginRepositories>\n" );
-
-        snippet.append( "  ...\n" );
-        snippet.append( "</project>\n" );
-
-        return StringEscapeUtils.escapeXml( snippet.toString() );
     }
 }

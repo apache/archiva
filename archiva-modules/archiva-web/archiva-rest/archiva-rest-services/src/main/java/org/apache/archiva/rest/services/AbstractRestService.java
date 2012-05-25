@@ -19,18 +19,20 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.AuditInformation;
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
+import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
-import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -66,6 +68,9 @@ public abstract class AbstractRestService
     @Inject
     @Named( value = "repositorySessionFactory" )
     protected RepositorySessionFactory repositorySessionFactory;
+
+    @Inject
+    protected ArchivaAdministration archivaAdministration;
 
     @Context
     protected HttpServletRequest httpServletRequest;
@@ -122,7 +127,13 @@ public abstract class AbstractRestService
     }
 
     protected String getBaseUrl( HttpServletRequest req )
+        throws RepositoryAdminException
     {
+        String applicationUrl = archivaAdministration.getUiConfiguration().getApplicationUrl();
+        if ( StringUtils.isNotBlank( applicationUrl ) )
+        {
+            return applicationUrl;
+        }
         return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
             ? ""
             : ":" + req.getServerPort() ) + req.getContextPath();

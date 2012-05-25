@@ -134,9 +134,6 @@ public class DefaultRepositoriesService
     private RepositoryContentFactory repositoryFactory;
 
     @Inject
-    private ArchivaAdministration archivaAdministration;
-
-    @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
 
