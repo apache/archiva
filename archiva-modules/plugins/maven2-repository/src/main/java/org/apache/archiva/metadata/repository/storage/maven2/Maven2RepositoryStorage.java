@@ -46,6 +46,7 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.xml.XMLException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.IssueManagement;
@@ -126,7 +127,9 @@ public class Maven2RepositoryStorage
 
     private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
-    private static final String METADATA_FILENAME = "maven-metadata.xml";
+    private static final String METADATA_FILENAME_START = "maven-metadata";
+
+    private static final String METADATA_FILENAME = METADATA_FILENAME_START + ".xml";
 
 
     @PostConstruct
@@ -746,7 +749,14 @@ public class Maven2RepositoryStorage
             {
                 return false;
             }
+            // some files from remote repositories can have name like maven-metadata-archiva-vm-all-public.xml
+            else if ( StringUtils.startsWith( name, METADATA_FILENAME_START ) && StringUtils.endsWith( name, ".xml" ) )
+            {
+                return false;
+            }
+
             return true;
+
         }
     }
 

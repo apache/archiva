@@ -178,10 +178,9 @@ public class DefaultMetadataResolver
                 repositoryStorage.listRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
             if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
             {
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Resolved root namespaces from storage: " + storageNamespaces );
-                }
+
+                log.debug( "Resolved root namespaces from storage: {}", storageNamespaces );
+
                 for ( String n : storageNamespaces )
                 {
                     try
@@ -221,6 +220,7 @@ public class DefaultMetadataResolver
             {
 
                 log.debug( "Resolved namespaces from storage: {}", storageNamespaces );
+
                 for ( String n : storageNamespaces )
                 {
                     try
@@ -368,10 +368,9 @@ public class DefaultMetadataResolver
                 repositoryStorage.readArtifactsMetadata( repoId, namespace, projectId, projectVersion, filter );
             if ( storageArtifacts != null && !storageArtifacts.isEmpty() )
             {
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Resolved artifacts from storage: " + storageArtifacts );
-                }
+
+                log.debug( "Resolved artifacts from storage: {}", storageArtifacts );
+
                 for ( ArtifactMetadata artifact : storageArtifacts )
                 {
                     try

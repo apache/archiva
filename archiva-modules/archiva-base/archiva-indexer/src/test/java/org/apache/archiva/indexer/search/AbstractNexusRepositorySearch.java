@@ -240,7 +240,7 @@ public abstract class AbstractNexusRepositorySearch
 
         public void artifactDiscovered( ArtifactContext ac )
         {
-            log.debug( "artifactDiscovered " + ac.getArtifact().getPath() + ":" + ac.getArtifactInfo() );
+            log.debug( "artifactDiscovered {}:", ac.getArtifact().getPath(), ac.getArtifactInfo() );
         }
     }
 
