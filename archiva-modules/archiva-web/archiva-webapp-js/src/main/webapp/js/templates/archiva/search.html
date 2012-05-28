@@ -339,12 +339,11 @@
 
 
       <div id="search-results" class="tab-pane">
-        <div class="row">
-          <div class="span3">
+        <div class="row-fluid">
+          <div class="span6">
             <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">${$.i18n.prop('search.artifact.result.filter')}</a>
           </div>
-          <div class="span4" id="search-result-number-div">
-
+          <div class="span6" id="search-result-number-div">
           </div>
         </div>
         <table class="table table-striped table-bordered" id="search-results-grid">
@@ -808,7 +807,7 @@
 </script>
 
 <script id="artifact-details-files-content_tmpl" type="text/html">
-      <div class="row">
+      <div class="row-fluid">
         <div class="span4">
            <ul id="artifact-content-list-files">
            {{each artifactDownloadInfos}}
