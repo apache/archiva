@@ -35,6 +35,7 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -54,7 +55,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -343,7 +343,7 @@ public class UploadAction
             String filename = artifactPath.substring( lastIndex + 1 );
             if ( VersionUtil.isSnapshot( version ) )
             {
-                filename = filename.replaceAll( "SNAPSHOT", timestamp + "-" + newBuildNumber );
+                filename = filename.replaceAll( VersionUtil.SNAPSHOT, timestamp + "-" + newBuildNumber );
             }
 
             boolean fixChecksums =

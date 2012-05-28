@@ -26,15 +26,16 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -296,7 +297,7 @@ public class MergeAction
         for ( ArtifactMetadata metadata : sourceArtifacts )
         {
 
-            if ( metadata.getProjectVersion().contains( "SNAPSHOT" ) )
+            if ( metadata.getProjectVersion().contains( VersionUtil.SNAPSHOT ) )
             {
                 artifactsWithOutSnapshots.add( metadata );
             }

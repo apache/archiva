@@ -281,13 +281,17 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                       mainContent.find("#artifact_content_tree").html("");
                       mainContent.find("#artifact-content-text" ).html("");
                       var idValue = $(this ).attr("id");
-                      var classifier=idValue.substringBeforeLast(":");
-                      var type = idValue.substringAfterLast(":");
-                      $.log("click:" + idValue + " -> " + classifier + ":" + type );
+                      var splitted = idValue.split(":");
+
+                      var classifier=splitted[0];//idValue.substringBeforeLast(":");
+                      var version=splitted[1];
+                      var type = splitted[2];
+
+                      $.log("click:" + idValue + " -> " + classifier + ":" + type + ":" + version);
                       if (type=="pom"){
                         $.log("show pom");
                         var pomContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(self.groupId);
-                        pomContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                        pomContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(version);
                         pomContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                         pomContentUrl+="&t=pom";
                         mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
@@ -304,7 +308,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                         return;
                       }
                       var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-                      entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                      entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(version);
                       entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                       if(classifier){
                         entriesUrl+="&c="+encodeURIComponent(classifier);
@@ -315,7 +319,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                   		  },function(file) {
                           $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
                           var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(self.groupId);
-                          fileContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                          fileContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(version);
                           fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                           if(type){
                             fileContentUrl+="&t="+encodeURIComponent(type);

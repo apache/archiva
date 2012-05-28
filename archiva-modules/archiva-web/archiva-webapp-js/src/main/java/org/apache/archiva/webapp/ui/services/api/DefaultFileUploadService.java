@@ -372,7 +372,7 @@ public class DefaultFileUploadService
             String filename = artifactPath.substring( lastIndex + 1 );
             if ( VersionUtil.isSnapshot( version ) )
             {
-                filename = filename.replaceAll( "SNAPSHOT", timestamp + "-" + newBuildNumber );
+                filename = filename.replaceAll( VersionUtil.SNAPSHOT, timestamp + "-" + newBuildNumber );
             }
 
             boolean fixChecksums =
