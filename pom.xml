@@ -45,9 +45,9 @@
   <distributionManagement>
     <!-- Site omitted - each project must provide their own -->
     <repository>
-      <id>vmbuild.staging</id>
-      <name>Apache Release Staging Repository on VMBuild</name>
-      <url>http://vmbuild.apache.org/archiva/repository/archiva-releases-stage</url>
+      <id>${releaseDeployId}</id>
+      <name>Apache Release Staging Repository</name>
+      <url>${releaseDeployUrl}</url>
     </repository>
     <snapshotRepository>
       <id>${snapshotsDeployId}</id>
@@ -55,6 +55,14 @@
       <url>${snapshotsDeployUrl}</url>
     </snapshotRepository>
   </distributionManagement>
+
+  <properties>
+    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
+    <snapshotsDeployUrl>http://archiva-repository.apache.org/archiva/repository/snapshots</snapshotsDeployUrl>
+    <snapshotsDeployId>archiva-repository.snapshots</snapshotsDeployId>
+    <releaseDeployUrl>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</releaseDeployUrl>
+    <releaseDeployId>archiva-repository.releases</releaseDeployId>
+  </properties>
 
 
   <scm>
@@ -73,11 +81,7 @@
     <url>https://builds.apache.org/view/A-F/view/Archiva/</url>
   </ciManagement>
 
-  <properties>
-    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
-    <snapshotsDeployUrl>http://archiva-repository.apache.org/archiva/repository/snapshots</snapshotsDeployUrl>
-    <snapshotsDeployId>archiva-repository.snapshots</snapshotsDeployId>
-  </properties>
+
 
   <!-- Developers listed by PMC Chair, PMC, Committers, Contributors, Emeritus all alphabetical-->
   <developers>
