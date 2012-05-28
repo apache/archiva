@@ -147,9 +147,9 @@
       <url>${distUrlReleaseRepo}</url>
     </repository>
     <snapshotRepository>
-      <id>archiva-repository</id>
+      <id>${snapshotsDeployId}</id>
       <name>Archiva VM Snapshots</name>
-      <url>${distUrlSnapshotRepo}</url>
+      <url>${snapshotsDeployUrl}</url>
     </snapshotRepository>
     <site>
       <id>apache.website</id>
@@ -171,7 +171,8 @@
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
 
     <distUrlReleaseRepo>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</distUrlReleaseRepo>
-    <distUrlSnapshotRepo>https://archiva-repository.apache.org/archiva/repository/snapshots/</distUrlSnapshotRepo>
+    <snapshotsDeployUrl>https://archiva-repository.apache.org/archiva/repository/snapshots/</snapshotsDeployUrl>
+    <snapshotsDeployId>https://archiva-repository.apache.org/archiva/repository/snapshots/</snapshotsDeployId>
   </properties>
 
   <repositories>
