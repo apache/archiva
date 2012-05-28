@@ -141,16 +141,6 @@
   </scm>
 
   <distributionManagement>
-    <repository>
-      <id>archiva-repository</id>
-      <name>Archiva VM Repository</name>
-      <url>${distUrlReleaseRepo}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${snapshotsDeployId}</id>
-      <name>Archiva VM Snapshots</name>
-      <url>${snapshotsDeployUrl}</url>
-    </snapshotRepository>
     <site>
       <id>apache.website</id>
       <url>${siteBaseDeployment}/redback/core</url>
@@ -170,9 +160,6 @@
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
 
-    <distUrlReleaseRepo>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</distUrlReleaseRepo>
-    <snapshotsDeployUrl>https://archiva-repository.apache.org/archiva/repository/snapshots/</snapshotsDeployUrl>
-    <snapshotsDeployId>https://archiva-repository.apache.org/archiva/repository/snapshots/</snapshotsDeployId>
   </properties>
 
   <repositories>
