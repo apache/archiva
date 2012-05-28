@@ -518,7 +518,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5-SNAPSHOT</version>
+          <version>2.5</version>
           <configuration>
             <source>1.5</source>
             <target>1.5</target>
