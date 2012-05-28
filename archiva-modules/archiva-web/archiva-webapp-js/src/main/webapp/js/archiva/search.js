@@ -611,7 +611,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       var repoId=selectedOption.val();
       return repoId;
     }
-    return null;
+    return "";
   }
 
   enableAutocompleBrowse=function(groupId){
