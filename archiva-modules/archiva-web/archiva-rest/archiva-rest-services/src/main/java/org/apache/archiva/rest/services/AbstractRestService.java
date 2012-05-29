@@ -176,7 +176,7 @@ public abstract class AbstractRestService
      * @param artifact
      * @return
      */
-    protected String getArtifactUrl( Artifact artifact, String version )
+    protected String getArtifactUrl( Artifact artifact )
         throws ArchivaRestServiceException
     {
         try

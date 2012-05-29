@@ -20,7 +20,6 @@ package org.apache.archiva.rest.services;
  */
 
 import net.sf.beanlib.provider.replicator.BeanReplicator;
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -39,7 +38,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -225,7 +223,7 @@ public class DefaultSearchService
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
-                        versionned.setUrl( getArtifactUrl( versionned, version ) );
+                        versionned.setUrl( getArtifactUrl( versionned ) );
 
                         artifacts.add( versionned );
 
@@ -235,8 +233,6 @@ public class DefaultSearchService
         }
         return artifacts;
     }
-
-
 
 
 }
