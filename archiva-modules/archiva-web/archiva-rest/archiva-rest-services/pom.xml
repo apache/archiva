@@ -33,6 +33,8 @@
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
     <jettyVersion>7.5.3.v20111011</jettyVersion>
+    <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
+    <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
   </properties>
 
   <dependencies>
