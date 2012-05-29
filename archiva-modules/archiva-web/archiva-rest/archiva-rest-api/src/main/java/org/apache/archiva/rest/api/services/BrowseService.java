@@ -24,7 +24,6 @@ import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
-import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.TreeEntry;
@@ -165,7 +164,7 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    List<ArtifactDownloadInfo> getArtifactDownloadInfos( @PathParam( "g" ) String groupId,
+    List<Artifact> getArtifactDownloadInfos( @PathParam( "g" ) String groupId,
                                                          @PathParam( "a" ) String artifactId,
                                                          @PathParam( "v" ) String version,
                                                          @QueryParam( "repositoryId" ) String repositoryId )

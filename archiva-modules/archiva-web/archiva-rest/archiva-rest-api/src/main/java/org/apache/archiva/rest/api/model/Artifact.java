@@ -134,6 +134,12 @@ public class Artifact
      */
     private String fileExtension;
 
+    /**
+     * human readable size : not available for all services
+     * @since 1.4-M3
+     */
+    private String size;
+
 
     public Artifact()
     {
@@ -356,6 +362,16 @@ public class Artifact
     public void setFileExtension( String fileExtension )
     {
         this.fileExtension = fileExtension;
+    }
+
+    public String getSize()
+    {
+        return size;
+    }
+
+    public void setSize( String size )
+    {
+        this.size = size;
     }
 
     @Override

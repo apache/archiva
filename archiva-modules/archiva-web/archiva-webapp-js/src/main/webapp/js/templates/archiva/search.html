@@ -811,8 +811,8 @@
         <div class="span5">
            <ul id="artifact-content-list-files">
            {{each artifactDownloadInfos}}
-             <li id="${$value.classifier}:${$value.version}:${$value.type}">
-               <a href="#">${$value.type}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
+             <li id="${$value.classifier}:${$value.version}:${$value.packaging}">
+               <a href="#">${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
              </li>
            {{/each}}
            </ul>

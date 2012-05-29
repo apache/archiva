@@ -22,7 +22,11 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
+import org.apache.archiva.rest.api.model.Artifact;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -53,14 +57,14 @@ public class ArtifactDownloadInfoBuilder
         return this;
     }
 
-    public ArtifactDownloadInfo build()
+    public Artifact build()
     {
         ArtifactReference ref = new ArtifactReference();
         ref.setArtifactId( artifactMetadata.getProject() );
         ref.setGroupId( artifactMetadata.getNamespace() );
         ref.setVersion( artifactMetadata.getVersion() );
         String path = managedRepositoryContent.toPath( ref );
-        path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifactMetadata.getId();
+        //path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifactMetadata.getId();
 
         String type = null, classifier = null;
 
@@ -71,8 +75,32 @@ public class ArtifactDownloadInfoBuilder
             classifier = facet.getClassifier();
         }
 
-        ArtifactDownloadInfo artifactDownloadInfo =
-            new ArtifactDownloadInfo( this.artifactMetadata, path, type, classifier );
+        Artifact artifactDownloadInfo = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
+        artifactDownloadInfo.setClassifier( classifier );
+        artifactDownloadInfo.setPackaging( type );
+        // TODO: find a reusable formatter for this
+        double s = this.artifactMetadata.getSize();
+        String symbol = "b";
+        if ( s > 1024 )
+        {
+            symbol = "K";
+            s /= 1024;
+
+            if ( s > 1024 )
+            {
+                symbol = "M";
+                s /= 1024;
+
+                if ( s > 1024 )
+                {
+                    symbol = "G";
+                    s /= 1024;
+                }
+            }
+        }
+
+        DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
+        artifactDownloadInfo.setSize( df.format( s ) + " " + symbol );
         return artifactDownloadInfo;
 
     }

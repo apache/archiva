@@ -41,7 +41,6 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
-import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
@@ -661,13 +660,13 @@ public class DefaultBrowseService
         return Collections.emptyList();
     }
 
-    public List<ArtifactDownloadInfo> getArtifactDownloadInfos( String groupId, String artifactId, String version,
-                                                                String repositoryId )
+    public List<Artifact> getArtifactDownloadInfos( String groupId, String artifactId, String version,
+                                                    String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
-        List<ArtifactDownloadInfo> artifactDownloadInfos = new ArrayList<ArtifactDownloadInfo>();
+        List<Artifact> artifactDownloadInfos = new ArrayList<Artifact>();
 
         RepositorySession session = repositorySessionFactory.createSession();
 
