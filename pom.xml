@@ -155,7 +155,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.useagent>true</gpg.useagent>
     <cxfVersion>2.6.0</cxfVersion>
-    <derbyVersion>10.8.2.2</derbyVersion>
+
     <!--
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
@@ -579,11 +579,6 @@
         <artifactId>hsqldb</artifactId>
         <version>2.2.8</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.derby</groupId>
-        <artifactId>derby</artifactId>
-        <version>${derbyVersion}</version>
       </dependency>
       <!-- spring -->
       <dependency>
