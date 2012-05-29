@@ -236,59 +236,7 @@ public class DefaultSearchService
         return artifacts;
     }
 
-    /**
-     * TODO add a configuration mechanism to have configured the base archiva url
-     *
-     * @param artifact
-     * @return
-     */
-    private String getArtifactUrl( Artifact artifact, String version )
-        throws ArchivaRestServiceException
-    {
-        try
-        {
 
-            if ( httpServletRequest == null )
-            {
-                return null;
-            }
-            if ( StringUtils.isEmpty( artifact.getUrl() ) )
-            {
-                return null;
-            }
-            StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
-
-            sb.append( "/repository" );
-
-            sb.append( '/' ).append( artifact.getContext() );
-
-            sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
-            sb.append( '/' ).append( artifact.getArtifactId() );
-            sb.append( '/' ).append( artifact.getVersion() );
-            sb.append( '/' ).append( artifact.getArtifactId() );
-            sb.append( '-' ).append( artifact.getVersion() );
-            if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
-            {
-                sb.append( '-' ).append( artifact.getClassifier() );
-            }
-            // maven-plugin packaging is a jar
-            if ( StringUtils.equals( "maven-plugin", artifact.getPackaging() ) )
-            {
-                sb.append( "jar" );
-            }
-            else
-            {
-                sb.append( '.' ).append( artifact.getPackaging() );
-            }
-
-            return sb.toString();
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-    }
 
 
 }

@@ -98,7 +98,7 @@ public class ArtifactDownloadInfoBuilder
                 }
             }
         }
-
+        artifactDownloadInfo.setContext( managedRepositoryContent.getId() );
         DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
         artifactDownloadInfo.setSize( df.format( s ) + " " + symbol );
         return artifactDownloadInfo;

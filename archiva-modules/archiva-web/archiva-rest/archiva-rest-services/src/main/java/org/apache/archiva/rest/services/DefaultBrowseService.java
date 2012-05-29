@@ -686,7 +686,10 @@ public class DefaultBrowseService
                     ArtifactDownloadInfoBuilder builder =
                         new ArtifactDownloadInfoBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
                             repositoryContentFactory.getManagedRepositoryContent( repoId ) );
-                    artifactDownloadInfos.add( builder.build() );
+                    Artifact art = builder.build();
+
+                    art.setUrl( getArtifactUrl( art, artifact.getVersion() ) );
+                    artifactDownloadInfos.add( art );
                 }
 
             }

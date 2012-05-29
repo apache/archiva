@@ -28,6 +28,8 @@ import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal
 import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
@@ -41,6 +43,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -165,6 +168,57 @@ public abstract class AbstractRestService
         for ( AuditListener auditListener : getAuditListeners() )
         {
             auditListener.auditEvent( auditEvent );
+        }
+    }
+
+    /**
+     * TODO add a configuration mechanism to have configured the base archiva url
+     *
+     * @param artifact
+     * @return
+     */
+    protected String getArtifactUrl( Artifact artifact, String version )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+
+            if ( httpServletRequest == null )
+            {
+                return null;
+            }
+
+            StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
+
+            sb.append( "/repository" );
+
+            sb.append( '/' ).append( artifact.getContext() );
+
+            sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
+            sb.append( '/' ).append( artifact.getArtifactId() );
+            sb.append( '/' ).append( artifact.getVersion() );
+            sb.append( '/' ).append( artifact.getArtifactId() );
+            sb.append( '-' ).append( artifact.getVersion() );
+            if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
+            {
+                sb.append( '-' ).append( artifact.getClassifier() );
+            }
+            // maven-plugin packaging is a jar
+            if ( StringUtils.equals( "maven-plugin", artifact.getPackaging() ) )
+            {
+                sb.append( "jar" );
+            }
+            else
+            {
+                sb.append( '.' ).append( artifact.getPackaging() );
+            }
+
+            return sb.toString();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 }
