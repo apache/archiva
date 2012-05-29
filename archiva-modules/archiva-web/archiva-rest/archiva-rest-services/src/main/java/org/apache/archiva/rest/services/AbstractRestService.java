@@ -130,7 +130,7 @@ public abstract class AbstractRestService
                 : redbackRequestInformation.getUser().getUsername() );
     }
 
-    protected String getBaseUrl( HttpServletRequest req )
+    protected String getBaseUrl()
         throws RepositoryAdminException
     {
         String applicationUrl = archivaAdministration.getUiConfiguration().getApplicationUrl();
@@ -138,9 +138,9 @@ public abstract class AbstractRestService
         {
             return applicationUrl;
         }
-        return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
-            ? ""
-            : ":" + req.getServerPort() ) + req.getContextPath();
+        return httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + (
+            httpServletRequest.getServerPort() == 80 ? "" : ":" + httpServletRequest.getServerPort() )
+            + httpServletRequest.getContextPath();
     }
 
     protected <T> Map<String, T> getBeansOfType( ApplicationContext applicationContext, Class<T> clazz )
@@ -173,8 +173,6 @@ public abstract class AbstractRestService
     }
 
     /**
-     * TODO add a configuration mechanism to have configured the base archiva url
-     *
      * @param artifact
      * @return
      */
@@ -189,7 +187,7 @@ public abstract class AbstractRestService
                 return null;
             }
 
-            StringBuilder sb = new StringBuilder( getBaseUrl( httpServletRequest ) );
+            StringBuilder sb = new StringBuilder( getBaseUrl() );
 
             sb.append( "/repository" );
 
