@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
@@ -196,7 +197,14 @@ public abstract class AbstractRestService
 
             sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
             sb.append( '/' ).append( artifact.getArtifactId() );
-            sb.append( '/' ).append( artifact.getVersion() );
+            if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
+            {
+                sb.append( '/' ).append( VersionUtil.getBaseVersion( artifact.getVersion() ) );
+            }
+            else
+            {
+                sb.append( '/' ).append( artifact.getVersion() );
+            }
             sb.append( '/' ).append( artifact.getArtifactId() );
             sb.append( '-' ).append( artifact.getVersion() );
             if ( StringUtils.isNotBlank( artifact.getClassifier() ) )

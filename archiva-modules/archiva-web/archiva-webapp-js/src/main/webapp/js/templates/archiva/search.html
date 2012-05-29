@@ -435,6 +435,9 @@
         <a data-toggle="tab" href="#artifact-details-files-content">${$.i18n.prop('artifact.detail.tab.header.file.content')}</a>
       </li>
       <li>
+        <a data-toggle="tab" href="#artifact-details-download-content">${$.i18n.prop('artifact.detail.tab.header.file.download')}</a>
+      </li>
+      <li>
         <a data-toggle="tab" href="#artifact-details-used-by-content">${$.i18n.prop('artifact.detail.tab.header.used.by')}</a>
       </li>
       <li>
@@ -628,7 +631,9 @@
       </div>
 
       <div id="artifact-details-files-content" class="tab-pane">
+      </div>
 
+      <div id="artifact-details-download-content" class="tab-pane">
       </div>
 
       <div id="artifact-details-used-by-content" class="tab-pane"></div>
@@ -826,4 +831,14 @@
       <div class="source">
          <pre class="prettyprint linenums" id="artifact-content-text"></pre>
       </div>
+</script>
+
+<script id="artifact-details-download-content_tmpl" type="text/html">
+    <ul id="artifact-download-list-files">
+    {{each artifactDownloadInfos}}
+      <li>
+        <a href="${$value.url}">${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
+      </li>
+    {{/each}}
+    </ul>
 </script>

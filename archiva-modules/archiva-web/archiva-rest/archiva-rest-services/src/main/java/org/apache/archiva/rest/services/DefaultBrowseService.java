@@ -688,7 +688,7 @@ public class DefaultBrowseService
                             repositoryContentFactory.getManagedRepositoryContent( repoId ) );
                     Artifact art = builder.build();
 
-                    art.setUrl( getArtifactUrl( art, artifact.getVersion() ) );
+                    art.setUrl( getArtifactUrl( art, version ) );
                     artifactDownloadInfos.add( art );
                 }
 

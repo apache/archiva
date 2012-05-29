@@ -224,6 +224,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                       }
                     });
                   }
+                  return;
                 }
                 if ($(e.target).attr("href")=="#artifact-details-used-by-content") {
                   var dependeesContentDiv=mainContent.find("#artifact-details-used-by-content" );
@@ -245,6 +246,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                       }
                     });
                   }
+                  return;
                 }
 
                 if ($(e.target).attr("href")=="#artifact-details-metadatas-content") {
@@ -267,7 +269,22 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                       self.entries(entries);
                     }
                   });
+                  return;
                 }
+
+                if ($(e.target).attr("href")=="#artifact-details-download-content") {
+                  $.log("artifact metadata");
+                  //
+                  mainContent.find("#artifact-details-download-content" ).html(smallSpinnerImg());
+                  var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.groupId);
+                  artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+                  artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                  $.get(artifactDownloadInfosUrl,function(data){
+                    $("#artifact-details-download-content" ).html($("#artifact-details-download-content_tmpl").tmpl({artifactDownloadInfos:data}));
+                  });
+                  return;
+                }
+
 
                 if ($(e.target).attr("href")=="#artifact-details-files-content") {
                   mainContent.find("#artifact-details-files-content" ).html(smallSpinnerImg());
