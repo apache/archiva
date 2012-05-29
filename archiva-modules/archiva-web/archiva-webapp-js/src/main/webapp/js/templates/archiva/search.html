@@ -808,16 +808,16 @@
 
 <script id="artifact-details-files-content_tmpl" type="text/html">
       <div class="row-fluid">
-        <div class="span4">
+        <div class="span5">
            <ul id="artifact-content-list-files">
            {{each artifactDownloadInfos}}
              <li id="${$value.classifier}:${$value.version}:${$value.type}">
-               <a href="#">${$value.type}:${$value.version}</a>
+               <a href="#">${$value.type}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
              </li>
            {{/each}}
            </ul>
         </div>
-        <div class="span8">
+        <div class="span7">
           <div id="artifact_content_tree">
           </div>
         </div>
