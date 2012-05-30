@@ -19,11 +19,11 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -111,20 +111,21 @@ public interface RepositoriesService
 
 
     @Path( "deleteArtifact" )
-    @GET
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noPermission = true )
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M2
      */
-    Boolean deleteArtifact( @QueryParam( "" ) Artifact artifact, @QueryParam( "repositoryId" ) String repositoryId )
+    Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException;
 
     @Path( "isAuthorizedToDeleteArtifacts/{repositoryId}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true)
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     Boolean isAuthorizedToDeleteArtifacts( @PathParam( "repositoryId" ) String repoId )
         throws ArchivaRestServiceException;
 

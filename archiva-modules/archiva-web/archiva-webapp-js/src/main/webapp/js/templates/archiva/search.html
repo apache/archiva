@@ -835,9 +835,9 @@
 
 <script id="artifact-details-download-content_tmpl" type="text/html">
     <ul id="artifact-download-list-files">
-    {{each artifactDownloadInfos}}
+    {{each(i, row) artifacts()}}
       <li>
-        <a href="${$value.url}">${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
+        <a href="#" data-bind="click: function(){deleteArtifact(row)}">del</a>:<a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
       </li>
     {{/each}}
     </ul>

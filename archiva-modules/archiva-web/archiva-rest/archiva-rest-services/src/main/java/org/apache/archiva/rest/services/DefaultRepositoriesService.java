@@ -620,10 +620,11 @@ public class DefaultRepositoriesService
         }
     }
 
-    public Boolean deleteArtifact( Artifact artifact, String repositoryId )
+    public Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException
     {
 
+        String repositoryId = artifact.getContext();
         if ( StringUtils.isEmpty( repositoryId ) )
         {
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );

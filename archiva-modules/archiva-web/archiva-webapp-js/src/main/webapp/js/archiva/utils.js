@@ -293,10 +293,10 @@ define("utils",["jquery","i18n","jquery.tmpl"], function() {
     }
 
     if (data.errorKey && data.errorKey.length>0){
-        displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
-      } else {
-        $.log("data.errorMessage:"+data.errorMessage);
-        displayErrorMessage(data.errorMessage,idToAppend);
+      displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
+    } else {
+      $.log("data.errorMessage:"+data.errorMessage);
+      displayErrorMessage(data.errorMessage,idToAppend);
     }
 
   }
