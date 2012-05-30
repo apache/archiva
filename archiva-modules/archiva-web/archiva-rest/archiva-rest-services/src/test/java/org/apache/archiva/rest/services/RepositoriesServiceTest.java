@@ -83,10 +83,11 @@ public class RepositoriesServiceTest
             artifact.setArtifactId( "commons-logging" );
             artifact.setVersion( "1.0.1" );
             artifact.setPackaging( "jar" );
+            artifact.setContext( SOURCE_REPO_ID );
 
             RepositoriesService repositoriesService = getRepositoriesService( null );
 
-            repositoriesService.deleteArtifact( artifact, SOURCE_REPO_ID );
+            repositoriesService.deleteArtifact( artifact );
         }
         catch ( ServerWebApplicationException e )
         {
@@ -111,7 +112,7 @@ public class RepositoriesServiceTest
             artifact.setVersion( "1.0.1" );
             artifact.setPackaging( "jar" );
 
-            repositoriesService.deleteArtifact( artifact, null );
+            repositoriesService.deleteArtifact( artifact );
         }
         catch ( ServerWebApplicationException e )
         {
@@ -138,10 +139,11 @@ public class RepositoriesServiceTest
             artifact.setArtifactId( "commons-logging" );
             artifact.setVersion( "1.0.1" );
             artifact.setPackaging( "jar" );
+            artifact.setContext( SOURCE_REPO_ID );
 
             RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 
-            repositoriesService.deleteArtifact( artifact, SOURCE_REPO_ID );
+            repositoriesService.deleteArtifact( artifact );
 
             assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
 

@@ -19,8 +19,8 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
-import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
@@ -346,7 +346,7 @@ public class BrowseServiceTest
 
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        List<ArtifactDownloadInfo> artifactDownloadInfos =
+        List<Artifact> artifactDownloadInfos =
             browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.1", testRepoId );
 
         log.info( "artifactDownloadInfos {}", artifactDownloadInfos );
