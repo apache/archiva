@@ -209,8 +209,9 @@ public class DeleteArtifactAction
             artifact.setVersion( version );
             artifact.setClassifier( classifier );
             artifact.setPackaging( type );
+            artifact.setContext( repositoryId );
 
-            repositoriesService.deleteArtifact( artifact, repositoryId );
+            repositoriesService.deleteArtifact( artifact );
         }
         catch ( ArchivaRestServiceException e )
         {

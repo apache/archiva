@@ -37,7 +37,7 @@ import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
-import org.apache.archiva.rest.api.model.ArtifactDownloadInfo;
+import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
@@ -93,7 +93,7 @@ public class ShowArtifactAction
 
     private List<Dependency> dependencies;
 
-    private Map<String, List<ArtifactDownloadInfo>> artifacts;
+    private Map<String, List<Artifact>> artifacts;
 
     private boolean dependencyTree = false;
 
@@ -157,7 +157,7 @@ public class ShowArtifactAction
         throws RepositoryNotFoundException, RepositoryException
     {
         ProjectVersionMetadata versionMetadata = null;
-        artifacts = new LinkedHashMap<String, List<ArtifactDownloadInfo>>();
+        artifacts = new LinkedHashMap<String, List<Artifact>>();
 
         List<String> repos = getObservableRepos();
 
@@ -212,10 +212,10 @@ public class ShowArtifactAction
 
                     for ( ArtifactMetadata artifact : artifacts )
                     {
-                        List<ArtifactDownloadInfo> l = this.artifacts.get( artifact.getVersion() );
+                        List<Artifact> l = this.artifacts.get( artifact.getVersion() );
                         if ( l == null )
                         {
-                            l = new ArrayList<ArtifactDownloadInfo>();
+                            l = new ArrayList<Artifact>();
                             this.artifacts.put( artifact.getVersion(), l );
                         }
                         ArtifactDownloadInfoBuilder builder = new ArtifactDownloadInfoBuilder().forArtifactMetadata(
@@ -568,7 +568,7 @@ public class ShowArtifactAction
         this.repositoryId = repositoryId;
     }
 
-    public Map<String, List<ArtifactDownloadInfo>> getArtifacts()
+    public Map<String, List<Artifact>> getArtifacts()
     {
         return artifacts;
     }
