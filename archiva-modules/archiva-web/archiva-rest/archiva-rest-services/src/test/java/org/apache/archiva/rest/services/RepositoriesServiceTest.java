@@ -22,12 +22,15 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -127,6 +130,16 @@ public class RepositoriesServiceTest
         throws Exception
     {
         initSourceTargetRepo();
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        List<Artifact> artifacts =
+            browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 3 );
+
+        log.info( "artifacts.size: {}", artifacts.size() );
+
         try
         {
             File artifactFile =
@@ -146,6 +159,11 @@ public class RepositoriesServiceTest
             repositoriesService.deleteArtifact( artifact );
 
             assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            artifacts =
+                browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
+
+            Assertions.assertThat( artifacts ).isNotNull().isEmpty();
 
         }
         finally
