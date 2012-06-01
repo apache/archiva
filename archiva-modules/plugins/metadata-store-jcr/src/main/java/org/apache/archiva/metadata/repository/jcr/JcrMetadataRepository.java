@@ -413,6 +413,11 @@ public class JcrMetadataRepository
             Node root = getJcrSession().getRootNode();
             Node node = root.getNode( getFacetPath( repositoryId, facetId, name ) );
 
+            if ( metadataFacetFactories == null )
+            {
+                return metadataFacet;
+            }
+
             MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
             if ( metadataFacetFactory != null )
             {
