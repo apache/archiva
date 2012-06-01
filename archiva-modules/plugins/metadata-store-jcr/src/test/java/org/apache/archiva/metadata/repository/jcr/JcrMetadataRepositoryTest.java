@@ -77,6 +77,7 @@ public class JcrMetadataRepositoryTest
         this.repository = jcrMetadataRepository;
     }
 
+
     @After
     public void tearDown()
         throws Exception

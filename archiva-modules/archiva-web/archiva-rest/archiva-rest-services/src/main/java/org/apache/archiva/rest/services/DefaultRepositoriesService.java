@@ -717,7 +717,7 @@ public class DefaultRepositoriesService
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
                 // TODO: mismatch between artifact (snapshot) version and project (base) version here
-                if ( artifact.getVersion().equals( artifact.getVersion() ) )
+                if ( artifactMetadata.getVersion().equals( artifact.getVersion() ) )
                 {
                     metadataRepository.removeArtifact( artifactMetadata.getRepositoryId(),
                                                        artifactMetadata.getNamespace(), artifactMetadata.getProject(),
@@ -735,7 +735,10 @@ public class DefaultRepositoriesService
                     triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
                 }
             }
+
             repositorySession.save();
+
+            repositorySession.close();
         }
 
         catch ( ContentNotFoundException e )

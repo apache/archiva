@@ -32,8 +32,11 @@ import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -64,6 +67,8 @@ public abstract class AbstractMetadataRepositoryTest
 
     private static final String TEST_PROJECT_VERSION = "1.0";
 
+    private static final String TEST_PROJECT_VERSION_2_0 = "2.0";
+
     private static final String TEST_FACET_ID = "test-facet-id";
 
     private static final String TEST_NAME = "test/name";
@@ -77,6 +82,8 @@ public abstract class AbstractMetadataRepositoryTest
     private static final String TEST_SHA1 = "2e5daf0201ddeb068a62d5e08da18657ab2c6be9";
 
     private static final String TEST_METADATA_VALUE = "test-metadata";
+
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     protected static Map<String, MetadataFacetFactory> createTestMetadataFacetFactories()
     {
@@ -603,6 +610,7 @@ public abstract class AbstractMetadataRepositoryTest
     public void testGetMetadataFacetsWhenEmpty()
         throws Exception
     {
+
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
         assertTrue( facets.isEmpty() );
     }
@@ -1049,10 +1057,27 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
 
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION_2_0, artifact );
+
+        Collection<String> versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+
+        log.info( "versions {}", versions );
+
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "1.0", "2.0" );
+
         repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
+
+        versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+
+        log.info( "versions {}", versions );
+
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "2.0" );
 
         assertTrue(
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+
+        Assertions.assertThat( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                        TEST_PROJECT_VERSION_2_0 ) ).isNotEmpty().hasSize( 1 );
     }
 
     @Test
@@ -1091,6 +1116,27 @@ public abstract class AbstractMetadataRepositoryTest
 
         assertTrue( repository.getArtifacts( TEST_REPO_ID ).isEmpty() );
         assertTrue( repository.getRootNamespaces( TEST_REPO_ID ).isEmpty() );
+    }
+
+
+    @Test
+    public void deleteVersion()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        artifact.addFacet( new TestMetadataFacet( "value" ) );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+
+        repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
+
+        assertTrue(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
     }
 
     private static ProjectMetadata createProject()

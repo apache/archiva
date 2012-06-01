@@ -216,7 +216,7 @@ public abstract class AbstractRestService
             }
             else
             {
-                sb.append( '.' ).append( artifact.getPackaging() );
+                sb.append( '.' ).append( artifact.getFileExtension() );
             }
 
             return sb.toString();

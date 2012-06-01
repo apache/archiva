@@ -22,11 +22,13 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.fest.assertions.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -134,16 +136,82 @@ public class RepositoriesServiceTest
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         List<Artifact> artifacts =
-            browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
+            browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                    "2.2.2", SOURCE_REPO_ID );
 
-        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 3 );
+        log.info( "artifacts: {}", artifacts );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
+
+        VersionsList versionsList =
+            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                           SOURCE_REPO_ID );
+        Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 );
 
         log.info( "artifacts.size: {}", artifacts.size() );
 
         try
         {
-            File artifactFile =
-                new File( "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1.jar" );
+            File artifactFile = new File(
+                "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
+
+            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            Artifact artifact = new Artifact();
+            artifact.setGroupId( "org.apache.karaf.features" );
+            artifact.setArtifactId( "org.apache.karaf.features.core" );
+            artifact.setVersion( "2.2.2" );
+            artifact.setPackaging( "jar" );
+            artifact.setContext( SOURCE_REPO_ID );
+
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+            repositoriesService.deleteArtifact( artifact );
+
+            assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            artifacts =
+                browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                        "2.2.2", SOURCE_REPO_ID );
+
+            Assertions.assertThat( artifacts ).isNotNull().isEmpty();
+
+            versionsList = browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                          SOURCE_REPO_ID );
+
+            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 1 );
+
+        }
+        finally
+        {
+            cleanRepos();
+        }
+    }
+
+    @Test
+    @Ignore
+    public void deleteArtifactWithClassifier()
+        throws Exception
+    {
+        initSourceTargetRepo();
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        List<Artifact> artifacts =
+            browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 3 );
+
+        VersionsList versionsList =
+            browseService.getVersionsList( "commons-logging", "commons-logging", SOURCE_REPO_ID );
+        Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 6 );
+
+        log.info( "artifacts.size: {}", artifacts.size() );
+
+        try
+        {
+            File artifactFile = new File(
+                "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar" );
 
             assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
 
@@ -151,6 +219,7 @@ public class RepositoriesServiceTest
             artifact.setGroupId( "commons-logging" );
             artifact.setArtifactId( "commons-logging" );
             artifact.setVersion( "1.0.1" );
+            artifact.setClassifier( "javadoc" );
             artifact.setPackaging( "jar" );
             artifact.setContext( SOURCE_REPO_ID );
 
@@ -165,12 +234,15 @@ public class RepositoriesServiceTest
 
             Assertions.assertThat( artifacts ).isNotNull().isEmpty();
 
+            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 5 );
+
         }
         finally
         {
             cleanRepos();
         }
     }
+
 
     @Test
     public void authorizedToDeleteArtifacts()

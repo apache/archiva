@@ -35,6 +35,7 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -615,24 +616,6 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
-    public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
-                                String id )
-        throws MetadataRepositoryException
-    {
-        try
-        {
-            Node root = getJcrSession().getRootNode();
-            String path = getArtifactPath( repositoryId, namespace, projectId, projectVersion, id );
-            if ( root.hasNode( path ) )
-            {
-                root.getNode( path ).remove();
-            }
-        }
-        catch ( RepositoryException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
-    }
 
     public void removeRepository( String repositoryId )
         throws MetadataRepositoryException
@@ -992,6 +975,40 @@ public class JcrMetadataRepository
         throws MetadataResolutionException
     {
         return getNodeNames( getProjectPath( repositoryId, namespace, projectId ), PROJECT_VERSION_NODE_TYPE );
+    }
+
+    public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
+                                String id )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+            Node root = getJcrSession().getRootNode();
+            String path = getArtifactPath( repositoryId, namespace, projectId, projectVersion, id );
+            if ( root.hasNode( path ) )
+            {
+                root.getNode( path ).remove();
+            }
+
+            // remove version
+
+            path = getProjectPath( repositoryId, namespace, projectId );
+
+            Node nodeAtPath = root.getNode( path );
+
+            for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
+            {
+                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) && StringUtils.equals( node.getName(),
+                                                                                         projectVersion ) )
+                {
+                    node.remove();
+                }
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repositoryId, String namespace, String projectId,

@@ -204,7 +204,8 @@ public class DefaultBrowseService
 
         try
         {
-            return new VersionsList( new ArrayList<String>( getVersions( selectedRepos, groupId, artifactId ) ) );
+            Collection<String> versions = getVersions( selectedRepos, groupId, artifactId );
+            return new VersionsList( new ArrayList<String>( versions ) );
         }
         catch ( MetadataResolutionException e )
         {
@@ -227,8 +228,9 @@ public class DefaultBrowseService
 
             for ( String repoId : selectedRepos )
             {
-                versions.addAll(
-                    metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId, artifactId ) );
+                Collection<String> projectVersions =
+                    metadataResolver.resolveProjectVersions( repositorySession, repoId, groupId, artifactId );
+                versions.addAll( projectVersions );
             }
 
             List<String> sortedVersions = new ArrayList<String>( versions );

@@ -296,6 +296,7 @@ public class DefaultMetadataResolver
         try
         {
             MetadataRepository metadataRepository = session.getRepository();
+
             Collection<String> projectVersions = metadataRepository.getProjectVersions( repoId, namespace, projectId );
             Collection<String> storageProjectVersions =
                 repositoryStorage.listProjectVersions( repoId, namespace, projectId,

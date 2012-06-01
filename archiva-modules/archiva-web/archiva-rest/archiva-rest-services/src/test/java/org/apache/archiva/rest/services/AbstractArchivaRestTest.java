@@ -55,7 +55,7 @@ public abstract class AbstractArchivaRestTest
 
     // START SNIPPET: authz-header
     // guest with an empty password
-    public String guestAuthzHeader =
+    public static String guestAuthzHeader =
         "Basic " + org.apache.cxf.common.util.Base64Utility.encode( ( "guest" + ":" ).getBytes() );
 
     // with an other login/password
