@@ -23,7 +23,9 @@ import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -63,8 +65,6 @@ public class ArtifactDownloadInfoBuilder
         ref.setArtifactId( artifactMetadata.getProject() );
         ref.setGroupId( artifactMetadata.getNamespace() );
         ref.setVersion( artifactMetadata.getVersion() );
-        String path = managedRepositoryContent.toPath( ref );
-        //path = path.substring( 0, path.lastIndexOf( "/" ) + 1 ) + artifactMetadata.getId();
 
         String type = null, classifier = null;
 
@@ -75,9 +75,16 @@ public class ArtifactDownloadInfoBuilder
             classifier = facet.getClassifier();
         }
 
-        Artifact artifactDownloadInfo = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
-        artifactDownloadInfo.setClassifier( classifier );
-        artifactDownloadInfo.setPackaging( type );
+        ref.setClassifier( classifier );
+        ref.setType( type );
+        File file = managedRepositoryContent.toFile( ref );
+
+        String extension = FilenameUtils.getExtension( file.getName() );
+
+        Artifact artifact = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
+        artifact.setClassifier( classifier );
+        artifact.setPackaging( type );
+        artifact.setFileExtension( extension );
         // TODO: find a reusable formatter for this
         double s = this.artifactMetadata.getSize();
         String symbol = "b";
@@ -98,10 +105,10 @@ public class ArtifactDownloadInfoBuilder
                 }
             }
         }
-        artifactDownloadInfo.setContext( managedRepositoryContent.getId() );
+        artifact.setContext( managedRepositoryContent.getId() );
         DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
-        artifactDownloadInfo.setSize( df.format( s ) + " " + symbol );
-        return artifactDownloadInfo;
+        artifact.setSize( df.format( s ) + " " + symbol );
+        return artifact;
 
     }
 
