@@ -628,7 +628,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
         }
     }
 
@@ -733,7 +733,7 @@ public class FileMetadataRepository
         catch ( IOException e )
         {
             // TODO
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error( e.getMessage(), e );
         }
     }
 
