@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.fest.assertions.Assertions;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -68,6 +69,7 @@ public class SearchServiceTest
 
     /**
      * same search but with Guest user
+     *
      * @throws Exception
      */
     @Test
@@ -225,10 +227,7 @@ public class SearchServiceTest
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
-        assertNotNull( artifacts );
-        assertTrue(
-            " not 2 results for Bundle Symbolic Name org.apache.karaf.features.core but " + artifacts.size() + ":"
-                + artifacts, artifacts.size() == 2 );
+        Assertions.assertThat( artifacts ).isNotNull().hasSize( 2 );
 
         for ( Artifact artifact : artifacts )
         {
@@ -236,7 +235,7 @@ public class SearchServiceTest
             String version = artifact.getVersion();
             assertEquals( "http://localhost:" + port
                               + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
-                              + version + "/org.apache.karaf.features.core-" + version + ".bundle", artifact.getUrl() );
+                              + version + "/org.apache.karaf.features.core-" + version + ".jar", artifact.getUrl() );
 
 
         }
