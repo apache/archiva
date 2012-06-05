@@ -391,22 +391,33 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     this.artifacts=ko.observableArray(artifacts);
     var self=this;
     deleteArtifact=function(artifact){
-      $.log("deleteArtifact");
+
       clearUserMessages();
-      $.ajax({
-        url:"restServices/archivaServices/repositoriesService/deleteArtifact",
-        type:"POST",
-        dataType:"json",
-        contentType: 'application/json',
-        data: ko.toJSON(artifact),
-        success:function(data){
-          self.artifacts.remove(artifact);
-          displaySuccessMessage( $.i18n.prop('artifact.deleted'));
-        },
-        error:function(data){
-          displayRestError(data,"user-messages");
-        }
-      });
+
+      openDialogConfirm(function(){
+        $.ajax({
+          url:"restServices/archivaServices/repositoriesService/deleteArtifact",
+          type:"POST",
+          dataType:"json",
+          contentType: 'application/json',
+          data: ko.toJSON(artifact),
+          success:function(data){
+            self.artifacts.remove(artifact);
+            displaySuccessMessage( $.i18n.prop('artifact.deleted'));
+          },
+          error:function(data){
+            displayRestError(data,"user-messages");
+          },
+          complete:function(){
+            closeDialogConfirm();
+          }
+        });
+      }, $.i18n.prop('ok'),
+          $.i18n.prop('cancel'),
+          $.i18n.prop('artifact.delete.confirm.title'),
+          $.i18n.prop('artifact.delete.confirm.save'));
+
+
 
     }
 
