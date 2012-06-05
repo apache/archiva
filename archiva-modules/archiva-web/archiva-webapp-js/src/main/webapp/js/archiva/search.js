@@ -409,6 +409,9 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       });
 
     }
+
+    this.deleteKarma = hasKarma('archiva-delete-artifact');
+
   }
 
   displayArtifactFilesContent=function(self){

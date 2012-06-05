@@ -843,7 +843,11 @@
     <ul id="artifact-download-list-files">
     {{each(i, row) artifacts()}}
       <li>
-        <a href="#" data-bind="click: function(){deleteArtifact(row)}">del</a>:<a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+        {{if deleteKarma}}
+          <a href="#" data-bind="click: function(){deleteArtifact(row)}">del</a>:<a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+        {{else}}
+          <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+        {{/if}}
       </li>
     {{/each}}
     </ul>
