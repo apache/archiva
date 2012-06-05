@@ -118,4 +118,43 @@ public class MavenProjectFacet
             this.parent = parent;
         }
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof MavenProjectFacet ) )
+        {
+            return false;
+        }
+
+        MavenProjectFacet that = (MavenProjectFacet) o;
+
+        if ( !artifactId.equals( that.artifactId ) )
+        {
+            return false;
+        }
+        if ( !groupId.equals( that.groupId ) )
+        {
+            return false;
+        }
+        if ( !packaging.equals( that.packaging ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = groupId.hashCode();
+        result = 31 * result + artifactId.hashCode();
+        result = 31 * result + packaging.hashCode();
+        return result;
+    }
 }

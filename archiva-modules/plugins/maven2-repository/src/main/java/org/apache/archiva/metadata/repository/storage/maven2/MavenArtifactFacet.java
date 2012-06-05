@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -118,4 +119,22 @@ public class MavenArtifactFacet
             this.buildNumber = Integer.parseInt( buildNumber );
         }
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof MavenArtifactFacet ) )
+        {
+            return false;
+        }
+
+        MavenArtifactFacet that = (MavenArtifactFacet) o;
+
+        return StringUtils.equals( that.getClassifier(), this.classifier );
+    }
+
 }

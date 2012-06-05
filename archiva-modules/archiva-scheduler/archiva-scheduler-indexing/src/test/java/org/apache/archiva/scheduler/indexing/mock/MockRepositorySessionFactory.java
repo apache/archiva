@@ -63,30 +63,38 @@ public class MockRepositorySessionFactory
             {
                 return new MetadataRepository()
                 {
+
+                    public void removeArtifact( String repositoryId, String namespace, String project,
+                                                String projectVersion, String projectId, MetadataFacet metadataFacet )
+                        throws MetadataRepositoryException
+                    {
+
+                    }
+
                     public void updateProject( String repositoryId, ProjectMetadata project )
                         throws MetadataRepositoryException
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public void updateArtifact( String repositoryId, String namespace, String projectId,
                                                 String projectVersion, ArtifactMetadata artifactMeta )
                         throws MetadataRepositoryException
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public void updateProjectVersion( String repositoryId, String namespace, String projectId,
                                                       ProjectVersionMetadata versionMetadata )
                         throws MetadataRepositoryException
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public void updateNamespace( String repositoryId, String namespace )
                         throws MetadataRepositoryException
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public List<String> getMetadataFacets( String repositoryId, String facetId )
@@ -104,7 +112,7 @@ public class MockRepositorySessionFactory
                     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
                         throws MetadataRepositoryException
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public void removeMetadataFacets( String repositoryId, String facetId )

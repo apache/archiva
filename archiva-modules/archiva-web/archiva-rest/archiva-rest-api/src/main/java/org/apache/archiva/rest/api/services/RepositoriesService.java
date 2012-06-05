@@ -129,4 +129,15 @@ public interface RepositoriesService
     Boolean isAuthorizedToDeleteArtifacts( @PathParam( "repositoryId" ) String repoId )
         throws ArchivaRestServiceException;
 
+    @Path( "deleteGroupId" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noPermission = true )
+    /**
+     * <b>permissions are checked in impl</b>
+     * @since 1.4-M3
+     */
+    Boolean deleteGroupId( @QueryParam( "groupId" ) String groupId )
+        throws ArchivaRestServiceException;
+
 }

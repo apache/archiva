@@ -22,13 +22,14 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.rest.api.model.BrowseResult;
+import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.fest.assertions.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -189,7 +190,6 @@ public class RepositoriesServiceTest
     }
 
     @Test
-    @Ignore
     public void deleteArtifactWithClassifier()
         throws Exception
     {
@@ -232,9 +232,15 @@ public class RepositoriesServiceTest
             artifacts =
                 browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
 
-            Assertions.assertThat( artifacts ).isNotNull().isEmpty();
+            log.info( "artifact: {}", artifacts );
 
-            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 5 );
+            Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
+
+            versionsList = browseService.getVersionsList( "commons-logging", "commons-logging", SOURCE_REPO_ID );
+
+            log.info( "versionsList: {}", versionsList );
+
+            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 6 );
 
         }
         finally
@@ -243,6 +249,31 @@ public class RepositoriesServiceTest
         }
     }
 
+
+    @Test
+    public void deleteGroupId()
+        throws Exception
+    {
+        initSourceTargetRepo();
+        try
+        {
+            BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+            BrowseResult browseResult = browseService.browseGroupId( "org.apache.karaf.features", SOURCE_REPO_ID );
+
+            assertNotNull( browseResult );
+
+            Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().contains(
+                new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.command", true ),
+                new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.core", true ) );
+
+            log.info( "browseResult: {}", browseResult );
+        }
+        finally
+        {
+            cleanRepos();
+        }
+    }
 
     @Test
     public void authorizedToDeleteArtifacts()

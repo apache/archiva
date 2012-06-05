@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +53,11 @@ public abstract class FacetedMetadata
     public MetadataFacet getFacet( String facetId )
     {
         return this.facets.get( facetId );
+    }
+
+    public MetadataFacet removeFacet( String facetId )
+    {
+        return this.facets.remove( facetId );
     }
 
     /**

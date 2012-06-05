@@ -194,6 +194,27 @@ public class JcrMetadataRepository
 
             node.setProperty( "version", artifactMeta.getVersion() );
 
+            // iterate over available facets to update/add/remove from the artifactMetadata
+            for ( String facetId : metadataFacetFactories.keySet() )
+            {
+                MetadataFacet metadataFacet = artifactMeta.getFacet( facetId );
+                if ( node.hasNode( facetId ) )
+                {
+                    node.getNode( facetId ).remove();
+                }
+                if ( metadataFacet != null )
+                {
+                    // recreate, to ensure properties are removed
+                    Node n = node.addNode( facetId );
+                    n.addMixin( FACET_NODE_TYPE );
+
+                    for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
+                    {
+                        n.setProperty( entry.getKey(), entry.getValue() );
+                    }
+                }
+            }
+            /*
             for ( MetadataFacet facet : artifactMeta.getFacetList() )
             {
                 if ( node.hasNode( facet.getFacetId() ) )
@@ -210,6 +231,7 @@ public class JcrMetadataRepository
                     n.setProperty( entry.getKey(), entry.getValue() );
                 }
             }
+            */
         }
         catch ( RepositoryException e )
         {
@@ -1002,6 +1024,40 @@ public class JcrMetadataRepository
                                                                                          projectVersion ) )
                 {
                     node.remove();
+                }
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
+    public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
+                                MetadataFacet metadataFacet )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+            Node root = getJcrSession().getRootNode();
+            String path = getProjectVersionPath( repositoryId, namespace, project, projectVersion );
+
+            if ( root.hasNode( path ) )
+            {
+                Node node = root.getNode( path );
+
+                for ( Node n : JcrUtils.getChildNodes( node ) )
+                {
+                    if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                    {
+                        ArtifactMetadata artifactMetadata = getArtifactFromNode( repositoryId, n );
+                        log.debug( "artifactMetadata: {}", artifactMetadata );
+                        MetadataFacet metadataFacetToRemove = artifactMetadata.getFacet( metadataFacet.getFacetId() );
+                        if ( metadataFacetToRemove != null && metadataFacet.equals( metadataFacetToRemove ) )
+                        {
+                            n.remove();
+                        }
+                    }
                 }
             }
         }

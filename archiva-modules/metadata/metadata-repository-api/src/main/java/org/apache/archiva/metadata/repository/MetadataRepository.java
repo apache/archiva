@@ -80,6 +80,19 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
+     * @param repositoryId
+     * @param namespace
+     * @param project
+     * @param version
+     * @param metadataFacet will remove artifacts which have this {@link MetadataFacet} using equals
+     * @throws MetadataRepositoryException
+     * @since 1.4-M3
+     */
+    void removeArtifact( String repositoryId, String namespace, String project, String version,
+                         MetadataFacet metadataFacet )
+        throws MetadataRepositoryException;
+
+    /**
      * Delete a repository's metadata. This includes all associated metadata facets.
      *
      * @param repositoryId the repository to delete

@@ -35,8 +35,10 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -633,6 +635,23 @@ public class FileMetadataRepository
             // TODO
             log.error( e.getMessage(), e );
         }
+    }
+
+    /**
+     * FIXME implements this !!!!
+     * @param repositoryId
+     * @param namespace
+     * @param project
+     * @param projectVersion
+     * @param projectId
+     * @param metadataFacet  will remove artifacts which have this {@link MetadataFacet} using equals
+     * @throws MetadataRepositoryException
+     */
+    public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
+                                String projectId, MetadataFacet metadataFacet )
+        throws MetadataRepositoryException
+    {
+        throw new NotImplementedException( "not implemented" );
     }
 
     public void removeRepository( String repoId )
