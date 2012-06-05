@@ -844,7 +844,7 @@
     {{each(i, row) artifacts()}}
       <li>
         {{if deleteKarma}}
-          <a href="#" data-bind="click: function(){deleteArtifact(row)}">del</a>:<a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+          <a href="#" data-bind="click: function(){deleteArtifact(row)}"><img src="images/trash.png"/></a>&nbsp;<a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
         {{else}}
           <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
         {{/if}}
