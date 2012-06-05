@@ -65,10 +65,10 @@ public class MockRepositorySessionFactory
                 {
 
                     public void removeArtifact( String repositoryId, String namespace, String project,
-                                                String projectVersion, String projectId, MetadataFacet metadataFacet )
+                                                String projectVersion, MetadataFacet metadataFacet )
                         throws MetadataRepositoryException
                     {
-
+                        throw new UnsupportedOperationException();
                     }
 
                     public void updateProject( String repositoryId, ProjectMetadata project )

@@ -25,6 +25,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,17 +176,24 @@ public class TestMetadataRepository
 
     public List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
+    }
+
+    public void removeArtifact( String repositoryId, String namespace, String project, String version,
+                                MetadataFacet metadataFacet )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
     }
 
     public void removeRepository( String repoId )
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
@@ -209,12 +217,12 @@ public class TestMetadataRepository
 
     public boolean canObtainAccess( Class<?> aClass )
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     public Object obtainAccess( Class<?> aClass )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public List<ArtifactMetadata> getArtifacts( String repositoryId )

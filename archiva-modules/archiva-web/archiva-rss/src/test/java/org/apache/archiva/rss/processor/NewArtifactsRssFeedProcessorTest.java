@@ -28,6 +28,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.junit.Before;
@@ -139,6 +140,13 @@ public class NewArtifactsRssFeedProcessorTest
             setFrom( from );
             setTo( to );
             return artifactsByDateRange;
+        }
+
+        public void removeArtifact( String repositoryId, String namespace, String project, String version,
+                                    MetadataFacet metadataFacet )
+            throws MetadataRepositoryException
+        {
+            throw new UnsupportedOperationException();
         }
 
         public void addMetadataFacet( String arg0, MetadataFacet arg1 )

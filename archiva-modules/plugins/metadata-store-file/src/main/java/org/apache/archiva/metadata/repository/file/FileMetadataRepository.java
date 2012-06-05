@@ -38,7 +38,6 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -648,10 +647,10 @@ public class FileMetadataRepository
      * @throws MetadataRepositoryException
      */
     public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
-                                String projectId, MetadataFacet metadataFacet )
+                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
-        throw new NotImplementedException( "not implemented" );
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public void removeRepository( String repoId )
