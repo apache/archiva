@@ -49,10 +49,19 @@ public interface ManagedRepositoryContent
 
     /**
      * delete a specified artifact from the repository
+     *
      * @param artifactReference
      * @throws ContentNotFoundException
      */
     void deleteArtifact( ArtifactReference artifactReference )
+        throws ContentNotFoundException;
+
+    /**
+     * @since 1.4-M3
+     * @param groupId
+     * @throws ContentNotFoundException
+     */
+    void deleteGroupId( String groupId )
         throws ContentNotFoundException;
 
     /**

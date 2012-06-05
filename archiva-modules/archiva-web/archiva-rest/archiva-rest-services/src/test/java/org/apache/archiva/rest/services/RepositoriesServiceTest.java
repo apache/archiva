@@ -274,9 +274,27 @@ public class RepositoriesServiceTest
 
             assertNotNull( browseResult );
 
+            log.info( "browseResult: {}", browseResult );
+
             Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().contains(
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.command", true ),
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.core", true ) );
+
+            File directory =
+                new File( "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.command" );
+
+            assertTrue( "directory not exists", directory.exists() );
+
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+            repositoriesService.deleteGroupId( "org.apache.karaf.features", SOURCE_REPO_ID );
+
+            assertFalse( "directory not exists", directory.exists() );
+
+            browseResult = browseService.browseGroupId( "org.apache.karaf.features", SOURCE_REPO_ID );
+
+            assertNotNull( browseResult );
+
+            Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
 
             log.info( "browseResult: {}", browseResult );
         }

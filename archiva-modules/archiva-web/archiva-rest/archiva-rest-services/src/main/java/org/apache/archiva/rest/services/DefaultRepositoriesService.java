@@ -804,9 +804,36 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
-    public Boolean deleteGroupId( String groupId )
+    public Boolean deleteGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
+        }
+
+        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
+        }
+
+        if ( StringUtils.isEmpty( groupId ) )
+        {
+            throw new ArchivaRestServiceException( "artifact.groupId cannot be null", 400, null );
+        }
+
+        try
+        {
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            repository.deleteGroupId( groupId );
+
+        }
+        catch ( RepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
         return true;
     }
 

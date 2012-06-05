@@ -20,8 +20,6 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.model.ArchivaArtifact;
@@ -31,6 +29,8 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -40,14 +40,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * ManagedLegacyRepositoryContent 
+ * ManagedLegacyRepositoryContent
  *
  * @version $Id$
- * 
  * @todo no need to be a component when filetypes, legacy path parser is not
  */
-@Service("managedRepositoryContent#legacy")
-@Scope("prototype")
+@Service( "managedRepositoryContent#legacy" )
+@Scope( "prototype" )
 public class ManagedLegacyRepositoryContent
     extends AbstractLegacyRepositoryContent
     implements ManagedRepositoryContent
@@ -67,14 +66,14 @@ public class ManagedLegacyRepositoryContent
 
         if ( !groupDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get versions using a non-existant groupId directory: "
-                + groupDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions using a non-existant groupId directory: " + groupDir.getAbsolutePath() );
         }
 
         if ( !groupDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get versions using a non-directory: "
-                + groupDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions using a non-directory: " + groupDir.getAbsolutePath() );
         }
 
         // First gather up the versions found as artifacts in the managed repository.
@@ -159,14 +158,14 @@ public class ManagedLegacyRepositoryContent
 
         if ( !repoDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get related artifacts using a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get related artifacts using a non-existant directory: " + repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get related artifacts using a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get related artifacts using a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         Set<ArtifactReference> foundArtifacts = new HashSet<ArtifactReference>();
@@ -210,14 +209,14 @@ public class ManagedLegacyRepositoryContent
 
         if ( !groupDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get versions using a non-existant groupId directory: "
-                + groupDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions using a non-existant groupId directory: " + groupDir.getAbsolutePath() );
         }
 
         if ( !groupDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get versions using a non-directory: "
-                + groupDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions using a non-directory: " + groupDir.getAbsolutePath() );
         }
 
         Set<String> foundVersions = new HashSet<String>();
@@ -250,14 +249,14 @@ public class ManagedLegacyRepositoryContent
 
         if ( !groupDir.exists() )
         {
-            throw new ContentNotFoundException( "Unable to get versions using a non-existant groupId directory: "
-                + groupDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions using a non-existant groupId directory: " + groupDir.getAbsolutePath() );
         }
 
         if ( !groupDir.isDirectory() )
         {
-            throw new ContentNotFoundException( "Unable to get versions using a non-directory: "
-                + groupDir.getAbsolutePath() );
+            throw new ContentNotFoundException(
+                "Unable to get versions using a non-directory: " + groupDir.getAbsolutePath() );
         }
 
         Set<String> foundVersions = new HashSet<String>();
@@ -322,7 +321,7 @@ public class ManagedLegacyRepositoryContent
 
     /**
      * Convert a path to an artifact reference.
-     * 
+     *
      * @param path the path to convert. (relative or full location path)
      * @throws LayoutException if the path cannot be converted to an artifact reference.
      */
@@ -337,7 +336,7 @@ public class ManagedLegacyRepositoryContent
 
         return super.toArtifactReference( path );
     }
-    
+
     public File toFile( ArchivaArtifact reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );
@@ -454,13 +453,19 @@ public class ManagedLegacyRepositoryContent
             }
         }
     }
-    
+
     public void setFileTypes( FileTypes fileTypes )
     {
         this.filetypes = fileTypes;
     }
 
     public void deleteArtifact( ArtifactReference artifactReference )
+        throws ContentNotFoundException
+    {
+        // TODO implements for legacy ??
+    }
+
+    public void deleteGroupId( String groupId )
         throws ContentNotFoundException
     {
         // TODO implements for legacy ??

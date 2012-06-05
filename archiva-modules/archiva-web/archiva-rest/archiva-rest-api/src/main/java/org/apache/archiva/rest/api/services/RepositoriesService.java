@@ -137,7 +137,7 @@ public interface RepositoriesService
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
-    Boolean deleteGroupId( @QueryParam( "groupId" ) String groupId )
+    Boolean deleteGroupId( @QueryParam( "groupId" ) String groupId, @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
 }
