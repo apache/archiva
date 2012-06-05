@@ -468,17 +468,23 @@
                 </tr>
                 <tr>
                   <th>${$.i18n.prop('browse.artifact.packaging')}</th>
-                  <td>${projectVersionMetadata.mavenFacet.packaging}</td>
+                  {{if projectVersionMetadata.mavenFacet}}
+                    <td>${projectVersionMetadata.mavenFacet.packaging}</td>
+                  {{else}}
+                    <td></td>
+                  {{/if}}
                 </tr>
-                {{if projectVersionMetadata.mavenFacet.parent }}
-                <tr>
-                  <th>${$.i18n.prop('browse.artifact.parent')}</th>
-                  <td>
-                    <a href="#" data-bind="click: displayParent">
-                    ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
-                    </a>
-                  </td>
-                </tr>
+                {{if projectVersionMetadata.mavenFacet}}
+                  {{if projectVersionMetadata.mavenFacet.parent }}
+                  <tr>
+                    <th>${$.i18n.prop('browse.artifact.parent')}</th>
+                    <td>
+                      <a href="#" data-bind="click: displayParent">
+                      ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
+                      </a>
+                    </td>
+                  </tr>
+                  {{/if}}
                 {{/if}}
               </tbody>
             </table>

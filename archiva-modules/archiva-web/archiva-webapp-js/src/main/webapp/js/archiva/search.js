@@ -895,7 +895,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       }
       return projectVersionMetadata;
     }
-    return null;
+    return new ProjectVersionMetadata();
   }
 
   MavenFacet=function(packaging,parent){
