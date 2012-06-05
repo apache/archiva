@@ -86,6 +86,20 @@ public class ManagedDefaultRepositoryContent
         {
             FileUtils.deleteQuietly( filePath );
         }
+
+        File filePathmd5 = new File( getRepoRoot(), path + ".md5" );
+
+        if ( filePathmd5.exists() )
+        {
+            FileUtils.deleteQuietly( filePathmd5 );
+        }
+
+        File filePathsha1 = new File( getRepoRoot(), path + ".sha1" );
+
+        if ( filePathsha1.exists() )
+        {
+            FileUtils.deleteQuietly( filePathsha1 );
+        }
     }
 
     public String getId()

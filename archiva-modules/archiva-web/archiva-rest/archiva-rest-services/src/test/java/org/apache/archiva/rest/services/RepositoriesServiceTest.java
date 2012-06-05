@@ -213,7 +213,16 @@ public class RepositoriesServiceTest
             File artifactFile = new File(
                 "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar" );
 
+            File artifactFilemd5 = new File(
+                "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.md5" );
+
+            File artifactFilesha1 = new File(
+                "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.sha1" );
+
             assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            assertTrue( "md5 not exists:" + artifactFilemd5.getPath(), artifactFilemd5.exists() );
+            assertTrue( "sha1 not exists:" + artifactFilesha1.getPath(), artifactFilesha1.exists() );
 
             Artifact artifact = new Artifact();
             artifact.setGroupId( "commons-logging" );
@@ -228,6 +237,8 @@ public class RepositoriesServiceTest
             repositoriesService.deleteArtifact( artifact );
 
             assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+            assertFalse( "md5 still exists:" + artifactFilemd5.getPath(), artifactFilemd5.exists() );
+            assertFalse( "sha1 still exists:" + artifactFilesha1.getPath(), artifactFilesha1.exists() );
 
             artifacts =
                 browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
