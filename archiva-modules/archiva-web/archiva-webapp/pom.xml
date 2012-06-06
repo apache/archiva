@@ -1376,7 +1376,7 @@
                 </configuration>
               </execution>
               <!--
-              redefine to override exclude configuration (and exlude back struts-security.xml :-)
+              redefine to override exclude configuration (and exclude back struts-security.xml :-)
               tomcat plugin 2.0 has a better support of war overlay
               -->
               <execution>
