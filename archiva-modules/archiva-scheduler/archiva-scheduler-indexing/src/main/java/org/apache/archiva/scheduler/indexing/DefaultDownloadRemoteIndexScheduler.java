@@ -190,9 +190,17 @@ public class DefaultDownloadRemoteIndexScheduler
             {
                 log.info( "schedule download remote index for repository {} with cron expression {}",
                           remoteRepository.getId(), remoteRepository.getCronExpression() );
-                taskScheduler.schedule(
-                    new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
-                    new CronTrigger( remoteRepository.getCronExpression() ) );
+                try
+                {
+                    CronTrigger cronTrigger = new CronTrigger( remoteRepository.getCronExpression() );
+                    taskScheduler.schedule(
+                        new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
+                        cronTrigger );
+                }
+                catch ( IllegalArgumentException e )
+                {
+                    log.warn( "Unable to schedule remote index download: " + e.getLocalizedMessage() );
+                }
 
                 if ( remoteRepository.isDownloadRemoteIndexOnStartup() )
                 {
