@@ -198,6 +198,10 @@ public class JcrMetadataRepository
             for ( String facetId : metadataFacetFactories.keySet() )
             {
                 MetadataFacet metadataFacet = artifactMeta.getFacet( facetId );
+                if ( metadataFacet == null )
+                {
+                    continue;
+                }
                 if ( node.hasNode( facetId ) )
                 {
                     node.getNode( facetId ).remove();

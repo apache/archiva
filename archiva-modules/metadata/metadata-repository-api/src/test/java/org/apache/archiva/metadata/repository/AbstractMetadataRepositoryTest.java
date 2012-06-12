@@ -33,6 +33,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
 import org.fest.assertions.Assertions;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -1045,40 +1046,6 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.<ArtifactMetadata>emptyList(), artifactsByChecksum );
     }
 
-    @Test
-    public void testDeleteArtifact()
-        throws Exception
-    {
-        ArtifactMetadata artifact = createArtifact();
-        artifact.addFacet( new TestMetadataFacet( "value" ) );
-
-        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
-
-        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
-
-        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION_2_0, artifact );
-
-        Collection<String> versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
-
-        log.info( "versions {}", versions );
-
-        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "1.0", "2.0" );
-
-        repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
-
-        versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
-
-        log.info( "versions {}", versions );
-
-        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "2.0" );
-
-        assertTrue(
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
-
-        Assertions.assertThat( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
-                                                        TEST_PROJECT_VERSION_2_0 ) ).isNotEmpty().hasSize( 1 );
-    }
 
     @Test
     public void testDeleteRepository()
@@ -1118,6 +1085,41 @@ public abstract class AbstractMetadataRepositoryTest
         assertTrue( repository.getRootNamespaces( TEST_REPO_ID ).isEmpty() );
     }
 
+
+    @Test
+    public void testDeleteArtifact()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        artifact.addFacet( new TestMetadataFacet( "value" ) );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION_2_0, artifact );
+
+        Collection<String> versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+
+        log.info( "versions {}", versions );
+
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "1.0", "2.0" );
+
+        repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
+
+        versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+
+        log.info( "versions {}", versions );
+
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "2.0" );
+
+        assertTrue(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+
+        Assertions.assertThat( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                        TEST_PROJECT_VERSION_2_0 ) ).isNotEmpty().hasSize( 1 );
+    }
 
     @Test
     public void deleteVersion()
