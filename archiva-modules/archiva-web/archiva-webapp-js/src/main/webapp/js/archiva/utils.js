@@ -309,14 +309,18 @@ define("utils",["jquery","i18n","jquery.tmpl"], function() {
    * @param errorList
    */
   customShowError=function(selector, validator, errorMap, errorList) {
-    $(selector).find("div.control-group" ).removeClass( "error" );
-    $(selector).find("span.help-inline").remove();
+    removeValidationErrorMessages(selector);
     for ( var i = 0; errorList[i]; i++ ) {
       var error = errorList[i];
       var field = $(selector).find("#"+error.element.id);
       field.parents( "div.control-group" ).addClass( "error" );
       field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
     }
+  }
+
+  removeValidationErrorMessages=function(selector){
+    $(selector).find("div.control-group" ).removeClass( "error" );
+    $(selector).find("span.help-inline").remove();
   }
 
   appendArchivaVersion=function(){
