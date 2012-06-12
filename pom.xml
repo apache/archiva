@@ -850,7 +850,7 @@
         <!-- make sure our code doesn't have 1.6 dependencies -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.7</version>
+        <version>1.8</version>
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
