@@ -218,6 +218,7 @@ public class ShowArtifactAction
                             l = new ArrayList<Artifact>();
                             this.artifacts.put( artifact.getVersion(), l );
                         }
+
                         ArtifactDownloadInfoBuilder builder = new ArtifactDownloadInfoBuilder().forArtifactMetadata(
                             artifact ).withManagedRepositoryContent(
                             repositoryFactory.getManagedRepositoryContent( repositoryId ) );

@@ -140,6 +140,17 @@ public class Artifact
      */
     private String size;
 
+    /**
+     * @since 1.4-M3
+     */
+    private String type;
+
+
+    /**
+     * @since 1.4-M3
+     */
+    private String path;
+
 
     public Artifact()
     {
@@ -374,6 +385,26 @@ public class Artifact
         this.size = size;
     }
 
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
+    public String getPath()
+    {
+        return path;
+    }
+
+    public void setPath( String path )
+    {
+        this.path = path;
+    }
+
     @Override
     public String toString()
     {
@@ -400,6 +431,9 @@ public class Artifact
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( ", packaging='" ).append( packaging ).append( '\'' );
         sb.append( ", fileExtension='" ).append( fileExtension ).append( '\'' );
+        sb.append( ", size='" ).append( size ).append( '\'' );
+        sb.append( ", type='" ).append( type ).append( '\'' );
+        sb.append( ", path='" ).append( path ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

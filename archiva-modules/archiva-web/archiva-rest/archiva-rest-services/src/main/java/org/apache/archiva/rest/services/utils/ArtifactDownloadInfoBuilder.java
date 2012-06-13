@@ -62,7 +62,7 @@ public class ArtifactDownloadInfoBuilder
     public Artifact build()
     {
         ArtifactReference ref = new ArtifactReference();
-        ref.setArtifactId( artifactMetadata.getId() );
+        ref.setArtifactId( artifactMetadata.getProject() );
         ref.setGroupId( artifactMetadata.getNamespace() );
         ref.setVersion( artifactMetadata.getVersion() );
 
@@ -85,7 +85,9 @@ public class ArtifactDownloadInfoBuilder
         artifact.setRepositoryId( artifactMetadata.getRepositoryId() );
         artifact.setClassifier( classifier );
         artifact.setPackaging( type );
+        artifact.setType( type );
         artifact.setFileExtension( extension );
+        artifact.setPath( managedRepositoryContent.toPath( ref ) );
         // TODO: find a reusable formatter for this
         double s = this.artifactMetadata.getSize();
         String symbol = "b";

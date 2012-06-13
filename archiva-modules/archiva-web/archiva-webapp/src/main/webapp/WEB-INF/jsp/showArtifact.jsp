@@ -171,11 +171,11 @@
                   <c:set var="packageName">POM</c:set>
                 </c:when>
                 <%-- These types aren't usually set in the POM yet, so we fudge them for the well known ones --%>
-                <c:when test="${a.type == 'maven-archetype' or a.namespace == 'org.apache.maven.archetypes'}">
+                <c:when test="${a.type == 'maven-archetype' or a.groupId == 'org.apache.maven.archetypes'}">
                   <c:url var="imageUrl" value="/images/download-type-archetype.png"/>
                   <c:set var="packageName">Maven Archetype</c:set>
                 </c:when>
-                <c:when test="${a.type == 'maven-skin' or a.namespace == 'org.apache.maven.skins'}">
+                <c:when test="${a.type == 'maven-skin' or a.groupId == 'org.apache.maven.skins'}">
                   <c:url var="imageUrl" value="/images/download-type-skin.png"/>
                   <c:set var="packageName">Maven Skin</c:set>
                 </c:when>
@@ -209,8 +209,10 @@
               </c:choose>
               <c:url var="url" value="/repository/${a.repositoryId}/${a.path}" />
               <tr>
-                <td><a href="${url}" title="Download ${a.id}"><img src="${imageUrl}" alt="" width="24" height="24"/></a></td>
-                <td class="type"><a href="${url}" title="Download ${a.id}">${packageName}</a></td>
+                <td>
+                  <a href="${url}" title="Download ${a.artifactId}"><img src="${imageUrl}" alt="" width="24" height="24"/></a>
+                </td>
+                <td class="type"><a href="${url}" title="Download ${a.artifactId}">${packageName}</a></td>
                 <td class="size">${a.size}</td>
               </tr>
             </c:forEach>
