@@ -62,7 +62,7 @@ public class ArtifactDownloadInfoBuilder
     public Artifact build()
     {
         ArtifactReference ref = new ArtifactReference();
-        ref.setArtifactId( artifactMetadata.getProject() );
+        ref.setArtifactId( artifactMetadata.getId() );
         ref.setGroupId( artifactMetadata.getNamespace() );
         ref.setVersion( artifactMetadata.getVersion() );
 
@@ -82,6 +82,7 @@ public class ArtifactDownloadInfoBuilder
         String extension = FilenameUtils.getExtension( file.getName() );
 
         Artifact artifact = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
+        artifact.setRepositoryId( artifactMetadata.getRepositoryId() );
         artifact.setClassifier( classifier );
         artifact.setPackaging( type );
         artifact.setFileExtension( extension );
