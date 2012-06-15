@@ -20,22 +20,20 @@ package org.apache.archiva.redback.rest.services;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.services.LoginService;
+import org.apache.archiva.redback.rest.api.services.RoleManagementService;
+import org.apache.archiva.redback.rest.api.services.UserService;
+import org.apache.catalina.Context;
+import org.apache.catalina.deploy.ApplicationParameter;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
-import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
-import org.apache.archiva.redback.rest.api.model.User;
-import org.apache.archiva.redback.rest.api.services.LoginService;
-import org.apache.archiva.redback.rest.api.services.RoleManagementService;
-import org.apache.archiva.redback.rest.api.services.UserService;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -56,9 +54,7 @@ public abstract class AbstractRestServicesTest
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    public Server server = null;
-
-    //private Tomcat tomcat;
+    private Tomcat tomcat;
 
     public int port;
 
@@ -91,36 +87,30 @@ public abstract class AbstractRestServicesTest
         return "restServices";
     }
 
-    static boolean useTomcat = Boolean.getBoolean( "test.useTomcat" );
-
     @Before
     public void startServer()
         throws Exception
     {
 
-        this.server = new Server( 0 );
+        tomcat = new Tomcat();
+        tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
+        tomcat.setPort( 0 );
 
-        ServletContextHandler context = new ServletContextHandler();
+        Context context = tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
 
-        context.setContextPath( "/" );
+        ApplicationParameter applicationParameter = new ApplicationParameter();
+        applicationParameter.setName( "contextConfigLocation" );
+        applicationParameter.setValue( getSpringConfigLocation() );
+        context.addApplicationParameter( applicationParameter );
 
-        context.setInitParameter( "contextConfigLocation", getSpringConfigLocation() );
+        context.addApplicationListener( ContextLoaderListener.class.getName() );
 
-        ContextLoaderListener contextLoaderListener = new ContextLoaderListener();
+        Tomcat.addServlet( context, "cxf", new CXFServlet() );
+        context.addServletMapping( "/" + getRestServicesPath() + "/*", "cxf" );
 
-        context.addEventListener( contextLoaderListener );
+        tomcat.start();
 
-        ServletHolder sh = new ServletHolder( CXFServlet.class );
-
-        SessionHandler sessionHandler = new SessionHandler();
-
-        context.setSessionHandler( sessionHandler );
-
-        context.addServlet( sh, "/" + getRestServicesPath() + "/*" );
-        server.setHandler( context );
-        this.server.start();
-        Connector connector = this.server.getConnectors()[0];
-        this.port = connector.getLocalPort();
+        this.port = tomcat.getConnector().getLocalPort();
 
         log.info( "start server on port " + this.port );
 
@@ -149,9 +139,9 @@ public abstract class AbstractRestServicesTest
     public void stopServer()
         throws Exception
     {
-        if ( this.server != null && this.server.isRunning() )
+        if ( this.tomcat != null )
         {
-            this.server.stop();
+            this.tomcat.stop();
         }
     }
 

@@ -29,7 +29,7 @@
 
   <properties>
     <jettyVersion>7.5.3.v20111011</jettyVersion>
-    <tomcatVersion>7.0.21</tomcatVersion>
+    <tomcatVersion>7.0.27</tomcatVersion>
     <test.useTomcat>false</test.useTomcat>
   </properties>
 
@@ -59,12 +59,6 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-api</artifactId>
     </dependency>
@@ -91,6 +85,10 @@
         <exclusion>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-server</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-servlet_2.5_spec</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.codehaus.jettison</groupId>
@@ -133,20 +131,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>${jettyVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
-      <version>${jettyVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!--
-    <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
       <version>${tomcatVersion}</version>
@@ -164,7 +148,12 @@
       <version>${tomcatVersion}</version>
       <scope>test</scope>
     </dependency>
-    -->
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-servlet-api</artifactId>
+      <version>${tomcatVersion}</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
