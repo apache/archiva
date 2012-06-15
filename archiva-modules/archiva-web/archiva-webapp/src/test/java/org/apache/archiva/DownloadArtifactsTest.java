@@ -19,11 +19,12 @@ package org.apache.archiva;
  */
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
-import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +65,10 @@ public class DownloadArtifactsTest
     public Server redirectServer = null;
 
     public int redirectPort;
+
+    public Server repoServer = null;
+
+    public int repoServerPort;
 
     @BeforeClass
     public static void setAppServerBase()
@@ -89,11 +95,26 @@ public class DownloadArtifactsTest
     {
         super.startServer();
 
+        // repo handler
+
+        this.repoServer = new Server( 0 );
+
+        ServletHolder shRepo = new ServletHolder( RepoServlet.class );
+        ServletContextHandler contextRepo = new ServletContextHandler();
+
+        contextRepo.setContextPath( "/" );
+        contextRepo.addServlet( shRepo, "/*" );
+
+        repoServer.setHandler( contextRepo );
+        repoServer.start();
+        this.repoServerPort = repoServer.getConnectors()[0].getLocalPort();
+
         //redirect handler
 
         this.redirectServer = new Server( 0 );
         ServletHolder shRedirect = new ServletHolder( RedirectServlet.class );
         ServletContextHandler contextRedirect = new ServletContextHandler();
+        contextRedirect.setAttribute( "redirectToPort", Integer.toString( this.repoServerPort ) );
 
         contextRedirect.setContextPath( "/" );
         contextRedirect.addServlet( shRedirect, "/*" );
@@ -102,6 +123,9 @@ public class DownloadArtifactsTest
         redirectServer.start();
         this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
         log.info( "redirect server port {}", redirectPort );
+
+
+
     }
 
     @After
@@ -179,7 +203,6 @@ public class DownloadArtifactsTest
     }
 
 
-    //FIXME start an other jetty instance rather than being dependant on network !!
     public static class RedirectServlet
         extends HttpServlet
     {
@@ -195,7 +218,21 @@ public class DownloadArtifactsTest
                                         + "<p>The document has moved <a href=\"http://repo.maven.apache.org/maven2/junit/junit/4.9/junit-4.9.jar\">here</a>.</p>\n"
                                         + "</body></html>\n" + "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n"
                                         + "<html><head>\n" );
-            resp.sendRedirect( "http://repo.maven.apache.org/maven2/" + req.getRequestURI() );
+            resp.sendRedirect( "http://localhost:" + getServletContext().getAttribute( "redirectToPort" ) + "/maven2/"
+                                   + req.getRequestURI() );
+        }
+    }
+
+    public static class RepoServlet
+        extends HttpServlet
+    {
+        @Override
+        protected void doGet( HttpServletRequest req, HttpServletResponse resp )
+            throws ServletException, IOException
+        {
+            File jar = new File( System.getProperty( "basedir" ), "src/test/junit-4.9.jar" );
+            IOUtils.copy( new FileInputStream( jar ), resp.getOutputStream() );
+
         }
     }
 
