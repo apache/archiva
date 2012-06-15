@@ -566,7 +566,7 @@ public class ShowArtifactActionTest
             List<Artifact> list = artifactMap.get( artifact.getVersion() );
             Artifact actual = list.get( 0 );
             assertEquals( artifact.getNamespace(), actual.getGroupId() );
-            assertEquals( artifact.getId(), actual.getArtifactId() );
+            assertEquals( artifact.getId(),actual.getId() );
             // olamy test has no more sense as we reuse an other object now
             //assertEquals( artifact.getProject(), actual.getGroupId() );
             assertEquals( artifact.getRepositoryId(), actual.getRepositoryId() );

@@ -111,6 +111,9 @@ public class ArtifactDownloadInfoBuilder
         artifact.setContext( managedRepositoryContent.getId() );
         DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
         artifact.setSize( df.format( s ) + " " + symbol );
+
+        artifact.setId( ref.getArtifactId() + "-" + ref.getVersion() + "." + ref.getType() );
+
         return artifact;
 
     }

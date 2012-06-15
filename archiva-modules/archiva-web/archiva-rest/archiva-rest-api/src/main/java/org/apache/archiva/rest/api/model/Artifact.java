@@ -151,6 +151,12 @@ public class Artifact
      */
     private String path;
 
+    /**
+     * concat of artifactId+'-'+version+'.'+type
+     * @since 1.4-M3
+     */
+    private String id;
+
 
     public Artifact()
     {
@@ -405,6 +411,16 @@ public class Artifact
         this.path = path;
     }
 
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
+    }
+
     @Override
     public String toString()
     {
@@ -434,6 +450,7 @@ public class Artifact
         sb.append( ", size='" ).append( size ).append( '\'' );
         sb.append( ", type='" ).append( type ).append( '\'' );
         sb.append( ", path='" ).append( path ).append( '\'' );
+        sb.append( ", id='" ).append( id ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
