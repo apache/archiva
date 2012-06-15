@@ -20,7 +20,6 @@ package org.apache.archiva.redback.common.ldap.connection;
  */
 
 import com.sun.jndi.ldap.LdapCtxFactory;
-import org.jvnet.animal_sniffer.IgnoreJRERequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +59,11 @@ public class LdapConnection
 
     private List<Rdn> baseDnRdns;
 
-    @IgnoreJRERequirement
     private static void initCtxFactory()
     {
         ctxFactory = new LdapCtxFactory();
     }
 
-    @IgnoreJRERequirement
     public LdapConnection( LdapConnectionConfiguration config, Rdn subRdn )
         throws LdapException
     {
@@ -107,7 +104,6 @@ public class LdapConnection
      * @param password
      * @throws LdapException
      */
-    @IgnoreJRERequirement
     public LdapConnection( LdapConnectionConfiguration config, String bindDn, String password )
         throws LdapException
     {
