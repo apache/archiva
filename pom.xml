@@ -96,7 +96,7 @@
     <plexus-expression-evaluator.version>2.0-SNAPSHOT</plexus-expression-evaluator.version>
     <plexus-utils.version>1.5.5</plexus-utils.version>
     <asfTomcatMavenPluginVersion>2.0-SNAPSHOT</asfTomcatMavenPluginVersion>
-    <tomcat7Version>7.0.27</tomcat7Version>
+    <tomcat7Version>7.0.28</tomcat7Version>
   </properties>
 
   <dependencyManagement>
