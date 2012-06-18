@@ -633,7 +633,7 @@
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-servlet-api</artifactId>
       <version>${tomcat7Version}</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
