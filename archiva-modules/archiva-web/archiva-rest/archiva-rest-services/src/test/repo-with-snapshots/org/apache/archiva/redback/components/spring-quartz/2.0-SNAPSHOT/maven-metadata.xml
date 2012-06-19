@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.apache.archiva.redback.components</groupId>
+  <artifactId>spring-quartz</artifactId>
+  <version>2.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20120618.214200</timestamp>
+      <buildNumber>5</buildNumber>
+    </snapshot>
+    <lastUpdated>20120618214200</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>2.0-20120618.214200-5</value>
+        <updated>20120618214200</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>2.0-20120618.214200-5</value>
+        <updated>20120618214200</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
