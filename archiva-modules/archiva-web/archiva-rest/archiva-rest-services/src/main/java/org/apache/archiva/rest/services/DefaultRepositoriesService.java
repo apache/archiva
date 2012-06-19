@@ -714,6 +714,15 @@ public class DefaultRepositoriesService
                 {
                     repository.deleteVersion( ref );
                 }
+                else
+                {
+                    Set<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
+                    log.debug( "related: {}", related );
+                    for ( ArtifactReference artifactRef : related )
+                    {
+                        repository.deleteArtifact( artifactRef );
+                    }
+                }
                 File metadataFile = getMetadata( targetPath.getAbsolutePath() );
                 ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
 
@@ -722,16 +731,6 @@ public class DefaultRepositoriesService
             Collection<ArtifactMetadata> artifacts =
                 metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
                                                  artifact.getVersion() );
-
-            if ( snapshotVersion )
-            {
-                Set<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
-                log.debug( "related: {}", related );
-                for ( ArtifactReference artifactRef : related )
-                {
-                    repository.deleteArtifact( artifactRef );
-                }
-            }
 
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
