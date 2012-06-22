@@ -728,9 +728,23 @@ public class DefaultRepositoriesService
 
                 updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
             }
-            Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
-                                                 artifact.getVersion() );
+            Collection<ArtifactMetadata> artifacts = Collections.emptyList();
+
+            if ( snapshotVersion )
+            {
+                String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
+                artifacts =
+                    metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
+                                                     baseVersion );
+            }
+            else
+            {
+                artifacts =
+                    metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
+                                                     artifact.getVersion() );
+            }
+
+            log.debug( "artifacts: {}", artifacts );
 
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
@@ -813,6 +827,7 @@ public class DefaultRepositoriesService
         }
         finally
         {
+
             repositorySession.save();
 
             repositorySession.close();
