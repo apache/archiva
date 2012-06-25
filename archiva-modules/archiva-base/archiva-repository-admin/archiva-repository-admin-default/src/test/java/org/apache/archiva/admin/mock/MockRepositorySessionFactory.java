@@ -64,6 +64,12 @@ public class MockRepositorySessionFactory
                 return new MetadataRepository()
                 {
 
+                    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+                        throws MetadataRepositoryException
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+
                     public void removeArtifact( String repositoryId, String namespace, String project,
                                                 String projectVersion, MetadataFacet metadataFacet )
                         throws MetadataRepositoryException

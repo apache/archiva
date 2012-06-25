@@ -597,6 +597,13 @@ public class FileMetadataRepository
         return artifacts;
     }
 
+    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+        throws MetadataRepositoryException
+    {
+        // FIXME implement this
+        throw new UnsupportedOperationException();
+    }
+
     public void removeArtifact( String repoId, String namespace, String project, String version, String id )
     {
 

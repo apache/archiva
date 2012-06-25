@@ -229,4 +229,10 @@ public class TestMetadataRepository
     {
         return artifacts;
     }
+
+    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
 }

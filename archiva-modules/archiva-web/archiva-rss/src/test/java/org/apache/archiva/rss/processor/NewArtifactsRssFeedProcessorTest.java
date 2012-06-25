@@ -325,5 +325,11 @@ public class NewArtifactsRssFeedProcessorTest
         {
             return artifactsByDateRange;
         }
+
+        public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+            throws MetadataRepositoryException
+        {
+
+        }
     }
 }

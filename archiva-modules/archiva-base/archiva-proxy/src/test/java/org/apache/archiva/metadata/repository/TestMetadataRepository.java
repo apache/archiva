@@ -194,4 +194,10 @@ public class TestMetadataRepository
     {
         throw new UnsupportedOperationException();
     }
+
+    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
 }
