@@ -79,6 +79,9 @@ public interface MetadataRepository
     void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
         throws MetadataRepositoryException;
 
+    void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+        throws MetadataRepositoryException;
+
     /**
      * @param repositoryId
      * @param namespace

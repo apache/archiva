@@ -781,10 +781,18 @@ public class DefaultRepositoriesService
                     }
                     else
                     {
-                        metadataRepository.removeArtifact( artifactMetadata.getRepositoryId(),
-                                                           artifactMetadata.getNamespace(),
-                                                           artifactMetadata.getProject(), artifact.getVersion(),
-                                                           artifactMetadata.getId() );
+                        if ( snapshotVersion )
+                        {
+                            metadataRepository.removeArtifact( artifactMetadata,
+                                                               VersionUtil.getBaseVersion( artifact.getVersion() ) );
+                        }
+                        else
+                        {
+                            metadataRepository.removeArtifact( artifactMetadata.getRepositoryId(),
+                                                               artifactMetadata.getNamespace(),
+                                                               artifactMetadata.getProject(), artifact.getVersion(),
+                                                               artifactMetadata.getId() );
+                        }
                     }
                     // TODO: move into the metadata repository proper - need to differentiate attachment of
                     //       repository metadata to an artifact

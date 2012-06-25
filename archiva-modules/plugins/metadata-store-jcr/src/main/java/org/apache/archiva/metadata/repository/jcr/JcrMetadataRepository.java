@@ -101,8 +101,6 @@ public class JcrMetadataRepository
     {
         this.metadataFacetFactories = metadataFacetFactories;
         this.repository = repository;
-
-        //session = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
     }
 
 
@@ -1003,6 +1001,48 @@ public class JcrMetadataRepository
         return getNodeNames( getProjectPath( repositoryId, namespace, projectId ), PROJECT_VERSION_NODE_TYPE );
     }
 
+    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+        throws MetadataRepositoryException
+    {
+
+        String repositoryId = artifactMetadata.getRepositoryId();
+
+        try
+        {
+            Node root = getJcrSession().getRootNode();
+            String path =
+                getProjectVersionPath( repositoryId, artifactMetadata.getNamespace(), artifactMetadata.getProject(),
+                                       baseVersion );
+
+            if ( root.hasNode( path ) )
+            {
+                Node node = root.getNode( path );
+
+                for ( Node n : JcrUtils.getChildNodes( node ) )
+                {
+                    if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                    {
+                        if ( n.hasProperty( "version" ) )
+                        {
+                            String version = n.getProperty( "version" ).getString();
+                            if ( StringUtils.equals( version, artifactMetadata.getVersion() ) )
+                            {
+                                n.remove();
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+
+
+    }
+
     public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 String id )
         throws MetadataRepositoryException
@@ -1422,9 +1462,7 @@ public class JcrMetadataRepository
     {
         if ( this.jcrSession == null || !this.jcrSession.isLive() )
         {
-
             jcrSession = repository.login( new SimpleCredentials( "admin", "admin".toCharArray() ) );
-
         }
         return this.jcrSession;
     }

@@ -341,21 +341,6 @@ public class RepositoriesServiceTest
         }
     }
 
-    protected ManagedRepository getTestManagedRepository( String id, String path )
-    {
-        String location = new File( FileUtil.getBasedir(), "target/" + path ).getAbsolutePath();
-        return new ManagedRepository( id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
-                                      true, false );
-    }
-
-    protected ManagedRepository getTestManagedRepository()
-    {
-        return getTestManagedRepository( "TEST", "test-repo" );
-    }
-
-
-    static final String SNAPSHOT_REPO_ID = "snapshot-repo";
-
     @Test
     public void deleteSnapshot()
         throws Exception
@@ -363,6 +348,10 @@ public class RepositoriesServiceTest
         File targetRepo = initSnapshotRepo();
         try
         {
+
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+            //repositoriesService.scanRepositoryDirectoriesNow( SNAPSHOT_REPO_ID );
+
             BrowseService browseService = getBrowseService( authorizationHeader, false );
             List<Artifact> artifacts =
                 browseService.getArtifactDownloadInfos( "org.apache.archiva.redback.components", "spring-quartz",
@@ -371,8 +360,6 @@ public class RepositoriesServiceTest
             log.info( "artifacts: {}", artifacts );
 
             Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 10 );
-
-            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 
             File artifactFile = new File( targetRepo,
                                           "org/apache/archiva/redback/components/spring-quartz/2.0-SNAPSHOT/spring-quartz-2.0-20120618.214127-1.jar" );
@@ -393,7 +380,9 @@ public class RepositoriesServiceTest
             artifact.setPackaging( "jar" );
             artifact.setRepositoryId( SNAPSHOT_REPO_ID );
             artifact.setContext( SNAPSHOT_REPO_ID );
+
             repositoriesService.deleteArtifact( artifact );
+
 
             artifacts =
                 browseService.getArtifactDownloadInfos( "org.apache.archiva.redback.components", "spring-quartz",
@@ -436,10 +425,11 @@ public class RepositoriesServiceTest
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SNAPSHOT_REPO_ID, true );
             assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) );
         }
-        ManagedRepository managedRepository = getTestManagedRepository();
-        managedRepository.setId( SNAPSHOT_REPO_ID );
-        managedRepository.setLocation( targetRepo.getCanonicalPath() );
-        managedRepository.setCronExpression( "* * * * * ?" );
+        ManagedRepository managedRepository =
+            getTestManagedRepository( SNAPSHOT_REPO_ID, "repo-with-snapshots" );
+        /*managedRepository.setId( SNAPSHOT_REPO_ID );
+        managedRepository.setLocation( );
+        managedRepository.setCronExpression( "* * * * * ?" );*/
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) );
 
@@ -457,6 +447,21 @@ public class RepositoriesServiceTest
         }
 
     }
+
+    protected ManagedRepository getTestManagedRepository( String id, String path )
+    {
+        String location = new File( FileUtil.getBasedir(), "target/" + path ).getAbsolutePath();
+        return new ManagedRepository( id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
+                                      true, false );
+    }
+
+    protected ManagedRepository getTestManagedRepository()
+    {
+        return getTestManagedRepository( "TEST", "test-repo" );
+    }
+
+
+    static final String SNAPSHOT_REPO_ID = "snapshot-repo";
 
 
 }
