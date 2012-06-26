@@ -79,6 +79,13 @@ public interface MetadataRepository
     void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
         throws MetadataRepositoryException;
 
+    /**
+     * used for deleting timestamped version of SNAPSHOT artifacts
+     * @param artifactMetadata the artifactMetadata with the timestamped version (2.0-20120618.214135-2)
+     * @param baseVersion      the base version of the snapshot (2.0-SNAPSHOT)
+     * @throws MetadataRepositoryException
+     * @since 1.4-M3
+     */
     void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException;
 
