@@ -600,8 +600,43 @@ public class FileMetadataRepository
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
-        // FIXME implement this
-        throw new UnsupportedOperationException();
+
+        File directory = new File( getDirectory( artifactMetadata.getRepositoryId() ),
+                                   artifactMetadata.getNamespace() + "/" + artifactMetadata.getProject() + "/"
+                                       + baseVersion );
+
+        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+        String id = artifactMetadata.getId();
+
+        properties.remove( "artifact:updated:" + id );
+        properties.remove( "artifact:whenGathered:" + id );
+        properties.remove( "artifact:size:" + id );
+        properties.remove( "artifact:md5:" + id );
+        properties.remove( "artifact:sha1:" + id );
+        properties.remove( "artifact:version:" + id );
+        properties.remove( "artifact:facetIds:" + id );
+
+        String prefix = "artifact:facet:" + id + ":";
+        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
+        {
+            String property = (String) key;
+            if ( property.startsWith( prefix ) )
+            {
+                properties.remove( property );
+            }
+        }
+
+        try
+        {
+            writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
+        }
+        catch ( IOException e )
+        {
+            // TODO
+            log.error( e.getMessage(), e );
+        }
+
     }
 
     public void removeArtifact( String repoId, String namespace, String project, String version, String id )
@@ -645,6 +680,7 @@ public class FileMetadataRepository
 
     /**
      * FIXME implements this !!!!
+     *
      * @param repositoryId
      * @param namespace
      * @param project
@@ -654,10 +690,10 @@ public class FileMetadataRepository
      * @throws MetadataRepositoryException
      */
     public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
-                                 MetadataFacet metadataFacet )
+                                MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
-        throw new UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException( "not implemented" );
     }
 
     public void removeRepository( String repoId )
