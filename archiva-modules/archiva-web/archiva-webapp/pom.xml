@@ -906,6 +906,7 @@
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <basedir>${basedir}</basedir>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+            <buildDirectory>${project.build.directory}</buildDirectory>
           </systemPropertyVariables>
         </configuration>
       </plugin>

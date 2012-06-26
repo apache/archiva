@@ -25,14 +25,14 @@ import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
-import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -91,7 +91,7 @@ public class AddManagedRepositoryActionTest
         repositoryTaskSchedulerControl = MockClassControl.createControl( RepositoryArchivaTaskScheduler.class );
         repositoryTaskScheduler = (RepositoryArchivaTaskScheduler) repositoryTaskSchedulerControl.getMock();
 
-        location = new File( "target/test/location" );
+        location = new File( System.getProperty( "basedir" ), "target/test/location" );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setArchivaConfiguration( archivaConfiguration );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRoleManager( roleManager );
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRegistry( registry );

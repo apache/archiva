@@ -31,15 +31,15 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
+import org.apache.archiva.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.web.validator.utils.ValidatorUtil;
 import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.redback.role.RoleManager;
-import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
-import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 import org.easymock.classextension.MockClassControl;
 
@@ -260,10 +260,13 @@ public class EditManagedRepositoryActionTest
             (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
         ( (DefaultManagedRepositoryAdmin) getManagedRepositoryAdmin() ).setRepositoryStatisticsManager(
             repositoryStatisticsManager );
-        // no deletion
+        repositoryStatisticsManager.deleteStatistics( metadataRepository , REPO_ID );
+        repositoryStatisticsManagerControl.setVoidCallable();
         repositoryStatisticsManagerControl.replay();
 
         new File( "target/test/" + REPO_ID + "-stage" ).mkdirs();
+
+        repository.setLocation( System.getProperty( "basedir" ) + "/target/test/" + REPO_ID );
 
         action.setRepository( repository );
         action.setStageNeeded( true );
@@ -588,6 +591,8 @@ public class EditManagedRepositoryActionTest
         throws IOException
     {
         ManagedRepository r = new ManagedRepository();
+        r.setLocation( System.getProperty( "basedir" ) + "/target/repo-" + REPO_ID );
+        r.setIndexDirectory( System.getProperty( "basedir" ) + "/target/repo-" + REPO_ID + "-index" );
         r.setId( REPO_ID );
         populateRepository( r );
         return r;
@@ -598,6 +603,7 @@ public class EditManagedRepositoryActionTest
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
         r.setId( REPO_ID + "-stage" );
+        r.setLocation( System.getProperty( "basedir" ) + "/target/" + REPO_ID + "-stage" );
         populateStagingRepository( r );
         return r;
     }

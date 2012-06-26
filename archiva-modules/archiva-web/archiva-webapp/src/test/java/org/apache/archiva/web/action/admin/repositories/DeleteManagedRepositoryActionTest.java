@@ -27,11 +27,6 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
@@ -39,13 +34,18 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.web.action.AbstractActionTestCase;
-import org.apache.archiva.web.action.AuditEventArgumentsMatcher;
-import org.apache.archiva.redback.role.RoleManager;
-import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;
+import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.web.action.AbstractActionTestCase;
+import org.apache.archiva.web.action.AuditEventArgumentsMatcher;
+import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -103,7 +103,7 @@ public class DeleteManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         //action.setRoleManager( roleManager );
-        location = new File( "target/test/location" );
+        location = new File( System.getProperty( "basedir" ), "target/test/location" );
 
         repositoryStatisticsManagerControl = MockControl.createControl( RepositoryStatisticsManager.class );
         repositoryStatisticsManager = (RepositoryStatisticsManager) repositoryStatisticsManagerControl.getMock();
@@ -185,10 +185,8 @@ public class DeleteManagedRepositoryActionTest
         stageRepoConfiguration.addManagedRepository( createStagingRepository() );
         archivaConfigurationControl.setReturnValue( stageRepoConfiguration );
 
-
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
-
 
         archivaConfigurationControl.replay();
 
