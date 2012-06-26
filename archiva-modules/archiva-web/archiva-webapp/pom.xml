@@ -991,7 +991,6 @@
                     org.apache.archiva.web.action*;version=${project.version},
                     org.apache.archiva.web.interceptor*;version=${project.version},
                     org.apache.archiva.web.mapper*;version=${project.version},
-                    org.apache.archiva.web.rss*;version=${project.version},
                     org.apache.archiva.web.tags*;version=${project.version},
                     org.apache.archiva.web.util*;version=${project.version},
                     org.apache.archiva.web.validator*;version=${project.version}
