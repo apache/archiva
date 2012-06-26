@@ -276,8 +276,10 @@
               </execution>
             </executions>
             <configuration>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
+              <!-- Use committed revision so it does not change every time svn update is run -->
+              <useLastCommittedRevision>true</useLastCommittedRevision>
+              <!-- default revision number if unavailable -->
+              <revisionOnScmFailure>??????</revisionOnScmFailure>
               <providerImplementations>
                 <svn>javasvn</svn>
               </providerImplementations>
@@ -286,7 +288,12 @@
               <dependency>
                 <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
                 <artifactId>maven-scm-provider-svnjava</artifactId>
-                <version>2.0</version>
+                <version>2.0.3</version>
+              </dependency>
+              <dependency>
+                <groupId>org.tmatesoft.svnkit</groupId>
+                <artifactId>svnkit</artifactId>
+                <version>1.7.5</version>
               </dependency>
             </dependencies>
           </plugin>
@@ -315,44 +322,13 @@
               </execution>
             </executions>
             <configuration>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
+              <!-- Use committed revision so it does not change every time svn update is run -->
+              <useLastCommittedRevision>true</useLastCommittedRevision>
+              <!-- default revision number if unavailable -->
+              <revisionOnScmFailure>??????</revisionOnScmFailure>
               <providerImplementations>
                 <svn>javasvn</svn>
               </providerImplementations>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>non-canonical-buildnumber</id>
-      <activation>
-        <file>
-          <missing>.svn</missing>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>buildnumber-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>create</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
-              <format>NON-CANONICAL_{0,date,yyyy-MM-dd_HH-mm}_{1}</format>
-              <items>
-                <item>timestamp</item>
-                <item>${user.name}</item>
-              </items>
             </configuration>
           </plugin>
         </plugins>
