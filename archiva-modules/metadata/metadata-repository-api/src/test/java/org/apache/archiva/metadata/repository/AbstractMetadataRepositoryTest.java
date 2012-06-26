@@ -33,7 +33,6 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
 import org.fest.assertions.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -1139,6 +1138,49 @@ public abstract class AbstractMetadataRepositoryTest
 
         assertTrue(
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+    }
+
+    @Test
+    public void deleteSnapshotVersion()
+        throws Exception
+    {
+        ArtifactMetadata artifactOne = createArtifact();
+        artifactOne.setVersion( "2.0-20120618.214127-1" );
+        artifactOne.setProjectVersion( "2.0-SNAPSHOT" );
+        artifactOne.addFacet( new TestMetadataFacet( "value" ) );
+        artifactOne.setId( TEST_PROJECT + "-" + "2.0-20120618.214127-1" + "." + "jar" );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT", artifactOne );
+
+        ArtifactMetadata artifactTwo = createArtifact();
+        artifactTwo.setVersion( "2.0-20120618.214135-2" );
+        artifactTwo.setProjectVersion( "2.0-SNAPSHOT" );
+        artifactTwo.addFacet( new TestMetadataFacet( "value" ) );
+        artifactTwo.setId( TEST_PROJECT + "-" + "2.0-20120618.214135-2" + "." + "jar" );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT", artifactTwo );
+
+        Collection<ArtifactMetadata> artifactMetadatas =
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" );
+
+        Assertions.assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 2 );
+
+        log.info( "artifactMetadatas: {}", artifactMetadatas );
+
+        //assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
+        //    repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" ) ) );
+
+        repository.removeArtifact( artifactOne, "2.0-SNAPSHOT" );
+
+        artifactMetadatas = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" );
+
+        Assertions.assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 1 );
+
+        repository.removeArtifact( artifactTwo, "2.0-SNAPSHOT" );
+
+        artifactMetadatas = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" );
+
+        Assertions.assertThat( artifactMetadatas ).isNotNull().isEmpty();
     }
 
     private static ProjectMetadata createProject()
