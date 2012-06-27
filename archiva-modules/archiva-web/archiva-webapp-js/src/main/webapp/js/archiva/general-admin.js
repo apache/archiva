@@ -626,18 +626,19 @@ define("archiva.general-admin",["jquery","i18n","order!utils","order!jquery.tmpl
     return [];
   }
 
-  CacheEntry=function(key,size,cacheHits,cacheMiss,cacheHitRate){
+  CacheEntry=function(key,size,cacheHits,cacheMiss,cacheHitRate,inMemorySize){
     this.key=key;
     this.size=size;
     this.cacheHits=cacheHits;
     this.cacheMiss=cacheMiss;
     this.cacheHitRate=cacheHitRate;
+    this.inMemorySize=inMemorySize;
   }
 
   mapCacheEntries=function(data){
     if(data!=null){
       return $.map(data,function(item){
-        return new CacheEntry(item.key,item.size,item.cacheHits,item.cacheMiss,item.cacheHitRate);
+        return new CacheEntry(item.key,item.size,item.cacheHits,item.cacheMiss,item.cacheHitRate,item.inMemorySize);
       })
     }
     return [];

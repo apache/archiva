@@ -127,9 +127,11 @@ public class DefaultSystemStatusService
         for ( Map.Entry<String, Cache> entry : caches.entrySet() )
         {
             CacheStatistics cacheStatistics = entry.getValue().getStatistics();
+
             cacheEntries.add( new CacheEntry( entry.getKey(), cacheStatistics.getSize(), cacheStatistics.getCacheHits(),
                                               cacheStatistics.getCacheMiss(),
-                                              decimalFormat.format( cacheStatistics.getCacheHitRate() ).toString() ) );
+                                              decimalFormat.format( cacheStatistics.getCacheHitRate() ).toString(),
+                                              cacheStatistics.getInMemorySize() ) );
         }
 
         return cacheEntries;
