@@ -53,7 +53,8 @@ public class CacheEntry
         this.cacheHits = cacheHits;
         this.cacheMiss = cacheMiss;
         this.cacheHitRate = cacheHitRate;
-        this.inMemorySize = inMemorySize;
+        // size is in bytes so use kb
+        this.inMemorySize = inMemorySize / 1024;
     }
 
     public String getKey()
@@ -106,6 +107,10 @@ public class CacheEntry
         this.cacheHitRate = cacheHitRate;
     }
 
+    /**
+     *
+     * @return cache size in kb
+     */
     public long getInMemorySize()
     {
         return inMemorySize;
