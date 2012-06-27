@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -47,7 +48,15 @@ public class ArchivaRuntimeInfo
     {
         this.version = (String) archivaRuntimeProperties.get( "archiva.version" );
         this.buildNumber = (String) archivaRuntimeProperties.get( "archiva.buildNumber" );
-        this.timestamp = NumberUtils.createLong( (String) archivaRuntimeProperties.get( "archiva.timestamp" ) );
+        String archivaTimeStamp = (String) archivaRuntimeProperties.get( "archiva.timestamp" );
+        if ( NumberUtils.isNumber( archivaTimeStamp ) )
+        {
+            this.timestamp = NumberUtils.createLong( archivaTimeStamp );
+        }
+        else
+        {
+            this.timestamp = new Date().getTime();
+        }
         this.devMode = Boolean.getBoolean( "archiva.devMode" );
     }
 
