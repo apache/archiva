@@ -278,7 +278,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
                   artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
                   artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
                   $.get(artifactDownloadInfosUrl,function(data){
-                    var artifactDetailsDownloadViewModel = new ArtifactDetailsDownloadViewModel(mapArtifacts(data));
+                    var artifactDetailsDownloadViewModel = new ArtifactDetailsDownloadViewModel(mapArtifacts(data),self);
                     mainContent.find("#artifact-details-download-content" ).attr("data-bind",'template:{name:"artifact-details-download-content_tmpl"}');
                     ko.applyBindings(artifactDetailsDownloadViewModel,mainContent.find("#artifact-details-download-content" ).get(0));
                   });
@@ -387,8 +387,9 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
 
   }
 
-  ArtifactDetailsDownloadViewModel=function(artifacts){
+  ArtifactDetailsDownloadViewModel=function(artifacts, artifactVersionDetailViewModel){
     this.artifacts=ko.observableArray(artifacts);
+    this.artifactVersionDetailViewModel=artifactVersionDetailViewModel;
     var self=this;
     deleteArtifact=function(artifact){
 
@@ -404,6 +405,14 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
           success:function(data){
             self.artifacts.remove(artifact);
             displaySuccessMessage( $.i18n.prop('artifact.deleted'));
+            // reload datas from server
+            var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.artifactVersionDetailViewModel.groupId);
+            artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(self.artifactVersionDetailViewModel.version);
+            artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+            $.get(artifactDownloadInfosUrl,function(data){
+              self.artifacts(mapArtifacts(data));
+            });
+
           },
           error:function(data){
             displayRestError(data,"user-messages");
