@@ -405,10 +405,12 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
           success:function(data){
             self.artifacts.remove(artifact);
             displaySuccessMessage( $.i18n.prop('artifact.deleted'));
+            $("#main-content #artifact-details-download-content" ).html(smallSpinnerImg());
             // reload datas from server
             var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.artifactVersionDetailViewModel.groupId);
             artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(self.artifactVersionDetailViewModel.version);
             artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+
             $.get(artifactDownloadInfosUrl,function(data){
               self.artifacts(mapArtifacts(data));
             });
