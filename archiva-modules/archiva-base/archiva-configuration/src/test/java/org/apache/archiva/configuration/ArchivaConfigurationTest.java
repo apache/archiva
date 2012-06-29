@@ -22,7 +22,6 @@ package org.apache.archiva.configuration;
 import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.redback.components.springutils.ComponentContainer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -31,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -51,7 +51,10 @@ public class ArchivaConfigurationTest
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private ComponentContainer componentContainer;
+    protected ApplicationContext applicationContext;
+
+    @Inject
+    FileTypes filetypes;
 
     public static File getTestFile( String path )
     {
@@ -60,13 +63,9 @@ public class ArchivaConfigurationTest
 
     protected <T> T lookup( Class<T> clazz, String hint )
     {
-        return componentContainer.getComponent( clazz, hint );
+        return (T) applicationContext.getBean( "archivaConfiguration#" + hint, ArchivaConfiguration.class );
     }
 
-    protected <T> T lookup( Class<T> clazz )
-    {
-        return componentContainer.getComponent( clazz );
-    }
 
     @Test
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
@@ -151,7 +150,6 @@ public class ArchivaConfigurationTest
                                       int proxyConnectorExpected )
         throws Exception
     {
-        FileTypes filetypes = lookup( FileTypes.class );
 
         assertEquals( "check managed repositories: " + configuration.getManagedRepositories(), managedExpected,
                       configuration.getManagedRepositories().size() );
