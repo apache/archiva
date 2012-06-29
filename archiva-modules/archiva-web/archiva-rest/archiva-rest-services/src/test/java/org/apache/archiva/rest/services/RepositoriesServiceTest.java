@@ -383,7 +383,6 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
 
-
             artifacts =
                 browseService.getArtifactDownloadInfos( "org.apache.archiva.redback.components", "spring-quartz",
                                                         "2.0-SNAPSHOT", SNAPSHOT_REPO_ID );
@@ -425,8 +424,7 @@ public class RepositoriesServiceTest
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SNAPSHOT_REPO_ID, true );
             assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) );
         }
-        ManagedRepository managedRepository =
-            getTestManagedRepository( SNAPSHOT_REPO_ID, "repo-with-snapshots" );
+        ManagedRepository managedRepository = getTestManagedRepository( SNAPSHOT_REPO_ID, "repo-with-snapshots" );
         /*managedRepository.setId( SNAPSHOT_REPO_ID );
         managedRepository.setLocation( );
         managedRepository.setCronExpression( "* * * * * ?" );*/
@@ -442,8 +440,16 @@ public class RepositoriesServiceTest
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) != null )
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SNAPSHOT_REPO_ID, true );
-            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) );
+            try
+            {
+                getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SNAPSHOT_REPO_ID, true );
+                assertNull(
+                    getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) );
+            }
+            catch ( Exception e )
+            {
+                log.warn( "skip issue while cleaning test repository: this can cause test failure", e );
+            }
         }
 
     }

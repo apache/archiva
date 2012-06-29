@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.CommonServices;
@@ -38,7 +39,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
-import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.junit.Before;
 
 import javax.ws.rs.core.MediaType;
@@ -344,13 +344,29 @@ public abstract class AbstractArchivaRestTest
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) != null )
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
-            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+            try
+            {
+                getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( TARGET_REPO_ID, true );
+                assertNull(
+                    getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
+            }
+            catch ( Exception e )
+            {
+                log.warn( "skip issue while cleaning test repository: this can cause test failure", e );
+            }
         }
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
-            assertNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+            try
+            {
+                getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( SOURCE_REPO_ID, true );
+                assertNull(
+                    getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) );
+            }
+            catch ( Exception e )
+            {
+                log.warn( "skip issue while cleaning test repository: this can cause test failure", e );
+            }
         }
 
     }
