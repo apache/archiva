@@ -318,8 +318,7 @@ public class RepositoriesServiceTest
         }
         finally
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( managedRepository.getId(),
-                                                                                          true );
+            cleanQuietlyRepo( managedRepository.getId() );
         }
     }
 
@@ -336,8 +335,19 @@ public class RepositoriesServiceTest
         }
         finally
         {
-            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( managedRepository.getId(),
-                                                                                          true );
+            cleanQuietlyRepo( managedRepository.getId() );
+        }
+    }
+
+    protected void cleanQuietlyRepo( String id )
+    {
+        try
+        {
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, true );
+        }
+        catch ( Exception e )
+        {
+            log.info( "ignore issue deleting test repo: {}", e.getMessage() );
         }
     }
 
