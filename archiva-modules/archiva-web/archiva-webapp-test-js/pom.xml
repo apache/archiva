@@ -99,6 +99,23 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -199,6 +216,7 @@
             <configuration>
               <systemPropertyVariables>
                 <browser>${selenium.browser}</browser>
+                <selenium.browser>${selenium.browser}</selenium.browser>
                 <baseUrl>${baseUrl}</baseUrl>
                 <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
                 <seleniumHost>${seleniumHost}</seleniumHost>
