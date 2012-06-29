@@ -19,12 +19,12 @@ package org.apache.archiva.configuration.functors;
  * under the License.
  */
 
+import org.apache.archiva.configuration.FileType;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.configuration.FileType;
 
 /**
- * FiletypeSelectionPredicate 
+ * FiletypeSelectionPredicate
  *
  * @version $Id$
  */

@@ -19,6 +19,7 @@ package org.apache.archiva.configuration.functors;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.commons.lang.StringUtils;
 
@@ -26,10 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 /**
- * ProxyConnectorConfigurationOrderComparatorTest 
+ * ProxyConnectorConfigurationOrderComparatorTest
  *
  * @version $Id$
  */
@@ -47,7 +46,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
 
         Collections.sort( proxies, ProxyConnectorConfigurationOrderComparator.getInstance() );
 
-        assertProxyOrder( new String[] { "corporate", "snapshots", "3rdparty", "sandbox" }, proxies );
+        assertProxyOrder( new String[]{ "corporate", "snapshots", "3rdparty", "sandbox" }, proxies );
     }
 
     public void testSortNormal()
@@ -61,7 +60,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
 
         Collections.sort( proxies, new ProxyConnectorConfigurationOrderComparator() );
 
-        assertProxyOrder( new String[] { "snapshots", "3rdparty", "corporate", "sandbox" }, proxies );
+        assertProxyOrder( new String[]{ "snapshots", "3rdparty", "corporate", "sandbox" }, proxies );
     }
 
     public void testSortPartial()
@@ -75,7 +74,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
 
         Collections.sort( proxies, new ProxyConnectorConfigurationOrderComparator() );
 
-        assertProxyOrder( new String[] { "3rdparty", "corporate", "snapshots", "sandbox" }, proxies );
+        assertProxyOrder( new String[]{ "3rdparty", "corporate", "snapshots", "sandbox" }, proxies );
     }
 
     private void assertProxyOrder( String[] ids, List<ProxyConnectorConfiguration> proxies )

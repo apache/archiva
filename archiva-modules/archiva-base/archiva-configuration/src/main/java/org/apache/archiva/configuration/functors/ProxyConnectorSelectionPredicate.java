@@ -19,12 +19,13 @@ package org.apache.archiva.configuration.functors;
  * under the License.
  */
 
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 
 /**
  * ProxyConnectorPredicate
+ *
  * @version $Id$
  */
 public class ProxyConnectorSelectionPredicate
@@ -47,8 +48,8 @@ public class ProxyConnectorSelectionPredicate
         if ( object instanceof ProxyConnectorConfiguration )
         {
             ProxyConnectorConfiguration connector = (ProxyConnectorConfiguration) object;
-            return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils
-                .equals( targetId, connector.getTargetRepoId() ) );
+            return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils.equals( targetId,
+                                                                                                        connector.getTargetRepoId() ) );
         }
 
         return satisfies;

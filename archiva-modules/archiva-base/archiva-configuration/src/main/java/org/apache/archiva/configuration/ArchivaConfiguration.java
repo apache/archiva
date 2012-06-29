@@ -45,13 +45,13 @@ public interface ArchivaConfiguration
      */
     void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException;
-    
+
     /**
      * Determines if the configuration in use was as a result of a defaulted configuration.
-     * 
+     *
      * @return true if the configuration was created from the default-archiva.xml as opposed
-     *              to being loaded from the usual locations of ${user.home}/.m2/archiva.xml or
-     *              ${appserver.base}/conf/archiva.xml
+     *         to being loaded from the usual locations of ${user.home}/.m2/archiva.xml or
+     *         ${appserver.base}/conf/archiva.xml
      */
     boolean isDefaulted();
 
@@ -61,24 +61,25 @@ public interface ArchivaConfiguration
      * @param listener the listener
      */
     void addListener( ConfigurationListener listener );
-    
+
     /**
      * Remove a configuration listener to stop notifications of changes to the configuration.
      *
      * @param listener the listener
      */
     void removeListener( ConfigurationListener listener );
-    
+
     /**
      * Add a registry listener to notify of events in plexus-registry.
      *
      * @param listener the listener
-     * TODO: Remove in future.
+     *                 TODO: Remove in future.
      */
     void addChangeListener( RegistryListener listener );
 
     /**
      * reload configuration from file included registry
+     *
      * @since 1.4-M1
      */
     void reload();

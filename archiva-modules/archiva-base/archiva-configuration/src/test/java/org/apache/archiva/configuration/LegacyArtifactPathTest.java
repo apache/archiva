@@ -26,6 +26,7 @@ import org.junit.runners.JUnit4;
 
 /**
  * Test the generated LegacyArtifactPath class from Modello. This is primarily to test the hand coded methods.
+ *
  * @since 1.1
  */
 @RunWith( JUnit4.class )

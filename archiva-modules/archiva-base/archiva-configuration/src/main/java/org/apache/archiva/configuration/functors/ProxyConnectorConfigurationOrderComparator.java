@@ -24,16 +24,15 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import java.util.Comparator;
 
 /**
- * @deprecated
- * ProxyConnectorConfigurationOrderComparator 
- *
  * @version $Id$
+ * @deprecated ProxyConnectorConfigurationOrderComparator
  */
 public class ProxyConnectorConfigurationOrderComparator
     implements Comparator<ProxyConnectorConfiguration>
 {
-    private static ProxyConnectorConfigurationOrderComparator INSTANCE = new ProxyConnectorConfigurationOrderComparator();
-    
+    private static ProxyConnectorConfigurationOrderComparator INSTANCE =
+        new ProxyConnectorConfigurationOrderComparator();
+
     public int compare( ProxyConnectorConfiguration o1, ProxyConnectorConfiguration o2 )
     {
         if ( o1 == null && o2 == null )
@@ -57,7 +56,7 @@ public class ProxyConnectorConfigurationOrderComparator
         {
             return 1;
         }
-        
+
         if ( o1.getOrder() != 0 && o2.getOrder() == 0 )
         {
             return -1;

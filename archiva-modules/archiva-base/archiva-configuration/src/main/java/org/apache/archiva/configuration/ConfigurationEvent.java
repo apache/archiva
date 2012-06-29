@@ -20,7 +20,7 @@ package org.apache.archiva.configuration;
  */
 
 /**
- * ConfigurationEvent 
+ * ConfigurationEvent
  *
  * @version $Id$
  */

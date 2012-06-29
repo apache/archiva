@@ -19,9 +19,9 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,7 +111,7 @@ public class MavenProxyPropertyLoader
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private Properties getSubset( Properties props, String prefix )
     {
         Enumeration keys = props.keys();

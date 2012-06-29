@@ -24,7 +24,7 @@ import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import java.util.Comparator;
 
 /**
- * NetworkProxyComparator 
+ * NetworkProxyComparator
  *
  * @version $Id$
  */

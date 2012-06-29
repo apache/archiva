@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 
-
 import java.util.Comparator;
 
 /**

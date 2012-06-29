@@ -21,7 +21,6 @@ package org.apache.archiva.configuration;
 
 /**
  * An error in the configuration.
- *
  */
 public class InvalidConfigurationException
     extends Exception
