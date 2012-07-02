@@ -1762,6 +1762,7 @@
               <exclude>DEPENDENCIES</exclude>
               <exclude>README.txt</exclude>
               <exclude>*.sh</exclude>
+              <exclude>.git/**</exclude>
             </excludes>
           </configuration>
         </plugin>
