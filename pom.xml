@@ -1652,19 +1652,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <version>0.8</version>
-          <configuration>
-            <excludes>
-              <exclude>.gitignore</exclude>
-              <exclude>DEPENDENCIES</exclude>
-              <exclude>README.txt</exclude>
-              <exclude>*.sh</exclude>
-            </excludes>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>appassembler-maven-plugin</artifactId>
           <version>1.2.3-SNAPSHOT</version>
@@ -1766,11 +1753,43 @@
           <artifactId>tomcat7-maven-plugin</artifactId>
           <version>${asfTomcatMavenPluginVersion}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>.gitignore</exclude>
+              <exclude>DEPENDENCIES</exclude>
+              <exclude>README.txt</exclude>
+              <exclude>*.sh</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
 
   <profiles>
+    <profile>
+      <id>rat-check</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.rat</groupId>
+            <artifactId>apache-rat-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>rat-verify</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>release</id>
       <build>
