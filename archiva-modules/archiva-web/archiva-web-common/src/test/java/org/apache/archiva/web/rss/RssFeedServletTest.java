@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RssFeedServletTest

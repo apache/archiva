@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * LegacyToDefaultConverterTest

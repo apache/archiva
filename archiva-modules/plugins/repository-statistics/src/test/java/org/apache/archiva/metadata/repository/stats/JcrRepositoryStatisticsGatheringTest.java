@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -53,7 +53,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

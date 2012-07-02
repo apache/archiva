@@ -37,7 +37,7 @@ import javax.inject.Named;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 

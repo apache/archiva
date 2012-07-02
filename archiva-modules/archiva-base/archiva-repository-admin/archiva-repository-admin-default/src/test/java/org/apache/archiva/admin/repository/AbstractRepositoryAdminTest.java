@@ -39,7 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy

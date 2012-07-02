@@ -45,7 +45,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * AbstractRepositoryServletTestCase

@@ -33,7 +33,7 @@ import java.io.FileReader;
 import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 

@@ -20,7 +20,7 @@ package org.apache.archiva.webdav;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -22,7 +22,7 @@ package org.apache.archiva.xml;
 import java.io.File;
 
 import junit.framework.TestCase;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
 /**

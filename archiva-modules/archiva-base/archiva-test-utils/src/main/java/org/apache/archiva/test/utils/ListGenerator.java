@@ -1,4 +1,4 @@
-package org.apache.archiva.test;
+package org.apache.archiva.test.utils;
 
 /*
  * Copyright 2012 The Apache Software Foundation.

@@ -26,7 +26,7 @@ import org.apache.struts2.StrutsSpringTestCase;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
 /**
  * AbstractWebworkTestCase 

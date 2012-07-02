@@ -45,7 +45,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

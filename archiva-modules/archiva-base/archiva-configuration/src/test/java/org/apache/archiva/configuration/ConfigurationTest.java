@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * Test the generated Configuration class from Modello. This is primarily to test the hand coded methods.

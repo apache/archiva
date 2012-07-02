@@ -1,4 +1,4 @@
-package org.apache.archiva.test;
+package org.apache.archiva.test.utils;
 
 /*
  * Copyright 2012 The Apache Software Foundation.
@@ -16,23 +16,23 @@ package org.apache.archiva.test;
  * limitations under the License.
  */
 
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
 /**
  * @author Eric
  */
-public class ArchivaSpringJUnit4ClassRunner
-    extends SpringJUnit4ClassRunner
+public class ArchivaBlockJUnit4ClassRunner
+    extends BlockJUnit4ClassRunner
 {
 
-    public ArchivaSpringJUnit4ClassRunner( Class<?> clazz )
+    public ArchivaBlockJUnit4ClassRunner( Class<?> klass )
         throws InitializationError
     {
-        super( clazz );
+        super( klass );
     }
 
     @Override
@@ -40,6 +40,4 @@ public class ArchivaSpringJUnit4ClassRunner
     {
         return ListGenerator.getShuffleList( super.computeTestMethods() );
     }
-
-
 }

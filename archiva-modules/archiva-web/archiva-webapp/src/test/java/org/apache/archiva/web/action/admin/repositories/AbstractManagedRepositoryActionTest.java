@@ -25,9 +25,8 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.struts2.StrutsSpringTestCase;
 
 import java.io.File;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractManagedRepositoryActionTest

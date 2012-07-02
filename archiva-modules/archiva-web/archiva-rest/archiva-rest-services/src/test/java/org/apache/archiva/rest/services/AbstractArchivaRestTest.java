@@ -45,7 +45,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.Collections;
 import java.util.Date;
-import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
 /**

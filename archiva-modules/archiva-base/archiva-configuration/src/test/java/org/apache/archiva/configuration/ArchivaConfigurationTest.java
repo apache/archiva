@@ -38,7 +38,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the configuration store.

@@ -21,8 +21,6 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
@@ -31,7 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
 import javax.inject.Inject;
-import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * AbstractRepositoryLayerTestCase
