@@ -1764,6 +1764,7 @@
               <exclude>*.sh</exclude>
               <exclude>.git/**</exclude>
               <exclude>src/test/resources/projects/compile/goal.txt</exclude>
+              <exclude>**/*.iml</exclude>
             </excludes>
           </configuration>
         </plugin>

@@ -1219,6 +1219,8 @@
               <exclude>src/test/resources/test-repo/**</exclude>
               <exclude>src/test/resources/**</exclude>
               <exclude>src/sql/**</exclude>
+              <exclude>src/test/repositories/test-repo/**</exclude>
+              <exclude>src/main/webapp/META-INF/MANIFEST.MF</exclude>
             </excludes>
           </configuration>
         </plugin>

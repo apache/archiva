@@ -368,6 +368,8 @@
           <configuration>
             <excludes>
               <exclude>src/test/repo-with-osgi/**</exclude>
+              <exclude>src/test/repo-with-classifier-only/**</exclude>
+              <exclude>src/test/repo-with-snapshots/**</exclude>
             </excludes>
           </configuration>
         </plugin>

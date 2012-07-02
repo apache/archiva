@@ -92,6 +92,7 @@
           <configuration>
             <excludes>
               <!-- for when the profile is not activated -->
+              <exclude>archiva-webapp-test-js/**</exclude>
               <exclude>archiva-webapp-test/**</exclude>
             </excludes>
           </configuration>
