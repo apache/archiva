@@ -1774,6 +1774,7 @@
               <exclude>.git/**</exclude>
               <exclude>src/test/resources/projects/compile/goal.txt</exclude>
               <exclude>**/*.iml</exclude>
+              <exclude>build-number.txt</exclude>
             </excludes>
           </configuration>
         </plugin>
