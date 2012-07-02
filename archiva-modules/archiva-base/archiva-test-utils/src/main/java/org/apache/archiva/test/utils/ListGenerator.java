@@ -20,15 +20,19 @@ import org.junit.runners.model.FrameworkMethod;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
+ * Generator of list of random test method
+ * -Dorg.apache.archiva.test=n
+ * n<=0 default jdk behavior
+ * n>0 number of round of random collection
+ *
  * @author Eric
  */
 public class ListGenerator
 {
-    private static int MAXROUND = 1;
+    private static int MAXROUND = 10;
 
     private ListGenerator()
     {
@@ -36,9 +40,16 @@ public class ListGenerator
 
     static List<FrameworkMethod> getShuffleList( List<FrameworkMethod> computeTestMethods )
     {
-        String javaSpecVersion = System.getProperty( "java.specification.version" );
-        // 1.6 1.5 version not shuffled to allow build
-        if ( javaSpecVersion.equals( "1.6" ) || javaSpecVersion.equals( "1.5" ) )
+        int testRound;
+        try
+        {
+            testRound = Integer.valueOf( System.getProperty( "org.apache.archiva.test", "0" ) );
+        }
+        catch ( NumberFormatException nfe )
+        {
+            testRound = 0;
+        }
+        if ( testRound <= 0 ) // default list usage
         {
             return computeTestMethods;
         }
@@ -46,32 +57,28 @@ public class ListGenerator
         {
             return null;
         }
-        List<FrameworkMethod> generated = new ArrayList<FrameworkMethod>( computeTestMethods );
 
-        Collections.sort( generated, new FrameworkMethodComparator() );
+        List<FrameworkMethod> generated = new ArrayList<FrameworkMethod>();
 
-        // 1.7 and more generated shuffled list
-        // double test method to have more change of failure
-        /*for ( int i = 0; i < MAXROUND; i++ )
+        testRound = Math.min( MAXROUND, testRound );
+
+        for ( int i = 0; i < testRound; i++ )
         {
             Collections.shuffle( computeTestMethods );
             generated.addAll( computeTestMethods );
-        }*/
-        //generated.add( computeTestMethods.get( 0 ) );
-
-        //Collections.shuffle( computeTestMethods );
-        //generated.addAll( computeTestMethods );
+        }
+        // Collections.sort( generated, new FrameworkMethodComparator() );
 
         return generated;
     }
 
-    private static class FrameworkMethodComparator
+    /*private static class FrameworkMethodComparator
         implements Comparator<FrameworkMethod>
     {
         public int compare( FrameworkMethod frameworkMethod, FrameworkMethod frameworkMethod1 )
         {
             return frameworkMethod.getName().compareTo( frameworkMethod1.getName() );
         }
-    }
+    }*/
 
 }
