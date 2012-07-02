@@ -666,7 +666,25 @@
       </resource>
     </resources>
 
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>src/main/webapp/css/*.css</exclude>
+              <exclude>src/main/webapp/js/*.js</exclude>
+              <exclude>src/site/resources/css/*.css</exclude>
+              <exclude>src/site/resources/js/*.js</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
+
       <!-- commented as not needed now
       <plugin>
         <groupId>com.samaxes.maven</groupId>
