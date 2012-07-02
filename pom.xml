@@ -847,6 +847,7 @@
             <exclude>README.txt</exclude>
             <exclude>*.sh</exclude>
             <exclude>.git/**</exclude>
+            <exclude>build-number.txt</exclude>
           </excludes>
         </configuration>
         <executions>
