@@ -20,12 +20,16 @@ package org.apache.archiva.model;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * RepositoryURLTest 
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryURLTest
     extends TestCase
 {
@@ -49,43 +53,51 @@ public class RepositoryURLTest
         assertEquals( "Password", expectedPassword, rurl.getPassword() );
     }
 
+    @Test
     public void testFileUrlNormal()
     {
         assertURL( "file:///home/joakim/code/test/this/", "file", NO_HOST, NO_PORT, "/home/joakim/code/test/this/",
                    NO_USER, NO_PASS );
     }
 
+    @Test
     public void testFileUrlShort()
     {
         assertURL( "file:/home/joakim/code/test/this/", "file", NO_HOST, NO_PORT, "/home/joakim/code/test/this/",
                    NO_USER, NO_PASS );
     }
 
+    @Test
     public void testHttpUrlPathless()
     {
         assertURL( "http://machine", "http", "machine", NO_PORT, "/", NO_USER, NO_PASS );
     }
 
+    @Test
     public void testHttpUrlWithPort()
     {
         assertURL( "http://machine:8080/", "http", "machine", "8080", "/", NO_USER, NO_PASS );
     }
 
+    @Test
     public void testHttpUrlWithUsernamePassword()
     {
         assertURL( "http://user:pass@machine/secured/", "http", "machine", NO_PORT, "/secured/", "user", "pass" );
     }
 
+    @Test
     public void testHttpUrlWithUsernameNoPassword()
     {
         assertURL( "http://user@machine/secured/", "http", "machine", NO_PORT, "/secured/", "user", NO_PASS );
     }
 
+    @Test
     public void testHttpUrlWithUsernamePasswordAndPort()
     {
         assertURL( "http://user:pass@machine:9090/secured/", "http", "machine", "9090", "/secured/", "user", "pass" );
     }
 
+    @Test
     public void testBogusWithPath()
     {
         // This should not fail.  The intent of RepositoryURL is to have it support oddball protocols that

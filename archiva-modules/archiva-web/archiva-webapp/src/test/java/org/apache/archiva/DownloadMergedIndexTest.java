@@ -37,16 +37,16 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class DownloadMergedIndexTest
     extends AbstractDownloadTest
 {

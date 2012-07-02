@@ -40,19 +40,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * AbstractRepositoryServletTestCase
  *
  * @version $Id$
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/repository-servlet-simple.xml" } )
 public abstract class AbstractRepositoryServletTestCase
     extends TestCase

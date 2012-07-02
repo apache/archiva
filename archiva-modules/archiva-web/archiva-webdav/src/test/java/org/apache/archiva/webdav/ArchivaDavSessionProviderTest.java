@@ -48,7 +48,12 @@ import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ArchivaDavSessionProviderTest
     extends TestCase
 {
@@ -57,7 +62,8 @@ public class ArchivaDavSessionProviderTest
     private WebdavRequest request;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -65,6 +71,7 @@ public class ArchivaDavSessionProviderTest
         request = new WebdavRequestImpl( new HttpServletRequestMock(), null );
     }
 
+    @Test
     public void testAttachSession()
         throws Exception
     {
@@ -73,6 +80,7 @@ public class ArchivaDavSessionProviderTest
         assertNotNull( request.getDavSession() );
     }
 
+    @Test
     public void testReleaseSession()
         throws Exception
     {

@@ -32,17 +32,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the configuration store.
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaConfigurationTest
     extends TestCase

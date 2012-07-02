@@ -21,10 +21,7 @@ package org.apache.archiva.consumers.core.repository;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -39,18 +36,17 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractRepositoryPurgeTest
     extends TestCase

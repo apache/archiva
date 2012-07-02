@@ -26,12 +26,14 @@ import org.apache.struts2.StrutsSpringTestCase;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.runner.RunWith;
 /**
  * AbstractWebworkTestCase 
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractWebworkTestCase
     extends StrutsSpringTestCase
 {

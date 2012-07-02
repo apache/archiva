@@ -43,7 +43,11 @@ import org.apache.struts2.StrutsSpringTestCase;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractActionTestCase
     extends StrutsSpringTestCase
 {
@@ -207,7 +211,8 @@ public abstract class AbstractActionTestCase
     }
 
     @Override
-    protected void setUp( )
+    @Before
+    public void setUp( )
         throws Exception
     {
         super.setUp( );
@@ -223,7 +228,8 @@ public abstract class AbstractActionTestCase
     }
 
     @Override
-    protected void tearDown( )
+    @After
+    public void tearDown( )
         throws Exception
     {
         super.tearDown( );

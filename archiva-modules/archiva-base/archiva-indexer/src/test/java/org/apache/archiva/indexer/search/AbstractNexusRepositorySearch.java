@@ -48,11 +48,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractNexusRepositorySearch
     extends TestCase

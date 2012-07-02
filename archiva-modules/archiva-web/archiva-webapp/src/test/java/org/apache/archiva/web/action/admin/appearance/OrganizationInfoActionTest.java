@@ -20,12 +20,14 @@ package org.apache.archiva.web.action.admin.appearance;
  */
 
 import org.apache.archiva.configuration.OrganisationInformation;
+import org.junit.Test;
 
 /**
  */
 public class OrganizationInfoActionTest
     extends AbstractOrganizationInfoActionTest
 {
+    @Test
     public void testOrganisationInfoLoads()
         throws Exception
     {

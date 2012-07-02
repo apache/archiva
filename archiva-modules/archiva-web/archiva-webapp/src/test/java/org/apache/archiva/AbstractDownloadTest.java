@@ -49,10 +49,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 
 import java.util.Collections;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.runner.RunWith;
 
 /**
  * @author Olivier Lamy
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractDownloadTest
     extends TestCase
 {

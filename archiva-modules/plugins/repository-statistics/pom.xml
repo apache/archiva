@@ -50,10 +50,11 @@
       <artifactId>jackrabbit-jcr-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-testutil</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>  
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>

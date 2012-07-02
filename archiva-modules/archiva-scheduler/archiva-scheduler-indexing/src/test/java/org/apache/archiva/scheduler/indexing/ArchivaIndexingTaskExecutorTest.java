@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.io.BufferedInputStream;
@@ -55,11 +54,12 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * ArchivaIndexingTaskExecutorTest
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class ArchivaIndexingTaskExecutorTest
     extends TestCase

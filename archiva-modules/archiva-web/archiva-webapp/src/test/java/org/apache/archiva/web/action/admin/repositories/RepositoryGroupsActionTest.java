@@ -37,6 +37,7 @@ import org.easymock.MockControl;
 
 import java.util.Collections;
 import java.util.List;
+import org.junit.Test;
 
 /**
  * RepositoryGroupsActionTest
@@ -56,7 +57,8 @@ public class RepositoryGroupsActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
-    protected void setUp()
+    @Override
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -72,6 +74,7 @@ public class RepositoryGroupsActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException, RepositoryAdminException
     {
@@ -85,6 +88,7 @@ public class RepositoryGroupsActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testAddRepositoryGroup()
         throws Exception
     {
@@ -108,6 +112,7 @@ public class RepositoryGroupsActionTest
         archivaConfigurationControl.verify();
     }
 
+    @Test
     public void testAddEmptyRepositoryGroup()
         throws Exception
     {
@@ -127,6 +132,7 @@ public class RepositoryGroupsActionTest
         assertEquals( 0, configuration.getRepositoryGroups().size() );
     }
 
+    @Test
     public void testAddDuplicateRepositoryGroup()
         throws Exception
     {
@@ -156,6 +162,7 @@ public class RepositoryGroupsActionTest
                       action.getRepositoryGroupAdmin().getRepositoriesGroups() );
     }
 
+    @Test
     public void testGetRepositoryGroups()
         throws Exception
     {
@@ -191,6 +198,7 @@ public class RepositoryGroupsActionTest
         assertEquals( REPO2_ID, repos.get( 0 ) );
     }
 
+    @Test
     public void testAddRepositoryToGroup()
         throws Exception
     {
@@ -240,6 +248,7 @@ public class RepositoryGroupsActionTest
         assertNull( action.getGroupToRepositoryMap().get( repoGroup.getId() ) );
     }
 
+    @Test
     public void testRemoveRepositoryFromGroup()
         throws Exception
     {
@@ -291,6 +300,7 @@ public class RepositoryGroupsActionTest
         assertEquals( REPO2_ID, repos.get( 1 ) );
     }
 
+    @Test
     public void testAddDuplicateRepositoryToGroup()
         throws Exception
     {
@@ -327,6 +337,7 @@ public class RepositoryGroupsActionTest
         assertEquals( Action.ERROR, result );
     }
 
+    @Test
     public void testRemoveRepositoryNotInGroup()
         throws Exception
     {

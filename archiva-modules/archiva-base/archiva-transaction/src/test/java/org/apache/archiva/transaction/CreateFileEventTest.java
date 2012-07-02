@@ -23,6 +23,8 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.FileUtil;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  */
@@ -31,6 +33,7 @@ public class CreateFileEventTest
 {
     private File testDir = new File( FileUtil.getBasedir(), "target/transaction-tests/create-file" );
 
+    @Test
     public void testCreateCommitRollback()
         throws Exception
     {
@@ -56,6 +59,7 @@ public class CreateFileEventTest
         assertTrue( "target directory still exists", new File( FileUtil.getBasedir(), "target" ).exists() );
     }
 
+    @Test
     public void testCreateCommitRollbackWithBackup()
         throws Exception
     {
@@ -90,6 +94,7 @@ public class CreateFileEventTest
         assertChecksumRollback( testFile );
     }
 
+    @Test
     public void testCreateRollbackCommit()
         throws Exception
     {
@@ -110,7 +115,9 @@ public class CreateFileEventTest
         assertChecksumCommit( testFile );
     }
 
-    protected void tearDown()
+    @Override
+    @After
+    public void tearDown()
         throws Exception
     {
         super.tearDown();

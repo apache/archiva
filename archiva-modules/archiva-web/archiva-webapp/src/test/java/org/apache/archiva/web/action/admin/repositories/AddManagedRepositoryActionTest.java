@@ -42,6 +42,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * AddManagedRepositoryActionTest
@@ -71,7 +73,8 @@ public class AddManagedRepositoryActionTest
 
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -111,6 +114,7 @@ public class AddManagedRepositoryActionTest
 
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException
     {
@@ -124,6 +128,7 @@ public class AddManagedRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testAddRepositoryInitialPage()
         throws Exception
     {
@@ -153,6 +158,7 @@ public class AddManagedRepositoryActionTest
         assertFalse( configuration.isSnapshots() );
     }
 
+    @Test
     public void testAddRepository()
         throws Exception
     {
@@ -216,6 +222,7 @@ public class AddManagedRepositoryActionTest
     }
 
 
+    @Test
     public void testAddRepositoryExistingLocation()
         throws Exception
     {
@@ -242,6 +249,7 @@ public class AddManagedRepositoryActionTest
         registryControl.verify();
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithNullInputs()
         throws Exception
     {
@@ -277,6 +285,7 @@ public class AddManagedRepositoryActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithBlankInputs()
         throws Exception
     {
@@ -313,6 +322,7 @@ public class AddManagedRepositoryActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithInvalidInputs()
         throws Exception
     {
@@ -366,6 +376,7 @@ public class AddManagedRepositoryActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithValidInputs()
         throws Exception
     {

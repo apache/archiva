@@ -24,19 +24,19 @@ import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.Properties;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * CachedFailuresPolicyTest
  *
  * @version $Id$
  */
-@RunWith( value = SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class CachedFailuresPolicyTest
     extends TestCase

@@ -147,6 +147,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-testutil</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>  
+    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <scope>test</scope>

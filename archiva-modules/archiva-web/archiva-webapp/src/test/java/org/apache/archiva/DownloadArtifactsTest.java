@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +50,12 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class DownloadArtifactsTest
     extends AbstractDownloadTest
 {

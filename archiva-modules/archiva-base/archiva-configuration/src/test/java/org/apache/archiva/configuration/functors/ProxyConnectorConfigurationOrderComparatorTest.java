@@ -26,15 +26,20 @@ import org.apache.commons.lang.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * ProxyConnectorConfigurationOrderComparatorTest
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ProxyConnectorConfigurationOrderComparatorTest
     extends TestCase
 {
+    @Test
     public void testSortOfAllZeros()
     {
         List<ProxyConnectorConfiguration> proxies = new ArrayList<ProxyConnectorConfiguration>();
@@ -49,6 +54,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
         assertProxyOrder( new String[]{ "corporate", "snapshots", "3rdparty", "sandbox" }, proxies );
     }
 
+    @Test
     public void testSortNormal()
     {
         List<ProxyConnectorConfiguration> proxies = new ArrayList<ProxyConnectorConfiguration>();
@@ -63,6 +69,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
         assertProxyOrder( new String[]{ "snapshots", "3rdparty", "corporate", "sandbox" }, proxies );
     }
 
+    @Test
     public void testSortPartial()
     {
         List<ProxyConnectorConfiguration> proxies = new ArrayList<ProxyConnectorConfiguration>();

@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -41,13 +40,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * RepositoryScannerTest
  *
  * @version $Id$
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class RepositoryScannerTest
     extends TestCase

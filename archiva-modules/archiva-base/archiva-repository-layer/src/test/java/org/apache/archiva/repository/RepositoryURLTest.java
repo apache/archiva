@@ -25,12 +25,16 @@ import org.apache.archiva.model.RepositoryURL;
 import java.net.MalformedURLException;
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * RepositoryURLTest 
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryURLTest
     extends TestCase
 {
@@ -46,7 +50,8 @@ public class RepositoryURLTest
         assertEquals( port, url.getPort() );
         assertEquals( path, url.getPath() );
     }
-
+    
+    @Test
     public void testProtocolHttp()
         throws MalformedURLException
     {
@@ -54,6 +59,7 @@ public class RepositoryURLTest
                    "/path/to/resource.txt" );
     }
 
+    @Test
     public void testProtocolWagonWebdav()
         throws MalformedURLException
     {
@@ -61,6 +67,7 @@ public class RepositoryURLTest
                    "/path/to/resource.txt" );
     }
 
+    @Test
     public void testProtocolHttpWithPort()
         throws MalformedURLException
     {
@@ -68,6 +75,7 @@ public class RepositoryURLTest
                    "/path/to/resource.txt" );
     }
 
+    @Test
     public void testProtocolHttpWithUsername()
         throws MalformedURLException
     {
@@ -75,6 +83,7 @@ public class RepositoryURLTest
                    "/path/to/resource.txt" );
     }
 
+    @Test
     public void testProtocolHttpWithUsernamePassword()
         throws MalformedURLException
     {
@@ -82,6 +91,7 @@ public class RepositoryURLTest
                    "/path/to/resource.txt" );
     }
 
+    @Test
     public void testProtocolHttpWithUsernamePasswordPort()
         throws MalformedURLException
     {

@@ -38,6 +38,7 @@
   <url>http://archiva.apache.org</url>
 
   <modules>
+    <module>archiva-testutil</module>
     <module>archiva-cli</module>
     <module>archiva-modules</module>
     <module>archiva-docs</module>

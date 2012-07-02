@@ -29,6 +29,8 @@ import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
 
 import java.util.Collections;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * AddRemoteRepositoryActionTest
@@ -46,7 +48,9 @@ public class AddRemoteRepositoryActionTest
 
     private static final String REPO_ID = "remote-repo-ident";
 
-    protected void setUp()
+    @Override
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -60,6 +64,7 @@ public class AddRemoteRepositoryActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {
@@ -73,6 +78,7 @@ public class AddRemoteRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testAddRemoteRepositoryInitialPage()
         throws Exception
     {
@@ -89,6 +95,7 @@ public class AddRemoteRepositoryActionTest
         assertEquals( Action.INPUT, status );
     }
 
+    @Test
     public void testAddRemoteRepository()
         throws Exception
     {

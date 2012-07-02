@@ -45,7 +45,6 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -53,6 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 
@@ -61,7 +61,7 @@ import static org.junit.Assert.*;
  *
  * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class HttpProxyTransferTest
 {

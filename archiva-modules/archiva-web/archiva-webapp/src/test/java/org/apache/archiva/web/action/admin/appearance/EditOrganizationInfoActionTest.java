@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  */
@@ -54,6 +56,7 @@ public class EditOrganizationInfoActionTest
     private ActionValidatorManager actionValidatorManager;
 
     @Override
+    @Before
     public void setUp()
         throws Exception
     {
@@ -64,6 +67,7 @@ public class EditOrganizationInfoActionTest
         actionValidatorManager = factory.createDefaultActionValidatorManager();
     }
 
+    @Test
     public void testOrganisationInfoSaves()
         throws Exception
     {
@@ -96,6 +100,7 @@ public class EditOrganizationInfoActionTest
         assertEquals( "URL1", orginfo.getUrl() );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithNullInputs()
         throws Exception
     {
@@ -122,6 +127,7 @@ public class EditOrganizationInfoActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithBlankInputs()
         throws Exception
     {
@@ -148,6 +154,7 @@ public class EditOrganizationInfoActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithInvalidInputs()
         throws Exception
     {
@@ -184,6 +191,7 @@ public class EditOrganizationInfoActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithValidInputs()
         throws Exception
     {

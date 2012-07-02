@@ -62,10 +62,11 @@
       <artifactId>commons-logging-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-testutil</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>    
   </dependencies>
   <build>
     <plugins>

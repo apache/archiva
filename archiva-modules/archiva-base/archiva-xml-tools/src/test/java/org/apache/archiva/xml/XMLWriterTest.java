@@ -24,6 +24,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.io.StringWriter;
+import org.junit.Test;
 
 /**
  * XMLWriterTest 
@@ -33,6 +34,7 @@ import java.io.StringWriter;
 public class XMLWriterTest
     extends AbstractArchivaXmlTestCase
 {
+    @Test
     public void testWrite()
         throws Exception
     {

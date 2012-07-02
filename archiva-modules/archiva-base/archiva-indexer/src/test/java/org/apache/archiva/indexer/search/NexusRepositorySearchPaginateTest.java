@@ -22,14 +22,14 @@ import junit.framework.TestCase;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class NexusRepositorySearchPaginateTest
     extends TestCase
 {

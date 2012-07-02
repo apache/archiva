@@ -31,13 +31,14 @@ import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.util.Arrays;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * RepositoryMetadataReaderTest
  *
  * @version $Id$
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class MavenRepositoryMetadataReaderTest
     extends TestCase
 {

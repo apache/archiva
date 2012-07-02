@@ -33,11 +33,16 @@ import org.easymock.MockControl;
 
 import java.util.Collections;
 
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 /**
  * EditRemoteRepositoryActionTest
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class EditRemoteRepositoryActionTest
     extends StrutsSpringTestCase
 {
@@ -55,7 +60,9 @@ public class EditRemoteRepositoryActionTest
         return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
     }
 
-    protected void setUp()
+    @Before
+    @Override
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -69,6 +76,7 @@ public class EditRemoteRepositoryActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testEditRemoteRepository()
         throws Exception
     {
@@ -98,6 +106,7 @@ public class EditRemoteRepositoryActionTest
         archivaConfigurationControl.verify();
     }
 
+    @Test
     public void testEditRemoteRepositoryInitialPage()
         throws Exception
     {
@@ -121,6 +130,7 @@ public class EditRemoteRepositoryActionTest
         assertRepositoryEquals( repository, createRepository() );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException, RepositoryAdminException
     {

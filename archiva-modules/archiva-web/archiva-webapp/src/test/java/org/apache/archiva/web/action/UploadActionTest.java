@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import org.junit.Test;
 
 /**
  * UploadActionTest
@@ -78,6 +79,7 @@ public class UploadActionTest
 
     private ManagedRepository managedRepository;
 
+    @Override
     public void setUp()
         throws Exception
     {
@@ -116,6 +118,7 @@ public class UploadActionTest
 
     }
 
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -286,6 +289,7 @@ public class UploadActionTest
         return control;
     }
 
+    @Test
     public void testArtifactUploadWithPomSuccessful()
         throws Exception
     {
@@ -327,6 +331,7 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
+    @Test
     public void testArtifactUploadWithClassifier()
         throws Exception
     {
@@ -387,6 +392,7 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
+    @Test
     public void testArtifactUploadGeneratePomSuccessful()
         throws Exception
     {
@@ -428,6 +434,7 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
+    @Test
     public void testArtifactUploadNoPomSuccessful()
         throws Exception
     {
@@ -511,6 +518,7 @@ public class UploadActionTest
         assertTrue( StringUtils.contains( contents, md5 ) );
     }
 
+    @Test
     public void testArtifactUploadFailedRepositoryNotFound()
         throws Exception
     {
@@ -548,6 +556,7 @@ public class UploadActionTest
             new File( repoLocation, "/org/apache/archiva/artifact-upload/" + MetadataTools.MAVEN_METADATA ).exists() );
     }
 
+    @Test
     public void testArtifactUploadSnapshots()
         throws Exception
     {
@@ -680,6 +689,7 @@ public class UploadActionTest
         assertEquals( "Incorrect build number in filename.", "2", buildnumber );
     }
 
+    @Test
     public void testChecksumIsCorrectWhenArtifactIsReUploaded()
         throws Exception
     {
@@ -748,6 +758,7 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
+    @Test
     public void testUploadArtifactAlreadyExistingRedeploymentsBlocked()
         throws Exception
     {
@@ -794,6 +805,7 @@ public class UploadActionTest
         verifyProjectMetadataChecksums( repoLocation );
     }
 
+    @Test
     public void testUploadArtifactAlreadyExistingRedeploymentsAllowed()
         throws Exception
     {

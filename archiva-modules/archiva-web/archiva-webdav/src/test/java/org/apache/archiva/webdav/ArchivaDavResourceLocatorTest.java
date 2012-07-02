@@ -20,22 +20,29 @@ package org.apache.archiva.webdav;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ArchivaDavResourceLocatorTest
     extends TestCase
 {
     ArchivaDavLocatorFactory factory;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
         factory = new ArchivaDavLocatorFactory();
     }
 
+    @Test
     public void testAvoidDoubleSlashInHref()
         throws Exception
     {
@@ -53,6 +60,7 @@ public class ArchivaDavResourceLocatorTest
         assertEquals( "/repository/internal", locator.getRepositoryPath() );
     }
 
+    @Test
     public void testLocatorWithPrefixHref()
         throws Exception
     {
@@ -70,6 +78,7 @@ public class ArchivaDavResourceLocatorTest
         assertEquals( "/repository/internal", locator.getRepositoryPath() );
     }
 
+    @Test
     public void testLocatorWithHrefThatContainsPrefix()
         throws Exception
     {
@@ -87,6 +96,7 @@ public class ArchivaDavResourceLocatorTest
         assertEquals( "/repository/internal", locator.getRepositoryPath() );
     }
 
+    @Test
     public void testLocatorWithRootHref()
         throws Exception
     {

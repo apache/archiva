@@ -32,7 +32,8 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
-
+import org.junit.Before;
+import org.junit.Test;
 /**
  * DeleteProxyConnectorActionTest
  *
@@ -52,7 +53,8 @@ public class DeleteProxyConnectorActionTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -68,7 +70,8 @@ public class DeleteProxyConnectorActionTest
         ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration(
             archivaConfiguration );
     }
-
+    
+    @Test
     public void testConfirmDelete()
         throws Exception
     {
@@ -84,6 +87,7 @@ public class DeleteProxyConnectorActionTest
         assertNoErrors( action );
     }
 
+    @Test
     public void testConfirmDeleteBadSourceOrTarget()
         throws Exception
     {
@@ -118,6 +122,7 @@ public class DeleteProxyConnectorActionTest
         assertHasErrors( action );
     }
 
+    @Test
     public void testConfirmDeleteNoSourceOrTarget()
         throws Exception
     {
@@ -152,6 +157,7 @@ public class DeleteProxyConnectorActionTest
         assertHasErrors( action );
     }
 
+    @Test
     public void testDelete()
         throws Exception
     {
@@ -177,6 +183,7 @@ public class DeleteProxyConnectorActionTest
         assertEquals( 0, archivaConfiguration.getConfiguration().getProxyConnectors().size() );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {

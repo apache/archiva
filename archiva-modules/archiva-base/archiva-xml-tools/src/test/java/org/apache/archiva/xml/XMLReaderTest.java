@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.junit.Test;
 
 /**
  * XMLReaderTest 
@@ -49,7 +50,8 @@ public class XMLReaderTest
             assertTrue( "Contains [" + expectedText + "]", texts.contains( expectedText ) );
         }
     }
-
+    
+    @Test
     public void testNoPrologBasicRead()
         throws XMLException
     {
@@ -60,6 +62,7 @@ public class XMLReaderTest
         assertElementTexts( fruits, new String[] { "apple", "cherry", "pear", "peach" } );
     }
 
+    @Test
     public void testNoPrologEntitiesRead()
         throws XMLException
     {
@@ -70,6 +73,7 @@ public class XMLReaderTest
         assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
+    @Test
     public void testNoPrologUtf8Read()
         throws XMLException
     {
@@ -80,6 +84,7 @@ public class XMLReaderTest
         assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
+    @Test
     public void testPrologUtf8Read()
         throws XMLException
     {
@@ -91,6 +96,7 @@ public class XMLReaderTest
     }
     
     // MRM-1136
+    @Test
     public void testProxiedMetadataRead()
         throws XMLException
     {

@@ -36,7 +36,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,11 +43,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Date;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings( { "ThrowableInstanceNeverThrown" } )
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class DuplicateArtifactsConsumerTest
     extends TestCase

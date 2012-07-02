@@ -53,11 +53,17 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 /**
  * EditManagedRepositoryActionTest
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class EditManagedRepositoryActionTest
     extends AbstractManagedRepositoryActionTest
 {
@@ -82,7 +88,8 @@ public class EditManagedRepositoryActionTest
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -133,6 +140,7 @@ public class EditManagedRepositoryActionTest
 
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException, RepositoryAdminException
     {
@@ -146,6 +154,7 @@ public class EditManagedRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testEditRepositoryInitialPage()
         throws Exception
     {
@@ -176,6 +185,7 @@ public class EditManagedRepositoryActionTest
         assertRepositoryEquals( repository, createRepository() );
     }
 
+    @Test
     public void testEditRepository()
         throws Exception
     {
@@ -285,6 +295,7 @@ public class EditManagedRepositoryActionTest
         registryControl.verify();
     }
 
+    @Test
     public void testEditRepositoryLocationChanged()
         throws Exception
     {
@@ -387,6 +398,7 @@ public class EditManagedRepositoryActionTest
         registryControl.verify();
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithNullInputs()
         throws Exception
     {
@@ -422,6 +434,7 @@ public class EditManagedRepositoryActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithBlankInputs()
         throws Exception
     {
@@ -458,6 +471,7 @@ public class EditManagedRepositoryActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithInvalidInputs()
         throws Exception
     {
@@ -511,6 +525,7 @@ public class EditManagedRepositoryActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithValidInputs()
         throws Exception
     {

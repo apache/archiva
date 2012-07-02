@@ -41,10 +41,15 @@ import java.util.Arrays;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 /**
  * Test the repositories action returns the correct data.
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoriesActionTest
     extends StrutsSpringTestCase
 {
@@ -54,7 +59,9 @@ public class RepositoriesActionTest
 
     ArchivaConfiguration originalArchivaConfiguration;
 
-    protected void setUp()
+    @Override
+    @Before
+    public void setUp()
         throws Exception
     {
 
@@ -73,7 +80,8 @@ public class RepositoriesActionTest
 
 
     @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -91,6 +99,7 @@ public class RepositoriesActionTest
         return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
     }
 
+    @Test
     public void testGetRepositories()
         throws Exception
     {
@@ -145,6 +154,7 @@ public class RepositoriesActionTest
         }
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException
     {

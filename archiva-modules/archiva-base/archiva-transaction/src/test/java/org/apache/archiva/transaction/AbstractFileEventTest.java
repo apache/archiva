@@ -29,16 +29,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 
 /**
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractFileEventTest
     extends TestCase
 {
     protected List<Digester> digesters;
 
     @SuppressWarnings( "unchecked" )
+    @Before
+    @Override
     public void setUp()
         throws Exception
     {

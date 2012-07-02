@@ -29,7 +29,6 @@ import org.easymock.MockControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,8 +36,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class NewVersionsOfArtifactRssFeedProcessorTest
     extends TestCase
 {

@@ -21,8 +21,14 @@ package org.apache.archiva.webdav;
 
 import junit.framework.TestCase;
 
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ArchivaDavSessionTest extends TestCase
 {
+    @Test
     public void testTokens()
     {
         ArchivaDavSession session = new ArchivaDavSession();
@@ -36,6 +42,7 @@ public class ArchivaDavSessionTest extends TestCase
         assertEquals(0, session.getLockTokens().length);
     }
     
+    @Test
     public void testAddReferencesThrowsUnsupportedOperationException()
     {
         ArchivaDavSession session = new ArchivaDavSession();
@@ -50,6 +57,7 @@ public class ArchivaDavSessionTest extends TestCase
         } 
     }
     
+    @Test
     public void testRemoveReferencesThrowsUnsupportedOperationException()
     {
         ArchivaDavSession session = new ArchivaDavSession();

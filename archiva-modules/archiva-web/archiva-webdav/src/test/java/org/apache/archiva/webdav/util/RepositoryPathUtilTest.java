@@ -20,12 +20,17 @@ package org.apache.archiva.webdav.util;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryPathUtilTest
     extends TestCase
 {
+    @Test
     public void testGetRepositoryId()
     {
         String href = "/path/to/my/resource";
@@ -38,6 +43,7 @@ public class RepositoryPathUtilTest
         assertEquals( "/", RepositoryPathUtil.getLogicalResource( href ) );
     }
 
+    @Test
     public void testGetLogicalPath()
     {
         String href = "/repository/internal/org/apache/maven/someartifact.jar";

@@ -30,6 +30,7 @@ import org.apache.archiva.scheduler.indexing.DefaultDownloadRemoteIndexScheduler
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +48,8 @@ public class BrowseActionTest
 
     private static final String OTHER_TEST_REPO = "other-repo";
 
-    protected void setUp()
+    @Override
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -61,7 +63,8 @@ public class BrowseActionTest
         factory.setRepositorySession( repositorySession );
     }
 
-    protected void tearDown()
+    @Override
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -69,11 +72,13 @@ public class BrowseActionTest
         setObservableRepos( Lists.<String>newArrayList( "test-repo" ) );
     }
 
+    @Test
     public void testInstantiation()
     {
         assertFalse( action == getActionProxy( "/browse.action" ).getAction() );
     }
 
+    @Test
     public void testBrowse()
         throws Exception
     {
@@ -92,6 +97,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseNoObservableRepos()
         throws Exception
     {
@@ -103,6 +109,7 @@ public class BrowseActionTest
         assertNoOutputVariables();
     }
 
+    @Test
     public void testBrowseGroupNoObservableRepos()
         throws Exception
     {
@@ -122,6 +129,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseArtifactNoObservableRepos()
         throws Exception
     {
@@ -143,6 +151,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseGroupNoGroupId()
         throws Exception
     {
@@ -151,6 +160,7 @@ public class BrowseActionTest
         assertNoOutputVariables();
     }
 
+    @Test
     public void testBrowseGroupNoArtifacts()
         throws Exception
     {
@@ -172,6 +182,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseGroupWithArtifacts()
         throws Exception
     {
@@ -195,6 +206,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseWithCollapsedGroupsAndArtifacts()
         throws Exception
     {
@@ -217,6 +229,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseWithCollapsedGroupsAndArtifactsAcrossRepositories()
         throws Exception
     {
@@ -241,6 +254,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseGroupWithCollapsedGroupsAndArtifacts()
         throws Exception
     {
@@ -266,6 +280,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseArtifactNoGroupId()
         throws Exception
     {
@@ -284,6 +299,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseArtifactNoArtifactId()
         throws Exception
     {
@@ -302,6 +318,7 @@ public class BrowseActionTest
         assertNull( action.getSharedModel() );
     }
 
+    @Test
     public void testBrowseArtifact()
         throws Exception
 
@@ -336,6 +353,7 @@ public class BrowseActionTest
         assertDefaultModel( model, selectedGroupId, selectedArtifactId, null );
     }
 
+    @Test
     public void testBrowseArtifactWithSnapshots()
         throws Exception
 

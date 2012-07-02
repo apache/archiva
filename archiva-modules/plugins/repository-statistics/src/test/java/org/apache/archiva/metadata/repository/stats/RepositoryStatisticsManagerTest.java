@@ -35,7 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import javax.jcr.Session;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryStatisticsManagerTest
     extends TestCase
 {
@@ -63,7 +68,8 @@ public class RepositoryStatisticsManagerTest
     }
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -74,6 +80,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepository = (MetadataRepository) metadataRepositoryControl.getMock();
     }
 
+    @Test
     public void testGetLatestStats()
         throws Exception
     {
@@ -113,6 +120,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetLatestStatsWhenEmpty()
         throws Exception
     {
@@ -127,6 +135,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testAddNewStats()
         throws Exception
     {
@@ -165,6 +174,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testDeleteStats()
         throws Exception
     {
@@ -210,6 +220,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testDeleteStatsWhenEmpty()
         throws Exception
     {
@@ -229,6 +240,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetStatsRangeInside()
         throws Exception
     {
@@ -272,6 +284,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetStatsRangeUpperOutside()
         throws Exception
     {
@@ -320,6 +333,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetStatsRangeLowerOutside()
         throws Exception
     {
@@ -368,6 +382,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetStatsRangeLowerAndUpperOutside()
         throws Exception
     {
@@ -422,6 +437,7 @@ public class RepositoryStatisticsManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetStatsRangeNotInside()
         throws Exception
     {

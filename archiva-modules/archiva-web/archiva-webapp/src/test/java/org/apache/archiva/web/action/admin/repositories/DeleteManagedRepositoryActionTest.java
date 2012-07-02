@@ -53,6 +53,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -89,7 +91,9 @@ public class DeleteManagedRepositoryActionTest
 
     private MockControl metadataRepositoryControl;
 
-    protected void setUp()
+    @Override
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -129,6 +133,7 @@ public class DeleteManagedRepositoryActionTest
         metadataRepositoryControl.replay();
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException, RepositoryAdminException
     {
@@ -142,6 +147,7 @@ public class DeleteManagedRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testDeleteRepositoryAndReposUnderRepoGroup()
         throws Exception
     {
@@ -172,6 +178,7 @@ public class DeleteManagedRepositoryActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testDeleteRepositoryConfirmation()
         throws Exception
     {
@@ -207,6 +214,7 @@ public class DeleteManagedRepositoryActionTest
                       action.getManagedRepositoryAdmin().getManagedRepositories() );
     }
 
+    @Test
     public void testDeleteRepositoryKeepContent()
         throws Exception
     {
@@ -248,6 +256,7 @@ public class DeleteManagedRepositoryActionTest
         return control;
     }
 
+    @Test
     public void testDeleteRepositoryDeleteContent()
         throws Exception
     {
@@ -275,6 +284,7 @@ public class DeleteManagedRepositoryActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testDeleteRepositoryAndAssociatedProxyConnectors()
         throws Exception
     {
@@ -306,6 +316,7 @@ public class DeleteManagedRepositoryActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testDeleteRepositoryCancelled()
         throws Exception
     {

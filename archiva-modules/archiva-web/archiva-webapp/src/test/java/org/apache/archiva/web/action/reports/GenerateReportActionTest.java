@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -76,7 +77,7 @@ public class GenerateReportActionTest
 
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -101,6 +102,8 @@ public class GenerateReportActionTest
         factory.setRepositorySession( repositorySession );
     }
 
+    
+    @Override
     @After
     public void tearDown()
         throws Exception
@@ -149,6 +152,7 @@ public class GenerateReportActionTest
         assertEquals( availableRepositories, action.getAvailableRepositories() );
     }
 
+    @Test
     public void testGenerateStatisticsInvalidRowCount()
         throws Exception
     {
@@ -162,6 +166,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsInvalidEndDate()
         throws Exception
     {
@@ -176,6 +181,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsMalformedEndDate()
         throws Exception
     {
@@ -191,6 +197,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsInvalidEndDateMultiRepo()
         throws Exception
     {
@@ -205,6 +212,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsMalformedEndDateMultiRepo()
         throws Exception
     {
@@ -220,6 +228,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsNoRepos()
         throws Exception
     {
@@ -232,6 +241,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsSingleRepo()
         throws Exception
     {
@@ -247,6 +257,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsSingleRepoNoStats()
         throws Exception
 
@@ -264,6 +275,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsOvershotPages()
         throws Exception
 
@@ -281,6 +293,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsMultipleRepoNoResults()
         throws Exception
 
@@ -303,6 +316,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testGenerateStatisticsMultipleRepo()
         throws Exception
 
@@ -322,6 +336,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsSingleRepo()
         throws Exception
     {
@@ -344,6 +359,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsMultipleRepos()
         throws Exception
     {
@@ -365,6 +381,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsMalformedEndDateMultiRepo()
         throws Exception
     {
@@ -380,6 +397,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsMalformedEndDateSingleRepo()
         throws Exception
     {
@@ -395,6 +413,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsInvalidEndDateMultiRepo()
         throws Exception
     {
@@ -409,6 +428,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsInvalidEndDateSingleRepo()
         throws Exception
     {
@@ -423,6 +443,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsSingleRepoNoStats()
         throws Exception
 
@@ -439,6 +460,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsNoRepos()
         throws Exception
     {
@@ -451,6 +473,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsMultipleRepoNoResults()
         throws Exception
 
@@ -472,6 +495,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testDownloadStatisticsMultipleRepoInStrutsFormat()
         throws Exception
     {
@@ -494,6 +518,7 @@ public class GenerateReportActionTest
         repositoryStatisticsManagerControl.verify();
     }
 
+    @Test
     public void testHealthReportSingleRepo()
         throws Exception
     {
@@ -524,6 +549,7 @@ public class GenerateReportActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testHealthReportInvalidRowCount()
         throws Exception
     {
@@ -542,6 +568,7 @@ public class GenerateReportActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testHealthReportAllRepos()
         throws Exception
     {
@@ -576,6 +603,7 @@ public class GenerateReportActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testHealthReportSingleRepoByCorrectGroupId()
         throws Exception
     {
@@ -606,6 +634,7 @@ public class GenerateReportActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testHealthReportSingleRepoByCorrectGroupIdAllRepositories()
         throws Exception
     {
@@ -641,6 +670,7 @@ public class GenerateReportActionTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testHealthReportSingleRepoByIncorrectGroupId()
         throws Exception
     {
@@ -681,6 +711,7 @@ public class GenerateReportActionTest
         return problem;
     }
 
+    @Test
     public void testHealthReportNoRepositoryId()
         throws Exception
     {

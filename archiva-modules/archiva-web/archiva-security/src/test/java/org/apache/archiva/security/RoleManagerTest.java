@@ -24,16 +24,16 @@ import org.apache.archiva.redback.role.RoleManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * RoleProfilesTest 
  *
  * @version $Id: RoleManagerTest.java 4330 2007-05-10 17:28:56Z jmcconnell $
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class RoleManagerTest
     extends TestCase

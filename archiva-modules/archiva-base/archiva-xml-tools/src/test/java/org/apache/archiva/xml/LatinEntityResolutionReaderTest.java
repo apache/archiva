@@ -32,6 +32,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
+import org.junit.Test;
 
 /**
  * LatinEntityResolutionReaderTest
@@ -139,7 +140,8 @@ public class LatinEntityResolutionReaderTest
             fail( "IOException: " + e.getMessage() );
         }
     }
-
+    
+    @Test
     public void testReaderNormalBufsize()
         throws IOException
     {
@@ -155,6 +157,7 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 4096 );
     }
 
+    @Test
     public void testReaderSmallBufsize()
         throws IOException
     {
@@ -170,6 +173,7 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 1024 );
     }
 
+    @Test
     public void testReaderRediculouslyTinyBufsize()
         throws IOException
     {
@@ -185,6 +189,7 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 32 );
     }
 
+    @Test
     public void testReaderHugeBufsize()
         throws IOException
     {
@@ -200,7 +205,7 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 409600 );
     }
 
-
+    @Test
     public void testReaderLeftOver()
         throws IOException
     {
@@ -225,7 +230,7 @@ public class LatinEntityResolutionReaderTest
         }
     }
 
-
+    @Test
     public void testNoLatinEntitiesHugeLine()
     {
         assertProperRead( "commons-codec-1.2.pom", "commons-codec-1.2.pom", 4096 );

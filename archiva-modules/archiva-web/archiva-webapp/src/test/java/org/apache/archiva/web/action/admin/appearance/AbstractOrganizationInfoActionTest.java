@@ -24,6 +24,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.easymock.MockControl;
+import org.junit.Before;
 
 /**
  */
@@ -40,8 +41,9 @@ public abstract class AbstractOrganizationInfoActionTest
 
     protected abstract AbstractAppearanceAction getAction();
 
+    @Before
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();

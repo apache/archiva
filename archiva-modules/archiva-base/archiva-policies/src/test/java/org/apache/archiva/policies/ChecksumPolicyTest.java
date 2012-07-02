@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,6 +33,7 @@ import java.io.FileReader;
 import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 
@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
  *
  * @version $Id$
  */
-@RunWith( value = SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml"} )
 public class ChecksumPolicyTest
 {

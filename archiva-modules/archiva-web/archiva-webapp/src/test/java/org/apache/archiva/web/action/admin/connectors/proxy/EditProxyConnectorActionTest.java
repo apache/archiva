@@ -43,6 +43,8 @@ import org.easymock.MockControl;
 
 import java.util.List;
 import java.util.Map;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * EditProxyConnectorActionTest
@@ -63,7 +65,8 @@ public class EditProxyConnectorActionTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -112,6 +115,7 @@ public class EditProxyConnectorActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testAddBlackListPattern()
         throws Exception
     {
@@ -145,6 +149,7 @@ public class EditProxyConnectorActionTest
         assertEquals( 1, connector.getBlackListPatterns().size() );
     }
 
+    @Test
     public void testAddProperty()
         throws Exception
     {
@@ -180,6 +185,7 @@ public class EditProxyConnectorActionTest
         assertEquals( "gramov-a-bits", connector.getProperties().get( "eat-a" ) );
     }
 
+    @Test
     public void testAddWhiteListPattern()
         throws Exception
     {
@@ -214,6 +220,7 @@ public class EditProxyConnectorActionTest
     }
 
     @SuppressWarnings( "unchecked" )
+    @Test
     public void testEditProxyConnectorCommit()
         throws Exception
     {
@@ -250,6 +257,7 @@ public class EditProxyConnectorActionTest
 
     }
 
+    @Test
     public void testEditProxyConnectorInitialPage()
         throws Exception
     {
@@ -266,6 +274,7 @@ public class EditProxyConnectorActionTest
         assertEquals( Action.INPUT, status );
     }
 
+    @Test
     public void testRemoveBlackListPattern()
         throws Exception
     {
@@ -314,6 +323,7 @@ public class EditProxyConnectorActionTest
         assertEquals( "Should have left 1 blacklist pattern", "**/*.war", connector.getBlackListPatterns().get( 0 ) );
     }
 
+    @Test
     public void testRemoveProperty()
         throws Exception
     {
@@ -362,6 +372,7 @@ public class EditProxyConnectorActionTest
         assertEquals( "Should have left 1 property", "general-tso", connector.getProperties().get( "username" ) );
     }
 
+    @Test
     public void testRemoveWhiteListPattern()
         throws Exception
     {
@@ -410,6 +421,7 @@ public class EditProxyConnectorActionTest
         assertEquals( "Should have left 1 whitelist pattern", "javax/**/*", connector.getWhiteListPatterns().get( 0 ) );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {

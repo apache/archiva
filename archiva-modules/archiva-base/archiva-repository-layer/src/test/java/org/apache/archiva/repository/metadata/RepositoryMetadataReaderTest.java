@@ -25,16 +25,16 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.xml.XMLException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.io.File;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * RepositoryMetadataReaderTest
  *
  * @version $Id$
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryMetadataReaderTest
     extends TestCase
 {

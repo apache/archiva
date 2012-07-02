@@ -31,6 +31,8 @@ import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DisableProxyConnectorActionTest
     extends AbstractWebworkTestCase
@@ -46,7 +48,8 @@ public class DisableProxyConnectorActionTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -62,6 +65,7 @@ public class DisableProxyConnectorActionTest
         ( (DefaultProxyConnectorAdmin) action.getProxyConnectorAdmin() ).setArchivaConfiguration( archivaConfiguration );
     }
 
+    @Test
     public void testConfirmDisableBadSourceOrTarget()
         throws Exception
     {
@@ -96,6 +100,7 @@ public class DisableProxyConnectorActionTest
         assertHasErrors( action );
     }
 
+    @Test
     public void testConfirmDisableNoSourceOrTarget()
         throws Exception
     {
@@ -130,6 +135,7 @@ public class DisableProxyConnectorActionTest
         assertHasErrors( action );
     }
 
+    @Test
     public void testDelete()
         throws Exception
     {
@@ -158,6 +164,7 @@ public class DisableProxyConnectorActionTest
         assertTrue( config.isDisabled() );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {
@@ -169,6 +176,7 @@ public class DisableProxyConnectorActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testConfirmEnable()
         throws Exception
     {

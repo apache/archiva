@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,7 +73,7 @@ public class SearchActionTest
     private RepositorySession session;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -107,6 +108,7 @@ public class SearchActionTest
 
     // quick search...
 
+    @Test
     public void testQuickSearch()
         throws Exception
     {
@@ -153,6 +155,7 @@ public class SearchActionTest
         searchControl.verify();
     }
 
+    @Test
     public void testSearchWithinSearchResults()
         throws Exception
     {
@@ -203,6 +206,7 @@ public class SearchActionTest
         searchControl.verify();
     }
 
+    @Test
     public void testQuickSearchUserHasNoAccessToAnyRepository()
         throws Exception
     {
@@ -223,6 +227,7 @@ public class SearchActionTest
         userReposControl.verify();
     }
 
+    @Test
     public void testQuickSearchNoSearchHits()
         throws Exception
     {
@@ -258,6 +263,7 @@ public class SearchActionTest
 
     // advanced/filtered search...
 
+    @Test
     public void testAdvancedSearchOneRepository()
         throws Exception
     {
@@ -305,6 +311,7 @@ public class SearchActionTest
         searchControl.verify();
     }
 
+    @Test
     public void testAdvancedSearchAllRepositories()
         throws Exception
     {
@@ -356,6 +363,7 @@ public class SearchActionTest
         userReposControl.verify();
     }
 
+    @Test
     public void testAdvancedSearchNoSearchHits()
         throws Exception
     {
@@ -393,6 +401,7 @@ public class SearchActionTest
         searchControl.verify();
     }
 
+    @Test
     public void testAdvancedSearchUserHasNoAccessToAnyRepository()
         throws Exception
     {
@@ -406,6 +415,7 @@ public class SearchActionTest
         assertEquals(GlobalResults.ACCESS_TO_NO_REPOS, result);
     }
 
+    @Test
     public void testAdvancedSearchNoSpecifiedCriteria()
         throws Exception
     {
@@ -422,6 +432,7 @@ public class SearchActionTest
     }
 
     // find artifact..
+    @Test
     public void testFindArtifactWithOneHit()
         throws Exception
     {
@@ -450,6 +461,7 @@ public class SearchActionTest
         userReposControl.verify();
     }
 
+    @Test
     public void testFindArtifactWithMultipleHits()
         throws Exception
     {
@@ -478,6 +490,7 @@ public class SearchActionTest
         userReposControl.verify();
     }
 
+    @Test
     public void testFindArtifactNoChecksumSpecified()
         throws Exception
     {
@@ -488,6 +501,7 @@ public class SearchActionTest
         assertEquals("Unable to search for a blank checksum", (String) action.getActionErrors().iterator().next());
     }
 
+    @Test
     public void testFindArtifactNoResults()
         throws Exception
     {

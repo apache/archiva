@@ -33,6 +33,8 @@ import org.apache.archiva.web.action.AbstractActionTestCase;
 import org.easymock.MockControl;
 
 import java.util.Collections;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * DeleteRemoteRepositoryActionTest
@@ -50,7 +52,9 @@ public class DeleteRemoteRepositoryActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
-    protected void setUp()
+    @Override
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -65,6 +69,7 @@ public class DeleteRemoteRepositoryActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testDeleteRemoteRepositoryConfirmation()
         throws Exception
     {
@@ -92,6 +97,7 @@ public class DeleteRemoteRepositoryActionTest
                       action.getRemoteRepositoryAdmin().getRemoteRepositories() );
     }
 
+    @Test
     public void testDeleteRemoteRepository()
         throws org.apache.archiva.redback.components.registry.RegistryException, IndeterminateConfigurationException, RepositoryAdminException
     {
@@ -123,6 +129,7 @@ public class DeleteRemoteRepositoryActionTest
         assertEquals( 0, configuration.getProxyConnectors().size() );
     }
 
+    @Test
     public void testDeleteRemoteRepositoryCancelled()
         throws Exception
     {

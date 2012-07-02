@@ -20,16 +20,16 @@ package org.apache.archiva.configuration;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 /**
  * Test the generated LegacyArtifactPath class from Modello. This is primarily to test the hand coded methods.
  *
  * @since 1.1
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class LegacyArtifactPathTest
     extends TestCase
 {

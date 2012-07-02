@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the repository converter.
@@ -48,7 +48,7 @@ import java.util.List;
  * @todo should reject if dependencies are missing - rely on reporting?
  * @todo group metadata
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath:/spring-context.xml"} )
 public class RepositoryConverterTest
     extends TestCase

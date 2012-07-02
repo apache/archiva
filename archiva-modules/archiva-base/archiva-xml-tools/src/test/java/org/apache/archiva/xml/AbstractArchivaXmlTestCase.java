@@ -22,12 +22,15 @@ package org.apache.archiva.xml;
 import java.io.File;
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.runner.RunWith;
 
 /**
  * AbstractArchivaXmlTestCase 
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractArchivaXmlTestCase
     extends TestCase
 {

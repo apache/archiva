@@ -34,7 +34,6 @@ import org.apache.archiva.rss.RssFeedGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,8 +43,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class NewArtifactsRssFeedProcessorTest
     extends TestCase
 {

@@ -38,18 +38,18 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * AbstractSecurityTest
  *
  * @version $Id: AbstractSecurityTest
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractSecurityTest
     extends TestCase

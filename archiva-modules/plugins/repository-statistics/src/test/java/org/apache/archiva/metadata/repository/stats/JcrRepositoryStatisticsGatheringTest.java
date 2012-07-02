@@ -39,9 +39,14 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.mockito.Mockito.*;
-
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class JcrRepositoryStatisticsGatheringTest
     extends TestCase
 {
@@ -58,7 +63,8 @@ public class JcrRepositoryStatisticsGatheringTest
     private Session session;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -100,7 +106,8 @@ public class JcrRepositoryStatisticsGatheringTest
     }
 
     @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         session.logout();
@@ -108,6 +115,7 @@ public class JcrRepositoryStatisticsGatheringTest
         super.tearDown();
     }
 
+    @Test
     public void testJcrStatisticsQuery()
         throws Exception
     {

@@ -33,6 +33,8 @@ import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * ProxyConnectorsActionTest
@@ -55,7 +57,8 @@ public class ProxyConnectorsActionTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -72,6 +75,7 @@ public class ProxyConnectorsActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {
@@ -84,6 +88,7 @@ public class ProxyConnectorsActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testExecute()
         throws Exception
     {

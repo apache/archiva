@@ -35,12 +35,12 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
-@RunWith( BlockJUnit4ClassRunner.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RssFeedServletTest
     extends TestCase
 {

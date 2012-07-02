@@ -30,6 +30,8 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.web.action.AbstractWebworkTestCase;
 import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.easymock.MockControl;
+import org.junit.Before;
+import org.junit.Test;
 
 public class EnableProxyConnectorActionTest
     extends AbstractWebworkTestCase
@@ -45,7 +47,8 @@ public class EnableProxyConnectorActionTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -69,6 +72,7 @@ public class EnableProxyConnectorActionTest
         archivaConfiguration.save( config );
     }
 
+    @Test
     public void testConfirmDeleteBadSourceOrTarget()
         throws Exception
     {
@@ -103,6 +107,7 @@ public class EnableProxyConnectorActionTest
         assertHasErrors( action );
     }
 
+    @Test
     public void testConfirmEnableNoSourceOrTarget()
         throws Exception
     {
@@ -137,6 +142,7 @@ public class EnableProxyConnectorActionTest
         assertHasErrors( action );
     }
 
+    @Test
     public void testEnable()
         throws Exception
     {
@@ -165,6 +171,7 @@ public class EnableProxyConnectorActionTest
         assertFalse( config.isDisabled() );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {
@@ -176,6 +183,7 @@ public class EnableProxyConnectorActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testConfirmEnable()
         throws Exception
     {

@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,7 +78,8 @@ public class ShowArtifactActionTest
 
     private static final String TEST_TYPE = "jar";
 
-    protected void setUp()
+    @Override
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -115,11 +117,13 @@ public class ShowArtifactActionTest
 
     }
 
+    @Test
     public void testInstantiation()
     {
         assertFalse( action == getActionProxy( "/showArtifact.action" ).getAction() );
     }
 
+    @Test
     public void testGetArtifactUniqueRelease()
     {
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
@@ -143,6 +147,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetArtifactUniqueSnapshot()
     {
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
@@ -173,6 +178,7 @@ public class ShowArtifactActionTest
         assertNull( action.getMailingLists() );
     }
 
+    @Test
     public void testGetArtifactUniqueSnapshotTimestamped()
     {
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
@@ -189,6 +195,7 @@ public class ShowArtifactActionTest
         assertNoOutputFields();
     }
 
+    @Test
     public void testGetMissingProject()
     {
         setActionParameters();
@@ -200,6 +207,7 @@ public class ShowArtifactActionTest
         assertNoOutputFields();
     }
 
+    @Test
     public void testGetArtifactNoObservableRepos()
     {
         setObservableRepos( Collections.<String>emptyList() );
@@ -214,6 +222,7 @@ public class ShowArtifactActionTest
         assertNoOutputFields();
     }
 
+    @Test
     public void testGetArtifactNotInObservableRepos()
     {
         metadataResolver.setProjectVersion( OTHER_TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID,
@@ -228,6 +237,7 @@ public class ShowArtifactActionTest
         assertNoOutputFields();
     }
 
+    @Test
     public void testGetArtifactOnlySeenInSecondObservableRepo()
     {
         setObservableRepos( Arrays.asList( OTHER_TEST_REPO, TEST_REPO ) );
@@ -252,6 +262,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetArtifactSeenInBothObservableRepo()
     {
         setObservableRepos( Arrays.asList( TEST_REPO, OTHER_TEST_REPO ) );
@@ -278,6 +289,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetArtifactCanOnlyObserveInOneOfTwoRepos()
     {
         setObservableRepos( Arrays.asList( TEST_REPO ) );
@@ -304,6 +316,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetArtifactNoMavenFacet()
     {
         ProjectVersionMetadata versionMetadata = new ProjectVersionMetadata();
@@ -335,6 +348,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testMetadataHasRepositoryFacetProblem()
     {
         String errMsg = "Error in resolving artifact's parent POM file: Sample Parent POM not found";
@@ -360,6 +374,7 @@ public class ShowArtifactActionTest
         assertEquals( "Artifact metadata is incomplete: " + errMsg, action.getActionErrors().toArray()[0].toString() );
     }
 
+    @Test
     public void testMetadataIncomplete()
     {
         ProjectVersionMetadata metaData = createProjectModel( TEST_SNAPSHOT_VERSION );
@@ -385,6 +400,7 @@ public class ShowArtifactActionTest
         assertEquals( "Artifact metadata is incomplete.", action.getActionErrors().toArray()[0].toString() );
     }
 
+    @Test
     public void testGetMailingLists()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
@@ -413,6 +429,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetDependencies()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
@@ -441,6 +458,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetDependees()
         throws Exception
     {
@@ -471,6 +489,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testGetProjectMetadata()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
@@ -498,6 +517,7 @@ public class ShowArtifactActionTest
         assertTrue( action.getArtifacts().isEmpty() );
     }
 
+    @Test
     public void testAddAndDeleteMetadataProperty()
     {
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );

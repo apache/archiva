@@ -24,12 +24,14 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 
 /**
  * ChecksummedFileTest
  *
  * @version $Id$
  */
+
 public class ChecksummedFileTest
     extends AbstractChecksumTestCase
 {
@@ -75,6 +77,7 @@ public class ChecksummedFileTest
         return jarFile;
     }
 
+    @Test
     public void testCalculateChecksumMd5()
         throws IOException
     {
@@ -85,6 +88,7 @@ public class ChecksummedFileTest
         assertEquals( expectedChecksum, actualChecksum );
     }
 
+    @Test
     public void testCalculateChecksumSha1()
         throws IOException
     {
@@ -95,6 +99,7 @@ public class ChecksummedFileTest
         assertEquals( expectedChecksum, actualChecksum );
     }
 
+    @Test
     public void testCreateChecksum()
         throws IOException
     {
@@ -108,6 +113,7 @@ public class ChecksummedFileTest
         assertEquals( "2bb14b388973351b0a4dfe11d171965f59cc61a1  redback-authz-open.jar", hashContents );
     }
 
+    @Test
     public void testFixChecksum()
         throws IOException
     {
@@ -126,12 +132,14 @@ public class ChecksummedFileTest
         assertTrue( "ChecksummedFile.isValid(SHA1) == true", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
     }
 
+    @Test
     public void testGetChecksumFile()
     {
         ChecksummedFile checksummedFile = new ChecksummedFile( new File( "test.jar" ) );
         assertEquals( "test.jar.sha1", checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 ).getName() );
     }
 
+    @Test
     public void testIsValidChecksum()
         throws IOException
     {
@@ -141,6 +149,7 @@ public class ChecksummedFileTest
         assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
     }
 
+    @Test
     public void testIsValidChecksumInvalidSha1Format()
         throws IOException
     {
@@ -155,6 +164,7 @@ public class ChecksummedFileTest
 
     }
 
+    @Test
     public void testIsValidChecksumNoChecksumFiles()
         throws IOException
     {
@@ -167,6 +177,7 @@ public class ChecksummedFileTest
 
     }
 
+    @Test
     public void testIsValidChecksumSha1AndMd5()
         throws IOException
     {
@@ -178,6 +189,7 @@ public class ChecksummedFileTest
             ChecksumAlgorithm.MD5 } ) );
     }
 
+    @Test
     public void testIsValidChecksumSha1NoMd5()
         throws IOException
     {
@@ -190,6 +202,7 @@ public class ChecksummedFileTest
 
     }
 
+    @Test
     public void testParseChecksum()
         throws IOException
     {
@@ -204,6 +217,7 @@ public class ChecksummedFileTest
 
     }
 
+    @Test
     public void testParseChecksumAltDash1()
         throws IOException
     {
@@ -215,6 +229,7 @@ public class ChecksummedFileTest
         assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
+    @Test
     public void testParseChecksumAltDash2()
         throws IOException
     {
@@ -226,6 +241,7 @@ public class ChecksummedFileTest
         assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
+    @Test
     public void testRemoteMetadataChecksumFilePathSha1()
         throws IOException
     {
@@ -246,6 +262,7 @@ public class ChecksummedFileTest
         }
     }
     
+    @Test
     public void testRemoteMetadataChecksumFilePathMd5()
         throws IOException
     {

@@ -44,7 +44,12 @@ import java.util.ArrayList;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class DeleteArtifactActionTest
     extends StrutsSpringTestCase
 {
@@ -79,7 +84,8 @@ public class DeleteArtifactActionTest
     }
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -111,7 +117,8 @@ public class DeleteArtifactActionTest
     }
 
     @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         action = null;
@@ -120,6 +127,7 @@ public class DeleteArtifactActionTest
     }
 
 
+    @Test
     public void testNPEInDeleteArtifact()
         throws Exception
     {

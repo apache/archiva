@@ -20,16 +20,16 @@ package org.apache.archiva.repository.content;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 /**
  * FilenameParserTest
  *
  * @version $Id$
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class FilenameParserTest
     extends TestCase
 {

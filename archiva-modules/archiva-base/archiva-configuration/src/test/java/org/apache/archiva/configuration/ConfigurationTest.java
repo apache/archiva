@@ -22,16 +22,16 @@ package org.apache.archiva.configuration;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * Test the generated Configuration class from Modello. This is primarily to test the hand coded methods.
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ConfigurationTest
     extends TestCase
 {

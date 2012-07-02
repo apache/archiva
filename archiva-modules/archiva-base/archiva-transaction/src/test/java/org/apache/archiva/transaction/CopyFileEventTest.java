@@ -24,6 +24,9 @@ import org.apache.archiva.common.utils.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  */
@@ -40,6 +43,8 @@ public class CopyFileEventTest
 
     private String source, oldChecksum;
 
+    @Override
+    @Before
     public void setUp()
         throws Exception
     {
@@ -67,7 +72,8 @@ public class CopyFileEventTest
 
         oldChecksum = readFile( testDestChecksum );
     }
-
+    
+    @Test
     public void testCopyCommitRollback()
         throws Exception
     {
@@ -92,6 +98,7 @@ public class CopyFileEventTest
         assertChecksumRollback( testDest );
     }
 
+    @Test
     public void testCopyCommitRollbackWithBackup()
         throws Exception
     {
@@ -126,6 +133,7 @@ public class CopyFileEventTest
         assertChecksumRollback( testDest );
     }
 
+    @Test
     public void testCreateRollbackCommit()
         throws Exception
     {
@@ -148,7 +156,9 @@ public class CopyFileEventTest
         assertTrue( "Test that the destination contents are copied correctly", source.equals( target ) );
     }
 
-    protected void tearDown()
+    @After    
+    @Override
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -156,6 +166,7 @@ public class CopyFileEventTest
         FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "target/transaction-tests" ) );
     }
 
+    @Override
     protected void assertChecksumCommit( File file )
         throws IOException
     {
@@ -166,6 +177,7 @@ public class CopyFileEventTest
         assertFalse( "Test that the destination checksum contents are created correctly", oldChecksum.equals( target ) );
     }
 
+    @Override
     protected void assertChecksumRollback( File file )
         throws IOException
     {

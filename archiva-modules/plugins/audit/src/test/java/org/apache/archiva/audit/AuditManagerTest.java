@@ -35,7 +35,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class AuditManagerTest
     extends TestCase
 {
@@ -69,7 +74,8 @@ public class AuditManagerTest
     }
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -83,7 +89,8 @@ public class AuditManagerTest
         repository.setId( TEST_REPO_ID );
         repository.setLocation( "" );
     }
-
+    
+    @Test
     public void testGetMostRecentEvents()
         throws Exception
     {
@@ -122,6 +129,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetMostRecentEventsLessThan10()
         throws Exception
     {
@@ -159,6 +167,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetMostRecentEventsInterleavedRepositories()
         throws Exception
     {
@@ -207,6 +216,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetMostRecentEventsWhenEmpty()
         throws Exception
 
@@ -222,6 +232,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testAddAuditEvent()
         throws Exception
 
@@ -237,6 +248,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testAddAuditEventNoRepositoryId()
         throws Exception
     {
@@ -252,6 +264,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testDeleteStats()
         throws Exception
 
@@ -265,6 +278,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsRangeInside()
         throws Exception
 
@@ -298,6 +312,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsRangeUpperOutside()
         throws Exception
     {
@@ -335,6 +350,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsRangeLowerOutside()
         throws Exception
     {
@@ -372,6 +388,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsRangeLowerAndUpperOutside()
         throws Exception
     {
@@ -415,6 +432,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsWithResource()
         throws Exception
     {
@@ -458,6 +476,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsWithNonExistantResource()
         throws Exception
     {
@@ -497,6 +516,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsRangeMultipleRepositories()
         throws Exception
     {
@@ -546,6 +566,7 @@ public class AuditManagerTest
         metadataRepositoryControl.verify();
     }
 
+    @Test
     public void testGetEventsRangeNotInside()
         throws Exception
     {

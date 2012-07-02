@@ -19,16 +19,19 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import java.io.File;
-
 import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.runner.RunWith;
+
+import java.io.File;
 
 /**
  * AbstractChecksumTestCase
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractChecksumTestCase
     extends TestCase
 {

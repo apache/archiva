@@ -31,22 +31,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
  *
- * @version $Id: ArchivaRepositoryScanningTaskExecutorPhase1Test.java 1214303 2011-12-14 15:37:51Z olamy $
+ * @version $Id$
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     extends TestCase
@@ -78,6 +78,7 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     protected MetadataRepository metadataRepository;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -123,6 +124,7 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

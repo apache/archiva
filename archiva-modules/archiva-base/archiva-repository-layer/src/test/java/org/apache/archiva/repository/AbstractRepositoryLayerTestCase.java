@@ -28,17 +28,17 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import javax.inject.Inject;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * AbstractRepositoryLayerTestCase
  *
  * @version $Id$
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractRepositoryLayerTestCase
 {

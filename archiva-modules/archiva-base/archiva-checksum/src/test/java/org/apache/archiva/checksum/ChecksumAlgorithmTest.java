@@ -22,27 +22,34 @@ package org.apache.archiva.checksum;
 import java.io.File;
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * ChecksumAlgorithmTest
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ChecksumAlgorithmTest
     extends TestCase
 {
+    @Test
     public void testGetHashByExtensionSha1()
     {
         assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( new File( "something.jar.sha1" ) ) );
         assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( new File( "OTHER.JAR.SHA1" ) ) );
     }
-
+    
+    @Test
     public void testGetHashByExtensionMd5()
     {
         assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( new File( "something.jar.md5" ) ) );
         assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( new File( "OTHER.JAR.MD5" ) ) );
     }
 
+    @Test
     public void testGetHashByExtensionInvalid()
     {
         try

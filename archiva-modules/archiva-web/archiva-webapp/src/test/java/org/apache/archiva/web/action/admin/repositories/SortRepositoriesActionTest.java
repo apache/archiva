@@ -28,9 +28,15 @@ import org.apache.archiva.redback.integration.interceptor.SecureActionBundle;
 import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 /**
  * SortRepositoriesActionTest
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class SortRepositoriesActionTest
     extends StrutsSpringTestCase
 {
@@ -56,7 +62,9 @@ public class SortRepositoriesActionTest
         return new String[]{ "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" };
     }
 
-    protected void setUp()
+    @Before
+    @Override
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -68,13 +76,15 @@ public class SortRepositoriesActionTest
     }
 
     @Override
-    protected void tearDown()
+    @After
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
         action.archivaConfiguration = originalArchivaConfiguration;
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException
     {
@@ -87,6 +97,7 @@ public class SortRepositoriesActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testSortDownFirstRepository()
         throws Exception
     {
@@ -121,6 +132,7 @@ public class SortRepositoriesActionTest
         assertEquals( REPO3_ID, repositories.get( 2 ) );
     }
 
+    @Test
     public void testSortDownLastRepository()
         throws Exception
     {
@@ -155,6 +167,7 @@ public class SortRepositoriesActionTest
         assertEquals( REPO3_ID, repositories.get( 2 ) );
     }
 
+    @Test
     public void testSortUpLastRepository()
         throws Exception
     {
@@ -189,6 +202,7 @@ public class SortRepositoriesActionTest
         assertEquals( REPO2_ID, repositories.get( 2 ) );
     }
 
+    @Test
     public void testSortUpFirstRepository()
         throws Exception
     {

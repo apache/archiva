@@ -38,6 +38,8 @@ import org.easymock.MockControl;
 
 import java.util.Collections;
 import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * SortProxyConnectorsActionTest
@@ -62,7 +64,8 @@ public class SortProxyConnectorsActionTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Override
-    protected void setUp()
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -90,6 +93,7 @@ public class SortProxyConnectorsActionTest
         archivaConfiguration.save( config );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws Exception
     {
@@ -101,6 +105,7 @@ public class SortProxyConnectorsActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testSortDown()
         throws Exception
     {
@@ -115,6 +120,7 @@ public class SortProxyConnectorsActionTest
         assertOrder( new String[]{ JAVAX, CENTRAL, CODEHAUS } );
     }
 
+    @Test
     public void testSortDownPastEnd()
         throws Exception
     {
@@ -131,6 +137,7 @@ public class SortProxyConnectorsActionTest
         assertOrder( new String[]{ CENTRAL, JAVAX, CODEHAUS } );
     }
 
+    @Test
     public void testSortUp()
         throws Exception
     {
@@ -145,6 +152,7 @@ public class SortProxyConnectorsActionTest
         assertOrder( new String[]{ CENTRAL, CODEHAUS, JAVAX } );
     }
 
+    @Test
     public void testSortUpPastBeginning()
         throws Exception
     {

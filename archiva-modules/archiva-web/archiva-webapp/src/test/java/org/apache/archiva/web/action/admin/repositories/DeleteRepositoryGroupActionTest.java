@@ -32,6 +32,8 @@ import org.apache.archiva.redback.integration.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
 import java.util.Collections;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * DeleteRepositoryGroupActionTest
@@ -47,7 +49,9 @@ public class DeleteRepositoryGroupActionTest
 
     private ArchivaConfiguration archivaConfiguration;
 
-    protected void setUp()
+    @Override
+    @Before
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -61,6 +65,7 @@ public class DeleteRepositoryGroupActionTest
             archivaConfiguration );
     }
 
+    @Test
     public void testSecureActionBundle()
         throws SecureActionException, RepositoryAdminException
     {
@@ -74,6 +79,7 @@ public class DeleteRepositoryGroupActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
+    @Test
     public void testDeleteRepositoryGroupConfirmation()
         throws Exception
     {
@@ -94,6 +100,7 @@ public class DeleteRepositoryGroupActionTest
         assertEquals( Collections.singletonList( origRepoGroup ), configuration.getRepositoryGroups() );
     }
 
+    @Test
     public void testDeleteRepositoryGroup()
         throws Exception
     {
@@ -118,6 +125,7 @@ public class DeleteRepositoryGroupActionTest
         assertTrue( configuration.getRepositoryGroups().isEmpty() );
     }
 
+    @Test
     public void testDeleteRepositoryGroupCancelled()
         throws Exception
     {

@@ -20,15 +20,20 @@ package org.apache.archiva.xml;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * LatinEntitiesTest 
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class LatinEntitiesTest
     extends TestCase
 {
+    @Test
     public void testResolveEntity()
     {
         // Good Entities.

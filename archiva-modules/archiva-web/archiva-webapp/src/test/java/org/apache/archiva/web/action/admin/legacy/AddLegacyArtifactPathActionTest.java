@@ -29,7 +29,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class AddLegacyArtifactPathActionTest
     extends TestCase
 {
@@ -67,6 +71,7 @@ public class AddLegacyArtifactPathActionTest
     private ActionValidatorManager actionValidatorManager;
 
     @Override
+    @Before
     public void setUp()
         throws Exception
     {
@@ -77,6 +82,7 @@ public class AddLegacyArtifactPathActionTest
         actionValidatorManager = factory.createDefaultActionValidatorManager();
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithNullInputs()
         throws Exception
     {
@@ -120,6 +126,7 @@ public class AddLegacyArtifactPathActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithBlankInputs()
         throws Exception
     {
@@ -163,6 +170,7 @@ public class AddLegacyArtifactPathActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithInvalidInputs()
         throws Exception
     {
@@ -218,6 +226,7 @@ public class AddLegacyArtifactPathActionTest
         ValidatorUtil.assertFieldErrors( expectedFieldErrors, fieldErrors );
     }
 
+    @Test
     public void testStruts2ValidationFrameworkWithValidInputs()
         throws Exception
     {

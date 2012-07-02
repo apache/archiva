@@ -9,6 +9,8 @@ import org.easymock.MockControl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -40,7 +42,9 @@ public class RepositoryScanningActionTest
 
     private Configuration config;
 
-    protected void setUp()
+    @Override
+    @Before
+    public void setUp()
         throws Exception
     {
 
@@ -65,6 +69,7 @@ public class RepositoryScanningActionTest
 
     }
 
+    @Test
     public void testUpdateKnownConsumers()
         throws Exception
     {
@@ -90,6 +95,7 @@ public class RepositoryScanningActionTest
         assertEquals( "results " + results, 8, results.size() );
     }
 
+    @Test
     public void testDisableAllKnownConsumers()
         throws Exception
     {

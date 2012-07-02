@@ -27,12 +27,15 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
-
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 /**
  * BannerTest
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class BannerTest
     extends TestCase
 {
@@ -43,14 +46,16 @@ public class BannerTest
         assertEquals( "Encoding: ", encoded, Banner.encode( decoded ) );
         assertEquals( "Decoding: ", decoded, Banner.decode( encoded ) );
     }
-
+    
+    @Test
     public void testEncodeDecode()
     {
         assertEncodeDecode( "[$10 ]", "[          ]" );
         assertEncodeDecode( "$$$5_$n$5_", "$_____" + eol + "_____" );
         assertEncodeDecode( "$${Refgjuvyr}", "${Erstwhile}" );
     }
-
+    
+    @Test
     public void testInjectVersion()
     {
         assertEquals( "[ 1.0 ]", Banner.injectVersion( "[#####]", "1.0" ) );
@@ -60,6 +65,7 @@ public class BannerTest
                       Banner.injectVersion( "Archiva:\"+eol+\" (##############)", "1.0-alpha-1" ) );
     }
 
+    @Test
     public void testGetBanner()
         throws IOException
     {

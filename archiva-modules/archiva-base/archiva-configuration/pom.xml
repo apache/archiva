@@ -103,20 +103,11 @@
       <artifactId>archiva-policies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-testutil</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
+    </dependency>    
   </dependencies>
   <build>
     <plugins>

@@ -29,10 +29,13 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.Collections;
+import org.apache.archiva.test.ArchivaBlockJUnit4ClassRunner;
+import org.junit.runner.RunWith;
 
 /**
  * @author Olivier Lamy
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RuntimeInfoServiceTest
     extends AbstractRestServicesTest
 {

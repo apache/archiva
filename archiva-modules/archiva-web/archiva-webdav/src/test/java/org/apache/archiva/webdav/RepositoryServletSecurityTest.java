@@ -54,13 +54,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
@@ -68,7 +68,7 @@ import java.io.InputStream;
  * 
  * @version $Id$
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class RepositoryServletSecurityTest
     extends TestCase

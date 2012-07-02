@@ -24,15 +24,15 @@ import org.apache.maven.wagon.Wagon;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the WagonFactory works through Spring to be bound into the RepositoryProxyConnectors implementation.
  * 
  */
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class WagonFactoryTest
     extends TestCase

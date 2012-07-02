@@ -30,9 +30,8 @@ import java.util.Collection;
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
  *
- * @version $Id: ArchivaRepositoryScanningTaskExecutorPhase1Test.java 1214303 2011-12-14 15:37:51Z olamy $
+ * @version $Id$
  */
-@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaRepositoryScanningTaskExecutorPhase1Test
     extends ArchivaRepositoryScanningTaskExecutorAbstractTest

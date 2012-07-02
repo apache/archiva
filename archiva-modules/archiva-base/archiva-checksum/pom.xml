@@ -38,10 +38,11 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-testutil</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
+    </dependency>  
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>

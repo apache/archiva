@@ -55,11 +55,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.apache.archiva.test.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverTest
     extends TestCase
