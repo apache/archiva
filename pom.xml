@@ -1763,6 +1763,7 @@
               <exclude>README.txt</exclude>
               <exclude>*.sh</exclude>
               <exclude>.git/**</exclude>
+              <exclude>src/test/resources/projects/compile/goal.txt</exclude>
             </excludes>
           </configuration>
         </plugin>
