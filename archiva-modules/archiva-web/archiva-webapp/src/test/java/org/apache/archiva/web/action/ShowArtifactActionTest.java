@@ -47,6 +47,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
@@ -79,6 +81,7 @@ public class ShowArtifactActionTest
     private static final String TEST_TYPE = "jar";
 
     @Override
+    @Before
     public void setUp()
         throws Exception
     {
