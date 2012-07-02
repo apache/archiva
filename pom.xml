@@ -837,6 +837,28 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>.gitignore</exclude>
+            <exclude>DEPENDENCIES</exclude>
+            <exclude>README.txt</exclude>
+            <exclude>*.sh</exclude>
+            <exclude>.git/**</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>rat-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
 
     </plugins>
   </build>
@@ -956,34 +978,5 @@
       </build>
     </profile>
 
-    <profile>
-      <id>rat</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.rat</groupId>
-            <artifactId>apache-rat-plugin</artifactId>
-            <configuration>
-              <excludes>
-                <exclude>.gitignore</exclude>
-                <exclude>DEPENDENCIES</exclude>
-                <exclude>README.txt</exclude>
-                <exclude>*.sh</exclude>
-                <exclude>.git/**</exclude>
-              </excludes>
-            </configuration>
-            <executions>
-              <execution>
-                <id>rat-check</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>verify</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
 </project>
