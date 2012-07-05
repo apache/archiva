@@ -1,0 +1,172 @@
+package org.apache.archiva.rest.services;
+
+/*
+ * Copyright 2012 Zenika
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.ReportRepositoriesService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * DefaultReportRepositoriesService
+ *
+ * @author Adrien Lecharpentier <adrien.lecharpentier@zenika.com>
+ * @since 1.4-M3
+ */
+@Service( "reportRepositoriesService#rest" )
+public class DefaultReportRepositoriesService
+    extends AbstractRestService
+    implements ReportRepositoriesService
+{
+
+    private static final String ALL_REPOSITORIES = "all";
+
+    @Inject
+    private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    public List<RepositoryStatistics> getStatisticsReport( List<String> repositoriesId, int rowCount, Date startDate,
+                                                           Date endDate )
+        throws ArchivaRestServiceException
+    {
+        switch ( repositoriesId.size() )
+        {
+            case 0:
+                throw new ArchivaRestServiceException( "report.statistics.report.missing-repositories", null );
+            case 1:
+                return getUniqueRepositoryReport( repositoriesId.get( 0 ), rowCount, startDate, endDate );
+            default:
+                return getMultipleRepositoriesReport( repositoriesId, rowCount );
+        }
+    }
+
+    private List<RepositoryStatistics> getMultipleRepositoriesReport( List<String> repositoriesId, int rowCount )
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            List<RepositoryStatistics> stats = new ArrayList<RepositoryStatistics>();
+            for ( String repo : repositoriesId )
+            {
+                try
+                {
+                    stats.add( repositoryStatisticsManager.getLastStatistics( metadataRepository, repo ) );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                }
+            }
+
+            return stats.subList( 0, stats.size() > rowCount ? rowCount : stats.size() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    private List<RepositoryStatistics> getUniqueRepositoryReport( String repositoryId, int rowCount, Date startDate,
+                                                                  Date endDate )
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            List<RepositoryStatistics> stats = null;
+            try
+            {
+                stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repositoryId, startDate,
+                                                                          endDate );
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+            }
+            if ( stats == null || stats.isEmpty() )
+            {
+                return Collections.<RepositoryStatistics>emptyList();
+            }
+
+            return stats.subList( 0, stats.size() > rowCount ? rowCount : stats.size() );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    public List<RepositoryProblemFacet> getHealthReport( String repository, String groupId, int rowCount )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<String> observableRepositories = getObservableRepos();
+            if ( !ALL_REPOSITORIES.equals( repository ) && !observableRepositories.contains( repository ) )
+            {
+                throw new ArchivaRestServiceException(
+                    "${$.i18n.prop('report.repository.illegal-access', " + repository + ")}", "repositoryId",
+                    new IllegalAccessException() );
+            }
+
+            if ( !ALL_REPOSITORIES.equals( repository ) )
+            {
+                observableRepositories = Collections.<String>singletonList( repository );
+            }
+
+            List<RepositoryProblemFacet> problemArtifacts = new ArrayList<RepositoryProblemFacet>();
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+            for ( String repoId : observableRepositories )
+            {
+                for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
+                {
+                    RepositoryProblemFacet metadataFacet =
+                        (RepositoryProblemFacet) metadataRepository.getMetadataFacet( repoId,
+                                                                                      RepositoryProblemFacet.FACET_ID,
+                                                                                      name );
+                    if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
+                    {
+                        problemArtifacts.add( metadataFacet );
+                    }
+                }
+            }
+
+            return problemArtifacts;
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+}
