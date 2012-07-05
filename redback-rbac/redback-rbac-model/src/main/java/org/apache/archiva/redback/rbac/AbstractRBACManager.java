@@ -35,7 +35,7 @@ import java.util.Set;
  * AbstractRBACManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractRBACManager
     implements RBACManager

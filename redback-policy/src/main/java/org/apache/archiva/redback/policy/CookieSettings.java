@@ -23,7 +23,7 @@ package org.apache.archiva.redback.policy;
  * CookieSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface CookieSettings
 {

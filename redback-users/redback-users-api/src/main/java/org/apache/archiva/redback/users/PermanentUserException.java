@@ -24,7 +24,7 @@ package org.apache.archiva.redback.users;
  * occurs. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PermanentUserException
     extends UserManagerException

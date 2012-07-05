@@ -22,7 +22,7 @@ import org.codehaus.plexus.util.StringUtils;
  * RBACObjectAssertions 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class RBACObjectAssertions
 {

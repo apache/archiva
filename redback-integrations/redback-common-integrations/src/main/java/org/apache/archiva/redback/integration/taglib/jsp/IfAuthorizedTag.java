@@ -33,7 +33,7 @@ import javax.servlet.jsp.jstl.core.ConditionalTagSupport;
  * IfAuthorizedTag:
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 public class IfAuthorizedTag
     extends ConditionalTagSupport

@@ -40,7 +40,7 @@ import java.util.Arrays;
  * AccountAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-account" )
 @Scope( "prototype" )

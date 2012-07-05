@@ -20,7 +20,7 @@ package org.apache.archiva.redback.rbac;
  * RbacObjectInvalidException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class RbacObjectInvalidException
     extends RbacManagerException

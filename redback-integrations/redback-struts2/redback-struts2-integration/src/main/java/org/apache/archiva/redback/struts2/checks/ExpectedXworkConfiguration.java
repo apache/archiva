@@ -42,7 +42,7 @@ import com.opensymphony.xwork2.config.ConfigurationManager;
  * </p>
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * 
  * TODO: Address comment below and add back in the component declaration
  *

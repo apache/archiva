@@ -48,7 +48,7 @@ import org.springframework.stereotype.Service;
  * Mailer
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("mailer")
 public class MailerImpl

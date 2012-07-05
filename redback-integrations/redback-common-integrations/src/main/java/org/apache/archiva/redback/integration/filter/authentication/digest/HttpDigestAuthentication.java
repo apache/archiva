@@ -44,7 +44,7 @@ import java.io.IOException;
  * HttpDigestAuthentication methods for working with <a href="http://www.faqs.org/rfcs/rfc2617.html">RFC 2617 HTTP Authentication</a>.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("httpAuthenticator#digest")
 public class HttpDigestAuthentication

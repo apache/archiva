@@ -25,7 +25,7 @@ import java.util.Collection;
 
 /**
  * @author <a href="mailto:evenisse@codehaus.org">Emmanuel Venisse</a>
- * @version $Id$
+ *
  */
 public interface Mailer
 {

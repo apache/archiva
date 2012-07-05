@@ -31,7 +31,7 @@ import org.extremecomponents.util.HtmlBuilder;
  * SecurityFilterCell 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class SecurityFilterCell
     implements Cell

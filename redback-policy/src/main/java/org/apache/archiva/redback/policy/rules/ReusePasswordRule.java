@@ -30,7 +30,7 @@ import java.util.Iterator;
  * the {@link User#getPreviousEncodedPasswords()} to ensure that a password is not reused.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordRule#reuse")
 public class ReusePasswordRule

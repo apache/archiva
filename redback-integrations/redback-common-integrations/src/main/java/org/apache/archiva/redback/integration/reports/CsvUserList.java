@@ -43,7 +43,7 @@ import java.util.Map;
  * CsvUserList
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "report#userlist-csv" )
 public class CsvUserList

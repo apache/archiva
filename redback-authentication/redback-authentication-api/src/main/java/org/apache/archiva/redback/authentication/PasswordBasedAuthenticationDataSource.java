@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  * PasswordBasedAuthenticationDataSource: the username is considered the principal with this data source
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * 
  */
 @Service("authenticationDataSource#password")

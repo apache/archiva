@@ -22,7 +22,7 @@ package org.apache.archiva.redback.authentication;
  * AuthenticationException.java
  *
  * @author Jesse McConnell
- * @version $Id$
+ *
  */
 public class AuthenticationException
     extends Exception

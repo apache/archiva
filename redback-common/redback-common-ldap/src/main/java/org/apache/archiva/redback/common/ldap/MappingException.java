@@ -20,7 +20,7 @@ package org.apache.archiva.redback.common.ldap;
  */
 
 /**
- * @version $Id$
+ *
  */
 public class MappingException
     extends Exception

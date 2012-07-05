@@ -20,7 +20,7 @@ package org.apache.archiva.redback.policy;
  * Password Rule Violations Exception
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PasswordRuleViolationException
     extends RuntimeException

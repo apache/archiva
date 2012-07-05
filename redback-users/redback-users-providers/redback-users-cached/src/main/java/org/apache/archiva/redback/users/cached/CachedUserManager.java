@@ -37,7 +37,7 @@ import java.util.List;
  * CachedUserManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "userManager#cached" )
 public class CachedUserManager

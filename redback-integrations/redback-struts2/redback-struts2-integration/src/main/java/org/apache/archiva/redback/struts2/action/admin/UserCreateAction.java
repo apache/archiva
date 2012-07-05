@@ -38,7 +38,7 @@ import org.springframework.stereotype.Controller;
  * UserCreateAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller("redback-admin-user-create")
 @Scope("prototype")

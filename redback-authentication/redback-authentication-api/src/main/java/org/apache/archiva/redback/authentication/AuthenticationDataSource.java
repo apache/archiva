@@ -24,7 +24,7 @@ package org.apache.archiva.redback.authentication;
  * <p/>
  * todo which this back to an interface and use the mojo style expression evaluation to populate the particular required fields
  *
- * @version $Id$
+ *
  * @see PasswordBasedAuthenticationDataSource
  * @see TokenBasedAuthenticationDataSource
  */

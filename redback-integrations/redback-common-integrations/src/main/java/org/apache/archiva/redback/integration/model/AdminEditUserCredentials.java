@@ -25,7 +25,7 @@ import org.apache.archiva.redback.users.User;
  * AdminEditUserCredentials
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class AdminEditUserCredentials
     extends EditUserCredentials

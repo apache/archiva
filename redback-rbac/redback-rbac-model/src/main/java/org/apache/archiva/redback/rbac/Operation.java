@@ -25,7 +25,7 @@ package org.apache.archiva.redback.rbac;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface Operation
 {

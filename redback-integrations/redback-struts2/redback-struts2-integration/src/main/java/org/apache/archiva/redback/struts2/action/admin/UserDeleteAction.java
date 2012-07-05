@@ -45,7 +45,7 @@ import java.util.Arrays;
  * UserDeleteAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-admin-user-delete" )
 @Scope( "prototype" )

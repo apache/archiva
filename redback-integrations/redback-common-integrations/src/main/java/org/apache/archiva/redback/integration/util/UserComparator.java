@@ -27,7 +27,7 @@ import org.apache.archiva.redback.users.User;
  * UserComparator
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class UserComparator
     implements Comparator<User>

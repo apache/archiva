@@ -27,7 +27,7 @@ import java.util.List;
  * XworkPackageConfig
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class XworkPackageConfig
 {

@@ -20,7 +20,7 @@ package org.apache.archiva.redback.policy;
  * Password Encoding Exception.
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PasswordEncodingException
     extends RuntimeException

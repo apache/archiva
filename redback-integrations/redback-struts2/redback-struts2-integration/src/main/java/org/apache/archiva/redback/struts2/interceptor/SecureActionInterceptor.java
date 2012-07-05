@@ -47,7 +47,7 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 @Controller( "redbackSecureActionInterceptor" )
 @Scope( "prototype" )

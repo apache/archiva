@@ -28,7 +28,7 @@ import org.extremecomponents.table.core.TableModel;
  * MailtoCell
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MailtoCell
     extends AbstractCell

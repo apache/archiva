@@ -25,7 +25,7 @@ import java.util.List;
  * EnvironmentCheck - Perform an Environment Check.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface EnvironmentCheck
 {

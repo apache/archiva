@@ -30,7 +30,7 @@ import javax.inject.Named;
  * MemoryKeyManagerTest 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryKeyManagerTest
     extends KeyManagerTestCase

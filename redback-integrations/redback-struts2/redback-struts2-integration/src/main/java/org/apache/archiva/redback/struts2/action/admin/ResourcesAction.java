@@ -40,7 +40,7 @@ import java.util.List;
  * OperationsAction:
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
- * @version $Id$
+ *
  */
 @Controller( "redback-resources" )
 @Scope( "prototype" )

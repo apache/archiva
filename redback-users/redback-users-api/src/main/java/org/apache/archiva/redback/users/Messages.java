@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
  * Localized Message Handling.
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class Messages
 {

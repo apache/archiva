@@ -28,7 +28,7 @@ import javax.annotation.PostConstruct;
  * RememberMeCookieSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("cookieSettings#rememberMe")
 public class RememberMeCookieSettings

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Controller;
  * SecurityExternalResult
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @SuppressWarnings( "serial" )
 @Controller( "securityExternalResult" )

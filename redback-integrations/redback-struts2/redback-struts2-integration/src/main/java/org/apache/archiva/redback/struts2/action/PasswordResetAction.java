@@ -41,7 +41,7 @@ import java.util.Arrays;
  * PasswordResetAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-password-reset" )
 @Scope( "prototype" )

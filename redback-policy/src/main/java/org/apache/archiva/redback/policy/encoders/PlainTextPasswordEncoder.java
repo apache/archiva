@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
  * See {@link PasswordEncoder#encodePassword(String)} for details.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordEncoder#plaintext")
 public class PlainTextPasswordEncoder

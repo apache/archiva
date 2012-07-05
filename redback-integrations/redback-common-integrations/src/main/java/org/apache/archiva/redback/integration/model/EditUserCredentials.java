@@ -26,7 +26,7 @@ import org.apache.archiva.redback.integration.util.DateUtils;
  * EditUserCredentials
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class EditUserCredentials
     extends UserCredentials

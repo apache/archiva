@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * @todo expand on javadoc
  */
 public interface UserAssignment

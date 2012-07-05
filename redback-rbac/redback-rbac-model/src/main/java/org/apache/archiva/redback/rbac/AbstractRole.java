@@ -20,7 +20,7 @@ package org.apache.archiva.redback.rbac;
  * AbstractRole useful for common logic that implementors can use. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractRole
     implements Role

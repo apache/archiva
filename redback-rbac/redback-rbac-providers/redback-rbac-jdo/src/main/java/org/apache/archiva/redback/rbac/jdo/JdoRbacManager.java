@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @author Jesse McConnell <jmcconnell@apache.org>
- * @version $Id$
+ *
  */
 @Service( "rBACManager#jdo" )
 public class JdoRbacManager

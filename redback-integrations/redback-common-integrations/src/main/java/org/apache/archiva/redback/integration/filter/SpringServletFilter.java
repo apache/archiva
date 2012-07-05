@@ -30,7 +30,7 @@ import javax.servlet.ServletException;
  * SpringServletFilter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class SpringServletFilter
     implements Filter

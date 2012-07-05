@@ -44,7 +44,7 @@ import java.io.IOException;
  * </ul>
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class HttpDigestAuthenticationFilter
     extends AbstractHttpAuthenticationFilter

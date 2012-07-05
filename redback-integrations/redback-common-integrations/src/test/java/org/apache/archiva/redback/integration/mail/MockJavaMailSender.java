@@ -31,7 +31,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 /**
  * @author <a href="mailto:olamy@apache.org">olamy</a>
  * @since 26 sept. 2008
- * @version $Id$
+ *
  */
 public class MockJavaMailSender
     extends JavaMailSenderImpl

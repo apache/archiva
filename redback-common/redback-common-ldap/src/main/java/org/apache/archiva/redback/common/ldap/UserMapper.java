@@ -24,7 +24,7 @@ import org.apache.archiva.redback.users.User;
 import javax.naming.directory.Attributes;
 
 /**
- * @version $Id$
+ *
  */
 public interface UserMapper
 {

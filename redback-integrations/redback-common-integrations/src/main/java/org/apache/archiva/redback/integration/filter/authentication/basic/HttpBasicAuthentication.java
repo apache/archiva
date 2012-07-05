@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
  * HttpBasicAuthentication
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("httpAuthenticator#basic")
 public class HttpBasicAuthentication

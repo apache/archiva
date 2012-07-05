@@ -38,7 +38,7 @@ import java.util.Map;
  * KeyManager backed by an in-memory only store.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("keyManager#memory")
 public class MemoryKeyManager

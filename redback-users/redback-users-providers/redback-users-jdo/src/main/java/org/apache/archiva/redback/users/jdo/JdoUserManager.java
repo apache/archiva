@@ -49,7 +49,7 @@ import java.util.List;
  * JdoUserManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "userManager#jdo" )
 public class JdoUserManager

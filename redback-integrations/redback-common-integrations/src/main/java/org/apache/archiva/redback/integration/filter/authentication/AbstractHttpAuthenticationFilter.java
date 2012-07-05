@@ -28,7 +28,7 @@ import org.apache.archiva.redback.integration.filter.SpringServletFilter;
  * AbstractHttpAuthenticationFilter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractHttpAuthenticationFilter
     extends SpringServletFilter

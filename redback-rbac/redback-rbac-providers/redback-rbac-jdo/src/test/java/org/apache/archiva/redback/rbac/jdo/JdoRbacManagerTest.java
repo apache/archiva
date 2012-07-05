@@ -43,7 +43,7 @@ import java.util.Properties;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class JdoRbacManagerTest
     extends AbstractRbacManagerTestCase

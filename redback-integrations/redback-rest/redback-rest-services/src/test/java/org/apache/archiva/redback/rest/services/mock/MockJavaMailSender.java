@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:olamy@apache.org">olamy</a>
  * @since 26 sept. 2008
- * @version $Id$
+ *
  */
 @Service("mockJavaMailSender")
 public class MockJavaMailSender

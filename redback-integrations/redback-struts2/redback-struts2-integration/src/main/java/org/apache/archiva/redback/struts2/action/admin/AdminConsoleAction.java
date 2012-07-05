@@ -31,7 +31,7 @@ import org.springframework.stereotype.Controller;
  * AdminConsoleAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller("redback-admin-console")
 @Scope("prototype")

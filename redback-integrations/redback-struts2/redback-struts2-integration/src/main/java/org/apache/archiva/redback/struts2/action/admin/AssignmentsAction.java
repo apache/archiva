@@ -53,7 +53,7 @@ import java.util.Set;
  * AssignmentsAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller("redback-assignments")
 @Scope("prototype")

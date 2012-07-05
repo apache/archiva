@@ -32,7 +32,6 @@ import javax.inject.Named;
 /**
  *
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
- * @version $Id: CustomInterceptorTest.java 1310448 2012-04-06 16:23:16Z olamy $
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

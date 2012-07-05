@@ -23,7 +23,7 @@ package org.apache.archiva.redback.integration.filter.authentication.digest;
  * Hex
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * @todo should probably move this to plexus-utils or plexus-security-common
  */
 public class Hex

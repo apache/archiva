@@ -21,7 +21,7 @@ package org.apache.archiva.redback.rbac;
  * a fundamental persistence or store issue. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class RbacManagerException
     extends Exception

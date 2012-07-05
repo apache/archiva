@@ -38,7 +38,7 @@ import java.util.List;
  * AbstractUserManagerTestCase 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )

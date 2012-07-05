@@ -44,7 +44,7 @@ import java.util.Map;
  * CsvRolesMatrix
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "report#rolesmatrix-csv" )
 public class CsvRolesMatrix

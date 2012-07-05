@@ -39,7 +39,7 @@ import java.util.List;
  * ConfigurationFactory
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "userConfiguration" )
 public class UserConfiguration

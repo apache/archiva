@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
  * OpenAuthorizer - No checks for authorization, everything passes. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * 
  */
 @Service("authorizer#rbac")

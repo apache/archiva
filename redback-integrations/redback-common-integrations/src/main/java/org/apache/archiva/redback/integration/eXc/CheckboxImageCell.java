@@ -28,7 +28,7 @@ import org.extremecomponents.table.view.html.BuilderUtils;
  * CheckboxImageCell
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class CheckboxImageCell
     extends AbstractCell

@@ -41,7 +41,7 @@ import java.util.List;
  * OperationsAction:
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
- * @version $Id$
+ *
  */
 @Controller( "redback-operations" )
 @Scope( "prototype" )

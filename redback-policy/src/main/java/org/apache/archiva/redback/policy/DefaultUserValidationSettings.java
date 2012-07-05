@@ -29,7 +29,7 @@ import javax.annotation.Resource;
  * DefaultUserValidationSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("userValidationSettings")
 public class DefaultUserValidationSettings

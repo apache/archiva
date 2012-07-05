@@ -27,7 +27,7 @@ import java.util.Date;
  * MemoryAuthenticationKey
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryAuthenticationKey
     implements AuthenticationKey

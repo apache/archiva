@@ -39,7 +39,7 @@ import java.util.List;
  * User Security Policy.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "userSecurityPolicy" )
 public class DefaultUserSecurityPolicy

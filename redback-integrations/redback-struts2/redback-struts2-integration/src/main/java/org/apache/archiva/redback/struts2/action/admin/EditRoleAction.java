@@ -45,7 +45,7 @@ import java.util.Map;
  * EditRoleAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-role-edit" )
 @Scope( "prototype" )

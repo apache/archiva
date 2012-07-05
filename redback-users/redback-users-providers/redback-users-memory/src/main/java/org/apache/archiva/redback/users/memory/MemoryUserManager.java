@@ -43,7 +43,7 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 /**
- * @version $Id$
+ *
  */
 @Service("userManager#memory")
 public class MemoryUserManager

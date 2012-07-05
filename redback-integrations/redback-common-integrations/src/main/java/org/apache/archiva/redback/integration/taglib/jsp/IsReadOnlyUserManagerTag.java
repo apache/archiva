@@ -30,7 +30,7 @@ import javax.servlet.jsp.jstl.core.ConditionalTagSupport;
  * IsReadOnlyUserManagerTag:
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 public class IsReadOnlyUserManagerTag
     extends ConditionalTagSupport

@@ -30,7 +30,7 @@ import java.util.List;
  * MemoryRole
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryRole
     extends AbstractRole

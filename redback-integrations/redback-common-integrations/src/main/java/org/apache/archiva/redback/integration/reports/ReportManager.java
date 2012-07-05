@@ -34,7 +34,7 @@ import java.util.Map;
  * ReportManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "reportManager" )
 public class ReportManager

@@ -43,7 +43,7 @@ import java.util.List;
  * PermissionsAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-permissions" )
 @Scope( "prototype" )

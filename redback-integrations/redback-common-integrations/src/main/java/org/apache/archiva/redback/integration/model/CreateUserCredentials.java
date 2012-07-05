@@ -23,7 +23,7 @@ package org.apache.archiva.redback.integration.model;
  * CreateUserCredentials
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class CreateUserCredentials
     extends UserCredentials

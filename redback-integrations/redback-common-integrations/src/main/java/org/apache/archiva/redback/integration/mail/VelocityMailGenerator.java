@@ -40,7 +40,7 @@ import java.util.Locale;
  * Mail generator component implementation using velocity.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
+ *
  */
 @Service( "mailGenerator#velocity" )
 public class VelocityMailGenerator

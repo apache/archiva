@@ -25,7 +25,7 @@ import org.apache.archiva.redback.authentication.AuthenticationException;
  * HttpAuthenticationException
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class HttpAuthenticationException
     extends AuthenticationException

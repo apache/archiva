@@ -25,7 +25,7 @@ import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenti
  * NonceExpirationException
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class NonceExpirationException
     extends HttpAuthenticationException

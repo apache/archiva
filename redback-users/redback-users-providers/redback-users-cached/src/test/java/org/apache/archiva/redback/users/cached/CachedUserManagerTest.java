@@ -35,7 +35,7 @@ import javax.inject.Named;
  * CachedUserManagerTest 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class CachedUserManagerTest
     extends AbstractUserManagerTestCase

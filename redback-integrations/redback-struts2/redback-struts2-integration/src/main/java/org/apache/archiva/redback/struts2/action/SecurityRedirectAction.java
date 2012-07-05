@@ -27,7 +27,7 @@ import org.springframework.stereotype.Controller;
  * SecurityRedirectAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-redirect" )
 @Scope( "prototype" )

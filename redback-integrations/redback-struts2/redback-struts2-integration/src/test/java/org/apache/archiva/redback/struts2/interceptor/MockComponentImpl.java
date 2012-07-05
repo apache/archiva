@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
- * @version $Id: MockComponentImpl.java 1310448 2012-04-06 16:23:16Z olamy $
  */
 @Service
 public class MockComponentImpl

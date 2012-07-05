@@ -54,7 +54,7 @@ import java.util.List;
  * UserEditAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-admin-user-edit" )
 @Scope( "prototype" )

@@ -24,7 +24,7 @@ package org.apache.archiva.redback.rbac;
  * when a RBAC Object Was Not Found. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class RbacObjectNotFoundException
     extends RbacManagerException

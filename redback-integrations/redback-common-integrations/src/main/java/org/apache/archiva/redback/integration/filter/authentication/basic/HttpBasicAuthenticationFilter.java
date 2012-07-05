@@ -36,7 +36,7 @@ import java.io.IOException;
  * HttpBasicAuthenticationFilter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class HttpBasicAuthenticationFilter
     extends AbstractHttpAuthenticationFilter

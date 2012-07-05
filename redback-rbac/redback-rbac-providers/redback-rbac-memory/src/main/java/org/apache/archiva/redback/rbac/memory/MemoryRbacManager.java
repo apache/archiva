@@ -48,7 +48,7 @@ import java.util.Map;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "rBACManager#memory" )
 public class MemoryRbacManager

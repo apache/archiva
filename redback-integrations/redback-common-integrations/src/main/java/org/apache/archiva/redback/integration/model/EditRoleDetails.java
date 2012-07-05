@@ -32,7 +32,7 @@ import org.apache.archiva.redback.rbac.Role;
  * creative injection of fields and values by the untrusted client.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class EditRoleDetails
     extends RoleDetails

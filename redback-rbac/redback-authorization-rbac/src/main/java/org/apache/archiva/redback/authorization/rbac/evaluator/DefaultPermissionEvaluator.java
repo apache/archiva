@@ -35,7 +35,7 @@ import javax.inject.Named;
  * of the person making the authorization check
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 @Service("permissionEvaluator")
 public class DefaultPermissionEvaluator

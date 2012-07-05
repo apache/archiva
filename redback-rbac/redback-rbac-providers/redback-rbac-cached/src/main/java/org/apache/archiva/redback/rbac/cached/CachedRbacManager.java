@@ -45,7 +45,7 @@ import java.util.Set;
  * CachedRbacManager is a wrapped RBACManager with caching.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "rBACManager#cached" )
 public class CachedRbacManager

@@ -27,7 +27,7 @@ import org.apache.archiva.redback.rbac.TemplatedRole;
  * TemplatedRoleSorter
  *
  * @author <a href="hisidro@exist.com">Henry Isidro</a>
- * @version $Id$
+ *
  */
 public class TemplatedRoleSorter
     implements Comparator<TemplatedRole>

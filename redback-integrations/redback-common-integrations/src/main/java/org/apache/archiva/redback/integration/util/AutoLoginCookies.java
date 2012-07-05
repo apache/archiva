@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
  * AutoLoginCookies
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("autoLoginCookies")
 public class AutoLoginCookies

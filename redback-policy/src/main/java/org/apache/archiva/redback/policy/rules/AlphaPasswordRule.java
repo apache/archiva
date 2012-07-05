@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
  * alpha characters contained within.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordRule#alpha-count")
 public class AlphaPasswordRule

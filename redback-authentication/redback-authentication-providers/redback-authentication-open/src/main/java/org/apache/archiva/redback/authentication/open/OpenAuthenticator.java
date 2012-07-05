@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
  * All attempts result in access. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * 
  */
 @Service("authenticator#open")

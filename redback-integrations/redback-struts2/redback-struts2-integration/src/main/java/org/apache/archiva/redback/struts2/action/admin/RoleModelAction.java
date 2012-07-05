@@ -35,7 +35,7 @@ import javax.inject.Inject;
  * RolesAction
  *
  * @author <a href="mailto:jmcconnell@apache.org">Jesse McConnell</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-role-model" )
 @Scope( "prototype" )

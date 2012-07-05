@@ -25,7 +25,7 @@ import org.apache.archiva.redback.rbac.Resource;
  * MemoryResource 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryResource
     implements Resource, java.io.Serializable

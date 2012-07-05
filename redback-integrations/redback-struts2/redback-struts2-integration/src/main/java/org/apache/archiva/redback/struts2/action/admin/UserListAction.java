@@ -62,7 +62,7 @@ import java.util.Set;
  * UserListAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-admin-user-list" )
 @Scope( "prototype" )

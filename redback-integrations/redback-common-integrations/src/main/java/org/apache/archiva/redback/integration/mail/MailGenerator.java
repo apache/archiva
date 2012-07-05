@@ -25,7 +25,7 @@ import org.apache.archiva.redback.keys.AuthenticationKey;
  * Mail generator component.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
+ *
  */
 public interface MailGenerator
 {

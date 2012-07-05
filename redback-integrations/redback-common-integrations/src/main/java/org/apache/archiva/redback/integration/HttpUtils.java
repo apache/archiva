@@ -27,7 +27,7 @@ import org.codehaus.plexus.util.StringUtils;
  * Collection of Utility methods useful in an Http environment.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * @todo should move this to plexus-utils or plexus-utils-web
  */
 public class HttpUtils

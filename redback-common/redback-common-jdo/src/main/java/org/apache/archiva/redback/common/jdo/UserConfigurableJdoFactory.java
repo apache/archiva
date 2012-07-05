@@ -37,7 +37,7 @@ import javax.inject.Named;
  * UserConfigurableJdoFactory
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "jdoFactory#users" )
 public class UserConfigurableJdoFactory

@@ -39,7 +39,7 @@ import java.io.IOException;
  * SimpleAuthorizationFilter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class SimpleAuthorizationFilter
     extends SpringServletFilter

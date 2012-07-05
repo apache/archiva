@@ -44,7 +44,7 @@ import java.util.List;
  * RoleCreateAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-role-create" )
 @Scope( "prototype" )

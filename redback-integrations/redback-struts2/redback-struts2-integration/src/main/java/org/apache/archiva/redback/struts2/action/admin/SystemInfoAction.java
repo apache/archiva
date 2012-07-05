@@ -46,7 +46,7 @@ import java.util.Set;
  * SystemInfoAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-sysinfo" )
 @Scope( "prototype" )

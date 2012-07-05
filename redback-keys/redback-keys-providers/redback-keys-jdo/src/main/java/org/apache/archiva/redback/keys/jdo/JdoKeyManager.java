@@ -43,7 +43,7 @@ import java.util.List;
  * JdoKeyManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "keyManager#jdo" )
 public class JdoKeyManager

@@ -44,7 +44,7 @@ import java.util.TreeMap;
  * Note that both the bind dn and password must be set if any are set.
  *
  * @author <a href="mailto:trygvis@inamo.no">trygvis</a>
- * @version $Id$
+ *
  */
 public class LdapConnectionConfiguration
 {

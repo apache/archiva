@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
  * 
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordEncoder#sha1")
 public class SHA1PasswordEncoder

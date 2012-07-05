@@ -27,7 +27,7 @@ import java.util.Date;
  * DateUtils
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class DateUtils
 {

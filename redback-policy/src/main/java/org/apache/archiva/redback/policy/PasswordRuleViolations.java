@@ -25,7 +25,7 @@ import java.util.List;
  * Password Rule Violations
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PasswordRuleViolations
 {

@@ -23,7 +23,7 @@ package org.apache.archiva.redback.rbac;
  * RbacPermanentException - tossed when a forbidden action against a permanent RBAC Object occurs.  
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class RbacPermanentException
     extends RbacManagerException

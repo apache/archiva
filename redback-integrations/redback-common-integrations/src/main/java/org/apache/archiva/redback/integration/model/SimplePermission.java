@@ -27,7 +27,7 @@ package org.apache.archiva.redback.integration.model;
  * creative injection of fields and values by the untrusted client.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class SimplePermission
 {

@@ -25,7 +25,7 @@ import org.apache.archiva.redback.users.User;
  * MemoryAuthorizationDataSource:
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
- * @version $Id$
+ *
  */
 public class MemoryAuthorizationDataSource
 //    implements AuthorizationDataSource

@@ -52,7 +52,7 @@ import java.util.Date;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-login" )
 @Scope( "prototype" )

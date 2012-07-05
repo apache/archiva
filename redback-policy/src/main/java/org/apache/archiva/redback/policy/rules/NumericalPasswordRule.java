@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
  * numerical characters contained within.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordRule#numerical-count")
 public class NumericalPasswordRule

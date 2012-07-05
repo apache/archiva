@@ -23,7 +23,7 @@ package org.apache.archiva.redback.integration.model;
  * CreateRoleDetails
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class CreateRoleDetails
     extends RoleDetails

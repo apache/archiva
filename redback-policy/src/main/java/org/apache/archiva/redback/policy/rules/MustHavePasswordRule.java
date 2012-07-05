@@ -28,7 +28,7 @@ import javax.annotation.PostConstruct;
  * Basic Password Rule, Checks for non-empty Passwords in non guest users.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordRule#must-have")
 public class MustHavePasswordRule

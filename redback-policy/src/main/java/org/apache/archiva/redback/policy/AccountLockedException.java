@@ -22,7 +22,7 @@ import org.apache.archiva.redback.users.User;
  * AccountLockedException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class AccountLockedException
     extends PolicyViolationException

@@ -27,7 +27,7 @@ import org.apache.archiva.redback.rbac.Operation;
  * OperationSorter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class OperationSorter
     implements Comparator<Operation>

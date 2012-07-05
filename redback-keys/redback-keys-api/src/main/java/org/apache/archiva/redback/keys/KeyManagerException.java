@@ -23,7 +23,7 @@ package org.apache.archiva.redback.keys;
  * KeyManagerException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class KeyManagerException
     extends Exception

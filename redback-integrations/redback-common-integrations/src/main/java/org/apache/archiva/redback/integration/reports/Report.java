@@ -25,7 +25,7 @@ import java.io.OutputStream;
  * Report
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface Report
 {

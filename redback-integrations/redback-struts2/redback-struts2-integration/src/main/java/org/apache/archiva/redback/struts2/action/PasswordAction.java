@@ -40,7 +40,7 @@ import java.util.Map;
  * PasswordAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-password" )
 @Scope( "prototype" )

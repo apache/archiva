@@ -26,7 +26,7 @@ import org.apache.archiva.redback.policy.MustChangePasswordException;
  * Authenticator:
  *
  * @author Jesse McConnell
- * @version $Id$
+ *
  */
 public interface Authenticator
 {

@@ -25,7 +25,7 @@ package org.apache.archiva.redback.policy;
  *
  * @author colin sampaleanu
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface PasswordEncoder
 {

@@ -26,7 +26,7 @@ import javax.naming.directory.Attributes;
 
 /**
  * 
- * @version $Id$
+ *
  */
 public final class LdapUtils
 {

@@ -22,7 +22,7 @@ import org.apache.archiva.redback.keys.KeyManagerException;
  * KeyNotFoundException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class KeyNotFoundException
     extends KeyManagerException

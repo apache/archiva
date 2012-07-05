@@ -43,7 +43,7 @@ import java.io.IOException;
  * HttpAuthenticator
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class HttpAuthenticator
 {

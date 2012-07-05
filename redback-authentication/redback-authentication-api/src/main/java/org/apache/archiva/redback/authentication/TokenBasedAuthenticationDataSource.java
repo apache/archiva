@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  * TokenBasedAuthenticationDataSource
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "authenticationDataSource#token" )
 @Scope( "prototype" )

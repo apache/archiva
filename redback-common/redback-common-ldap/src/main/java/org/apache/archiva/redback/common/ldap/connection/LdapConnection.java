@@ -37,7 +37,7 @@ import java.util.Properties;
  * The configuration for a connection will not change.
  *
  * @author <a href="mailto:trygvis@inamo.no">trygvis</a>
- * @version $Id$
+ *
  */
 public class LdapConnection
 {

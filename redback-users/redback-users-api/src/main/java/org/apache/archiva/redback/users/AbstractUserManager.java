@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * AbstractUserManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractUserManager
     implements UserManager

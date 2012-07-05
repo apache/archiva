@@ -27,7 +27,7 @@ import org.extremecomponents.util.HtmlBuilder;
  * SecurityView
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class SecurityView
     extends AbstractHtmlView

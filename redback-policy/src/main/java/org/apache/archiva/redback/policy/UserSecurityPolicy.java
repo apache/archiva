@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * User Security Policy Settings.
  *
- * @version $Id$
+ *
  * @todo roll password management into it's own object.
  */
 public interface UserSecurityPolicy

@@ -35,7 +35,7 @@ import javax.inject.Named;
  * LogoutAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-logout" )
 @Scope( "prototype" )

@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  * ExpectedJsps
  * @FIXME the jsp list is not correct
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("environmentCheck#ExpectedJsps")
 public class ExpectedJsps

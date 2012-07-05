@@ -20,7 +20,7 @@ package org.apache.archiva.redback.policy;
  * PolicyViolationException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PolicyViolationException
     extends Exception

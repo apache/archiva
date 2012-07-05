@@ -46,7 +46,7 @@ import java.util.Map;
  * {@link Authenticator} implementation that uses a wrapped {@link UserManager} to authenticate.
  *
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
- * @version $Id$
+ *
  */
 @Service( "authenticator#user-manager" )
 public class UserManagerAuthenticator

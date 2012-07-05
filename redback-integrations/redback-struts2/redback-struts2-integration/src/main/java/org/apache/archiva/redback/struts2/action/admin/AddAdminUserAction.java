@@ -50,7 +50,7 @@ import java.util.Date;
  * AddAdminUserAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redback-admin-account" )
 @Scope( "prototype" )

@@ -38,7 +38,7 @@ import java.util.Properties;
  * JdoUserManagerTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class JdoUserManagerTest
     extends AbstractUserManagerTestCase

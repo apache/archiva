@@ -29,7 +29,7 @@ import java.io.Serializable;
  * UserCredentials
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class UserCredentials
     implements Serializable

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * AbstractKeyManager 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractKeyManager
     implements KeyManager

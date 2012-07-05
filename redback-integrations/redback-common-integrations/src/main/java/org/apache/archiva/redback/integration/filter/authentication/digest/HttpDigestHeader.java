@@ -35,7 +35,7 @@ import java.util.Properties;
  * HttpDigestHeader
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service( "httpClientHeader" )
 @Scope( "prototype" )

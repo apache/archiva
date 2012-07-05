@@ -25,7 +25,7 @@ import org.apache.archiva.redback.rbac.Operation;
  * MemoryOperation 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryOperation
     implements Operation, java.io.Serializable

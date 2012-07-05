@@ -26,7 +26,7 @@ import java.security.NoSuchAlgorithmException;
  * Digest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  * @todo move to plexus-utils in future
  */
 public class Digest

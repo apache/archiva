@@ -22,7 +22,7 @@ import org.apache.archiva.redback.users.User;
  * MustChangePasswordException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MustChangePasswordException
     extends PolicyViolationException

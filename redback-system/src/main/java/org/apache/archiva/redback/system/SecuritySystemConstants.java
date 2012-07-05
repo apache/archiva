@@ -23,7 +23,7 @@ package org.apache.archiva.redback.system;
  * SecuritySystemConstants - constants for use with contexts that use plexus-security. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class SecuritySystemConstants
 {

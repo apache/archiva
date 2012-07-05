@@ -30,7 +30,7 @@ import javax.servlet.jsp.jstl.core.ConditionalTagSupport;
  * IfConfiguredTag:
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 public class IfConfiguredTag
     extends ConditionalTagSupport

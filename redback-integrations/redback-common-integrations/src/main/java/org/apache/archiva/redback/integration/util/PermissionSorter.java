@@ -27,7 +27,7 @@ import org.apache.archiva.redback.rbac.Permission;
  * PermissionSorter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PermissionSorter
     implements Comparator<Permission>

@@ -21,7 +21,7 @@ package org.apache.archiva.redback.authentication;
 
 /**
  * Contants class used for authentication
- * @version $Id$
+ *
  */
 public class AuthenticationConstants
 {

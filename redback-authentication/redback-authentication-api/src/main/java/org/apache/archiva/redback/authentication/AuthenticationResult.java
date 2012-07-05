@@ -26,7 +26,7 @@ import java.util.Map;
  * AuthenticationResult: wrapper object for information that comes back from the authentication system
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 public class AuthenticationResult
     implements Serializable

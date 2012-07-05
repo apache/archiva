@@ -22,7 +22,7 @@ package org.apache.archiva.redback.common.ldap;
 import javax.naming.directory.Attributes;
 
 /**
- * @version $Id$
+ *
  */
 public class UserUpdate
 {

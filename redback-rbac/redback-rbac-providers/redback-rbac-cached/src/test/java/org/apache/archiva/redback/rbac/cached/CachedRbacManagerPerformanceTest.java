@@ -31,7 +31,7 @@ import javax.inject.Named;
  * CachedRbacManagerPerformanceTest 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class CachedRbacManagerPerformanceTest
     extends AbstractRbacManagerPerformanceTestCase

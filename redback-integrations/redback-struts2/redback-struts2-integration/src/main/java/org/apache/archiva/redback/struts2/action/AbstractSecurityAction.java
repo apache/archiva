@@ -35,7 +35,7 @@ import org.apache.archiva.redback.integration.interceptor.SecureActionException;
  * AbstractSecurityAction
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractSecurityAction
     extends RedbackActionSupport

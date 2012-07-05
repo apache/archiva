@@ -37,7 +37,7 @@ import java.util.Properties;
  * JdoKeyManagerTest 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class JdoKeyManagerTest
     extends KeyManagerTestCase

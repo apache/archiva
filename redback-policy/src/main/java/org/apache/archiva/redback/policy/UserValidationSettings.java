@@ -23,7 +23,7 @@ package org.apache.archiva.redback.policy;
  * UserValidationSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface UserValidationSettings
 {

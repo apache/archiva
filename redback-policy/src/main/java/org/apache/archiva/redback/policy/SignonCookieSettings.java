@@ -28,7 +28,7 @@ import javax.annotation.PostConstruct;
  * SignonCookieSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("cookieSettings#signon")
 public class SignonCookieSettings

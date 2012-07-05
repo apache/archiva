@@ -36,7 +36,7 @@ import java.util.List;
  * EnvironmentCheckInterceptor
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redbackEnvironmentCheckInterceptor" )
 @Scope( "prototype" )

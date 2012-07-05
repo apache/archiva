@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  * SHA-256 Password Encoder.
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordEncoder#sha256")
 public class SHA256PasswordEncoder

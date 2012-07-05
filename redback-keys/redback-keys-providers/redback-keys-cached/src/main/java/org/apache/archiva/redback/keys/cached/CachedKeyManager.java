@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
  * CachedKeyManager 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("keyManager#cached")
 public class CachedKeyManager

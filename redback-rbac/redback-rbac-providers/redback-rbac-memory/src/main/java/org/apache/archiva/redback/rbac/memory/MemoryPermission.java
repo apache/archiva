@@ -27,7 +27,7 @@ import org.apache.archiva.redback.rbac.Permission;
  * MemoryPermission 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryPermission
     implements Permission, java.io.Serializable

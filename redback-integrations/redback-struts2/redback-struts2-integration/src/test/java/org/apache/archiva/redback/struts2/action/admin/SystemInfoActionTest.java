@@ -30,7 +30,7 @@ import org.junit.runners.JUnit4;
  * SystemInfoActionTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @RunWith( JUnit4.class )
 public class SystemInfoActionTest

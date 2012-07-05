@@ -27,7 +27,7 @@ import org.apache.archiva.redback.rbac.Resource;
  * ResourceSorter
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class ResourceSorter
     implements Comparator<Resource>

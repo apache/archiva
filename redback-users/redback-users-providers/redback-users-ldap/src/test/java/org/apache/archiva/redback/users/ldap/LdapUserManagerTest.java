@@ -57,7 +57,7 @@ import java.util.List;
  * LdapUserManagerTest 
  *
  * @author <a href="mailto:jesse@codehaus.org">Jesse McConnell</a>
- * @version $Id$
+ *
  */  
 
 @RunWith( SpringJUnit4ClassRunner.class )

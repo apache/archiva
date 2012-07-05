@@ -30,7 +30,7 @@ import java.security.NoSuchAlgorithmException;
  * Abstract Password Encoder that uses the {@link MessageDigest} from JAAS.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class AbstractJAASPasswordEncoder
     implements PasswordEncoder

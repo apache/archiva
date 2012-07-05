@@ -45,7 +45,7 @@ import java.util.Map;
  * AbstractUserCredentialsAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public abstract class AbstractUserCredentialsAction
     extends AbstractSecurityAction

@@ -24,7 +24,7 @@ package org.apache.archiva.redback.integration.interceptor;
  *
  * @author Jesse McConnell <jesse@codehaus.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface SecureAction
 {

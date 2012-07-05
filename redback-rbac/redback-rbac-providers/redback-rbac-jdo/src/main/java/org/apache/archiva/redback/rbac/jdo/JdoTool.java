@@ -54,7 +54,7 @@ import java.util.List;
  * JdoTool - RBAC JDO Tools.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("jdoTool")
 public class JdoTool

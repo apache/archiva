@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
  * {@link #setMaximumCharacters(int)} characters in length.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Service("passwordRule#character-length")
 public class CharacterLengthPasswordRule

@@ -52,7 +52,7 @@ import java.util.Properties;
  * EnvironmentCheckInterceptor
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller( "redbackForceAdminUserInterceptor" )
 @Scope( "prototype" )

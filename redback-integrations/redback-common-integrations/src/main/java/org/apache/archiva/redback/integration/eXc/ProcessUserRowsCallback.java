@@ -33,7 +33,7 @@ import org.extremecomponents.table.limit.Sort;
  * ProcessUserRowsCallback - Efficient and safe sort callback for user manager provided user lists.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class ProcessUserRowsCallback
     extends ProcessRowsCallback

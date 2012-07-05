@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
  * IfAnyAuthorizedTag:
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- * @version $Id$
+ *
  */
 public class IfAnyAuthorizedTag
     extends ConditionalTagSupport

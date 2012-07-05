@@ -29,7 +29,7 @@ import org.apache.archiva.redback.integration.HttpUtils;
  * HttpUtilsTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class HttpUtilsTest
     extends TestCase

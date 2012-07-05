@@ -44,7 +44,7 @@ import org.springframework.stereotype.Controller;
  * ReportAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 @Controller("redback-report")
 @Scope("prototype")

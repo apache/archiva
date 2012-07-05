@@ -30,7 +30,7 @@ import javax.inject.Named;
  * MemoryRbacManagerTest 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class MemoryRbacManagerTest
     extends AbstractRbacManagerTestCase

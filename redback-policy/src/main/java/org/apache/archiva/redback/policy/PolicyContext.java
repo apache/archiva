@@ -24,7 +24,7 @@ import java.util.Map;
  * Useful for managing policy operations on a thread local point of view. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public class PolicyContext
 {

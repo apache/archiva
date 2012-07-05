@@ -22,7 +22,7 @@ import org.apache.archiva.redback.users.User;
  * A Password Rule
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ *
  */
 public interface PasswordRule
 {

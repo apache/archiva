@@ -33,7 +33,7 @@ import java.util.Date;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- * @version $Id$
+ *
  */
 @Service( "userMapper#ldap" )
 public class LdapUserMapper
