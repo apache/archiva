@@ -27,9 +27,8 @@ import javax.inject.Inject;
 
 /**
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
- * @version $Id: MockCustomInterceptor.java 1310448 2012-04-06 16:23:16Z olamy $
  */
-@Service("testCustomInterceptor")
+@Service( "testCustomInterceptor" )
 public class MockCustomInterceptor
     implements Interceptor
 {
