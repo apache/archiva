@@ -124,18 +124,6 @@
       <timezone>-8</timezone>
     </developer>
 
-
-    <developer>
-      <id>joakime</id>
-      <name>Joakim Erdfelt</name>
-      <email>joakime@apache.org</email>
-      <organization>ASF</organization>
-      <roles>
-        <role>Emeritus</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-
     <developer>
       <id>nicolas</id>
       <name>Nicolas De Loof</name>
@@ -203,7 +191,19 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
+
     <!-- Emeritus Committers -->
+
+    <developer>
+      <id>joakime</id>
+      <name>Joakim Erdfelt</name>
+      <email>joakime@apache.org</email>
+      <organization>ASF</organization>
+      <roles>
+        <role>Emeritus</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
     <developer>
       <id>jvanzyl</id>
       <name>Jason van Zyl</name>
