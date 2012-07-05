@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 /**
  * ErrorHandlingTest
  *
- * @version $Id$
+ *
  */
 public class ErrorHandlingTest
     extends AbstractProxyTestCase

@@ -29,7 +29,7 @@ import org.apache.archiva.repository.metadata.MetadataTools;
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate
  * ArtifactReference.
  *
- * @version $Id$
+ *
  * <p/>
  */
 public class RepositoryRequest

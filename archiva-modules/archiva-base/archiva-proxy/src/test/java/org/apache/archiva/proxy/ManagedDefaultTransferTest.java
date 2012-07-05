@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 /**
  * ManagedDefaultTransferTest
  *
- * @version $Id$
+ *
  */
 public class ManagedDefaultTransferTest
     extends AbstractProxyTestCase

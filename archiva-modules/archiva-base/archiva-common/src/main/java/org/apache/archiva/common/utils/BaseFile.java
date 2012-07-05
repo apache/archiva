@@ -26,7 +26,7 @@ import java.net.URI;
  * BaseFile - convenient File object that tracks the Base Directory and can provide relative path values
  * for the file object based on that Base Directory value.
  *
- * @version $Id$
+ *
  */
 public class BaseFile
     extends File

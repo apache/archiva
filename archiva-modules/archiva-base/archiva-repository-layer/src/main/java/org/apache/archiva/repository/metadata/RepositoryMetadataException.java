@@ -24,7 +24,7 @@ import org.apache.archiva.repository.RepositoryException;
 /**
  * RepositoryMetadataException
  *
- * @version $Id$
+ *
  */
 public class RepositoryMetadataException
     extends RepositoryException

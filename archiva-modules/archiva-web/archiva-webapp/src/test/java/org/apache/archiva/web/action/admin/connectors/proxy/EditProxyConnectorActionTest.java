@@ -49,7 +49,7 @@ import org.junit.Test;
 /**
  * EditProxyConnectorActionTest
  *
- * @version $Id$
+ *
  */
 public class EditProxyConnectorActionTest
     extends AbstractWebworkTestCase

@@ -92,7 +92,7 @@ import static org.junit.Assert.*;
  * (1) If it isn't proxied, no point in having a remote.
  * </pre>
  *
- * @version $Id$
+ *
  */
 public class MetadataTransferTest
     extends AbstractProxyTestCase

@@ -25,7 +25,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 /**
  * ArchivaArtifact - Mutable artifact object.
  *
- * @version $Id$
+ *
  */
 public class ArchivaArtifact
 {

@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * FiletypeSelectionPredicate
  *
- * @version $Id$
+ *
  */
 public class FiletypeSelectionPredicate
     implements Predicate

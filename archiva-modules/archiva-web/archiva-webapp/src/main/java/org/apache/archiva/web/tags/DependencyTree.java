@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * DependencyTree
  *
- * @version $Id$
+ *
  */
 @Service( "dependencyTree" )
 public class DependencyTree

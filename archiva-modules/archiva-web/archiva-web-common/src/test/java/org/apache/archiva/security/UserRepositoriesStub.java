@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * UserRepositories stub used for testing.
  *
- * @version $Id$
+ *
  */
 public class UserRepositoriesStub
     implements UserRepositories

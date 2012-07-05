@@ -28,7 +28,7 @@ import java.io.File;
 /**
  * BaseFileTest
  *
- * @version $Id$
+ *
  */
 public class BaseFileTest
     extends TestCase

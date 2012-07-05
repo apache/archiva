@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Generic Filename Parser for use with layout routines.
  *
- * @version $Id$
+ *
  */
 public class FilenameParser
 {

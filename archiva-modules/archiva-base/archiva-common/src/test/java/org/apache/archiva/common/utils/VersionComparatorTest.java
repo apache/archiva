@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 /**
  * VersionComparatorTest 
  *
- * @version $Id$
+ *
  */
 public class VersionComparatorTest
     extends TestCase

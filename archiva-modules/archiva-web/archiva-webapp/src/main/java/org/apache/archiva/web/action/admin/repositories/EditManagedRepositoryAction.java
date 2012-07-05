@@ -33,7 +33,7 @@ import java.io.File;
 /**
  * AddManagedRepositoryAction
  *
- * @version $Id$
+ *
  */
 @Controller( "editManagedRepositoryAction" )
 @Scope( "prototype" )

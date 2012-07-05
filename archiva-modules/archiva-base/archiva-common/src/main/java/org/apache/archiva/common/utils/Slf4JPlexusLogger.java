@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Slf4JPlexusLogger - temporary logger to provide an Slf4j Logger to those components
  * outside of the archiva codebase that require a plexus logger.
  *
- * @version $Id$
+ *
  */
 public class Slf4JPlexusLogger
     implements org.codehaus.plexus.logging.Logger

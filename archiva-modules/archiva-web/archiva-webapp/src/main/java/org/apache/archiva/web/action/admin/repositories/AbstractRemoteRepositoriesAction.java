@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * AbstractRemoteRepositoriesAction
  *
- * @version $Id$
+ *
  */
 public class AbstractRemoteRepositoriesAction
     extends AbstractRepositoriesAdminAction

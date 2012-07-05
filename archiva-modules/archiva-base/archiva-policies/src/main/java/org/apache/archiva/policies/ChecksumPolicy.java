@@ -35,7 +35,7 @@ import java.util.Properties;
  * ChecksumPolicy - a policy applied after the download to see if the file has been downloaded
  * successfully and completely (or not).
  *
- * @version $Id$
+ *
  */
 @Service( "postDownloadPolicy#checksum" )
 public class ChecksumPolicy

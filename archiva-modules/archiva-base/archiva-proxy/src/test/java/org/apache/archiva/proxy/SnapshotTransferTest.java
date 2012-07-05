@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * SnapshotTransferTest 
  *
- * @version $Id$
+ *
  */
 public class SnapshotTransferTest
     extends AbstractProxyTestCase

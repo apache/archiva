@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * ValidateChecksumConsumer - validate the provided checksum against the file it represents.
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#validate-checksums" )
 @Scope( "prototype" )

@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * NetworkProxySelectionPredicate
  *
- * @version $Id$
+ *
  */
 public class NetworkProxySelectionPredicate
     implements Predicate

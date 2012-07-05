@@ -48,7 +48,7 @@ import java.util.List;
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
  * into the destination repository.
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#artifact-legacy-to-default-converter" )
 @Scope( "prototype" )

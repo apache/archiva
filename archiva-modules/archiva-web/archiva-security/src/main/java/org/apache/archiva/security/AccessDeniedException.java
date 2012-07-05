@@ -22,7 +22,7 @@ package org.apache.archiva.security;
 /**
  * AccessDeniedException 
  *
- * @version $Id$
+ *
  */
 public class AccessDeniedException
     extends ArchivaSecurityException

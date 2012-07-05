@@ -46,7 +46,7 @@ import java.util.Map;
 /**
  * XMLReader - a set of common xml utility methods for reading content out of an xml file. 
  *
- * @version $Id$
+ *
  */
 public class XMLReader
 {

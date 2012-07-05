@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * This represents a connector for a repository to repository proxy.
  *
- * @version $Id$
+ *
  */
 public class ProxyConnector
     implements RepositoryConnector

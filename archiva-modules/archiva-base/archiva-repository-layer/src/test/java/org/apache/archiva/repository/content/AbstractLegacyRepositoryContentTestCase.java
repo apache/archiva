@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 /**
  * AbstractLegacyRepositoryContentTestCase
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractLegacyRepositoryContentTestCase
     extends AbstractRepositoryLayerTestCase

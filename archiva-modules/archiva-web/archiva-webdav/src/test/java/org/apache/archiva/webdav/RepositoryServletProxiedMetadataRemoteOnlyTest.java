@@ -27,7 +27,7 @@ import org.junit.Test;
 /**
  * RepositoryServlet Tests, Proxied, Get of Metadata, exists on remote repository only.
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletProxiedMetadataRemoteOnlyTest
     extends AbstractRepositoryServletProxiedMetadataTestCase

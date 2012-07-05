@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNull;
 /**
  * ChecksumTransferTest
  *
- * @version $Id$
+ *
  */
 public class ChecksumTransferTest
     extends AbstractProxyTestCase

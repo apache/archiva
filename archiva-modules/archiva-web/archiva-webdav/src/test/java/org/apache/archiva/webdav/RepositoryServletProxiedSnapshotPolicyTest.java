@@ -36,7 +36,7 @@ import java.util.ArrayList;
 /**
  * RepositoryServlet Tests, Proxied, Get of Snapshot Artifacts, with varying policy settings.
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletProxiedSnapshotPolicyTest
     extends AbstractRepositoryServletProxiedTestCase

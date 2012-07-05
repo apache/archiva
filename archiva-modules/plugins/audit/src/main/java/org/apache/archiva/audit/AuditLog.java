@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 /**
  * AuditLog - Audit Log.
  * 
- * @version $Id$
+ *
  *
  */
 @Service("auditListener#logging")

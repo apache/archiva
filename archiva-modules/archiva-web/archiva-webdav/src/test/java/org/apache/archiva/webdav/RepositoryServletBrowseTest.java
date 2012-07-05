@@ -32,7 +32,7 @@ import java.io.File;
 /**
  * RepositoryServletBrowseTest
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletBrowseTest
     extends AbstractRepositoryServletTestCase

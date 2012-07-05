@@ -54,7 +54,7 @@ import javax.servlet.jsp.tagext.TryCatchFinally;
  *   </archiva:dependency-tree>
  * </pre>
  *
- * @version $Id$
+ *
  */
 @StrutsTag(name = "dependency-tree", tldBodyContent = "JSP", tldTagClass = "org.apache.archiva.web.tags.DependencyTreeTag", description = "Render a dependency tree for the provided project.")
 public class DependencyTreeTag

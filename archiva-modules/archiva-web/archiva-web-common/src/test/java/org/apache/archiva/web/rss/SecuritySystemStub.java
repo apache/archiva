@@ -46,7 +46,7 @@ import java.util.Map;
 /**
  * SecuritySystem stub used for testing.
  *
- * @version $Id$
+ *
  */
 public class SecuritySystemStub
     implements SecuritySystem

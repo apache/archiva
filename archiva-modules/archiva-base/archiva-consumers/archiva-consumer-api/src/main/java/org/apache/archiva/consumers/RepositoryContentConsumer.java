@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * A consumer of content (files) in the repository.
  *
- * @version $Id$
+ *
  */
 public interface RepositoryContentConsumer
     extends Consumer

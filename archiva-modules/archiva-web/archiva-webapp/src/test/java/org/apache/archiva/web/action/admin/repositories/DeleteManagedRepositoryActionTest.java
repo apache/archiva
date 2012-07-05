@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
 /**
  * DeleteManagedRepositoryActionTest
  *
- * @version $Id$
+ *
  */
 public class DeleteManagedRepositoryActionTest
     extends AbstractActionTestCase

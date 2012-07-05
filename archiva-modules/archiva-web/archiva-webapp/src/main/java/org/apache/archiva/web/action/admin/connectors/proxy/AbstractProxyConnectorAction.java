@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * AbstractProxyConnectorAction
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractProxyConnectorAction
     extends AbstractActionSupport

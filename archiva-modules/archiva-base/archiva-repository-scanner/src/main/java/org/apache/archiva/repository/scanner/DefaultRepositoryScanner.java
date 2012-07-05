@@ -39,7 +39,7 @@ import java.util.Set;
 /**
  * DefaultRepositoryScanner
  *
- * @version $Id$
+ *
  */
 @Service( "repositoryScanner#default" )
 public class DefaultRepositoryScanner

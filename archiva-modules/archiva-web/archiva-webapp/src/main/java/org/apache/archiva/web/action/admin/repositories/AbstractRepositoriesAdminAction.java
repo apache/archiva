@@ -37,7 +37,7 @@ import javax.inject.Inject;
  * Base class for all repository administrative functions.
  * This should be neutral to the type of action (add/edit/delete) and type of repo (managed/remote)
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractRepositoriesAdminAction
     extends AbstractActionSupport

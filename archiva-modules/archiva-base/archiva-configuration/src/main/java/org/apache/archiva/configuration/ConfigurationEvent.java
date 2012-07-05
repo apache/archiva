@@ -22,7 +22,7 @@ package org.apache.archiva.configuration;
 /**
  * ConfigurationEvent
  *
- * @version $Id$
+ *
  */
 public class ConfigurationEvent
 {

@@ -29,7 +29,7 @@ import java.io.File;
 /**
  * AbstractChecksumTestCase
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractChecksumTestCase

@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * FileTypes
  *
- * @version $Id$
+ *
  */
 @Service( "fileTypes" )
 public class FileTypes

@@ -61,7 +61,7 @@ import org.junit.runner.RunWith;
 /**
  * EditManagedRepositoryActionTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class EditManagedRepositoryActionTest

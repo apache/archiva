@@ -26,7 +26,7 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * Enumeration of available ChecksumAlgorithm techniques.
  *
- * @version $Id$
+ *
  */
 public enum ChecksumAlgorithm {
     SHA1("SHA-1", "sha1", "SHA1"),

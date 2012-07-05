@@ -26,7 +26,7 @@ import org.junit.Test;
  * Based on LoginTest of Emmanuel Venisse test.
  *
  * @author José Morales Martínez
- * @version $Id$
+ *
  */
 
 

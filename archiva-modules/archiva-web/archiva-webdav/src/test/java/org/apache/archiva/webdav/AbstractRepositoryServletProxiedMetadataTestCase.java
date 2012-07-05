@@ -32,7 +32,7 @@ import org.junit.Before;
 /**
  * Abstract TestCase for RepositoryServlet Tests, Proxied, Get of Metadata. 
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractRepositoryServletProxiedMetadataTestCase
     extends AbstractRepositoryServletProxiedTestCase

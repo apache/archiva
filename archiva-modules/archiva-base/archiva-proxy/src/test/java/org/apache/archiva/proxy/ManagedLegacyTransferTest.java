@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * ManagedLegacyTransferTest 
  *
- * @version $Id$
+ *
  */
 public class ManagedLegacyTransferTest
     extends AbstractProxyTestCase

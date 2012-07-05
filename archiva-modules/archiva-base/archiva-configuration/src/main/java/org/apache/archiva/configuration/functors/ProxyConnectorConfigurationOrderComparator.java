@@ -24,7 +24,7 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import java.util.Comparator;
 
 /**
- * @version $Id$
+ *
  * @deprecated ProxyConnectorConfigurationOrderComparator
  */
 public class ProxyConnectorConfigurationOrderComparator

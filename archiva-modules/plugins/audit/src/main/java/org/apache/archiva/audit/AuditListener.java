@@ -22,7 +22,7 @@ package org.apache.archiva.audit;
 /**
  * AuditListener 
  *
- * @version $Id$
+ *
  */
 public interface AuditListener
 {

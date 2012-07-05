@@ -36,7 +36,7 @@ import org.junit.Test;
 /**
  * Deploy / Put Test cases for RepositoryServlet.  
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletDeployTest
     extends AbstractRepositoryServletTestCase

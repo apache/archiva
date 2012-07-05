@@ -37,7 +37,7 @@ import org.junit.Test;
 /**
  * DeleteProxyConnectorActionTest
  *
- * @version $Id$
+ *
  */
 public class DeleteProxyConnectorActionTest
     extends AbstractWebworkTestCase

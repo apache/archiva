@@ -29,7 +29,7 @@ import javax.servlet.jsp.tagext.Tag;
 /**
  * ExpressionTool 
  *
- * @version $Id$
+ *
  */
 public class ExpressionTool
 {

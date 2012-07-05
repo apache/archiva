@@ -26,7 +26,7 @@ import java.util.Comparator;
 /**
  * RepositoryConfigurationComparator
  *
- * @version $Id$
+ *
  */
 public class RepositoryConfigurationComparator
     implements Comparator<AbstractRepositoryConfiguration>

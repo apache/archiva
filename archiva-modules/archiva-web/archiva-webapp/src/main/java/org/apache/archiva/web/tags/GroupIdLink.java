@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * GroupIdLink 
  *
- * @version $Id$
+ *
  */
 public class GroupIdLink
     extends Component

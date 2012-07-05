@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * AbstractProgressConsumer 
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractProgressConsumer
     extends AbstractMonitoredConsumer

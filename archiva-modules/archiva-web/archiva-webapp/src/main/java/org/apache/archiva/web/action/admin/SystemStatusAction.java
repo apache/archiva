@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Shows system status information for the administrator.
  *
- * @version $Id$
+ *
  */
 @Controller( "systemStatus" )
 @Scope( "prototype" )

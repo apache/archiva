@@ -22,7 +22,7 @@ package org.apache.archiva.checksum;
 /**
  * Hex - simple hex conversions. 
  *
- * @version $Id$
+ *
  */
 public class Hex
 {

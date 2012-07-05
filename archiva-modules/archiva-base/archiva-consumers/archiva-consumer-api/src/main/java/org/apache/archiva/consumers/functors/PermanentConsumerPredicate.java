@@ -25,7 +25,7 @@ import org.apache.archiva.consumers.Consumer;
 /**
  * Selects Consumers that are flaged as 'permanent'. 
  *
- * @version $Id$
+ *
  */
 public class PermanentConsumerPredicate
     implements Predicate

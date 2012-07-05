@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * ProxyConnectorPredicate
  *
- * @version $Id$
+ *
  */
 public class ProxyConnectorSelectionPredicate
     implements Predicate

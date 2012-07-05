@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * DefaultUserRepositories
  *
- * @version $Id$
+ *
  */
 @Service( "userRepositories" )
 public class DefaultUserRepositories

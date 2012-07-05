@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractDefaultRepositoryContent
 {

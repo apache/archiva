@@ -24,7 +24,7 @@ import java.util.Comparator;
 /**
  * ProxyConnectorOrderComparator 
  *
- * @version $Id$
+ *
  */
 public class ProxyConnectorOrderComparator
     implements Comparator<ProxyConnector>

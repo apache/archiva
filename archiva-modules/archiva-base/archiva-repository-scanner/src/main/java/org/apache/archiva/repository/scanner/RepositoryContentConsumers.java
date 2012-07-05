@@ -48,7 +48,7 @@ import java.util.Map;
 /**
  * RepositoryContentConsumerUtil
  *
- * @version $Id$
+ *
  */
 @Service("repositoryContentConsumers")
 public class RepositoryContentConsumers

@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * MetadataUpdaterConsumer will create and update the metadata present within the repository.
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#metadata-updater" )
 @Scope( "prototype" )

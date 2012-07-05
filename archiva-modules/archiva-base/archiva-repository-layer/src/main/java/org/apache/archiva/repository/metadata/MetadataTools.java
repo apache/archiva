@@ -75,7 +75,7 @@ import java.util.regex.Matcher;
 /**
  * MetadataTools
  *
- * @version $Id$
+ *
  */
 @Service( "metadataTools#default" )
 public class MetadataTools

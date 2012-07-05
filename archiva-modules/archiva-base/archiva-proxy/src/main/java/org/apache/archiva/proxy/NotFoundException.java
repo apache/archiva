@@ -22,7 +22,7 @@ package org.apache.archiva.proxy;
 /**
  * NotFoundException - thrown when the resource requested was not found on the remote repository. 
  *
- * @version $Id$
+ *
  */
 public class NotFoundException
     extends ProxyException

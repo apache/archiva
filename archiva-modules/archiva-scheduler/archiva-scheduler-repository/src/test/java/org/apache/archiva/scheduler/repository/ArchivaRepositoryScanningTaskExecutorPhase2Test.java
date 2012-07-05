@@ -36,7 +36,7 @@ import java.util.Date;
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase2Test
  *
- * @version $Id$
+ *
  */
 
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )

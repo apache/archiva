@@ -24,7 +24,7 @@ import org.apache.archiva.common.ArchivaException;
 /**
  * LayoutException 
  *
- * @version $Id$
+ *
  */
 public class LayoutException extends ArchivaException
 {

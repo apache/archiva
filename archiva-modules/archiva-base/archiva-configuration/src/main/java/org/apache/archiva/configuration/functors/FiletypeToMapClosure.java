@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * FiletypeToMapClosure
  *
- * @version $Id$
+ *
  */
 public class FiletypeToMapClosure
     implements Closure

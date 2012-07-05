@@ -22,7 +22,7 @@ package org.apache.archiva.converter.artifact;
 /**
  * ArtifactConversionException 
  *
- * @version $Id$
+ *
  */
 public class ArtifactConversionException
     extends Exception

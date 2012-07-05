@@ -34,7 +34,7 @@ import java.util.Properties;
 /**
  * {@link PreDownloadPolicy} to check if the requested url has failed before.
  *
- * @version $Id$
+ *
  */
 @Service( "preDownloadPolicy#cache-failures" )
 public class CachedFailuresPolicy

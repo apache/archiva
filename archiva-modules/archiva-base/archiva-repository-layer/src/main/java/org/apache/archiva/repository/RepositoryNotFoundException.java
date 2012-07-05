@@ -22,7 +22,7 @@ package org.apache.archiva.repository;
 /**
  * RepositoryNotFoundException 
  *
- * @version $Id$
+ *
  */
 public class RepositoryNotFoundException
     extends RepositoryException

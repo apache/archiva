@@ -26,7 +26,7 @@ import java.util.Date;
 /**
  * DefaultUrlFailureCache 
  *
- * @version $Id$
+ *
  */
 public class DefaultUrlFailureCache
     implements UrlFailureCache

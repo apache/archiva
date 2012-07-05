@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Version utility methods.
  *
- * @version $Id$
+ *
  */
 public class VersionUtil
 {

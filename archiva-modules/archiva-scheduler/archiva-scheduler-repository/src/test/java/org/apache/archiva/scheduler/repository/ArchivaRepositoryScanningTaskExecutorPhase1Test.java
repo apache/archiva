@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
  *
- * @version $Id$
+ *
  */
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaRepositoryScanningTaskExecutorPhase1Test

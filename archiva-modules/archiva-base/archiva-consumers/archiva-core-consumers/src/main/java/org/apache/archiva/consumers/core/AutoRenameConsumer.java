@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * AutoRenameConsumer
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#auto-rename" )
 @Scope( "prototype" )

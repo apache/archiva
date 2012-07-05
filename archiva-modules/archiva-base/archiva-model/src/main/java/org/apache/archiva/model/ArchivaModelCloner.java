@@ -27,7 +27,7 @@ import java.util.Properties;
 /**
  * Utility methods for cloning various Archiva Model objects.
  *
- * @version $Id$
+ *
  */
 public class ArchivaModelCloner
 {

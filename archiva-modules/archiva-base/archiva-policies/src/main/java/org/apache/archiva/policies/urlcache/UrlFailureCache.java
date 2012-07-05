@@ -23,7 +23,7 @@ package org.apache.archiva.policies.urlcache;
 /**
  * Cache for requested URLs that cannot be fetched. 
  *
- * @version $Id$
+ *
  */
 public interface UrlFailureCache
 {

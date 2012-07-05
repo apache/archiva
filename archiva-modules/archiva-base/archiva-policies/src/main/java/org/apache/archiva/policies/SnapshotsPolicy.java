@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 /**
  * {@link PreDownloadPolicy} to apply for snapshot versions. 
  *
- * @version $Id$
+ *
  */
 @Service("preDownloadPolicy#snapshots")
 public class SnapshotsPolicy

@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 /**
  * Banner 
  *
- * @version $Id$
+ *
  */
 public class Banner
 {

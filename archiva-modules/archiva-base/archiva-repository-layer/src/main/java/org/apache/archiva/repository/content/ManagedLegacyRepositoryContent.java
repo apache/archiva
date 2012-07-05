@@ -42,7 +42,7 @@ import java.util.Set;
 /**
  * ManagedLegacyRepositoryContent
  *
- * @version $Id$
+ *
  * @todo no need to be a component when filetypes, legacy path parser is not
  */
 @Service( "managedRepositoryContent#legacy" )

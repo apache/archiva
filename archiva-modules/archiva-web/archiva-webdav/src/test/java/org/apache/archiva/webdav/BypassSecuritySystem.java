@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
  * BypassSecuritySystem - used to bypass the security system for testing reasons and allow
  * for every request to respond as success / true. 
  *
- * @version $Id$
+ *
  */
 @Service("securitySystem#bypass")
 public class BypassSecuritySystem

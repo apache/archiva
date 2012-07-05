@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * RepositoryServletTest
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletNoProxyTest
     extends AbstractRepositoryServletTestCase

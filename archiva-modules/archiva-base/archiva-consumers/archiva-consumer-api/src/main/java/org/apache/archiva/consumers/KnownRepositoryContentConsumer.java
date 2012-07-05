@@ -22,7 +22,7 @@ package org.apache.archiva.consumers;
 /**
  * Consumer for Known Repository Content.
  *
- * @version $Id$
+ *
  */
 public interface KnownRepositoryContentConsumer
     extends RepositoryContentConsumer

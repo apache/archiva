@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * LatinEntities - simple utility class to handle latin entity conversion. 
  *
- * @version $Id$
+ *
  */
 public class LatinEntities
 {

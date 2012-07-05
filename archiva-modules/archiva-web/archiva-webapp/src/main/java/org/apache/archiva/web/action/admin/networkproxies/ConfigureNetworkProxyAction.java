@@ -39,7 +39,7 @@ import javax.inject.Inject;
 /**
  * ConfigureNetworkProxyAction
  *
- * @version $Id$
+ *
  */
 @Controller( "configureNetworkProxyAction" )
 @Scope( "prototype" )

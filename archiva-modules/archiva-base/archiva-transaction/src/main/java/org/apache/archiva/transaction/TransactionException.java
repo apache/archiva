@@ -22,7 +22,7 @@ package org.apache.archiva.transaction;
 /**
  * TransactionException 
  *
- * @version $Id$
+ *
  */
 public class TransactionException
     extends Exception

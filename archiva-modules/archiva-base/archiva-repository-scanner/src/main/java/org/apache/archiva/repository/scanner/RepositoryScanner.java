@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * RepositoryScanner
  *
- * @version $Id$
+ *
  */
 public interface RepositoryScanner
 {

@@ -29,7 +29,7 @@ package org.apache.archiva.proxy;
  * Similar in scope to the <code>HTTP 304 Not Modified</code> response code.
  * </p> 
  *
- * @version $Id$
+ *
  */
 public class NotModifiedException
     extends ProxyException

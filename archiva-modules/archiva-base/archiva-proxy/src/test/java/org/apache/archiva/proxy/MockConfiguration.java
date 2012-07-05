@@ -40,7 +40,7 @@ import javax.annotation.PostConstruct;
 /**
  * MockConfiguration
  *
- * @version $Id$
+ *
  */
 @Service( "archivaConfiguration#mock" )
 public class MockConfiguration

@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * AutoRemoveConsumer
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#auto-remove" )
 @Scope( "prototype" )

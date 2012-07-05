@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
 /**
  * ManagedDefaultRepositoryContentTest
  *
- * @version $Id$
+ *
  */
 public class ManagedDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase

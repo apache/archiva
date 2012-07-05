@@ -22,7 +22,7 @@ package org.apache.archiva.consumers;
 /**
  * ConsumerMonitor - a monitor for consumers. 
  *
- * @version $Id$
+ *
  */
 public interface ConsumerMonitor
 {

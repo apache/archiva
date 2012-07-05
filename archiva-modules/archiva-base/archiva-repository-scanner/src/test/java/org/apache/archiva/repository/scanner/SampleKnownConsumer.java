@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * SampleKnownConsumer 
  *
- * @version $Id$
+ *
  */
 public class SampleKnownConsumer
   extends AbstractMonitoredConsumer

@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 /**
  * ChecksumAlgorithmTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ChecksumAlgorithmTest

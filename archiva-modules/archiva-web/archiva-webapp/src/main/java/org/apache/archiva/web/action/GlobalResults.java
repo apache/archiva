@@ -22,7 +22,7 @@ package org.apache.archiva.web.action;
 /**
  * GlobalResults - constants for global result definitions. 
  *
- * @version $Id$
+ *
  */
 public class GlobalResults
 {

@@ -24,7 +24,7 @@ import org.apache.archiva.common.ArchivaException;
 /**
  * XMLException 
  *
- * @version $Id$
+ *
  */
 public class XMLException extends ArchivaException
 {

@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 /**
  * ArtifactExtensionMappingTest
  *
- * @version $Id$
+ *
  */
 public class ArtifactExtensionMappingTest
     extends AbstractRepositoryLayerTestCase

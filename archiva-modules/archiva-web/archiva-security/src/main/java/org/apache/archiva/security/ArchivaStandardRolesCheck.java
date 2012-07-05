@@ -34,7 +34,7 @@ import javax.inject.Named;
 /**
  * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions. 
  *
- * @version $Id$
+ *
  */
 @Service("environmentCheck#archiva-required-roles")
 public class ArchivaStandardRolesCheck

@@ -33,7 +33,7 @@ import org.apache.struts2.views.jsp.ComponentTagSupport;
 /**
  * GroupIdLink 
  *
- * @version $Id$
+ *
  */
 @StrutsTag(name = "groupIdLink", tldBodyContent = "empty", tldTagClass = "org.apache.archiva.web.tags.GroupIdLinkTag", description = "Render a groupId as a set of Links")
 public class GroupIdLinkTag

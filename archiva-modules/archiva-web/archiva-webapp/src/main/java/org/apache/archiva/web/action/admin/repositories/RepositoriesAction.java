@@ -54,7 +54,7 @@ import java.util.Map;
 /**
  * Shows the Repositories Tab for the administrator.
  *
- * @version $Id$
+ *
  */
 @Controller( "repositoriesAction" )
 @Scope( "prototype" )

@@ -31,7 +31,7 @@ import java.util.Date;
 /**
  * TriggerBeginScanClosure 
  *
- * @version $Id$
+ *
  */
 public class TriggerBeginScanClosure
     implements Closure

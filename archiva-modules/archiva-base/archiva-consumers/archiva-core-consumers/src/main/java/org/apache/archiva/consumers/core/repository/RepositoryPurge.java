@@ -20,7 +20,7 @@ package org.apache.archiva.consumers.core.repository;
  */
 
 /**
- * @version $Id$
+ *
  */
 public interface RepositoryPurge
 {

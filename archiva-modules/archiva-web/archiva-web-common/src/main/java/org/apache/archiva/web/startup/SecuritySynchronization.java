@@ -51,7 +51,7 @@ import java.util.Map.Entry;
 /**
  * ConfigurationSynchronization
  *
- * @version $Id$
+ *
  */
 @Service
 public class SecuritySynchronization

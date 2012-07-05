@@ -29,7 +29,7 @@ import org.springframework.stereotype.Controller;
 /**
  * AddRemoteRepositoryAction
  *
- * @version $Id$
+ *
  */
 @Controller( "addRemoteRepositoryAction" )
 @Scope( "prototype" )

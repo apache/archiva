@@ -50,7 +50,7 @@ import java.util.Map;
 /**
  * RepositoryScanningAction
  *
- * @version $Id$
+ *
  */
 @Controller( "repositoryScanningAction" )
 @Scope( "prototype" )

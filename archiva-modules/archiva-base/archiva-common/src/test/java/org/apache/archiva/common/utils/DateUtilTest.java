@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 /**
  * DateUtilTest 
  *
- * @version $Id$
+ *
  */
 public class DateUtilTest extends TestCase
 {

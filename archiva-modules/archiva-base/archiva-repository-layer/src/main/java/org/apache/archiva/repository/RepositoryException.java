@@ -22,7 +22,7 @@ package org.apache.archiva.repository;
 /**
  * RepositoryException 
  *
- * @version $Id$
+ *
  */
 public class RepositoryException
     extends Exception

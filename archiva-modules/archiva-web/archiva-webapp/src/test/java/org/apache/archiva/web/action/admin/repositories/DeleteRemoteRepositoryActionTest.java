@@ -39,7 +39,7 @@ import org.junit.Test;
 /**
  * DeleteRemoteRepositoryActionTest
  *
- * @version $Id$
+ *
  */
 public class DeleteRemoteRepositoryActionTest
     extends AbstractActionTestCase

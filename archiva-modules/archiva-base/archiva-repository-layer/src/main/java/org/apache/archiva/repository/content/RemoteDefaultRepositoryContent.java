@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 /**
  * RemoteDefaultRepositoryContent
  *
- * @version $Id$
+ *
  */
 @Service( "remoteRepositoryContent#default" )
 @Scope( "prototype" )

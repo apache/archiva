@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 /**
  * AbstractWebworkTestCase 
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractWebworkTestCase

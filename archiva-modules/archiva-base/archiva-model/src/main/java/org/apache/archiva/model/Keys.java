@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Keys - utility methods for converting common objects into string keys. 
  *
- * @version $Id$
+ *
  */
 public class Keys
 {

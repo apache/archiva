@@ -21,7 +21,7 @@ package org.apache.archiva.consumers.core.repository;
 
 /**
  *
- * @version $Id$
+ *
  */
 public class RepositoryPurgeException
     extends Exception

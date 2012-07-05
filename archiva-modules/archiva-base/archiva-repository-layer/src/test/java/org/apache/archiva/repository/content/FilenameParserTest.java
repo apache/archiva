@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 /**
  * FilenameParserTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class FilenameParserTest

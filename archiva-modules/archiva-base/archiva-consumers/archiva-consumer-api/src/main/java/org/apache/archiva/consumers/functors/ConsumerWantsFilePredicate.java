@@ -30,7 +30,7 @@ import org.apache.tools.ant.types.selectors.SelectorUtils;
 /**
  * ConsumerWantsFilePredicate 
  *
- * @version $Id$
+ *
  */
 public class ConsumerWantsFilePredicate
     implements Predicate

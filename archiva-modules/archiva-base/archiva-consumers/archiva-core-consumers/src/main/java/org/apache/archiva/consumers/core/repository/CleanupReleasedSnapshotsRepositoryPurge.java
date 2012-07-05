@@ -67,7 +67,7 @@ import java.util.List;
  * be purged.  Leaving 2.1-SNAPSHOT in alone.
  * </p>
  *
- * @version $Id$
+ *
  */
 public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge

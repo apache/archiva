@@ -22,7 +22,7 @@ package org.apache.archiva.model;
 /**
  * A tag for objects that are considered ArchivaArtifactPlatformDetails. 
  *
- * @version $Id$
+ *
  */
 public interface ArchivaArtifactPlatformDetails
 {

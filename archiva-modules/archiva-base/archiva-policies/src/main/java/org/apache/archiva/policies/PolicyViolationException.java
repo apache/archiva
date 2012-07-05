@@ -24,7 +24,7 @@ import org.apache.archiva.common.ArchivaException;
 /**
  * PolicyViolationException 
  *
- * @version $Id$
+ *
  */
 public class PolicyViolationException
     extends ArchivaException

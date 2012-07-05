@@ -50,7 +50,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 /**
  * AbstractRepositoryServletTestCase
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/repository-servlet-simple.xml" } )

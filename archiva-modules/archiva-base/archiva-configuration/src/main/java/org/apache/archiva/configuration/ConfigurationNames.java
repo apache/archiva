@@ -22,7 +22,7 @@ package org.apache.archiva.configuration;
 /**
  * Utility methods for testing the configuration property name.
  *
- * @version $Id$
+ *
  */
 public class ConfigurationNames
 {

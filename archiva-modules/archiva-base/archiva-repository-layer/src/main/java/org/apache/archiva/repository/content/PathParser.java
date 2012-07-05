@@ -25,7 +25,7 @@ import org.apache.archiva.repository.layout.LayoutException;
 /**
  * PathParser interface.
  *
- * @version $Id$
+ *
  */
 public interface PathParser
 {

@@ -24,7 +24,7 @@ import org.apache.archiva.common.ArchivaException;
 /**
  * ArchivaSecurityException 
  *
- * @version $Id$
+ *
  */
 public class ArchivaSecurityException
     extends ArchivaException

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )

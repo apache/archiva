@@ -22,7 +22,7 @@ package org.apache.archiva.model;
 /**
  * RepositoryURL - Mutable (and protocol forgiving) URL object.
  *
- * @version $Id$
+ *
  */
 public class RepositoryURL
 {

@@ -31,7 +31,7 @@ import javax.inject.Named;
 /**
  * RemoteDefaultRepositoryContentTest 
  *
- * @version $Id$
+ *
  */
 public class RemoteDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase

@@ -41,7 +41,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order.
  *
- * @version $Id$
+ *
  */
 public class ArchivaStartup
     implements ServletContextListener

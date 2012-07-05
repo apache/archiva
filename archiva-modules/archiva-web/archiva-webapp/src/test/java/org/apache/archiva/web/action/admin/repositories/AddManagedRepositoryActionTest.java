@@ -48,7 +48,7 @@ import org.junit.Test;
 /**
  * AddManagedRepositoryActionTest
  *
- * @version $Id$
+ *
  */
 public class AddManagedRepositoryActionTest
     extends AbstractManagedRepositoryActionTest

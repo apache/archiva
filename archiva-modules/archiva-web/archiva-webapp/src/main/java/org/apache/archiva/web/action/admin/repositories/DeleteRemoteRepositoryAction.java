@@ -29,7 +29,7 @@ import org.springframework.stereotype.Controller;
 /**
  * DeleteRemoteRepositoryAction
  *
- * @version $Id$
+ *
  */
 @Controller( "deleteRemoteRepositoryAction" )
 @Scope( "prototype" )

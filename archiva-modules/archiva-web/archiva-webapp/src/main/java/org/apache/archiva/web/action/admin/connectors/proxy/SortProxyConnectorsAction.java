@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * SortProxyConnectorsAction -
  *
- * @version $Id$
+ *
  */
 @Controller( "sortProxyConnectorsAction" )
 @Scope( "prototype" )

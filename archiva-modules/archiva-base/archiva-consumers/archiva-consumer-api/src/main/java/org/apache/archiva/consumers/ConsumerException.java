@@ -24,7 +24,7 @@ import org.apache.archiva.common.ArchivaException;
 /**
  * ConsumerException - details about the failure of a consumer.
  *
- * @version $Id$
+ *
  */
 public class ConsumerException
     extends ArchivaException

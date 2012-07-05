@@ -33,7 +33,7 @@ import java.util.Properties;
 /**
  * AbstractUpdatePolicy
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractUpdatePolicy
     implements PreDownloadPolicy

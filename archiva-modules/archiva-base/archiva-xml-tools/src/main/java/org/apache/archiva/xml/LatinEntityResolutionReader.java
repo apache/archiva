@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 /**
  * LatinEntityResolutionReader - Read a Character Stream.
  *
- * @version $Id$
+ *
  */
 public class LatinEntityResolutionReader
     extends Reader

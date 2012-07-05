@@ -36,7 +36,7 @@ import java.io.IOException;
 /**
  * CopyPasteSnippetTag 
  *
- * @version $Id$
+ *
  */
 @StrutsTag(name = "copy-paste-snippet", tldBodyContent = "empty", tldTagClass = "org.apache.archiva.web.tags.CopyPasteSnippetTag", description = "Render a copy paste snippet for the provided object")
 public class CopyPasteSnippetTag

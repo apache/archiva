@@ -37,7 +37,7 @@ import org.junit.Test;
 /**
  * LatinEntityResolutionReaderTest
  *
- * @version $Id$
+ *
  */
 public class LatinEntityResolutionReaderTest
     extends AbstractArchivaXmlTestCase

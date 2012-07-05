@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * RepositoryContentRequest
  *
- * @version $Id$
+ *
  */
 @Service( "repositoryContentFactory#default" )
 public class RepositoryContentFactory

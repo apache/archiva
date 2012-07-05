@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  * <dd>The file that is being referenced in the checksum file.</dd>
  * </dl>
  *
- * @version $Id$
+ *
  */
 public class ChecksummedFile
 {

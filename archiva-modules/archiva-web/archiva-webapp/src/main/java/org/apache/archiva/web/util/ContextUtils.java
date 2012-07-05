@@ -30,7 +30,7 @@ import javax.servlet.jsp.PageContext;
 /**
  * ContextUtils 
  *
- * @version $Id$
+ *
  */
 public class ContextUtils
 {

@@ -26,7 +26,7 @@ import java.util.Comparator;
 /**
  * AdminRepositoryConsumerComparator 
  *
- * @version $Id$
+ *
  */
 public class AdminRepositoryConsumerComparator
     implements Comparator<AdminRepositoryConsumer>

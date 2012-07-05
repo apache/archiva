@@ -31,7 +31,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 /**
  * ArchivaMimeTypesTest 
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

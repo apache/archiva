@@ -58,7 +58,7 @@ import java.util.List;
  * <p/>
  * TODO: no need for this to be a scanner - we can just query the database / content repository to get a full list
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#duplicate-artifacts" )
 @Scope( "prototype" )

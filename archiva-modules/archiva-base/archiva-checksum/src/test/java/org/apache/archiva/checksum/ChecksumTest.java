@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 /**
  * ChecksumTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ChecksumTest

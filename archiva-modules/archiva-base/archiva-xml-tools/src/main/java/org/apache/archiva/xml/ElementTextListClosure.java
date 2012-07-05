@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Gather the text from a collection of {@link Element}'s into a {@link List}
  *
- * @version $Id$
+ *
  */
 public class ElementTextListClosure
     implements Closure

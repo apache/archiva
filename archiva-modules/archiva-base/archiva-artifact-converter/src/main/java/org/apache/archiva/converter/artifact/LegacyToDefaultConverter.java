@@ -67,7 +67,7 @@ import java.util.regex.Matcher;
 /**
  * LegacyToDefaultConverter
  *
- * @version $Id$
+ *
  */
 @Service( "artifactConverter#legacy-to-default" )
 public class LegacyToDefaultConverter

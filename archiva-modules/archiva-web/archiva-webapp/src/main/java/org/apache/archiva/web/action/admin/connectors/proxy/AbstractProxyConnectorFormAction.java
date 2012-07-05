@@ -44,7 +44,7 @@ import java.util.Map;
  * AbstractProxyConnectorFormAction - generic fields and methods for either add or edit actions related with the
  * Proxy Connector.
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractProxyConnectorFormAction
     extends AbstractProxyConnectorAction

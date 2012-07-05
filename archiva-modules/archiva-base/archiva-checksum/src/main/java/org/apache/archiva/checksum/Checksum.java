@@ -32,7 +32,7 @@ import org.apache.commons.io.output.NullOutputStream;
 /**
  * Checksum - simple checksum hashing routines. 
  *
- * @version $Id$
+ *
  */
 public class Checksum
 {

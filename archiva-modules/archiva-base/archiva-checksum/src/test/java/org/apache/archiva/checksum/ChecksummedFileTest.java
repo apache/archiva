@@ -31,7 +31,7 @@ import java.io.IOException;
 /**
  * ChecksummedFileTest
  *
- * @version $Id$
+ *
  */
 
 public class ChecksummedFileTest

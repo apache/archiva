@@ -29,7 +29,7 @@ import javax.inject.Inject;
 /**
  * AbstractAppearanceAction
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractAppearanceAction
     extends AbstractActionSupport

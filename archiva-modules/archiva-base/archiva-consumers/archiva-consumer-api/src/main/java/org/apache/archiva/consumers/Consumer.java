@@ -22,7 +22,7 @@ package org.apache.archiva.consumers;
 /**
  * Consumer - the base set of methods for a consumer.
  *
- * @version $Id$
+ *
  */
 public abstract interface Consumer
 {

@@ -31,7 +31,7 @@ import java.util.Collection;
  * LegacyPathParser is a parser for maven 1 (legacy layout) paths to
  * ArtifactReference.
  *
- * @version $Id$
+ *
  */
 public class LegacyPathParser
     implements PathParser

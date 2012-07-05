@@ -24,7 +24,7 @@ package org.apache.archiva.web.action.admin.repositories;
  * <p/>
  * Place for all generic methods used in Managed Repository Administration.
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractManagedRepositoriesAction
     extends AbstractRepositoriesAdminAction

@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 /**
  * RepositoryRequestTest
  *
- * @version $Id$
+ *
  */
 @ContextConfiguration(
     locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repo-request-test.xml" } )

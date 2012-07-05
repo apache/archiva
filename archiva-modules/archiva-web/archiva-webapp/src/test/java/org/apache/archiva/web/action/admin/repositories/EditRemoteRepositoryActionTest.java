@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 /**
  * EditRemoteRepositoryActionTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class EditRemoteRepositoryActionTest

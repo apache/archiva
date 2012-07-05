@@ -56,7 +56,7 @@ import static org.junit.Assert.*;
 /**
  * MetadataToolsTest
  *
- * @version $Id$
+ *
  */
 @ContextConfiguration(
     locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )

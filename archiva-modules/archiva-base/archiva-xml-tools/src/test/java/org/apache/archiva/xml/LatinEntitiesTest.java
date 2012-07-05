@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 /**
  * LatinEntitiesTest 
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class LatinEntitiesTest

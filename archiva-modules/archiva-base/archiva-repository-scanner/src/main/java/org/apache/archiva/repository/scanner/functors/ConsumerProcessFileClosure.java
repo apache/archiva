@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * ConsumerProcessFileClosure 
  *
- * @version $Id$
+ *
  */
 public class ConsumerProcessFileClosure
     implements Closure

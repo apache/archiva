@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * AbstractLegacyRepositoryContent
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractLegacyRepositoryContent
 {

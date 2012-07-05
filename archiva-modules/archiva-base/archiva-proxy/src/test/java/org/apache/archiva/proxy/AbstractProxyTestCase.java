@@ -69,7 +69,7 @@ import static org.junit.Assert.*;
 /**
  * AbstractProxyTestCase
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )

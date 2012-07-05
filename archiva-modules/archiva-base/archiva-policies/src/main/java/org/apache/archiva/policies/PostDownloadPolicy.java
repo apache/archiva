@@ -23,7 +23,7 @@ package org.apache.archiva.policies;
  * Policy to apply after the download has completed, but before the
  * resource is made available to the calling client. 
  *
- * @version $Id$
+ *
  */
 public interface PostDownloadPolicy
     extends DownloadPolicy

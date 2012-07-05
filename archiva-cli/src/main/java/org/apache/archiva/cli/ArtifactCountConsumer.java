@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * ArtifactCountConsumer
  *
- * @version $Id$
+ *
  */
 @Service("knownRepositoryContentConsumer#count-artifacts")
 @Scope("prototype")

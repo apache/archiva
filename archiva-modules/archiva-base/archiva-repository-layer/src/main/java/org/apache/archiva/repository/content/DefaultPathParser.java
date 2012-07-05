@@ -38,7 +38,7 @@ import java.util.Collections;
  * TODO: remove in favour of path translator, this is just delegating for the most part, but won't accommodate other
  * extensions like NPanday
  *
- * @version $Id$
+ *
  */
 @Service( "pathParser#default" )
 public class DefaultPathParser

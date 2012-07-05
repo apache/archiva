@@ -55,7 +55,7 @@ import java.util.Properties;
 /**
  * ArchivaCli
  *
- * @version $Id$
+ *
  * @todo add back reading of archiva.xml from a given location
  */
 public class ArchivaCli

@@ -33,7 +33,7 @@ import javax.inject.Inject;
 /**
  * EditRemoteRepositoryAction
  *
- * @version $Id$
+ *
  */
 @Controller( "editRemoteRepositoryAction" )
 @Scope( "prototype" )

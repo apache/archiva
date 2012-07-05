@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * NetworkProxiesAction
  *
- * @version $Id$
+ *
  */
 @Controller( "networkProxiesAction" )
 @Scope( "prototype" )

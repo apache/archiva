@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 /**
  * RemoteLegacyRepositoryContent
  *
- * @version $Id$
+ *
  * @todo no need to be a component once legacy path parser is not
  */
 @Service( "remoteRepositoryContent#legacy" )

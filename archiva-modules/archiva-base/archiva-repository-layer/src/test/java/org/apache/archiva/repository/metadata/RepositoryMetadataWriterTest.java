@@ -33,7 +33,7 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 /**
  * RepositoryMetadataWriterTest 
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryMetadataWriterTest

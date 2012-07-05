@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * RepositoryScanStatistics - extension to the RepositoryContentStatistics model.
  *
- * @version $Id$
+ *
  */
 @XmlRootElement( name = "repositoryScanStatistics" )
 public class RepositoryScanStatistics

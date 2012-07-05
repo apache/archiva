@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * AddAdminRepoConsumerClosure 
  *
- * @version $Id$
+ *
  */
 public class AddAdminRepoConsumerClosure
     implements Closure

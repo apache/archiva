@@ -48,7 +48,7 @@ import java.util.Date;
 /**
  * ArchivaRepositoryScanningTaskExecutor
  *
- * @version $Id$
+ *
  */
 @Service( "taskExecutor#repository-scanning" )
 public class ArchivaRepositoryScanningTaskExecutor

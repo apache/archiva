@@ -27,7 +27,7 @@ import org.springframework.stereotype.Controller;
 /**
  * EditProxyConnectorAction
  *
- * @version $Id$
+ *
  */
 @Controller( "editProxyConnectorAction" )
 @Scope( "prototype" )

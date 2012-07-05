@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 /**
  * ProxyConnectorConfigurationOrderComparatorTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ProxyConnectorConfigurationOrderComparatorTest

@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * RepositoryConnector 
  *
- * @version $Id$
+ *
  */
 public interface RepositoryConnector
 {

@@ -25,7 +25,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMapp
 /**
  * ArtifactExtensionMapping
  *
- * @version $Id$
+ *
  */
 public class ArtifactExtensionMapping
 {

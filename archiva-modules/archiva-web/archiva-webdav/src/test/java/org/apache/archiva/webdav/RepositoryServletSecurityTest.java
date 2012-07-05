@@ -66,7 +66,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
  * perform redback security checking.
  * 
- * @version $Id$
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

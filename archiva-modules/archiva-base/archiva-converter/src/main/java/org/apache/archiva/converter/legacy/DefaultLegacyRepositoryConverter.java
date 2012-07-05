@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * DefaultLegacyRepositoryConverter
  *
- * @version $Id$
+ *
  */
 @Service( "legacyRepositoryConverter#default" )
 public class DefaultLegacyRepositoryConverter

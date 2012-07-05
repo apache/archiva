@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Handler for potential repository proxy connectors.
  *
- * @version $Id$
+ *
  */
 public interface RepositoryProxyConnectors
 {

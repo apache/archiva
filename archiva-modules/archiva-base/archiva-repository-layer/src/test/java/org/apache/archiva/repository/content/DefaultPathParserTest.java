@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
  *
  * TODO: move to path translator tests
  *
- * @version $Id$
+ *
  */
 public class DefaultPathParserTest
     extends AbstractRepositoryLayerTestCase

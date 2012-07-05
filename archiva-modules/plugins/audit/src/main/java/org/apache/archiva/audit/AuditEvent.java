@@ -32,7 +32,7 @@ import java.util.TimeZone;
 /**
  * AuditEvent
  *
- * @version $Id$
+ *
  */
 public class AuditEvent
     implements MetadataFacet

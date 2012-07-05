@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * UserRepositories 
  *
- * @version $Id$
+ *
  */
 public interface UserRepositories
 {

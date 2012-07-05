@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * CacheFailuresTransferTest
  *
- * @version $Id$
+ *
  */
 public class CacheFailuresTransferTest
     extends AbstractProxyTestCase

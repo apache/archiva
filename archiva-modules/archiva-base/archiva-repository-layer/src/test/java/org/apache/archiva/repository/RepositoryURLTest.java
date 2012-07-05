@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 /**
  * RepositoryURLTest 
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryURLTest

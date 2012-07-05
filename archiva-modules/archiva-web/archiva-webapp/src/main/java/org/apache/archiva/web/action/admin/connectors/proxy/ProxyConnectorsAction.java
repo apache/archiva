@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * ProxyConnectorsAction
  *
- * @version $Id$
+ *
  */
 @Controller( "proxyConnectorsAction" )
 @Scope( "prototype" )

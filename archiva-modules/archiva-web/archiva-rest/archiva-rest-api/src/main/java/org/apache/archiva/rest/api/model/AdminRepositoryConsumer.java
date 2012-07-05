@@ -25,7 +25,7 @@ import java.io.Serializable;
 /**
  * AdminRepositoryConsumer
  *
- * @version $Id$
+ *
  */
 @XmlRootElement( name = "adminRepositoryConsumer" )
 public class AdminRepositoryConsumer

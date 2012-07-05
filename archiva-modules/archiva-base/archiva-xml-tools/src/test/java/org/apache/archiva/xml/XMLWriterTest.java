@@ -29,7 +29,7 @@ import org.junit.Test;
 /**
  * XMLWriterTest 
  *
- * @version $Id$
+ *
  */
 public class XMLWriterTest
     extends AbstractArchivaXmlTestCase

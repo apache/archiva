@@ -22,7 +22,7 @@ package org.apache.archiva.common;
 /**
  * ArchivaException 
  *
- * @version $Id$
+ *
  */
 public class ArchivaException
     extends Exception

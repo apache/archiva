@@ -23,7 +23,7 @@ package org.apache.archiva.policies;
 /**
  * Policy to apply before the download is attempted.
  *
- * @version $Id$
+ *
  */
 public interface PreDownloadPolicy extends DownloadPolicy
 {

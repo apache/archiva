@@ -26,7 +26,7 @@ import javax.servlet.ServletConfig;
 /**
  * UnauthenticatedRepositoryServlet
  *
- * @version $Id$
+ *
  */
 public class UnauthenticatedRepositoryServlet
     extends RepositoryServlet

@@ -25,7 +25,7 @@ import java.util.Properties;
 /**
  * DownloadPolicy 
  *
- * @version $Id$
+ *
  */
 public interface DownloadPolicy
     extends Policy

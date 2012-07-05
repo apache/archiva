@@ -22,7 +22,7 @@ package org.apache.archiva.consumers;
 /**
  * Consumer for Invalid Repository Content 
  *
- * @version $Id$
+ *
  */
 public interface InvalidRepositoryContentConsumer
     extends RepositoryContentConsumer

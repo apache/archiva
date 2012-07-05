@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings.
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletProxiedReleasePolicyTest
     extends AbstractRepositoryServletProxiedTestCase

@@ -22,7 +22,7 @@ package org.apache.archiva.model;
 /**
  * Tag for identifying a Compound Key 
  *
- * @version $Id$
+ *
  */
 public interface CompoundKey
 {

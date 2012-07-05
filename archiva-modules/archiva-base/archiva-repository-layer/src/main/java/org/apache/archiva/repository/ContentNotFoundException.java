@@ -22,7 +22,7 @@ package org.apache.archiva.repository;
 /**
  * ContentNotFoundException is thrown in response for requests for content that is not the repository. 
  *
- * @version $Id$
+ *
  */
 public class ContentNotFoundException
     extends RepositoryException

@@ -35,7 +35,7 @@ import org.junit.Test;
 /**
  * AddRemoteRepositoryActionTest
  *
- * @version $Id$
+ *
  */
 public class AddRemoteRepositoryActionTest
     extends AbstractActionTestCase

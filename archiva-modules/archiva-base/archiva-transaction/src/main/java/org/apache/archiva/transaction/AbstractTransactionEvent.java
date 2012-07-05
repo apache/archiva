@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * Abstract class for the TransactionEvents
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractTransactionEvent
     implements TransactionEvent

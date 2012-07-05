@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * ArtifactMissingChecksumsConsumer - Create missing and/or fix invalid checksums for the artifact.
  *
- * @version $Id$
+ *
  */
 @Service( "knownRepositoryContentConsumer#create-missing-checksums" )
 @Scope( "prototype" )

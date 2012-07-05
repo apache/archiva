@@ -43,7 +43,7 @@ import java.io.File;
 /**
  * AbstractRepositoryServletProxiedTestCase
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractRepositoryServletProxiedTestCase
     extends AbstractRepositoryServletTestCase

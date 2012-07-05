@@ -30,7 +30,7 @@ import java.io.File;
 /**
  * RepositoryServletTest 
  *
- * @version $Id$
+ *
  */
 public class RepositoryServletNoProxyMetadataTest
     extends AbstractRepositoryServletTestCase

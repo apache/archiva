@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 /**
  * ManagedLegacyRepositoryContentTest
  *
- * @version $Id$
+ *
  */
 public class ManagedLegacyRepositoryContentTest
     extends AbstractLegacyRepositoryContentTestCase

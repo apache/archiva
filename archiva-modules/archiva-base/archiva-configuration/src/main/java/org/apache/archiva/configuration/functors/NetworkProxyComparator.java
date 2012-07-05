@@ -26,7 +26,7 @@ import java.util.Comparator;
 /**
  * NetworkProxyComparator
  *
- * @version $Id$
+ *
  */
 public class NetworkProxyComparator
     implements Comparator<NetworkProxyConfiguration>

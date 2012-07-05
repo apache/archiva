@@ -28,7 +28,7 @@ import org.codehaus.plexus.digest.Digester;
 /**
  * Event for creating a file from a string content.
  *
- * @version $Id$
+ *
  */
 public class CreateFileEvent
     extends AbstractTransactionEvent

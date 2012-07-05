@@ -29,7 +29,7 @@ import org.apache.archiva.redback.users.User;
 /**
  * ArchivaXworkUser
  *
- * @version $Id$
+ *
  */
 public final class ArchivaXworkUser
 {

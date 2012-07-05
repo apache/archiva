@@ -31,7 +31,7 @@ import javax.inject.Named;
 /**
  * RemoteLegacyRepositoryContentTest
  *
- * @version $Id$
+ *
  */
 public class RemoteLegacyRepositoryContentTest
     extends AbstractLegacyRepositoryContentTestCase

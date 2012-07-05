@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 /**
  * LegacyPathParserTest
  *
- * @version $Id$
+ *
  */
 public class LegacyPathParserTest
     extends AbstractRepositoryLayerTestCase

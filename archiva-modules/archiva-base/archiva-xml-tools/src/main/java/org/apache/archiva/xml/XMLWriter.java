@@ -28,7 +28,7 @@ import java.io.Writer;
 /**
  * XMLWriter - Making writing XML files easier. 
  *
- * @version $Id$
+ *
  */
 public class XMLWriter
 {

@@ -22,7 +22,7 @@ package org.apache.archiva.security;
 /**
  * PrincipalNotFoundException 
  *
- * @version $Id$
+ *
  */
 public class PrincipalNotFoundException
     extends ArchivaSecurityException

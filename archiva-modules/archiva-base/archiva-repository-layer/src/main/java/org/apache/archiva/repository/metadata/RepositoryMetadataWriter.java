@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * RepositoryMetadataWriter
  *
- * @version $Id$
+ *
  */
 public class RepositoryMetadataWriter
 {

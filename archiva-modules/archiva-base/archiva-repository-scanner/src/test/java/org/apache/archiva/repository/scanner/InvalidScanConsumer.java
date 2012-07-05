@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * InvalidScanConsumer 
  *
- * @version $Id$
+ *
  */
 public class InvalidScanConsumer
     extends AbstractMonitoredConsumer

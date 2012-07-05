@@ -22,7 +22,7 @@ package org.apache.archiva.configuration;
 /**
  * ConfigurationListener
  *
- * @version $Id$
+ *
  */
 public interface ConfigurationListener
 {

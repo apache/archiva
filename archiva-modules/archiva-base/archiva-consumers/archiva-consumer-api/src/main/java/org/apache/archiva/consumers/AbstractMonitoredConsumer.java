@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * AbstractMonitoredConsumer 
  *
- * @version $Id$
+ *
  */
 public abstract class AbstractMonitoredConsumer
     implements Consumer

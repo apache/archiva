@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * ArtifactConverter 
  *
- * @version $Id$
+ *
  */
 public interface ArtifactConverter
 {

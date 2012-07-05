@@ -46,7 +46,7 @@ import java.util.Set;
 /**
  * ManagedDefaultRepositoryContent
  *
- * @version $Id$
+ *
  */
 @Service( "managedRepositoryContent#default" )
 @Scope( "prototype" )

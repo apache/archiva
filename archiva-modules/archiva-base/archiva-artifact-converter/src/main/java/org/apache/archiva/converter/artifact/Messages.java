@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 /**
  * Messages 
  *
- * @version $Id$
+ *
  */
 public class Messages
 {

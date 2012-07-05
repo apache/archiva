@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 /**
  * PathUtilTest 
  *
- * @version $Id$
+ *
  */
 public class PathUtilTest
     extends TestCase

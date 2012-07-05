@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * ScanConsumer 
  *
- * @version $Id$
+ *
  */
 public class KnownScanConsumer
     extends AbstractMonitoredConsumer

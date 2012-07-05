@@ -35,7 +35,7 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 /**
  * RepositoryMetadataReaderTest
  *
- * @version $Id$
+ *
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class MavenRepositoryMetadataReaderTest

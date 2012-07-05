@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * DefaultUserRepositoriesTest
  *
- * @version $Id$
+ *
  */
 public class DefaultUserRepositoriesTest
     extends AbstractSecurityTest

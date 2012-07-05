@@ -29,7 +29,7 @@ import org.codehaus.plexus.digest.Digester;
 /**
  * Event to copy a file.
  *
- * @version $Id$
+ *
  */
 public class CopyFileEvent
     extends AbstractTransactionEvent

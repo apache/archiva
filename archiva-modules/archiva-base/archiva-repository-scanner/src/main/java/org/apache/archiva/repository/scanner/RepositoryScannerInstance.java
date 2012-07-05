@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * RepositoryScannerInstance
  *
- * @version $Id$
+ *
  */
 public class RepositoryScannerInstance
     implements DirectoryWalkListener

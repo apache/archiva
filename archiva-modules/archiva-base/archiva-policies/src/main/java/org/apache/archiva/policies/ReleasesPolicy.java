@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 /**
  * {@link PreDownloadPolicy} to apply for released versions.
  *
- * @version $Id$
+ *
  */
 @Service("preDownloadPolicy#releases")
 public class ReleasesPolicy
