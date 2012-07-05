@@ -477,6 +477,16 @@
         <otherArchive>http://old.nabble.com/Archiva---Issues-f29617.html</otherArchive>
       </otherArchives>
     </mailingList>
+    <mailingList>
+      <name>Archiva Notifications List</name>
+      <subscribe>notifications-subscribe@archiva.apache.org</subscribe>
+      <unsubscribe>notifications-unsubscribe@archiva.apache.org</unsubscribe>
+      <archive>http://mail-archives.apache.org/mod_mbox/archiva-notifications/</archive>
+      <otherArchives>
+        <otherArchive>http://www.mail-archive.com/notifications@archiva.apache.org</otherArchive>
+        <otherArchive>http://archiva.notifications.markmail.org/</otherArchive>
+      </otherArchives>
+    </mailingList>
   </mailingLists>
 
   <build>
