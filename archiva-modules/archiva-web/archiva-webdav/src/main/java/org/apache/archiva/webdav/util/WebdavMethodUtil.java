@@ -30,7 +30,6 @@ import java.util.Locale;
 /**
  * WebdavMethodUtil
  *
- * @version $Id: WebdavMethodUtil.java 5412 2007-01-13 01:18:47Z joakime $
  */
 public class WebdavMethodUtil
 {

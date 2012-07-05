@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
 /**
  * MimeTypes
  *
- * @version $Id: MimeTypes.java 7010 2007-10-25 23:35:02Z joakime $
+ *
  */
 @Service( "mimeTpes" )
 public class MimeTypes

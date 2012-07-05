@@ -30,7 +30,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 /**
  * MimeTypesTest
  *
- * @version $Id: MimeTypesTest.java 6556 2007-06-20 20:44:46Z joakime $
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

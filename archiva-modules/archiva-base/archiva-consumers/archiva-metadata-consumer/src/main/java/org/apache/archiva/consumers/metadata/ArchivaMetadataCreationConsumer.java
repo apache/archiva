@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * Take an artifact off of disk and put it into the metadata repository.
  *
- * @version $Id: ArtifactUpdateDatabaseConsumer.java 718864 2008-11-19 06:33:35Z brett $
+ *
  */
 @Service( "knownRepositoryContentConsumer#create-archiva-metadata" )
 @Scope( "prototype" )

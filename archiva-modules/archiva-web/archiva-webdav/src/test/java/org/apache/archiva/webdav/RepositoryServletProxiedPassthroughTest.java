@@ -32,7 +32,6 @@ import org.junit.Test;
 /**
  * RepositoryServlet Tests, Proxied, Get of resources that are not artifacts or metadata, with varying policy settings.
  * 
- * @version $Id: RepositoryServletProxiedReleasePolicyTest.java 661174 2008-05-29 01:49:41Z jdumay $
  */
 public class RepositoryServletProxiedPassthroughTest
     extends AbstractRepositoryServletProxiedTestCase

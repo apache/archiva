@@ -31,7 +31,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 /**
  * RoleProfilesTest 
  *
- * @version $Id: RoleManagerTest.java 4330 2007-05-10 17:28:56Z jmcconnell $
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

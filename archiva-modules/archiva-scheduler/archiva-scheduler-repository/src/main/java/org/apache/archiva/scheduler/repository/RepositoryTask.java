@@ -27,7 +27,7 @@ import java.io.File;
  * DataRefreshTask - task for discovering changes in the repository
  * and updating all associated data.
  *
- * @version $Id: DataRefreshTask.java 525176 2007-04-03 15:21:33Z joakime $
+ *
  */
 public class RepositoryTask
     implements Task

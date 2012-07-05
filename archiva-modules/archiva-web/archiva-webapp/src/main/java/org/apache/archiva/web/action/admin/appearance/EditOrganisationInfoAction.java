@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 /**
- * @version $Id: ConfigurationAction.java 480950 2006-11-30 14:58:35Z evenisse $
+ *
  */
 @Controller( "editOrganisationInfo" )
 @Scope( "prototype" )

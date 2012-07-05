@@ -28,7 +28,6 @@ import java.util.Map;
 /**
  * SearchResults
  *
- * @version $Id: SearchResults.java 742859 2009-02-10 05:35:05Z jdumay $
  */
 public class SearchResults
 {

@@ -22,7 +22,6 @@ package org.apache.archiva.repository.scanner;
 /**
  * RepositoryException 
  *
- * @version $Id: RepositoryException.java 718864 2008-11-19 06:33:35Z brett $
  */
 public class RepositoryScannerException
     extends Exception

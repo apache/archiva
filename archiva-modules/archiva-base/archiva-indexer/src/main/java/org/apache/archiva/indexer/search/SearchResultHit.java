@@ -25,7 +25,6 @@ import java.util.List;
 /**
  * SearchResultHit
  *
- * @version $Id: SearchResultHit.java 740552 2009-02-04 01:09:17Z oching $
  */
 public class SearchResultHit
 {

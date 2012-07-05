@@ -38,7 +38,7 @@ import java.util.Properties;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
- * @version $Id: AbstractSeleniumTestCase.java 761154 2009-04-02 03:31:19Z wsmoak $
+ *
  */
 
 public abstract class AbstractSeleniumTest

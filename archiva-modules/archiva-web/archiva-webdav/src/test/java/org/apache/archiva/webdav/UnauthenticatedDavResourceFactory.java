@@ -32,7 +32,6 @@ import javax.inject.Inject;
 /**
  * UnauthenticatedDavResourceFactory
  *
- * @version $Id:
  */
 @Service("archivaDavResourceFactory#unauthenticated")
 public class UnauthenticatedDavResourceFactory

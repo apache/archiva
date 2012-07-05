@@ -30,7 +30,6 @@ import org.junit.Test;
 /**
  * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings.
  *
- * @version $Id: RepositoryServletProxiedReleasePolicyTest.java 590908 2007-11-01 06:21:26Z joakime $
  */
 public class RepositoryServletProxiedRelocatedTest
     extends AbstractRepositoryServletProxiedTestCase

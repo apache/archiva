@@ -59,7 +59,7 @@ import static org.junit.Assert.*;
 /**
  * Integration test for connecting over a HTTP proxy.
  *
- * @version $Id: ManagedDefaultTransferTest.java 677852 2008-07-18 08:16:24Z brett $
+ *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
