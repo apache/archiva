@@ -54,6 +54,8 @@ public class RepositoryStatistics
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    private String repositoryId;
+
     public Date getScanEndTime()
     {
         return scanEndTime;
@@ -139,6 +141,16 @@ public class RepositoryStatistics
         return scanEndTime.getTime() - scanStartTime.getTime();
     }
 
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
     public String getFacetId()
     {
         return FACET_ID;
@@ -167,6 +179,7 @@ public class RepositoryStatistics
         properties.put( "totalGroupCount", String.valueOf( totalGroupCount ) );
         properties.put( "totalProjectCount", String.valueOf( totalProjectCount ) );
         properties.put( "newFileCount", String.valueOf( newFileCount ) );
+        properties.put( "repositoryId", repositoryId );
         for ( Map.Entry<String, Long> entry : totalCountForType.entrySet() )
         {
             properties.put( "count-" + entry.getKey(), String.valueOf( entry.getValue() ) );
@@ -184,6 +197,7 @@ public class RepositoryStatistics
         totalGroupCount = Long.parseLong( properties.get( "totalGroupCount" ) );
         totalProjectCount = Long.parseLong( properties.get( "totalProjectCount" ) );
         newFileCount = Long.parseLong( properties.get( "newFileCount" ) );
+        repositoryId = properties.get( "repositoryId" );
         totalCountForType.clear();
         for ( Map.Entry<String, String> entry : properties.entrySet() )
         {
@@ -244,6 +258,10 @@ public class RepositoryStatistics
         {
             return false;
         }
+        if ( !repositoryId.equals( that.repositoryId ) )
+        {
+            return false;
+        }
 
         return true;
     }
@@ -260,6 +278,7 @@ public class RepositoryStatistics
         result = 31 * result + (int) ( totalProjectCount ^ ( totalProjectCount >>> 32 ) );
         result = 31 * result + (int) ( newFileCount ^ ( newFileCount >>> 32 ) );
         result = 31 * result + totalCountForType.hashCode();
+        result = 31 * result + repositoryId.hashCode();
         return result;
     }
 
@@ -269,7 +288,8 @@ public class RepositoryStatistics
         return "RepositoryStatistics{" + "scanEndTime=" + scanEndTime + ", scanStartTime=" + scanStartTime +
             ", totalArtifactCount=" + totalArtifactCount + ", totalArtifactFileSize=" + totalArtifactFileSize +
             ", totalFileCount=" + totalFileCount + ", totalGroupCount=" + totalGroupCount + ", totalProjectCount=" +
-            totalProjectCount + ", newFileCount=" + newFileCount + ", totalCountForType=" + totalCountForType + '}';
+            totalProjectCount + ", newFileCount=" + newFileCount + ", totalCountForType=" + totalCountForType + ", " +
+            "repositoryId=" + repositoryId + '}';
     }
 
     public Map<String, Long> getTotalCountForType()
@@ -284,7 +304,7 @@ public class RepositoryStatistics
 
     public void setTotalCountForType( String type, long count )
     {
-        totalCountForType.put( type, count );
+        totalCountForType.put( type.replaceAll( "-", "_" ).replaceAll( "\\.", "_" ), count );
     }
     
     private static final class ZeroForNullHashMap<K, V extends Long> extends HashMap<K, V>

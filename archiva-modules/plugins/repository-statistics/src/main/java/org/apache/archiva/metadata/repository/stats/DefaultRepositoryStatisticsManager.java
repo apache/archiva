@@ -123,6 +123,7 @@ public class DefaultRepositoryStatisticsManager
         throws MetadataRepositoryException
     {
         RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        repositoryStatistics.setRepositoryId( repositoryId );
         repositoryStatistics.setScanStartTime( startTime );
         repositoryStatistics.setScanEndTime( endTime );
         repositoryStatistics.setTotalFileCount( totalFiles );

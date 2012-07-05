@@ -504,7 +504,7 @@
     <p>
         ${$.i18n.prop('apperance-configuration.details-description')}
     </p>
-    
+
     <form id="appearance-configuration-form-id" class="well form-horizontal">
         <fieldset id="appearance-configuration-fielset-id">
             <div class="control-group">
@@ -701,4 +701,176 @@
       </td>
     </tr>
 {% } %}
+</script>
+
+<script id="report-base" type="text/html">
+  <div class="page-header">
+    <h2>${$.i18n.prop('report.title')}</h2>
+  </div>
+
+    <ul class="nav nav-tabs">
+      <li class="active" id="report-stat-tab-li"><a href="#report-stat-tab-content" data-toggle="tab">${$.i18n.prop('report.statistics.title')}</a></li>
+      <li id="report-health-tab-li"><a href="#report-health-tab-content" data-toggle="tab">${$.i18n.prop('report.health.title')}</a></li>
+      <li id="report-result-tab-li" class="hide"><a href="#report-result" data-toggle="tab">${$.i18n.prop('report.result.title')}</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane active" id="report-stat-tab-content">
+        <form class="form-horizontal" id="report-statistics-form-id">
+          <fieldset id="form-statistics-report">
+            <div class="row-fluid">
+              <div class="span6 row-fluid">
+                <div class="row-fluid" id="repositoriesErrorMessage"></div>
+                <div class="row-fluid">
+                  <div class="span6 dotted">
+                    <h5>${$.i18n.prop('report.statistics.selected-repositories.label')}</h5>
+                    <hr/>
+                    <div style="min-height: 40px"
+                         data-bind="sortable: { template: 'statistics-repositories-order-tmpl', data:statisticsReport().repositories}">
+                    </div>
+                  </div>
+                  <div class="span6 dotted">
+                    <h5>${$.i18n.prop('repository.groups.available-repositories.label')}</h5>
+                    <hr/>
+                    <div style="min-height: 40px"
+                         data-bind="sortable: {template: 'statistics-repositories-order-tmpl',data:availableRepositories}">
+                    </div>
+                </div>
+                </div>
+              </div>
+              <div class="span6 well">
+                  <div class="control-group">
+                      <label for="rowCountStatistics" class="control-label">
+                          ${$.i18n.prop('report.statistics.row-count.label')}
+                      </label>
+                      <div class="controls">
+                          <input type="text" id="rowCountStatistics" name="rowCountStatistics" class="input-small"
+                                 data-bind="value: statisticsReport().rowCount"/>
+
+                          <button class="btn btn-warning btn-mini" id="rowCount-info-button"
+                                  data-original-title="${$.i18n.prop('report.statistics.rowCount.explanations-title')}"
+                                  data-content="${$.i18n.prop('report.statistics.rowCount.explanations')}">
+                              <i class="icon-question-sign icon-white"></i>
+                          </button>
+                      </div>
+                  </div>
+                  <div class="control-group">
+                      <label for="startDate" class="control-label">
+                          ${$.i18n.prop('report.statistics.start-date.label')}
+                      </label>
+                      <div class="controls">
+                          <input type="text" id="startDate" name="startDate" class="input-small"
+                                 data-bind="value: statisticsReport().startDate"/>
+                      </div>
+                  </div>
+                  <div class="control-group">
+                      <label for="endDate" class="control-label">
+                          ${$.i18n.prop('report.statistics.end-date.label')}
+                      </label>
+                      <div class="controls">
+                          <input type="text" id="endDate" name="endDate" class="input-small"
+                                 data-bind="value: statisticsReport().endDate"/>
+                      </div>
+                  </div>
+              </div>
+            </div>
+              <div class="form-actions">
+                  <button class="btn btn-primary" data-bind="click: showStatistics">
+                      ${$.i18n.prop('report.statistics.btn-view')}
+                  </button>
+              </div>
+          </fieldset>
+        </form>
+      </div>
+
+      <div class="tab-pane" id="report-health-tab-content">
+        <form class="form-horizontal" id="report-health-form-id">
+          <fieldset id="form-health-report">
+            <div class="control-group">
+              <label for="rowCountHealth" class="control-label">
+                ${$.i18n.prop('report.statistics.row-count.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="rowCountHealth" name="rowCountHealth" class="input-small required"
+                        data-bind="value: healthReport().rowCount"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="groupId" class="control-label">
+                ${$.i18n.prop('report.health.groupId.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="groupId" name="groupId" data-bind="value: healthReport().groupId"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="repositoryId" class="control-label">
+                ${$.i18n.prop('report.health.repositoryId.label')}
+              </label>
+              <div class="controls">
+                <select id="repositoryId" name="repositoryId" data-bind="value: healthReport().repositoryId"
+                        class="required">
+                    <option value="all">${$.i18n.prop('report.select.all-repositories')}</option>
+                    {{each(i, repoId) repositoriesList}}
+                      <option value="${repoId}">${repoId}</option>
+                    {{/each}}
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="#" class="btn btn-primary" data-bind="click: showHealth">
+                ${$.i18n.prop('report.health.btn-view')}
+              </a>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+      <div class="tab-pane" id="report-result">
+    </div>
+</script>
+
+<script id="statistics-repositories-order-tmpl" type="text/html">
+    <div class="well draggable-item">
+        ${$data}
+    </div>
+</script>
+
+<script id="report-health" type="text/html">
+    <div class="page-header">
+        <h3>${$.i18n.prop('report.health.title')}</h3>
+    </div>
+    <table class="table table-bordered table-striped"
+           data-bind="simpleGrid: tableReportViewModel,simpleGridTemplate:'table-report-tmpl',pageLinksId:'reportHealthPageLinkId'">
+    </table>
+    <div id="reportHealthPageLinkId"></div>
+</script>
+
+<script id="report-statistics" type="text/html">
+    <div class="page-header">
+        <h3>${$.i18n.prop('report.statistics.title')}</h3>
+    </div>
+    <table class="table table-bordered table-striped"
+           data-bind="simpleGrid: tableReportViewModel,simpleGridTemplate:'table-report-tmpl',pageLinksId:'reportStatisticsPageLinkId'">
+    </table>
+    <div id="reportStatisticsPageLinkId"></div>
+</script>
+<script id="table-report-tmpl" type="text/html">
+    <thead>
+    {{each(i, columnDefinition) columns}}
+      <th>${ columnDefinition.headerText }</th>
+    {{/each}}
+    </thead>
+    <tbody>
+    {{each(i, row) itemsOnCurrentPage()}}
+      <tr>
+        {{each(i, columnDefinition) columns}}
+          {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
+          <td>
+              ${val}
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+    </tbody>
 </script>
