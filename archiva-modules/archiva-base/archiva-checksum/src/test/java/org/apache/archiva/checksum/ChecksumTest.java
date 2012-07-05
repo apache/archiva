@@ -23,15 +23,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import junit.framework.TestCase;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * ChecksumTest
  *
  * @version $Id$
  */
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ChecksumTest
-    extends AbstractChecksumTestCase
+    extends TestCase
 {
     private static final String UNSET_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 

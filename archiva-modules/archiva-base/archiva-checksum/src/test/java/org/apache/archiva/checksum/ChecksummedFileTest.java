@@ -21,9 +21,12 @@ package org.apache.archiva.checksum;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -42,6 +45,18 @@ public class ChecksummedFileTest
     
     private static final String REMOTE_METADATA_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
+    
+    @Before
+    public void cleanTestDir() 
+    {
+        try 
+        {
+            FileUtils.deleteDirectory(getTestOutputDir());
+        } catch (IOException ex) {
+            Logger.getLogger(ChecksummedFileTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private File createTestableJar( String filename )
         throws IOException 
     {
