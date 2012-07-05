@@ -19,15 +19,14 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * ChecksummedFileTest
@@ -38,27 +37,31 @@ import org.junit.Test;
 public class ChecksummedFileTest
     extends AbstractChecksumTestCase
 {
-    /**  SHA1 checksum from www.ibiblio.org/maven2, incuding file path */
+    /**
+     * SHA1 checksum from www.ibiblio.org/maven2, incuding file path
+     */
     private static final String SERVLETAPI_SHA1 = "bcc82975c0f9c681fcb01cc38504c992553e93ba";
-    
+
     private static final String REMOTE_METADATA_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-    
+
     private static final String REMOTE_METADATA_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
-    
+
     @Before
-    public void cleanTestDir() 
+    public void cleanTestDir()
     {
-        try 
+        try
         {
-            FileUtils.deleteDirectory(getTestOutputDir());
-        } catch (IOException ex) {
-            Logger.getLogger(ChecksummedFileTest.class.getName()).log(Level.SEVERE, null, ex);
+            FileUtils.deleteDirectory( getTestOutputDir() );
+        }
+        catch ( IOException ex )
+        {
+            LoggerFactory.getLogger( ChecksummedFileTest.class ).warn( ex.getMessage(), ex );
         }
     }
-    
+
     private File createTestableJar( String filename )
-        throws IOException 
+        throws IOException
     {
         File srcFile = getTestResource( filename );
         File destFile = new File( getTestOutputDir(), srcFile.getName() );
@@ -139,12 +142,14 @@ public class ChecksummedFileTest
         FileUtils.writeStringToFile( sha1File, "sha1sum: redback-authz-open.jar: No such file or directory" );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertFalse( "ChecksummedFile.isValid(SHA1) == false", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
+        assertFalse( "ChecksummedFile.isValid(SHA1) == false",
+                     checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
 
-        boolean fixed = checksummedFile.fixChecksums( new ChecksumAlgorithm[] { ChecksumAlgorithm.SHA1 } );
+        boolean fixed = checksummedFile.fixChecksums( new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1 } );
         assertTrue( "ChecksummedFile.fixChecksums() == true", fixed );
 
-        assertTrue( "ChecksummedFile.isValid(SHA1) == true", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
+        assertTrue( "ChecksummedFile.isValid(SHA1) == true",
+                    checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
     }
 
     @Test
@@ -186,9 +191,8 @@ public class ChecksummedFileTest
         File jarFile = createTestableJar( "examples/redback-authz-open.jar", false, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums( new ChecksumAlgorithm[] {
-            ChecksumAlgorithm.SHA1,
-            ChecksumAlgorithm.MD5 } ) );
+        assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
+            new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 } ) );
 
     }
 
@@ -199,9 +203,8 @@ public class ChecksummedFileTest
         File jarFile = createTestableJar( "examples/redback-authz-open.jar", true, true );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums( new ChecksumAlgorithm[] {
-            ChecksumAlgorithm.SHA1,
-            ChecksumAlgorithm.MD5 } ) );
+        assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
+            new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 } ) );
     }
 
     @Test
@@ -211,9 +214,8 @@ public class ChecksummedFileTest
         File jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksums( new ChecksumAlgorithm[] {
-            ChecksumAlgorithm.SHA1,
-            ChecksumAlgorithm.MD5 } ) );
+        assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksums(
+            new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 } ) );
 
     }
 
@@ -263,20 +265,19 @@ public class ChecksummedFileTest
         String expected = REMOTE_METADATA_SHA1 + "  /home/test/repository/examples/metadata/maven-metadata.xml";
         File testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
-        
-        try 
+
+        try
         {
-            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
-                "maven-metadata-remote.xml" );            
+            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1, "maven-metadata-remote.xml" );
             assertEquals( "Checksum doesn't match", REMOTE_METADATA_SHA1, s );
         }
         catch ( IOException e )
-        {   
+        {
             e.printStackTrace();
             fail( "IOException should not occur." );
         }
     }
-    
+
     @Test
     public void testRemoteMetadataChecksumFilePathMd5()
         throws IOException
@@ -284,15 +285,14 @@ public class ChecksummedFileTest
         String expected = REMOTE_METADATA_MD5 + "  ./examples/metadata/maven-metadata.xml";
         File testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
-        
+
         try
         {
-            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.MD5,
-                "maven-metadata-remote.xml" );     
+            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.MD5, "maven-metadata-remote.xml" );
             assertEquals( "Checksum doesn't match", REMOTE_METADATA_MD5, s );
         }
         catch ( IOException e )
-        {   
+        {
             e.printStackTrace();
             fail( "IOException should not occur." );
         }
