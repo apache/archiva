@@ -115,7 +115,9 @@
               org.apache.archiva.redback.authorization,
               org.apache.archiva.metadata.model,
               org.apache.archiva.repository.scanner,
-              org.codehaus.jackson.annotate
+              org.codehaus.jackson.annotate,
+              org.apache.archiva.metadata.repository.stats,
+              org.apache.archiva.reports
             </Import-Package>
           </instructions>
         </configuration>
