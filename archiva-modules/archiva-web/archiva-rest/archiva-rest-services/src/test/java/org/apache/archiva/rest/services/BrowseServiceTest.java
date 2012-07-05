@@ -27,7 +27,7 @@ import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.fest.assertions.api.MapAssert;
+import org.fest.assertions.data.MapEntry;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -83,7 +83,7 @@ public class BrowseServiceTest
 
         metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
-        assertThat( metadatas ).isNotNull().isNotEmpty().includes( MapAssert.entry( "wine", "bordeaux" ) );
+        assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "wine", "bordeaux" ) );
 
         deleteTestRepo( testRepoId );
 
@@ -115,7 +115,7 @@ public class BrowseServiceTest
 
         metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
 
-        assertThat( metadatas ).isNotNull().isNotEmpty().includes( MapAssert.entry( "wine", "bordeaux" ) );
+        assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "wine", "bordeaux" ) );
 
         browseService.deleteMetadata( "commons-cli", "commons-cli", "1.0", "wine", testRepoId );
 
