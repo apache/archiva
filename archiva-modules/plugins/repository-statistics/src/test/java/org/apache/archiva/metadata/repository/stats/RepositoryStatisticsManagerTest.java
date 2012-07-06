@@ -502,6 +502,7 @@ public class RepositoryStatisticsManagerTest
     private RepositoryStatistics createTestStats( Date startTime, Date endTime )
     {
         RepositoryStatistics stats = new RepositoryStatistics();
+        stats.setRepositoryId( TEST_REPO_ID );
         stats.setScanStartTime( startTime );
         stats.setScanEndTime( endTime );
         stats.setTotalArtifactFileSize( 20 * 12345L );

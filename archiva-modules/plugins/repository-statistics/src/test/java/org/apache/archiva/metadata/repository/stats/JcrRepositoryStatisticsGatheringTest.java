@@ -73,6 +73,9 @@ public class JcrRepositoryStatisticsGatheringTest
         File dir = new File( "target/jcr" );
         FileUtils.deleteDirectory( dir );
 
+        assertTrue( confFile.exists() );
+        assertFalse( dir.exists() );
+
         TransientRepository repository = new TransientRepository( confFile, dir );
         session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
 
@@ -110,7 +113,10 @@ public class JcrRepositoryStatisticsGatheringTest
     public void tearDown()
         throws Exception
     {
-        session.logout();
+        if ( session != null )
+        {
+            session.logout();
+        }
 
         super.tearDown();
     }
@@ -146,6 +152,7 @@ public class JcrRepositoryStatisticsGatheringTest
         expectedStatistics.setTotalCountForType( "xml", 3 );
         expectedStatistics.setTotalCountForType( "war", 2 );
         expectedStatistics.setTotalCountForType( "pom", 144 );
+        expectedStatistics.setRepositoryId( TEST_REPO );
 
         verify( metadataRepository ).addMetadataFacet( TEST_REPO, expectedStatistics );
     }

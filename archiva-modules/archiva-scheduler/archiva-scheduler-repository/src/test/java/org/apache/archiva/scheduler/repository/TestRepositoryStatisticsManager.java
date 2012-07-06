@@ -54,6 +54,7 @@ public class TestRepositoryStatisticsManager
         repositoryStatistics.setScanEndTime( endTime );
         repositoryStatistics.setNewFileCount( newFiles );
         repositoryStatistics.setTotalFileCount( totalFiles );
+        repositoryStatistics.setRepositoryId( repositoryId );
 
         stats.add( repositoryStatistics );
     }
