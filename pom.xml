@@ -579,6 +579,7 @@
           <configuration>
             <tagBase>https://svn.apache.org/repos/asf/archiva/tags/</tagBase>
             <useReleaseProfile>false</useReleaseProfile>
+            <goals>deploy</goals>
             <arguments>-Prelease</arguments>
           </configuration>
         </plugin>
@@ -628,38 +629,34 @@
     <profile>
       <id>release</id>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-assembly-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>org.apache.apache.resources</groupId>
-                  <artifactId>apache-source-release-assembly-descriptor</artifactId>
-                  <version>1.0.4</version>
-                </dependency>
-              </dependencies>
-              <executions>
-                <execution>
-                  <id>source-release-assembly</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>single</goal>
-                  </goals>
-                  <configuration>
-                    <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                    <descriptorRefs>
-                      <descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>
-                    </descriptorRefs>
-                    <tarLongFileFormat>gnu</tarLongFileFormat>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.apache.resources</groupId>
+                <artifactId>apache-source-release-assembly-descriptor</artifactId>
+                <version>1.0.4</version>
+              </dependency>
+            </dependencies>
+            <executions>
+              <execution>
+                <id>source-release-assembly</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                  <descriptorRefs>
+                    <descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>
+                  </descriptorRefs>
+                  <tarLongFileFormat>gnu</tarLongFileFormat>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
           <!-- We want to sign the artifact, the POM, and all attached artifacts -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
