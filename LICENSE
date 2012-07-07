@@ -260,7 +260,7 @@ BEGIN Silver Egg Techology License -----------------------------------
 END Silver Egg Techology License -------------------------------------
 
 
-For jQuery 1.3.2:
+For jQuery 1.7.2:
 
 Copyright (c) 2009 John Resig, http://jquery.com/
 
@@ -284,7 +284,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-For JQuery UI 1.7.2:
+For JQuery UI 1.8.16:
 
 Copyright (c) 2009 Paul Bakaus, http://jqueryui.com/
 
@@ -311,4 +311,77 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For bootstrap:
+
+Copyright 2012 Twitter, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may
+not use this work except in compliance with the License.
+You may obtain a copy of the License in the LICENSE file, or at: http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+
+For chosen jquery
+
+Version 0.9.7
+Full source at https://github.com/harvesthq/chosen
+Copyright (c) 2011 Harvest http://getharvest.com
+
+MIT License, https://github.com/harvesthq/chosen/blob/master/LICENSE.md
+
+For require domReady order:
+
+@license RequireJS domReady 1.0.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
+Available via the MIT or new BSD license.
+see: http://github.com/jrburke/requirejs for details
+
+For jQuery Cookie plugin:
+
+Copyright (c) 2010 Klaus Hartl (stilbuero.de)
+Dual licensed under the MIT and GPL licenses:
+http://www.opensource.org/licenses/mit-license.php
+http://www.gnu.org/licenses/gpl.html
+
+For jQuery File Upload
+
+Copyright 2010, Sebastian Tschan
+https://blueimp.net
+Licensed under the MIT license:
+http://www.opensource.org/licenses/MIT
+
+For jQuery Templates Plugin
+Copyright Software Freedom Conservancy, Inc.
+Dual licensed under the MIT or GPL Version 2 licenses. http://jquery.org/license
+
+For  Query Validation Plugin
+
+Copyright (c) 2006 - 2011 Jörn Zaefferer
+Dual licensed under the MIT and GPL licenses:
+http://www.opensource.org/licenses/mit-license.php
+http://www.gnu.org/licenses/gpl.html
+
+For Knockout JavaScript library
+(c) Steven Sanderson - http://knockoutjs.com/
+License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+For knockout-sortable
+(c) 2012 Ryan Niemeyer
+http://www.opensource.org/licenses/mit-license
+
+For prettify
+Copyright (C) 2006 Google Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
