@@ -1723,9 +1723,8 @@
             <useReleaseProfile>false</useReleaseProfile>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
-            <preparationGoals>clean</preparationGoals>
-            <!-- TODO: merge these when upgrading to latest ASF parent POM -->
-            <arguments>-Papache-release,release</arguments>
+            <preparationGoals>clean install</preparationGoals>
+            <arguments>-Prelease</arguments>
           </configuration>
         </plugin>
         <plugin>
@@ -1782,15 +1781,17 @@
     <profile>
       <id>release</id>
       <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <inherited>false</inherited>
-            <configuration>
-              <finalName>apache-archiva-${project.version}-src</finalName>
-            </configuration>
-          </plugin>
-        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <inherited>false</inherited>
+              <configuration>
+                <finalName>apache-archiva-${project.version}-src</finalName>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
 
