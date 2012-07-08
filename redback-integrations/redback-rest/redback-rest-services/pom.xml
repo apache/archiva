@@ -28,7 +28,6 @@
   <name>Redback :: REST :: Services</name>
 
   <properties>
-    <jettyVersion>7.5.3.v20111011</jettyVersion>
     <tomcatVersion>7.0.29</tomcatVersion>
     <test.useTomcat>false</test.useTomcat>
   </properties>
