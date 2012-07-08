@@ -752,6 +752,7 @@ public class DefaultBrowseService
                     }
                     finally
                     {
+                        closeQuietly( jarFile );
                         IOUtils.closeQuietly( inputStream );
                     }
                 }
@@ -780,6 +781,21 @@ public class DefaultBrowseService
                    Arrays.asList( groupId, artifactId, version, classifier, type ).toArray( new String[5] ) );
         // 404 ?
         return new ArtifactContent();
+    }
+
+    private void closeQuietly( JarFile jarFile )
+    {
+        if ( jarFile != null )
+        {
+            try
+            {
+                jarFile.close();
+            }
+            catch ( IOException e )
+            {
+                log.warn( "ignore error closing jarFile {}", jarFile.getName() );
+            }
+        }
     }
 
     //---------------------------
