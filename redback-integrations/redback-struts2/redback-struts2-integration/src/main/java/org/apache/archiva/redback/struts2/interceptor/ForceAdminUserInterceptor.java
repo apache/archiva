@@ -21,20 +21,21 @@ package org.apache.archiva.redback.struts2.interceptor;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
-import org.apache.archiva.redback.integration.checks.security.AdminAutoCreateCheck;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.integration.checks.security.AdminAutoCreateCheck;
+import org.apache.archiva.redback.integration.util.AutoLoginCookies;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.system.SecuritySystemConstants;
+import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.integration.util.AutoLoginCookies;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -52,7 +53,6 @@ import java.util.Properties;
  * EnvironmentCheckInterceptor
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Controller( "redbackForceAdminUserInterceptor" )
 @Scope( "prototype" )
@@ -66,20 +66,20 @@ public class ForceAdminUserInterceptor
     private static boolean checked = false;
 
     /**
-     *  role-hint="configurable"
+     * role-hint="configurable"
      */
     @Inject
     @Named( value = "userManager#configurable" )
     private UserManager userManager;
 
     /**
-     *  role-hint="default"
+     * role-hint="default"
      */
     @Inject
     private RoleManager roleManager;
 
     /**
-     *  role-hint="default"
+     * role-hint="default"
      */
     @Inject
     private UserConfiguration config;
@@ -155,25 +155,31 @@ public class ForceAdminUserInterceptor
             String forceAdminFilePath = System.getProperty( AdminAutoCreateCheck.FORCE_ADMIN_FILE_PATH );
             if ( StringUtils.isBlank( forceAdminFilePath ) )
             {
-                log.info( AdminAutoCreateCheck.FORCE_ADMIN_FILE_PATH + " system props is empty don't use an auto creation admin " );
+                log.info( AdminAutoCreateCheck.FORCE_ADMIN_FILE_PATH
+                              + " system props is empty don't use an auto creation admin " );
                 return null;
             }
             File file = new File( forceAdminFilePath );
             if ( !file.exists() )
             {
-                log.warn( "file set in sysprops " + AdminAutoCreateCheck.FORCE_ADMIN_FILE_PATH + " not exists skip admin auto creation" );
+                log.warn( "file set in sysprops " + AdminAutoCreateCheck.FORCE_ADMIN_FILE_PATH
+                              + " not exists skip admin auto creation" );
                 return null;
             }
             Properties properties = new Properties();
-            FileInputStream fis = null;
+            FileInputStream fis = new FileInputStream( file );
             try
             {
-                properties.load( new FileInputStream( file ) );
+                properties.load( fis );
             }
             catch ( Exception e )
             {
                 log.warn( "error loading properties from file " + forceAdminFilePath + " skip admin auto creation" );
                 return null;
+            }
+            finally
+            {
+                IOUtils.closeQuietly( fis );
             }
 
             // ensure we have all properties
@@ -195,7 +201,8 @@ public class ForceAdminUserInterceptor
 
             if ( StringUtils.isBlank( fullName ) )
             {
-                log.warn( "property " + AdminAutoCreateCheck.ADMIN_FULL_NAME_KEY + " not set skip auto admin creation" );
+                log.warn(
+                    "property " + AdminAutoCreateCheck.ADMIN_FULL_NAME_KEY + " not set skip auto admin creation" );
                 return null;
             }
 
