@@ -105,7 +105,7 @@ public class JdoUserQuery
             keys.add( getEmail() );
         }
 
-        return (String[]) keys.toArray( new String[0] );
+        return keys.toArray( new String[keys.size()] );
     }
 
     /**
