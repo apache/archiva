@@ -330,13 +330,13 @@ function() {
       select: function( event, ui ) {
         $.log("select artifactId:"+ui.item.artifactId);
         // user can be in a non search view so init the search view first
+        var searchViewModel = new SearchViewModel();
+        var searchRequest = new SearchRequest();
+        searchRequest.artifactId(ui.item.artifactId);
+        searchViewModel.searchRequest(searchRequest);
         displaySearch(function(){
-          var searchViewModel = new SearchViewModel();
-          var searchRequest = new SearchRequest();
-          searchRequest.artifactId(ui.item.artifactId);
-          searchViewModel.searchRequest(searchRequest);
           searchViewModel.externalAdvancedSearch();
-        });
+        },searchViewModel);
       }
 		}).data( "autocomplete" )._renderItem = function( ul, item ) {
 							return $( "<li></li>" )

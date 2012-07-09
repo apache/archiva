@@ -1272,6 +1272,10 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     });
   }
 
+  /**
+   * search results view model: display a grid with autocomplete filtering on grid headers
+   * @param artifacts
+   */
   ResultViewModel=function(artifacts){
     var self=this;
     this.originalArtifacts=artifacts;
@@ -1339,6 +1343,9 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
     });
   }
 
+  /**
+   * View model used for search response and filtering
+   */
   SearchViewModel=function(){
     var self=this;
     this.searchRequest=ko.observable(new SearchRequest());
@@ -1371,6 +1378,7 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       self.search("restServices/archivaServices/searchService/searchArtifacts");
     }
     removeFilter=function(){
+      $.log("removeFilter:"+self.resultViewModel.originalArtifacts.length);
       self.resultViewModel.artifacts(self.resultViewModel.originalArtifacts);
     }
     this.search=function(url){
@@ -1381,7 +1389,6 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
       mainContent.find("#btn-basic-search" ).button("loading");
       mainContent.find("#btn-advanced-search" ).button("loading");
       $("#user-messages").html(mediumSpinnerImg());
-
 
       self.selectedRepoIds=[];
       mainContent.find("#search-basic-repositories" )
@@ -1400,19 +1407,21 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
           success: function(data) {
             clearUserMessages();
             var artifacts=mapArtifacts(data);
+            $.log("search#ajax call success:artifacts.length:"+artifacts.length);
             if (artifacts.length<1){
               displayWarningMessage( $.i18n.prop("search.artifact.noresults"));
               return;
             } else {
               self.resultViewModel.originalArtifacts=artifacts;
+              $.log("search#ajax call success:self.resultViewModel.originalArtifacts:"+self.resultViewModel.originalArtifacts.length);
               self.resultViewModel.artifacts(artifacts);
               if (!searchResultsGrid.attr("data-bind")){
+                $.log('!searchResultsGrid.attr("data-bind")');
                 searchResultsGrid.attr("data-bind",
                                  "simpleGrid: gridViewModel,simpleGridTemplate:'search-results-view-grid-tmpl',pageLinksId:'search-results-view-grid-pagination'");
                 ko.applyBindings(self.resultViewModel,searchResultsGrid.get(0));
                 ko.applyBindings(self,mainContent.find("#remove-filter-id" ).get(0));
-                mainContent.find("#search-result-number-div").attr("data-bind",
-                  "template:{name:'search-result-number-div-tmpl'}");
+                mainContent.find("#search-result-number-div").attr("data-bind","template:{name:'search-result-number-div-tmpl'}");
                 ko.applyBindings(self,mainContent.find("#search-result-number-div" ).get(0));
               }
 
@@ -1444,7 +1453,13 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
 
   }
 
-  displaySearch=function(successCallbackFn){
+  /**
+   * display a search result (collection of Artifacts) in a grid
+   * see template with id #search-artifacts-div-tmpl
+   * @param successCallbackFn can be a callback function called on success getting observable repositories.
+   * @param searchViewModelCurrent model to reuse if not null whereas a new one is created.
+   */
+  displaySearch=function(successCallbackFn,searchViewModelCurrent){
     clearUserMessages();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
@@ -1453,7 +1468,14 @@ define("search",["jquery","i18n","jquery.tmpl","choosen","order!knockout","knock
         dataType: 'json',
         success: function(data) {
           mainContent.html($("#search-artifacts-div-tmpl" ).tmpl());
-          var searchViewModel=new SearchViewModel();
+          var searchViewModel;
+          if (searchViewModelCurrent){
+            $.log("searchViewModelCurrent not null");
+            searchViewModel=searchViewModelCurrent
+          }else {
+            $.log("searchViewModelCurrent null");
+            searchViewModel=new SearchViewModel();
+          }
           var repos=mapStringList(data);
           $.log("repos:"+repos);
           searchViewModel.observableRepoIds(repos);
