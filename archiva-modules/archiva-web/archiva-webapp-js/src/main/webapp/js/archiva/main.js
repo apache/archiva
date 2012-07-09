@@ -310,6 +310,7 @@ function() {
 
     $( "#quick-search-autocomplete" ).autocomplete({
       minLength: 3,
+      delay: 600,
 			source: function(request, response){
         $.get("restServices/archivaServices/searchService/quickSearch?queryString="+encodeURIComponent(request.term),
            function(data) {
