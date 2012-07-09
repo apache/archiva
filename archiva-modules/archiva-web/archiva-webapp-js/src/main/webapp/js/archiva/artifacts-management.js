@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.artifacts-management",["jquery","i18n","order!utils","order!jquery.tmpl","order!knockout",
-  "order!knockout.simpleGrid","jquery.validate","bootstrap","jquery.fileupload","jquery.fileupload.ui"]
+define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","knockout",
+  "knockout.simpleGrid","jquery.validate","bootstrap","jquery.fileupload","jquery.fileupload.ui"]
     , function() {
 
   ArtifactUpload=function(classifier,pomFile){

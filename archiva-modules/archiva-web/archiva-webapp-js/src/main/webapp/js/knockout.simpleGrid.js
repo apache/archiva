@@ -10,7 +10,7 @@
 //  ... etc
 
 
-define("knockout.simpleGrid",["jquery","order!utils","i18n","order!knockout"], function() {
+define("knockout.simpleGrid",["jquery","utils","i18n","knockout"], function() {
 (function (ko, $) {
 
 

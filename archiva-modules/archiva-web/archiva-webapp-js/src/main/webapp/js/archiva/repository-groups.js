@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","order!knockout"
-  ,"order!knockout.simpleGrid","knockout.sortable"],
+define("archiva.repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","knockout"
+  ,"knockout.simpleGrid","knockout.sortable"],
 function() {
 
   RepositoryGroup=function(id,repositories){

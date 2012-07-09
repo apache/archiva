@@ -33,7 +33,7 @@
 
   <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
 
-  <script type="text/javascript" src="js/require.1.0.8.js"></script>
+  <script type="text/javascript" src="js/require.2.0.2.js"></script>
 
   <title>Apache Archiva</title>
 
@@ -137,6 +137,7 @@
                         "archiva.proxy-connectors": "archiva/proxy-connectors",
                         "archiva.repository-groups": "archiva/repository-groups",
                         "archiva.artifacts-management": "archiva/artifacts-management",
+                        "archiva.search": "archiva/search",
                         "archiva.main": "archiva/main"
                     }
                 });
@@ -144,8 +145,8 @@
 
 
 
-                require(['order!domReady','order!jquery','order!i18n','order!startup'], function (domReady) {
-                  domReady.withResources(
+                require(['domReady!','jquery','i18n','startup'], function (domReady) {
+                  //domReady(
                     loadi18n(function () {
                       $.ajax({
                           url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
@@ -154,13 +155,14 @@
                               window.archivaDevMode=data.devMode;
                               window.archivaJavascriptLog=data.javascriptLog;
                               window.archivaRuntimeInfo=data;
+                              console.log("before start app");
 
-
-                              require(['order!domReady','archiva/main'],function (domReady) {
-                                  domReady.withResources(function () {
+                              require(['domReady!','archiva.main'],function (domReady) {
+                                  //domReady(function () {
+                                      $.log("startArchivaApplication");
                                       startArchivaApplication();
                                       $("#loadingDiv").hide();
-                                  })
+                                  //})
                               })
 
 
@@ -168,7 +170,7 @@
                           }
                         })
                     })
-                  );
+                  //);
                 });
         }
     })

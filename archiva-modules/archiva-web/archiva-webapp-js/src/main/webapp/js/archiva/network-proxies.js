@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","order!knockout"
-  ,"order!knockout.simpleGrid"], function() {
+define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
+  ,"knockout.simpleGrid"], function() {
 
 
   NetworkProxy=function(id,protocol,host,port,username,password,useNtlm){
