@@ -43,7 +43,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
     breadCrumbEntries=function(){
       // root level ?
-      if (!self.parentBrowseViewModel) return [];
+      if (!self.parentBrowseViewModel){
+        return [];
+      }
       return calculateBreadCrumbEntries(self.groupId);
     }
 
@@ -69,6 +71,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   calculateBreadCrumbEntries=function(groupId){
+    if (!groupId){
+      return [];
+    }
     var splitted = groupId.split(".");
     var breadCrumbEntries=[];
     var curGroupId="";

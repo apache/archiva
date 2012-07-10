@@ -269,6 +269,7 @@ function() {
                     ko.utils.arrayFirst(self.artifactMenuItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
                         if ( p.href == "#"+self.activeMenuId()) {
                           p.func();
+                          return;
                         }
                     });
                     
