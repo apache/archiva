@@ -321,7 +321,7 @@ function() {
       ]
       this.activeMenuId = ko.observable();
           
-      Sammy(function () {
+      sammyArchivaApplication = Sammy(function () {
                 this.get('#:folder', function () {
                     self.activeMenuId(this.params.folder);
                     ko.utils.arrayFirst(self.artifactMenuItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
@@ -332,8 +332,8 @@ function() {
                     
                   });
                 this.get('', function () { this.app.runRoute('get', '#Search') });
-          } ).run();
-
+          } );
+      sammyArchivaApplication.run();
   }
 
   startArchivaApplication=function(){
