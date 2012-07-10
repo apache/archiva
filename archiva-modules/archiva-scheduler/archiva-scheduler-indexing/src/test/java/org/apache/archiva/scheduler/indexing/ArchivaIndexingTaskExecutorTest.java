@@ -110,7 +110,8 @@ public class ArchivaIndexingTaskExecutorTest
         {
             indexer.removeIndexingContext( indexingContext, true );
         }
-
+        /*
+        removeIndexingContext with true cleanup files.
         // delete created index in the repository
         File indexDir = new File( repositoryConfig.getLocation(), ".indexer" );
         FileUtils.deleteDirectory( indexDir );
@@ -119,7 +120,7 @@ public class ArchivaIndexingTaskExecutorTest
         indexDir = new File( repositoryConfig.getLocation(), ".index" );
         FileUtils.deleteDirectory( indexDir );
         assertFalse( indexDir.exists() );
-
+        */
         super.tearDown();
     }
 
