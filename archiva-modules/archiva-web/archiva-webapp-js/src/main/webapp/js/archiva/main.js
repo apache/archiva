@@ -91,67 +91,6 @@ function() {
         }
       }
     }
-
-
-    var screen = $.urlParam('screen');
-
-    if(screen){
-      if(screen=='network-proxies'&& hasKarma('archiva-manage-configuration')){
-        displayNetworkProxies();
-        return;
-      }
-      if(screen=='proxy-connectors'&& hasKarma('archiva-manage-configuration')){
-        displayProxyConnectors();
-        return;
-      }
-      if(screen=="legacy-artifact-path-support"&& hasKarma('archiva-manage-configuration')){
-        displayLegacyArtifactPathSupport();
-        return;
-      }
-      if (screen=='repository-scanning'&& hasKarma('archiva-manage-configuration')){
-        displayRepositoryScanning();
-        return;
-      }
-      if (screen=='network-configuration'&& hasKarma('archiva-manage-configuration')){
-        displayNetworkConfiguration();
-        return;
-      }
-      if (screen=='system-status'&& hasKarma('archiva-manage-configuration')){
-        displaySystemStatus();
-        return;
-      }
-      if (screen=='repositories-management'&& hasKarma('archiva-manage-configuration')){
-        displayRepositoriesGrid();
-        return;
-      }
-      if (screen=='ui-configuration'&& hasKarma('archiva-manage-configuration')){
-        displayUiConfiguration();
-        return;
-      }
-
-      if (screen=="browse"){
-        displayBrowse(true);
-        return;
-      }
-      if (screen=='appearance-configuration'&& hasKarma('archiva-manage-configuration')){
-        displayAppearanceConfiguration();
-        return;
-      }
-
-      if (screen=='artifact-upload' && hasKarma('archiva-upload-repository')){
-        displayUploadArtifact();
-        return;
-      }
-
-      if (screen=='manage-users' && hasKarma('archiva-manage-users')){
-        displayUsersGrid();
-        return;
-      }
-      if (screen=='roles-grid' && hasKarma('archiva-manage-users')){
-        displayRolesGrid();
-        return;
-      }
-    }
     // by default display search screen
     displaySearch();
   }
@@ -328,7 +267,7 @@ function() {
                     ko.utils.arrayFirst(self.artifactMenuItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
                         if ( p.href == "#"+self.activeMenuId()) {
                            p.func();
-                      }
+                        }
                     });
                     
                   });
