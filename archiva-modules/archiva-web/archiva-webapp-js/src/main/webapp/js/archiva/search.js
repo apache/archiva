@@ -29,7 +29,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     this.parentBrowseViewModel=parentBrowseViewModel;
     this.groupId=groupId;
     displayGroupId=function(groupId){
-      displayGroupDetail(groupId,self);
+      window.sammyArchivaApplication.setLocation("#browse/"+groupId);
     }
     displayParentGroupId=function(){
       $.log("called displayParentGroupId groupId:"+self.parentBrowseViewModel.groupId);

@@ -65,12 +65,6 @@ function() {
       return;
     }
 
-    var browse = $.urlParam('browse');
-    if (browse){
-      displayBrowseGroupId(browse);
-      return;
-    }
-
     var artifact= $.urlParam("artifact");
     var repositoryId = $.urlParam("repositoryId");
     // format groupId:artifactId org.apache.maven.plugins:maven-jar-plugin
@@ -262,15 +256,23 @@ function() {
       this.activeMenuId = ko.observable();
           
       window.sammyArchivaApplication = Sammy(function () {
+                this.get('#browse/:groupId',function(context){
+                  var groupId = this.params['groupId'];
+                  if (groupId){
+                    displayBrowseGroupId(groupId);
+                  } else {
+                    displayBrowse(true);
+                  }
+                });
                 this.get('#:folder', function () {
                     self.activeMenuId(this.params.folder);
                     ko.utils.arrayFirst(self.artifactMenuItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
                         if ( p.href == "#"+self.activeMenuId()) {
-                           p.func();
+                          p.func();
                         }
                     });
                     
-                  });
+                });
                 this.get('', function () { this.app.runRoute('get', '#Search') });
           } );
       sammyArchivaApplication.run();
