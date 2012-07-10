@@ -20,6 +20,7 @@
 define("utils",["jquery","i18n","jquery.tmpl"], function() {
 
   loadi18n=function(loadCallback){
+    $.log("loadi18n");
     var browserLang = usedLang();
     $.log("use browserLang:"+browserLang);
 

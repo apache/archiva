@@ -151,7 +151,7 @@
 
 
 
-                require(['jquery','i18n','sammy','startup','domReady!'], function (domReady) {
+                require(['jquery','i18n','sammy','startup','utils','domReady!'], function (domReady) {
                     loadi18n(function () {
                       $.ajax({
                           url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
