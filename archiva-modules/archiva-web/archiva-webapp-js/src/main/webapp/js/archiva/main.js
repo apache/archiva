@@ -302,7 +302,7 @@ function() {
       ];
       this.administrationMenuItems = [
               {  text : $.i18n.prop('menu.administration') , id: null},
-              {  text : $.i18n.prop('menu.repository.groups')        , id: "mmenu-repository-groups-list-a"     , href: "#RepositoryGroup"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
+              {  text : $.i18n.prop('menu.repository.groups')        , id: "menu-repository-groups-list-a"     , href: "#RepositoryGroup"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
               {  text : $.i18n.prop('menu.repositories')             , id: "menu-repositories-list-a"           , href: "#RepositoryList"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoriesGrid()}},
               {  text : $.i18n.prop('menu.proxy-connectors')         , id: "menu-proxy-connectors-list-a"       , href: "#ProxyConnectors"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectors()}},
               {  text : $.i18n.prop('menu.network-proxies')          , id: "menu-network-proxies-list-a"        , href: "#NetProxies"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}},
