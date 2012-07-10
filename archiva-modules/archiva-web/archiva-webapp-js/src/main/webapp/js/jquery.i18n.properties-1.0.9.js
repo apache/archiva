@@ -12,6 +12,7 @@
  * 
  *****************************************************************************/
 
+// START olamy hack more AMD compliant
 (function($, window) {
   (function(factory){
     // Support module loading scenarios
@@ -24,6 +25,7 @@
     }
   })
 
+// END olamy hack
 (function($) {
 $.i18n = {};
 
@@ -490,6 +492,8 @@ String.prototype.split = function (separator, limit) {
     return cbSplit(this, separator, limit);
 };
 
-});
+});// (jQuery);
 
+// START olamy hack more AMD compliant
 })(jQuery, window);
+// END olamy hack
