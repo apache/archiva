@@ -311,14 +311,15 @@ function() {
               {  text : $.i18n.prop('menu.network-configuration')    , id: "menu-network-configuration-list-a"  , href: "#network"          , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkConfiguration()}},
               {  text : $.i18n.prop('menu.system-status')            , id: "menu-system-status-list-a"          , href: "#status"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus()}},
               {  text : $.i18n.prop('menu.appearance-configuration') , id: "menu-appearance-list-a"             , href: "#appearance"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayAppearanceConfiguration()}},
-              {  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#uiconfig"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration()}}
-      ]
+              {  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#uiconfig"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration()}},
+              {  text : $.i18n.prop('menu.reports')                  , id: "menu-report-list-a"                 , href: "#reports"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage()}}
+      ];
       
       this.usersMenuItems = [
               {  text : $.i18n.prop('menu.users') , id: null},
               {  text : $.i18n.prop('menu.users.manage')    , id: "menu-users-list-a", href: "#users" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayUsersGrid()}},
               {  text : $.i18n.prop('menu.users.roles')     , id: "menu-roles-list-a", href: "#roles" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayRolesGrid()}}
-      ]
+      ];
       this.activeMenuId = ko.observable();
           
       window.sammyArchivaApplication = Sammy(function () {
