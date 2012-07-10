@@ -19,39 +19,39 @@
 <script type="text/html" id="main_menu_tmpl">
   <div id="main-menu">
 
-          <ul class="nav nav-list" data-bind="foreach: artifactMenuItems">
-             <!-- ko ifnot: id -->
-             <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
-             <!-- /ko -->
-             <!-- ko if: id -->
-             <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
-                <a data-bind="text: text, attr: { id: id, href: href}"></a>
-             </li>
-             <!-- /ko -->
+    <ul class="nav nav-list" data-bind="foreach: artifactMenuItems">
+       <!-- ko ifnot: id -->
+       <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
+       <!-- /ko -->
+       <!-- ko if: id -->
+       <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
+          <a data-bind="text: text, attr: { id: id, href: href}"></a>
+       </li>
+       <!-- /ko -->
 
-           </ul>
+    </ul>
 
-           <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-configuration']}" data-bind="foreach: administrationMenuItems">
-             <!-- ko ifnot: id -->
-             <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
-             <!-- /ko -->
-             <!-- ko if: id -->
-             <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
-                <a data-bind="text: text, attr: { id: id, href: href}"></a>
-             </li>
-             <!-- /ko -->
-           </ul>
+    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-configuration']}" data-bind="foreach: administrationMenuItems">
+      <!-- ko ifnot: id -->
+      <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
+      <!-- /ko -->
+      <!-- ko if: id -->
+      <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
+        <a data-bind="text: text, attr: { id: id, href: href}"></a>
+      </li>
+      <!-- /ko -->
+    </ul>
 
-           <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}" data-bind="foreach: usersMenuItems">
-             <!-- ko ifnot: id -->
-             <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
-             <!-- /ko -->
-             <!-- ko if: id -->
-             <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
-                <a data-bind="text: text, attr: { id: id, href: href}"></a>
-             </li>
-             <!-- /ko -->
-           </ul>
+    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}" data-bind="foreach: usersMenuItems">
+      <!-- ko ifnot: id -->
+      <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
+      <!-- /ko -->
+      <!-- ko if: id -->
+      <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
+        <a data-bind="text: text, attr: { id: id, href: href}"></a>
+      </li>
+      <!-- /ko -->
+    </ul>
 
   </div>
 </script>
