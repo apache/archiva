@@ -32,6 +32,7 @@
 
 
   <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+  <script type="text/javascript" src="js/sammy.0.7.1.js"></script>
 
   <script type="text/javascript" src="js/require.2.0.2.js"></script>
 
@@ -102,6 +103,10 @@
                 require.config({
                     baseUrl: "js/",
                     urlArgs: ""+appendJsNoCacheUrl(),
+                    shim: {
+                            'sammy':['jquery'],
+                            'archiva.main':["jquery","sammy"]
+                          },
                     paths: {
                         "i18n":"jquery.i18n.properties-1.0.9",
                         "jquery": "jquery-1.7.2",
@@ -124,6 +129,7 @@
                         "jquery.fileupload.ui":"jquery.fileupload-ui-6.6.3",
                         "tmpl": "tmpl.min",
                         "prettify": "prettify",
+                        "sammy": "sammy.0.7.1",
                         "jqueryFileTree": "jqueryFileTree-1.0.1",
                         "redback": "redback/redback",
                         "redback.roles": "redback/roles",
@@ -145,7 +151,7 @@
 
 
 
-                require(['domReady!','jquery','i18n','startup'], function (domReady) {
+                require(['jquery','i18n','sammy','startup','domReady!'], function (domReady) {
                     loadi18n(function () {
                       $.ajax({
                           url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
@@ -155,7 +161,7 @@
                               window.archivaJavascriptLog=data.javascriptLog;
                               window.archivaRuntimeInfo=data;
 
-                              require(['domReady!','archiva.main'],function (domReady) {
+                              require(['sammy','archiva.main','domReady!'],function (domReady) {
                                       $.log("startArchivaApplication");
                                       startArchivaApplication();
                                       $("#loadingDiv").hide();

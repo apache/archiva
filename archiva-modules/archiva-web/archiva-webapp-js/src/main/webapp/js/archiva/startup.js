@@ -17,7 +17,7 @@
  * under the License.
  */
 
-define("startup",["jquery","utils"],
+define("startup",["jquery","sammy","utils"],
 function() {
 
   // define a container object with various datas

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.main",["jquery","jquery.ui","jquery.cookie","bootstrap","archiva.search",
+define("archiva.main",["jquery","sammy","jquery.ui","jquery.cookie","bootstrap","archiva.search",
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
@@ -256,58 +256,105 @@ function() {
     });
   }
 
-    //------------------------------------//
-    // Change UI with appearance settings //
-    //------------------------------------//
-    updateAppearanceToolBar=function() {
-        $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
-            type: "GET",
-            dataType: 'json',
-            success: function(data) {
-                if(data.url){
-                  var url = data.url.startsWith("http://") || data.url.startsWith("https://") ? data.url : "http://"+data.url;
-                  var link="<a href='"+url+"' class='brand'>";
-                  if (data.logoLocation) {
-                      link+="<img src='"+data.logoLocation+"' style='max-height: 30px'/>";
-                  } else if (data.name) {
-                      link+=data.name;
-                  } else {
-                      link+="Archiva";
-                  }
-                  link+="</a>";
-                  $("#organisation-logo").html(link);
+  //------------------------------------//
+  // Change UI with appearance settings //
+  //------------------------------------//
+  updateAppearanceToolBar=function() {
+      $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
+          type: "GET",
+          dataType: 'json',
+          success: function(data) {
+              if(data.url){
+                var url = data.url.startsWith("http://") || data.url.startsWith("https://") ? data.url : "http://"+data.url;
+                var link="<a href='"+url+"' class='brand'>";
+                if (data.logoLocation) {
+                    link+="<img src='"+data.logoLocation+"' style='max-height: 30px'/>";
+                } else if (data.name) {
+                    link+=data.name;
+                } else {
+                    link+="Archiva";
                 }
-              if (!data.url && data.name){
-                $("#organisation-logo").html("<a href='/' class='brand'>"+data.name+"</a>");
+                link+="</a>";
+                $("#organisation-logo").html(link);
               }
-              if (!data.url && !data.name){
-                $("#organisation-logo").html("<a href='/' class='brand'>Archiva</a>");
-              }
-            },
-            error: function() {
-                $("#organisation-logo").html("<a href='/' class='brand'>Archiva</a>");
+            if (!data.url && data.name){
+              $("#organisation-logo").html("<a href='/' class='brand'>"+data.name+"</a>");
             }
-        });
-    }
+            if (!data.url && !data.name){
+              $("#organisation-logo").html("<a href='/' class='brand'>Archiva</a>");
+            }
+          },
+          error: function() {
+              $("#organisation-logo").html("<a href='/' class='brand'>Archiva</a>");
+          }
+      });
+  }
 
+
+  MainMenuViewModel=function() {
+      
+      var self = this;
+      this.artifactMenuItems = [
+              {  text : $.i18n.prop('menu.artifacts') , id: null},
+              {  text : $.i18n.prop('menu.artifacts.search') , id: "menu-find-search-a", href: "#Search" , func: function(){displaySearch(this)}},
+              {  text : $.i18n.prop('menu.artifacts.browse') , id: "menu-find-browse-a", href: "#Browse" , func: function(){displayBrowse(true)}},
+              {  text : $.i18n.prop('menu.artifacts.upload') , id: "menu-find-upload-a", href: "#Upload" , redback: "{permissions: ['archiva-upload-repository']}", func: function(){displayUploadArtifact(true)}}
+      ];
+      this.administrationMenuItems = [
+              {  text : $.i18n.prop('menu.administration') , id: null},
+              {  text : $.i18n.prop('menu.repository.groups')        , id: "mmenu-repository-groups-list-a"     , href: "#RepositoryGroup"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
+              {  text : $.i18n.prop('menu.repositories')             , id: "menu-repositories-list-a"           , href: "#RepositoryList"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoriesGrid()}},
+              {  text : $.i18n.prop('menu.proxy-connectors')         , id: "menu-proxy-connectors-list-a"       , href: "#ProxyConnectors"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectors()}},
+              {  text : $.i18n.prop('menu.network-proxies')          , id: "menu-network-proxies-list-a"        , href: "#NetProxies"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}},
+              {  text : $.i18n.prop('menu.legacy-artifact-support')  , id: "menu-legacy-support-list-a"         , href: "#Legacy"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayLegacyArtifactPathSupport()}},
+              {  text : $.i18n.prop('menu.repository-scanning')      , id: "menu-repository-scanning-list-a"    , href: "#ScanningList"     , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning()}},
+              {  text : $.i18n.prop('menu.network-configuration')    , id: "menu-network-configuration-list-a"  , href: "#Network"          , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkConfiguration()}},
+              {  text : $.i18n.prop('menu.system-status')            , id: "menu-system-status-list-a"          , href: "#Status"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus()}},
+              {  text : $.i18n.prop('menu.appearance-configuration') , id: "menu-appearance-list-a"             , href: "#Appearance"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayAppearanceConfiguration()}},
+              {  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#UIConfig"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration()}}
+      ]
+      
+      this.usersMenuItems = [
+              {  text : $.i18n.prop('menu.users') , id: null},
+              {  text : $.i18n.prop('menu.users.manage')    , id: "menu-users-list-a", href: "#Users" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayUsersGrid()}},
+              {  text : $.i18n.prop('menu.users.roles')     , id: "menu-roles-list-a", href: "#Roles" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayRolesGrid()}}
+      ]
+      this.activeMenuId = ko.observable();
+          
+      Sammy(function () {
+                this.get('#:folder', function () {
+                    self.activeMenuId(this.params.folder);
+                    ko.utils.arrayFirst(self.artifactMenuItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
+                        if ( p.href == "#"+self.activeMenuId()) {
+                           p.func();
+                      }
+                    });
+                    
+                  });
+                this.get('', function () { this.app.runRoute('get', '#Search') });
+          } ).run();
+
+  }
 
   startArchivaApplication=function(){
     $.log("startArchivaApplication");
     $('#topbar-menu-container').html($("#topbar_menu_tmpl" ).tmpl());
     $('#sidebar-content').html($("#main_menu_tmpl").tmpl());
 
+    ko.bindingHandlers.redbackP = {
+            init: function(element, valueAccessor) {
+                $(element).attr("redback-permissions",valueAccessor);
+                }
+    };
+    ko.applyBindings(new MainMenuViewModel());
+
     hideElementWithKarma();
     checkSecurityLinks();
     checkCreateAdminLink();
     $('#footer-content').html($('#footer-tmpl').tmpl(window.archivaRuntimeInfo));
 
-    // create handlers on menu entries to add class active on click
-    var alinkNodes=$("#sidebar-content #main-menu").find("li a");
-    alinkNodes.on("click",function(){
-      alinkNodes.parent("li").removeClass("active");
-      $(this).parent("li").addClass("active");
-    })
-
+    
+    
     $( "#quick-search-autocomplete" ).autocomplete({
       minLength: 3,
       delay: 600,
