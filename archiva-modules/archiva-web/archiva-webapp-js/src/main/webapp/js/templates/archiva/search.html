@@ -111,21 +111,25 @@
               <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
               <td>${artifactId}</td>
             </tr>
+            {{if projectVersionMetadata}}
             <tr>
               <th>${$.i18n.prop('browse.artifact.name')}</th>
               <td>${projectVersionMetadata.name}</td>
             </tr>
+            {{/if}}
+            {{if projectVersionMetadata}}
             <tr>
               <th>${$.i18n.prop('browse.artifact.description')}</th>
               <td>${projectVersionMetadata.description}</td>
             </tr>
-            {{if projectVersionMetadata.mavenFacet}}
+            {{/if}}
+            {{if projectVersionMetadata && projectVersionMetadata.mavenFacet}}
             <tr>
               <th>${$.i18n.prop('browse.artifact.packaging')}</th>
               <td>${projectVersionMetadata.mavenFacet.packaging}</td>
             </tr>
             {{/if}}
-            {{if projectVersionMetadata.organization}}
+            {{if projectVersionMetadata && projectVersionMetadata.organization}}
             <tr>
               <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
               {{if projectVersionMetadata.organization.url}}
@@ -139,7 +143,7 @@
               {{/if}}
             </tr>
             {{/if}}
-            {{if projectVersionMetadata.issueManagement}}
+            {{if projectVersionMetadata && projectVersionMetadata.issueManagement}}
             <tr>
               <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
               <td>
@@ -448,6 +452,7 @@
       </li>
     </ul>
     <div class="tab-content">
+      {{if projectVersionMetadata}}
   	  <div id="artifact-details-info-content" class="tab-pane active">
         <blockquote>${projectVersionMetadata.description}</blockquote>
         <div class="row-fluid">
@@ -593,6 +598,7 @@
         </div>
         {{/if}}
   	  </div>
+      {{/if}}
 
 
   	  <div id="artifact-details-dependencies-content" class="tab-pane">

@@ -830,6 +830,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   displayBrowseArtifactDetail=function(groupId, artifactId){
+    $.log("displayBrowseArtifactDetail");
     window.sammyArchivaApplication.setLocation("#artifact/"+groupId+"/"+artifactId);
     //displayArtifactDetail(groupId,artifactId,null,null);
   }
