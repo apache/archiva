@@ -808,7 +808,8 @@
             <appserver.base>${archivaAppServerBase}</appserver.base>
             <appserver.home>${archivaAppServerBase}</appserver.home>
             <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
-            <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file>
+            <!-- remove admin auto creation that must be tested too -->
+            <!--redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file-->
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             <archiva.user.configFileName>${archivaAppServerBase}/conf/archiva.xml</archiva.user.configFileName>
             <archiva.devMode>${archiva.devMode}</archiva.devMode>

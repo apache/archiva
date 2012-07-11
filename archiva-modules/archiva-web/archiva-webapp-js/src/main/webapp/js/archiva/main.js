@@ -269,7 +269,8 @@ function() {
                 });
                 this.get('#:folder', function () {
                     self.activeMenuId(this.params.folder);
-                    ko.utils.arrayFirst(self.artifactMenuItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
+                    var baseItems = self.artifactMenuItems?self.artifactMenuItems:[];
+                    ko.utils.arrayFirst(baseItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
                         if ( p.href == "#"+self.activeMenuId()) {
                           p.func();
                           return;
@@ -277,21 +278,27 @@ function() {
                     });
                     
                 });
+                this.get('#open-admin-create-box',function(){
+                  $.log("#open-admin-create-box");
+                  adminCreateBox();
+                });
                 //this.get('', function () { this.app.runRoute('get', '#search') });
           } );
       sammyArchivaApplication.run();
   }
 
   startArchivaApplication=function(){
+
     $.log("startArchivaApplication");
     $('#topbar-menu-container').html($("#topbar_menu_tmpl" ).tmpl());
     $('#sidebar-content').html($("#main_menu_tmpl").tmpl());
 
     ko.bindingHandlers.redbackP = {
-            init: function(element, valueAccessor) {
-                $(element).attr("redback-permissions",valueAccessor);
-                }
+      init: function(element, valueAccessor) {
+          $(element).attr("redback-permissions",valueAccessor);
+          }
     };
+
     ko.applyBindings(new MainMenuViewModel());
 
     hideElementWithKarma();
@@ -299,8 +306,6 @@ function() {
     checkCreateAdminLink();
     $('#footer-content').html($('#footer-tmpl').tmpl(window.archivaRuntimeInfo));
 
-    
-    
     $( "#quick-search-autocomplete" ).autocomplete({
       minLength: 3,
       delay: 600,

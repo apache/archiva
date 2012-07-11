@@ -28,7 +28,6 @@
           <a data-bind="text: text, attr: { id: id, href: href}"></a>
        </li>
        <!-- /ko -->
-
     </ul>
 
     <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-configuration']}" data-bind="foreach: administrationMenuItems">
@@ -65,7 +64,7 @@
           <div id="organisation-logo" class="pull-left"></div>
           <ul class="nav pull-right">
             <li id="create-admin-link" style="display: none">
-              <a href="#" onclick="adminCreateBox();" id="create-admin-link-a">
+              <a href="#open-admin-create-box" onclick="adminCreateBox();" id="create-admin-link-a">
                 <span class="label label-important">${$.i18n.prop('create.admin.page.link')}</span>
               </a>
             </li>
