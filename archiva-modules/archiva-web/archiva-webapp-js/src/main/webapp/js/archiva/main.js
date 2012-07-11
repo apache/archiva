@@ -277,7 +277,7 @@ function() {
                     });
                     
                 });
-                this.get('', function () { this.app.runRoute('get', '#search') });
+                //this.get('', function () { this.app.runRoute('get', '#search') });
           } );
       sammyArchivaApplication.run();
   }
