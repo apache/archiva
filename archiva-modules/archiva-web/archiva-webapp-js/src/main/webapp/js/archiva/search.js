@@ -59,6 +59,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       $.log("displayProjectEntry:"+id+",groupId:"+self.groupId+",values:"+values);
 
       displayArtifactDetail(self.groupId,values,self);
+      //window.sammyArchivaApplication.setLocation("#artifact/"+self.groupId+"/"+values);
 
     }
 
@@ -829,6 +830,12 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   displayBrowseArtifactDetail=function(groupId, artifactId){
+    window.sammyArchivaApplication.setLocation("#artifact/"+groupId+"/"+artifactId);
+    //displayArtifactDetail(groupId,artifactId,null,null);
+  }
+
+  goToBrowseArtifactDetail=function(groupId, artifactId){
+    $.log("displayBrowseArtifactDetail");
     displayBrowseGroupId(groupId);
     displayArtifactDetail(groupId,artifactId,null,null);
   }

@@ -64,29 +64,8 @@ function() {
       resetPasswordForm(resetPassword);
       return;
     }
-
-    var artifact= $.urlParam("artifact");
-    var repositoryId = $.urlParam("repositoryId");
-    // format groupId:artifactId org.apache.maven.plugins:maven-jar-plugin
-    // or  groupId:artifactId:version org.apache.maven.plugins:maven-jar-plugin:2.3.1
-    // repository in param repositoryId
-    if (artifact){
-      if ( artifact.indexOf(':')>=0){
-        var splitted = artifact.split(':');
-        $.log("splitted.length:"+splitted.length);
-        if(splitted.length==2){
-          displayBrowseArtifactDetail(splitted[0],splitted[1],null,null);
-          return;
-        } else if (splitted.length==3) {
-          generalDisplayArtifactDetailsVersionView(splitted[0],splitted[1],splitted[2],repositoryId);
-          return;
-        } else {
-          displayWarningMessage( $.i18n.prop("shortcut.artifact.illegal"));
-        }
-      }
-    }
     // by default display search screen
-    displaySearch();
+    window.sammyArchivaApplication.setLocation("#search");
   }
 
   hasKarma=function(karmaName){
@@ -256,6 +235,30 @@ function() {
       this.activeMenuId = ko.observable();
           
       window.sammyArchivaApplication = Sammy(function () {
+                // #artifact-(optionnal repositoryId)
+                // format groupId:artifactId org.apache.maven.plugins:maven-jar-plugin
+                // or  groupId:artifactId:version org.apache.maven.plugins:maven-jar-plugin:2.3.1
+                this.get('#artifact/:groupId/:artifactId',function(context){
+                  var groupId= this.params['groupId'];
+                  var artifactId= this.params['artifactId'];
+                  $.log("get #artifact:"+groupId+":"+artifactId);
+                  goToBrowseArtifactDetail(groupId,artifactId);//,null,null);
+                  return;
+
+                });
+                this.get('#artifact:repositoryId/:groupId/:artifactId/:version',function(context){
+
+                  var repositoryId = this.params['repositoryId'];
+                  var groupId= this.params['groupId'];
+                  var artifactId= this.params['artifactId'];
+                  var version= this.params['version'];
+
+                  if(!version){
+                    displayBrowseArtifactDetail(splitted[0],splitted[1]);//,null,null);
+                  } else {
+                    generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId);
+                  }
+                });
                 this.get('#browse/:groupId',function(context){
                   var groupId = this.params['groupId'];
                   if (groupId){
@@ -274,7 +277,7 @@ function() {
                     });
                     
                 });
-                this.get('', function () { this.app.runRoute('get', '#Search') });
+                this.get('', function () { this.app.runRoute('get', '#search') });
           } );
       sammyArchivaApplication.run();
   }
