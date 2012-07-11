@@ -289,6 +289,8 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
         return;
       }
       self.user.createAdmin();
+      // go to search when admin created
+      window.sammyArchivaApplication.setLocation("#search");
     }
   }
 
@@ -296,24 +298,40 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
    * open a modal box to create admin user
    */
   adminCreateBox=function() {
-    $.log("adminCreateBox");
-    window.redbackModel.createUser=true;
-    $("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
-    var viewModel = new AdminUserViewModel();
-    ko.applyBindings(viewModel,$("#main-content" ).get(0));
-    $("#user-create").validate({
-      rules: {
-        confirmPassword: {
-          equalTo: "#password"
-        }
-      },
-      showErrors: function(validator, errorMap, errorList) {
-        customShowError("#main-content #user-create",validator,errorMap,errorMap);
-      }
 
+
+    $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        var adminExists = data;
+        if (adminExists == false) {
+
+          window.redbackModel.createUser=true;
+          $("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
+          var viewModel = new AdminUserViewModel();
+          ko.applyBindings(viewModel,$("#main-content" ).get(0));
+          $.log("adminCreateBox");
+          $("#user-create").validate({
+            rules: {
+              confirmPassword: {
+                equalTo: "#password"
+              }
+            },
+            showErrors: function(validator, errorMap, errorList) {
+              customShowError("#main-content #user-create",validator,errorMap,errorMap);
+            }
+
+          });
+          // desactivate roles pill when adding user
+          $("#edit_user_details_pills_headers").hide();
+
+        } else {
+          window.sammyArchivaApplication.setLocation("#search");
+        }
+
+      }
     });
-    // desactivate roles pill when adding user
-    $("#edit_user_details_pills_headers").hide();
   }
 
   /**

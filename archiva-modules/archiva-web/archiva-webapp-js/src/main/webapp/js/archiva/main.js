@@ -65,7 +65,8 @@ function() {
       return;
     }
     // by default display search screen
-    window.sammyArchivaApplication.setLocation("#search");
+    $.log("location:"+window.sammyArchivaApplication.getLocation());
+    //window.sammyArchivaApplication.setLocation("#search");
   }
 
   hasKarma=function(karmaName){
