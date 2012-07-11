@@ -52,26 +52,7 @@ function() {
     });
   }
 
-  // handle url with registration link
-  checkUrlParams=function(){
-    var validateMeId = $.urlParam('validateMe');
-    if (validateMeId) {
-      validateKey(validateMeId);
-      return;
-    }
-    var resetPassword= $.urlParam('resetPassword');
-    if (resetPassword){
-      resetPasswordForm(resetPassword);
-      return;
-    }
-    // by default display search screen
-    $.log("location:"+window.sammyArchivaApplication.getLocation());
-    //window.sammyArchivaApplication.setLocation("#search");
-  }
 
-  hasKarma=function(karmaName){
-    return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
-  }
 
   decorateMenuWithKarma=function(user) {
     var username = user.username;
@@ -247,7 +228,6 @@ function() {
         });
         //this.get('', function () { this.app.runRoute('get', '#search') });
       });
-      sammyArchivaApplication.run();
   }
 
   userLoggedCallbackFn=function(user){
@@ -290,6 +270,33 @@ function() {
         $.log("adminExists:"+adminExists);
       }
     });
+  }
+
+  // handle url with registration link
+  checkUrlParams=function(){
+    var validateMeId = $.urlParam('validateMe');
+    if (validateMeId) {
+      validateKey(validateMeId);
+      return;
+    }
+    var resetPassword= $.urlParam('resetPassword');
+    if (resetPassword){
+      resetPasswordForm(resetPassword);
+      return;
+    }
+
+    var matches = window.location.toString().match(/^[^#]*(#.+)$/);
+    var hash = matches ? matches[1] : '';
+    $.log("location:"+window.sammyArchivaApplication.getLocation()+",hash:"+hash);
+    // by default display search screen
+    if(!hash){
+      window.sammyArchivaApplication.setLocation("#search");
+    }
+
+  }
+
+  hasKarma=function(karmaName){
+    return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   }
 
   startArchivaApplication=function(){
@@ -348,6 +355,8 @@ function() {
 								.appendTo( ul );
 						};
     updateAppearanceToolBar();
+
+    window.sammyArchivaApplication.run();
 
   }
 
