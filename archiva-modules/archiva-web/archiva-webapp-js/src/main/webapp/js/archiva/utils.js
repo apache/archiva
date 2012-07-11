@@ -40,6 +40,8 @@ define("utils",["jquery","i18n","jquery.tmpl"], function() {
     if ( !window.archivaJavascriptLog ){
       return;
     }
+    Sammy.log(message);
+    return;
     if (typeof window.console != 'undefined' && typeof window.console.log != 'undefined') {
       console.log(message);
     } else {
