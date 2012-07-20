@@ -435,14 +435,14 @@ public class ArchivaDavResourceFactoryTest
             requestControl.expectAndReturn( request.getRequestURI(),
                                             "http://localhost:8080/archiva/repository/" + INTERNAL_REPO
                                                 + "/eclipse/jdtcore/maven-metadata.xml" );
-            response.addHeader( "Pragma", "no-cache" );
+            response.setHeader( "Pragma", "no-cache" );
             responseControl.setVoidCallable();
 
-            response.addHeader( "Cache-Control", "no-cache" );
+            response.setHeader( "Cache-Control", "no-cache" );
             responseControl.setVoidCallable();
 
             long date = 2039842134;
-            response.addDateHeader( "last-modified", date );
+            response.setDateHeader( "last-modified", date );
             responseControl.setVoidCallable();
 
             archivaConfigurationControl.replay();
