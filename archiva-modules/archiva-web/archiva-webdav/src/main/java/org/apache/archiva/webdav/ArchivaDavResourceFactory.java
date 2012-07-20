@@ -844,12 +844,12 @@ public class ArchivaDavResourceFactory
         // header.
         if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" ) )
         {
-            response.addHeader( "Pragma", "no-cache" );
-            response.addHeader( "Cache-Control", "no-cache" );
+            response.setHeader( "Pragma", "no-cache" );
+            response.setHeader( "Cache-Control", "no-cache" );
         }
 
         // We need to specify this so connecting wagons can work correctly
-        response.addDateHeader( "last-modified", resource.getModificationTime() );
+        response.setDateHeader( "last-modified", resource.getModificationTime() );
 
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
