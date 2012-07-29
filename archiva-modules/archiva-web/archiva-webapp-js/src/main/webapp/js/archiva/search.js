@@ -650,7 +650,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
    * call from menu entry to display root level
    */
   displayBrowse=function(freshView){
-    screenChange()
+    screenChange();
     var mainContent = $("#main-content");
     if(freshView){
       mainContent.html($("#browse-tmpl" ).tmpl());
@@ -684,6 +684,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
   changeBrowseRepository=function(){
     var selectedRepository=getSelectedBrowsingRepository();
+    $.log("changeBrowseRepository:"+selectedRepository);
     displayGroupDetail(null,null,"restServices/archivaServices/browseService/rootGroups?repositoryId="+encodeURIComponent(selectedRepository));
   }
 
