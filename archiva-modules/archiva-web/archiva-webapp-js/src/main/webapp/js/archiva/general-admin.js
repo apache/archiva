@@ -886,7 +886,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   reportStatisticsFormValidator=function(){
-    var validate = $("#report-statistics-form-id").validate({
+    var validate = $("#main-content #report-statistics-form-id").validate({
       rules: {
         rowCountStatistics: {
           required:true,
@@ -901,23 +901,25 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-        customShowError("#report-statistics-form-id", validator, errorMap, errorMap);
+        $.log("showErrors");
+        customShowError("#main-content #report-statistics-form-id", validator, errorMap, errorMap);
       }
     })
   }
   ReportStatisticsViewModel=function(repositoriesAvailable){
+    var mainContent=$("#main-content");
     reportStatisticsFormValidator();
 
     var self=this;
     this.availableRepositories = ko.observableArray( repositoriesAvailable );
     this.statisticsReport = ko.observable( new StatisticsReportRequest() );
 
-    $("#startDate" ).datepicker();
-    $("#endDate" ).datepicker();
-    $("#rowCount-info-button" ).popover();
+    mainContent.find("#startDate" ).datepicker();
+    mainContent.find("#endDate" ).datepicker();
+    mainContent.find("#rowCount-info-button" ).popover();
 
     this.showStatistics=function() {
-      if (!$("#report-statistics-form-id").valid()) {
+      if (!mainContent.find("#report-statistics-form-id").valid()) {
         return;
       }
       if(this.statisticsReport().repositories().length==0){
@@ -925,7 +927,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         return;
       }
       clearUserMessages( "repositoriesErrorMessage" );
-      var resultTabContent = $("#report-result");
+      var resultTabContent = mainContent.find("#report-result");
 
       url = "restServices/archivaServices/reportServices/getStatisticsReport/?rowCount="
         + this.statisticsReport().rowCount();
@@ -1064,7 +1066,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         return;
       }
 
-      var resultTabContent = $("#report-result");
+      var resultTabContent = $("#main-content #report-result");
 
       var url =
         "restServices/archivaServices/reportServices/getHealthReports/" + this.healthReport().repositoryId() + "/"
