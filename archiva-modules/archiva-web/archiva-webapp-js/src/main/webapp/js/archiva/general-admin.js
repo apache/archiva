@@ -886,6 +886,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   reportStatisticsFormValidator=function(){
+    $.log("reportStatisticsFormValidator");
     var validate = $("#main-content #report-statistics-form-id").validate({
       rules: {
         rowCountStatistics: {
@@ -919,6 +920,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     mainContent.find("#rowCount-info-button" ).popover();
 
     this.showStatistics=function() {
+      $.log("showStatistics");
+      clearUserMessages( "repositoriesErrorMessage" );
       if (!mainContent.find("#report-statistics-form-id").valid()) {
         return;
       }
@@ -926,7 +929,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         displayErrorMessage( $.i18n.prop('report.statistics.repositories.required'), "repositoriesErrorMessage" );
         return;
       }
-      clearUserMessages( "repositoriesErrorMessage" );
+
       var resultTabContent = mainContent.find("#report-result");
 
       url = "restServices/archivaServices/reportServices/getStatisticsReport/?rowCount="
