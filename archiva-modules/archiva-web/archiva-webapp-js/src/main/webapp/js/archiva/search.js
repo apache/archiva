@@ -637,19 +637,21 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   browseRoot=function(){
-    /*var url="restServices/archivaServices/browseService/rootGroups";
     var selectedRepo=getSelectedBrowsingRepository();
-    if (selectedRepo){
-      url+="?repositoryId="+encodeURIComponent(selectedRepo);
+
+    if(selectedRepo) {
+      window.sammyArchivaApplication.setLocation("#browse~"+selectedRepo);
+    } else {
+      window.sammyArchivaApplication.setLocation("#browse");
     }
-    displayGroupDetail(null,null,url);*/
-    window.sammyArchivaApplication.setLocation("#browse");
   }
 
   /**
    * call from menu entry to display root level
+   * @param freshView redisplay everything
+   * @param repositoryId if any repository selected
    */
-  displayBrowse=function(freshView){
+  displayBrowse=function(freshView,repositoryId){
     screenChange();
     var mainContent = $("#main-content");
     if(freshView){
@@ -663,8 +665,11 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:""}));
-          var url="restServices/archivaServices/browseService/rootGroups"
+          mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
+          var url="restServices/archivaServices/browseService/rootGroups";
+          if(repositoryId){
+            url+="?repositoryId="+repositoryId;
+          }
           $.ajax(url, {
               type: "GET",
               dataType: 'json',
@@ -684,8 +689,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
   changeBrowseRepository=function(){
     var selectedRepository=getSelectedBrowsingRepository();
-    $.log("changeBrowseRepository:"+selectedRepository);
-    displayGroupDetail(null,null,"restServices/archivaServices/browseService/rootGroups?repositoryId="+encodeURIComponent(selectedRepository));
+    //$.log("changeBrowseRepository:"+selectedRepository);
+    //displayGroupDetail(null,null,"restServices/archivaServices/browseService/rootGroups?repositoryId="+encodeURIComponent(selectedRepository));
+    window.sammyArchivaApplication.setLocation("#browse~"+selectedRepository);
   }
 
   getSelectedBrowsingRepository=function(){
