@@ -220,9 +220,9 @@ function() {
           var repositoryId = this.params.repositoryId;
           $.log("repositoryId:"+repositoryId);
           if (groupId){
-            displayBrowseGroupId(groupId);
+            displayBrowseGroupId(groupId,repositoryId);
           } else {
-            displayBrowse(true);
+            displayBrowse(true,repositoryId);
           }
         });
         this.get('#browse~:repositoryId',function(context){
