@@ -694,7 +694,13 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
   changeBrowseRepository=function(){
     var selectedRepository=getSelectedBrowsingRepository();
-    window.sammyArchivaApplication.setLocation("#browse~"+selectedRepository);
+    // #browse~internal/org.apache.maven
+    var currentHash=window.location.hash;
+    var newLocation = "#browse~"+selectedRepository+currentHash.substringAfterFirst("/");
+    // do we have extra path after repository ?
+
+    $.log("changeBrowseRepository:"+newLocation);
+    window.sammyArchivaApplication.setLocation(newLocation);
   }
 
   getSelectedBrowsingRepository=function(){
