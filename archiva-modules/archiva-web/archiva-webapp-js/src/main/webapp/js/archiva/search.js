@@ -637,12 +637,13 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   browseRoot=function(){
-    var url="restServices/archivaServices/browseService/rootGroups";
+    /*var url="restServices/archivaServices/browseService/rootGroups";
     var selectedRepo=getSelectedBrowsingRepository();
     if (selectedRepo){
       url+="?repositoryId="+encodeURIComponent(selectedRepo);
     }
-    displayGroupDetail(null,null,url);
+    displayGroupDetail(null,null,url);*/
+    window.sammyArchivaApplication.setLocation("#browse");
   }
 
   /**
