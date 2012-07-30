@@ -104,6 +104,17 @@ public class RepositoryRequest
     }
 
     /**
+     * 
+     * @param requestedPath
+     * @return true if the requestedPath is likely an archetype catalog request.
+     */
+    public boolean isArchetypeCatalog( String requestedPath )
+    {
+    	//TODO: Make it static final String
+    	return requestedPath.endsWith( "/archetype-catalog.xml");
+    }
+    
+    /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a support file request.
      * </p>

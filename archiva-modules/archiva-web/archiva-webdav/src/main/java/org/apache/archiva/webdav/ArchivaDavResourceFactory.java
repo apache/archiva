@@ -688,6 +688,14 @@ public class ArchivaDavResourceFactory
             return connectors.fetchMetatadaFromProxies( managedRepository, path ) != null;
         }
 
+        // Is it an Archetype Catalog?
+        if ( repositoryRequest.isArchetypeCatalog( path ) )
+        {
+            File proxiedFile = connectors.fetchFromProxies( managedRepository, path );
+
+            return ( proxiedFile != null );
+        }
+        
         // Not any of the above? Then it's gotta be an artifact reference.
         try
         {

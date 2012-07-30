@@ -241,6 +241,9 @@ public class ArchivaDavResourceFactoryTest
                           "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
             repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
                                                        internalRepo );
+            repoRequestControl.expectAndReturn(
+                    repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
+                    false );
 
             archivaConfigurationControl.replay();
             requestControl.replay();
@@ -309,6 +312,9 @@ public class ArchivaDavResourceFactoryTest
                                           internalRepo ),
                 new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
                           "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+            repoRequestControl.expectAndReturn(
+                    repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
+                    false );
 
             archivaConfigurationControl.replay();
             requestControl.replay();
@@ -386,6 +392,10 @@ public class ArchivaDavResourceFactoryTest
                                           localMirrorRepo ),
                 new File( config.findManagedRepositoryById( LOCAL_MIRROR_REPO ).getLocation(),
                           "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+
+            repoRequestControl.expectAndReturn(
+                    repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
+                    false , 2);
 
             archivaConfigurationControl.replay();
             requestControl.replay();
