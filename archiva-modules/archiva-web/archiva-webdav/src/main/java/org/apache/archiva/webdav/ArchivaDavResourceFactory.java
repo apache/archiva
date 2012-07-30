@@ -691,6 +691,7 @@ public class ArchivaDavResourceFactory
         // Is it an Archetype Catalog?
         if ( repositoryRequest.isArchetypeCatalog( path ) )
         {
+            // FIXME we must implement a merge of remote archetype catalog from remote servers.
             File proxiedFile = connectors.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
