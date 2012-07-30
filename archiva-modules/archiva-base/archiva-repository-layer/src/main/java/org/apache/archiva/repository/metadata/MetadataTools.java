@@ -85,6 +85,8 @@ public class MetadataTools
 
     public static final String MAVEN_METADATA = "maven-metadata.xml";
 
+    public static final String MAVEN_ARCHETYPE_CATALOG ="archetype-catalog.xml";
+
     private static final char PATH_SEPARATOR = '/';
 
     private static final char GROUP_SEPARATOR = '.';

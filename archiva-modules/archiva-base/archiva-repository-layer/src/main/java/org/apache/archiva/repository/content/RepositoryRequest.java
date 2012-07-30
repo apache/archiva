@@ -19,17 +19,17 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate
  * ArtifactReference.
- *
- *
+ * <p/>
+ * <p/>
  * <p/>
  */
 public class RepositoryRequest
@@ -38,7 +38,7 @@ public class RepositoryRequest
 
     private PathParser legacyPathParser;
 
-    public RepositoryRequest (LegacyPathParser legacyPathParser)
+    public RepositoryRequest( LegacyPathParser legacyPathParser )
     {
         this.legacyPathParser = legacyPathParser;
     }
@@ -104,16 +104,14 @@ public class RepositoryRequest
     }
 
     /**
-     * 
      * @param requestedPath
      * @return true if the requestedPath is likely an archetype catalog request.
      */
     public boolean isArchetypeCatalog( String requestedPath )
     {
-    	//TODO: Make it static final String
-    	return requestedPath.endsWith( "/archetype-catalog.xml");
+        return requestedPath.endsWith( "/" + MetadataTools.MAVEN_ARCHETYPE_CATALOG );
     }
-    
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a support file request.
