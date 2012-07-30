@@ -62,6 +62,7 @@
     <snapshotsDeployId>archiva-repository.snapshots</snapshotsDeployId>
     <releaseDeployUrl>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</releaseDeployUrl>
     <releaseDeployId>archiva-repository.releases</releaseDeployId>
+    <gpg.useagent>true</gpg.useagent>
   </properties>
 
 
@@ -663,7 +664,7 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <configuration>
               <passphrase>${gpg.passphrase}</passphrase>
-              <useAgent>true</useAgent>
+              <useAgent>${gpg.useagent}</useAgent>
             </configuration>
             <executions>
               <execution>
