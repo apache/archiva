@@ -21,7 +21,7 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd"> 
 
 <!-- ==================================================================
-     Plexus Security Tools
+     Redback Security Tools
 
      This should contain the /security namespaced action configurations.
 
