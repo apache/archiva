@@ -36,49 +36,6 @@
   <url>http://archiva.apache.org/redback/core</url>
   <inceptionYear>2006</inceptionYear>
 
-  <developers>
-    <developer>
-      <id>joakime</id>
-      <name>Joakim Erdfelt</name>
-      <email>joakim@erdfelt.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>jesse</id>
-      <name>Jesse McConnell</name>
-      <email>jesse@codehaus.org</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>hisidro</id>
-      <name>Henry Isidro</name>
-      <email>hisidro@codehaus.org</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>olamy</id>
-      <name>Olivier Lamy</name>
-      <email>olamy@codehaus.org</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>jbonofre</id>
-      <name>Jean-Baptiste Onofré</name>
-      <email>jbonofre@apache.org</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
   <contributors>
     <contributor>
       <name>Lester Ecarma</name>
@@ -118,6 +75,13 @@
     </contributor>
     <contributor>
       <name>Brent Atkinson</name>
+    </contributor>
+    <contributor>
+      <name>Henry Isidro</name>
+      <email>hisidro@codehaus.org</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
     </contributor>
   </contributors>
   
