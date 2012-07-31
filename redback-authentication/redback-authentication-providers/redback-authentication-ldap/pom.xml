@@ -94,13 +94,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Export-Package>
-              org.apache.archiva.redback.authentication.ldap
-            </Export-Package>
-          </instructions>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.sonatype.plugins</groupId>

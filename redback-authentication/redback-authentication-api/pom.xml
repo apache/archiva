@@ -54,13 +54,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Export-Bundle>
-              org.apache.archiva.redback.authentication;version=${project.version}
-            </Export-Bundle>
-          </instructions>
-        </configuration>
       </plugin>
     </plugins>
   </build>
