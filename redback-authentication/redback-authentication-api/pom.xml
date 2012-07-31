@@ -19,13 +19,17 @@
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.apache.archiva.redback</groupId>
     <artifactId>redback-authentication</artifactId>
     <version>2.0-SNAPSHOT</version>
   </parent>
+
   <artifactId>redback-authentication-api</artifactId>
+  <packaging>bundle</packaging>
   <name>Redback :: Authentication API</name>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
@@ -44,4 +48,21 @@
       <artifactId>jsr250-api</artifactId>
     </dependency>     
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Bundle>
+              org.apache.archiva.redback.authentication;version=${project.version}
+            </Export-Bundle>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

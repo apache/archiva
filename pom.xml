@@ -36,7 +36,6 @@
   <url>http://archiva.apache.org/redback/core</url>
   <inceptionYear>2006</inceptionYear>
 
-
   <developers>
     <developer>
       <id>joakime</id>
@@ -66,6 +65,14 @@
       <id>olamy</id>
       <name>Olivier Lamy</name>
       <email>olamy@codehaus.org</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jbonofre</id>
+      <name>Jean-Baptiste Onofré</name>
+      <email>jbonofre@apache.org</email>
       <roles>
         <role>Developer</role>
       </roles>
@@ -119,7 +126,6 @@
     <url>http://jira.codehaus.org/browse/REDBACK</url>
   </issueManagement>
 
-
   <modules>
     <module>redback-authentication</module>
     <module>redback-authorization</module>
@@ -155,7 +161,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.useagent>true</gpg.useagent>
     <cxfVersion>2.6.1</cxfVersion>
-
     <!--
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
@@ -929,6 +934,5 @@
       </plugin>
     </plugins>
   </reporting>
-
 
 </project>
