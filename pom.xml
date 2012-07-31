@@ -36,55 +36,6 @@
   <url>http://archiva.apache.org/redback/core</url>
   <inceptionYear>2006</inceptionYear>
 
-  <contributors>
-    <contributor>
-      <name>Lester Ecarma</name>
-    </contributor>
-    <contributor>
-      <name>Teodoro Cue</name>
-    </contributor>
-    <contributor>
-      <name>Eirik Bjørsnøs</name>
-    </contributor>
-    <contributor>
-      <name>Jan Ancajas</name>
-    </contributor>
-    <contributor>
-      <name>Damien Blugeon</name>
-    </contributor>
-    <contributor>
-      <name>Julien Henry</name>
-    </contributor>
-    <contributor>
-      <name>John Michael Luy</name>
-    </contributor>
-    <contributor>
-      <name>Maria Catherine Tan</name>
-    </contributor>
-    <contributor>
-      <name>Wolfgang Strunk</name>
-    </contributor>
-    <contributor>
-      <name>Jevica Arianne B. Zurbano</name>
-    </contributor>
-    <contributor>
-      <name>Stefan Prange</name>
-    </contributor>
-    <contributor>
-      <name>Napoleon Esmundo C. Ramirez</name>
-    </contributor>
-    <contributor>
-      <name>Brent Atkinson</name>
-    </contributor>
-    <contributor>
-      <name>Henry Isidro</name>
-      <email>hisidro@codehaus.org</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </contributor>
-  </contributors>
-  
   <issueManagement>
     <system>Jira</system>
     <url>http://jira.codehaus.org/browse/REDBACK</url>
