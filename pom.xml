@@ -74,7 +74,7 @@
     <redback.taskqueue.version>2.0-SNAPSHOT</redback.taskqueue.version>
     <slf4j.version>1.6.6</slf4j.version>
     <binder.version>0.11</binder.version>
-    <spring.version>3.1.1.RELEASE</spring.version>
+    <spring.version>3.1.2.RELEASE</spring.version>
     <jackrabbit.version>2.5.0</jackrabbit.version>
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
