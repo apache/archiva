@@ -18,15 +18,20 @@
   ~ under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <artifactId>redback</artifactId>
     <groupId>org.apache.archiva.redback</groupId>
     <version>2.0-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
+
   <artifactId>redback-data-management</artifactId>
+  <packaging>bundle</packaging>
   <name>Redback :: Data Management Utilities</name>
   <description>Back up, restore and upgrade utilities for JDO databases using XML</description>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
@@ -86,8 +91,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -101,4 +111,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>
