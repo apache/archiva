@@ -315,6 +315,8 @@ public class DefaultDependencyTreeBuilder
         req.setModelSource( modelResolver.resolveModel( groupId, artifactId, version ) );
         req.setModelResolver( modelResolver );
         req.setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
+        //MRM-1607. olamy this will resolve jdk profiles on the current running archiva jvm
+        req.setSystemProperties( System.getProperties() );
 
         return builder.build( req ).getEffectiveModel();
     }
