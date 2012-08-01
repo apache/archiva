@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<features name="redback-core-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+  <feature name="redback-configuration" version="${project.version}" resolver="(obr)">
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax-inject.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva.redback/redback-configuration/${project.version}</bundle>
+  </feature>
+
+  <feature name="redback-policy" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">redback-configuration</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax-inject.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva.redback/redback-policy/${project.version}</bundle>
+  </feature>
+
+  <feature name="redback-authentication-api" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">redback-policy</feature>
+    <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-inject/${javax-inject.bundle.version}</bundle>
+    <bundle>mvn:org.apache.archiva.redback/redback-authentication-api/${project.version}</bundle>
+  </feature>
+
+  <feature name="redback-authentication-ldap" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">redback-authentication-api</feature>
+    <bundle>mvn:org.apache.archiva.redback/redback-authentication-ldap/${project.version}</bundle>
+  </feature>
+
+  <feature name="redback-authentication-memory" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">redback-authentication-api</feature>
+    <bundle>mvn:org.apache.archiva.redback/redback-authentication-memory/${project.version}</bundle>
+  </feature>
+
+  <feature name="redback-authentication-open" version="${project.version}" resolver="(obr)">
+    <feature version="${project.version}">redback-authentication-api</feature>
+    <bundle>mvn:org.apache.archiva.redback/redback-authentication-open/${project.version}</bundle>
+  </feature>
+
+</features>

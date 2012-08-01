@@ -53,6 +53,7 @@
     <module>redback-users</module>
     <module>redback-data-management</module>
     <module>redback-integrations</module>
+    <module>redback-features</module>
   </modules>
 
   <scm>
