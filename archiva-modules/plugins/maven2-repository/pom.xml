@@ -75,6 +75,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${maven3x.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact-manager</artifactId>
     </dependency>
     <dependency>
@@ -205,7 +210,19 @@
               org.codehaus.redback.components*,
               org.dom4j*;version="[1.6,2)",
               org.springframework*;version="[3,4)",
-              org.slf4j;resolution:=optional
+              org.slf4j;resolution:=optional,
+              org.apache.maven,
+              org.apache.maven.project,
+              org.sonatype.aether,
+              org.sonatype.aether.artifact,
+              org.sonatype.aether.collection,
+              org.sonatype.aether.graph,
+              org.sonatype.aether.impl.internal,
+              org.sonatype.aether.repository,
+              org.sonatype.aether.resolution,
+              org.sonatype.aether.util,
+              org.sonatype.aether.util.artifact,
+              org.sonatype.aether.version
             </Import-Package>
           </instructions>
         </configuration>
