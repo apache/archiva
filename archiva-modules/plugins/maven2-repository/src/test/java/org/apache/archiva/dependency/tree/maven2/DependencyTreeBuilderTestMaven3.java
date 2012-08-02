@@ -37,6 +37,7 @@ import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.graph.DependencyVisitor;
 import org.sonatype.aether.impl.DependencyCollector;
 import org.sonatype.aether.impl.internal.DefaultRepositorySystem;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
@@ -301,7 +302,18 @@ public class DependencyTreeBuilderTestMaven3
 
         DependencyResolutionResult resolutionResult =
             builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                         TEST_VERSION );
+                                         TEST_VERSION, new DependencyVisitor()
+            {
+                public boolean visitEnter( DependencyNode dependencyNode )
+                {
+                    return true;
+                }
+
+                public boolean visitLeave( DependencyNode dependencyNode )
+                {
+                    return true;
+                }
+            } );
 
         assertNotNull( resolutionResult );
         assertEquals( 10, resolutionResult.getDependencies().size() );

@@ -51,6 +51,10 @@ import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.DependencyResolutionException;
 import org.apache.maven.project.DependencyResolutionResult;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
+import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
+import org.apache.maven.repository.internal.DefaultVersionResolver;
+import org.apache.maven.repository.internal.MavenRepositorySystemSession;
 import org.codehaus.plexus.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,14 +64,30 @@ import org.sonatype.aether.RequestTrace;
 import org.sonatype.aether.artifact.ArtifactType;
 import org.sonatype.aether.artifact.ArtifactTypeRegistry;
 import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
+import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyFilter;
+import org.sonatype.aether.graph.DependencyVisitor;
+import org.sonatype.aether.impl.ArtifactDescriptorReader;
+import org.sonatype.aether.impl.VersionRangeResolver;
+import org.sonatype.aether.impl.VersionResolver;
+import org.sonatype.aether.impl.internal.DefaultServiceLocator;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
+import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.resolution.DependencyRequest;
+import org.sonatype.aether.spi.connector.ArtifactDownload;
+import org.sonatype.aether.spi.connector.ArtifactUpload;
+import org.sonatype.aether.spi.connector.MetadataDownload;
+import org.sonatype.aether.spi.connector.MetadataUpload;
+import org.sonatype.aether.spi.connector.RepositoryConnector;
+import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
+import org.sonatype.aether.transfer.NoRepositoryConnectorException;
 import org.sonatype.aether.util.DefaultRepositorySystemSession;
 import org.sonatype.aether.util.DefaultRequestTrace;
 import org.sonatype.aether.util.artifact.ArtifacIdUtils;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.artifact.JavaScopes;
 import org.sonatype.aether.version.VersionConstraint;
 import org.springframework.stereotype.Service;
@@ -133,7 +153,8 @@ public class Maven3DependencyTreeBuilder
     }
 
     public DependencyResolutionResult buildDependencyTree( List<String> repositoryIds, String groupId,
-                                                           String artifactId, String version )
+                                                           String artifactId, String version,
+                                                           DependencyVisitor dependencyVisitor )
         throws Exception
     {
         Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
@@ -217,6 +238,9 @@ public class Maven3DependencyTreeBuilder
 
         log.debug( "dependency graph build" );
 
+        // FIXME take care of relative path
+        test( repository.getLocation(), groupId, artifactId, version, dependencyVisitor );
+
         return resolutionResult;
     }
 
@@ -296,6 +320,10 @@ public class Maven3DependencyTreeBuilder
             }
         }
 
+        collect.setRoot( new org.sonatype.aether.graph.Dependency(
+            new org.sonatype.aether.util.artifact.DefaultArtifact( project.getGroupId(), project.getArtifactId(), null,
+                                                                   project.getVersion() ), "compile" ) );
+
         DependencyRequest depRequest = new DependencyRequest( collect, filter );
         depRequest.setTrace( trace );
 
@@ -319,6 +347,112 @@ public class Maven3DependencyTreeBuilder
         depRequest.setRoot( node );
 
         return result;
+    }
+
+    private void test( String localRepoDir, String groupId, String artifactId, String version,
+                       DependencyVisitor dependencyVisitor )
+    {
+
+        RepositorySystem system = newRepositorySystem();
+
+        RepositorySystemSession session = newRepositorySystemSession( system, localRepoDir );
+
+        org.sonatype.aether.artifact.Artifact artifact =
+            new DefaultArtifact( groupId + ":" + artifactId + ":" + version );
+
+        //RemoteRepository repo = Booter.newCentralRepository();
+
+        CollectRequest collectRequest = new CollectRequest();
+        collectRequest.setRoot( new Dependency( artifact, "" ) );
+        //collectRequest.addRepository( repo );
+
+        try
+        {
+            CollectResult collectResult = system.collectDependencies( session, collectRequest );
+            collectResult.getRoot().accept( dependencyVisitor );
+            log.debug( "test" );
+        }
+        catch ( DependencyCollectionException e )
+        {
+            log.error( e.getMessage(), e );
+        }
+
+
+    }
+
+    public static class MyFileRepositoryConnectorFactory
+        extends FileRepositoryConnectorFactory
+    {
+
+        public MyFileRepositoryConnectorFactory()
+        {
+
+        }
+
+        public RepositoryConnector newInstance( RepositorySystemSession session,
+                                                org.sonatype.aether.repository.RemoteRepository repository )
+            throws NoRepositoryConnectorException
+        {
+
+            try
+            {
+                return super.newInstance( session, repository );
+            }
+            catch ( NoRepositoryConnectorException e )
+            {
+
+            }
+
+            return new RepositoryConnector()
+            {
+
+                private Logger log = LoggerFactory.getLogger( getClass() );
+
+                public void get( Collection<? extends ArtifactDownload> artifactDownloads,
+                                 Collection<? extends MetadataDownload> metadataDownloads )
+                {
+                    log.debug( "get" );
+                }
+
+                public void put( Collection<? extends ArtifactUpload> artifactUploads,
+                                 Collection<? extends MetadataUpload> metadataUploads )
+                {
+                    log.debug( "put" );
+                }
+
+                public void close()
+                {
+                    log.debug( "close" );
+                }
+            };
+        }
+    }
+
+    public static RepositorySystem newRepositorySystem()
+    {
+        DefaultServiceLocator locator = new DefaultServiceLocator();
+        locator.addService( RepositoryConnectorFactory.class,
+                            MyFileRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
+        locator.addService( VersionResolver.class, DefaultVersionResolver.class );
+        locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
+        locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
+        //locator.addService( RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class );
+        //locator.setServices( WagonProvider.class,  );
+
+        return locator.getService( RepositorySystem.class );
+    }
+
+    public static RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
+    {
+        MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+
+        LocalRepository localRepo = new LocalRepository( localRepoDir );
+        session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
+
+        //session.setTransferListener( new ConsoleTransferListener() );
+        //session.setRepositoryListener( new ConsoleRepositoryListener() );
+
+        return session;
     }
 
     private String getVersionSelectedFromRange( VersionConstraint constraint )

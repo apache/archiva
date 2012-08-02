@@ -23,6 +23,7 @@ import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
+import org.sonatype.aether.graph.DependencyVisitor;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
  * @since 1.4-M3
  */
 public class TreeDependencyNodeVisitor
-    implements DependencyNodeVisitor
+    implements DependencyNodeVisitor, DependencyVisitor
 {
 
     final List<TreeEntry> treeEntries;
@@ -39,6 +40,8 @@ public class TreeDependencyNodeVisitor
     private TreeEntry currentEntry;
 
     private DependencyNode firstNode;
+
+    private org.sonatype.aether.graph.DependencyNode firstDependencyNode;
 
     public TreeDependencyNodeVisitor( List<TreeEntry> treeEntries )
     {
@@ -69,4 +72,27 @@ public class TreeDependencyNodeVisitor
         return true;
     }
 
+    public boolean visitEnter( org.sonatype.aether.graph.DependencyNode dependencyNode )
+    {
+        TreeEntry entry = new TreeEntry( new BeanReplicator().replicateBean( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+        entry.setParent( currentEntry );
+        currentEntry = entry;
+
+        if ( firstDependencyNode == null )
+        {
+            firstDependencyNode = dependencyNode;
+            treeEntries.add( currentEntry );
+        }
+        else
+        {
+            currentEntry.getParent().getChilds().add( currentEntry );
+        }
+        return true;
+    }
+
+    public boolean visitLeave( org.sonatype.aether.graph.DependencyNode dependencyNode )
+    {
+        currentEntry = currentEntry.getParent();
+        return true;
+    }
 }

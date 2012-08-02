@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
+import org.apache.archiva.dependency.tree.maven2.Maven3DependencyTreeBuilder;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
@@ -56,6 +57,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.project.DependencyResolutionResult;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.springframework.stereotype.Service;
 
@@ -90,6 +92,9 @@ public class DefaultBrowseService
 
     @Inject
     private DependencyTreeBuilder dependencyTreeBuilder;
+
+    @Inject
+    private Maven3DependencyTreeBuilder maven3DependencyTreeBuilder;
 
     @Inject
     private RepositoryContentFactory repositoryContentFactory;
@@ -426,6 +431,7 @@ public class DefaultBrowseService
 
         List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
         TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
+        /*
         try
         {
             dependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version,
@@ -436,6 +442,18 @@ public class DefaultBrowseService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
+        */
+        try
+        {
+            DependencyResolutionResult result =
+                maven3DependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version, treeDependencyNodeVisitor );
+            log.debug( "result: {}", result );
+        }
+        catch ( Exception e )
+        {
+            log.error( e.getMessage(), e );
+        }
+
         return treeEntries;
     }
 
