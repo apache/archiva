@@ -69,6 +69,7 @@ import java.util.Map;
 
 /**
  * @author Olivier Lamy
+ * @since 1.4-M3
  */
 @Service( "dependencyTreeBuilder#maven3" )
 public class Maven3DependencyTreeBuilder
