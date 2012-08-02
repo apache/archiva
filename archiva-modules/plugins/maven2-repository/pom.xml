@@ -232,18 +232,19 @@
               org.dom4j*;version="[1.6,2)",
               org.springframework*;version="[3,4)",
               org.slf4j;resolution:=optional,
-              org.apache.maven,
-              org.apache.maven.project,
+              org.apache.maven.repository.internal,
+              org.sonatype.aether.connector.file,
+              org.sonatype.aether.impl,
+              org.sonatype.aether.spi.connector,
+              org.sonatype.aether.transfer,
               org.sonatype.aether,
               org.sonatype.aether.artifact,
               org.sonatype.aether.collection,
               org.sonatype.aether.graph,
               org.sonatype.aether.impl.internal,
               org.sonatype.aether.repository,
-              org.sonatype.aether.resolution,
               org.sonatype.aether.util,
-              org.sonatype.aether.util.artifact,
-              org.sonatype.aether.version
+              org.sonatype.aether.util.artifact
             </Import-Package>
           </instructions>
         </configuration>

@@ -47,7 +47,6 @@ import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyVisitor;
 import org.sonatype.aether.impl.ArtifactDescriptorReader;
@@ -55,13 +54,7 @@ import org.sonatype.aether.impl.VersionRangeResolver;
 import org.sonatype.aether.impl.VersionResolver;
 import org.sonatype.aether.impl.internal.DefaultServiceLocator;
 import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.spi.connector.ArtifactDownload;
-import org.sonatype.aether.spi.connector.ArtifactUpload;
-import org.sonatype.aether.spi.connector.MetadataDownload;
-import org.sonatype.aether.spi.connector.MetadataUpload;
-import org.sonatype.aether.spi.connector.RepositoryConnector;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
-import org.sonatype.aether.transfer.NoRepositoryConnectorException;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +63,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -206,59 +198,11 @@ public class Maven3DependencyTreeBuilder
 
     }
 
-    public static class MyFileRepositoryConnectorFactory
-        extends FileRepositoryConnectorFactory
-    {
-
-        public MyFileRepositoryConnectorFactory()
-        {
-
-        }
-
-        public RepositoryConnector newInstance( RepositorySystemSession session,
-                                                org.sonatype.aether.repository.RemoteRepository repository )
-            throws NoRepositoryConnectorException
-        {
-
-            try
-            {
-                return super.newInstance( session, repository );
-            }
-            catch ( NoRepositoryConnectorException e )
-            {
-
-            }
-
-            return new RepositoryConnector()
-            {
-
-                private Logger log = LoggerFactory.getLogger( getClass() );
-
-                public void get( Collection<? extends ArtifactDownload> artifactDownloads,
-                                 Collection<? extends MetadataDownload> metadataDownloads )
-                {
-                    log.debug( "get" );
-                }
-
-                public void put( Collection<? extends ArtifactUpload> artifactUploads,
-                                 Collection<? extends MetadataUpload> metadataUploads )
-                {
-                    log.debug( "put" );
-                }
-
-                public void close()
-                {
-                    log.debug( "close" );
-                }
-            };
-        }
-    }
-
     public static RepositorySystem newRepositorySystem()
     {
         DefaultServiceLocator locator = new DefaultServiceLocator();
         locator.addService( RepositoryConnectorFactory.class,
-                            MyFileRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
+                            ArchivaRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
         locator.addService( VersionResolver.class, DefaultVersionResolver.class );
         locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
         locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
