@@ -385,6 +385,7 @@
                   <appserver.base>${project.build.directory}/appserver-base</appserver.base>
                   <appserver.home>${project.build.directory}/appserver-base</appserver.home>
                   <derby.system.home>${project.build.directory}</derby.system.home>
+                  <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                 </systemProperties>
               </container>
               <configuration>
