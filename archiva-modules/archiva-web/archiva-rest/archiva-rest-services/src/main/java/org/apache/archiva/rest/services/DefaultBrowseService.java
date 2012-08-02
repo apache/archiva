@@ -57,8 +57,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.project.DependencyResolutionResult;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -445,15 +443,17 @@ public class DefaultBrowseService
         */
         try
         {
-            DependencyResolutionResult result =
-                maven3DependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version, treeDependencyNodeVisitor );
-            log.debug( "result: {}", result );
+
+            maven3DependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version,
+                                                             treeDependencyNodeVisitor );
+
         }
         catch ( Exception e )
         {
             log.error( e.getMessage(), e );
         }
 
+        log.debug( "treeEntrie: {}", treeEntries );
         return treeEntries;
     }
 

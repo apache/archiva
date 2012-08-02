@@ -25,7 +25,6 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.maven.project.DependencyResolutionResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,6 +73,8 @@ public class DependencyTreeBuilderTestMaven3
     private DefaultRepositorySystem defaultRepositorySystem;
 
 
+    final Map<String, DependencyNode> nodes = new HashMap<String, DependencyNode>();
+
     @Inject
     @Named( value = "archivaConfiguration#test" )
     ArchivaConfiguration config;
@@ -85,8 +86,6 @@ public class DependencyTreeBuilderTestMaven3
         super.setUp();
 
         defaultRepositorySystem = (DefaultRepositorySystem) plexusSisuBridge.lookup( RepositorySystem.class );
-
-        final Map<String, DependencyNode> nodes = new HashMap<String, DependencyNode>();
 
         DefaultDependencyNode springContext = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.springframework", "spring-context", "2.5.6" ), "compile" ) );
@@ -300,23 +299,20 @@ public class DependencyTreeBuilderTestMaven3
         throws Exception
     {
 
-        DependencyResolutionResult resolutionResult =
-            builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                         TEST_VERSION, new DependencyVisitor()
+        builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                     TEST_VERSION, new DependencyVisitor()
+        {
+            public boolean visitEnter( DependencyNode dependencyNode )
             {
-                public boolean visitEnter( DependencyNode dependencyNode )
-                {
-                    return true;
-                }
+                return true;
+            }
 
-                public boolean visitLeave( DependencyNode dependencyNode )
-                {
-                    return true;
-                }
-            } );
+            public boolean visitLeave( DependencyNode dependencyNode )
+            {
+                return true;
+            }
+        } );
 
-        assertNotNull( resolutionResult );
-        assertEquals( 10, resolutionResult.getDependencies().size() );
 
     }
 }
