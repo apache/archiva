@@ -1685,6 +1685,12 @@
     </plugins>
     <pluginManagement>
       <plugins>
+        <!-- last version version 2.3 have permisson issue !! -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.2.2</version>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>appassembler-maven-plugin</artifactId>
