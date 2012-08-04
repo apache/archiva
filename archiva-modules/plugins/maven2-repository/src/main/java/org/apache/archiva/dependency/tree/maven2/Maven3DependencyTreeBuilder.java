@@ -54,12 +54,12 @@ import org.sonatype.aether.impl.ArtifactDescriptorReader;
 import org.sonatype.aether.impl.VersionRangeResolver;
 import org.sonatype.aether.impl.VersionResolver;
 import org.sonatype.aether.impl.internal.DefaultServiceLocator;
+import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.selector.AndDependencySelector;
 import org.sonatype.aether.util.graph.selector.ExclusionDependencySelector;
-import org.sonatype.aether.util.graph.selector.OptionalDependencySelector;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -229,7 +229,8 @@ public class Maven3DependencyTreeBuilder
         session.setDependencySelector( depFilter );
 
         LocalRepository localRepo = new LocalRepository( localRepoDir );
-        session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );
+        session.setLocalRepositoryManager(
+            new SimpleLocalRepositoryManager( localRepoDir ) );// system.newLocalRepositoryManager( localRepo ) );
 
         //session.setTransferListener(  );
         //session.setRepositoryListener( n );
