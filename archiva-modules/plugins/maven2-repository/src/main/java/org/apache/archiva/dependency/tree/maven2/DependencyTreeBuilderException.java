@@ -18,21 +18,15 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
-import org.apache.archiva.maven2.model.TreeEntry;
-import org.sonatype.aether.graph.DependencyVisitor;
-
-import java.util.List;
-
 /**
  * @author Olivier Lamy
+ * @since 1.4-M3
  */
-public interface DependencyTreeBuilder
+public class DependencyTreeBuilderException
+    extends Exception
 {
-    void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
-                              DependencyVisitor dependencyVisitor )
-        throws Exception;
-
-    List<TreeEntry> buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version )
-        throws Exception;
+    public DependencyTreeBuilderException( String message, Throwable t )
+    {
+        super( message, t );
+    }
 }
-

@@ -21,12 +21,11 @@ package org.apache.archiva.web.tags;
 
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.archiva.common.ArchivaException;
-import org.apache.archiva.dependency.tree.maven2.Maven3DependencyTreeBuilder;
+import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.archiva.model.Keys;
 import org.apache.archiva.security.ArchivaXworkUser;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
@@ -48,7 +47,7 @@ public class DependencyTree
 
 
     @Inject
-    private Maven3DependencyTreeBuilder dependencyTreeBuilder;
+    private DependencyTreeBuilder dependencyTreeBuilder;
 
     @Inject
     private UserRepositories userRepositories;

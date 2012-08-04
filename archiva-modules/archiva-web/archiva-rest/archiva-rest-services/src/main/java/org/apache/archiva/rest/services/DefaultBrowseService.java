@@ -21,7 +21,6 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
-import org.apache.archiva.dependency.tree.maven2.Maven3DependencyTreeBuilder;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
@@ -89,9 +88,6 @@ public class DefaultBrowseService
 
     @Inject
     private DependencyTreeBuilder dependencyTreeBuilder;
-
-    @Inject
-    private Maven3DependencyTreeBuilder maven3DependencyTreeBuilder;
 
     @Inject
     private RepositoryContentFactory repositoryContentFactory;
@@ -429,7 +425,7 @@ public class DefaultBrowseService
         try
         {
 
-            return maven3DependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version );
+            return dependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version );
 
         }
         catch ( Exception e )

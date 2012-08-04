@@ -64,7 +64,6 @@
     <maven.version>2.0.8</maven.version>
     <aether.version>1.13.1</aether.version>
 
-    <maven-dependency-tree.version>2.0-SNAPSHOT</maven-dependency-tree.version>
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>4.1.3</maven.indexer.version>
     <wagon.version>2.2</wagon.version>
@@ -1418,17 +1417,6 @@
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-model-converter</artifactId>
         <version>${maven-model-converter.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-dependency-tree</artifactId>
-        <version>${maven-dependency-tree.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
