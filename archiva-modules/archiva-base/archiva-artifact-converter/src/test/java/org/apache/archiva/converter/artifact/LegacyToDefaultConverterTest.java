@@ -699,6 +699,8 @@ public class LegacyToDefaultConverterTest
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
+        // clear warning before test related to MRM-1638
+        artifactConverter.clearWarnings(); 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
@@ -743,6 +745,8 @@ public class LegacyToDefaultConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
+        // clear warning before test related to MRM-1638
+        artifactConverter.clearWarnings(); 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
