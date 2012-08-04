@@ -63,7 +63,7 @@
     <rome.bundle.version>1.0_2</rome.bundle.version>
     <servicemix.specs.version>1.9.0</servicemix.specs.version>
     <sisu-inject-bean.version>2.3.0</sisu-inject-bean.version>
-    <sisu-guava.version>0.9.9</sisu-guava.version>
+    <guava.version>13.0</guava.version>
     <stax-utils.bundle.version>20040917_2</stax-utils.bundle.version>
     <testng.version>6.3.1</testng.version>
     <velocity.bundle.version>1.7_3</velocity.bundle.version>

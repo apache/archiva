@@ -24,7 +24,7 @@
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-classworlds/${plexus-classworlds.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-component-annotations/${plexus-component-annotations.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.codehaus.plexus/plexus-utils/${plexus-utils.version}</bundle>
-    <bundle dependency="true">mvn:org.sonatype.sisu/sisu-guava/${sisu-guava.version}</bundle>
+    <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
     <bundle dependency="true">mvn:org.sonatype.sisu/sisu-guice/${sisu-guice.version}</bundle>
     <bundle dependency="true">mvn:org.sonatype.sisu/sisu-inject-bean/${sisu-inject-bean.version}</bundle>
     <bundle dependency="true">mvn:org.sonatype.sisu/sisu-inject-plexus/${sisu-inject-plexus.version}</bundle>
