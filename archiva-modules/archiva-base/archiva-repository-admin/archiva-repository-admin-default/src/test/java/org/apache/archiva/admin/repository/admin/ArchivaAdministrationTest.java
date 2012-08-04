@@ -27,11 +27,9 @@ import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.audit.AuditEvent;
-import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
@@ -194,24 +192,27 @@ public class ArchivaAdministrationTest
     public void organisationInfoUpdate()
         throws Exception
     {
-        OrganisationInformation organisationInformation = archivaAdministration.getOrganisationInformation();
-        assertNotNull( organisationInformation );
-        assertNull( organisationInformation.getLogoLocation() );
-        assertNull( organisationInformation.getName() );
-        assertNull( organisationInformation.getUrl() );
+        OrganisationInformation oldOrganisationInformation = archivaAdministration.getOrganisationInformation();
+        assertNotNull( oldOrganisationInformation );
+        assertNull( oldOrganisationInformation.getLogoLocation() );
+        assertNull( oldOrganisationInformation.getName() );
+        assertNull( oldOrganisationInformation.getUrl() );
 
-        organisationInformation = new OrganisationInformation();
-        organisationInformation.setLogoLocation( "http://foo.com/bar.png" );
-        organisationInformation.setName( "foo org" );
-        organisationInformation.setUrl( "http://foo.com" );
+        OrganisationInformation newOrganisationInformation = new OrganisationInformation();
+        newOrganisationInformation.setLogoLocation( "http://foo.com/bar.png" );
+        newOrganisationInformation.setName( "foo org" );
+        newOrganisationInformation.setUrl( "http://foo.com" );
 
-        archivaAdministration.setOrganisationInformation( organisationInformation );
+        archivaAdministration.setOrganisationInformation( newOrganisationInformation );
 
-        organisationInformation = archivaAdministration.getOrganisationInformation();
-        assertNotNull( organisationInformation );
-        assertEquals( "http://foo.com/bar.png", organisationInformation.getLogoLocation() );
-        assertEquals( "foo org", organisationInformation.getName() );
-        assertEquals( "http://foo.com", organisationInformation.getUrl() );
+        newOrganisationInformation = archivaAdministration.getOrganisationInformation();
+        assertNotNull( newOrganisationInformation );
+        assertEquals( "http://foo.com/bar.png", newOrganisationInformation.getLogoLocation() );
+        assertEquals( "foo org", newOrganisationInformation.getName() );
+        assertEquals( "http://foo.com", newOrganisationInformation.getUrl() );
+        
+        // back to initial OrganisationInformation //MRM-1638
+        archivaAdministration.setOrganisationInformation( oldOrganisationInformation );
 
     }
 
@@ -219,13 +220,14 @@ public class ArchivaAdministrationTest
     public void uiConfiguration()
         throws Exception
     {
-        UiConfiguration ui = archivaAdministration.getUiConfiguration();
-        assertNotNull( ui );
+        UiConfiguration oldUi = archivaAdministration.getUiConfiguration();
+        assertNotNull( oldUi );
         // assert default values
-        assertFalse( ui.isDisableEasterEggs() );
-        assertTrue( ui.isAppletFindEnabled() );
-        assertTrue( ui.isShowFindArtifacts() );
+        assertFalse( oldUi.isDisableEasterEggs() );
+        assertTrue( oldUi.isAppletFindEnabled() );
+        assertTrue( oldUi.isShowFindArtifacts() );
 
+        UiConfiguration ui = archivaAdministration.getUiConfiguration();
         ui.setAppletFindEnabled( false );
         ui.setShowFindArtifacts( false );
         ui.setDisableEasterEggs( true );
@@ -237,6 +239,8 @@ public class ArchivaAdministrationTest
         assertTrue( ui.isDisableEasterEggs() );
         assertFalse( ui.isAppletFindEnabled() );
         assertFalse( ui.isShowFindArtifacts() );
+        
+        archivaAdministration.updateUiConfiguration( oldUi );
     }
 
     @Test
