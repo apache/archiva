@@ -192,7 +192,17 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
-
+    <developer>
+      <id>skygo</id>
+      <name>Eric Barboni</name>
+      <email>skygo@apache.org</email>
+      <organization>ASF</organization>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    
     <!-- Emeritus Committers -->
 
     <developer>
