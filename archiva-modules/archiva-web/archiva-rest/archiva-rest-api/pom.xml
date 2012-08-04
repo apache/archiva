@@ -122,7 +122,8 @@
               org.apache.archiva.repository.scanner,
               org.codehaus.jackson.annotate,
               org.apache.archiva.metadata.repository.stats,
-              org.apache.archiva.reports
+              org.apache.archiva.reports,
+              org.apache.archiva.maven2.model
             </Import-Package>
           </instructions>
         </configuration>
