@@ -29,7 +29,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.webtest.memory.TestMetadataResolver;
 import org.apache.archiva.webtest.memory.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;

@@ -19,7 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;

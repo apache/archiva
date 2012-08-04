@@ -22,6 +22,8 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.archiva.dependency.tree.maven2.Maven3DependencyTreeBuilder;
+import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
@@ -39,19 +41,16 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
-import org.apache.archiva.rest.api.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
-import org.apache.archiva.rest.api.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
 import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
-import org.apache.archiva.rest.services.utils.TreeDependencyNodeVisitor;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -427,25 +426,10 @@ public class DefaultBrowseService
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
-        List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
-        TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
-        /*
-        try
-        {
-            dependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version,
-                                                       treeDependencyNodeVisitor );
-        }
-        catch ( DependencyTreeBuilderException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        */
         try
         {
 
-            maven3DependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version,
-                                                             treeDependencyNodeVisitor );
+            return maven3DependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version );
 
         }
         catch ( Exception e )
@@ -453,8 +437,7 @@ public class DefaultBrowseService
             log.error( e.getMessage(), e );
         }
 
-        log.debug( "treeEntrie: {}", treeEntries );
-        return treeEntries;
+        return Collections.emptyList();
     }
 
     public List<ManagedRepository> getUserRepositories()

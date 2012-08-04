@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.api.model;
+package org.apache.archiva.maven2.model;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -81,5 +81,33 @@ public class TreeEntry
     public void setParent( TreeEntry parent )
     {
         this.parent = parent;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof TreeEntry ) )
+        {
+            return false;
+        }
+
+        TreeEntry treeEntry = (TreeEntry) o;
+
+        if ( artifact != null ? !artifact.equals( treeEntry.artifact ) : treeEntry.artifact != null )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return artifact != null ? artifact.hashCode() : 0;
     }
 }

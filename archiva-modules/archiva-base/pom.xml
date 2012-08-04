@@ -49,5 +49,6 @@
     <module>archiva-repository-admin</module>
     <module>archiva-security-common</module>
     <module>archiva-maven2-metadata</module>
+    <module>archiva-maven2-model</module>
   </modules>
 </project>

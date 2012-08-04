@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -279,4 +280,5 @@ public class DependencyTreeBuilderTest
 
         control.verify();
     }
+
 }

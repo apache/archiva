@@ -30,6 +30,7 @@ import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.maven.artifact.Artifact;
@@ -67,6 +68,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,8 +122,8 @@ public class Maven3DependencyTreeBuilder
         builder = defaultModelBuilderFactory.newInstance();
     }
 
-    public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
-                                     DependencyVisitor dependencyVisitor )
+    public List<TreeEntry> buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId,
+                                                String version )
         throws Exception
     {
         Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
@@ -139,7 +141,7 @@ public class Maven3DependencyTreeBuilder
         if ( repository == null )
         {
             // metadata could not be resolved
-            return;
+            return Collections.emptyList();
         }
 
         // MRM-1411
@@ -166,9 +168,14 @@ public class Maven3DependencyTreeBuilder
             }
         }
 
-        // FIXME take care of relative path
-        resolve( repository.getLocation(), groupId, artifactId, version, dependencyVisitor );
+        List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
+        TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
 
+        // FIXME take care of relative path
+        resolve( repository.getLocation(), groupId, artifactId, version, treeDependencyNodeVisitor );
+
+        log.debug( "treeEntrie: {}", treeEntries );
+        return treeEntries;
     }
 
 

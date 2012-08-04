@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.api.model;
+package org.apache.archiva.maven2.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -136,6 +136,7 @@ public class Artifact
 
     /**
      * human readable size : not available for all services
+     *
      * @since 1.4-M3
      */
     private String size;
@@ -153,9 +154,15 @@ public class Artifact
 
     /**
      * concat of artifactId+'-'+version+'.'+type
+     *
      * @since 1.4-M3
      */
     private String id;
+
+    /**
+     * @since 1.4-M3
+     */
+    private String scope;
 
 
     public Artifact()
@@ -168,6 +175,25 @@ public class Artifact
         this.artifactId = artifactId;
         this.groupId = groupId;
         this.version = version;
+    }
+
+    /**
+     * @since 1.4-M3
+     */
+    public Artifact( String groupId, String artifactId, String version, String scope )
+    {
+        this( groupId, artifactId, version );
+        this.scope = scope;
+    }
+
+    /**
+     * @since 1.4-M3
+     */
+    public Artifact( String groupId, String artifactId, String version, String scope, String classifier )
+    {
+        this( groupId, artifactId, version );
+        this.scope = scope;
+        this.classifier = classifier;
     }
 
     public String getGroupId()
@@ -421,6 +447,16 @@ public class Artifact
         this.id = id;
     }
 
+    public String getScope()
+    {
+        return scope;
+    }
+
+    public void setScope( String scope )
+    {
+        this.scope = scope;
+    }
+
     @Override
     public String toString()
     {
@@ -455,4 +491,169 @@ public class Artifact
         return sb.toString();
     }
 
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof Artifact ) )
+        {
+            return false;
+        }
+
+        Artifact artifact = (Artifact) o;
+
+        if ( !artifactId.equals( artifact.artifactId ) )
+        {
+            return false;
+        }
+        if ( bundleDescription != null
+            ? !bundleDescription.equals( artifact.bundleDescription )
+            : artifact.bundleDescription != null )
+        {
+            return false;
+        }
+        if ( bundleDocUrl != null ? !bundleDocUrl.equals( artifact.bundleDocUrl ) : artifact.bundleDocUrl != null )
+        {
+            return false;
+        }
+        if ( bundleExportPackage != null
+            ? !bundleExportPackage.equals( artifact.bundleExportPackage )
+            : artifact.bundleExportPackage != null )
+        {
+            return false;
+        }
+        if ( bundleExportService != null
+            ? !bundleExportService.equals( artifact.bundleExportService )
+            : artifact.bundleExportService != null )
+        {
+            return false;
+        }
+        if ( bundleImportPackage != null
+            ? !bundleImportPackage.equals( artifact.bundleImportPackage )
+            : artifact.bundleImportPackage != null )
+        {
+            return false;
+        }
+        if ( bundleLicense != null ? !bundleLicense.equals( artifact.bundleLicense ) : artifact.bundleLicense != null )
+        {
+            return false;
+        }
+        if ( bundleName != null ? !bundleName.equals( artifact.bundleName ) : artifact.bundleName != null )
+        {
+            return false;
+        }
+        if ( bundleRequireBundle != null
+            ? !bundleRequireBundle.equals( artifact.bundleRequireBundle )
+            : artifact.bundleRequireBundle != null )
+        {
+            return false;
+        }
+        if ( bundleSymbolicName != null
+            ? !bundleSymbolicName.equals( artifact.bundleSymbolicName )
+            : artifact.bundleSymbolicName != null )
+        {
+            return false;
+        }
+        if ( bundleVersion != null ? !bundleVersion.equals( artifact.bundleVersion ) : artifact.bundleVersion != null )
+        {
+            return false;
+        }
+        if ( classifier != null ? !classifier.equals( artifact.classifier ) : artifact.classifier != null )
+        {
+            return false;
+        }
+        if ( context != null ? !context.equals( artifact.context ) : artifact.context != null )
+        {
+            return false;
+        }
+        if ( fileExtension != null ? !fileExtension.equals( artifact.fileExtension ) : artifact.fileExtension != null )
+        {
+            return false;
+        }
+        if ( goals != null ? !goals.equals( artifact.goals ) : artifact.goals != null )
+        {
+            return false;
+        }
+        if ( !groupId.equals( artifact.groupId ) )
+        {
+            return false;
+        }
+        if ( id != null ? !id.equals( artifact.id ) : artifact.id != null )
+        {
+            return false;
+        }
+        if ( packaging != null ? !packaging.equals( artifact.packaging ) : artifact.packaging != null )
+        {
+            return false;
+        }
+        if ( path != null ? !path.equals( artifact.path ) : artifact.path != null )
+        {
+            return false;
+        }
+        if ( prefix != null ? !prefix.equals( artifact.prefix ) : artifact.prefix != null )
+        {
+            return false;
+        }
+        if ( repositoryId != null ? !repositoryId.equals( artifact.repositoryId ) : artifact.repositoryId != null )
+        {
+            return false;
+        }
+        if ( scope != null ? !scope.equals( artifact.scope ) : artifact.scope != null )
+        {
+            return false;
+        }
+        if ( size != null ? !size.equals( artifact.size ) : artifact.size != null )
+        {
+            return false;
+        }
+        if ( type != null ? !type.equals( artifact.type ) : artifact.type != null )
+        {
+            return false;
+        }
+        if ( url != null ? !url.equals( artifact.url ) : artifact.url != null )
+        {
+            return false;
+        }
+        if ( !version.equals( artifact.version ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = context != null ? context.hashCode() : 0;
+        result = 31 * result + ( url != null ? url.hashCode() : 0 );
+        result = 31 * result + groupId.hashCode();
+        result = 31 * result + artifactId.hashCode();
+        result = 31 * result + ( repositoryId != null ? repositoryId.hashCode() : 0 );
+        result = 31 * result + version.hashCode();
+        result = 31 * result + ( prefix != null ? prefix.hashCode() : 0 );
+        result = 31 * result + ( goals != null ? goals.hashCode() : 0 );
+        result = 31 * result + ( bundleVersion != null ? bundleVersion.hashCode() : 0 );
+        result = 31 * result + ( bundleSymbolicName != null ? bundleSymbolicName.hashCode() : 0 );
+        result = 31 * result + ( bundleExportPackage != null ? bundleExportPackage.hashCode() : 0 );
+        result = 31 * result + ( bundleExportService != null ? bundleExportService.hashCode() : 0 );
+        result = 31 * result + ( bundleDescription != null ? bundleDescription.hashCode() : 0 );
+        result = 31 * result + ( bundleName != null ? bundleName.hashCode() : 0 );
+        result = 31 * result + ( bundleLicense != null ? bundleLicense.hashCode() : 0 );
+        result = 31 * result + ( bundleDocUrl != null ? bundleDocUrl.hashCode() : 0 );
+        result = 31 * result + ( bundleImportPackage != null ? bundleImportPackage.hashCode() : 0 );
+        result = 31 * result + ( bundleRequireBundle != null ? bundleRequireBundle.hashCode() : 0 );
+        result = 31 * result + ( classifier != null ? classifier.hashCode() : 0 );
+        result = 31 * result + ( packaging != null ? packaging.hashCode() : 0 );
+        result = 31 * result + ( fileExtension != null ? fileExtension.hashCode() : 0 );
+        result = 31 * result + ( size != null ? size.hashCode() : 0 );
+        result = 31 * result + ( type != null ? type.hashCode() : 0 );
+        result = 31 * result + ( path != null ? path.hashCode() : 0 );
+        result = 31 * result + ( id != null ? id.hashCode() : 0 );
+        result = 31 * result + ( scope != null ? scope.hashCode() : 0 );
+        return result;
+    }
 }

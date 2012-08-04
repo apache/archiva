@@ -21,12 +21,12 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.Entry;
-import org.apache.archiva.rest.api.model.TreeEntry;
+import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
 
 import javax.ws.rs.DELETE;

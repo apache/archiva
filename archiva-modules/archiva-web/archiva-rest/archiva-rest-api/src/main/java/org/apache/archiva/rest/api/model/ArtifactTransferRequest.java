@@ -18,6 +18,8 @@ package org.apache.archiva.rest.api.model;
  * under the License.
  */
 
+import org.apache.archiva.maven2.model.Artifact;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 

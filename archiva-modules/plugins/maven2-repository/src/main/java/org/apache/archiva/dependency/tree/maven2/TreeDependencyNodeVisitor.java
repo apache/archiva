@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.services.utils;
+package org.apache.archiva.dependency.tree.maven2;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,10 +19,9 @@ package org.apache.archiva.rest.services.utils;
  */
 
 import net.sf.beanlib.provider.replicator.BeanReplicator;
-import org.apache.archiva.rest.api.model.Artifact;
-import org.apache.archiva.rest.api.model.TreeEntry;
-import org.apache.maven.shared.dependency.tree.DependencyNode;
-import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
+import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven2.model.TreeEntry;
+import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.DependencyVisitor;
 
 import java.util.List;
@@ -32,14 +31,12 @@ import java.util.List;
  * @since 1.4-M3
  */
 public class TreeDependencyNodeVisitor
-    implements DependencyNodeVisitor, DependencyVisitor
+    implements DependencyVisitor
 {
 
     final List<TreeEntry> treeEntries;
 
     private TreeEntry currentEntry;
-
-    private DependencyNode firstNode;
 
     private org.sonatype.aether.graph.DependencyNode firstDependencyNode;
 
@@ -48,33 +45,12 @@ public class TreeDependencyNodeVisitor
         this.treeEntries = treeEntries;
     }
 
-    public boolean visit( DependencyNode node )
-    {
-        TreeEntry entry = new TreeEntry( new BeanReplicator().replicateBean( node.getArtifact(), Artifact.class ) );
-        entry.setParent( currentEntry );
-        currentEntry = entry;
 
-        if ( firstNode == null )
-        {
-            firstNode = node;
-            treeEntries.add( currentEntry );
-        }
-        else
-        {
-            currentEntry.getParent().getChilds().add( currentEntry );
-        }
-        return true;
-    }
-
-    public boolean endVisit( DependencyNode node )
+    public boolean visitEnter( DependencyNode dependencyNode )
     {
-        currentEntry = currentEntry.getParent();
-        return true;
-    }
-
-    public boolean visitEnter( org.sonatype.aether.graph.DependencyNode dependencyNode )
-    {
-        TreeEntry entry = new TreeEntry( new BeanReplicator().replicateBean( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+        TreeEntry entry = new TreeEntry(
+            new BeanReplicator().replicateBean( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+        entry.getArtifact().setScope( dependencyNode.getDependency().getScope() );
         entry.setParent( currentEntry );
         currentEntry = entry;
 
@@ -90,7 +66,7 @@ public class TreeDependencyNodeVisitor
         return true;
     }
 
-    public boolean visitLeave( org.sonatype.aether.graph.DependencyNode dependencyNode )
+    public boolean visitLeave( DependencyNode dependencyNode )
     {
         currentEntry = currentEntry.getParent();
         return true;

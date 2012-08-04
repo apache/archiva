@@ -37,7 +37,7 @@ import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
-import org.apache.archiva.rest.api.model.Artifact;
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
