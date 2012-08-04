@@ -20,18 +20,18 @@ package org.apache.archiva.web.tags;
  */
 
 import com.opensymphony.xwork2.ActionContext;
-import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.ArchivaException;
+import org.apache.archiva.dependency.tree.maven2.Maven3DependencyTreeBuilder;
 import org.apache.archiva.model.Keys;
 import org.apache.archiva.security.ArchivaXworkUser;
 import org.apache.archiva.security.UserRepositories;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.shared.dependency.tree.DependencyNode;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
-import org.apache.maven.shared.dependency.tree.traversal.DependencyNodeVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.graph.DependencyVisitor;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -40,8 +40,6 @@ import java.util.List;
 
 /**
  * DependencyTree
- *
- *
  */
 @Service( "dependencyTree" )
 public class DependencyTree
@@ -50,7 +48,7 @@ public class DependencyTree
 
 
     @Inject
-    private DependencyTreeBuilder dependencyTreeBuilder;
+    private Maven3DependencyTreeBuilder dependencyTreeBuilder;
 
     @Inject
     private UserRepositories userRepositories;
@@ -129,7 +127,7 @@ public class DependencyTree
             dependencyTreeBuilder.buildDependencyTree( userRepositories.getObservableRepositoryIds( getPrincipal() ),
                                                        groupId, artifactId, modelVersion, visitor );
         }
-        catch ( DependencyTreeBuilderException e )
+        catch ( Exception e )
         {
             throw new ArchivaException( "Unable to build dependency tree: " + e.getMessage(), e );
         }
@@ -143,7 +141,7 @@ public class DependencyTree
     }
 
     private static class TreeListVisitor
-        implements DependencyNodeVisitor
+        implements DependencyVisitor
     {
         private List<TreeEntry> list;
 
@@ -163,7 +161,7 @@ public class DependencyTree
             return this.list;
         }
 
-        public boolean visit( DependencyNode node )
+        public boolean visitEnter( DependencyNode node )
         {
             if ( firstNode == null )
             {
@@ -178,7 +176,7 @@ public class DependencyTree
             }
 
             currentEntry.appendPre( "<li>" );
-            currentEntry.setArtifact( node.getArtifact() );
+            currentEntry.setArtifact( node.getDependency().getArtifact() );
             currentEntry.appendPost( "</li>" );
             this.list.add( currentEntry );
 
@@ -190,7 +188,7 @@ public class DependencyTree
             return true;
         }
 
-        public boolean endVisit( DependencyNode node )
+        public boolean visitLeave( org.sonatype.aether.graph.DependencyNode node )
         {
             firstChild = false;
 
@@ -206,5 +204,7 @@ public class DependencyTree
 
             return true;
         }
+
+
     }
 }

@@ -68,7 +68,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,8 +121,8 @@ public class Maven3DependencyTreeBuilder
         builder = defaultModelBuilderFactory.newInstance();
     }
 
-    public List<TreeEntry> buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId,
-                                                String version )
+    public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
+                                     DependencyVisitor dependencyVisitor )
         throws Exception
     {
         Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
@@ -141,7 +140,7 @@ public class Maven3DependencyTreeBuilder
         if ( repository == null )
         {
             // metadata could not be resolved
-            return Collections.emptyList();
+            return;
         }
 
         // MRM-1411
@@ -168,11 +167,20 @@ public class Maven3DependencyTreeBuilder
             }
         }
 
+        // FIXME take care of relative path
+        resolve( repository.getLocation(), groupId, artifactId, version, dependencyVisitor );
+    }
+
+
+    public List<TreeEntry> buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId,
+                                                String version )
+        throws Exception
+    {
+
         List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
         TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
 
-        // FIXME take care of relative path
-        resolve( repository.getLocation(), groupId, artifactId, version, treeDependencyNodeVisitor );
+        buildDependencyTree( repositoryIds, groupId, artifactId, version, treeDependencyNodeVisitor );
 
         log.debug( "treeEntrie: {}", treeEntries );
         return treeEntries;
