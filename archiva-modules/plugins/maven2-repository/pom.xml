@@ -251,7 +251,10 @@
               org.sonatype.aether.impl.internal,
               org.sonatype.aether.repository,
               org.sonatype.aether.util,
-              org.sonatype.aether.util.artifact
+              org.sonatype.aether.util.artifact,
+              net.sf.beanlib.provider.replicator,
+              org.apache.archiva.maven2.model,
+              org.sonatype.aether.util.graph.selector
             </Import-Package>
           </instructions>
         </configuration>
