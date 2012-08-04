@@ -795,6 +795,11 @@
         <artifactId>aether-util</artifactId>
         <version>${aether.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector-file</artifactId>
+        <version>${aether.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.maven</groupId>

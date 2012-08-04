@@ -104,11 +104,9 @@
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-util</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.sonatype.aether</groupId>
       <artifactId>aether-connector-file</artifactId>
-      <version>${aether.version}</version>
     </dependency>
 
     <dependency>
