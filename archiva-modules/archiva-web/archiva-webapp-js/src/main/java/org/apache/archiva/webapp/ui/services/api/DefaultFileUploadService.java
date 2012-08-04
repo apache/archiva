@@ -60,7 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -240,7 +240,7 @@ public class DefaultFileUploadService
 
         filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
         {
-            public boolean apply( @Nullable FileMetadata fileMetadata )
+            public boolean apply( FileMetadata fileMetadata )
             {
                 return fileMetadata != null && fileMetadata.isPomFile();
             }
