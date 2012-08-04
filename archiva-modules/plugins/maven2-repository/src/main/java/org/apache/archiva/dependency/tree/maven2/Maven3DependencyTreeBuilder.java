@@ -47,6 +47,7 @@ import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
+import org.sonatype.aether.collection.DependencySelector;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyVisitor;
 import org.sonatype.aether.impl.ArtifactDescriptorReader;
@@ -56,6 +57,9 @@ import org.sonatype.aether.impl.internal.DefaultServiceLocator;
 import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.graph.selector.AndDependencySelector;
+import org.sonatype.aether.util.graph.selector.ExclusionDependencySelector;
+import org.sonatype.aether.util.graph.selector.OptionalDependencySelector;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -179,10 +183,14 @@ public class Maven3DependencyTreeBuilder
         org.sonatype.aether.artifact.Artifact artifact =
             new DefaultArtifact( groupId + ":" + artifactId + ":" + version );
 
-        //RemoteRepository repo = Booter.newCentralRepository();
-
         CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRoot( new Dependency( artifact, "" ) );
+
+        // add remote repositories ?
+        //collectRequest.addRepository(  )
+
+        collectRequest.setRequestContext( "project" );
+
         //collectRequest.addRepository( repo );
 
         try
@@ -216,6 +224,9 @@ public class Maven3DependencyTreeBuilder
     public static RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
     {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+
+        DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
+        session.setDependencySelector( depFilter );
 
         LocalRepository localRepo = new LocalRepository( localRepoDir );
         session.setLocalRepositoryManager( system.newLocalRepositoryManager( localRepo ) );

@@ -25,19 +25,15 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.easymock.MockControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.CollectResult;
-import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.DependencyVisitor;
-import org.sonatype.aether.impl.DependencyCollector;
 import org.sonatype.aether.impl.internal.DefaultRepositorySystem;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.DefaultDependencyNode;
@@ -87,89 +83,115 @@ public class DependencyTreeBuilderTestMaven3
 
         defaultRepositorySystem = (DefaultRepositorySystem) plexusSisuBridge.lookup( RepositorySystem.class );
 
-        DefaultDependencyNode springContext = new DefaultDependencyNode(
+        Configuration configuration = new Configuration();
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig.setId( TEST_REPO_ID );
+        repoConfig.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
+        configuration.addManagedRepository( repoConfig );
+        config.save( configuration );
+
+        //artifactFactory = ((DefaultDependencyTreeBuilder)this.builder).getFactory();
+    }
+
+
+    private Artifact createArtifact( String groupId, String artifactId, String version )
+    {
+        return new DefaultArtifact( groupId, artifactId, "jar", version );
+    }
+
+    private String getId( Artifact artifact )
+    {
+        return artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion();
+    }
+
+    @Test
+    public void testBuilderDependencies()
+        throws Exception
+    {
+
+        DependencyNode springContext = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.springframework", "spring-context", "2.5.6" ), "compile" ) );
 
-        springContext.setPremanagedVersion( "2.5.5" );
+        //springContext.setPremanagedVersion( "2.5.5" );
 
         nodes.put( getId( springContext.getDependency().getArtifact() ), springContext );
 
-        DefaultDependencyNode springTest = new DefaultDependencyNode(
+        DependencyNode springTest = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.springframework", "spring-test", "2.5.5" ), "test" ) );
 
         nodes.put( getId( springTest.getDependency().getArtifact() ), springTest );
 
-        DefaultDependencyNode plexusUtils = new DefaultDependencyNode(
+        DependencyNode plexusUtils = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus", "plexus-utils", "1.4.5" ), "compile" ) );
 
-        plexusUtils.setPremanagedVersion( "1.5.1" );
+        //plexusUtils.setPremanagedVersion( "1.5.1" );
 
         nodes.put( getId( plexusUtils.getDependency().getArtifact() ), plexusUtils );
 
-        DefaultDependencyNode slf4jLog4j12 = new DefaultDependencyNode(
+        DependencyNode slf4jLog4j12 = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.slf4j", "slf4j-log4j12", "1.5.0" ), "runtime" ) );
 
-        slf4jLog4j12.setPremanagedScope( "test" );
+        //slf4jLog4j12.setPremanagedScope( "test" );
 
         nodes.put( getId( slf4jLog4j12.getDependency().getArtifact() ), slf4jLog4j12 );
 
-        DefaultDependencyNode plexusLog4j = new DefaultDependencyNode(
+        DependencyNode plexusLog4j = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus", "plexus-log4j-logging", "1.1-alpha-3" ), "test" ) );
 
         nodes.put( getId( plexusLog4j.getDependency().getArtifact() ), plexusLog4j );
 
-        DefaultDependencyNode log4j =
+        DependencyNode log4j =
             new DefaultDependencyNode( new Dependency( createArtifact( "log4j", "log4j", "1.2.14" ), "test" ) );
 
         nodes.put( getId( log4j.getDependency().getArtifact() ), log4j );
 
-        DefaultDependencyNode mavenArtifact = new DefaultDependencyNode(
+        DependencyNode mavenArtifact = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.apache.maven", "maven-artifact", "2.0.8" ), "test" ) );
 
         nodes.put( getId( mavenArtifact.getDependency().getArtifact() ), mavenArtifact );
 
-        DefaultDependencyNode mavenProject = new DefaultDependencyNode(
+        DependencyNode mavenProject = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.apache.maven", "maven-project", "2.0.8" ), "test" ) );
 
         nodes.put( getId( mavenProject.getDependency().getArtifact() ), mavenProject );
 
-        DefaultDependencyNode mavenCore = new DefaultDependencyNode(
+        DependencyNode mavenCore = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.apache.maven", "maven-core", "2.0.8" ), "test" ) );
 
         nodes.put( getId( mavenCore.getDependency().getArtifact() ), mavenCore );
 
-        DefaultDependencyNode mavenSettings = new DefaultDependencyNode(
+        DependencyNode mavenSettings = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.apache.maven", "maven-settings", "2.0.8" ), "test" ) );
 
         nodes.put( getId( mavenSettings.getDependency().getArtifact() ), mavenSettings );
 
-        DefaultDependencyNode mavenModel = new DefaultDependencyNode(
+        DependencyNode mavenModel = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.apache.maven", "maven-model", "2.0.8" ), "test" ) );
 
         nodes.put( getId( mavenModel.getDependency().getArtifact() ), mavenModel );
 
-        DefaultDependencyNode plexusCommandLine = new DefaultDependencyNode(
+        DependencyNode plexusCommandLine = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus", "plexus-command-line", "1.0-alpha-2" ), "test" ) );
 
         nodes.put( getId( plexusCommandLine.getDependency().getArtifact() ), plexusCommandLine );
 
-        DefaultDependencyNode plexusRegistryCommons = new DefaultDependencyNode(
+        DependencyNode plexusRegistryCommons = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus.registry", "plexus-registry-commons", "1.0-alpha-2" ),
                             "test" ) );
 
         nodes.put( getId( plexusRegistryCommons.getDependency().getArtifact() ), plexusRegistryCommons );
 
-        plexusRegistryCommons.setPremanagedVersion( "1.0-alpha-3" );
+        //plexusRegistryCommons.setPremanagedVersion( "1.0-alpha-3" );
 
-        DefaultDependencyNode plexusRegistryApi = new DefaultDependencyNode(
+        DependencyNode plexusRegistryApi = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus.registry", "plexus-registry-api", "1.0-alpha-2" ),
                             "test" ) );
 
         nodes.put( getId( plexusRegistryApi.getDependency().getArtifact() ), plexusRegistryApi );
 
-        plexusRegistryApi.setPremanagedVersion( "1.0-alpha-3" );
+        //plexusRegistryApi.setPremanagedVersion( "1.0-alpha-3" );
 
-        DefaultDependencyNode plexusSpring = new DefaultDependencyNode(
+        DependencyNode plexusSpring = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2" ), "test" ) );
 
         nodes.put( getId( plexusSpring.getDependency().getArtifact() ), plexusSpring );
@@ -189,56 +211,56 @@ public class DependencyTreeBuilderTestMaven3
         plexusSpring.getChildren().add( plexusRegistryCommons );
         plexusSpring.getChildren().add( plexusRegistryApi );
 
-        DefaultDependencyNode commonsLang = new DefaultDependencyNode(
+        DependencyNode commonsLang = new DefaultDependencyNode(
             new Dependency( createArtifact( "commons-lang", "commons-lang", "2.2" ), "compile" ) );
 
         nodes.put( getId( commonsLang.getDependency().getArtifact() ), commonsLang );
 
-        DefaultDependencyNode commonsIO = new DefaultDependencyNode(
+        DependencyNode commonsIO = new DefaultDependencyNode(
             new Dependency( createArtifact( "commons-io", "commons-io", "1.4" ), "compile" ) );
 
         nodes.put( getId( commonsIO.getDependency().getArtifact() ), commonsIO );
 
-        DefaultDependencyNode slf4j = new DefaultDependencyNode(
+        DependencyNode slf4j = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.slf4j", "slf4j-api", "1.5.0" ), "compile" ) );
 
         nodes.put( getId( slf4j.getDependency().getArtifact() ), slf4j );
 
-        DefaultDependencyNode plexusAPI = new DefaultDependencyNode(
+        DependencyNode plexusAPI = new DefaultDependencyNode(
             new Dependency( createArtifact( "org.codehaus.plexus", "plexus-component-api", "1.0-alpha-22" ),
                             "compile" ) );
 
         nodes.put( getId( plexusAPI.getDependency().getArtifact() ), plexusAPI );
 
-        DefaultDependencyNode xalan =
+        DependencyNode xalan =
             new DefaultDependencyNode( new Dependency( createArtifact( "xalan", "xalan", "2.7.0" ), "compile" ) );
 
         nodes.put( getId( xalan.getDependency().getArtifact() ), xalan );
 
-        DefaultDependencyNode dom4j =
-            new DefaultDependencyNode( new Dependency( createArtifact( "dom4j", "dom4j", "1.6.1" ), "test" ) );
+        DependencyNode dom4j =
+            new TestDefaultDependencyNode( new Dependency( createArtifact( "dom4j", "dom4j", "1.6.1" ), "test" ) );
 
         nodes.put( getId( dom4j.getDependency().getArtifact() ), dom4j );
 
         //dom4j.setFailedUpdateScope("compile");
 
-        DefaultDependencyNode junit =
-            new DefaultDependencyNode( new Dependency( createArtifact( "junit", "junit", "3.8.1" ), "test" ) );
+        DependencyNode junit =
+            new TestDefaultDependencyNode( new Dependency( createArtifact( "junit", "junit", "3.8.1" ), "test" ) );
 
         nodes.put( getId( junit.getDependency().getArtifact() ), junit );
 
-        DefaultDependencyNode easymock = new DefaultDependencyNode(
+        DependencyNode easymock = new TestDefaultDependencyNode(
             new Dependency( createArtifact( "easymock", "easymock", "1.2_Java1.3" ), "test" ) );
 
         nodes.put( getId( easymock.getDependency().getArtifact() ), easymock );
 
-        DefaultDependencyNode easymockExt = new DefaultDependencyNode(
+        DependencyNode easymockExt = new TestDefaultDependencyNode(
             new Dependency( createArtifact( "easymock", "easymockclassextension", "1.2" ), "test" ) );
 
         nodes.put( getId( easymockExt.getDependency().getArtifact() ), easymockExt );
 
-        DependencyNode mainNode = new DefaultDependencyNode(
-            new Dependency( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ), "compile" ) );
+        DependencyNode mainNode = new TestDefaultDependencyNode(
+            new Dependency( createArtifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION ), "" ) );
 
         nodes.put( getId( mainNode.getDependency().getArtifact() ), mainNode );
 
@@ -253,7 +275,7 @@ public class DependencyTreeBuilderTestMaven3
         mainNode.getChildren().add( easymock );
         mainNode.getChildren().add( easymockExt );
 
-        defaultRepositorySystem.setDependencyCollector( new DependencyCollector()
+        /*defaultRepositorySystem.setDependencyCollector( new DependencyCollector()
         {
 
             public CollectResult collectDependencies( RepositorySystemSession session, CollectRequest request )
@@ -272,35 +294,91 @@ public class DependencyTreeBuilderTestMaven3
                 return collectResult;
             }
         } );
+        */
 
-        Configuration configuration = new Configuration();
-        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
-        repoConfig.setId( TEST_REPO_ID );
-        repoConfig.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
-        configuration.addManagedRepository( repoConfig );
-        config.save( configuration );
+        MockControl control = MockControl.createStrictControl( DependencyVisitor.class );
+        DependencyVisitor visitor = (DependencyVisitor) control.getMock();
 
-        //artifactFactory = ((DefaultDependencyTreeBuilder)this.builder).getFactory();
-    }
+        control.expectAndReturn( visitor.visitEnter( mainNode ), true );
 
+        control.expectAndReturn( visitor.visitEnter( commonsLang ), true );
+        control.expectAndReturn( visitor.visitLeave( commonsLang ), true );
 
-    private Artifact createArtifact( String groupId, String artifactId, String version )
-    {
-        return new DefaultArtifact( groupId, artifactId, null, version );
-    }
+        control.expectAndReturn( visitor.visitEnter( commonsIO ), true );
+        control.expectAndReturn( visitor.visitLeave( commonsIO ), true );
 
-    private String getId( Artifact artifact )
-    {
-        return artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion();
-    }
+        control.expectAndReturn( visitor.visitEnter( slf4j ), true );
+        control.expectAndReturn( visitor.visitLeave( slf4j ), true );
 
-    @Test
-    public void testBuilderDependencies()
-        throws Exception
-    {
+        control.expectAndReturn( visitor.visitEnter( plexusAPI ), true );
+        control.expectAndReturn( visitor.visitLeave( plexusAPI ), true );
 
-        builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
-                                     TEST_VERSION, new DependencyVisitor()
+        control.expectAndReturn( visitor.visitEnter( plexusSpring ), true );
+
+        control.expectAndReturn( visitor.visitEnter( springContext ), true );
+        control.expectAndReturn( visitor.visitLeave( springContext ), true );
+
+        control.expectAndReturn( visitor.visitEnter( springTest ), true );
+        control.expectAndReturn( visitor.visitLeave( springTest ), true );
+
+        control.expectAndReturn( visitor.visitEnter( plexusUtils ), true );
+        control.expectAndReturn( visitor.visitLeave( plexusUtils ), true );
+
+        control.expectAndReturn( visitor.visitEnter( slf4jLog4j12 ), true );
+        control.expectAndReturn( visitor.visitLeave( slf4jLog4j12 ), true );
+
+        control.expectAndReturn( visitor.visitEnter( plexusLog4j ), true );
+        control.expectAndReturn( visitor.visitLeave( plexusLog4j ), true );
+
+        control.expectAndReturn( visitor.visitEnter( log4j ), true );
+        control.expectAndReturn( visitor.visitLeave( log4j ), true );
+
+        control.expectAndReturn( visitor.visitEnter( mavenArtifact ), true );
+        control.expectAndReturn( visitor.visitLeave( mavenArtifact ), true );
+
+        control.expectAndReturn( visitor.visitEnter( mavenProject ), true );
+        control.expectAndReturn( visitor.visitLeave( mavenProject ), true );
+
+        control.expectAndReturn( visitor.visitEnter( mavenCore ), true );
+        control.expectAndReturn( visitor.visitLeave( mavenCore ), true );
+
+        control.expectAndReturn( visitor.visitEnter( mavenSettings ), true );
+        control.expectAndReturn( visitor.visitLeave( mavenSettings ), true );
+
+        control.expectAndReturn( visitor.visitEnter( mavenModel ), true );
+        control.expectAndReturn( visitor.visitLeave( mavenModel ), true );
+
+        control.expectAndReturn( visitor.visitEnter( plexusCommandLine ), true );
+        control.expectAndReturn( visitor.visitLeave( plexusCommandLine ), true );
+
+        control.expectAndReturn( visitor.visitEnter( plexusRegistryCommons ), true );
+        control.expectAndReturn( visitor.visitLeave( plexusRegistryCommons ), true );
+
+        control.expectAndReturn( visitor.visitEnter( plexusRegistryApi ), true );
+        control.expectAndReturn( visitor.visitLeave( plexusRegistryApi ), true );
+
+        control.expectAndReturn( visitor.visitLeave( plexusSpring ), true );
+
+        control.expectAndReturn( visitor.visitEnter( xalan ), true );
+        control.expectAndReturn( visitor.visitLeave( xalan ), true );
+
+        control.expectAndReturn( visitor.visitEnter( dom4j ), true );
+        control.expectAndReturn( visitor.visitLeave( dom4j ), true );
+
+        control.expectAndReturn( visitor.visitEnter( junit ), true );
+        control.expectAndReturn( visitor.visitLeave( junit ), true );
+
+        control.expectAndReturn( visitor.visitEnter( easymock ), true );
+        control.expectAndReturn( visitor.visitLeave( easymock ), true );
+
+        control.expectAndReturn( visitor.visitEnter( easymockExt ), true );
+        control.expectAndReturn( visitor.visitLeave( easymockExt ), true );
+
+        control.expectAndReturn( visitor.visitLeave( mainNode ), true );
+
+        control.replay();
+
+        visitor = new DependencyVisitor()
         {
             public boolean visitEnter( DependencyNode dependencyNode )
             {
@@ -311,8 +389,41 @@ public class DependencyTreeBuilderTestMaven3
             {
                 return true;
             }
-        } );
+        };
 
+        builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
+                                     TEST_VERSION, visitor );
 
+        control.verify();
+
+    }
+
+    public static class TestDefaultDependencyNode
+        extends DefaultDependencyNode
+    {
+
+        private TestDefaultDependencyNode( Dependency dependency )
+        {
+            super( dependency );
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals( Object o )
+        {
+            DependencyNode node = (DependencyNode) o;
+            boolean equals = this.getDependency().getArtifact().getGroupId().equals(
+                node.getDependency().getArtifact().getGroupId() ) &&
+                this.getDependency().getArtifact().getArtifactId().equals(
+                    node.getDependency().getArtifact().getArtifactId() ) &&
+                this.getDependency().getArtifact().getVersion().equals(
+                    node.getDependency().getArtifact().getVersion() );
+            return equals;
+        }
     }
 }
