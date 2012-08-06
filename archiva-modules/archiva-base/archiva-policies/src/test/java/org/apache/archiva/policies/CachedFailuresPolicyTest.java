@@ -81,7 +81,7 @@ public class CachedFailuresPolicyTest
         policy.applyPolicy( CachedFailuresPolicy.NO, request, localFile );
     }
 
-    @Test
+    @Test( expected = PolicyViolationException.class )
     public void testPolicyYes()
         throws Exception
     {
@@ -89,28 +89,21 @@ public class CachedFailuresPolicyTest
         DownloadPolicy policy = lookupPolicy();
         File localFile = getFile();
         Properties request = createRequest();
-
-        request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
+        // make unique name
+        String url = "http://a.bad.hostname.maven.org/path/to/resource"+ System.currentTimeMillis() +".txt";
+        
+        request.setProperty( "url", url );
 
         // should not fail
         policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );
         // status Yes Not In cache
 
         // Yes in Cache
-        String url = "http://a.bad.hostname.maven.org/path/to/resource.txt";
-
+        
         urlFailureCache.cacheFailure( url );
 
         request.setProperty( "url", url );
 
-        try
-        {
-            policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );
-            fail( "Expected a PolicyViolationException." );
-        }
-        catch ( PolicyViolationException e )
-        {
-            // expected path.
-        }
+        policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );       
     }
 }

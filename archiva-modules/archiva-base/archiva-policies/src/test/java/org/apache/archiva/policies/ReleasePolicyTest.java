@@ -368,6 +368,7 @@ public class ReleasePolicyTest
 
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
