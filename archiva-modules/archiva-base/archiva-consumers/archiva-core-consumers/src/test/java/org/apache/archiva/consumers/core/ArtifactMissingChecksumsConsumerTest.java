@@ -36,6 +36,7 @@ public class ArtifactMissingChecksumsConsumerTest
     private ManagedRepository repoConfig;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

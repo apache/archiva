@@ -35,6 +35,7 @@ public class RetentionCountRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -47,6 +48,7 @@ public class RetentionCountRepositoryPurgeTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

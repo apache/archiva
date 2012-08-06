@@ -26,6 +26,7 @@ public class MetadataUpdateConsumerTest
     extends AbstractArtifactConsumerTest
 {
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

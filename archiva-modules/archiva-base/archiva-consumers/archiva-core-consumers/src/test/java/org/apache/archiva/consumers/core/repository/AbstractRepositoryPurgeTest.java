@@ -100,6 +100,7 @@ public abstract class AbstractRepositoryPurgeTest
 
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -120,6 +121,7 @@ public abstract class AbstractRepositoryPurgeTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

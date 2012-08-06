@@ -60,6 +60,7 @@ public abstract class AbstractArtifactConsumerTest
 
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -74,6 +75,7 @@ public abstract class AbstractArtifactConsumerTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

@@ -46,6 +46,7 @@ public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -56,6 +57,7 @@ public class RepositoryPurgeConsumerTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

@@ -62,6 +62,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     MetadataTools metadataTools;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -222,6 +223,9 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom" );
         assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom.md5" );
         assertExists( releasesProjectRoot + "/1.0/released-artifact-in-diff-repo-1.0.pom.sha1" );
+        
+        // remove RELEASES_TEST_REPO_ID so this test will be more independant
+        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( RELEASES_TEST_REPO_ID, null, false );
     }
 
     @Test

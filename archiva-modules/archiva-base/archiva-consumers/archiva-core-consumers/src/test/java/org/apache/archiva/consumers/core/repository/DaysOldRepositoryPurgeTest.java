@@ -49,6 +49,7 @@ public class DaysOldRepositoryPurgeTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
