@@ -203,8 +203,6 @@
         <configuration>
           <redirectTestOutputToFile>false</redirectTestOutputToFile>
           <runOrder>alphabetical</runOrder>
-          <!-- see https://jira.codehaus.org/browse/SUREFIRE-828 -->
-          <excludedGroups>foonotatestsurefireissue</excludedGroups>
         </configuration>
         <executions>
           <execution>
