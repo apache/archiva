@@ -81,10 +81,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
 
-    <!-- jackrabbit 2.5.0 supports only lucene 3.0.3 -->
-    <!-- jackrabbit 2.6 will support lucene 3.6.x -->
     <lucene.version>3.6.1</lucene.version>
-    <jackrabbit.version>2.6-SNAPSHOT</jackrabbit.version>
+    <jackrabbit.version>2.5.1</jackrabbit.version>
 
     <cxfVersion>2.6.1</cxfVersion>
     <derbyVersion>10.8.2.2</derbyVersion>
