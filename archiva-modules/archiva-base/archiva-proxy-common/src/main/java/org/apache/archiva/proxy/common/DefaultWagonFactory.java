@@ -82,6 +82,7 @@ public class DefaultWagonFactory
             {
                 headers = new Properties();
             }
+            // FIXME make this configurable !!
             headers.put( "User-Agent", "Java" );
             Method setHttpHeaders = clazz.getMethod( "setHttpHeaders", new Class[]{ Properties.class } );
             setHttpHeaders.invoke( wagon, headers );
