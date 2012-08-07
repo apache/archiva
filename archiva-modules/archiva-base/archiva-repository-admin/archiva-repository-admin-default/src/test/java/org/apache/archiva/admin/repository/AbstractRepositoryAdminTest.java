@@ -51,7 +51,7 @@ public abstract class AbstractRepositoryAdminTest
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    public static final String APPSERVER_BASE_PATH = System.getProperty( "appserver.base" );
+    public static final String APPSERVER_BASE_PATH = AbstractRepositoryAdminTest.fixPath( System.getProperty( "appserver.base" ) );
 
     @Inject
     protected MockAuditListener mockAuditListener;
@@ -73,7 +73,19 @@ public abstract class AbstractRepositoryAdminTest
         AuditInformation auditInformation = new AuditInformation( getFakeUser(), "archiva-localhost" );
         return auditInformation;
     }
-
+    
+   // make a nice repo path to allow unit test to run
+    private static String fixPath ( String path ) 
+    {
+        String SPACE = " ";
+        if ( path.contains( SPACE ) )
+        {
+            LoggerFactory.getLogger( AbstractRepositoryAdminTest.class.getName() ).error( 
+                    "You are building and testing  with {appserver.base}: \n " + path + " containing space. Consider relocating." );
+        }
+        return path.replaceAll( SPACE, "&amp;20");
+    }
+    
     protected User getFakeUser()
     {
         SimpleUser user = new SimpleUser()
