@@ -178,6 +178,17 @@ function() {
       this.activeMenuId = ko.observable();
           
       window.sammyArchivaApplication = Sammy(function () {
+        this.get('#quicksearch~:artifactId',function(){
+          var artifactId= this.params.artifactId;
+          // user can be in a non search view so init the search view first
+          var searchViewModel = new SearchViewModel();
+          var searchRequest = new SearchRequest();
+          searchRequest.artifactId(artifactId);
+          searchViewModel.searchRequest(searchRequest);
+          displaySearch(function(){
+            searchViewModel.externalAdvancedSearch();
+          },searchViewModel);
+        });
         this.get('#open-admin-create-box',function(){
           $.log("#open-admin-create-box");
           adminCreateBox();
@@ -354,14 +365,7 @@ function() {
       },
       select: function( event, ui ) {
         $.log("select artifactId:"+ui.item.artifactId);
-        // user can be in a non search view so init the search view first
-        var searchViewModel = new SearchViewModel();
-        var searchRequest = new SearchRequest();
-        searchRequest.artifactId(ui.item.artifactId);
-        searchViewModel.searchRequest(searchRequest);
-        displaySearch(function(){
-          searchViewModel.externalAdvancedSearch();
-        },searchViewModel);
+        window.sammyArchivaApplication.setLocation("#quicksearch~"+ui.item.artifactId);
       }
 		}).data( "autocomplete" )._renderItem = function( ul, item ) {
 							return $( "<li></li>" )
