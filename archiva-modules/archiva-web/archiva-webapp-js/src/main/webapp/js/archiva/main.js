@@ -205,6 +205,15 @@ function() {
           return;
 
         });
+        this.get('#artifact~:repositoryId/:groupId/:artifactId',function(context){
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var repositoryId = this.params.repositoryId;
+          $.log("get #artifact:"+groupId+":"+artifactId);
+          goToBrowseArtifactDetail(groupId,artifactId,repositoryId);//,null,null);
+          return;
+
+        });
         this.get('#artifact/:groupId/:artifactId/:version',function(context){
 
           var repositoryId = this.params.repositoryId;
