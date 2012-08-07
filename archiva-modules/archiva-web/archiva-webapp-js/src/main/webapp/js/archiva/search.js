@@ -893,7 +893,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             if (i<values.length-2)groupId+=".";
           }
           var artifactId=values[values.length-1];
-          displayArtifactDetail(groupId,artifactId,self);
+          goToArtifactDetail(groupId,artifactId);
         } else {
           var selectedRepo=getSelectedBrowsingRepository();
           var location ="#browse";
