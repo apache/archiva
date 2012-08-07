@@ -43,6 +43,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import org.slf4j.LoggerFactory;
 
 /**
  */
@@ -142,13 +143,26 @@ public abstract class AbstractRepositoryPurgeTest
         }
     }
 
+    private static String fixPath( String path ) 
+    {
+        if ( path.contains( " " ) )
+        {
+            LoggerFactory.getLogger(AbstractRepositoryPurgeTest.class.getName()).error(
+                "You are building and testing  with a path: \n "
+                + path + " containing space. Consider relocating.");
+            return path.replaceAll(" ", "%20");
+        }
+        return path;
+    }
+    
     public ManagedRepository getRepoConfiguration( String repoId, String repoName )
     {
         config = new ManagedRepository();
         config.setId( repoId );
         config.setName( repoName );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        config.setLocation( new File( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );
+        String path =  AbstractRepositoryPurgeTest.fixPath( new File( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );       
+        config.setLocation( path );
         config.setReleases( true );
         config.setSnapshots( true );
         config.setDeleteReleasedSnapshots( true );
@@ -188,7 +202,7 @@ public abstract class AbstractRepositoryPurgeTest
         throws Exception
     {
         removeMavenIndexes();
-        File testDir = getTestRepoRoot();
+        File testDir = getTestRepoRoot();// AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot() );
         FileUtils.deleteDirectory( testDir );
         FileUtils.copyDirectory( new File( "target/test-classes/" + TEST_REPO_ID ), testDir );
 
