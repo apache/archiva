@@ -74,7 +74,7 @@
           ${breadCrumbEntry.displayValue}
         {{else}}
           {{if breadCrumbEntry.artifact}}
-            <a href="#" data-bind="click: function(){displayArtifactDetail(breadCrumbEntry.groupId,breadCrumbEntry.artifactId,null,null)}">${breadCrumbEntry.displayValue}</a>
+            <a href="#" data-bind="click: function(){goToArtifactDetail(breadCrumbEntry.groupId,breadCrumbEntry.artifactId)}">${breadCrumbEntry.displayValue}</a>
           {{else}}
             <a href="#" data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
           {{/if}}
