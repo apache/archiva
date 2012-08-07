@@ -756,8 +756,14 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   changeBrowseRepository=function(){
     var selectedRepository=getSelectedBrowsingRepository();
     // #browse~internal/org.apache.maven
+    // or #artifact~snapshots/org.apache.maven.plugins/maven-compiler-plugin
     var currentHash=window.location.hash;
-    var newLocation = "#browse";
+
+
+
+    $.log("currentHash:"+currentHash);
+
+    var newLocation = currentHash.substringBeforeFirst("/");// "#browse";
     if (selectedRepository){
       newLocation+="~"+selectedRepository;
     }

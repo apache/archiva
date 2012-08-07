@@ -402,6 +402,14 @@ define("utils",["jquery","i18n","jquery.tmpl"], function() {
     return this.substring(0,this.lastIndexOf(str));
   }
 
+  String.prototype.substringBeforeFirst = function(str) {
+    var idx = this.indexOf(str);
+    if(idx<0){
+      return this;
+    }
+    return this.substring(0,idx);
+  }
+
   String.prototype.substringAfterLast = function(str) {
     return this.substring(this.lastIndexOf(str)+1);
   }
