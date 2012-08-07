@@ -41,6 +41,7 @@
         <exclude>maven-metadata-appassembler.xml</exclude>
       </excludes>
       <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
     </fileSet> 
     <fileSet>
       <directory>target/generated-resources/appassembler/jsw/archiva/logs</directory>
@@ -111,6 +112,8 @@
       <includes>
         <include>org.apache.archiva:archiva-webapp-js</include>
       </includes>
+      <fileMode>0755</fileMode>
+      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>
