@@ -205,18 +205,14 @@ function() {
           return;
 
         });
-        this.get('#artifact:repositoryId/:groupId/:artifactId/:version',function(context){
+        this.get('#artifact/:groupId/:artifactId/:version',function(context){
 
           var repositoryId = this.params.repositoryId;
           var groupId= this.params.groupId;
           var artifactId= this.params.artifactId;
           var version= this.params.version;
+          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId);
 
-          if(!version){
-            displayBrowseArtifactDetail(splitted[0],splitted[1]);//,null,null);
-          } else {
-            generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId);
-          }
         });
         this.get('#browse/:groupId',function(context){
           var groupId = this.params.groupId;

@@ -598,6 +598,37 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     artifactVersionDetailViewModel.display();
   }
 
+  goToBrowseArtifactDetail=function(groupId, artifactId){
+    $.log("goToBrowseArtifactDetail:"+groupId+":"+artifactId);
+    displayBrowseGroupId(groupId,null,null);
+    displayArtifactDetail(groupId,artifactId,null,null);
+  }
+
+  /**
+   *
+   */
+  displayBrowseGroupId=function(groupId,repositoryId,artifactId){
+    clearUserMessages();
+    $.log("displayBrowseGroupId:"+groupId+":"+repositoryId);
+    userRepositoriesCall(
+        function(data){
+          var mainContent = $("#main-content");
+          mainContent.html($("#browse-tmpl" ).tmpl());
+          mainContent.find("#browse_result").html(mediumSpinnerImg());
+          var parentBrowseViewModel=new BrowseViewModel(null,null,null,repositoryId);
+          var url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+          if (repositoryId){
+            url+="?repositoryId="+repositoryId;
+            mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
+          }else{
+            mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:""}));
+          }
+          displayGroupDetail(groupId,parentBrowseViewModel,url,repositoryId);
+        }
+    );
+
+  }
+
   /**
    *
    * @param groupId
@@ -606,6 +637,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
    * @param restUrl
    */
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl){
+    $.log("displayArtifactDetail:"+groupId+":"+artifactId);
     var artifactDetailViewModel=new ArtifactDetailViewModel(groupId,artifactId);
     var mainContent = $("#main-content");
     mainContent.find("#browse_artifact_detail" ).hide();
@@ -808,7 +840,14 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           var artifactId=values[values.length-1];
           displayArtifactDetail(groupId,artifactId,self);
         } else {
-          displayBrowseGroupIdFromAutoComplete(ui.item.name);
+          var selectedRepo=getSelectedBrowsingRepository();
+          var location ="#browse";
+          if (selectedRepo){
+            location+="~"+selectedRepo;
+          }
+          location+="/"+ui.item.name;
+          window.sammyArchivaApplication.setLocation(location);
+          //displayBrowseGroupIdFromAutoComplete(ui.item.name);
         }
         return false;
       }
@@ -832,41 +871,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     displayGroupDetail(groupId,parentBrowseViewModel,null);
   }
 
-  /**
-   * called if browser url contains queryParam browse=groupId
-   * @param groupId
-   */
-  displayBrowseGroupId=function(groupId,repositoryId){
-    clearUserMessages();
-    $.log("displayBrowseGroupId:"+groupId+":"+repositoryId);
-    userRepositoriesCall(
-        function(data){
-          var mainContent = $("#main-content");
-          mainContent.html($("#browse-tmpl" ).tmpl());
-          mainContent.find("#browse_result").html(mediumSpinnerImg());
-          var parentBrowseViewModel=new BrowseViewModel(null,null,null,repositoryId);
-          var url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
-          if (repositoryId){
-            url+="?repositoryId="+repositoryId;
-            mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
-          }else{
-            mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:""}));
-          }
-          displayGroupDetail(groupId,parentBrowseViewModel,url,repositoryId);
-        }
-    );
-
-  }
-
   displayBrowseArtifactDetail=function(groupId, artifactId){
     $.log("displayBrowseArtifactDetail");
     window.sammyArchivaApplication.setLocation("#artifact/"+groupId+"/"+artifactId);
-  }
-
-  goToBrowseArtifactDetail=function(groupId, artifactId){
-    $.log("displayBrowseArtifactDetail");
-    displayBrowseGroupId(groupId);
-    displayArtifactDetail(groupId,artifactId,null,null);
   }
 
   mapBrowseResultEntries=function(data){
