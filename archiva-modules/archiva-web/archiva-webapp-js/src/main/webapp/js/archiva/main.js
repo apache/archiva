@@ -223,6 +223,15 @@ function() {
           generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId);
 
         });
+        this.get('#artifact~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId);
+
+        });
         this.get('#browse/:groupId',function(context){
           var groupId = this.params.groupId;
           if (groupId){
