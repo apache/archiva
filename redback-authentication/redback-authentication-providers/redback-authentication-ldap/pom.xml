@@ -100,6 +100,24 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.apache.archiva.redback.authentication.ldap;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.naming*,
+              javax.inject;version="[1,2)",
+              org.apache.archiva.redback.authentication;version=${project.version},
+              org.apache.archiva.redback.common.ldap*;version=${project.version},
+              org.apache.archiva.redback.configuration;version=${project.version},
+              org.apache.archiva.redback.users.ldap.service;version=${project.version},
+              org.apache.commons.lang;version="[2.6,3)",
+              org.springframework.stereotype;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
