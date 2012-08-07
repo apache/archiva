@@ -112,12 +112,6 @@
         <include>org.apache.archiva:archiva-webapp-js</include>
       </includes>
     </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <includes>
-        <include>org.apache.archiva:archiva-docs:zip:docs</include>
-      </includes>
-    </dependencySet>
   </dependencySets>
 </assembly>
 
