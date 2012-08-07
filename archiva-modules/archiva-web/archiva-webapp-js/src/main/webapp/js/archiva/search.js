@@ -762,7 +762,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     var newLocation = currentHash.substringBeforeFirst("/");
     // maybe the current hash contains a repositoryId so remove it
     if (newLocation.indexOf("~")>-1){
-      newLocation=currentHash.substringBeforeFirst("");
+      newLocation=currentHash.substringBeforeFirst("~");
     }
     if (selectedRepository){
       newLocation+="~"+selectedRepository;
