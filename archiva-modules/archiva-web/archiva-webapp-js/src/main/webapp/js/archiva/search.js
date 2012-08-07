@@ -61,11 +61,16 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       // artifactId can contains .
       // value org.apache.aries/org.apache.aries.util
       // split this org.apache.maven and maven-archiver
-      var values = id.substring((self.groupId+'.').length,id.length);//.split(".");
-      $.log("displayProjectEntry:"+id+",groupId:"+self.groupId+",values:"+values);
+      var artifactId = id.substring((self.groupId+'.').length,id.length);//.split(".");
+      var selectedRepo=getSelectedBrowsingRepository();
 
-      displayArtifactDetail(self.groupId,values,self);
-      //window.sammyArchivaApplication.setLocation("#artifact/"+self.groupId+"/"+values);
+      var location ="#artifact";
+      if (selectedRepo){
+        location+="~"+selectedRepo;
+      }
+      location+="/"+self.groupId+"/"+artifactId;
+
+      window.sammyArchivaApplication.setLocation(location);
 
     }
 
@@ -752,7 +757,11 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     var selectedRepository=getSelectedBrowsingRepository();
     // #browse~internal/org.apache.maven
     var currentHash=window.location.hash;
-    var newLocation = "#browse~"+selectedRepository+currentHash.substringAfterFirst("/");
+    var newLocation = "#browse";
+    if (selectedRepository){
+      newLocation+="~"+selectedRepository;
+    }
+    newLocation += currentHash.substringAfterFirst("/");
     // do we have extra path after repository ?
 
     $.log("changeBrowseRepository:"+newLocation);
