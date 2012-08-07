@@ -32,6 +32,7 @@ import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.apache.maven.wagon.StreamWagon;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.authentication.AuthenticationException;
@@ -128,7 +129,7 @@ public class DownloadRemoteIndexTask
                 new URL( this.remoteRepository.getUrl() ).getProtocol() + ( ( this.networkProxy != null
                     && this.networkProxy.isUseNtlm() ) ? "-ntlm" : "" );
 
-            final Wagon wagon = wagonFactory.getWagon( wagonProtocol );
+            final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon( wagonProtocol );
             int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
             // FIXME olamy having 2 config values
             wagon.setReadTimeout( timeoutInMilliseconds );
