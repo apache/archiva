@@ -668,6 +668,14 @@
           <artifactId>geronimo-javamail_1.4_spec</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-activation_1.1_spec</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.codehaus.jettison</groupId>
           <artifactId>jettison</artifactId>
         </exclusion>
