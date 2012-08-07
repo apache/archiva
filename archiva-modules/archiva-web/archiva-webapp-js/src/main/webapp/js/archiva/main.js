@@ -179,6 +179,7 @@ function() {
           
       window.sammyArchivaApplication = Sammy(function () {
         this.get('#quicksearch~:artifactId',function(){
+          $("#main-content" ).html(mediumSpinnerImg());
           var artifactId= this.params.artifactId;
           // user can be in a non search view so init the search view first
           var searchViewModel = new SearchViewModel();
@@ -189,6 +190,36 @@ function() {
             searchViewModel.externalAdvancedSearch();
           },searchViewModel);
         });
+
+        this.get('#basicsearch/:queryterms',function(){
+          var queryterms= this.params.queryterms;
+          $.log("queryterms:"+queryterms);
+          var searchViewModel = new SearchViewModel();
+          var searchRequest = new SearchRequest();
+          searchRequest.queryTerms(queryterms);
+          searchViewModel.searchRequest(searchRequest);
+          displaySearch(function(){
+            searchViewModel.externalBasicSearch();
+          },searchViewModel);
+
+        });
+        this.get('#basicsearch~:repositoryIds/:queryterms',function(){
+          var queryterms= this.params.queryterms;
+          var repositoryIds = this.params.repositoryIds;
+          var repos = repositoryIds.split("~");
+          $.log("queryterms:"+queryterms+',repositoryIds:'+repositoryIds+",repos:"+repos.length);
+          var queryterms= this.params.queryterms;
+          $.log("queryterms:"+queryterms);
+          var searchViewModel = new SearchViewModel();
+          var searchRequest = new SearchRequest();
+          searchRequest.queryTerms(queryterms);
+          searchRequest.repositories=repos;
+          searchViewModel.searchRequest(searchRequest);
+          displaySearch(function(){
+            searchViewModel.externalBasicSearch();
+          },searchViewModel);
+        });
+
         this.get('#open-admin-create-box',function(){
           $.log("#open-admin-create-box");
           adminCreateBox();
