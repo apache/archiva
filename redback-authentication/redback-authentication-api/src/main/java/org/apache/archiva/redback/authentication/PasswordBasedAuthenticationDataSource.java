@@ -73,7 +73,7 @@ public class PasswordBasedAuthenticationDataSource
 
     public String toString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append( "PasswordBasedAuthenticationDataSource[" );
         sb.append( "principal=" ).append( principal );
         sb.append( ",password=" );

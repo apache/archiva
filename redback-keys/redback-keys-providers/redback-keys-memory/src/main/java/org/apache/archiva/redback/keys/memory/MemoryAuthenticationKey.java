@@ -94,7 +94,7 @@ public class MemoryAuthenticationKey
 
     public String toString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append( "MemoryAuthenticationKey[" );
         sb.append( "key=" ).append( key );

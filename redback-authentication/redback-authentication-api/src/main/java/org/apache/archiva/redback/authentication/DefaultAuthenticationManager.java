@@ -109,7 +109,7 @@ public class DefaultAuthenticationManager
 
     private String knownAuthenticators()
     {
-        StringBuffer strbuf = new StringBuffer();
+        StringBuilder strbuf = new StringBuilder();
 
         for ( Authenticator authenticator : authenticators )
         {

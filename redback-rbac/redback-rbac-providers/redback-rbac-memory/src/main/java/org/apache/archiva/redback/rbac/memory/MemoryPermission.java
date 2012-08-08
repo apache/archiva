@@ -178,7 +178,7 @@ public class MemoryPermission
      */
     public String toString()
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append( "name = '" );
         buf.append( getName() + "'" );
         return buf.toString();

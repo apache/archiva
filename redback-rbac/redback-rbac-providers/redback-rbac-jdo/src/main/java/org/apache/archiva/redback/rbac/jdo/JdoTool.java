@@ -259,7 +259,7 @@ public class JdoTool
 
             query.declareImports( "import java.lang.String" );
 
-            StringBuffer filter = new StringBuffer();
+            StringBuilder filter = new StringBuilder();
 
             if ( roleNames.size() > 0 )
             {

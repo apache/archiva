@@ -98,7 +98,7 @@ public class AbstractRbacManagerPerformanceTestCase
         {
             // Failure
 
-            StringBuffer stats = new StringBuffer();
+            StringBuilder stats = new StringBuilder();
 
             stats.append( "Stats on " ).append( msg );
             stats.append( "\nStart Time (ms): " ).append( Long.toString( startTime ) );

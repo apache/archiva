@@ -127,7 +127,7 @@ public class SystemInfoAction
      * The recursive object dumping switchboard.
      *
      * @param seenObjects objects already seen (to prevent cycles)
-     * @param sb          the stringbuffer to populate
+     * @param sb          the StringBuilder to populate
      * @param obj         the object to dump
      * @param indent      the current indent string.
      * @param depth       the depth in the tree.

@@ -40,7 +40,7 @@ public class JdoUserQuery
      */
     public String getOrdering()
     {
-        StringBuffer ordering = new StringBuffer();
+        StringBuilder ordering = new StringBuilder();
 
         if ( UserQuery.ORDER_BY_EMAIL.equals( getOrderBy() ) )
         {

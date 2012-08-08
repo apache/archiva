@@ -60,7 +60,7 @@ public class DateUtils
 
         SimpleDateFormat format = new SimpleDateFormat( dateFormat );
 
-        StringBuffer out = new StringBuffer();
+        StringBuilder out = new StringBuilder();
         out.append( format.format( date ) );
         out.append( " - " );
 

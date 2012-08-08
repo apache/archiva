@@ -72,7 +72,7 @@ public class TokenBasedAuthenticationDataSource
 
     public String toString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append( "TokenBasedAuthenticationDataSource[" );
         sb.append( "principal=" ).append( principal );
         sb.append( ",token=" ).append( token );

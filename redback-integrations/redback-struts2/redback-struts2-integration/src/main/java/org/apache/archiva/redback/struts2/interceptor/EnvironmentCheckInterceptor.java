@@ -80,7 +80,7 @@ public class EnvironmentCheckInterceptor
 
             if ( !violations.isEmpty() )
             {
-                StringBuffer msg = new StringBuffer();
+                StringBuilder msg = new StringBuilder();
                 msg.append( "EnvironmentCheck Failure.\n" );
                 msg.append( "======================================================================\n" );
                 msg.append( " ENVIRONMENT FAILURE !! \n" );

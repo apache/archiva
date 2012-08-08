@@ -64,7 +64,7 @@ public abstract class UserCredentials
 
     public String toString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append( "UserCredentials[" );
         sb.append( "username=" ).append( username );

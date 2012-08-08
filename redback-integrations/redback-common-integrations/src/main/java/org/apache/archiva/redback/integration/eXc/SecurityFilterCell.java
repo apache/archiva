@@ -102,7 +102,7 @@ public class SecurityFilterCell
             html.value( value );
         }
 
-        StringBuffer onkeypress = new StringBuffer();
+        StringBuilder onkeypress = new StringBuilder();
         onkeypress.append( "if (event.keyCode == 13) {" );
         onkeypress.append( new TableActions( model ).getFilterAction() );
         onkeypress.append( "}" );
