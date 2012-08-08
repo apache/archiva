@@ -97,7 +97,7 @@ public class DateUtil
             --leftDays;
         }
 
-        StringBuffer interval = new StringBuffer();
+        StringBuilder interval = new StringBuilder();
 
         appendInterval( interval, leftDays, "Day" );
         appendInterval( interval, leftHours, "Hour" );
@@ -108,7 +108,7 @@ public class DateUtil
         return interval.toString();
     }
 
-    private static void appendInterval( StringBuffer interval, int count, String type )
+    private static void appendInterval( StringBuilder interval, int count, String type )
     {
         if ( count > 0 )
         {

@@ -268,10 +268,10 @@ define(['module'], function (module) {
                 file = new java.io.File(url),
                 lineSeparator = java.lang.System.getProperty("line.separator"),
                 input = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(file), encoding)),
-                stringBuffer, line,
+                StringBuilder, line,
                 content = '';
             try {
-                stringBuffer = new java.lang.StringBuffer();
+                StringBuilder = new java.lang.StringBuilder();
                 line = input.readLine();
 
                 // Byte Order Mark (BOM) - The Unicode Standard, version 3.0, page 324
@@ -286,14 +286,14 @@ define(['module'], function (module) {
                     line = line.substring(1);
                 }
 
-                stringBuffer.append(line);
+                StringBuilder.append(line);
 
                 while ((line = input.readLine()) !== null) {
-                    stringBuffer.append(lineSeparator);
-                    stringBuffer.append(line);
+                    StringBuilder.append(lineSeparator);
+                    StringBuilder.append(line);
                 }
                 //Make sure we return a JavaScript string and not a Java string.
-                content = String(stringBuffer.toString()); //String
+                content = String(StringBuilder.toString()); //String
             } finally {
                 input.close();
             }

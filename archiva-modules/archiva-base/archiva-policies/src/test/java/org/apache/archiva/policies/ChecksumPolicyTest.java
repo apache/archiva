@@ -298,7 +298,7 @@ public class ChecksumPolicyTest
 
     private String createMessage( String settingType, String md5State, String sha1State )
     {
-        StringBuffer msg = new StringBuffer();
+        StringBuilder msg = new StringBuilder();
         msg.append( "Expected result of ChecksumPolicy.apply(" );
         msg.append( settingType.toUpperCase() );
         msg.append( ") when working with " );

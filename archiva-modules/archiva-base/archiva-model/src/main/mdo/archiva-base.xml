@@ -504,7 +504,7 @@
           
     public static String toKey( ProjectReference reference )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( defaultString( reference.getGroupId() ) ).append( ":" );
         key.append( defaultString( reference.getArtifactId() ) );
@@ -574,7 +574,7 @@
           
     public static String toKey( VersionedReference reference )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( defaultString( reference.getGroupId() ) ).append( ":" );
         key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
@@ -664,7 +664,7 @@
           
     public static String toKey( ArtifactReference artifactReference )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( defaultString( artifactReference.getGroupId() ) ).append( ":" );
         key.append( defaultString( artifactReference.getArtifactId() ) ).append( ":" );
@@ -677,7 +677,7 @@
 
     public static String toVersionlessKey( ArtifactReference artifactReference )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( defaultString( artifactReference.getGroupId() ) ).append( ":" );
         key.append( defaultString( artifactReference.getArtifactId() ) ).append( ":" );

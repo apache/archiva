@@ -38,7 +38,7 @@ public class XMLWriterTest
     public void testWrite()
         throws Exception
     {
-        StringBuffer expected = new StringBuffer();
+        StringBuilder expected = new StringBuilder();
 
         expected.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
         expected.append( "\n" );

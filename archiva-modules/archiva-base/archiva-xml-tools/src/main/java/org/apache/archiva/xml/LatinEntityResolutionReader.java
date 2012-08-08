@@ -96,7 +96,7 @@ public class LatinEntityResolutionReader
             }
         }
 
-        StringBuffer sbuf = getExpandedBuffer( current_requested_length );
+        StringBuilder sbuf = getExpandedBuffer( current_requested_length );
 
         // Have we reached the end of the buffer?
         if ( sbuf == null )
@@ -127,10 +127,10 @@ public class LatinEntityResolutionReader
         return ( current_requested_offset - offset ) + tmp_length;
     }
 
-    private StringBuffer getExpandedBuffer( int minimum_length )
+    private StringBuilder getExpandedBuffer( int minimum_length )
         throws IOException
     {
-        StringBuffer buf = null;
+        StringBuilder buf = null;
         String line = this.originalReader.readLine();
         boolean done = ( line == null );
 
@@ -138,7 +138,7 @@ public class LatinEntityResolutionReader
         {
             if ( buf == null )
             {
-                buf = new StringBuffer();
+                buf = new StringBuilder();
             }
 
             buf.append( expandLine( line ) );
@@ -165,7 +165,7 @@ public class LatinEntityResolutionReader
 
     private String expandLine( String line )
     {
-        StringBuffer ret = new StringBuffer();
+        StringBuilder ret = new StringBuilder();
 
         int offset = 0;
         String entity;

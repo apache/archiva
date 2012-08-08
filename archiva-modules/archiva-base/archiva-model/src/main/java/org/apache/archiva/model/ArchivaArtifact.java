@@ -197,7 +197,7 @@ public class ArchivaArtifact
     @Override
     public String toString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if ( model.getGroupId() != null )
         {
             sb.append( model.getGroupId() );
@@ -213,7 +213,7 @@ public class ArchivaArtifact
         return sb.toString();
     }
 
-    private void appendArtifactTypeClassifierString( StringBuffer sb )
+    private void appendArtifactTypeClassifierString( StringBuilder sb )
     {
         sb.append( model.getArtifactId() );
         sb.append( ":" );

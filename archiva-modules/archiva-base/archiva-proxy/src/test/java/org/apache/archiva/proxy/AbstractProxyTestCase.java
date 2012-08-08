@@ -353,7 +353,7 @@ public abstract class AbstractProxyTestCase
             org.apache.commons.io.FileUtils.listFiles( workingDir, new String[]{ "tmp" }, false );
         if ( !tmpFiles.isEmpty() )
         {
-            StringBuffer emsg = new StringBuffer();
+            StringBuilder emsg = new StringBuilder();
             emsg.append( "Found Temp Files in dir: " ).append( workingDir.getPath() );
             for ( File tfile : tmpFiles )
             {

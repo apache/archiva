@@ -91,7 +91,7 @@ public abstract class AbstractWebworkTestCase
         assertNotNull( errors );
         if ( errors.size() > 0 )
         {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
             msg.append( "Should have had no errors. but found the following errors." );
     
             for ( String error : errors )
@@ -114,7 +114,7 @@ public abstract class AbstractWebworkTestCase
     
         if ( !StringUtils.equals( expectedStatus, (String) actualStatus ) )
         {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
             msg.append( "Unexpected status returned from method <" );
             msg.append( methodName ).append( "> on action <" );
             String clazzname = action.getClass().getName();

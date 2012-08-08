@@ -71,7 +71,7 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
     protected String createVersionMetadata( String groupId, String artifactId, String version, String timestamp,
                                           String buildNumber, String lastUpdated )
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" );
         buf.append( "<metadata>\n" );
@@ -106,7 +106,7 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
     protected String createProjectMetadata( String groupId, String artifactId, String latest, String release,
                                           String[] versions )
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" );
         buf.append( "<metadata>\n" );
@@ -146,7 +146,7 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
 
     protected String createGroupMetadata( String groupId, String[] plugins )
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" );
         buf.append( "<metadata>\n" );

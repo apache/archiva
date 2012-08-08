@@ -187,7 +187,7 @@ public class FilenameParser
     {
         boolean done = false;
 
-        StringBuffer ver = new StringBuffer();
+        StringBuilder ver = new StringBuilder();
 
         // Any text upto the end of a special case is considered non-version. 
         Matcher specialMat = mavenPluginPattern.matcher( name );

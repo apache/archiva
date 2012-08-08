@@ -83,7 +83,7 @@ public class LatinEntityResolutionReaderTest
         File exampleFile = getExampleXml( examplePath );
         FileReader fileReader = new FileReader( exampleFile );
         BufferedReader lineReader = new BufferedReader( fileReader );
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         boolean hasContent = false;
 
@@ -122,7 +122,7 @@ public class LatinEntityResolutionReaderTest
         }
     }
 
-    private void assertProperRead( StringBuffer expected, String sourcePath, int bufSize )
+    private void assertProperRead( StringBuilder expected, String sourcePath, int bufSize )
     {
         try
         {
@@ -145,7 +145,7 @@ public class LatinEntityResolutionReaderTest
     public void testReaderNormalBufsize()
         throws IOException
     {
-        StringBuffer expected = new StringBuffer();
+        StringBuilder expected = new StringBuilder();
 
         expected.append( "<basic>\n" );
         expected.append( "  <names>\n" );
@@ -161,7 +161,7 @@ public class LatinEntityResolutionReaderTest
     public void testReaderSmallBufsize()
         throws IOException
     {
-        StringBuffer expected = new StringBuffer();
+        StringBuilder expected = new StringBuilder();
 
         expected.append( "<basic>\n" );
         expected.append( "  <names>\n" );
@@ -177,7 +177,7 @@ public class LatinEntityResolutionReaderTest
     public void testReaderRediculouslyTinyBufsize()
         throws IOException
     {
-        StringBuffer expected = new StringBuffer();
+        StringBuilder expected = new StringBuilder();
 
         expected.append( "<basic>\n" );
         expected.append( "  <names>\n" );
@@ -193,7 +193,7 @@ public class LatinEntityResolutionReaderTest
     public void testReaderHugeBufsize()
         throws IOException
     {
-        StringBuffer expected = new StringBuffer();
+        StringBuilder expected = new StringBuilder();
 
         expected.append( "<basic>\n" );
         expected.append( "  <names>\n" );

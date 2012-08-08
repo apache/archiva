@@ -119,7 +119,7 @@ public class RepositoryScanStatistics
 
     public String toDump( ManagedRepository repo )
     {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         buf.append( "\n.\\ Scan of " ).append( this.getRepositoryId() );
         buf.append( " \\.__________________________________________" );

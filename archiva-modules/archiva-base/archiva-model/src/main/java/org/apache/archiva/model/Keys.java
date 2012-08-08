@@ -30,7 +30,7 @@ public class Keys
 {
     public static String toKey( String groupId, String artifactId, String version, String classifier, String type )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( groupId ).append( ":" );
         key.append( artifactId ).append( ":" );
@@ -48,7 +48,7 @@ public class Keys
 
     public static String toKey( ProjectReference ref )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( ref.getGroupId() ).append( ":" );
         key.append( ref.getArtifactId() );
@@ -58,7 +58,7 @@ public class Keys
 
     public static String toKey( String groupId, String artifactId, String version )
     {
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
 
         key.append( groupId ).append( ":" );
         key.append( artifactId ).append( ":" );

@@ -124,7 +124,7 @@ public class ProxyConnector
     @Override
     public String toString()
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append( "ProxyConnector[\n" );
         sb.append( "  source: [managed] " ).append( this.sourceRepository.getRepoRoot() ).append( "\n" );

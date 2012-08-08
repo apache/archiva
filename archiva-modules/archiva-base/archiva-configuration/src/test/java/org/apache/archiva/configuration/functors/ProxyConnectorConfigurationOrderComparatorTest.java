@@ -101,7 +101,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
 
         if ( orderFailedAt >= 0 )
         {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
 
             msg.append( "Failed expected order of the proxies <" );
             msg.append( StringUtils.join( ids, ", " ) );

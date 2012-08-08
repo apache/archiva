@@ -150,7 +150,7 @@ public class ManagedLegacyRepositoryContentTest
             "org.apache.maven/distributions/testing-1.0.tar.gz", "org.apache.maven/distributions/testing-1.0.zip",
             "org.apache.maven/javadoc.jars/testing-1.0-javadoc.jar" };
 
-        StringBuffer relatedDebugString = new StringBuffer();
+        StringBuilder relatedDebugString = new StringBuilder();
         relatedDebugString.append( "[" );
         for ( ArtifactReference ref : related )
         {

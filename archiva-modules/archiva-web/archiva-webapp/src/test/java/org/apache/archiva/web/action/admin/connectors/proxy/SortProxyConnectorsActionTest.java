@@ -194,7 +194,7 @@ public class SortProxyConnectorsActionTest
 
         if ( orderFailedAt >= 0 )
         {
-            StringBuffer msg = new StringBuffer();
+            StringBuilder msg = new StringBuilder();
 
             msg.append( "Failed expected order of the proxy connectors <" );
             msg.append( StringUtils.join( targetRepoOrder, ", " ) );
