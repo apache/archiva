@@ -227,19 +227,19 @@ public class DownloadRemoteIndexTask
     {
         private Logger log = LoggerFactory.getLogger( getClass() );
 
-        String reourceName;
+        String resourceName;
 
         long startTime;
 
         public void transferInitiated( TransferEvent transferEvent )
         {
-            reourceName = transferEvent.getResource().getName();
-            log.debug( "initiate transfer of {}", reourceName );
+            resourceName = transferEvent.getResource().getName();
+            log.debug( "initiate transfer of {}", resourceName );
         }
 
         public void transferStarted( TransferEvent transferEvent )
         {
-            reourceName = transferEvent.getResource().getName();
+            resourceName = transferEvent.getResource().getName();
             startTime = System.currentTimeMillis();
             log.info( "start transfer of {}", transferEvent.getResource().getName() );
         }
@@ -252,7 +252,7 @@ public class DownloadRemoteIndexTask
 
         public void transferCompleted( TransferEvent transferEvent )
         {
-            reourceName = transferEvent.getResource().getName();
+            resourceName = transferEvent.getResource().getName();
             long endTime = System.currentTimeMillis();
             log.info( "end of transfer file {}: {}s", transferEvent.getResource().getName(),
                       ( endTime - startTime ) / 1000 );
