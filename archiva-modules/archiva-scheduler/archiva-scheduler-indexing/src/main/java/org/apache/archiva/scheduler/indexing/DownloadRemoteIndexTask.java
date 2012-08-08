@@ -110,7 +110,7 @@ public class DownloadRemoteIndexTask
         stopWatch.start();
         try
         {
-            log.info( "start download remote index for remote repository " + this.remoteRepository.getId() );
+            log.info( "start download remote index for remote repository {}", this.remoteRepository.getId() );
             IndexingContext indexingContext = remoteRepositoryAdmin.createIndexContext( this.remoteRepository );
 
             // create a temp directory to download files
@@ -217,7 +217,7 @@ public class DownloadRemoteIndexTask
         }
         catch ( IOException e )
         {
-            log.warn( "skip error delete " + f + ": " + e.getMessage() );
+            log.warn( "skip error delete {} : {}", f, e.getMessage() );
         }
     }
 
