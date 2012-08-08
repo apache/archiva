@@ -212,8 +212,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom.sha1" );
 
         String releasesProjectRoot =
-            new File( "target/test-" + getName() + "/releases-test-repo-one" ).getAbsolutePath()
-                + "/org/apache/archiva/released-artifact-in-diff-repo";
+            AbstractRepositoryPurgeTest.fixPath( new File( "target/test-" + getName() + "/releases-test-repo-one" ).getAbsolutePath()
+                + "/org/apache/archiva/released-artifact-in-diff-repo" );
 
         // check if the released version was not removed
         assertExists( releasesProjectRoot + "/1.0" );

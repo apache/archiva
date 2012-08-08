@@ -143,7 +143,7 @@ public abstract class AbstractRepositoryPurgeTest
         }
     }
 
-    private static String fixPath( String path ) 
+    protected static String fixPath( String path ) 
     {
         if ( path.contains( " " ) )
         {
@@ -202,15 +202,18 @@ public abstract class AbstractRepositoryPurgeTest
         throws Exception
     {
         removeMavenIndexes();
-        File testDir = getTestRepoRoot();// AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot() );
+        File testDir = new File( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().getAbsolutePath() ) ) ;// AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot() );
         FileUtils.deleteDirectory( testDir );
-        FileUtils.copyDirectory( new File( "target/test-classes/" + TEST_REPO_ID ), testDir );
+        File sourceDir = new File ( new File( "target/test-classes/" + TEST_REPO_ID).getAbsolutePath() );
+        FileUtils.copyDirectory( sourceDir, testDir );
 
-        File releasesTestDir = new File( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID );
+        File releasesTestDir = new File( AbstractRepositoryPurgeTest.fixPath( new File( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID ).getAbsolutePath() ) );
+        
         FileUtils.deleteDirectory( releasesTestDir );
-        FileUtils.copyDirectory( new File( "target/test-classes/" + RELEASES_TEST_REPO_ID ), releasesTestDir );
+        File sourceReleasesDir = new File ( new File( "target/test-classes/" + RELEASES_TEST_REPO_ID).getAbsolutePath() );
+        FileUtils.copyDirectory( sourceReleasesDir, releasesTestDir );
 
-        return testDir.getAbsolutePath();
+        return AbstractRepositoryPurgeTest.fixPath( testDir.getAbsolutePath() );
     }
 
     @Override
