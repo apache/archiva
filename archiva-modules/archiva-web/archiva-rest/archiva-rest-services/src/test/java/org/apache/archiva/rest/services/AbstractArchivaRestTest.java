@@ -46,7 +46,10 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Date;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Olivier Lamy
@@ -67,22 +70,31 @@ public abstract class AbstractArchivaRestTest
 
     // END SNIPPET: authz-header
 
-
+    @BeforeClass 
+    public static void chekRepo() {
+        Assume.assumeTrue( !System.getProperty( "appserver.base" ).contains(" ") );
+        LoggerFactory.getLogger( AbstractArchivaRestTest.class.getName() ).
+                error( "Rest services unit test must be run in a folder with no space" );
+        // skygo: was not possible to fix path in this particular module
+        // Skip test if not in proper folder , otherwise test are not fair coz repository
+        // cannot have space in their name.
+    }
+    
     @Override
     @Before
     public void startServer()
         throws Exception
-    {
+    {        
         File appServerBase = new File( System.getProperty( "appserver.base" ) );
 
         File jcrDirectory = new File( appServerBase, "jcr" );
-
+        
         if ( jcrDirectory.exists() )
         {
             FileUtils.deleteDirectory( jcrDirectory );
         }
 
-        super.startServer();
+        super.startServer();        
     }
 
     @Override
@@ -91,6 +103,7 @@ public abstract class AbstractArchivaRestTest
         return "classpath*:META-INF/spring-context.xml,classpath:META-INF/spring-context-test.xml";
     }
 
+    @Override
     protected String getRestServicesPath()
     {
         return "restServices";
@@ -233,7 +246,7 @@ public abstract class AbstractArchivaRestTest
 
     protected SearchService getSearchService( String authzHeader )
     {
-        // START SNIPPET: cxf-searchservice-creation
+        // START SNIPPET: cxf-searchservice-creation        
         SearchService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        SearchService.class,
@@ -373,7 +386,7 @@ public abstract class AbstractArchivaRestTest
         }
 
     }
-
+    
     protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan )
         throws Exception
     {
@@ -391,7 +404,7 @@ public abstract class AbstractArchivaRestTest
         {
             FileUtils.deleteDirectory( badContent );
         }
-
+        
         managedRepository.setLocation( new File( repoPath ).getPath() );
         managedRepository.setIndexDirectory(
             System.getProperty( "java.io.tmpdir" ) + "/target/.index-" + Long.toString( new Date().getTime() ) );
