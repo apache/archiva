@@ -17,9 +17,8 @@
  * under the License.
  */
 
-/* $Id$ */
-
 body{padding-top: 4px;}
+
 .xleftbanner, #bannerLeft img {
   float: left;
 }
