@@ -248,8 +248,9 @@ function() {
         var checkArtifactDetailContent=function(groupId,artifactId,version,repositoryId,tabToActivate,idContentToCheck,contentDisplayFn){
           // no need to recalculate all stuff just activate the tab
           var htmlId = idContentToCheck?idContentToCheck:"browse_artifact_detail";
-          if($("#main-content #"+htmlId ).html()!=null){
-            if( $.trim($("#browse_artifact_detail" ).html().length)>0){
+          var htmlIdSelect = $("#main-content #"+htmlId );
+          if(htmlIdSelect.html()!=null){
+            if( $.trim(htmlIdSelect.html().length)>0){
               $("#main-content #"+tabToActivate).tab('show')
               return;
             }
@@ -258,7 +259,7 @@ function() {
                                                    function(){
                                                      $("#main-content #"+tabToActivate).tab('show')
                                                      if(contentDisplayFn){
-                                                       contentDisplayFn();
+                                                       contentDisplayFn(groupId,artifactId,version);
                                                      }
                                                    }
           );
@@ -320,35 +321,35 @@ function() {
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependency-tree-content-a");
         });
 
+
+        var calculateUsedBy=function(groupId,artifactId,version){
+          var dependeesContentDiv=$("#main-content #artifact-details-used-by-content" );
+          if( $.trim(dependeesContentDiv.html()).length<1){
+            dependeesContentDiv.html(mediumSpinnerImg());
+            var dependeesUrl="restServices/archivaServices/browseService/dependees/"+encodeURIComponent(groupId);
+            dependeesUrl+="/"+encodeURIComponent(artifactId);
+            dependeesUrl+="/"+encodeURIComponent(version);
+            var selectedRepo=getSelectedBrowsingRepository();
+            if (selectedRepo){
+              dependeesUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+            }
+            $.ajax(dependeesUrl, {
+              type: "GET",
+              dataType: 'json',
+              success: function(data) {
+                var artifacts=mapArtifacts(data);
+                dependeesContentDiv.html($("#dependees_tmpl").tmpl({artifacts: artifacts}));
+              }
+            });
+          }
+        }
+
         this.get('#artifact-used-by/:groupId/:artifactId/:version',function(context){
 
           var repositoryId = this.params.repositoryId;
           var groupId= this.params.groupId;
           var artifactId= this.params.artifactId;
           var version= this.params.version;
-
-          var calculateUsedBy=function(){
-            var dependeesContentDiv=$("#main-content #artifact-details-used-by-content" );
-            if( $.trim(dependeesContentDiv.html()).length<1){
-              dependeesContentDiv.html(mediumSpinnerImg());
-              var dependeesUrl="restServices/archivaServices/browseService/dependees/"+encodeURIComponent(groupId);
-              dependeesUrl+="/"+encodeURIComponent(artifactId);
-              dependeesUrl+="/"+encodeURIComponent(version);
-              var selectedRepo=getSelectedBrowsingRepository();
-              if (selectedRepo){
-                dependeesUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
-              }
-              $.ajax(dependeesUrl, {
-                type: "GET",
-                dataType: 'json',
-                success: function(data) {
-                  var artifacts=mapArtifacts(data);
-                  dependeesContentDiv.html($("#dependees_tmpl").tmpl({artifacts: artifacts}));
-                }
-              });
-            }
-          }
-
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-used-by-content-a","artifact-details-used-by-content",calculateUsedBy);
         });
 
@@ -358,7 +359,7 @@ function() {
           var groupId= this.params.groupId;
           var artifactId= this.params.artifactId;
           var version= this.params.version;
-          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-used-by-content-a");
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-used-by-content-a","artifact-details-used-by-content",calculateUsedBy);
         });
 
 
