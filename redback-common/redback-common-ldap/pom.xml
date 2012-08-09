@@ -70,6 +70,24 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.apache.archiva.redback.common.ldap*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.naming*,
+              javax.inject;version="[1,2)",
+              org.apache.archiva.redback.configuration;version=${project.version},
+              org.apache.archiva.redback.users;version=${project.version},
+              org.apache.commons.lang;version="[2.6,3)",
+              org.springframework.stereotype;version="[3,4)",
+              com.sun.jndi.ldap;resolution:=optional,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
     </plugins>
   </build>

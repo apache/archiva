@@ -90,6 +90,25 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.apache.archiva.redback.common.jdo*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject;version="[1,2)",
+              javax.jdo;version="[2,3)",
+              org.apache.archiva.redback.components.jdo;version=${project.version},
+              org.apache.archiva.redback.configuration;version=${project.version},
+              org.apache.commons.lang;version="[2.6,3)",
+              org.codehaus.plexus.interpolation;version="[1.9,2)",
+              org.jpox*;version="[1.1,2)",
+              org.springframework.stereotype;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
     </plugins>
   </build>
