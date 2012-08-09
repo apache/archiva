@@ -36,7 +36,7 @@ import java.util.List;
  * RequiredRolesEnvironmentCheck:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 @Service( "environmentCheck#guest-user-check" )
 public class GuestUserEnvironmentCheck

@@ -44,7 +44,7 @@ import java.util.List;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- * @version "$Id$"
+ *
  */
 @Service( "userManager#ldap" )
 public class LdapUserManager

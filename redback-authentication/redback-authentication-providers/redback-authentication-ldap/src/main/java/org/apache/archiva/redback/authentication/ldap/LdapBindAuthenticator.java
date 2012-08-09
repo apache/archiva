@@ -47,7 +47,6 @@ import javax.naming.directory.SearchResult;
  * LdapBindAuthenticator:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
  */
 @Service( "authenticator#ldap" )
 public class LdapBindAuthenticator

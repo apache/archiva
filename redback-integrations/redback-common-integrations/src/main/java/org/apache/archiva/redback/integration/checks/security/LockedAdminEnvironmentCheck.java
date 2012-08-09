@@ -41,7 +41,7 @@ import java.util.List;
  * and unlocks them on startup.
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 @Service( "environmentCheck#locked-admin-check" )
 public class LockedAdminEnvironmentCheck

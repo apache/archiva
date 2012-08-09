@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 /**
  * Basic Password Rule. Checks that password only contains alpha-numeric characters.
  *
- * $Id$
  */
 @Service("passwordRule#alpha-numeric")
 public class AlphaNumericPasswordRule

@@ -24,7 +24,6 @@ package org.apache.archiva.redback.authorization;
  * EntityAuthenticationException.java
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $ID:$
  */
 public class AuthorizationException
     extends Exception

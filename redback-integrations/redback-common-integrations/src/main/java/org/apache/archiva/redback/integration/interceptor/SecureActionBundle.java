@@ -28,7 +28,7 @@ import org.apache.archiva.redback.rbac.Resource;
  * SecureActionBundle:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 public class SecureActionBundle
 {

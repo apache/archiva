@@ -33,7 +33,7 @@ import javax.inject.Inject;
  * TestAuthenticationManager:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $ID:$
+ *
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

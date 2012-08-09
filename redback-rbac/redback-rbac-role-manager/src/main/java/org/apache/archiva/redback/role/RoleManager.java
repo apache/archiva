@@ -27,7 +27,7 @@ import java.net.URL;
  * RoleProfileManager:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 public interface RoleManager
 {

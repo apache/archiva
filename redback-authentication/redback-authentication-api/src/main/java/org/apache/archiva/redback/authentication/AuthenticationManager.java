@@ -28,7 +28,6 @@ import java.util.List;
  * AuthenticationManager:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
  */
 public interface AuthenticationManager
 {

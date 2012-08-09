@@ -26,7 +26,7 @@ import javax.annotation.PostConstruct;
 /**
  * Basic Password Rule. Checks that password does not have whitespaces in it.
  *
- * $Id$
+ *
  */
 @Service("passwordRule#no-whitespaces")
 public class WhitespacePasswordRule

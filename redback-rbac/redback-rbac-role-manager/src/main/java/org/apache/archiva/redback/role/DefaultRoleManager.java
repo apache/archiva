@@ -57,7 +57,7 @@ import java.util.Map;
  * RoleProfileManager:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 @Service( "roleManager" )
 public class DefaultRoleManager

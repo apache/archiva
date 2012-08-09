@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- * @version "$Id$"
+ *
  */
 @Service
 public class DefaultLdapController

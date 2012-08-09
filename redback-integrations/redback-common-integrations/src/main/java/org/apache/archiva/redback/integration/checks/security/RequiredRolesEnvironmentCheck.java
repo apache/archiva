@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
  * assigned.
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 @Service("environmentCheck#required-roles")
 public class RequiredRolesEnvironmentCheck

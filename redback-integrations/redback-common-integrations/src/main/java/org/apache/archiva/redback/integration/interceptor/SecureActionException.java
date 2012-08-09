@@ -23,7 +23,7 @@ package org.apache.archiva.redback.integration.interceptor;
  * SecureActionException:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 public class SecureActionException
     extends Exception

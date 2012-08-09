@@ -41,7 +41,6 @@ import java.util.Map;
  * auth procedure followed by authentication based on a known key for 'remember me' type functionality.
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
  */
 @Service("authenticationManager")
 public class DefaultAuthenticationManager

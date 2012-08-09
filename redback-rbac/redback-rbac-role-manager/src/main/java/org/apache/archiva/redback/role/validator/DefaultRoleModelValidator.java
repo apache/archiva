@@ -38,7 +38,7 @@ import java.util.List;
  * DefaultRoleModelValidator: validates completeness of the model
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 @Service( "roleModelValidator" )
 public class DefaultRoleModelValidator

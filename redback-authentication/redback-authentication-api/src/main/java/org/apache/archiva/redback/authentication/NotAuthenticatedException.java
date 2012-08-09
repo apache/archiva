@@ -23,7 +23,6 @@ package org.apache.archiva.redback.authentication;
  * EntityAuthenticationException.java
  *
  * @author Dan Diephouse
- * @since $Id$
  */
 public class NotAuthenticatedException
     extends Exception
@@ -33,6 +32,7 @@ public class NotAuthenticatedException
      */
     public NotAuthenticatedException()
     {
+        // no op
     }
 
     /**

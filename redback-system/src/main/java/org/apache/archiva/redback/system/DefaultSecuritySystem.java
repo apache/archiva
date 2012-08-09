@@ -45,7 +45,7 @@ import javax.inject.Named;
  * DefaultSecuritySystem:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  */
 @Service( "securitySystem" )
 public class DefaultSecuritySystem

@@ -25,7 +25,7 @@ import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants
  * RoleConstants:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
+ *
  * @deprecated use {@link RedbackRoleConstants}
  */
 public class RoleConstants

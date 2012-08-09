@@ -43,7 +43,6 @@ import javax.annotation.Resource;
  * KeyStoreAuthenticator:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
  */
 @Service( "authenticator#keystore" )
 public class KeyStoreAuthenticator
@@ -59,7 +58,7 @@ public class KeyStoreAuthenticator
 
     public String getId()
     {
-        return "$Id$";
+        return getClass().getName();
     }
 
     public AuthenticationResult authenticate( AuthenticationDataSource source )

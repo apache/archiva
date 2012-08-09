@@ -34,7 +34,6 @@ import org.apache.archiva.redback.users.UserManager;
  * SecuritySystem:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $ID:$
  *
  */
 public interface SecuritySystem

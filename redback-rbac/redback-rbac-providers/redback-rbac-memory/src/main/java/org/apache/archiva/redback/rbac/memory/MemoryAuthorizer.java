@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author: Jesse McConnell <jesse@codehaus.org>
- * @version: $Id$
   */
 @Service("authorizer#memory")
 public class MemoryAuthorizer
