@@ -243,7 +243,42 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
               ko.applyBindings(self,mainContent.find("#browse_breadcrumb" ).get(0));
               mainContent.find("#browse-autocomplete" ).hide();
               mainContent.find("#browse-autocomplete-divider" ).hide();
+
+              //calculate tree content
+              var treeContentDiv=mainContent.find("#artifact-details-dependency-tree-content" );
+              if( $.trim(treeContentDiv.html()).length<1){
+                treeContentDiv.html(mediumSpinnerImg());
+                var treeDependencyUrl="restServices/archivaServices/browseService/treeEntries/"+encodeURIComponent(groupId);
+                treeDependencyUrl+="/"+encodeURIComponent(artifactId);
+                treeDependencyUrl+="/"+encodeURIComponent(version);
+                var selectedRepo=getSelectedBrowsingRepository();
+                if (selectedRepo){
+                  treeDependencyUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+                }
+                $.ajax(treeDependencyUrl, {
+                  type: "GET",
+                  dataType: 'json',
+                  success: function(data) {
+                    var treeEntries = mapTreeEntries(data);
+                    treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: treeEntries}));
+                  }
+                });
+              }
+
+
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
+
+                if ($(e.target).attr("data-target")=="#artifact-details-info-content") {
+                  var location ="#artifact";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
+                  }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
+                  return;
+                }
+
 
                 if ($(e.target).attr("data-target")=="#artifact-details-dependencies-content") {
                   var location ="#artifact-dependencies";
@@ -253,28 +288,18 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                   location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
 
                   window.sammyArchivaApplication.setLocation(location);
+                  return;
                 }
 
-                if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
-                  var treeContentDiv=mainContent.find("#artifact-details-dependency-tree-content" );
-                  if( $.trim(treeContentDiv.html()).length<1){
-                    treeContentDiv.html(mediumSpinnerImg());
-                    var treeDependencyUrl="restServices/archivaServices/browseService/treeEntries/"+encodeURIComponent(groupId);
-                    treeDependencyUrl+="/"+encodeURIComponent(artifactId);
-                    treeDependencyUrl+="/"+encodeURIComponent(version);
-                    var selectedRepo=getSelectedBrowsingRepository();
-                    if (selectedRepo){
-                      treeDependencyUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
-                    }
-                    $.ajax(treeDependencyUrl, {
-                      type: "GET",
-                      dataType: 'json',
-                      success: function(data) {
-                        var treeEntries = mapTreeEntries(data);
-                        treeContentDiv.html($("#dependency_tree_tmpl" ).tmpl({treeEntries: treeEntries}));
-                      }
-                    });
+                if ($(e.target).attr("data-target")=="#artifact-details-dependency-tree-content") {
+                  var location ="#artifact-dependency-tree";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
                   }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
+                  return;
                   return;
                 }
                 if ($(e.target).attr("href")=="#artifact-details-used-by-content") {

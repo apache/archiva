@@ -281,6 +281,28 @@ function() {
 
         });
 
+
+        this.get('#artifact-dependency-tree/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,function(){$("#main-content #artifact-details-dependency-tree-content-a").tab('show')});
+
+        });
+
+        this.get('#artifact-dependency-tree~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,function(){$("#main-content #artifact-details-dependency-tree-content-a").tab('show')});
+
+        });
+
+
         this.get('#browse/:groupId',function(context){
           var groupId = this.params.groupId;
           if (groupId){

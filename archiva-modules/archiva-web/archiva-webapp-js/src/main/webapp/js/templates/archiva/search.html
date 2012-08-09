@@ -426,7 +426,7 @@
 <script id="browse-artifact-detail-tmpl" type="text/html">
     <ul id="artifact-details-tabs" class="nav nav-tabs">
       <li class="active">
-        <a data-toggle="tab" href="#artifact-details-info-content">${$.i18n.prop('artifact.detail.tab.header.info')}</a>
+        <a data-toggle="tab" id="artifact-details-info-content-a" data-target="#artifact-details-info-content" href="#artifact-details-info-content">${$.i18n.prop('artifact.detail.tab.header.info')}</a>
       </li>
       <li>
         <a data-toggle="tab" id="artifact-details-dependencies-content-a" data-target="#artifact-details-dependencies-content" href="#artifact-details-dependencies-content">${$.i18n.prop('artifact.detail.tab.header.dependencies')}</a>
