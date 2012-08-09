@@ -245,15 +245,23 @@ function() {
           return;
         });
 
-        var checkArtifactDetailContent=function(groupId,artifactId,version,repositoryId,tabToActivate){
+        var checkArtifactDetailContent=function(groupId,artifactId,version,repositoryId,tabToActivate,idContentToCheck,contentDisplayFn){
           // no need to recalculate all stuff just activate the tab
-          if($("#browse_artifact_detail" ).html()!=null){
+          var htmlId = idContentToCheck?idContentToCheck:"browse_artifact_detail";
+          if($("#main-content #"+htmlId ).html()!=null){
             if( $.trim($("#browse_artifact_detail" ).html().length)>0){
               $("#main-content #"+tabToActivate).tab('show')
               return;
             }
           }
-          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,function(){$("#main-content #"+tabToActivate).tab('show')});
+          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,
+                                                   function(){
+                                                     $("#main-content #"+tabToActivate).tab('show')
+                                                     if(contentDisplayFn){
+                                                       contentDisplayFn();
+                                                     }
+                                                   }
+          );
         }
 
         this.get('#artifact/:groupId/:artifactId/:version',function(context){
@@ -310,6 +318,47 @@ function() {
           var artifactId= this.params.artifactId;
           var version= this.params.version;
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependency-tree-content-a");
+        });
+
+        this.get('#artifact-used-by/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+
+          var calculateUsedBy=function(){
+            var dependeesContentDiv=$("#main-content #artifact-details-used-by-content" );
+            if( $.trim(dependeesContentDiv.html()).length<1){
+              dependeesContentDiv.html(mediumSpinnerImg());
+              var dependeesUrl="restServices/archivaServices/browseService/dependees/"+encodeURIComponent(groupId);
+              dependeesUrl+="/"+encodeURIComponent(artifactId);
+              dependeesUrl+="/"+encodeURIComponent(version);
+              var selectedRepo=getSelectedBrowsingRepository();
+              if (selectedRepo){
+                dependeesUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+              }
+              $.ajax(dependeesUrl, {
+                type: "GET",
+                dataType: 'json',
+                success: function(data) {
+                  var artifacts=mapArtifacts(data);
+                  dependeesContentDiv.html($("#dependees_tmpl").tmpl({artifacts: artifacts}));
+                }
+              });
+            }
+          }
+
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-used-by-content-a","artifact-details-used-by-content",calculateUsedBy);
+        });
+
+        this.get('#artifact-used-by~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-used-by-content-a");
         });
 
 
