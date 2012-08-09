@@ -66,6 +66,22 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.apache.archiva.redback.rest.api*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.ws.rs,
+              javax.xml.bind.annotation,
+              org.apache.archiva.redback.authorization;version=${project.version},
+              org.apache.archiva.redback.integration.util;version=${project.version},
+              org.apache.archiva.redback.rbac;version=${project.version},
+              org.apache.archiva.redback.users;version=${project.version},
+              org.apache.commons.lang;version="[2.6,3)"
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

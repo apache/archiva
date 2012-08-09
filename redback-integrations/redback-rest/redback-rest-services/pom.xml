@@ -189,6 +189,45 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.apache.archiva.redback.rest.services*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.inject;version="[1,2)",
+              javax.mail.internet,
+              javax.servlet.http,
+              javax.ws.rs.core,
+              javax.ws.rs.ext,
+              net.sf.ehcache,
+              org.apache.archiva.redback.authentication;version=${project.version},
+              org.apache.archiva.redback.authorization;version=${project.version},
+              org.apache.archiva.redback.components.cache;version=${project.version},
+              org.apache.archiva.redback.configuration;version=${project.version},
+              org.apache.archiva.redback.integration.filter.authentication*;version=${project.version},
+              org.apache.archiva.redback.integration.mail;version=${project.version},
+              org.apache.archiva.redback.integration.model;version=${project.version},
+              org.apache.archiva.redback.integration.util;version=${project.version},
+              org.apache.archiva.redback.keys*;version=${project.version},
+              org.apache.archiva.redback.policy;version=${project.version},
+              org.apache.archiva.redback.rbac;version=${project.version},
+              org.apache.archiva.redback.rest.api.model;version=${project.version},
+              org.apache.archiva.redback.rest.api.services;version=${project.version},
+              org.apache.archiva.redback.role*;version=${project.version},
+              org.apache.archiva.redback.system*;version=${project.version},
+              org.apache.archiva.redback.users;version=${project.version},
+              org.apache.commons.io;version="[1.4,2)",
+              org.apache.commons.lang;version="[2.6,3)",
+              org.apache.cxf*;version="[2.6,3)",
+              org.codehaus.jackson.map;version="[1.9.8,2)",
+              org.codehaus.plexus.util;version="[3,4)",
+              org.springframework*;version="[3,4)",
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
