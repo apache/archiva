@@ -219,9 +219,10 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       return entries;
     }
 
-    this.display=function(){
+    this.display=function(afterCallbackFn){
       mainContent.find("#browse_breadcrumb").hide("slide", {}, 300,function(){
         mainContent.find("#browse_artifact").hide("slide", {}, 300,function(){
+
           mainContent.find("#browse_artifact_detail").show();
           mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
           mainContent.find("#browse_breadcrumb" ).show();
@@ -243,6 +244,16 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
               mainContent.find("#browse-autocomplete" ).hide();
               mainContent.find("#browse-autocomplete-divider" ).hide();
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
+
+                if ($(e.target).attr("data-target")=="#artifact-details-dependencies-content") {
+                  var location ="#artifact-dependencies";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
+                  }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
+                }
 
                 if ($(e.target).attr("href")=="#artifact-details-dependency-tree-content") {
                   var treeContentDiv=mainContent.find("#artifact-details-dependency-tree-content" );
@@ -328,7 +339,11 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                   displayArtifactFilesContent(self);
                 }
               });
+              if(afterCallbackFn){
+                afterCallbackFn();
+              }
             }
+
           });
 
         });
@@ -485,8 +500,6 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           $.i18n.prop('cancel'),
           $.i18n.prop('artifact.delete.confirm.title'),
           $.i18n.prop('artifact.delete.confirm.save'));
-
-
 
     }
 
@@ -1481,7 +1494,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     }
   }
 
-  generalDisplayArtifactDetailsVersionView=function(groupId,artifactId,version,repositoryId){
+  generalDisplayArtifactDetailsVersionView=function(groupId,artifactId,version,repositoryId,afterCallbackFn){
     var mainContent=$("#main-content");
     mainContent.html($("#browse-tmpl" ).tmpl());
     mainContent.find("#browse_result" ).hide();
@@ -1494,7 +1507,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       function(data) {
         mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:repositoryId}));
         var artifactVersionDetailViewModel=new ArtifactVersionDetailViewModel(groupId,artifactId,version,repositoryId);
-        artifactVersionDetailViewModel.display();
+        artifactVersionDetailViewModel.display(afterCallbackFn);
       }
     );
 
