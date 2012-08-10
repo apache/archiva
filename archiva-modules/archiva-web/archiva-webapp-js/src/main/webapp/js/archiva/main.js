@@ -256,10 +256,10 @@ function() {
             }
           }
           generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,
-                                                   function(){
+                                                   function(artifactVersionDetailViewModel){
                                                      $("#main-content #"+tabToActivate).tab('show')
                                                      if(contentDisplayFn){
-                                                       contentDisplayFn(groupId,artifactId,version);
+                                                       contentDisplayFn(groupId,artifactId,version,artifactVersionDetailViewModel);
                                                      }
                                                    }
           );
@@ -360,6 +360,49 @@ function() {
           var artifactId= this.params.artifactId;
           var version= this.params.version;
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-used-by-content-a","artifact-details-used-by-content",calculateUsedBy);
+        });
+
+        var calculateMetadatas=function(groupId,artifactId,version,artifactVersionDetailViewModel){
+
+          var metadatasContentDiv=$("#main-content #artifact-details-metadatas-content" );
+          var metadatasUrl="restServices/archivaServices/browseService/metadatas/"+encodeURIComponent(groupId);
+          metadatasUrl+="/"+encodeURIComponent(artifactId);
+          metadatasUrl+="/"+encodeURIComponent(version);
+          var selectedRepo=getSelectedBrowsingRepository();
+          if (selectedRepo){
+            metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+          }
+
+          //fixe self.entries not in the scope
+
+          $.ajax(metadatasUrl, {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              var entries= $.map(data,function(e,i){
+                return new MetadataEntry( e.key, e.value,false);
+              });
+              artifactVersionDetailViewModel.entries(entries);
+            }
+          });
+        }
+
+        this.get('#artifact-metadatas/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-metadatas-content-a",null,calculateMetadatas);
+        });
+
+        this.get('#artifact-metadatas~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-metadatas-content-a",null,calculateMetadatas);
         });
 
 

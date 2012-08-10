@@ -318,25 +318,13 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                 }
 
                 if ($(e.target).attr("href")=="#artifact-details-metadatas-content") {
-                  $.log("artifact metadata");
-                  var metadatasContentDiv=mainContent.find("#artifact-details-metadatas-content" );
-                  var metadatasUrl="restServices/archivaServices/browseService/metadatas/"+encodeURIComponent(groupId);
-                  metadatasUrl+="/"+encodeURIComponent(artifactId);
-                  metadatasUrl+="/"+encodeURIComponent(version);
-                  var selectedRepo=getSelectedBrowsingRepository();
-                  if (selectedRepo){
-                    metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+                  var location ="#artifact-metadatas";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
                   }
-                  $.ajax(metadatasUrl, {
-                    type: "GET",
-                    dataType: 'json',
-                    success: function(data) {
-                      var entries= $.map(data,function(e,i){
-                        return new MetadataEntry( e.key, e.value,false);
-                      });
-                      self.entries(entries);
-                    }
-                  });
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
                   return;
                 }
 
@@ -357,7 +345,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                 }
               });
               if(afterCallbackFn){
-                afterCallbackFn();
+                afterCallbackFn(self);
               }
             }
 
