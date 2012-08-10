@@ -208,7 +208,7 @@ public class CachedRbacManager
      * @see org.apache.archiva.redback.rbac.RBACManager#getAssignedPermissionMap(java.lang.String)
      */
     @SuppressWarnings( "unchecked" )
-    public Map getAssignedPermissionMap( String principal )
+    public synchronized Map getAssignedPermissionMap( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
         Object el = userPermissionsCache.get( principal );
@@ -666,7 +666,7 @@ public class CachedRbacManager
         return this.rbacImpl.saveResource( resource );
     }
 
-    public Role saveRole( Role role )
+    public synchronized Role saveRole( Role role )
         throws RbacObjectInvalidException, RbacManagerException
     {
         /*
@@ -692,7 +692,7 @@ public class CachedRbacManager
         return this.rbacImpl.saveRole( role );
     }
 
-    public void saveRoles( Collection<Role> roles )
+    public synchronized void saveRoles( Collection<Role> roles )
         throws RbacObjectInvalidException, RbacManagerException
     {
 
