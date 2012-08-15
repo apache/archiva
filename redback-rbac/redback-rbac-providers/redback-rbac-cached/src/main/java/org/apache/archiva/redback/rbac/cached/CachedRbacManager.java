@@ -21,6 +21,8 @@ package org.apache.archiva.redback.rbac.cached;
 
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RBACManagerListener;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.RbacObjectInvalidException;
@@ -28,8 +30,6 @@ import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
-import org.apache.archiva.redback.rbac.Permission;
-import org.apache.archiva.redback.rbac.RBACManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,6 @@ import java.util.Set;
  * CachedRbacManager is a wrapped RBACManager with caching.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service( "rBACManager#cached" )
 public class CachedRbacManager
@@ -211,17 +210,17 @@ public class CachedRbacManager
     public synchronized Map<String, List<Permission>> getAssignedPermissionMap( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Object el = userPermissionsCache.get( principal );
+        Map<String, List<Permission>> el = (Map<String, List<Permission>>) userPermissionsCache.get( principal );
 
         if ( el != null )
         {
-            //log.debug( "using cached user permission map" );
-            return (Map<String, List<Permission>>) el;
+            log.debug( "using cached user permission map" );
+            return el;
         }
         else
         {
             log.debug( "building user permission map" );
-            Map userPermMap = this.rbacImpl.getAssignedPermissionMap( principal );
+            Map<String, List<Permission>> userPermMap = this.rbacImpl.getAssignedPermissionMap( principal );
             userPermissionsCache.put( principal, userPermMap );
             return userPermMap;
         }
