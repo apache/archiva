@@ -208,7 +208,7 @@ public class CachedRbacManager
      * @see org.apache.archiva.redback.rbac.RBACManager#getAssignedPermissionMap(java.lang.String)
      */
     @SuppressWarnings( "unchecked" )
-    public synchronized Map getAssignedPermissionMap( String principal )
+    public synchronized Map<String, List<Permission>> getAssignedPermissionMap( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
         Object el = userPermissionsCache.get( principal );
@@ -216,7 +216,7 @@ public class CachedRbacManager
         if ( el != null )
         {
             //log.debug( "using cached user permission map" );
-            return (Map) el;
+            return (Map<String, List<Permission>>) el;
         }
         else
         {
