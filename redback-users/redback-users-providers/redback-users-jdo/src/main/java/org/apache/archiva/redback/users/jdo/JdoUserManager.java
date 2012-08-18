@@ -425,7 +425,7 @@ public class JdoUserManager
         catch ( PlexusStoreException e )
         {
             throw new UserManagerException( "Unable to get object '" + JdoUser.class.getName() + "', id '" + id +
-                                                "', fetch-group '" + fetchGroup + "' from jdo store." );
+                                                "', fetch-group '" + fetchGroup + "' from jdo store.", e );
         }
     }
 
