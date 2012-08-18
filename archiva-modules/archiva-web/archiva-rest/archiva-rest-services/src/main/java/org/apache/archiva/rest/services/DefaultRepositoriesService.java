@@ -318,7 +318,7 @@ public class DefaultRepositoriesService
         }
         catch ( UserNotFoundException e )
         {
-            throw new ArchivaRestServiceException( "user " + userName + " not found", null );
+            throw new ArchivaRestServiceException( "user " + userName + " not found", e );
         }
 
         // check karma on source : read

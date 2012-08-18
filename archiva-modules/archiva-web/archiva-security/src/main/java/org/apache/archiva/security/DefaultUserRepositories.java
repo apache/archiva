@@ -23,9 +23,6 @@ import com.google.common.collect.Lists;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.role.RoleManager;
@@ -33,6 +30,9 @@ import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,10 +43,8 @@ import java.util.List;
 
 /**
  * DefaultUserRepositories
- *
- *
  */
-@Service( "userRepositories" )
+@Service("userRepositories")
 public class DefaultUserRepositories
     implements UserRepositories
 {
@@ -153,7 +151,7 @@ public class DefaultUserRepositories
         }
         catch ( UserNotFoundException e )
         {
-            throw new PrincipalNotFoundException( "Unable to find principal " + principal + "" );
+            throw new PrincipalNotFoundException( "Unable to find principal " + principal + "", e );
         }
 
         if ( user.isLocked() )

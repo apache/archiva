@@ -19,9 +19,6 @@ package org.apache.archiva.security;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
@@ -38,10 +35,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  *
  */
-@Service("servletAuthenticator")
+@Service( "servletAuthenticator" )
 public class ArchivaServletAuthenticator
     implements ServletAuthenticator
 {
@@ -76,8 +76,8 @@ public class ArchivaServletAuthenticator
         {
             if ( authzResult.getException() != null )
             {
-                log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission
-                    + ",repo=" + repositoryId + "] : " + authzResult.getException().getMessage() );
+                log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission + ",repo="
+                              + repositoryId + "] : " + authzResult.getException().getMessage() );
 
                 throw new UnauthorizedException( "Access denied for repository " + repositoryId );
             }
@@ -95,7 +95,8 @@ public class ArchivaServletAuthenticator
             User user = securitySystem.getUserManager().findUser( principal );
             if ( user == null )
             {
-                throw new UnauthorizedException( "The security system had an internal error - please check your system logs" );
+                throw new UnauthorizedException(
+                    "The security system had an internal error - please check your system logs" );
             }
             if ( user.isLocked() )
             {
@@ -109,11 +110,11 @@ public class ArchivaServletAuthenticator
         }
         catch ( UserNotFoundException e )
         {
-            throw new UnauthorizedException( e.getMessage() );
+            throw new UnauthorizedException( e.getMessage(), e );
         }
         catch ( AuthorizationException e )
         {
-            throw new UnauthorizedException( e.getMessage() );
+            throw new UnauthorizedException( e.getMessage(), e );
         }
     }
 
