@@ -35,4 +35,10 @@ public class UnauthorizedException
     {
         super( message );
     }
+
+    public UnauthorizedException( String message, Throwable t )
+    {
+        super( message );
+    }
+
 }
