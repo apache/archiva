@@ -239,42 +239,42 @@
                     <div class="control-group">
                       <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.groupId')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="groupId" name="groupId" size="50"
+                        <input type="text" class="input-medium search-query" id="groupId" name="groupId" size="50" placeholder="my.group.id"
                                data-bind="value: searchRequest().groupId"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.artifactId')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="artifactId" name="artifactId" size="50"
+                        <input type="text" class="input-medium search-query" id="artifactId" name="artifactId" size="50" placeholder="my.artifact.id"
                                data-bind="value: searchRequest().artifactId"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.version')}</label>
+                      <label class="control-label" for="version">${$.i18n.prop('search.artifact.search.form.query.version')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="version" name="version" size="50"
+                        <input type="text" class="input-medium search-query" id="version" name="version" size="50" placeholder="0.0.0"
                                data-bind="value: searchRequest().version"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.classifier')}</label>
+                      <label class="control-label" for="classifier">${$.i18n.prop('search.artifact.search.form.query.classifier')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="classifier" name="classifier" size="50"
+                        <input type="text" class="input-medium search-query" id="classifier" name="classifier" size="50" placeholder="bin"
                                data-bind="value: searchRequest().classifier"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.packaging')}</label>
+                      <label class="control-label" for="packaging">${$.i18n.prop('search.artifact.search.form.query.packaging')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="packaging" name="packaging" size="50"
+                        <input type="text" class="input-medium search-query" id="packaging" name="packaging" size="50" placeholder="jar"
                                data-bind="value: searchRequest().packaging"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.className')}</label>
+                      <label class="control-label" for="className">${$.i18n.prop('search.artifact.search.form.query.className')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="className" name="className" size="50"
+                        <input type="text" class="input-medium search-query" id="className" name="className" size="50" placeholder="my.ClassName"
                                data-bind="value: searchRequest().className"/>
                       </div>
                     </div>
@@ -289,44 +289,44 @@
                 <form class="well form-horizontal" id="search-osgi-form">
                   <fieldset>
                     <div class="control-group">
-                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleSymbolicName')}</label>
+                      <label class="control-label" for="bundleSymbolicName">${$.i18n.prop('search.artifact.search.form.query.bundleSymbolicName')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="bundleSymbolicName" name="bundleSymbolicName" size="50"
+                        <input type="text" class="input-medium search-query" id="bundleSymbolicName" name="bundleSymbolicName" size="50" placeholder="my.SymbolicName"
                                data-bind="value: searchRequest().bundleSymbolicName"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleVersion')}</label>
+                      <label class="control-label" for="bundleVersion">${$.i18n.prop('search.artifact.search.form.query.bundleVersion')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="bundleVersion" name="bundleVersion" size="50"
+                        <input type="text" class="input-medium search-query" id="bundleVersion" name="bundleVersion" size="50" placeholder="0.0.0"
                                data-bind="value: searchRequest().bundleVersion"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleExportPackage')}</label>
+                      <label class="control-label" for="bundleExportPackage">${$.i18n.prop('search.artifact.search.form.query.bundleExportPackage')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="bundleExportPackage" name="bundleExportPackage" size="50"
+                        <input type="text" class="input-medium search-query" id="bundleExportPackage" name="bundleExportPackage" size="50" placeholder="my.package;version=0.0,..."
                                data-bind="value: searchRequest().bundleExportPackage"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleExportService')}</label>
+                      <label class="control-label" for="bundleExportService">${$.i18n.prop('search.artifact.search.form.query.bundleExportService')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="bundleExportService" name="bundleExportService" size="50"
+                        <input type="text" class="input-medium search-query" id="bundleExportService" name="bundleExportService" size="50" placeholder="my.SomeService"
                                data-bind="value: searchRequest().bundleExportService"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleImportPackage')}</label>
+                      <label class="control-label" for="bundleImportPackage">${$.i18n.prop('search.artifact.search.form.query.bundleImportPackage')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="bundleImportPackage" name="bundleImportPackage" size="50"
+                        <input type="text" class="input-medium search-query" id="bundleImportPackage" name="bundleImportPackage" size="50" placeholder="my.package;version=0.0,..."
                                data-bind="value: searchRequest().bundleImportPackage"/>
                       </div>
                     </div>
                     <div class="control-group">
-                      <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.bundleRequireBundle')}</label>
+                      <label class="control-label" for="bundleRequireBundle">${$.i18n.prop('search.artifact.search.form.query.bundleRequireBundle')}</label>
                       <div class="controls">
-                        <input type="text" class="input-medium search-query" id="bundleRequireBundle" name="bundleRequireBundle" size="50"
+                        <input type="text" class="input-medium search-query" id="bundleRequireBundle" name="bundleRequireBundle" size="50" placeholder="my.package;version=0.0,..."
                                data-bind="value: searchRequest().bundleRequireBundle"/>
                       </div>
                     </div>
