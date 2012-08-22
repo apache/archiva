@@ -1626,7 +1626,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             displayRestError(res);
           },
           complete:function() {
-            mainContent.find("##btn-basic-search" ).button("reset");
+            mainContent.find("#btn-basic-search" ).button("reset");
             mainContent.find("#btn-advanced-search" ).button("reset");
             removeMediumSpinnerImg("#user-messages");
           }
