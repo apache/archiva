@@ -16,14 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.templates",["text!templates/archiva/menu.html",
+define("archiva.templates",["jquery.tmpl","utils","text!templates/archiva/menu.html",
           "text!templates/archiva/generics.html",
           "text!templates/archiva/modal.html",
           "text!templates/archiva/repositories.html",
           "text!templates/archiva/search.html",
-          "text!templates/archiva/general-admin.html",
-          "jquery.tmpl","utils"],
-  function(menu,generics,modal,repositories,
+          "text!templates/archiva/general-admin.html"],
+  function(jqueryTmpl,utils,menu,generics,modal,repositories,
            search,general_admin) {
 
     var htmlFragment=$("#html-fragments");

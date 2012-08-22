@@ -16,10 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.templates",["text!templates/redback/user-edit.html",
-          "text!templates/redback/login.html",
-          "jquery.tmpl","utils"],
-    function(useredit, login) {
+define("redback.templates",["jquery.tmpl","utils","text!templates/redback/user-edit.html",
+          "text!templates/redback/login.html"],
+    function(jqueryTmpl,utils,useredit, login) {
 
       var htmlFragment=$("#html-fragments");
 
