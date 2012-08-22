@@ -42,7 +42,7 @@
           <required>true</required>
           <description>This is the version of the configuration format.</description>
         </field>
-        <field java.adder="false">
+        <field>
           <description>
  @deprecated use managedRepositories or remoteRepositories instead.
           </description>
@@ -50,8 +50,7 @@
           <version>1.0.0+</version>
           <association java.generate-add="false"
                        java.generate-remove="false"
-                       java.generate-break="false"
-                       java.generate-create="false">
+                       java.adder="false">
             <type>V1RepositoryConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>

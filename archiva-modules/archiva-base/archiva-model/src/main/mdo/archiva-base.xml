@@ -19,7 +19,7 @@
   -->
 
 <model xsd.namespace="http://archiva.apache.org/model/1.2.0"
-       xsd.target-namespace="http://archiva.apache.org/model/1.2.0">
+       xsd.targetNamespace="http://archiva.apache.org/model/1.2.0">
   <id>archiva-base-model</id>
   <name>ArchivaBaseModel</name>
   <!-- Note that we've outright removed old model information instead of setting the finish version to be 1.2.1.
