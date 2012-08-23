@@ -144,3 +144,7 @@ footer {
     padding: 5px 5px;
     text-shadow: 0 1px 0 #FFFFFF;
 }
+
+.sidebar-nav {
+    padding: 9px 0;
+}
