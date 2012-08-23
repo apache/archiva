@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.main",["jquery","sammy","jquery.ui","jquery.cookie","bootstrap","archiva.search",
+define("archiva.main",["jquery","sammy","jquery.tmpl","jquery.ui","jquery.cookie","bootstrap","archiva.search",
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
@@ -591,17 +591,6 @@ function() {
     window.sammyArchivaApplication.run();
 
   }
-
-
-  //-----------------------------------------
-  // extends jquery tmpl to support var def
-  //-----------------------------------------
-
-  $.extend($.tmpl.tag, {
-      "var": {
-          open: "var $1;"
-      }
-  });
 
 
 });

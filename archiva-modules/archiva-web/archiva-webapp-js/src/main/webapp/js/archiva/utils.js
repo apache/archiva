@@ -17,7 +17,7 @@
  * under the License.
  */
 
-define("utils",["jquery","jquery.tmpl","i18n"], function() {
+require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
 
   loadi18n=function(loadCallback){
     $.log("loadi18n");
@@ -426,6 +426,16 @@ define("utils",["jquery","jquery.tmpl","i18n"], function() {
     return this.substring(idx);
   }
 
+  //-----------------------------------------
+  // extends jquery tmpl to support var def
+  //-----------------------------------------
 
+  $(function() {
+    $.extend($.tmpl.tag, {
+        "var": {
+            open: "var $1;"
+        }
+    });
+  });
 
 });
