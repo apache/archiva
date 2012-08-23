@@ -147,7 +147,7 @@
                     }
                 });
 
-                require(['jquery','jquery.tmpl','i18n','sammy','startup','utils','domReady!'], function (domReady) {
+                requirejs(['jquery','jquery.tmpl','i18n','sammy','startup','utils','domReady!'], function (domReady) {
                     loadi18n(function () {
                       $.ajax({
                           url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
