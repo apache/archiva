@@ -1551,7 +1551,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         // cleanup previours error message
         customShowError("#main-content #search-basic-form", null, null, []);
       }
-      var location="#searchresult";
+      var location="#basicsearch";
 
       self.selectedRepoIds=[];
       mainContent.find("#search-basic-repositories" )
