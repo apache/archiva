@@ -178,7 +178,7 @@ function($,sammy,tmpl,ui) {
       this.activeMenuId = ko.observable();
           
       window.sammyArchivaApplication = Sammy(function () {
-        var self = this;
+
         this.get('#quicksearch~:artifactId',function(){
           $("#main-content" ).html(mediumSpinnerImg());
           var artifactId= this.params.artifactId;
@@ -267,20 +267,20 @@ function($,sammy,tmpl,ui) {
           searchRequest.classifier(classifier);
           searchRequest.packaging(packaging);
           searchRequest.className(className);
-
-          searchRequest.selectedRepoIds=repositoryIds;
+          //searchRequest.repositories=repos;
+          //searchRequest.selectedRepoIds=repos;
           searchViewModel.searchRequest(searchRequest);
           displaySearch(function(){
 
-            searchViewModel.search("restServices/archivaServices/searchService/searchArtifacts",repositoryIds);
+            searchViewModel.search("restServices/archivaServices/searchService/searchArtifacts",repos);//,repositoryIds);
           },searchViewModel);
         }
 
-        self.get("#advancedsearch/:queryterms",function(){
+        this.get("#advancedsearch/:queryterms",function(){
           advancedSearchRoute(this.params);
         });
 
-        self.get("#advancedsearch~:repositoryIds/:queryterms",function(){
+        this.get("#advancedsearch~:repositoryIds/:queryterms",function(){
           advancedSearchRoute(this.params);
         });
 

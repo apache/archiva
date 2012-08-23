@@ -1567,14 +1567,11 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         });
       }
       location+="/"+queryTerm;
-      $.log("basicsearch location:"+location);
       window.sammyArchivaApplication.setLocation(location);
-      //self.search("restServices/archivaServices/searchService/quickSearchWithRepositories");
     }
 
     this.externalBasicSearch=function(){
       var queryTerm=this.searchRequest().queryTerms();
-      $.log("externalBasicSearch#queryTerm:"+queryTerm);
       self.search("restServices/archivaServices/searchService/quickSearchWithRepositories",this.searchRequest().repositories);
     }
 
@@ -1585,7 +1582,55 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       this.search("restServices/archivaServices/searchService/searchArtifacts");
     }
     advancedSearch=function(){
-      self.search("restServices/archivaServices/searchService/searchArtifacts");
+      var location="#advancedsearch";
+
+      self.selectedRepoIds=[];
+      mainContent.find("#search-basic-repositories" )
+          .find(".chzn-choices li span").each(function(i,span){
+                      self.selectedRepoIds.push($(span).html());
+                      }
+                    );
+
+      if (self.selectedRepoIds.length>0){
+        $.log("selectedRepoIds:"+self.selectedRepoIds.length);
+        $(self.selectedRepoIds).each(function(index, Element){
+          location+="~"+self.selectedRepoIds[index];
+        });
+      }
+      location+="/";
+      if(self.searchRequest().groupId()){
+        location+=self.searchRequest().groupId();
+      }/*else{
+        location+='~';
+      }*/
+      if(self.searchRequest().artifactId()){
+        location+='~'+self.searchRequest().artifactId();
+      }else{
+        location+='~';
+      }
+      if(self.searchRequest().version()){
+        location+='~'+self.searchRequest().version();
+      }else{
+        location+='~';
+      }
+      if(self.searchRequest().classifier()){
+        location+='~'+self.searchRequest().classifier();
+      }else{
+        location+='~';
+      }
+      if(self.searchRequest().packaging()){
+        location+='~'+self.searchRequest().packaging();
+      }else{
+        location+='~';
+      }
+      if(self.searchRequest().className()){
+        location+='~'+self.searchRequest().className();
+      }else{
+        location+='~';
+      }
+
+      $.log("location:"+location);
+      window.sammyArchivaApplication.setLocation(location);
     }
     removeFilter=function(){
       $.log("removeFilter:"+self.resultViewModel.originalArtifacts.length);
