@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.main",["jquery","sammy","jquery.tmpl","jquery.ui","jquery.cookie","bootstrap","archiva.search",
+define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl","jquery.cookie","bootstrap","archiva.search",
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
@@ -597,6 +597,10 @@ function($,sammy,tmpl,ui) {
     checkCreateAdminLink();
     $('#footer-content').html($('#footer-tmpl').tmpl(window.archivaRuntimeInfo));
 
+    updateAppearanceToolBar();
+
+    window.sammyArchivaApplication.run();
+
     $( "#quick-search-autocomplete" ).autocomplete({
       minLength: 3,
       delay: 600,
@@ -626,9 +630,6 @@ function($,sammy,tmpl,ui) {
 								.append( "<a>" + item.artifactId + "</a>" )
 								.appendTo( ul );
 						};
-    updateAppearanceToolBar();
-
-    window.sammyArchivaApplication.run();
 
   }
 
