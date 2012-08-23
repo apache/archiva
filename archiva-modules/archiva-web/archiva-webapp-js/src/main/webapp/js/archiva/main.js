@@ -246,8 +246,18 @@ function($,sammy,tmpl,ui) {
           },searchViewModel);
         });
 
-        var advancedSearchRoute=function(repositoryIds,groupId,artifactId,version,classifier,packaging,className){
-
+        var advancedSearchRoute=function(params){
+          var repositoryIds = params.repositoryIds;
+          var repos = repositoryIds ? repositoryIds.split("~"):[];
+          var queryTerms = params.queryterms;
+          var terms=queryTerms?queryTerms.split('~'):[];
+          $.log("queryTerms:"+queryTerms+",terms.length:"+terms.length);
+          var groupId= terms.length>0?terms[0]:"";
+          var artifactId= terms.length>1?terms[1]:"";
+          var version= terms.length>2?terms[2]:"";
+          var classifier= terms.length>3?terms[3]:"";
+          var packaging= terms.length>4?terms[4]:"";
+          var className= terms.length>5?terms[5]:"";
           $.log("groupId:artifactId:version:classifier:packaging:className="+groupId+':'+artifactId+':'+version+':'+classifier+':'+packaging+':'+className);
           var searchViewModel = new SearchViewModel();
           var searchRequest = new SearchRequest();
@@ -261,67 +271,17 @@ function($,sammy,tmpl,ui) {
           searchRequest.selectedRepoIds=repositoryIds;
           searchViewModel.searchRequest(searchRequest);
           displaySearch(function(){
-            //searchViewModel.externalAdvancedSearch();
+
             searchViewModel.search("restServices/archivaServices/searchService/searchArtifacts",repositoryIds);
           },searchViewModel);
         }
 
-        /*var advancedSearchParams=['groupId','artifactId','version','classifier','packaging','className'];
-
-        var createAdvancedSearchRoutes=function(startLocation){
-          for(var idx=1;idx<advancedSearchParams.length+1;idx++){
-            var route = startLocation;
-            $(advancedSearchParams).each(function(index) {
-              if(index<idx){
-                route+="~:"+advancedSearchParams[index];
-              }
-            });
-            $.log("add route:"+route);
-            self.get(route,function(){
-              var repositoryIds = this.params.repositoryIds;
-              var repos = repositoryIds ? repositoryIds.split("~"):[];
-              $.log('repos:'+repos.length);
-              var groupId= this.params.groupId;
-              var artifactId= this.params.artifactId;
-              var version= this.params.version;
-              var classifier= this.params.classifier;
-              var packaging= this.params.packaging;
-              var className= this.params.className;
-              advancedSearchRoute(repos,groupId,artifactId,version,classifier,packaging,className);
-            });
-          }
-        }*/
-        //createAdvancedSearchRoutes("#advancedsearch/");
-        //createAdvancedSearchRoutes("#advancedsearch~:repositoryIds/");
-
         self.get("#advancedsearch/:queryterms",function(){
-          var repositoryIds = this.params.repositoryIds;
-          var repos = repositoryIds ? repositoryIds.split("~"):[];
-          var queryTerms = this.params.queryterms;
-          var terms=queryTerms?queryTerms.split('~'):[];
-          $.log("queryTerms:"+queryTerms+",terms.length:"+terms.length);
-          var groupId= terms.length>0?terms[0]:"";
-          var artifactId= terms.length>1?terms[1]:"";
-          var version= terms.length>2?terms[2]:"";
-          var classifier= terms.length>3?terms[3]:"";
-          var packaging= terms.length>4?terms[4]:"";
-          var className= terms.length>5?terms[5]:"";
-          advancedSearchRoute(repos,groupId,artifactId,version,classifier,packaging,className);
+          advancedSearchRoute(this.params);
         });
 
         self.get("#advancedsearch~:repositoryIds/:queryterms",function(){
-          var repositoryIds = this.params.repositoryIds;
-          var repos = repositoryIds ? repositoryIds.split("~"):[];
-          var queryTerms = this.params.queryterms;
-          var terms=queryTerms?queryTerms.split('~'):[];
-          $.log("queryTerms:"+queryTerms+",terms.length:"+terms.length);
-          var groupId= terms.length>0?terms[0]:"";
-          var artifactId= terms.length>1?terms[1]:"";
-          var version= terms.length>2?terms[2]:"";
-          var classifier= terms.length>3?terms[3]:"";
-          var packaging= terms.length>4?terms[4]:"";
-          var className= terms.length>5?terms[5]:"";
-          advancedSearchRoute(repos,groupId,artifactId,version,classifier,packaging,className);
+          advancedSearchRoute(this.params);
         });
 
 
