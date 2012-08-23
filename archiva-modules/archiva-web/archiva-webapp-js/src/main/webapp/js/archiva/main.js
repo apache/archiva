@@ -20,7 +20,7 @@ define("archiva.main",["jquery","sammy","jquery.tmpl","jquery.ui","jquery.cookie
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
-function() {
+function($,sammy,tmpl,ui) {
 
   /**
    * reccord a cookie for session with the logged user

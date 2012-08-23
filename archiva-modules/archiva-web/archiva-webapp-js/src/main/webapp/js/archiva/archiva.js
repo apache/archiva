@@ -51,7 +51,7 @@ $.ajax({
                 urlArgs: ""+appendJsNoCacheUrl(),
                 shim: {
                       'sammy':['jquery','jquery.tmpl'],
-                      'archiva.main':['jquery','sammy','jquery.tmpl'],
+                      'archiva.main':['jquery','jquery.ui','sammy','jquery.tmpl'],
                       'utils':['jquery','jquery.tmpl'],
                       'archiva.templates': ['jquery','jquery.tmpl','utils'],
                       'redback.templates': ['jquery','jquery.tmpl','utils']
@@ -97,7 +97,7 @@ $.ajax({
                 }
             });
 
-            requirejs(['jquery','jquery.tmpl','i18n','sammy','startup','utils','domReady!'], function (domReady) {
+            requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!'], function (domReady) {
                 loadi18n(function () {
                   $.ajax({
                       url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
