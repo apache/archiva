@@ -97,7 +97,7 @@ $.ajax({
                 }
             });
 
-            requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!'], function (domReady) {
+            requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils',"archiva.main",'domReady!'], function (domReady) {
                 loadi18n(function () {
                   $.ajax({
                       url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
@@ -110,6 +110,7 @@ $.ajax({
                           require(['sammy','jquery','jquery.tmpl','archiva.main','utils','domReady!'],function (domReady) {
                               startArchivaApplication();
                               $("#loadingDiv").hide();
+                              drawQuickSearchAutocomplete();
                           })
                       }
                     })
