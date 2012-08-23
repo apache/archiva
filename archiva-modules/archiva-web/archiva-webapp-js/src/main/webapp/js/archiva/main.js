@@ -208,12 +208,37 @@ function() {
           var repositoryIds = this.params.repositoryIds;
           var repos = repositoryIds.split("~");
           $.log("queryterms:"+queryterms+',repositoryIds:'+repositoryIds+",repos:"+repos.length);
+          var searchViewModel = new SearchViewModel();
+          var searchRequest = new SearchRequest();
+          searchRequest.queryTerms(queryterms);
+          searchRequest.repositories=repos;
+          searchViewModel.searchRequest(searchRequest);
+          displaySearch(function(){
+            searchViewModel.externalBasicSearch();
+          },searchViewModel);
+        });
+
+        this.get('#searchresult~:repositoryIds/:queryterms',function(){
+          var queryterms= this.params.queryterms;
+          var repositoryIds = this.params.repositoryIds;
+          var repos = repositoryIds.split("~");
+          $.log("queryterms:"+queryterms+',repositoryIds:'+repositoryIds+",repos:"+repos.length);
+          var searchViewModel = new SearchViewModel();
+          var searchRequest = new SearchRequest();
+          searchRequest.queryTerms(queryterms);
+          searchRequest.repositories=repos;
+          searchViewModel.searchRequest(searchRequest);
+          displaySearch(function(){
+            searchViewModel.externalBasicSearch();
+          },searchViewModel);
+        });
+
+        this.get('#searchresult/:queryterms',function(){
           var queryterms= this.params.queryterms;
           $.log("queryterms:"+queryterms);
           var searchViewModel = new SearchViewModel();
           var searchRequest = new SearchRequest();
           searchRequest.queryTerms(queryterms);
-          searchRequest.repositories=repos;
           searchViewModel.searchRequest(searchRequest);
           displaySearch(function(){
             searchViewModel.externalBasicSearch();

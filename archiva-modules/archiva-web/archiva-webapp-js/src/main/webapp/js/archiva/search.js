@@ -1533,6 +1533,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
    */
   SearchViewModel=function(){
     var self=this;
+    var mainContent=$("#main-content");
     this.searchRequest=ko.observable(new SearchRequest());
     this.observableRepoIds=ko.observableArray([]);
     this.selectedRepoIds=[];
@@ -1550,7 +1551,25 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         // cleanup previours error message
         customShowError("#main-content #search-basic-form", null, null, []);
       }
-      self.search("restServices/archivaServices/searchService/quickSearchWithRepositories");
+      var location="#searchresult";
+
+      self.selectedRepoIds=[];
+      mainContent.find("#search-basic-repositories" )
+          .find(".chzn-choices li span").each(function(i,span){
+                      self.selectedRepoIds.push($(span).html());
+                      }
+                    );
+
+      if (self.selectedRepoIds.length>0){
+        $.log("selectedRepoIds:"+self.selectedRepoIds.length);
+        $(self.selectedRepoIds).each(function(index, Element){
+          location+="~"+self.selectedRepoIds[index];
+        });
+      }
+      location+="/"+queryTerm;
+      $.log("basicsearch location:"+location);
+      window.sammyArchivaApplication.setLocation(location);
+      //self.search("restServices/archivaServices/searchService/quickSearchWithRepositories");
     }
 
     this.externalBasicSearch=function(){
@@ -1573,8 +1592,6 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       self.resultViewModel.artifacts(self.resultViewModel.originalArtifacts);
     }
     this.search=function(url,repositoriesIds){
-
-      var mainContent=$("#main-content");
 
       var searchResultsGrid=mainContent.find("#search-results #search-results-grid" );
       mainContent.find("#btn-basic-search" ).button("loading");
@@ -1673,7 +1690,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           $.log("repos:"+repos);
           searchViewModel.observableRepoIds(repos);
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
-          mainContent.find("#search-basic-repostories-select" ).chosen();
+          mainContent.find("#search-basic-repositories-select" ).chosen();
           if (successCallbackFn && $.isFunction(successCallbackFn)) successCallbackFn();
         }
     });
