@@ -62,7 +62,7 @@ $.ajax({
                     "jquery.tmpl": "jquery.tmpl",
                     "utils": "archiva/utils",
                     "startup": "archiva/startup",
-                    "jquery.ui": "jquery-ui-1.8.16.custom.min",
+                    "jquery.ui": "jquery-ui-1.8.23.custom.min",
                     "jquery.ui.widget": "jquery.ui.widget-1.8.18",
                     "jquery.cookie": "jquery.cookie.1.0.0",
                     "bootstrap": "bootstrap.2.1.0",
