@@ -40,7 +40,9 @@ import org.apache.maven.index.OSGI;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.StringSearchExpression;
+import org.apache.maven.index.expr.UserInputSearchExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -152,95 +154,95 @@ public class NexusRepositorySearch
         BooleanQuery q = new BooleanQuery();
         if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( searchFields.getGroupId() ) ),
+            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( searchFields.getGroupId() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
             q.add(
-                indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( searchFields.getArtifactId() ) ),
+                indexer.constructQuery( MAVEN.ARTIFACT_ID, new UserInputSearchExpression( searchFields.getArtifactId() ) ),
                 Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( searchFields.getVersion() ) ),
+            q.add( indexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression( searchFields.getVersion() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( searchFields.getPackaging() ) ),
+            q.add( indexer.constructQuery( MAVEN.PACKAGING, new UserInputSearchExpression( searchFields.getPackaging() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
         {
             q.add(
-                indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( searchFields.getClassName() ) ),
+                indexer.constructQuery( MAVEN.CLASSNAMES, new UserInputSearchExpression( searchFields.getClassName() ) ),
                 Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleSymbolicName() ) )
         {
             q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                           new StringSearchExpression( searchFields.getBundleSymbolicName() ) ),
+                                           new UserInputSearchExpression( searchFields.getBundleSymbolicName() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
         {
             q.add(
-                indexer.constructQuery( OSGI.VERSION, new StringSearchExpression( searchFields.getBundleVersion() ) ),
+                indexer.constructQuery( OSGI.VERSION, new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
                 Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
-                                           new StringSearchExpression( searchFields.getBundleExportPackage() ) ),
+                                           new UserInputSearchExpression( searchFields.getBundleExportPackage() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
-                                           new StringSearchExpression( searchFields.getBundleExportService() ) ),
+                                           new UserInputSearchExpression( searchFields.getBundleExportService() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
-                                           new StringSearchExpression( searchFields.getBundleImportPackage() ) ),
+                                           new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
         {
-            q.add( indexer.constructQuery( OSGI.NAME, new StringSearchExpression( searchFields.getBundleName() ) ),
+            q.add( indexer.constructQuery( OSGI.NAME, new UserInputSearchExpression( searchFields.getBundleName() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
-                                           new StringSearchExpression( searchFields.getBundleImportPackage() ) ),
+                                           new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleRequireBundle() ) )
         {
             q.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
-                                           new StringSearchExpression( searchFields.getBundleRequireBundle() ) ),
+                                           new UserInputSearchExpression( searchFields.getBundleRequireBundle() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
             q.add(
-                indexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( searchFields.getClassifier() ) ),
+                indexer.constructQuery( MAVEN.CLASSIFIER, new UserInputSearchExpression( searchFields.getClassifier() ) ),
                 Occur.MUST );
         }
 
@@ -308,11 +310,11 @@ public class NexusRepositorySearch
 
     private void constructQuery( String term, BooleanQuery q )
     {
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new UserInputSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.VERSION, new UserInputSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.PACKAGING, new UserInputSearchExpression( term ) ), Occur.SHOULD );
+        q.add( indexer.constructQuery( MAVEN.CLASSNAMES, new UserInputSearchExpression( term ) ), Occur.SHOULD );
 
         //Query query =
         //    new WildcardQuery( new Term( MAVEN.CLASSNAMES.getFieldName(), "*" ) );
