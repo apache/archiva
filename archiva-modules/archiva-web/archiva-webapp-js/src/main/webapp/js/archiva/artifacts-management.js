@@ -39,7 +39,7 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
 
     saveArtifacts=function(){
       clearUserMessages();
-      if(!$("#main-content #fileupload" ).valid()){
+      if(!$("#main-content" ).find("#fileupload" ).valid()){
         return;
       }
       if(this.artifactUploads.length<1){
@@ -84,12 +84,14 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
               success: function(data) {
                 var artifactUploadViewModel=new ArtifactUploadViewModel(data);
                 ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
-                var validator =  $("#main-content #fileupload" ).validate({
+                var fileUpload=$("#main-content" ).find("#fileupload");
+                var validator =  fileUpload.validate({
                   showErrors: function(validator, errorMap, errorList) {
                    customShowError("#main-content #fileupload",validator,errorMap,errorMap);
                   }
                 });
-                $('#fileupload').fileupload({
+
+                fileUpload.fileupload({
                     submit: function (e, data) {
                       var $this = $(this);
                       $this.fileupload('send', data);
@@ -98,7 +100,7 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
                     }
                   }
                 );
-                $('#fileupload').bind('fileuploadsubmit', function (e, data) {
+                fileUpload.bind('fileuploadsubmit', function (e, data) {
                   var pomFile = data.context.find('#pomFile' ).attr("checked");
                   var classifier = data.context.find('#classifier' ).val();
                   if (!data.formData){
