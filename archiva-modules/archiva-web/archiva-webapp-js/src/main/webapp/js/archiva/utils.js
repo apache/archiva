@@ -41,12 +41,12 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
       return;
     }
     Sammy.log(message);
-    return;
+    /*return;
     if (typeof window.console != 'undefined' && typeof window.console.log != 'undefined') {
       console.log(message);
     } else {
       // do nothing no console
-    }
+    }*/
   });
 
   /**
@@ -113,8 +113,9 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
    * clear #main-content and call clearUserMessages
     */
   screenChange=function(){
-    $("#main-content").html("");
-    $("#main-content").removeAttr("data-bind");
+    var mainContent=$("#main-content");
+    mainContent.html("");
+    mainContent.removeAttr("data-bind");
     clearUserMessages();
   }
 
@@ -149,13 +150,14 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
    * @param title
    */
   openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
+    var dialogCancel=$("#dialog-confirm-modal-cancel");
     if (window.modalConfirmDialog==null) {
       window.modalConfirmDialog = $("#dialog-confirm-modal").modal();//{backdrop:'static',show:false}
       window.modalConfirmDialog.bind('hidden', function () {
         $("#dialog-confirm-modal-header-title").html("");
         $("#dialog-confirm-modal-body-text").html("");
       })
-      $("#dialog-confirm-modal-cancel").on("click", function(){
+      dialogCancel.on("click", function(){
         window.modalConfirmDialog.modal('hide');
       });
     }
@@ -165,13 +167,14 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
       $("#dialog-confirm-modal-ok").html(okMessage);
     }
     if (cancelMessage){
-      $("#dialog-confirm-modal-cancel").html(cancelMessage);
+      dialogCancel.html(cancelMessage);
     }
     window.modalConfirmDialog.modal('show');
 
     // unbind previous events !!
-    $("#dialog-confirm-modal-ok").off( );
-    $("#dialog-confirm-modal-ok").on("click", okFn);
+    var dialogConfirmModalOk=$("#dialog-confirm-modal-ok");
+    dialogConfirmModalOk.off( );
+    dialogConfirmModalOk.on("click", okFn);
 
   }
 
