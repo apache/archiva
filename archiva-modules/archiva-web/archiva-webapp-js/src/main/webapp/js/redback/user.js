@@ -107,7 +107,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
                 successFnCallback(currentUser);
               }
               clearForm("#main-content #user-create");
-              $("#main-content #user-create").hide();
+              $("#main-content").find("#user-create").hide();
               activateUsersGridTab();
               return this;
             } else {
@@ -170,7 +170,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
             if (updated == true) {
               clearUserMessages();
               displaySuccessMessage($.i18n.prop("user.updated",currentUser.username()));
-              $("#main-content #users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
+              $("#main-content").find("#users-view-tabs-li-user-edit").find("a").html($.i18n.prop("add"));
               clearForm("#main-content #user-create");
               activateUsersGridTab();
               return this;
@@ -188,7 +188,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
     this.save=function(){
       $.log("user.save create:"+window.redbackModel.createUser);
       if (window.redbackModel.createUser==true){
-        var valid = $("#main-content #user-create").valid();
+        var valid = $("#main-content").find("#user-create").valid();
 
         if (valid==false) {
           $.log("user#save valid:false");
@@ -298,7 +298,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
    * open a modal box to create admin user
    */
   adminCreateBox=function() {
-
+    var mainContent=$("#main-content");
 
     $.ajax("restServices/redbackServices/userService/isAdminUserExists", {
       type: "GET",
@@ -308,9 +308,9 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
         if (adminExists == false) {
 
           window.redbackModel.createUser=true;
-          $("#main-content").attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
+          mainContent.attr("data-bind",'template: {name:"redback/user-edit-tmpl",data: user}');
           var viewModel = new AdminUserViewModel();
-          ko.applyBindings(viewModel,$("#main-content" ).get(0));
+          ko.applyBindings(viewModel,mainContent.get(0));
           $.log("adminCreateBox");
           $("#user-create").validate({
             rules: {
@@ -420,8 +420,9 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
       decorateMenuWithKarma(user);
       return;
     }
-    $("#modal-login-err-message").html($.i18n.prop("incorrect.username.password"));
-    $("#modal-login-err-message").show();
+    var modalLoginErrMsg=$("#modal-login-err-message");
+    modalLoginErrMsg.html($.i18n.prop("incorrect.username.password"));
+    modalLoginErrMsg.show();
   }
 
   /**
@@ -487,11 +488,12 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
   }
 
   passwordReset=function(){
-    var username = $("#user-login-form-username" ).val();
+    var userLoginFormUsername=$("#user-login-form-username" );
+    var username = userLoginFormUsername.val();
     if(username.trim().length<1){
       var errorList=[{
         message: $.i18n.prop("username.cannot.be.empty"),
-  		  element: $("#user-login-form-username").get(0)
+  		  element: userLoginFormUsername.get(0)
       }];
       customShowError("#user-login-form", null, null, errorList);
       return;
@@ -627,7 +629,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
       window.modalEditUserBox.bind('hidden', function () {
         $("#modal-user-edit-err-message").hide();
       })
-      $("#modal-user-edit #modal-user-edit-ok").on( "click keydown keypress", function(e) {
+      $("#modal-user-edit").find("#modal-user-edit-ok").on( "click keydown keypress", function(e) {
         e.preventDefault();
         $.log("user.js#editUserDetailsBox");
         var valid = $("#user-edit-form").valid();
@@ -636,19 +638,19 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
         }
         var user = {
           username:currentUser.username,
-          fullName:$("#modal-user-edit #fullname").val(),
-          email:$("#modal-user-edit #email").val(),
-          previousPassword:$("#modal-user-edit #userEditFormCurrentPassword").val(),
-          password:$("#modal-user-edit #userEditFormNewPassword").val(),
-          confirmPassword:$("#modal-user-edit #userEditFormNewPasswordConfirm").val()
+          fullName:$("#modal-user-edit").find("#fullname").val(),
+          email:$("#modal-user-edit").find("#email").val(),
+          previousPassword:$("#modal-user-edit").find("#userEditFormCurrentPassword").val(),
+          password:$("#modal-user-edit").find("#userEditFormNewPassword").val(),
+          confirmPassword:$("#modal-user-edit").find("#userEditFormNewPasswordConfirm").val()
         };
         editUserDetails(user);
       });
     }
     var currentUser = getUserFromLoginCookie();
-    $("#modal-user-edit #username").html(currentUser.username);
-    $("#modal-user-edit #fullname").val(currentUser.fullName);
-    $("#modal-user-edit #email").val(currentUser.email);
+    $("#modal-user-edit").find("#username").html(currentUser.username);
+    $("#modal-user-edit").find("#fullname").val(currentUser.fullName);
+    $("#modal-user-edit").find("#email").val(currentUser.email);
     window.modalEditUserBox.modal('show');
     $("#user-edit-form").validate({
       rules: {

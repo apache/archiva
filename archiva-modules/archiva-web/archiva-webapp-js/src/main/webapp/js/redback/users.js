@@ -216,7 +216,7 @@ define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","kn
     }
 
     saveUser=function(){
-      var valid = $("#main-content #user-create").valid();
+      var valid = $("#main-content").find("#user-create").valid();
       if (valid==false) {
         return;
       }

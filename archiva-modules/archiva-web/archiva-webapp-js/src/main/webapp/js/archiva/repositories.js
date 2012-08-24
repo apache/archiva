@@ -178,7 +178,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.availableLayouts = window.managedRepositoryTypes;
 
     this.save=function(){
-      var valid = $("#main-content #managed-repository-edit-form").valid();
+      var valid = $("#main-content").find("#managed-repository-edit-form").valid();
       if (valid==false) {
           return;
       }
@@ -261,7 +261,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
   }
 
   activateManagedRepositoryFormValidation=function(){
-    var validator = $("#main-content #managed-repository-edit-form").validate({
+    var validator = $("#main-content" ).find("#managed-repository-edit-form").validate({
       rules: {
         daysOlder : {
           digits: true,
@@ -314,7 +314,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       clearUserMessages();
       openDialogConfirm(
           function(){
-            $("#dialog-confirm-modal #modal-login-footer").append(smallSpinnerImg());
+            $("#dialog-confirm-modal" ).find("#modal-login-footer").append(smallSpinnerImg());
             var checked = $("#managed-repository-scan-now-all").get(0).checked;
             var url = "restServices/archivaServices/repositoriesService/scanRepositoryNow?";
             url += "repositoryId="+encodeURIComponent(managedRepository.id());
@@ -351,7 +351,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       clearUserMessages();
       openDialogConfirm(
           function(){
-            $("#dialog-confirm-modal #modal-login-footer").append(smallSpinnerImg());
+            $("#dialog-confirm-modal").find("#modal-login-footer").append(smallSpinnerImg());
             var url = "restServices/archivaServices/managedRepositoriesService/deleteManagedRepository?";
             url += "repositoryId="+encodeURIComponent(managedRepository.id());
 
@@ -645,7 +645,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.availableLayouts = window.managedRepositoryTypes;
 
     this.save=function(){
-      var valid = $("#main-content #remote-repository-edit-form").valid();
+      var valid = $("#main-content" ).find("#remote-repository-edit-form").valid();
       if (valid==false) {
         return;
       }
@@ -815,7 +815,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
   activateRemoteRepositoryFormValidation=function(){
     // FIXME find a way to activate cronExpression validation only if downloadRemote is activated !
-    var validator = $("#main-content #remote-repository-edit-form").validate({
+    var validator = $("#main-content" ).find("#remote-repository-edit-form").validate({
       rules: {
         id: {
           required: true,
@@ -891,7 +891,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
         ],
         pageSize: 5,
         gridUpdateCallBack: function(){
-          $("#main-content #managed-repositories-table").find("[title]").tooltip();
+          $("#main-content" ).find("#managed-repositories-table").find("[title]").tooltip();
         }
       });
       var mainContent = $("#main-content");
@@ -928,7 +928,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
         ],
         pageSize: 5,
         gridUpdateCallBack: function(){
-          $("#main-content #remote-repositories-table").find("[title]").tooltip();
+          $("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
         }
       });
       var mainContent = $("#main-content");
@@ -960,13 +960,13 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             success: function(data) {
               var viewModel = new RemoteRepositoryViewModel(new RemoteRepository(),false,remoteRepositoriesViewModel);
               viewModel.networkProxies(mapNetworkProxies(data));
-              ko.applyBindings(viewModel,$("#main-content #remote-repository-edit").get(0));
+              ko.applyBindings(viewModel,$("#main-content" ).find("#remote-repository-edit").get(0));
               activateRemoteRepositoryFormValidation();
             }
         })
       }
       if ($(e.target).attr("href")=="#remote-repositories-view") {
-        $("#main-content #remote-repository-edit-li a").html($.i18n.prop("add"));
+        $("#main-content" ).find("#remote-repository-edit-li" ).find("a").html($.i18n.prop("add"));
       }
 
     });

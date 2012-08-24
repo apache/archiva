@@ -61,7 +61,7 @@ define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jqu
     this.bulkMode=false || bulkMode;
 
     this.save=function(){
-      if (!$("#main-content #network-proxy-edit-form").valid()){
+      if (!$("#main-content" ).find("#network-proxy-edit-form").valid()){
         return;
       }
       if (!this.bulkMode){
@@ -215,12 +215,12 @@ define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jqu
         mainContent.find("#network-proxies-view-tabs").on('show', function (e) {
           if ($(e.target).attr("href")=="#network-proxies-edit") {
             var viewModel = new NetworkProxyViewModel(new NetworkProxy(),false,networkProxiesViewModel);
-            ko.applyBindings(viewModel,$("#main-content #network-proxies-edit").get(0));
+            ko.applyBindings(viewModel,$("#main-content" ).find("#network-proxies-edit").get(0));
             activateNetworkProxyFormValidation();
             clearUserMessages();
           }
           if ($(e.target).attr("href")=="#network-proxies-view") {
-            $("#main-content #network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
+            $("#main-content" ).find("#network-proxies-view-tabs-li-edit a").html($.i18n.prop("add"));
             clearUserMessages();
           }
 
@@ -252,10 +252,10 @@ define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jqu
           ],
           pageSize: 5,
           gridUpdateCallBack: function(networkProxy){
-            $("#main-content #networkProxiesTable [title]").tooltip();
+            $("#main-content" ).find("#networkProxiesTable [title]").tooltip();
           }
         });
-        ko.applyBindings(networkProxiesViewModel,$("#main-content #network-proxies-view").get(0));
+        ko.applyBindings(networkProxiesViewModel,$("#main-content" ).find("#network-proxies-view").get(0));
       }
     )
   }
@@ -270,7 +270,7 @@ define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jqu
   }
 
   activateNetworkProxyFormValidation=function(){
-    var editForm=$("#main-content #network-proxy-edit-form");
+    var editForm=$("#main-content" ).find("#network-proxy-edit-form");
     var validator = editForm.validate({
       rules: {id: {
        required: true,

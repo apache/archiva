@@ -97,8 +97,9 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
    * open the register modal box
    */
   registerBox=function(){
+    var modalRegister=$("#modal-register");
     if (window.modalRegisterWindow==null) {
-      window.modalRegisterWindow = $("#modal-register").modal({backdrop:'static',show:false});
+      window.modalRegisterWindow = modalRegister.modal({backdrop:'static',show:false});
       window.modalRegisterWindow.bind('hidden', function () {
         $("#modal-register-err-message").hide();
       })
@@ -109,7 +110,7 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
         customShowError("#user-register-form",validator,errorMap,errorMap);
       }
     });
-    $("#modal-register").delegate("#modal-register-ok", "click keydown keypress", function(e) {
+    modalRegister.delegate("#modal-register-ok", "click keydown keypress", function(e) {
       e.preventDefault();
       register();
     });

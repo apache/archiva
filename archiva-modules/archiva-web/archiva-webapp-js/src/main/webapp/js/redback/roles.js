@@ -312,34 +312,34 @@ define("redback.roles",["jquery","utils","i18n","jquery.validate","knockout","kn
   }
 
   activateRolesGridTab=function(){
-    $("#main-content #roles-view-tabs li").removeClass("active");
-    $("#main-content #roles-view-tabs-content div").removeClass("active");
+    $("#main-content").find("#roles-view-tabs").find("li").removeClass("active");
+    $("#main-content").find("#roles-view-tabs-content").find("div").removeClass("active");
     // activate roles grid tab
-    $("#main-content #roles-view-tabs-content #roles-view").addClass("active");
-    $("#main-content #roles-view-tabs-li-roles-grid").addClass("active");
+    $("#main-content").find("#roles-view-tabs-content").find("#roles-view").addClass("active");
+    $("#main-content").find("#roles-view-tabs-li-roles-grid").addClass("active");
   }
 
   activateRoleEditTab=function(){
-    $("#main-content #roles-view-tabs li").removeClass("active");
-    $("#main-content #roles-view-tabs-content div").removeClass("active");
+    $("#main-content").find("#roles-view-tabs").find("li").removeClass("active");
+    $("#main-content").find("#roles-view-tabs-content").find("div").removeClass("active");
     // activate role edit tab
-    $("#main-content #roles-view-tabs-content #role-edit").addClass("active");
+    $("#main-content").find("#roles-view-tabs-content").find("#role-edit").addClass("active");
     $("#roles-view-tabs-li-roles-edit").addClass("active");
   }
 
   activateRoleUsersListTab=function(){
-    $("#main-content #role-edit-users-li").removeClass("active");
-    $("#main-content #role-edit-users").removeClass("active");
+    $("#main-content").find("#role-edit-users-li").removeClass("active");
+    $("#main-content").find("#role-edit-users").removeClass("active");
     // activate roles grid tab
-    $("#main-content #role-view-users-li").addClass("active");
-    $("#main-content #role-view-users").addClass("active");
+    $("#main-content").find("#role-view-users-li").addClass("active");
+    $("#main-content").find("#role-view-users").addClass("active");
   }
 
   activateRoleUsersEditTab=function(){
-    $("#main-content #role-view-users-li").removeClass("active");
-    $("#main-content #role-view-users").removeClass("active");
+    $("#main-content").find("#role-view-users-li").removeClass("active");
+    $("#main-content").find("#role-view-users").removeClass("active");
     // activate role edit tab
-    $("#main-content #role-edit-users").addClass("active");
+    $("#main-content").find("#role-edit-users").addClass("active");
     $("#role-edit-users-li").addClass("active");
   }
 

@@ -147,10 +147,10 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       return entries;
     }
     displayArtifactInfo=function(){
-      if ($("#main-content #artifact-info:visible" ).length>0) {
-        $("#main-content #artifact-info" ).hide();
+      if ($("#main-content").find("#artifact-info:visible" ).length>0) {
+        $("#main-content").find("#artifact-info" ).hide();
       } else {
-        $("#main-content #artifact-info" ).show();
+        $("#main-content").find("#artifact-info" ).show();
       }
     }
 
@@ -483,7 +483,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           success:function(data){
             self.artifacts.remove(artifact);
             displaySuccessMessage( $.i18n.prop('artifact.deleted'));
-            $("#main-content #artifact-details-download-content" ).html(smallSpinnerImg());
+            $("#main-content").find("#artifact-details-download-content" ).html(smallSpinnerImg());
             // reload datas from server
             var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.artifactVersionDetailViewModel.groupId);
             artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(self.artifactVersionDetailViewModel.version);
@@ -557,7 +557,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         if(classifier){
           entriesUrl+="&c="+encodeURIComponent(classifier);
         }
-        $("#main-content #artifact_content_tree").fileTree({
+        $("#main-content").find("#artifact_content_tree").fileTree({
           script: entriesUrl,
           root: ""
     		  },function(file) {
@@ -855,7 +855,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   getSelectedBrowsingRepository=function(){
-    var selectedOption=$("#main-content #select_browse_repository option:selected" );
+    var selectedOption=$("#main-content").find("#select_browse_repository").find("option:selected" );
     if (selectedOption.length>0){
       var repoId=selectedOption.val();
       return repoId;
@@ -873,7 +873,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     if (selectedRepo){
       url+="?repositoryId="+encodeURIComponent(selectedRepo);
     }
-    $( "#main-content #browse-autocomplete" ).autocomplete({
+    $( "#main-content").find("#browse-autocomplete" ).autocomplete({
       minLength: 2,
 			source: function(request, response){
         var query = "";
@@ -1412,7 +1412,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   }
 
   applyAutocompleteOnHeader=function(property,resultViewModel){
-    $( "#main-content #search-filter-auto-"+property ).autocomplete({
+    $( "#main-content").find("#search-filter-auto-"+property ).autocomplete({
       minLength: 0,
 			source: function(request, response){
         var founds=[];
@@ -1543,7 +1543,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       if ($.trim(queryTerm).length<1){
         var errorList=[{
           message: $.i18n.prop("search.artifact.search.form.terms.empty"),
-    		  element: $("#main-content #search-basic-form #search-terms" ).get(0)
+    		  element: $("#main-content").find("#search-basic-form").find("#search-terms" ).get(0)
         }];
         customShowError("#main-content #search-basic-form", null, null, errorList);
         return;

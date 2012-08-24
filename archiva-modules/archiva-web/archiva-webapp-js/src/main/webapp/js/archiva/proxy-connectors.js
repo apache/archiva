@@ -150,7 +150,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
     }
 
     changePolicyOption=function(id){
-      var selectedOption=$("#main-content #policy-"+id + " option:selected");
+      var selectedOption=$("#main-content").find("#policy-"+id ).find("option:selected");
       if (selectedOption.length>0){
         var value = selectedOption.val();
         $.log("changePolicyOption:"+id+":"+value);
@@ -172,7 +172,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
 
 
     addBlacklistPattern=function(){
-      var pattern = $("#main-content #blacklist-value").val();
+      var pattern = $("#main-content").find("#blacklist-value").val();
       var tab =  self.proxyConnector.blackListPatterns();
       tab.push(pattern);
       self.proxyConnector.blackListPatterns(tab);
@@ -185,7 +185,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
     }
 
     addWhitelistPattern=function(){
-      var pattern = $("#main-content #whitelist-value").val();
+      var pattern = $("#main-content" ).find("#whitelist-value").val();
       var tab =  self.proxyConnector.whiteListPatterns();
       tab.push(pattern);
       self.proxyConnector.whiteListPatterns(tab);
@@ -430,7 +430,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
 
       var managedRepository = getManagedRepository(proxyConnector.sourceRepoId());
       var proxyConnectorEditOrderViewModel=new ProxyConnectorEditOrderViewModel(proxyConnectors,self,managedRepository);
-      ko.applyBindings(proxyConnectorEditOrderViewModel,$("#main-content #proxy-connector-edit-order").get(0));
+      ko.applyBindings(proxyConnectorEditOrderViewModel,$("#main-content").find("#proxy-connector-edit-order").get(0));
       activateProxyConnectorsEditOrderTab();
     }
 
@@ -439,7 +439,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
         data: self.proxyConnectors,
         pageSize: 5,
         gridUpdateCallBack: function(){
-          $("#main-content #proxyConnectorsTable [title]").tooltip();
+          $("#main-content" ).find("#proxyConnectorsTable" ).find("[title]").tooltip();
         }
       });
       var mainContent = $("#main-content");

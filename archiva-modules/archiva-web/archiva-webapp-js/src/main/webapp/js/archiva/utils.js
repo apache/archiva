@@ -163,8 +163,9 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     }
     $("#dialog-confirm-modal-header-title").html(title);
     $("#dialog-confirm-modal-body-text").html(bodyText);
+    var dialogConfirmModalOk=$("#dialog-confirm-modal-ok");
     if (okMessage){
-      $("#dialog-confirm-modal-ok").html(okMessage);
+      dialogConfirmModalOk.html(okMessage);
     }
     if (cancelMessage){
       dialogCancel.html(cancelMessage);
@@ -172,7 +173,7 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     window.modalConfirmDialog.modal('show');
 
     // unbind previous events !!
-    var dialogConfirmModalOk=$("#dialog-confirm-modal-ok");
+
     dialogConfirmModalOk.off( );
     dialogConfirmModalOk.on("click", okFn);
 

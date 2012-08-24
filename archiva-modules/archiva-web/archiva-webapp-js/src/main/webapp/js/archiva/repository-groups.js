@@ -111,8 +111,8 @@ function() {
       $.log("editRepositoryGroup:"+repositoryGroup.id()+",repositories:"+repositoryGroup.repositories().length+",managed:"+repositoryGroup.managedRepositories().length);
       var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,true,self);
       activateRepositoryGroupEditTab();
-      ko.applyBindings(repositoryGroupViewModel,$("#main-content #repository-groups-edit" ).get(0));
-      $("#main-content #repository-groups-view-tabs-li-edit a").html($.i18n.prop("edit"));
+      ko.applyBindings(repositoryGroupViewModel,$("#main-content").find("#repository-groups-edit" ).get(0));
+      $("#main-content" ).find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
