@@ -19,22 +19,22 @@
 
 appendArchivaVersion=function(){
   return "_archivaVersion="+window.archivaRuntimeInfo.version;
-}
+};
 
 timestampNoCache=function(){
   if (window.archivaRuntimeInfo.version.match("SNAPSHOT$")){
     return "&archivaTimestamp="+window.archivaRuntimeInfo.timestamp+(window.archivaRuntimeInfo.devMode?"&_="+jQuery.now():"");
   }
   return "";
-}
+};
 
 appendTemplateUrl=function(){
   return appendArchivaVersion()+timestampNoCache();
-}
+};
 
 appendJsNoCacheUrl=function(){
   return appendArchivaVersion()+timestampNoCache();
-}
+};
 
 $.ajax({
     url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/en",
@@ -117,4 +117,4 @@ $.ajax({
                   });
                 })
     }
-})
+});
