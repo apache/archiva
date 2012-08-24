@@ -339,7 +339,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
    */
   loginBox=function(){
 
-    screenChange();
     if (window.modalLoginWindow!=null){
       window.modalLoginWindow=null;
     }
