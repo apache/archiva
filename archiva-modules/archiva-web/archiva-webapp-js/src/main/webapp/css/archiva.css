@@ -148,3 +148,9 @@ footer {
 .sidebar-nav {
     padding: 9px 0;
 }
+
+.page-header {
+    border-bottom: 1px solid #EEEEEE;
+    margin: 15px 0 20px;
+    padding-bottom: 3px;
+}
