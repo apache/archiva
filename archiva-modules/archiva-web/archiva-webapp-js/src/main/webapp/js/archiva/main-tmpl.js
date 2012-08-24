@@ -16,23 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(['jquery',"jquery.tmpl","utils","text!templates/archiva/menu.html",
+require(['jquery',"jquery.tmpl",'i18n',"utils","text!templates/archiva/menu.html",
           "text!templates/archiva/generics.html",
           "text!templates/archiva/modal.html",
           "text!templates/archiva/repositories.html",
           "text!templates/archiva/search.html",
           "text!templates/archiva/general-admin.html"],
-  function(jquery,jqueryTmpl,utils,menu,generics,modal,repositories,
+  function(jquery,jqueryTmpl,i18n,utils,menu,generics,modal,repositories,
            search,general_admin) {
-
-    var htmlFragment=$("#html-fragments");
-    // template loading
-    htmlFragment.append(menu);
-    htmlFragment.append(generics);
-    $.tmpl( modal ).appendTo(htmlFragment);
-    htmlFragment.append(repositories);
-    htmlFragment.append(search);
-    htmlFragment.append(general_admin);
-    $.log("main-tmpl.js loaded");
+    loadArchivaTemplate=function(){
+      var htmlFragment=$("#html-fragments");
+      // template loading
+      htmlFragment.append(menu);
+      htmlFragment.append(generics);
+      $.tmpl( modal ).appendTo(htmlFragment);
+      htmlFragment.append(repositories);
+      htmlFragment.append(search);
+      htmlFragment.append(general_admin);
+      $.log("main-tmpl.js loaded");
+    }
   }
 );

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl","jquery.cookie","bootstrap","archiva.search",
+define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl",'i18n',"jquery.cookie","bootstrap","archiva.search",
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
@@ -581,6 +581,8 @@ function(jquery,ui,sammy,tmpl) {
   startArchivaApplication=function(){
 
     $.log("startArchivaApplication");
+    loadRedbackTemplate();
+    loadArchivaTemplate();
     $('#topbar-menu-container').html($("#topbar_menu_tmpl" ).tmpl());
     $('#sidebar-content').html($("#main_menu_tmpl").tmpl());
 

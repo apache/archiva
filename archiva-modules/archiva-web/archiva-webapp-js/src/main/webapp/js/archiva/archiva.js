@@ -51,8 +51,8 @@ $.ajax({
                 urlArgs: ""+appendJsNoCacheUrl(),
                 shim: {
                       'sammy':['jquery','jquery.tmpl'],
-                      'archiva.main':['jquery','jquery.ui','sammy','jquery.tmpl'],
-                      'utils':['jquery','jquery.tmpl'],
+                      'archiva.main':['jquery','jquery.ui','sammy','jquery.tmpl','utils','i18n'],
+                      'utils':['jquery','jquery.tmpl','i18n'],
                       'archiva.templates': ['jquery','jquery.tmpl','utils'],
                       'redback.templates': ['jquery','jquery.tmpl','utils']
                       },
@@ -97,9 +97,9 @@ $.ajax({
                 }
             });
 
-            requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils',"archiva.main",'domReady!'], function (domReady) {
-                loadi18n(function () {
-                  $.ajax({
+                requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main'], function () {
+                  loadi18n(function () {
+                    $.ajax({
                       url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
                       dataType: 'json',
                       success:function(data){
@@ -107,14 +107,14 @@ $.ajax({
                           window.archivaJavascriptLog=data.javascriptLog;
                           window.archivaRuntimeInfo=data;
 
-                          require(['sammy','jquery','jquery.tmpl','archiva.main','utils','domReady!'],function () {
+                          require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
                               startArchivaApplication();
                               $("#loadingDiv").hide();
                               drawQuickSearchAutocomplete();
                           })
                       }
                     })
+                  });
                 })
-            });
     }
 })

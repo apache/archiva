@@ -16,15 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-require(['jquery',"jquery.tmpl","utils","text!templates/redback/user-edit.html",
+require(['jquery',"jquery.tmpl",'i18n',"utils","text!templates/redback/user-edit.html",
           "text!templates/redback/login.html"],
-    function(jquery,jqueryTmpl,utils,useredit, login) {
+    function(jquery,jqueryTmpl,i18n,utils,useredit, login) {
 
-      var htmlFragment=$("#html-fragments");
+      loadRedbackTemplate=function(){
 
-      // template loading
-      htmlFragment.append(useredit);
-      $.tmpl(login).appendTo("#html-fragments");
-      $.log("redback-tmpl.js loaded");
+        var htmlFragment=$("#html-fragments");
+
+        // template loading
+        htmlFragment.append(useredit);
+        //$.tmpl(useredit).appendTo("#html-fragments");
+        $.tmpl(login).appendTo("#html-fragments");
+        //htmlFragment.append(login);
+        $.log("redback-tmpl.js loaded");
+      }
     }
 );
