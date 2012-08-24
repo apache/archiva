@@ -72,7 +72,7 @@ function(jquery,ui,sammy,tmpl) {
           return item.name();
         });
 
-        $("#topbar-menu-container [redback-permissions]").each(function(element){
+        $("#topbar-menu-container").find("[redback-permissions]").each(function(element){
           checkElementKarma(this);
         });
         $("#sidebar-content [redback-permissions]").each(function(element){
@@ -105,7 +105,7 @@ function(jquery,ui,sammy,tmpl) {
       $(this).hide();
     });
 
-    $("#sidebar-content [redback-permissions]").each(function(element){
+    $("#sidebar-content").find("[redback-permissions]").each(function(element){
       $(this).hide();
     });
     $.log("hideElementWithKarma");

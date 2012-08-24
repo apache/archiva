@@ -22,7 +22,7 @@ appendArchivaVersion=function(){
 }
 
 timestampNoCache=function(){
-  if (window.archivaRuntimeInfo.version.match("SNAPSHOT$")=="SNAPSHOT"){
+  if (window.archivaRuntimeInfo.version.match("SNAPSHOT$")){
     return "&archivaTimestamp="+window.archivaRuntimeInfo.timestamp+(window.archivaRuntimeInfo.devMode?"&_="+jQuery.now():"");
   }
   return "";
@@ -107,7 +107,7 @@ $.ajax({
                           window.archivaJavascriptLog=data.javascriptLog;
                           window.archivaRuntimeInfo=data;
 
-                          require(['sammy','jquery','jquery.tmpl','archiva.main','utils','domReady!'],function (domReady) {
+                          require(['sammy','jquery','jquery.tmpl','archiva.main','utils','domReady!'],function () {
                               startArchivaApplication();
                               $("#loadingDiv").hide();
                               drawQuickSearchAutocomplete();
