@@ -57,142 +57,138 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <reportPlugins>
-            <!-- jxr first -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jxr-plugin</artifactId>
-              <version>2.3</version>
-              <configuration>
-                <aggregate>true</aggregate>
-              </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-checkstyle-plugin</artifactId>
-              <version>2.9.1</version>
-              <configuration>
-                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                <configLocation>config/maven_checks.xml</configLocation>
-                <reportSets>
-                  <report>checkstyle</report>
-                </reportSets>
-              </configuration>
-            </plugin>
-            <plugin>
-              <!-- No need for the standard project reports -->
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-project-info-reports-plugin</artifactId>
-              <version>2.5</version>
-              <reportSets>
-                <reportSet>
-                  <reports>
-                    <report>index</report>
-                  </reports>
-                </reportSet>
-              </reportSets>
-            </plugin>
-            <!-- cobertura Disabled - not working  try jacoco-->
-            <!-- cobertura not working wll with jdk7 -->
-            <plugin>
-              <groupId>org.jacoco</groupId>
-              <artifactId>jacoco-maven-plugin</artifactId>
-              <version>0.5.9.201207300726</version>
-            </plugin>
-            <!-- -->
-            <!-- TODO: OOME 1.1.1 check newer version-->
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>findbugs-maven-plugin</artifactId>
-              <version>2.5.2</version>
-            </plugin>
-            
-            
-            <!-- -->
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>taglist-maven-plugin</artifactId>
-              <version>2.4</version>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>2.8.1</version>
-              <configuration>
-                <source>1.5</source>
-                <useStandardDocletOptions>true</useStandardDocletOptions>
-                <doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
-                <docletArtifact>
-                  <groupId>gr.spinellis</groupId>
-                  <artifactId>UmlGraph</artifactId>
-                  <version>4.6</version>
-                </docletArtifact>
-                <additionalparam>
-                  -inferrel -inferdep -quiet -hide java.*
-                  -collpackages java.util.* -qualify
-                  -postfixpackage -nodefontsize 9
-                  -nodefontpackagesize 7
-                </additionalparam>
-                <links>
-                  <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                  <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>
-                  <link>http://commons.apache.org/dbcp/apidocs/</link>
-                  <link>http://commons.apache.org/fileupload/apidocs/</link>
-                  <link>http://commons.apache.org/httpclient/apidocs/</link>
-                  <link>http://commons.apache.org/logging/apidocs/</link>
-                  <link>http://commons.apache.org/pool/apidocs/</link>
-                  <link>http://junit.sourceforge.net/javadoc/</link>
-                  <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
-                  <link>http://jakarta.apache.org/regexp/apidocs/</link>
-                  <link>http://velocity.apache.org/engine/releases/velocity-1.5/apidocs/</link>
-                </links>
-                <linksource>true</linksource>
-                <show>private</show>
-                <tags>
-                  <tag>
-                    <name>todo</name>
-                    <placement>a</placement>
-                    <head>To Do:</head>
-                  </tag>
-                </tags>
-              </configuration>
-              <reportSets>
-                <reportSet>
-                  <reports>
-                    <!-- Don't need tests -->
-                    <report>aggregate</report>
-                  </reports>
-                </reportSet>
-              </reportSets>
-              <!-- <inherited>false</inherited> skygo failing-->
-            </plugin>
-         
-            <!-- TODO: choose appropriate rulesets -->
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-pmd-plugin</artifactId>
-              <version>2.7.1</version>
-              <configuration>
-                <targetJdk>1.5</targetJdk>
-              </configuration>
-            </plugin>
-            <!-- -->
-            <!-- Not being checked
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>clirr-maven-plugin</artifactId>
-            </plugin>
-            -->
-          </reportPlugins>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
+  <reporting><!-- no migration to 3.0 without ack of olamy :p -->
+    <plugins>
+      
+      <!-- jxr first -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.9.1</version>
+        <configuration>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <configLocation>config/maven_checks.xml</configLocation>
+          <reportSets>
+            <report>checkstyle</report>
+          </reportSets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <!-- No need for the standard project reports -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.5</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <!-- cobertura Disabled - not working  try jacoco-->
+      <!-- cobertura not working wll with jdk7 -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.5.9.201207300726</version>
+      </plugin>
+      <!-- -->
+      <!-- TODO: OOME 1.1.1 check newer version-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+            
+            
+      <!-- -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.8.1</version>
+        <configuration>
+          <source>1.5</source>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <doclet>gr.spinellis.umlgraph.doclet.UmlGraphDoc</doclet>
+          <docletArtifact>
+            <groupId>gr.spinellis</groupId>
+            <artifactId>UmlGraph</artifactId>
+            <version>4.6</version>
+          </docletArtifact>
+          <additionalparam>
+            -inferrel -inferdep -quiet -hide java.*
+            -collpackages java.util.* -qualify
+            -postfixpackage -nodefontsize 9
+            -nodefontpackagesize 7
+          </additionalparam>
+          <links>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+            <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>
+            <link>http://commons.apache.org/dbcp/apidocs/</link>
+            <link>http://commons.apache.org/fileupload/apidocs/</link>
+            <link>http://commons.apache.org/httpclient/apidocs/</link>
+            <link>http://commons.apache.org/logging/apidocs/</link>
+            <link>http://commons.apache.org/pool/apidocs/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+            <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+            <link>http://jakarta.apache.org/regexp/apidocs/</link>
+            <link>http://velocity.apache.org/engine/releases/velocity-1.5/apidocs/</link>
+          </links>
+          <linksource>true</linksource>
+          <show>private</show>
+          <tags>
+            <tag>
+              <name>todo</name>
+              <placement>a</placement>
+              <head>To Do:</head>
+            </tag>
+          </tags>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!-- Don't need tests -->
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <!-- <inherited>false</inherited> skygo failing-->
+      </plugin>
+         
+      <!-- TODO: choose appropriate rulesets -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.7.1</version>
+        <configuration>
+          <targetJdk>1.5</targetJdk>
+        </configuration>
+      </plugin>
+      <!-- -->
+      <!-- Not being checked
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+      </plugin>
+      -->
+    </plugins>
+  </reporting>
 
   <distributionManagement>
     <site>
