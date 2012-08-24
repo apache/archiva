@@ -71,7 +71,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }
       return artifactValue;
     }, this);
-  }
+  };
 
   mapLegacyArtifactPaths=function(data){
     if (data){
@@ -80,20 +80,20 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }):[mapLegacyArtifactPath(data)];
     }
     return [];
-  }
+  };
 
   mapLegacyArtifactPath=function(data){
     return data?new LegacyArtifactPath(data.path,data.groupId,data.artifactId,data.version,data.classifier,data.type):null;
-  }
+  };
 
   activateLegacyArtifactPathFormValidation=function(){
-    var theForm=$("#main-content #legacy-artifact-paths-edit-form");
+    var theForm=$("#main-content" ).find("#legacy-artifact-paths-edit-form");
     var validator = theForm.validate({
       showErrors: function(validator, errorMap, errorList) {
        customShowError("#main-content #legacy-artifact-paths-edit-form",validator,errorMap,errorMap);
       }
     });
-  }
+  };
 
   LegacyArtifactPathViewModel=function(legacyArtifactPath,update,legacyArtifactPathsViewModel){
     var self=this;
@@ -107,11 +107,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       mainContent.find("#legacy-artifact-paths-view-tabs-li-edit a").html($.i18n.prop("edit"));
       activateLegacyArtifactPathFormValidation();
       activateLegacyArtifactPathsEditTab();
-    }
+    };
 
     displayGrid=function(){
       activateLegacyArtifactPathsGridTab();
-    }
+    };
 
     calculatePath=function(){
       var path="";
@@ -131,10 +131,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         path+="."+self.legacyArtifactPath.type();
       }
       self.legacyArtifactPath.path(path);
-    }
+    };
 
     this.save=function(){
-      var theForm=$("#main-content #legacy-artifact-paths-edit-form");
+      var theForm=$("#main-content" ).find("#legacy-artifact-paths-edit-form");
       if (!theForm.valid()){
         return;
       }
@@ -174,7 +174,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         );
       }
     }
-  }
+  };
 
   LegacyArtifactPathsViewModel=function(){
     var self=this;
@@ -194,7 +194,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       ],
       pageSize: 5,
       gridUpdateCallBack: function(networkProxy){
-        $("#main-content #legacy-artifact-paths-table [title]").tooltip();
+        $("#main-content").find("#legacy-artifact-paths-table" ).find("[title]").tooltip();
       }
     });
 
@@ -202,7 +202,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     editLegacyArtifactPath=function(legacyArtifactPath){
       var legacyArtifactPathViewModel=new LegacyArtifactPathViewModel(legacyArtifactPath,true);
       legacyArtifactPathViewModel.display();
-    }
+    };
 
     removeLegacyArtifactPath=function(legacyArtifactPath){
 
@@ -230,13 +230,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           }, $.i18n.prop('ok'), $.i18n.prop('cancel'), $.i18n.prop('legacy-artifact-path.delete.confirm',legacyArtifactPath.path()),
                       $("#legacy-artifact-path-delete-warning-tmpl" ).tmpl(legacyArtifactPath));
 
-    }
+    };
 
     updateLegacyArtifactPath=function(legacyArtifactPath){
 
     }
 
-  }
+  };
 
   displayLegacyArtifactPathSupport=function(){
     clearUserMessages();
@@ -274,7 +274,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     });
 
 
-  }
+  };
 
 
   activateLegacyArtifactPathsGridTab=function(){
@@ -286,7 +286,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     mainContent.find("#legacy-artifact-paths-view").addClass("active");
     mainContent.find("#legacy-artifact-paths-view-tabs-li-edit a").html($.i18n.prop("add"));
 
-  }
+  };
 
   activateLegacyArtifactPathsEditTab=function(){
     var mainContent = $("#main-content");
@@ -295,7 +295,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     mainContent.find("#legacy-artifact-paths-view-tabs-li-edit").addClass("active");
     mainContent.find("#legacy-artifact-paths-edit").addClass("active");
-  }
+  };
 
 
   //---------------------------
@@ -309,11 +309,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     //private List<String> patterns;
     this.patterns=ko.observableArray(patterns);
 
-  }
+  };
 
   mapFileType=function(data){
     return new FileType(data.id,data.patterns);
-  }
+  };
 
   mapFileTypes=function(data){
     if (data!=null){
@@ -322,7 +322,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }):[mapFileType(data)];
     }
     return [];
-  }
+  };
 
   AdminRepositoryConsumer=function(enabled,id,description){
     //private boolean enabled = false;
@@ -521,7 +521,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.networkConfiguration=ko.observable(networkConfiguration);
 
     save=function(){
-      if (!$("#main-content #network-configuration-edit-form").valid()){
+      if (!$("#main-content" ).find("#network-configuration-edit-form").valid()){
         return;
       }
       clearUserMessages();
@@ -647,7 +647,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
 
   displayCacheEntries=function(){
-    var divContent = $("#main-content #status_caches");
+    var divContent = $("#main-content" ).find("#status_caches");
     divContent.html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/cacheEntries", {
         type: "GET",
@@ -660,7 +660,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   flushCache=function(key){
     clearUserMessages();
-    $("#main-content #status_caches").html(smallSpinnerImg());
+    $("#main-content" ).find("#status_caches").html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/clearCache/"+encodeURIComponent(key), {
         type: "GET",
         success: function(data){
@@ -672,7 +672,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   flushAllCaches=function(){
     clearUserMessages();
-    $("#main-content #status_caches").html(smallSpinnerImg());
+    $("#main-content" ).find("#status_caches").html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/clearAllCaches", {
         type: "GET",
         success: function(data){
@@ -711,7 +711,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   displayScanningStats=function(){
-    var divContent = $("#main-content #status_scanning");
+    var divContent = $("#main-content" ).find("#status_scanning");
     divContent.html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/repositoryScannerStatistics", {
         type: "GET",
@@ -724,7 +724,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   displayMemoryUsage=function(){
-    var divContent = $("#main-content #status_memory_info");
+    var divContent = $("#main-content" ).find("#status_memory_info");
     divContent.html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/memoryStatus", {
         type: "GET",
@@ -738,7 +738,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   displayQueueEntries=function(){
-    var divContent = $("#main-content #status_queues");
+    var divContent = $("#main-content" ).find("#status_queues");
     divContent.html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/queueEntries", {
         type: "GET",
@@ -750,7 +750,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   displayServerTime=function(){
-    var divContent = $("#main-content #status_current_time");
+    var divContent = $("#main-content" ).find("#status_current_time");
     divContent.html(smallSpinnerImg());
     $.ajax("restServices/archivaServices/systemStatusService/currentServerTime/"+encodeURIComponent(usedLang()), {
         type: "GET",
@@ -810,7 +810,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
   }
   activateOrganisationInformationFormValidation=function(){
-    var validate = $("#main-content #appearance-configuration-form-id").validate({
+    var validate = $("#main-content" ).find("#appearance-configuration-form-id").validate({
       rules: {
         name: {
           required: true
@@ -834,7 +834,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.organisationInformation=ko.observable(organisationInformation);
 
     this.save=function(){
-      if (!$("#main-content #appearance-configuration-form-id").valid()) {
+      if (!$("#main-content" ).find("#appearance-configuration-form-id").valid()) {
           return;
       }
       clearUserMessages();
@@ -866,7 +866,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         var organisationInformation=new OrganisationInformation(data.name,data.url,data.logoLocation);
         var organisationInformationViewModel=new OrganisationInformationViewModel(organisationInformation);
         ko.applyBindings(organisationInformationViewModel, mainContent.get(0));
-        var validator = $("#main-content #appearance-configuration-form-id").validate({
+        var validator = $("#main-content" ).find("#appearance-configuration-form-id").validate({
           showErrors: function(validator,errorMap,errorList) {
             customShowError(mainContent.find("#appearance-configuration-form-id").get(0),validator,errorMap,errorMap);
           }
@@ -887,7 +887,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   reportStatisticsFormValidator=function(){
     $.log("reportStatisticsFormValidator");
-    var validate = $("#main-content #report-statistics-form-id").validate({
+    var validate = $("#main-content" ).find("#report-statistics-form-id").validate({
       rules: {
         rowCountStatistics: {
           required:true,
@@ -954,8 +954,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           resultTabContent.html( $( "#report-statistics" ).tmpl() );
           var reportStatistics = new ReportStatisticsResultViewModel( data );
           ko.applyBindings( reportStatistics, resultTabContent.get( 0 ) );
-          $( "#report-result-tab-li" ).removeClass( "hide" );
-          $( "#report-result-tab-li" ).addClass( "active" );
+          var reportResultTabLi=$( "#report-result-tab-li");
+          reportResultTabLi.removeClass( "hide" );
+          reportResultTabLi.addClass( "active" );
           $( "#report-stat-tab-li" ).removeClass( "active" );
           $( "#report-stat-tab-content" ).removeClass( "active" );
           resultTabContent.addClass( "active" );
@@ -1044,7 +1045,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   reportHealthFormValidator=function(){
-    var validate = $("#main-content #report-health-form-id").validate({
+    var validate = $("#main-content" ).find("#report-health-form-id").validate({
       rules: {
         rowCountHealth: {
           required: true,
@@ -1065,11 +1066,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.healthReport = ko.observable(new HealthReportRequest());
 
     this.showHealth=function() {
-      if (!$("#main-content #report-health-form-id").valid()) {
+      if (!$("#main-content" ).find("#report-health-form-id").valid()) {
         return;
       }
 
-      var resultTabContent = $("#main-content #report-result");
+      var resultTabContent = $("#main-content" ).find("#report-result");
 
       var url =
         "restServices/archivaServices/reportServices/getHealthReports/" + this.healthReport().repositoryId() + "/"
@@ -1088,8 +1089,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           var reports = new ReportHealthResultViewModel( mapHealthReportResults( data ) );
           resultTabContent.html( $( "#report-health" ).tmpl() );
           ko.applyBindings( reports, resultTabContent.get( 0 ) );
-          $( "#report-result-tab-li" ).removeClass( "hide" );
-          $( "#report-result-tab-li" ).addClass( "active" );
+          var reportResultTabLi=$( "#report-result-tab-li" );
+          reportResultTabLi.removeClass( "hide" );
+          reportResultTabLi.addClass( "active" );
           $( "#report-health-tab-li" ).removeClass( "active" );
           $( "#report-health-tab-content" ).removeClass( "active" );
           resultTabContent.addClass( "active" );
