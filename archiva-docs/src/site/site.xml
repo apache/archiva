@@ -25,6 +25,28 @@
     <href>http://archiva.apache.org/</href>
   </bannerLeft>
 
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>false</topBarEnabled>
+      <sideBarEnabled>true</sideBarEnabled>
+      <leftColumnClass>span2</leftColumnClass>
+      <bodyColumnClass>span10</bodyColumnClass>
+      <googleSearch>
+        <sitesearch>${project.url}</sitesearch>
+      </googleSearch>
+      <twitter>
+        <user>archiva</user>
+        <showUser>true</showUser>
+        <showFollowers>false</showFollowers>
+      </twitter>
+      <ohloh>
+        <projectId>6670</projectId>
+        <widget>stats</widget>
+      </ohloh>
+    </fluidoSkin>
+
+  </custom>
+
   <publishDate format="yyyy-MM-dd" position="right" />
   <version position="right" />
 
