@@ -25,12 +25,15 @@ import org.apache.jackrabbit.webdav.io.OutputContext;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -62,7 +65,7 @@ public class IndexWriter
     {
         outputContext.setModificationTime( new Date().getTime() );
         outputContext.setContentType( "text/html" );
-        outputContext.setETag( "" );
+        outputContext.setETag( "" ); // skygo ETag MRM-1127 seems to be fixed
         if ( outputContext.hasStream() )
         {
             PrintWriter writer = new PrintWriter( outputContext.getOutputStream() );
@@ -76,9 +79,28 @@ public class IndexWriter
 
     private void writeDocumentStart( PrintWriter writer )
     {
+        writer.println("<!DOCTYPE html>");
         writer.println( "<html>" );
         writer.println( "<head>" );
         writer.println( "<title>Collection: /" + logicalResource + "</title>" );
+        writer.println( "<style type=\"text/css\">" );
+        writer.println( "ul{list-style:none;}" ); //list-style-image: url("../images/folder.png");
+        StringBuilder relative = new StringBuilder("../../");
+        if ( logicalResource.length() > 0 ) 
+        {
+            String tmpRelative = StringUtils.replace( logicalResource, "\\", "/" );
+            for (int i=0;i<tmpRelative.split("/").length;i++) 
+            {
+                relative.append("../");
+            }
+        }
+        writer.println( ".file{list-style-image:url(" + relative.toString() + "images/trash.png);}" );
+        writer.println( ".folder{list-style-image:url(" + relative.toString() + "images/folder.png);}" );
+        writer.println( "a{color: #0088CC;text-decoration: none;}" );
+        writer.println( ".collection li:nth-child(odd){background-color:#fafafa;}" );
+        writer.println( ".size{position:absolute;left:500px;color:#cc8800;}" );
+        writer.println( ".date{position:absolute;left:600px;color:#0000cc;}" );
+        writer.println( "</style>" );
         writer.println( "</head>" );
         writer.println( "<body>" );
         writer.println( "<h3>Collection: /" + logicalResource + "</h3>" );
@@ -93,11 +115,11 @@ public class IndexWriter
             parentName = StringUtils.replace( parentName, "\\", "/" );
 
             writer.println( "<ul>" );
-            writer.println( "<li><a href=\"../\">" + parentName + "</a> <i><small>(Parent)</small></i></li>" );
+            writer.println( "<li class=\"folder\"><a href=\"../\">" + parentName + "</a> <i><small>(Parent)</small></i></li>" );
             writer.println( "</ul>" );
         }
 
-        writer.println( "<ul>" );
+        writer.println( "<ul class=\"collection\">" );
     }
 
     private void writeDocumentEnd( PrintWriter writer )
@@ -118,7 +140,7 @@ public class IndexWriter
 
                 for ( File file : files )
                 {
-                    writeHyperlink( writer, file.getName(), file.isDirectory() );
+                    writeHyperlink( writer, file.getName(), file.lastModified(), file.length(), file.isDirectory() );
                 }
             }
         }
@@ -161,22 +183,35 @@ public class IndexWriter
                     if ( !written.contains( childFile.getName() ) )
                     {
                         written.add( childFile.getName() );
-                        writeHyperlink( writer, fileName, childFile.isDirectory() );
+                        writeHyperlink( writer, fileName, childFile.lastModified(), childFile.length(), childFile.isDirectory() );
                     }
                 }
             }
         }
     }
 
-    private void writeHyperlink( PrintWriter writer, String resourceName, boolean directory )
+    private static String fileDateFormat( long date ) 
+    {
+        DateFormat dateFormatter = DateFormat.getDateTimeInstance( DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault() );
+        Date aDate = new Date( date );
+        return dateFormatter.format( aDate );
+    }
+    
+    private static String fileSizeFormat( long fileSize )
+    {
+        DecimalFormat format =new DecimalFormat( "###,##0.000" );
+        return format.format( (double) fileSize / 1024 ) + " KB";
+    }
+    
+    private void writeHyperlink( PrintWriter writer, String resourceName, long lastModified, long fileSize, boolean directory )
     {
         if ( directory )
         {
-            writer.println( "<li><a href=\"" + resourceName + "/\">" + resourceName + "</a></li>" );
+            writer.println( "<li class=\"folder\"><a href=\"" + resourceName + "/\">" + resourceName + "</a></li>" );
         }
         else
         {
-            writer.println( "<li><a href=\"" + resourceName + "\">" + resourceName + "</a></li>" );
+            writer.println( "<li class=\"file\"><a href=\"" + resourceName + "\">" + resourceName + "<span class=\"size\">" + fileSizeFormat( fileSize ) + "</span><span class=\"date\">" + fileDateFormat( lastModified ) + "</span></a></li>" );
         }
     }
 }
