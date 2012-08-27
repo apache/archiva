@@ -29,6 +29,7 @@
 
 Using Archiva Web Services
 
-  Web services is a new feature for 1.2. Archiva exposes two types of services: administrative and search. More details : {{{./webservices/xml-rpc.html} Archiva Xml Rpc Services}}
-
   Starting version 1.4, you can now use REST services : More details : {{{./webservices/rest.html} Archiva REST Services}}
+
+  Note: Since 1.4-M3 xmlrpc services has been removed.
+
