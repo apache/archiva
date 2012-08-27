@@ -1734,7 +1734,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.5.1-SNAPSHOT</version>
+          <version>2.5.1</version>
           <configuration>
             <useJvmChmod>true</useJvmChmod>
           </configuration>
