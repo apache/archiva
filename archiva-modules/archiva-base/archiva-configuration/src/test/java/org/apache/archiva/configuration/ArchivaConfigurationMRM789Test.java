@@ -68,10 +68,10 @@ public class ArchivaConfigurationMRM789Test
     public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
         throws Exception
     {
-        File repo = new File( FileUtil.getBasedir(), "/target/test-classes/existing_snapshots" );
+        File repo = new File( FileUtil.getBasedir(), "target/test-classes/existing_snapshots" );
         repo.mkdirs();
 
-        repo = new File( FileUtil.getBasedir(), "/target/test-classes/existing_internal" );
+        repo = new File( FileUtil.getBasedir(), "target/test-classes/existing_internal" );
         repo.mkdirs();
 
         String existingTestDefaultArchivaConfigFile = FileUtils.readFileToString(
@@ -88,7 +88,7 @@ public class ArchivaConfigurationMRM789Test
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );
         Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration, 2, 1, 1 );
+        assertConfiguration( configuration, 2, 2, 2 );
 
         ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
         assertTrue( "check managed repositories", repository.getLocation().endsWith( "data/repositories/internal" ) );

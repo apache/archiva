@@ -32,15 +32,18 @@
   <bean name="archivaConfiguration#test-defaults-default-repo-location-exists" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#empty"/>
   </bean>
+  <bean name="registry#empty" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"/>
 
   <bean name="archivaConfiguration#test-defaults" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
-    <property name="registry" ref="registry#empty"/>
+    <property name="registry" ref="registry#emptydef"/>
   </bean>
-  <bean name="registry#empty" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"/>
+  <bean name="registry#emptydef" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"/>
 
   <bean name="archivaConfiguration#test-upgrade-09"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#test-upgrade-09"/>
   </bean>
+
+
 
   <bean name="registry#test-upgrade-09" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
