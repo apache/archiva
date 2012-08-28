@@ -367,15 +367,11 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
       var res = ($.isArray(proxyConnectors) && proxyConnectors.length>0) ? proxyConnectors[0]:new ProxyConnector();
       return res;
     }
-
-    showSettings=function(proxyConnector,targetContentStartId, targetImgStartId,theProxyConnectorsViewModel){
+    showSettings=function(){
       $.log("showSettings");
-    }
-
-    hideSettings=function(proxyConnector){
       $("#body_content" ).find(".popover" ).hide();
+      //$("#main-content").find("[id^='proxy-connectors-grid-remoterepo-settings-edit-']" ).popover("hide");
     }
-
     buildSettings=function(proxyConnector){
       var tmplHtml = $("#proxy-connectors-remote-settings-popover-tmpl")
                                            .tmpl({
@@ -385,13 +381,6 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
 
       var targetImg = $(("#proxy-connectors-grid-remoterepo-settings-edit-")
                             +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\."));
-
-
-
-      //targetImg.popover();
-
-      //targetImg.popover('show');
-
       return tmplHtml;
     }
 
