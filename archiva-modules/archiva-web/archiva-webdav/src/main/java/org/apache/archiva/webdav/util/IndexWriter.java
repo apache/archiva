@@ -94,7 +94,7 @@ public class IndexWriter
                 relative.append("../");
             }
         }
-        writer.println( ".file{list-style-image:url(" + relative.toString() + "images/trash.png);}" );
+        writer.println( ".file{list-style-image:url(" + relative.toString() + "images/package-x-generic.png);}" );
         writer.println( ".folder{list-style-image:url(" + relative.toString() + "images/folder.png);}" );
         writer.println( "a{color: #0088CC;text-decoration: none;}" );
         writer.println( ".collection li:nth-child(odd){background-color:#fafafa;}" );
