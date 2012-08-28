@@ -370,7 +370,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
 
     showSettings=function(proxyConnector,targetContentStartId, targetImgStartId,theProxyConnectorsViewModel){
       var id = (targetContentStartId?targetContentStartId:"#proxy-connectors-grid-remoterepo-settings-content-")
-                                      +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId()
+                                      +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId()
           .replace(/\./g,"\\\.");
 
 
@@ -383,11 +383,11 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
                                                 proxyConnector:ko.toJS(proxyConnector)
                                                 } ).html();
 
-      targetContent.append(tmplHtml);
+      //targetContent.append(tmplHtml);
 
       var targetImg = $((targetImgStartId?targetImgStartId:"#proxy-connectors-grid-remoterepo-settings-edit-")
-                            +proxyConnector.sourceRepoId()+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\."));
-      targetImg.attr("data-content",targetContent.html());
+                            +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\."));
+      targetImg.attr("data-content",tmplHtml);//targetContent.html());
       targetImg.popover(
           {
             placement: "left",
@@ -397,6 +397,14 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
 
       targetImg.popover('show');
 
+    }
+
+    hideSettings=function(proxyConnector){
+      $.log('hideSettings:'+proxyConnector.sourceRepoId()+","+proxyConnector.targetRepoId());
+      //var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-")
+      //                      +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\.");
+      $("#body_content" ).find(".popover" ).hide();
+      //targetImg.attr("data-content",'');//.popover('hide');
     }
 
     this.displaySettings=function(sourceRepoId,targetRepoId,targetContentStartId, targetImgStartId){
