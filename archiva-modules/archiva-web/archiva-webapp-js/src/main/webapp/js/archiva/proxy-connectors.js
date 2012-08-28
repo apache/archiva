@@ -383,11 +383,9 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
                                                 proxyConnector:ko.toJS(proxyConnector)
                                                 } ).html();
 
-      //targetContent.append(tmplHtml);
-
       var targetImg = $((targetImgStartId?targetImgStartId:"#proxy-connectors-grid-remoterepo-settings-edit-")
                             +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\."));
-      targetImg.attr("data-content",tmplHtml);//targetContent.html());
+      targetImg.attr("data-content",tmplHtml);
       targetImg.popover(
           {
             placement: "left",
