@@ -1744,7 +1744,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
    * @param searchViewModelCurrent model to reuse if not null whereas a new one is created.
    */
   displaySearch=function(successCallbackFn,searchViewModelCurrent){
-    clearUserMessages();
+    screenChange();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
     $.ajax("restServices/archivaServices/searchService/observableRepoIds", {

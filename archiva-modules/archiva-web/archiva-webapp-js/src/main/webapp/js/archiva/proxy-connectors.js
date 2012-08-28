@@ -442,8 +442,6 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
 
       ko.applyBindings(this,mainContent.find("#proxy-connectors-view").get(0));
       var prxGrids=mainContent.find("[id^='proxy-connectors-grid-remoterepo-settings-edit-']");
-
-      $.log("prxGrids:"+prxGrids.length);
       prxGrids.popover();
       removeSmallSpinnerImg();
       mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
@@ -518,7 +516,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
   }
 
   displayProxyConnectors=function(){
-    clearUserMessages();
+    screenChange();
     var mainContent = $("#main-content");
     mainContent.html($("#proxyConnectorsMain").tmpl());
     mainContent.append(smallSpinnerImg());

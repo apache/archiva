@@ -69,6 +69,7 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
   }
 
   displayUploadArtifact=function(){
+    screenChange();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
 

@@ -116,6 +116,7 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     var mainContent=$("#main-content");
     mainContent.html("");
     mainContent.removeAttr("data-bind");
+    $("#body_content" ).find(".popover" ).hide();
     clearUserMessages();
   }
 

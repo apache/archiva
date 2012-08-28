@@ -857,7 +857,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
   //---------------------------
 
   displayRepositoriesGrid=function(){
-    clearUserMessages();
+    screenChange();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
     mainContent.html($("#repositoriesMain").tmpl());

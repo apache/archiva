@@ -201,7 +201,7 @@ define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jqu
 
 
   displayNetworkProxies=function(){
-    clearUserMessages();
+    screenChange();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
 

@@ -239,7 +239,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   };
 
   displayLegacyArtifactPathSupport=function(){
-    clearUserMessages();
+    screenChange();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
 
