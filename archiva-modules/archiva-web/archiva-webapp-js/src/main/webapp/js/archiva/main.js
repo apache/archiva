@@ -311,10 +311,11 @@ function(jquery,ui,sammy,tmpl) {
         var checkArtifactDetailContent=function(groupId,artifactId,version,repositoryId,tabToActivate,idContentToCheck,contentDisplayFn){
           // no need to recalculate all stuff just activate the tab
           var htmlId = idContentToCheck?idContentToCheck:"browse_artifact_detail";
-          var htmlIdSelect = $("#main-content #"+htmlId );
+          var htmlIdSelect = $("#main-content").find("#"+htmlId );
           if(htmlIdSelect.html()!=null){
             if( $.trim(htmlIdSelect.html().length)>0){
               $("#main-content #"+tabToActivate).tab('show');
+              $.log("checkArtifactDetailContent " + htmlId + " html not empty no calculation");
               return;
             }
           }
@@ -364,6 +365,33 @@ function(jquery,ui,sammy,tmpl) {
           var version= this.params.version;
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependencies-content-a");
         });
+
+        this.get('#artifact-details-files-content/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+
+          checkArtifactDetailContent(groupId,artifactId,version,null,"artifact-details-files-content-a","artifact-details-files-content",
+                                     function(groupId,artifactId,version,artifactVersionDetailViewModel){
+                                       displayArtifactFilesContent(artifactVersionDetailViewModel);
+                                     });
+
+        });
+
+        this.get('#artifact-details-files-content~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-files-content-a","artifact-details-files-content",
+                                     function(groupId,artifactId,version,artifactVersionDetailViewModel){
+                                       displayArtifactFilesContent(artifactVersionDetailViewModel);
+                                     });
+        });
+
 
 
         this.get('#artifact-dependency-tree/:groupId/:artifactId/:version',function(context){

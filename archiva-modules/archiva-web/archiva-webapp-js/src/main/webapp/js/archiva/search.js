@@ -341,7 +341,15 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                   return;
                 }
                 if ($(e.target).attr("href")=="#artifact-details-files-content") {
-                  displayArtifactFilesContent(self);
+                  //displayArtifactFilesContent(self);
+                  var location ="#artifact-details-files-content";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
+                  }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
+                  return;
                 }
               });
               if(afterCallbackFn){

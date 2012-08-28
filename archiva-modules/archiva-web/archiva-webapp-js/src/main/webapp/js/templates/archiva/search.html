@@ -638,14 +638,11 @@
         </table>
   	  </div>
 
-      <div id="artifact-details-dependency-tree-content" class="tab-pane">
-      </div>
+      <div id="artifact-details-dependency-tree-content" class="tab-pane"></div>
 
-      <div id="artifact-details-files-content" class="tab-pane">
-      </div>
+      <div id="artifact-details-files-content" class="tab-pane"></div>
 
-      <div id="artifact-details-download-content" class="tab-pane">
-      </div>
+      <div id="artifact-details-download-content" class="tab-pane"></div>
 
       <div id="artifact-details-used-by-content" class="tab-pane"></div>
 
@@ -825,7 +822,7 @@
 <script id="artifact-details-files-content_tmpl" type="text/html">
       <div class="row-fluid">
         <div class="span5">
-           <ul id="artifact-content-list-files">
+           <ul id="artifact-content-list-files" class="package-list">
            {{each artifactDownloadInfos}}
              <li id="${$value.classifier}:${$value.version}:${$value.packaging}">
                <a href="#">${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
