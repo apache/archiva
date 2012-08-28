@@ -271,7 +271,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
 
               mainContent.find("#artifact-details-tabs").on('show', function (e) {
-
+                $.log("e.target:"+e.target);
                 if ($(e.target).attr("data-target")=="#artifact-details-info-content") {
                   var location ="#artifact";
                   if (self.repositoryId){
@@ -340,6 +340,16 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                 }
                 if ($(e.target).attr("href")=="#artifact-details-files-content") {
                   var location ="#artifact-details-files-content";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
+                  }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
+                  return;
+                }
+                if ($(e.target).attr("href")=="#artifact-details-mailing-list-content") {
+                  var location ="#artifact-mailing-list";
                   if (self.repositoryId){
                     location+="~"+self.repositoryId;
                   }

@@ -315,7 +315,7 @@ function(jquery,ui,sammy,tmpl) {
           if(htmlIdSelect.html()!=null){
             if( $.trim(htmlIdSelect.html().length)>0){
               $("#main-content #"+tabToActivate).tab('show');
-              $.log("checkArtifactDetailContent " + htmlId + " html not empty no calculation");
+              $.log("checkArtifactDetailContent " + htmlId + " html not empty no calculation, tabToActivate:"+tabToActivate);
               return;
             }
           }
@@ -436,6 +436,24 @@ function(jquery,ui,sammy,tmpl) {
           var artifactId= this.params.artifactId;
           var version= this.params.version;
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependency-tree-content-a");
+        });
+
+        this.get('#artifact-mailing-list/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-mailing-list-content-a");
+        });
+
+        this.get('#artifact-mailing-list~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-mailing-list-content-a");
         });
 
 
