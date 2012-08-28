@@ -489,7 +489,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     }
 
     hideStats=function(managedRepository){
-
+      $("#body_content" ).find(".popover" ).hide();
     }
 
     showPomSnippet=function(managedRepository){
