@@ -393,6 +393,32 @@ function(jquery,ui,sammy,tmpl) {
         });
 
 
+        this.get('#artifact-details-download-content/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+
+          checkArtifactDetailContent(groupId,artifactId,version,null,"artifact-details-download-content-a","artifact-details-download-content",
+                                     function(groupId,artifactId,version,artifactVersionDetailViewModel){
+                                       displayArtifactDownloadContent(artifactVersionDetailViewModel);
+                                     });
+
+        });
+
+        this.get('#artifact-details-download-content~:repositoryId/:groupId/:artifactId/:version',function(context){
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-download-content-a","artifact-details-download-content",
+                                     function(groupId,artifactId,version,artifactVersionDetailViewModel){
+                                       displayArtifactDownloadContent(artifactVersionDetailViewModel);
+                                     });
+        });
+
 
         this.get('#artifact-dependency-tree/:groupId/:artifactId/:version',function(context){
 

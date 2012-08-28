@@ -329,19 +329,16 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                 }
 
                 if ($(e.target).attr("href")=="#artifact-details-download-content") {
-                  mainContent.find("#artifact-details-download-content" ).html(smallSpinnerImg());
-                  var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.groupId);
-                  artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
-                  artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
-                  $.get(artifactDownloadInfosUrl,function(data){
-                    var artifactDetailsDownloadViewModel = new ArtifactDetailsDownloadViewModel(mapArtifacts(data),self);
-                    mainContent.find("#artifact-details-download-content" ).attr("data-bind",'template:{name:"artifact-details-download-content_tmpl"}');
-                    ko.applyBindings(artifactDetailsDownloadViewModel,mainContent.find("#artifact-details-download-content" ).get(0));
-                  });
+                  var location ="#artifact-details-download-content";
+                  if (self.repositoryId){
+                    location+="~"+self.repositoryId;
+                  }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+
+                  window.sammyArchivaApplication.setLocation(location);
                   return;
                 }
                 if ($(e.target).attr("href")=="#artifact-details-files-content") {
-                  //displayArtifactFilesContent(self);
                   var location ="#artifact-details-files-content";
                   if (self.repositoryId){
                     location+="~"+self.repositoryId;
@@ -520,11 +517,25 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
   }
 
-  displayArtifactFilesContent=function(self){
+  displayArtifactDownloadContent=function(artifactVersionDetailViewModel){
+    var mainContent=$("#main-content");
+    mainContent.find("#artifact-details-download-content" ).html(smallSpinnerImg());
+    var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+    artifactDownloadInfosUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(artifactVersionDetailViewModel.version);
+    artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+    $.get(artifactDownloadInfosUrl,function(data){
+      var artifactDetailsDownloadViewModel = new ArtifactDetailsDownloadViewModel(mapArtifacts(data),artifactVersionDetailViewModel);
+      mainContent.find("#artifact-details-download-content" ).attr("data-bind",'template:{name:"artifact-details-download-content_tmpl"}');
+      ko.applyBindings(artifactDetailsDownloadViewModel,mainContent.find("#artifact-details-download-content" ).get(0));
+    });
+    return;
+  }
+
+  displayArtifactFilesContent=function(artifactVersionDetailViewModel){
     var mainContent = $("#main-content");
     mainContent.find("#artifact-details-files-content" ).html(smallSpinnerImg());
-    var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(self.groupId);
-    artifactDownloadInfosUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(self.version);
+    var artifactDownloadInfosUrl = "restServices/archivaServices/browseService/artifactDownloadInfos/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+    artifactDownloadInfosUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(artifactVersionDetailViewModel.version);
     artifactDownloadInfosUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
 
     $.get(artifactDownloadInfosUrl,function(data){
@@ -542,8 +553,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         $.log("click:" + idValue + " -> " + classifier + ":" + type + ":" + version);
         if (type=="pom"){
           $.log("show pom");
-          var pomContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(self.groupId);
-          pomContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(version);
+          var pomContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+          pomContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
           pomContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
           pomContentUrl+="&t=pom";
           mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
@@ -559,8 +570,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           });
           return;
         }
-        var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(self.groupId);
-        entriesUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(version);
+        var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+        entriesUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
         entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
         if(classifier){
           entriesUrl+="&c="+encodeURIComponent(classifier);
@@ -570,8 +581,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           root: ""
     		  },function(file) {
             $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
-            var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(self.groupId);
-            fileContentUrl+="/"+encodeURIComponent(self.artifactId)+"/"+encodeURIComponent(version);
+            var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+            fileContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
             fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
             if(type){
               fileContentUrl+="&t="+encodeURIComponent(type);
