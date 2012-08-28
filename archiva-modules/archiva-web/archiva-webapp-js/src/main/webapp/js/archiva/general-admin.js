@@ -917,7 +917,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     mainContent.find("#startDate" ).datepicker();
     mainContent.find("#endDate" ).datepicker();
-    mainContent.find("#rowCount-info-button" ).popover();
+    mainContent.find("#rowcount-info-button" ).popover();
 
     this.showStatistics=function() {
       $.log("showStatistics");
