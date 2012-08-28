@@ -400,11 +400,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
     }
 
     hideSettings=function(proxyConnector){
-      $.log('hideSettings:'+proxyConnector.sourceRepoId()+","+proxyConnector.targetRepoId());
-      //var targetImg = $("#proxy-connectors-grid-remoterepo-settings-edit-")
-      //                      +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\.");
       $("#body_content" ).find(".popover" ).hide();
-      //targetImg.attr("data-content",'');//.popover('hide');
     }
 
     this.displaySettings=function(sourceRepoId,targetRepoId,targetContentStartId, targetImgStartId){
