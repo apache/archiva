@@ -94,12 +94,14 @@ public class IndexWriter
                 relative.append("../");
             }
         }
-        writer.println( ".file{list-style-image:url(" + relative.toString() + "images/package-x-generic.png);}" );
-        writer.println( ".folder{list-style-image:url(" + relative.toString() + "images/folder.png);}" );
-        writer.println( "a{color: #0088CC;text-decoration: none;}" );
-        writer.println( ".collection li:nth-child(odd){background-color:#fafafa;}" );
-        writer.println( ".size{position:absolute;left:500px;color:#cc8800;}" );
-        writer.println( ".date{position:absolute;left:600px;color:#0000cc;}" );
+        writer.println( ".file{background:url(" + relative.toString() + "images/package-x-generic.png) no-repeat scroll 0 0 transparent;}" );
+        writer.println( ".folder{background:url(" + relative.toString() + "images/folder.png) no-repeat scroll 0 0 transparent;}" );
+        writer.println( "a{color:#0088CC;text-decoration: none;padding-left:20px;}" );
+        writer.println( ".collection tr:nth-child(odd){background-color:#fafafa;}" );
+        writer.println( "tr td:nth-child(2){width:150px;color:#cc8800;text-align:right;}" );
+        writer.println( "tr td:nth-child(3){width:150px;color:#0000cc;text-align:center;}" );
+        writer.println( "th td:nth-child(2){width:150px;}" );
+        writer.println( "th td:nth-child(3){width:150px;}" );
         writer.println( "</style>" );
         writer.println( "</head>" );
         writer.println( "<body>" );
@@ -115,16 +117,17 @@ public class IndexWriter
             parentName = StringUtils.replace( parentName, "\\", "/" );
 
             writer.println( "<ul>" );
-            writer.println( "<li class=\"folder\"><a href=\"../\">" + parentName + "</a> <i><small>(Parent)</small></i></li>" );
+            writer.println( "<li><a class=\"folder\" href=\"../\">" + parentName + "</a> <i><small>(Parent)</small></i></li>" );
             writer.println( "</ul>" );
         }
 
-        writer.println( "<ul class=\"collection\">" );
+        writer.println( "<table class=\"collection\">" );
+        writer.println( "<tr><th>Name</th><th>Size (Bytes)</th><th>Last Modified</th></tr>" );
     }
 
     private void writeDocumentEnd( PrintWriter writer )
     {
-        writer.println( "</ul>" );
+        writer.println( "</table>" );
         writer.println( "</body>" );
         writer.println( "</html>" );
     }
@@ -197,21 +200,15 @@ public class IndexWriter
         return dateFormatter.format( aDate );
     }
     
-    private static String fileSizeFormat( long fileSize )
-    {
-        DecimalFormat format =new DecimalFormat( "###,##0.000" );
-        return format.format( (double) fileSize / 1024 ) + " KB";
-    }
-    
     private void writeHyperlink( PrintWriter writer, String resourceName, long lastModified, long fileSize, boolean directory )
     {
         if ( directory )
         {
-            writer.println( "<li class=\"folder\"><a href=\"" + resourceName + "/\">" + resourceName + "</a></li>" );
+            writer.println( "<tr><td><a class=\"folder\" href=\"" + resourceName + "/\">" + resourceName + "</a></td><td>&nbsp;</td><td>&nbsp;</td></tr>" );
         }
         else
         {
-            writer.println( "<li class=\"file\"><a href=\"" + resourceName + "\">" + resourceName + "<span class=\"size\">" + fileSizeFormat( fileSize ) + "</span><span class=\"date\">" + fileDateFormat( lastModified ) + "</span></a></li>" );
+            writer.println( "<tr><td><a class=\"file\" href=\"" + resourceName + "\">" + resourceName + "</a></td><td class=\"size\">" + fileSize + "&nbsp;&nbsp;</td><td class=\"date\">" + fileDateFormat( lastModified ) + "</td></tr>" );
         }
     }
 }

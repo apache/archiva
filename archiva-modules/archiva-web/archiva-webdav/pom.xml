@@ -277,6 +277,7 @@
               <exclude>src/test/resources/archiva-mime-types.txt</exclude>
               <exclude>src/test/resources/artifact.jar.sha1</exclude>
               <exclude>src/test/resources/maven-metadata.xml</exclude>
+              <exclude>nbactions.xml</exclude>
             </excludes>
           </configuration>
         </plugin>
