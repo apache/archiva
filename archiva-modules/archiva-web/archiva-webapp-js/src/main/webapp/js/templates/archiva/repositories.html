@@ -714,9 +714,12 @@
       <td>${row.sourceRepoId()}</td>
       <td>${row.targetRepoId()}</td>
       <td>
-          <img src="images/utilities-system-monitor-22-22.png" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
-               data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
-               data-bind="event: { mouseover: function(){ showSettings(row)},mouseout: function(){hideSettings(row)},}">
+          <a class="btn btn-info btn-mini" id="proxy-connectors-grid-remoterepo-settings-edit-${row.sourceRepoId()}-${row.targetRepoId()}"
+                  data-original-title="${$.i18n.prop('proxy-connectors.grid.remoterepo.settings.popover.title')}"
+                  data-content="${buildSettings(row)}">
+              <i class="icon-question-sign icon-white"></i>
+          </a>
+
       </td>
       <td>
         <a data-bind="click: function(){ editProxyConnector(row)}" href="#">

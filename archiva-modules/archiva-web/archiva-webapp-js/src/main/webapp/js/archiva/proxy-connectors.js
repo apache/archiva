@@ -369,36 +369,30 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
     }
 
     showSettings=function(proxyConnector,targetContentStartId, targetImgStartId,theProxyConnectorsViewModel){
-      var id = (targetContentStartId?targetContentStartId:"#proxy-connectors-grid-remoterepo-settings-content-")
-                                      +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId()
-          .replace(/\./g,"\\\.");
+      $.log("showSettings");
+    }
 
+    hideSettings=function(proxyConnector){
+      $("#body_content" ).find(".popover" ).hide();
+    }
 
-      var targetContent = $(id);
-      targetContent.html("");
-
+    buildSettings=function(proxyConnector){
       var tmplHtml = $("#proxy-connectors-remote-settings-popover-tmpl")
                                            .tmpl({
                                                 proxyConnectorsViewModel: self,
                                                 proxyConnector:ko.toJS(proxyConnector)
                                                 } ).html();
 
-      var targetImg = $((targetImgStartId?targetImgStartId:"#proxy-connectors-grid-remoterepo-settings-edit-")
+      var targetImg = $(("#proxy-connectors-grid-remoterepo-settings-edit-")
                             +proxyConnector.sourceRepoId().replace(/\./g,"\\\.")+"-"+proxyConnector.targetRepoId().replace(/\./g,"\\\."));
-      targetImg.attr("data-content",tmplHtml);
-      targetImg.popover(
-          {
-            placement: "left",
-            html: true
-          }
-      );
 
-      targetImg.popover('show');
 
-    }
 
-    hideSettings=function(proxyConnector){
-      $("#body_content" ).find(".popover" ).hide();
+      //targetImg.popover();
+
+      //targetImg.popover('show');
+
+      return tmplHtml;
     }
 
     this.displaySettings=function(sourceRepoId,targetRepoId,targetContentStartId, targetImgStartId){
@@ -447,7 +441,11 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
       var mainContent = $("#main-content");
 
       ko.applyBindings(this,mainContent.find("#proxy-connectors-view").get(0));
-      removeSmallSpinnerImg("#main-content");
+      var prxGrids=mainContent.find("[id^='proxy-connectors-grid-remoterepo-settings-edit-']");
+
+      $.log("prxGrids:"+prxGrids.length);
+      prxGrids.popover();
+      removeSmallSpinnerImg();
       mainContent.find("#proxy-connectors-view-tabs #proxy-connectors-view-tabs-a-network-proxies-grid").tab('show');
 
       mainContent.find("#proxy-connectors-view-tabs").on('show', function (e) {
