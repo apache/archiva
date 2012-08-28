@@ -66,6 +66,14 @@
 
     <surefireVersion>2.12.3</surefireVersion>
 
+    <siteFilePath></siteFilePath>
+    <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
+    <scmPubCheckoutDirectory></scmPubCheckoutDirectory>
+    <scmTryUpdate>true</scmTryUpdate>
+    <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
+    <maven-scm-provider-svnjava.version>2.0.4</maven-scm-provider-svnjava.version>
+    <svnkit.version>1.7.5-v1</svnkit.version>
+
   </properties>
 
 
@@ -683,6 +691,41 @@
           <artifactId>apache-rat-plugin</artifactId>
           <version>0.8</version>
         </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <configuration>
+            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/</pubScmUrl>
+            <content>${siteFilePath}</content>
+            <checkoutDirectory>${scmPubCheckoutDirectory}</checkoutDirectory>
+            <tryUpdate>${scmTryUpdate}</tryUpdate>
+            <skipDeletedFiles>${scmSkipDeletedFiles}</skipDeletedFiles>
+            <providerImplementations>
+              <svn>javasvn</svn>
+            </providerImplementations>
+            <checkinComment>Apache Archiva Main site deployment</checkinComment>
+            <ignorePathsToDelete>
+              <ignorePathToDelete>docs/**</ignorePathToDelete>
+              <ignorePathToDelete>ref/**</ignorePathToDelete>
+              <ignorePathToDelete>redback/**</ignorePathToDelete>
+            </ignorePathsToDelete>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+              <artifactId>maven-scm-provider-svnjava</artifactId>
+              <version>${maven-scm-provider-svnjava.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.tmatesoft.svnkit</groupId>
+              <artifactId>svnkit</artifactId>
+              <version>${svnkit.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
