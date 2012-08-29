@@ -36,29 +36,6 @@
     <module>metadata</module>
     <module>plugins</module>
   </modules>
-  <build>
-    <plugins>    
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.5.9.201207300726</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
   <reporting>
     <plugins>
       
@@ -96,28 +73,7 @@
           </reportSet>
         </reportSets>
       </plugin>
-      <!-- cobertura Disabled - not working  try jacoco-->
-      <!-- cobertura not working wll with jdk7 -->
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.5.9.201207300726</version>
-      </plugin>
-      <!-- -->
-      <!-- TODO: OOME 1.1.1 check newer version-->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
-      </plugin>
-            
-            
-      <!-- -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>taglist-maven-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
