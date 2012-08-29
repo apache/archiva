@@ -65,7 +65,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteBaseDeployment}/redback/core</url>
+      <url>${siteUrlDeployment}</url>
     </site>
   </distributionManagement>
   
@@ -83,6 +83,9 @@
      -->
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
+
+    <siteFilePath>${user.home}/redback-core-site-deploy</siteFilePath>
+    <scmPubCheckoutDirectory>${user.home}/redback-core-site-content</scmPubCheckoutDirectory>
 
   </properties>
 
@@ -685,13 +688,19 @@
   <build>
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>jpox-maven-plugin</artifactId>
           <version>1.1.7</version>
         </plugin>
-
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <configuration>
+            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/redback/core</pubScmUrl>
+            <checkinComment>Apache Redback Core site deployment</checkinComment>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
