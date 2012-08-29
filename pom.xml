@@ -66,6 +66,8 @@
 
     <surefireVersion>2.12.3</surefireVersion>
 
+    <!-- svnsubpub configuration -->
+
     <siteFilePath></siteFilePath>
     <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
     <scmPubCheckoutDirectory></scmPubCheckoutDirectory>
@@ -73,6 +75,10 @@
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
     <maven-scm-provider-svnjava.version>2.0.4</maven-scm-provider-svnjava.version>
     <svnkit.version>1.7.5-v1</svnkit.version>
+
+
+    <!-- reporting plugins versions -->
+    <maven-project-info-reports-plugin.version>2.5</maven-project-info-reports-plugin.version>
 
   </properties>
 
