@@ -28,6 +28,12 @@
   <packaging>pom</packaging>
   <name>Archiva :: Modules</name>
   <url>http://archiva.apache.org/ref/${project.version}</url>
+
+  <properties>
+    <siteFilePath>${user.home}/archiva-ref-${project.version}/</siteFilePath>
+    <scmPubCheckoutDirectory>${user.home}/archiva-ref-${project.version}-content</scmPubCheckoutDirectory>
+  </properties>
+
   <modules>
     <module>archiva-base</module>
     <module>archiva-scheduler</module>
@@ -36,6 +42,22 @@
     <module>metadata</module>
     <module>plugins</module>
   </modules>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <configuration>
+            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/ref/${project.version}</pubScmUrl>
+            <checkinComment>Apache Archiva Versionned ref for ${project.version}</checkinComment>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <reporting>
     <plugins>
       
@@ -129,7 +151,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteBaseDeployment}/ref/${project.version}</url>
+      <url>${siteUrlDeployment}</url>
     </site>
   </distributionManagement>
 </project>
