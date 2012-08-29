@@ -49,7 +49,7 @@ Archiva Developer's Documentation
 
     Similarly, the resolution strategy for resources in the repository is abstracted from the storage and metadata to
     allow multiple strategies. This facilitates features such as repository proxying, repository grouping, and on the
-    fly format conversion. These are described in the {{{./repositories.html} Repository API}} documents.
+    fly format conversion. These are described in the {{{./repository-api.html} Repository API}} documents.
 
     On top of the metadata repository, components can be built to provide the services available in the application.
     These are described as plugins, though at this time there is no formal plugin registration mechanism or interface -
