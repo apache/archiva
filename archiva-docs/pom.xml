@@ -48,6 +48,7 @@
             <excludes>
               <exclude>src/site/resources/css/*.css</exclude>
               <exclude>src/site/resources/js/*.js</exclude>
+              <exclude>*.sh</exclude>
             </excludes>
           </configuration>
         </plugin>
