@@ -1,0 +1,1 @@
+to deploy site: sh ./deploySite.sh

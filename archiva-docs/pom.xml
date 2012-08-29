@@ -29,6 +29,11 @@
   <name>Archiva :: Documentation</name>
   <url>http://archiva.apache.org/docs/${project.version}/</url>
 
+  <properties>
+    <siteFilePath>${user.home}/archiva-docs-${project.version}/</siteFilePath>
+    <scmPubCheckoutDirectory>${user.home}/archiva-docs-${project.version}-content</scmPubCheckoutDirectory>
+  </properties>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -44,6 +49,14 @@
               <exclude>src/site/resources/css/*.css</exclude>
               <exclude>src/site/resources/js/*.js</exclude>
             </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <configuration>
+            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/docs/${project.version}</pubScmUrl>
+            <checkinComment>Apache Archiva Versionned docs for ${project.version}</checkinComment>
           </configuration>
         </plugin>
       </plugins>
@@ -101,7 +114,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteBaseDeployment}/docs/${project.version}</url>
+      <url>${siteUrlDeployment}</url>
     </site>
   </distributionManagement>
 
