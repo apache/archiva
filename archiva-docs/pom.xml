@@ -38,10 +38,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-        </plugin>
-        <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
@@ -56,7 +52,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
           <configuration>
-            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/docs/${project.version}</pubScmUrl>
             <checkinComment>Apache Archiva Versionned docs for ${project.version}</checkinComment>
           </configuration>
         </plugin>
@@ -64,14 +59,25 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <executions>
           <execution>
-            <id>site</id>
+            <id>site-generate-resources</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>site</goal>
             </goals>
+          </execution>
+          <execution>
+            <id>stage-for-scm-publish</id>
+            <phase>post-site</phase>
+            <goals>
+              <goal>stage</goal>
+            </goals>
+            <configuration>
+              <skipDeploy>false</skipDeploy>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -115,7 +121,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteUrlDeployment}</url>
+      <url>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/docs/${project.version}</url>
     </site>
   </distributionManagement>
 
