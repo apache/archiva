@@ -325,7 +325,7 @@
         <scope>provided</scope>
       </dependency>
       <!-- Plexus -->
-      <dependency>
+      <!--dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-api</artifactId>
         <version>1.0-alpha-20</version>
@@ -335,7 +335,7 @@
             <artifactId>plexus-container-default</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
+      </dependency-->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
