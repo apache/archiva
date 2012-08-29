@@ -68,8 +68,6 @@
 
     <!-- svnsubpub configuration -->
 
-    <siteFilePath></siteFilePath>
-    <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
     <scmPubCheckoutDirectory></scmPubCheckoutDirectory>
     <scmTryUpdate>true</scmTryUpdate>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
@@ -583,6 +581,19 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>scm-publish</id>
+            <phase>site-deploy</phase>
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -677,6 +688,21 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <version>3.1</version>
+          <configuration>
+            <skipDeploy>true</skipDeploy>
+          </configuration>
+          <executions>
+            <execution>
+              <id>stage-for-scm-publish</id>
+              <phase>post-site</phase>
+              <goals>
+                <goal>stage</goal>
+              </goals>
+              <configuration>
+                <skipDeploy>false</skipDeploy>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -699,8 +725,6 @@
           <artifactId>maven-scm-publish-plugin</artifactId>
           <version>1.0-SNAPSHOT</version>
           <configuration>
-            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/</pubScmUrl>
-            <content>${siteFilePath}</content>
             <checkoutDirectory>${scmPubCheckoutDirectory}</checkoutDirectory>
             <tryUpdate>${scmTryUpdate}</tryUpdate>
             <skipDeletedFiles>${scmSkipDeletedFiles}</skipDeletedFiles>
@@ -708,11 +732,6 @@
               <svn>javasvn</svn>
             </providerImplementations>
             <checkinComment>Apache Archiva Main site deployment</checkinComment>
-            <ignorePathsToDelete>
-              <ignorePathToDelete>docs/**</ignorePathToDelete>
-              <ignorePathToDelete>ref/**</ignorePathToDelete>
-              <ignorePathToDelete>redback/**</ignorePathToDelete>
-            </ignorePathsToDelete>
           </configuration>
           <dependencies>
             <dependency>
@@ -726,6 +745,15 @@
               <version>${svnkit.version}</version>
             </dependency>
           </dependencies>
+          <executions>
+            <execution>
+              <id>scm-publish</id>
+              <phase>site-deploy</phase>
+              <goals>
+                <goal>publish-scm</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
 
       </plugins>
