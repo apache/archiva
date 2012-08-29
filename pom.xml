@@ -324,17 +324,6 @@
         <version>2.5</version>
         <scope>provided</scope>
       </dependency>
-      <dependency>
-        <groupId>org.apache.archiva.redback</groupId>
-        <artifactId>plexus-spring</artifactId>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>  
-          </exclusion>
-        </exclusions>
-      </dependency>
       <!-- Plexus -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
