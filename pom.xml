@@ -79,6 +79,9 @@
 
     <!-- reporting plugins versions -->
     <maven-project-info-reports-plugin.version>2.5</maven-project-info-reports-plugin.version>
+    <checkstyleVersion>2.9.1</checkstyleVersion>
+    <jxrVersion>2.3</jxrVersion>
+    <javadocVersion>2.8.1</javadocVersion>
 
   </properties>
 
