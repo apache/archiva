@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -54,6 +53,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
@@ -95,17 +95,25 @@ public class Maven2RepositoryMetadataResolverTest
 
     private WagonFactory wagonFactory;
 
+    ManagedRepositoryConfiguration testRepo;
+    
+    Configuration c;
+    
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        Configuration c = new Configuration();
-        ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
+        c = new Configuration();
+        testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
         testRepo.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
+        testRepo.setReleases( true );
+        testRepo.setSnapshots( true );
         c.addManagedRepository( testRepo );
+       
 
         RemoteRepositoryConfiguration testRemoteRepo = new RemoteRepositoryConfiguration();
         testRemoteRepo.setId( TEST_REMOTE_REPO_ID );
@@ -123,6 +131,9 @@ public class Maven2RepositoryMetadataResolverTest
 
         configuration.save( c );
 
+        assertTrue ( c.getManagedRepositories().get( 0 ).isSnapshots() );
+        assertTrue ( c.getManagedRepositories().get( 0 ).isReleases() );
+        
         wagonFactory = mock( WagonFactory.class );
 
         storage.setWagonFactory( wagonFactory );
@@ -450,152 +461,6 @@ public class Maven2RepositoryMetadataResolverTest
             assertEquals( "missing-pom", e.getId() );
         }
     }
-
-    // Tests for MRM-1411 - START
-    @Test
-    public void testGetProjectVersionMetadataWithParentSuccessful()
-        throws Exception
-    {
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
-                                    "target/test-repository/com/example/test/test-artifact-module-a" );
-
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" );
-
-        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
-        assertEquals( "jar", facet.getPackaging() );
-        assertEquals( "http://maven.apache.org", metadata.getUrl() );
-        assertEquals( "com.example.test", facet.getParent().getGroupId() );
-        assertEquals( "test-artifact-root", facet.getParent().getArtifactId() );
-        assertEquals( "1.0", facet.getParent().getVersion() );
-        assertEquals( "test-artifact-module-a", facet.getArtifactId() );
-        assertEquals( "com.example.test", facet.getGroupId() );
-        assertNull( metadata.getCiManagement() );
-        assertNotNull( metadata.getDescription() );
-
-        checkApacheLicense( metadata );
-
-        assertEquals( "1.0", metadata.getId() );
-        assertEquals( "Test Artifact :: Module A", metadata.getName() );
-        String path = "test-artifact/trunk/test-artifact-module-a";
-        assertEquals( TEST_SCM_CONN_BASE + path, metadata.getScm().getConnection() );
-        assertEquals( TEST_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
-        assertEquals( TEST_SCM_URL_BASE + path, metadata.getScm().getUrl() );
-
-        List<Dependency> dependencies = metadata.getDependencies();
-        assertEquals( 2, dependencies.size() );
-        assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
-        assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
-
-        List<String> paths = new ArrayList<String>();
-        paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
-        paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
-        paths.add( "target/test-repository/com/example/test/test-artifact-root" );
-
-        deleteTestArtifactWithParent( paths );
-    }
-
-    @Test
-    public void testGetProjectVersionMetadataWithParentNoRemoteReposConfigured()
-        throws Exception
-    {
-        // remove configuration
-        Configuration config = configuration.getConfiguration();
-        RemoteRepositoryConfiguration remoteRepo = config.findRemoteRepositoryById( TEST_REMOTE_REPO_ID );
-        config.removeRemoteRepository( remoteRepo );
-
-        configuration.save( config );
-
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
-                                    "target/test-repository/com/example/test/test-artifact-module-a" );
-
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" );
-        assertEquals( "1.0", metadata.getId() );
-
-        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
-        assertNotNull( facet );
-        assertEquals( "com.example.test", facet.getGroupId() );
-        assertEquals( "test-artifact-module-a", facet.getArtifactId() );
-        assertEquals( "jar", facet.getPackaging() );
-
-        List<String> paths = new ArrayList<String>();
-        paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
-        paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
-        paths.add( "target/test-repository/com/example/test/test-artifact-root" );
-
-        deleteTestArtifactWithParent( paths );
-    }
-
-    @Test
-    public void testGetProjectVersionMetadataWithParentNotInAnyRemoteRepo()
-        throws Exception
-    {
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
-                                    "target/test-repository/com/example/test/test-artifact-module-a" );
-
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-parent", "1.1" );
-
-        assertEquals( "1.1", metadata.getId() );
-
-        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
-        assertNotNull( facet );
-        assertEquals( "com.example.test", facet.getGroupId() );
-        assertEquals( "missing-parent", facet.getArtifactId() );
-        assertEquals( "jar", facet.getPackaging() );
-
-        List<String> paths = new ArrayList<String>();
-        paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
-        paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
-        paths.add( "target/test-repository/com/example/test/test-artifact-root" );
-
-        deleteTestArtifactWithParent( paths );
-    }
-
-    @Test
-    public void testGetProjectVersionMetadataWithParentSnapshotVersion()
-        throws Exception
-    {
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
-                                    "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
-
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
-                                                "1.1-SNAPSHOT" );
-
-        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
-        assertEquals( "jar", facet.getPackaging() );
-        assertEquals( "com.example.test", facet.getParent().getGroupId() );
-        assertEquals( "test-snapshot-artifact-root", facet.getParent().getArtifactId() );
-        assertEquals( "1.1-SNAPSHOT", facet.getParent().getVersion() );
-        assertEquals( "test-snapshot-artifact-module-a", facet.getArtifactId() );
-        assertEquals( "com.example.test", facet.getGroupId() );
-        assertNull( metadata.getCiManagement() );
-        assertNotNull( metadata.getDescription() );
-
-        checkApacheLicense( metadata );
-
-        assertEquals( "1.1-SNAPSHOT", metadata.getId() );
-        assertEquals( "Test Snapshot Artifact :: Module A", metadata.getName() );
-        String path = "test-snapshot-artifact/trunk/test-snapshot-artifact-module-a";
-        assertEquals( TEST_SCM_CONN_BASE + path, metadata.getScm().getConnection() );
-        assertEquals( TEST_SCM_DEV_CONN_BASE + path, metadata.getScm().getDeveloperConnection() );
-        assertEquals( TEST_SCM_URL_BASE + path, metadata.getScm().getUrl() );
-
-        List<Dependency> dependencies = metadata.getDependencies();
-        assertEquals( 2, dependencies.size() );
-        assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
-        assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
-
-        List<String> paths = new ArrayList<String>();
-        paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
-        paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-root" );
-
-        deleteTestArtifactWithParent( paths );
-    }
-
-    // Tests for MRM-1411 - END
 
     @Test
     public void testGetRootNamespaces()

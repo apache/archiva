@@ -156,7 +156,20 @@ public class Maven2RepositoryStorage
             ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
 
             String artifactVersion = projectVersion;
-
+            if ( VersionUtil.isSnapshot( projectVersion ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
+            {
+                if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+                {
+                    throw new RepositoryStorageRuntimeException("lookforsnaponreleaseonly", "managed repo is configured for release only");
+                }
+            } 
+            else 
+            {
+                if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                {
+                    throw new RepositoryStorageRuntimeException("lookforsreleaseonsneponly", "managed repo is configured for snapshot only");
+                }
+            }
             File basedir = new File( managedRepository.getLocation() );
             if ( VersionUtil.isSnapshot( projectVersion ) )
             {
