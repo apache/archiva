@@ -247,7 +247,8 @@ public class RepositoryModelResolver
                 String protocol = getProtocol( remoteRepository.getUrl() );
                 final NetworkProxy networkProxy = this.networkProxyMap.get( remoteRepository.getId() );
 
-                // XXX skygo: look strange to me
+                // if it's a ntlm proxy we have to lookup the wagon light which support thats
+                // wagon http client doesn't support that
                 wagon = ( networkProxy != null && networkProxy.isUseNtlm() ) ? wagonFactory.getWagon(
                     "wagon#" + protocol + "-ntlm" ) : wagonFactory.getWagon( "wagon#" + protocol );
                 wagon = wagonFactory.getWagon( "wagon#" + protocol );
