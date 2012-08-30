@@ -79,7 +79,7 @@
     <maven-project-info-reports-plugin.version>2.5</maven-project-info-reports-plugin.version>
     <checkstyleVersion>2.9.1</checkstyleVersion>
     <jxrVersion>2.3</jxrVersion>
-    <javadocVersion>2.8.1</javadocVersion>
+    <javadocPluginVersion>2.8.1</javadocPluginVersion>
 
   </properties>
 
@@ -656,7 +656,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>${javadocVersion}</version>
+          <version>${javadocPluginVersion}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
