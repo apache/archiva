@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 
 public class RepositoryModelResolver
     implements ModelResolver
@@ -90,6 +91,8 @@ public class RepositoryModelResolver
     {
         this( new File( managedRepository.getLocation() ), pathTranslator );
 
+        this.managedRepository = managedRepository;
+        
         this.wagonFactory = wagonFactory;
 
         this.remoteRepositories = remoteRepositories;
@@ -109,7 +112,20 @@ public class RepositoryModelResolver
 
         if ( !model.exists() )
         {
-
+            if ( VersionUtil.isSnapshot( version ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
+            {
+                if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+                {
+                    throw new UnresolvableModelException("lookforsnaponreleaseonly", groupId, artifactId, version );
+                }
+            } 
+            else 
+            {
+                if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                {
+                    throw new UnresolvableModelException("lookforsreleaseonsneponly", groupId, artifactId, version );
+                }
+            }
             // is a SNAPSHOT ? so we can try to find locally before asking remote repositories.
             if ( StringUtils.contains( version, VersionUtil.SNAPSHOT ) )
             {
@@ -231,6 +247,7 @@ public class RepositoryModelResolver
                 String protocol = getProtocol( remoteRepository.getUrl() );
                 final NetworkProxy networkProxy = this.networkProxyMap.get( remoteRepository.getId() );
 
+                // XXX skygo: look strange to me
                 wagon = ( networkProxy != null && networkProxy.isUseNtlm() ) ? wagonFactory.getWagon(
                     "wagon#" + protocol + "-ntlm" ) : wagonFactory.getWagon( "wagon#" + protocol );
                 wagon = wagonFactory.getWagon( "wagon#" + protocol );
