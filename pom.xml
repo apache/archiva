@@ -65,7 +65,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteUrlDeployment}</url>
+      <url>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/redback/core</url>
     </site>
   </distributionManagement>
   
@@ -84,7 +84,6 @@
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
 
-    <siteFilePath>${user.home}/redback-core-site-deploy</siteFilePath>
     <scmPubCheckoutDirectory>${user.home}/redback-core-site-content</scmPubCheckoutDirectory>
 
   </properties>
@@ -684,9 +683,27 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <skipDeploy>true</skipDeploy>
+          </configuration>
+          <executions>
+            <execution>
+              <id>stage-for-scm-publish</id>
+              <phase>post-site</phase>
+              <goals>
+                <goal>stage</goal>
+              </goals>
+              <configuration>
+                <skipDeploy>false</skipDeploy>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
           <configuration>
-            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/redback/core</pubScmUrl>
             <checkinComment>Apache Redback Core site deployment</checkinComment>
           </configuration>
         </plugin>
@@ -817,9 +834,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${javadocVersion}</version>
+        <version>${javadocPluginVersion}</version>
         <inherited>false</inherited>
         <configuration>
+          <javadocVersion>1.6</javadocVersion>
           <docletArtifact>
             <groupId>com.google.doclava</groupId>
             <artifactId>doclava</artifactId>
