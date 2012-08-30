@@ -99,7 +99,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${javadocVersion}</version>
+        <version>${javadocPluginVersion}</version>
         <configuration>
           <source>1.5</source>
           <links>
