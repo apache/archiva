@@ -185,6 +185,9 @@ public class ArchivaConfigurationTest
         finally
         {
             System.getProperties().remove( "org.apache.archiva.webapp.ui.appletFindEnabled" );
+            archivaConfiguration.reload();
+            Configuration configuration = archivaConfiguration.getConfiguration();
+            assertTrue( "check boolean", configuration.getWebapp().getUi().isAppletFindEnabled() );
         }
     }
 
