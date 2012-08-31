@@ -54,7 +54,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 
 public class RepositoryModelResolver
     implements ModelResolver
@@ -112,20 +111,9 @@ public class RepositoryModelResolver
 
         if ( !model.exists() )
         {
-            if ( VersionUtil.isSnapshot( version ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
-            {
-                if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
-                {
-                    throw new UnresolvableModelException("lookforsnaponreleaseonly", groupId, artifactId, version );
-                }
-            } 
-            else 
-            {
-                if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
-                {
-                    throw new UnresolvableModelException("lookforsreleaseonsneponly", groupId, artifactId, version );
-                }
-            }
+            /**
+             * 
+             */
             // is a SNAPSHOT ? so we can try to find locally before asking remote repositories.
             if ( StringUtils.contains( version, VersionUtil.SNAPSHOT ) )
             {
@@ -145,21 +133,20 @@ public class RepositoryModelResolver
                     if ( success && model.exists() )
                     {
                         log.info(
-                            "Model '" + model.getAbsolutePath() + "' successfully retrieved from remote repository '"
-                                + remoteRepository.getId() + "'" );
+                            "Model '{}' successfully retrieved from remote repository '{}'", 
+                                model.getAbsolutePath(), remoteRepository.getId() );
                         break;
                     }
                 }
                 catch ( ResourceDoesNotExistException e )
                 {
-                    log.info( "An exception was caught while attempting to retrieve model '" + model.getAbsolutePath()
-                                  + "' from remote repository '" + remoteRepository.getId() + "'.Reason:"
-                                  + e.getMessage() );
+                    log.info( "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
+                                 new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
                 }
                 catch ( Exception e )
                 {
-                    log.warn( "An exception was caught while attempting to retrieve model '" + model.getAbsolutePath()
-                                  + "' from remote repository '" + remoteRepository.getId() + "'.", e.getMessage() );
+                    log.warn( "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
+                                 new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
 
                     continue;
                 }
@@ -290,11 +277,11 @@ public class RepositoryModelResolver
 
                             artifactPath = pathTranslator.toPath( groupId, artifactId, version, filename );
 
-                            log.debug( "New artifactPath : " + artifactPath );
+                            log.debug( "New artifactPath :{}", artifactPath );
                         }
                     }
 
-                    log.info( "Retrieving " + artifactPath + " from " + remoteRepository.getName() );
+                    log.info( "Retrieving {} from {}", artifactPath, remoteRepository.getName() );
 
                     wagon.get( artifactPath, tmpResource );
 
@@ -414,12 +401,12 @@ public class RepositoryModelResolver
         }
         catch ( ConnectionException e )
         {
-            log.error( "Could not connect to " + remoteRepository.getName() + ": " + e.getMessage() );
+            log.error( "Could not connect to {}:{} ",remoteRepository.getName(), e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            log.error( "Could not connect to " + remoteRepository.getName() + ": " + e.getMessage() );
+            log.error( "Could not connect to {}:{} ",remoteRepository.getName(), e.getMessage() );
             connected = false;
         }
 
@@ -432,7 +419,7 @@ public class RepositoryModelResolver
     {
         File destFile = new File( tmpDirectory, resource.getName() + ext );
 
-        log.info( "Retrieving " + remotePath + " from " + remoteRepository.getName() );
+        log.info( "Retrieving {} from {}", remotePath, remoteRepository.getName() );
 
         wagon.get( remotePath, destFile );
 
@@ -477,8 +464,8 @@ public class RepositoryModelResolver
                 {
                     if ( newLocation.exists() )
                     {
-                        log.error( "Tried to copy file " + fileToMove.getName() + " to " + newLocation.getAbsolutePath()
-                                       + " but file with this name already exists." );
+                        log.error( "Tried to copy file {} to {} but file with this name already exists.", 
+                                        fileToMove.getName(), newLocation.getAbsolutePath() );
                     }
                     else
                     {

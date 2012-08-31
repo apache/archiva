@@ -91,7 +91,7 @@ public class MavenArtifactFacet
 
     public Map<String, String> toProperties()
     {
-        HashMap<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<String, String>();
         properties.put( "type", type );
         if ( classifier != null )
         {

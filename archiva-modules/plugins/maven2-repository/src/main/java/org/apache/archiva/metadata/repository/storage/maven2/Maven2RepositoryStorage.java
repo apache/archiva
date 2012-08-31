@@ -614,7 +614,7 @@ public class Maven2RepositoryStorage
         }
         catch ( IOException e )
         {
-            log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
+            log.error( "Unable to checksum file {}: {},MD5", file, e.getMessage() );
         }
         try
         {
@@ -622,7 +622,7 @@ public class Maven2RepositoryStorage
         }
         catch ( IOException e )
         {
-            log.error( "Unable to checksum file " + file + ": " + e.getMessage() );
+            log.error( "Unable to checksum file {}: {},SHA1", file, e.getMessage() );
         }
         metadata.setSize( file.length() );
     }
