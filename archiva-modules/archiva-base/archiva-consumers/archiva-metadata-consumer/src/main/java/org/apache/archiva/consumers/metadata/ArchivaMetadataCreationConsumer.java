@@ -176,7 +176,7 @@ public class ArchivaMetadataCreationConsumer
             }
             catch ( RepositoryStorageMetadataNotFoundException e )
             {
-                log.warn( "Missing or invalid POM for artifact: " + path + "; creating empty metadata" );
+                log.warn( "Missing or invalid POM for artifact:" + path + " (" + repoId + "); creating empty metadata" );
 
                 versionMetadata = new ProjectVersionMetadata();
                 versionMetadata.setId( projectVersion );
@@ -185,7 +185,7 @@ public class ArchivaMetadataCreationConsumer
             }
             catch ( RepositoryStorageMetadataInvalidException e )
             {
-                log.warn( "Error occurred resolving POM for artifact: " + path + "; message: " + e.getMessage() );
+                log.warn( "Error occurred resolving POM for artifact:" + path + "(" + repoId + "); message: " + e.getMessage() );
             }
 
             // read the metadata and update it if it is newer or doesn't exist
@@ -202,12 +202,12 @@ public class ArchivaMetadataCreationConsumer
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Error occurred persisting metadata for artifact: " + path + "; message: " + e.getMessage(), e );
+            log.warn( "Error occurred persisting metadata for artifact: " + path + "(" + repoId + "); message: " + e.getMessage(), e );
             repositorySession.revert();
         }
         catch ( RepositoryStorageRuntimeException e )
         {
-            log.warn( "Error occurred persisting metadata for artifact: " + path + "; message: " + e.getMessage(), e );
+            log.warn( "Error occurred persisting metadata for artifact: " + path + "(" + repoId + "); message: " + e.getMessage(), e );
             repositorySession.revert();
         }
         finally
