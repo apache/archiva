@@ -19,22 +19,18 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.apache.archiva.common.utils.FileUtil;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-
-
-import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
+import javax.inject.Inject;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Test the configuration store.
@@ -42,10 +38,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaConfigurationMRM789Test
-    extends TestCase
 {
-
-    private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     protected ApplicationContext applicationContext;

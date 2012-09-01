@@ -19,14 +19,13 @@ package org.apache.archiva.configuration.functors;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.apache.commons.lang.StringUtils;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -37,7 +36,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ProxyConnectorConfigurationOrderComparatorTest
-    extends TestCase
 {
     @Test
     public void testSortOfAllZeros()

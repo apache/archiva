@@ -19,28 +19,19 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import junit.framework.TestCase;
+import javax.inject.Inject;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.inject.Inject;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class FileTypesTest
-    extends TestCase
 {
     @Inject
     private FileTypes filetypes;
-
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-    }
 
     @Test
     public void testIsArtifact()

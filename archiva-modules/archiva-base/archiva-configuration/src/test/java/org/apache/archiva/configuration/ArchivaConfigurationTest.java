@@ -19,34 +19,33 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import junit.framework.TestCase;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
-
-
-import javax.inject.Inject;
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the configuration store.
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ArchivaConfigurationTest
-    extends TestCase
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );

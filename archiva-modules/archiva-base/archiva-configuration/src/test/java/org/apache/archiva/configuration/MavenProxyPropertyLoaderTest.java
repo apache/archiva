@@ -19,23 +19,21 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class MavenProxyPropertyLoaderTest
-    extends TestCase
 {
     private MavenProxyPropertyLoader loader;
 
@@ -81,26 +79,19 @@ public class MavenProxyPropertyLoaderTest
         assertEquals( "Repository url", expectedUrl, repo.getUrl() );
     }
 
-    @Test
-    public void testInvalidConfiguration()
+    @Test( expected=InvalidConfigurationException.class )
+    public void testInvalidConfiguration() 
+        throws InvalidConfigurationException
     {
         Configuration configuration = new Configuration();
-        try
-        {
-            loader.load( new Properties(), configuration );
-            fail( "Incomplete config should have failed" );
-        }
-        catch ( InvalidConfigurationException e )
-        {
-            assertTrue( true );
-        }
+        loader.load( new Properties(), configuration );
+        //fail( "Incomplete config should have failed" );
     }
 
     @Before
     public void setUp()
         throws Exception
     {
-        super.setUp();
         loader = new MavenProxyPropertyLoader();
     }
 }

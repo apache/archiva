@@ -213,6 +213,7 @@
               <exclude>src/main/resources/org/apache/archiva/configuration/default-archiva.xml</exclude>
               <exclude>src/test/conf/maven-proxy-complete.conf</exclude>
               <exclude>src/test/resources/org/apache/archiva/configuration/test-default-archiva.xml</exclude>
+              <exclude>nbactions.xml</exclude>
             </excludes>
           </configuration>
         </plugin>
