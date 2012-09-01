@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -30,6 +29,7 @@ import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +39,11 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.lang.StringUtils;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractArtifactConsumerTest
-    extends TestCase
 {
     private File repoLocation;
 
@@ -60,12 +60,9 @@ public abstract class AbstractArtifactConsumerTest
 
 
     @Before
-    @Override
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         FileType fileType =
             (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
@@ -75,7 +72,6 @@ public abstract class AbstractArtifactConsumerTest
     }
 
     @After
-    @Override
     public void tearDown()
         throws Exception
     {
@@ -111,5 +107,10 @@ public abstract class AbstractArtifactConsumerTest
         predicate.setBasefile( baseFile );
 
         assertFalse( predicate.evaluate( consumer ) );
+    }
+    
+    public String getName()
+    {
+        return StringUtils.substringAfterLast( getClass().getName(), "." );
     }
 }

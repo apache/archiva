@@ -19,8 +19,11 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
+import java.io.File;
+import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -32,11 +35,10 @@ import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.io.File;
 
 /**
  */
@@ -197,7 +199,9 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-
+        // skygo: Default Validator was not looking at same config
+        ( (DefaultRepositoryCommonValidator) applicationContext.getBean(
+            RepositoryCommonValidator.class ) ).setArchivaConfiguration( archivaConfiguration );
         ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
         if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
         {
@@ -214,7 +218,9 @@ public class RepositoryPurgeConsumerTest
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-
+        // skygo: Default Validator was not looking at same config
+        ( (DefaultRepositoryCommonValidator) applicationContext.getBean(
+            RepositoryCommonValidator.class ) ).setArchivaConfiguration( archivaConfiguration );
         ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
         if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
         {

@@ -1,15 +1,15 @@
 package org.apache.archiva.consumers.core;
 
+import java.io.File;
+import java.util.Calendar;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.util.Calendar;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

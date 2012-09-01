@@ -137,6 +137,7 @@
             <excludes>
               <exclude>src/test/resources/test-repo/**</exclude>
               <exclude>src/test/resources/releases-test-repo-one/**</exclude>
+              <exclude>nbactions.xml</exclude>
             </excludes>
           </configuration>
         </plugin>

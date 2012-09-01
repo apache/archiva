@@ -19,17 +19,16 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.repository.events.RepositoryListener;
-import org.apache.commons.lang.time.DateUtils;
-import org.junit.After;
-import org.junit.Test;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.commons.lang.time.DateUtils;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  */

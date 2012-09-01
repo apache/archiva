@@ -19,38 +19,35 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import junit.framework.TestCase;
+import java.io.File;
+import javax.inject.Inject;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.easymock.MockControl;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-
-import javax.inject.Inject;
-import java.io.File;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractRepositoryPurgeTest
-    extends TestCase
 {
     public static final String TEST_REPO_ID = "test-repo";
 
@@ -101,12 +98,10 @@ public abstract class AbstractRepositoryPurgeTest
 
 
     @Before
-    @Override
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
+    
         removeMavenIndexes();
 
         listenerControl = MockControl.createControl( RepositoryListener.class );
@@ -122,12 +117,10 @@ public abstract class AbstractRepositoryPurgeTest
     }
 
     @After
-    @Override
     public void tearDown()
         throws Exception
     {
         removeMavenIndexes();
-        super.tearDown();
         config = null;
         repo = null;
 
@@ -216,7 +209,6 @@ public abstract class AbstractRepositoryPurgeTest
         return AbstractRepositoryPurgeTest.fixPath( testDir.getAbsolutePath() );
     }
 
-    @Override
     public String getName()
     {
         return StringUtils.substringAfterLast( getClass().getName(), "." );
