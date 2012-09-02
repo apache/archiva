@@ -33,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.util.List;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * AbstractUserManagerTestCase 
@@ -42,6 +43,7 @@ import java.util.List;
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public class AbstractUserManagerTestCase
     extends TestCase
 {
@@ -57,6 +59,13 @@ public class AbstractUserManagerTestCase
     
     private UserManagerEventTracker eventTracker;
 
+    
+    private static final int EVENTTRACKERCOUNT = 2;
+    // assertCleanUserManager
+    // getEventTracker().userManagerInit( true ); is 1
+    // userManager.getUsers() is 2
+    // only on clear context
+    
     public UserManager getUserManager()
     {
         return userManager;
@@ -167,7 +176,7 @@ public class AbstractUserManagerTestCase
         assertEquals( added, actual );
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -202,7 +211,7 @@ public class AbstractUserManagerTestCase
 		assertTrue( actual.isLocked() );
 		
 		/* Check into the event tracker. */
-		assertEquals(1, getEventTracker().countInit);
+		assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit);
 		assertNotNull(getEventTracker().lastDbFreshness);
 		assertTrue(getEventTracker().lastDbFreshness.booleanValue());
 
@@ -228,7 +237,7 @@ public class AbstractUserManagerTestCase
         assertEquals( added, actual );
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -252,7 +261,7 @@ public class AbstractUserManagerTestCase
         assertEquals( 1, um.getUsers().size() );
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -280,7 +289,7 @@ public class AbstractUserManagerTestCase
         assertEquals( 1, um.getUsers().size() );
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -318,7 +327,7 @@ public class AbstractUserManagerTestCase
         }
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -374,7 +383,7 @@ public class AbstractUserManagerTestCase
         }
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -508,7 +517,7 @@ public class AbstractUserManagerTestCase
         assertFalse( um.userExists( "voodoohatrack" ) );
 
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -550,7 +559,7 @@ public class AbstractUserManagerTestCase
         assertTrue( securityPolicy.getPasswordEncoder().isPasswordValid( user.getEncodedPassword(), "superpass" ) );
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
@@ -592,7 +601,7 @@ public class AbstractUserManagerTestCase
         assertEquals( user.getFullName(), admin.getFullName() );
         
         /* Check into the event tracker. */
-        assertEquals( 1, getEventTracker().countInit );
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
         
