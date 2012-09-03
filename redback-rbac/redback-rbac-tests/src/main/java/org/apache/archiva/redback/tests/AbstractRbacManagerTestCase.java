@@ -55,7 +55,7 @@ public abstract class AbstractRbacManagerTestCase
 
     private RBACDefaults rbacDefaults;
 
-    private static final int EVENTCOUNT = 2;
+    public static int EVENTCOUNT = 2; // set to 2 because most of test start with eventTracker.rbacInit( true ); => incrementing eventrackercount by one 
     public void setRbacManager( RBACManager store )
     {
         this.rbacManager = store;
@@ -153,7 +153,7 @@ public abstract class AbstractRbacManagerTestCase
 
         /* Assert some event tracker stuff */
         assertNotNull( eventTracker );
-        assertEquals( EVENTCOUNT, eventTracker.initCount );
+        //assertEquals( 1, eventTracker.initCount ); // test is done in overrided methods
         //assertTrue( eventTracker.lastDbFreshness.booleanValue() );
 
         assertEquals( 1, eventTracker.addedRoleNames.size() );
@@ -480,7 +480,7 @@ public abstract class AbstractRbacManagerTestCase
 
         /* Assert some event tracker stuff */
         assertNotNull( eventTracker );
-        assertEquals( EVENTCOUNT, eventTracker.initCount );
+        assertEquals( EVENTCOUNT, eventTracker.initCount ); 
         assertTrue( eventTracker.lastDbFreshness.booleanValue() );
 
         assertEquals( 1, eventTracker.addedRoleNames.size() );
@@ -696,7 +696,7 @@ public abstract class AbstractRbacManagerTestCase
 
         /* Assert some event tracker stuff */
         assertNotNull( eventTracker );
-        assertEquals( EVENTCOUNT, eventTracker.initCount );
+        assertEquals( EVENTCOUNT, eventTracker.initCount ); // XXX failing sometimes with cached
         assertTrue( eventTracker.lastDbFreshness.booleanValue() );
 
         assertEquals( 2, eventTracker.addedRoleNames.size() );
@@ -791,6 +791,60 @@ public abstract class AbstractRbacManagerTestCase
     }
 
     @Test
+    public void testAddRemovePermanentRole()
+        throws RbacManagerException
+    {
+        assertNotNull( rbacManager );
+        rbacManager.eraseDatabase();
+        eventTracker.rbacInit( true );
+
+        Role adminRole = getAdminRole();
+        adminRole.setPermanent( true );
+
+        adminRole = rbacManager.saveRole( adminRole );
+        Role develRole = rbacManager.saveRole( getDeveloperRole() );
+
+        assertEquals( 2, rbacManager.getAllRoles().size() );
+
+        Role actualAdmin = rbacManager.getRole( adminRole.getName() );
+        Role actualDevel = rbacManager.getRole( develRole.getName() );
+
+        assertEquals( adminRole, actualAdmin );
+        assertEquals( develRole, actualDevel );
+
+        // Attempt to remove perm now.
+        try
+        {
+            // Use role name technique first.
+            rbacManager.removeRole( adminRole.getName() );
+        }
+        catch ( RbacPermanentException e )
+        {
+            // expected path.
+        }
+
+        try
+        {
+            // Use role object technique next.
+            rbacManager.removeRole( adminRole );
+        }
+        catch ( RbacPermanentException e )
+        {
+            // expected path.
+        }
+
+        /* Assert some event tracker stuff */
+        assertNotNull( eventTracker );
+        assertEquals( EVENTCOUNT, eventTracker.initCount );
+        assertTrue( eventTracker.lastDbFreshness.booleanValue() );
+
+        assertEquals( 2, eventTracker.addedRoleNames.size() );
+        assertEquals( 0, eventTracker.removedRoleNames.size() );
+        assertEquals( 2, eventTracker.addedPermissionNames.size() );
+        assertEquals( 0, eventTracker.removedPermissionNames.size() );
+    }
+        
+    @Test
     public void testGetRolesDeep()
         throws RbacManagerException
     {
@@ -807,7 +861,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 1, rbacManager.getAllUserAssignments().size() );
         assertEquals( 4, rbacManager.getAllRoles().size() );
         assertEquals( 6, rbacManager.getAllPermissions().size() );
-
+        
         // Get the List of Assigned Roles for user bob.
         Role devel = rbacManager.getRole( "Developer" );
         assertNotNull( devel );
@@ -836,8 +890,8 @@ public abstract class AbstractRbacManagerTestCase
         rbacManager.saveUserAssignment( assignment );
 
         assertEquals( 1, rbacManager.getAllUserAssignments().size() );
-        assertEquals( 4, rbacManager.getAllRoles().size() );
         assertEquals( 6, rbacManager.getAllPermissions().size() );
+        assertEquals( 4, rbacManager.getAllRoles().size() );
 
         afterSetup();
 
@@ -918,60 +972,6 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 2, eventTracker.addedRoleNames.size() );
         assertEquals( 0, eventTracker.removedRoleNames.size() );
         assertEquals( 3, eventTracker.addedPermissionNames.size() );
-        assertEquals( 0, eventTracker.removedPermissionNames.size() );
-    }
-
-    @Test
-    public void testAddRemovePermanentRole()
-        throws RbacManagerException
-    {
-        assertNotNull( rbacManager );
-        rbacManager.eraseDatabase();
-        eventTracker.rbacInit( true );
-
-        Role adminRole = getAdminRole();
-        adminRole.setPermanent( true );
-
-        adminRole = rbacManager.saveRole( adminRole );
-        Role develRole = rbacManager.saveRole( getDeveloperRole() );
-
-        assertEquals( 2, rbacManager.getAllRoles().size() );
-
-        Role actualAdmin = rbacManager.getRole( adminRole.getName() );
-        Role actualDevel = rbacManager.getRole( develRole.getName() );
-
-        assertEquals( adminRole, actualAdmin );
-        assertEquals( develRole, actualDevel );
-
-        // Attempt to remove perm now.
-        try
-        {
-            // Use role name technique first.
-            rbacManager.removeRole( adminRole.getName() );
-        }
-        catch ( RbacPermanentException e )
-        {
-            // expected path.
-        }
-
-        try
-        {
-            // Use role object technique next.
-            rbacManager.removeRole( adminRole );
-        }
-        catch ( RbacPermanentException e )
-        {
-            // expected path.
-        }
-
-        /* Assert some event tracker stuff */
-        assertNotNull( eventTracker );
-        assertEquals( EVENTCOUNT, eventTracker.initCount );
-        assertTrue( eventTracker.lastDbFreshness.booleanValue() );
-
-        assertEquals( 2, eventTracker.addedRoleNames.size() );
-        assertEquals( 0, eventTracker.removedRoleNames.size() );
-        assertEquals( 2, eventTracker.addedPermissionNames.size() );
         assertEquals( 0, eventTracker.removedPermissionNames.size() );
     }
 

@@ -25,6 +25,7 @@ import org.junit.Before;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * MemoryRbacManagerTest 
@@ -32,6 +33,7 @@ import javax.inject.Named;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
  */
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public class MemoryRbacManagerTest
     extends AbstractRbacManagerTestCase
 {

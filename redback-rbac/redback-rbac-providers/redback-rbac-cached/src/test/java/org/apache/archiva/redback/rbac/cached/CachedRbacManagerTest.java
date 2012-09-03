@@ -26,7 +26,10 @@ import org.junit.Before;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.junit.After;
+import org.springframework.test.annotation.DirtiesContext;
 
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public class CachedRbacManagerTest
     extends AbstractRbacManagerTestCase
 {
@@ -51,9 +54,10 @@ public class CachedRbacManagerTest
         CacheManager.getInstance().clearAll();
         setRbacManager( rbacManager );
 
-        assertTrue( getRbacManager() instanceof CachedRbacManager );
+        assertTrue( getRbacManager() instanceof CachedRbacManager );       
     }
-
+    
+    @After
     public void tearDown()
         throws Exception
     {
@@ -68,5 +72,6 @@ public class CachedRbacManagerTest
         rbacManager.eraseDatabase();
         //eventTracker.rbacInit( true );
         super.testStoreInitialization();
-    }
+        assertEquals( EVENTCOUNT-1, eventTracker.initCount );
+    }          
 }

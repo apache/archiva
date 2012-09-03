@@ -37,6 +37,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * JdoRbacManagerTest:
@@ -45,6 +46,7 @@ import java.util.Properties;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
  */
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public class JdoRbacManagerTest
     extends AbstractRbacManagerTestCase
 {
@@ -211,5 +213,6 @@ public class JdoRbacManagerTest
         rbacManager.eraseDatabase();
         eventTracker.rbacInit( true );
         super.testStoreInitialization();
+        assertEquals( EVENTCOUNT, eventTracker.initCount );
     }
 }
