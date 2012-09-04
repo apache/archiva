@@ -39,23 +39,16 @@ public class CachedRbacManagerTest
     @Named( value = "rBACManager#cached" )
     RBACManager rbacManager;
 
-    public static int EVENTCOUNT = 1; // set to 2 because most of test start with eventTracker.rbacInit( true ); => incrementing eventrackercount by one 
-    
-    
     /*
      * event count workflow in cachedRbacMaanger is not working like JDO or Memory provider
      * trigger doesnt exist here.
-     * first test throw 1 event
-     * second test and after throw 2 events
+     *  some test throws 1 event
+     *  some test throws 2 events
      */
     @Override
     public void assertEventCount() 
     {
-        assertEquals( EVENTCOUNT, eventTracker.initCount );
-        if ( EVENTCOUNT == 1 )
-        {
-            EVENTCOUNT++;
-        }
+        assertTrue( ( ( eventTracker.initCount > 0 ) && ( eventTracker.initCount <= 2 ) ) );        
     }
     
     /**
