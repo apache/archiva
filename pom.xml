@@ -65,7 +65,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/redback/core</url>
+      <url>file://${siteDeployDirectory}</url>
     </site>
   </distributionManagement>
   
@@ -83,7 +83,7 @@
      -->
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
-
+    <siteDeployDirectory>${user.home}/redback-core-site-deploy</siteDeployDirectory>
     <scmPubCheckoutDirectory>${user.home}/redback-core-site-content</scmPubCheckoutDirectory>
 
   </properties>
@@ -683,28 +683,12 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <configuration>
-            <skipDeploy>true</skipDeploy>
-          </configuration>
-          <executions>
-            <execution>
-              <id>stage-for-scm-publish</id>
-              <phase>post-site</phase>
-              <goals>
-                <goal>stage</goal>
-              </goals>
-              <configuration>
-                <skipDeploy>false</skipDeploy>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
           <configuration>
+            <content>${siteDeployDirectory}</content>
             <checkinComment>Apache Redback Core site deployment</checkinComment>
+            <tryUpdate>true</tryUpdate>
+            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/redback/core</pubScmUrl>
           </configuration>
         </plugin>
       </plugins>
