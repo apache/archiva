@@ -47,8 +47,31 @@ import java.util.List;
 public class AssignmentsActionTest
     extends AbstractUserCredentialsActionTest
 {
+ //@Rule public TestName name = new TestName();
+ // xxx help for jdk 7 investigation
     private AssignmentsAction action;
 
+  /*  public static final List<String> favorites =
+        Arrays.asList("user", "user2","user3","user-admin");
+   xxx help for jdk 7 investigation 
+  private void displayInfo(boolean before) throws RbacObjectNotFoundException, RbacManagerException {
+    System.err.print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    if (before) {
+      System.err.print("(b)");
+    } else {
+      System.err.print("(a)");
+    }
+    System.err.println(name.getMethodName());
+    for (String user : favorites) {
+      if (rbacManager.userAssignmentExists(user)) {
+        for (String s : rbacManager.getUserAssignment(user).getRoleNames()) {
+          System.err.println("--" + user + ">>" + s);
+        }
+      }
+    }
+    System.err.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+  }*/
+   
     @Before
     public void setUp()
         throws Exception
@@ -58,11 +81,26 @@ public class AssignmentsActionTest
         ActionProxy actionProxy = getActionProxy( "/security/assignments" );
         action = (AssignmentsAction) actionProxy.getAction();
 
-        login( action, "user", PASSWORD );
+        login( action, "user", PASSWORD );      
         action.setPrincipal( "user2" );
+        //displayInfo(true);//xxx help for jdk 7 investigation
 
     }
 
+  /*@After xxx help for jdk 7 investigation
+  @Override
+  public void after() {
+    super.after();
+    try {
+       displayInfo(false);
+    } catch (RbacObjectNotFoundException ex) {
+      Logger.getLogger(AssignmentsActionTest.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (RbacObjectInvalidException ex) {
+      Logger.getLogger(AssignmentsActionTest.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (RbacManagerException ex) {
+      Logger.getLogger(AssignmentsActionTest.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }*/
     /**
      * Check security - show/edituser should fail if the permission 'user-management-user-role' is not present, but a
      * valid 'user-management-role-grant' is.
@@ -81,6 +119,8 @@ public class AssignmentsActionTest
 
             assertFalse( authzResult.isAuthorized() );
         }
+        
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Grant Administrator - default" );
     }
 
     /**
@@ -102,6 +142,7 @@ public class AssignmentsActionTest
             result |= authzResult.isAuthorized();
         }
         assertTrue( result );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     private List<SecureActionBundle.AuthorizationTuple> getTuples()
@@ -124,6 +165,7 @@ public class AssignmentsActionTest
         assertEquals( Action.SUCCESS, action.show() );
 
         assertEquals( 2, action.getApplicationRoleDetails().size() );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -150,6 +192,7 @@ public class AssignmentsActionTest
         List<List<RoleTableCell>> table = details.getTable();
         assertEquals( 1, table.size() );
         assertRow( table, 0, "default", "Project Administrator - default", false );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -209,6 +252,7 @@ public class AssignmentsActionTest
         assertEquals( Action.SUCCESS, action.edituser() );
 
         assertTrue( rbacManager.getUserAssignment( "user2" ).getRoleNames().isEmpty() );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -232,6 +276,7 @@ public class AssignmentsActionTest
         assertEquals( Action.SUCCESS, action.edituser() );
 
         assertTrue( rbacManager.getUserAssignment( "user2" ).getRoleNames().isEmpty() );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -257,6 +302,9 @@ public class AssignmentsActionTest
 
         assertEquals( Lists.<String>newArrayList( "Continuum Group Project Administrator" ),
                       rbacManager.getUserAssignment( "user2" ).getRoleNames() );
+        
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( "Continuum Group Project Administrator" );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Global Grant Administrator" );
     }
 
     /**
@@ -328,6 +376,8 @@ public class AssignmentsActionTest
 
         //assertEquals( Arrays.asList( "Project Administrator - default", "Project Administrator - other" ),
         //              rbacManager.getUserAssignment( "user2" ).getRoleNames() );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" ); 
+        
     }
 
     /**
@@ -363,6 +413,9 @@ public class AssignmentsActionTest
 
         assertEquals( Arrays.asList( "Continuum Group Project Administrator" ),
                       rbacManager.getUserAssignment( "user2" ).getRoleNames() );
+        
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( "Continuum Group Project Administrator" );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -422,6 +475,8 @@ public class AssignmentsActionTest
         assertEquals( Action.SUCCESS, action.edituser() );
 
         assertTrue( rbacManager.getUserAssignment( "user2" ).getRoleNames().isEmpty() );
+        
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Global Grant Administrator" );
     }
 
     /**
@@ -456,6 +511,12 @@ public class AssignmentsActionTest
         List<String> user2roles = rbacManager.getUserAssignment( "user2" ).getRoleNames();
         assertTrue( user2roles.contains( "Project Administrator - other" ) );
         assertTrue( user2roles.contains( "Registered User" ) );
+        
+        
+        // back to initial
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( "Registered User" );
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( "Project Administrator - other" );
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -482,6 +543,8 @@ public class AssignmentsActionTest
         assertEquals( Action.SUCCESS, action.edituser() );
 
         assertTrue( rbacManager.getUserAssignment( "user2" ).getRoleNames().isEmpty() );
+        
+        rbacManager.getUserAssignment( "user" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -591,6 +654,10 @@ public class AssignmentsActionTest
 
         assertEquals( Arrays.asList( "Continuum Group Project Administrator", "Project Administrator - default" ),
                       rbacManager.getUserAssignment( "user2" ).getRoleNames() );
+        
+        // back to inital
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( "Continuum Group Project Administrator" );
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( "Project Administrator - default" );
     }
 
     /**
@@ -662,5 +729,9 @@ public class AssignmentsActionTest
         assertTrue( !user2roles.contains( "Continuum Group Project Administrator" ) );
         assertTrue( !user2roles.contains( "Project Administrator - default" ) );
         assertTrue( user2roles.contains( nonAppRoleName ) );
+        
+        // back to initial
+        rbacManager.removeRole( nonAppRole );
+        rbacManager.getUserAssignment( "user2" ).removeRoleName( nonAppRoleName );
     }
 }
