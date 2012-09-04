@@ -60,6 +60,8 @@ public class JdoRbacManagerTest
     @Named( value = "rBACManager#jdo" )
     RBACManager rbacManager;
 
+    public static int EVENTCOUNT = 2;
+    
     @Override
     public void assertEventCount() 
     {

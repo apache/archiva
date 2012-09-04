@@ -39,11 +39,8 @@ public class CachedRbacManagerTest
     @Named( value = "rBACManager#cached" )
     RBACManager rbacManager;
 
-    @BeforeClass
-    public static void dummyInit()
-    {
-        EVENTCOUNT = 1;
-    }
+    public static int EVENTCOUNT = 1; // set to 2 because most of test start with eventTracker.rbacInit( true ); => incrementing eventrackercount by one 
+    
     
     /*
      * event count workflow in cachedRbacMaanger is not working like JDO or Memory provider

@@ -42,6 +42,8 @@ public class MemoryRbacManagerTest
     @Named (value = "rBACManager#memory")
     RBACManager rbacManager;
 
+    public static int EVENTCOUNT = 2;
+    
     @Override
     public void assertEventCount() 
     {

@@ -55,7 +55,6 @@ public abstract class AbstractRbacManagerTestCase
 
     private RBACDefaults rbacDefaults;
 
-    public static int EVENTCOUNT = 2; // set to 2 because most of test start with eventTracker.rbacInit( true ); => incrementing eventrackercount by one 
     public void setRbacManager( RBACManager store )
     {
         this.rbacManager = store;
