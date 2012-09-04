@@ -71,7 +71,7 @@
     <scmPubCheckoutDirectory></scmPubCheckoutDirectory>
     <scmTryUpdate>true</scmTryUpdate>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
-    <maven-scm-provider-svnjava.version>2.0.4</maven-scm-provider-svnjava.version>
+    <maven-scm-provider-svnjava.version>2.0.5-SNAPSHOT</maven-scm-provider-svnjava.version>
     <svnkit.version>1.7.5-v1</svnkit.version>
 
 
