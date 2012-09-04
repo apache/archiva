@@ -42,6 +42,12 @@ public class MemoryRbacManagerTest
     @Named (value = "rBACManager#memory")
     RBACManager rbacManager;
 
+    @Override
+    public void assertEventCount() 
+    {
+        assertEquals( EVENTCOUNT, eventTracker.initCount );
+    }
+    
     /**
      * Creates a new RbacStore which contains no data.
      */
