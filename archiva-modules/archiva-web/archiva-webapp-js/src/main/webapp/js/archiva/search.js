@@ -86,6 +86,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     }
 
     deleteGroupId=function(groupId){
+      var previousHash=getUrlHash();
+      $.log("previousHash:"+previousHash);
       var repoId=getSelectedBrowsingRepository();
       if(!repoId){
         displayErrorMessage($.i18n.prop('groupId.delete.missing.repoId'));
@@ -97,8 +99,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           type:"GET",
           dataType:"json",
           success:function(data){
-
-
+            window.sammyArchivaApplication.setLocation(previousHash);
+            displaySuccessMessage( $.i18n.prop("groupdId.deleted", groupId));
           },
           error:function(data){
             displayRestError(data,"user-messages");
@@ -110,7 +112,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       }, $.i18n.prop('ok'),
           $.i18n.prop('cancel'),
           $.i18n.prop('groupId.delete.confirm.title'),
-          $.i18n.prop('groupId.delete.confirm.save'));
+          $.i18n.prop('groupId.delete.confirm.save',groupId));
     }
   }
 

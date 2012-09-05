@@ -50,9 +50,16 @@
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
         {{if browseResultEntry.project}}
-          <li class="browse-list-project" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
-            <a href="#">${displayEntry(browseResultEntry.name)}</a>
-          </li>
+          {{if deleteKarma}}
+            <li class="browse-list-project">
+              <img src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+              <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+            </li>
+          {{else}}
+            <li class="browse-list-project">
+              <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+            </li>
+          {{/if}}
         {{else}}
           {{if deleteKarma}}
             <li class="browse-list">

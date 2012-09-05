@@ -109,6 +109,11 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     $(textId).focus();
   }
 
+  getUrlHash=function(){
+    var matches = window.location.toString().match(/^[^#]*(#.+)$/);
+    return matches ? matches[1] : null;
+  }
+
   /**
    * clear #main-content and call clearUserMessages
     */
