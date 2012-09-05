@@ -52,11 +52,20 @@
         {{if browseResultEntry.project}}
           <li class="browse-list-project" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">
             <a href="#">${displayEntry(browseResultEntry.name)}</a>
-        {{else}}
-          <li class="browse-list" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">
-            <a href="#" title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-        {{/if}}          
           </li>
+        {{else}}
+          {{if deleteKarma}}
+            <li class="browse-list">
+              <img src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+              <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#" title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+            </li>
+          {{else}}
+            <li class="browse-list" >
+              <a href="#" title="folder ${displayEntry(browseResultEntry.name)}" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+            </li>
+          {{/if}}
+        {{/if}}          
+
       {{/each}}
     </ul>
   </div>

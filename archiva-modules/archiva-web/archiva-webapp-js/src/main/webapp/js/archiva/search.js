@@ -80,6 +80,38 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       }
       return value;
     }
+
+    deleteKarma=function(){
+      return hasKarma('archiva-delete-artifact');
+    }
+
+    deleteGroupId=function(groupId){
+      var repoId=getSelectedBrowsingRepository();
+      if(!repoId){
+        displayErrorMessage($.i18n.prop('groupId.delete.missing.repoId'));
+        return;
+      }
+      openDialogConfirm(function(){
+        $.ajax({
+          url:"restServices/archivaServices/repositoriesService/deleteGroupId?groupId="+groupId+"&repositoryId="+repoId,
+          type:"GET",
+          dataType:"json",
+          success:function(data){
+
+
+          },
+          error:function(data){
+            displayRestError(data,"user-messages");
+          },
+          complete:function(){
+            closeDialogConfirm();
+          }
+        });
+      }, $.i18n.prop('ok'),
+          $.i18n.prop('cancel'),
+          $.i18n.prop('groupId.delete.confirm.title'),
+          $.i18n.prop('groupId.delete.confirm.save'));
+    }
   }
 
   calculateBreadCrumbEntries=function(groupId){
