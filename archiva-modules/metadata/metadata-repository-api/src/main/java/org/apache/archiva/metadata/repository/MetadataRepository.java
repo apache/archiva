@@ -114,11 +114,11 @@ public interface MetadataRepository
     /**
      *
      * @param repositoryId
-     * @param project
+     * @param namespace (groupId for maven )
      * @since 1.4-M3
      * @throws MetadataRepositoryException
      */
-    void removeNamespace( String repositoryId, String project )
+    void removeNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException;
 
     List<ArtifactMetadata> getArtifacts( String repositoryId )
