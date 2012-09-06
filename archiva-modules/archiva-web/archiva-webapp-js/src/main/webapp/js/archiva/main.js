@@ -44,11 +44,22 @@ function(jquery,ui,sammy,tmpl) {
     $("#register-link").show();
     $("#logout-link").hide();
     $("#change-password-link").hide();
+    // cleanup karmas
+    window.redbackModel.operatioNames=[];
     hideElementWithKarma();
-    if (doScreenChange) screenChange();
+    if (doScreenChange) {
+      screenChange();
+    }
     $("#main-content").html("");
     $.ajax({
-      url: 'restServices/redbackServices/loginService/logout'
+      url: 'restServices/redbackServices/loginService/logout',
+      complete: function(){
+        if(!doScreenChange){
+          // refresh the screen as no more karmas now
+          window.sammyArchivaApplication.refresh();
+        }
+      }
+
     });
   };
 
