@@ -331,5 +331,11 @@ public class NewArtifactsRssFeedProcessorTest
         {
 
         }
+
+        public void removeNamespace( String repositoryId, String namespace )
+            throws MetadataRepositoryException
+        {
+
+        }
     }
 }

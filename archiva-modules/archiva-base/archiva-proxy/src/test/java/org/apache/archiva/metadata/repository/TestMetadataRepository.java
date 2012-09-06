@@ -200,4 +200,10 @@ public class TestMetadataRepository
     {
         throw new UnsupportedOperationException();
     }
+
+    public void removeNamespace( String repositoryId, String namespace )
+        throws MetadataRepositoryException
+    {
+
+    }
 }
