@@ -87,16 +87,24 @@ public abstract class AbstractArchivaRestTest
     {        
         File appServerBase = new File( System.getProperty( "appserver.base" ) );
 
-        File jcrDirectory = new File( appServerBase, "jcr" );
+        removeAppsubFolder( appServerBase, "jcr" );
+        removeAppsubFolder( appServerBase, "conf" );
+        removeAppsubFolder( appServerBase, "data" );
         
-        if ( jcrDirectory.exists() )
-        {
-            FileUtils.deleteDirectory( jcrDirectory );
-        }
-
+        
         super.startServer();        
     }
-
+    
+    private void removeAppsubFolder( File appServerBase, String folder )
+       throws Exception
+    {
+        File directory = new File( appServerBase, folder );        
+        if ( directory.exists() )
+        {
+            FileUtils.deleteDirectory( directory );
+        }
+    }
+    
     @Override
     protected String getSpringConfigLocation()
     {
