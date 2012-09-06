@@ -69,21 +69,23 @@
               </a>
             </li>
             <li id="login-link" style="display: none">
-              <a href="#" onclick="loginBox();" id="login-link-a">
-                <span class="label label-success force-upper-case">${$.i18n.prop('login')}</span>
+              <a onclick="loginBox();" id="login-link-a">
+                <span class="btn btn-success label force-upper-case">${$.i18n.prop('login')}</span>
               </a>
             </li>
             <li id="change-password-link">
-              <a href="#" onclick="editUserDetailsBox();">${$.i18n.prop('edit.details')}</a>
+              <a onclick="editUserDetailsBox();">
+                <span class="btn btn-warning label force-upper-case">${$.i18n.prop('edit.details')}</span>
+              </a>
             </li>
             <li id="logout-link" style="display: none">
-              <a href="#" onclick="logout(true);" id="logout-link-a">
-                <span class="label label-important force-upper-case">${$.i18n.prop('logout')}</span>
+              <a onclick="logout(true);" id="logout-link-a">
+                <span class="btn btn-danger label force-upper-case">${$.i18n.prop('logout')}</span>
               </a>
             </li>
             <li id="register-link" style="display: none">
-              <a href="#" onclick="registerBox();" id="register-link-a">
-                <span class="label label-info force-upper-case">${$.i18n.prop('register')}</span>
+              <a onclick="registerBox();" id="register-link-a">
+                <span class="btn btn-info label force-upper-case">${$.i18n.prop('register')}</span>
               </a>
             </li>
             <li>
