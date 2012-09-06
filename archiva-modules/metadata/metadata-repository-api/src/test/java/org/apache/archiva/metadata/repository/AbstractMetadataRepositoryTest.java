@@ -134,6 +134,11 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
 
         assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
+
+        repository.removeNamespace( TEST_REPO_ID, TEST_NAMESPACE );
+
+        assertTrue( repository.getRootNamespaces( TEST_REPO_ID ).isEmpty() );
+
     }
 
     @Test
