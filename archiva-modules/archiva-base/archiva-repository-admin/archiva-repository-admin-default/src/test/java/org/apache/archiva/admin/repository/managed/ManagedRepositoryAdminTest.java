@@ -300,7 +300,9 @@ public class ManagedRepositoryAdminTest
         assertAuditListenerCallAndUpdateAddAndDelete( true );
 
         mockAuditListener.clearEvents();
-
+        
+        new File( repoLocation + STAGE_REPO_ID_END ).delete();
+        assertFalse( new File( repoLocation + STAGE_REPO_ID_END ).exists() );
     }
 
 
