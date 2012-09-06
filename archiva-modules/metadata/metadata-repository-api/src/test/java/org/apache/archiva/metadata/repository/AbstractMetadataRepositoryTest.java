@@ -32,6 +32,7 @@ import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,10 +49,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -122,7 +122,7 @@ public abstract class AbstractMetadataRepositoryTest
         throws Exception
     {
         Collection<String> namespaces = repository.getRootNamespaces( TEST_REPO_ID );
-        assertEquals( Collections.<String>emptyList(), namespaces );
+        Assertions.assertThat( namespaces ).isNotNull().isEmpty();
     }
 
     @Test
@@ -133,11 +133,12 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
 
-        assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isNotEmpty().contains(
+            TEST_NAMESPACE ).hasSize( 1 );
 
         repository.removeNamespace( TEST_REPO_ID, TEST_NAMESPACE );
 
-        assertTrue( repository.getRootNamespaces( TEST_REPO_ID ).isEmpty() );
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isEmpty();
 
     }
 
@@ -146,7 +147,7 @@ public abstract class AbstractMetadataRepositoryTest
         throws Exception
     {
         assertNull( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) );
-        assertEquals( Collections.emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isEmpty();
 
         ProjectMetadata project = new ProjectMetadata();
         project.setId( TEST_PROJECT );
@@ -159,7 +160,9 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_NAMESPACE, project.getNamespace() );
 
         // test that namespace is also constructed
-        assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
+
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isNotEmpty().contains(
+            TEST_NAMESPACE ).hasSize( 1 );
     }
 
     @Test
@@ -168,7 +171,7 @@ public abstract class AbstractMetadataRepositoryTest
     {
         assertNull( repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
         assertNull( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) );
-        assertEquals( Collections.<String>emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isEmpty();
 
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
@@ -193,7 +196,8 @@ public abstract class AbstractMetadataRepositoryTest
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
         assertNull( repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
         assertNull( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) );
-        assertEquals( Collections.<String>emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
+
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isEmpty();
 
         ArtifactMetadata metadata = createArtifact();
 
@@ -204,7 +208,9 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( Collections.singletonList( metadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
 
         // test that namespace, project and project version is also constructed
-        assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
+
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isNotEmpty().contains(
+            TEST_NAMESPACE ).hasSize( 1 );
 
         ProjectMetadata projectMetadata = repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
         assertEquals( TEST_PROJECT, projectMetadata.getId() );
