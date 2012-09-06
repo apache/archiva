@@ -597,6 +597,24 @@ public class FileMetadataRepository
         return artifacts;
     }
 
+    public void removeNamespace( String repositoryId, String project )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+            File namespaceDirectory = new File( getDirectory( repositoryId ), project );
+            FileUtils.deleteDirectory( namespaceDirectory );
+            //Properties properties = new Properties();
+            //properties.setProperty( "namespace", namespace );
+            //writeProperties( properties, namespaceDirectory, NAMESPACE_METADATA_KEY );
+
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
