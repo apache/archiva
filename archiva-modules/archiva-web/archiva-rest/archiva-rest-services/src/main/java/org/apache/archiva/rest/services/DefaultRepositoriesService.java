@@ -31,6 +31,7 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
@@ -61,7 +62,6 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
-import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
@@ -105,7 +105,7 @@ import java.util.TimeZone;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "repositoriesService#rest" )
+@Service ( "repositoriesService#rest" )
 public class DefaultRepositoriesService
     extends AbstractRestService
     implements RepositoriesService
@@ -113,11 +113,11 @@ public class DefaultRepositoriesService
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named ( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Inject
-    @Named( value = "taskExecutor#indexing" )
+    @Named ( value = "taskExecutor#indexing" )
     private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
 
     @Inject
@@ -136,14 +136,14 @@ public class DefaultRepositoriesService
     private RepositoryContentFactory repositoryFactory;
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named ( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
 
     @Inject
     private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
-    @Named( value = "repositorySessionFactory" )
+    @Named ( value = "repositorySessionFactory" )
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
@@ -861,17 +861,34 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "artifact.groupId cannot be null", 400, null );
         }
 
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
         try
         {
             ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
 
             repository.deleteGroupId( groupId );
 
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            metadataRepository.removeNamespace( repositoryId, groupId );
+
+            metadataRepository.save();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
         catch ( RepositoryException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        finally
+        {
+
+            repositorySession.close();
         }
         return true;
     }

@@ -476,6 +476,28 @@ public class JcrMetadataRepository
         }
     }
 
+    public void removeNamespace( String repositoryId, String projectId )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+            Node root = getJcrSession().getRootNode();
+            String path = getNamespacePath( repositoryId, projectId );
+            if ( root.hasNode( path ) )
+            {
+                Node node = root.getNode( path );
+                if ( node.isNodeType( NAMESPACE_NODE_TYPE ) )
+                {
+                    node.remove();
+                }
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
     public void removeMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {

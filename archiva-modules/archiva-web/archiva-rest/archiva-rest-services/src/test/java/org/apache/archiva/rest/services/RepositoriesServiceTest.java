@@ -287,7 +287,7 @@ public class RepositoriesServiceTest
             assertTrue( "directory not exists", directory.exists() );
 
             RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
-            repositoriesService.deleteGroupId( "org.apache.karaf.features", SOURCE_REPO_ID );
+            repositoriesService.deleteGroupId( "org.apache.karaf", SOURCE_REPO_ID );
 
             assertFalse( "directory not exists", directory.exists() );
 
@@ -297,7 +297,13 @@ public class RepositoriesServiceTest
 
             Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
 
-            log.info( "browseResult: {}", browseResult );
+            browseResult = browseService.browseGroupId( "org.apache.karaf", SOURCE_REPO_ID );
+
+            assertNotNull( browseResult );
+
+            Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
+
+            log.info( "browseResult empty: {}", browseResult );
         }
         finally
         {
