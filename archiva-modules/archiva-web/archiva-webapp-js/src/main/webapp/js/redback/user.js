@@ -339,8 +339,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
    */
   loginBox=function(){
 
-
-
     if (window.modalLoginWindow!=null){
       window.modalLoginWindow=null;
     }
@@ -388,6 +386,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
    * @param result
    */
   var successLoginCallbackFn=function(result){
+
     var logged = false;
     if (result == null) {
       logged = false;
@@ -419,6 +418,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
       }
       clearForm("#user-login-form");
       decorateMenuWithKarma(user);
+
       return;
     }
     var modalLoginErrMsg=$("#modal-login-err-message");
@@ -443,6 +443,8 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
   var completeLoginCallbackFn=function(){
     $("#modal-login-ok").removeAttr("disabled");
     $("#small-spinner").remove();
+    // force current screen reload to consider user karma
+    window.sammyArchivaApplication.refresh();
   }
 
   resetPasswordForm=function(key){
@@ -535,7 +537,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
   login=function(){
     $.log("user.js#login");
     $("#modal-login-err-message").html("");
-    screenChange();
+
     var valid = $("#user-login-form").valid();
     if (!valid) {
         return;
