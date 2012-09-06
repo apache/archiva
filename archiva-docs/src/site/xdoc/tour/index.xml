@@ -64,55 +64,55 @@ table.bodyTable tr.b {
       <table>
         <tr>
           <td>
-            <a href="../images/tour/project.png" class="gallery_image" rel="gallery_image" title="Archiva provides an informative display for artifacts stored in the repository.
+            <a href="../images/tour/project-info.png" class="gallery_image" rel="gallery_image" title="Archiva provides an informative display for artifacts stored in the repository.
                       This includes a user-friendly display of the Maven informations, as well as the relationships between projects.">
-              <img src="../images/tour/project.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
+              <img src="../images/tour/project-info.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
               1. Project Information
             </a>
           </td>
           <td>
-            <a href="../images/tour/search.png" class="gallery_image" rel="gallery_image"
+            <a href="../images/tour/search-form.png" class="gallery_image" rel="gallery_image"
                 title="Archiva has both a user-friendly browsing interface, and powerful search functionalities. The contents of all artifacts are indexed,
                           including Maven project information and Java class information to facilitate locating code within any repository.
                           By using the Find Artifact feature, you can identify unknown artifacts based on the database of known checksums for known artifacts.">
-              <img src="../images/tour/search.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
+              <img src="../images/tour/search-form.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
               2. Artifact Search
             </a>
           </td>
           <td>
-            <a href="../images/tour/proxy.png" class="gallery_image" rel="gallery_image"
+            <a href="../images/tour/remote-proxy-cache.png" class="gallery_image" rel="gallery_image"
                 title="Archiva can operate as a proxy for remote repositories, allowing you to improve build
                           performance by caching artifacts in a closer network location, and control artifact
                           usage through the use of white and black lists on proxy connectors.">
-              <img src="../images/tour/proxy.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
+              <img src="../images/tour/remote-proxy-cache.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
                3. Remote Proxying Cache
             </a>
           </td>
           <td>
-            <a href="../images/tour/upload.png" class="gallery_image" rel="gallery_image"
+            <a href="../images/tour/upload-files.png" class="gallery_image" rel="gallery_image"
                 title="Archiva now supports artifact uploads via UI. A pom file can also be included
                           in the upload or Archiva can generate one during the upload.">
-              <img src="../images/tour/upload.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
+              <img src="../images/tour/upload-files.png" width="150" height="93" style="border: 1px solid silver; margin-bottom: 0.25em" alt="" /><br/>
                4. Artifact Upload
             </a>
           </td>
         </tr>
         <tr>
           <td>
-            <a href="../images/tour/admin.png" class="gallery_image" rel="gallery_image"
+            <a href="../images/tour/graphical-admin.png" class="gallery_image" rel="gallery_image"
                 title="Archiva has a comprehensive web-based administration interface for configuring repositories,
                           remote proxies, scheduled jobs and more. The configuration is kept in sync with the XML
                           configuration files so that they can also be hand-edited if necessary.">
-              <img src="../images/tour/admin.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+              <img src="../images/tour/graphical-admin.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               5. Graphical Administration
             </a>
           </td>
           <td>
-            <a href="../images/tour/virtual-repos.png" class="gallery_image" rel="gallery_image"
+            <a href="../images/tour/repos-group.png" class="gallery_image" rel="gallery_image"
                 title="Archiva implements the concept of virtual repositories, wherein a set of
                           Archiva repositories can be grouped together under one URL and that one URL
                           can be used by clients (s.a. Maven) to download from these repositories.">
-              <img src="../images/tour/virtual-repos.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+              <img src="../images/tour/repos-group.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
               6. Virtual Repositories
             </a>
           </td>
