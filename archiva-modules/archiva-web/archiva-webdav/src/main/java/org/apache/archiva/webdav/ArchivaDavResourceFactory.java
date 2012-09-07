@@ -38,6 +38,16 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.RepositoryProxyConnectors;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -76,17 +86,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.apache.archiva.redback.authentication.AuthenticationException;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManager;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -112,7 +112,7 @@ import java.util.Set;
 /**
  *
  */
-@Service( "davResourceFactory#archiva" )
+@Service ( "davResourceFactory#archiva" )
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -145,7 +145,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named( value = "repositoryProxyConnectors#default" )
+    @Named ( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     /**
@@ -175,7 +175,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named( value = "httpAuthenticator#basic" )
+    @Named ( value = "httpAuthenticator#basic" )
     private HttpAuthenticator httpAuth;
 
     @Inject
@@ -208,7 +208,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named ( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
     private ApplicationContext applicationContext;
@@ -559,12 +559,9 @@ public class ArchivaDavResourceFactory
                             String event = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE )
                                 + PROXIED_SUFFIX;
 
-                            if ( log.isDebugEnabled() )
-                            {
-                                log.debug( "Proxied artifact '" + resourceFile.getName() + "' in repository '"
-                                               + managedRepository.getId() + "' (current user '" + activePrincipal
-                                               + "')" );
-                            }
+                            log.debug( "Proxied artifact '{}' in repository '{}' (current user '{}')",
+                                       resourceFile.getName(), managedRepository.getId(), activePrincipal );
+
                             triggerAuditEvent( request.getRemoteAddr(), archivaLocator.getRepositoryId(),
                                                logicalResource.getPath(), event, activePrincipal );
                         }
@@ -696,7 +693,7 @@ public class ArchivaDavResourceFactory
 
             return ( proxiedFile != null );
         }
-        
+
         // Not any of the above? Then it's gotta be an artifact reference.
         try
         {
@@ -710,11 +707,10 @@ public class ArchivaDavResourceFactory
                 File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
 
                 resource.setPath( managedRepository.toPath( artifact ) );
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Proxied artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
-                                   + artifact.getVersion() + "'" );
-                }
+
+                log.debug( "Proxied artifact '{}:{}:{}'", artifact.getGroupId(), artifact.getArtifactId(),
+                           artifact.getVersion() );
+
                 return ( proxiedFile != null );
             }
         }
@@ -772,7 +768,7 @@ public class ArchivaDavResourceFactory
             Model model = null;
             try
             {
-                model = mavenXpp3Reader.read(reader);
+                model = mavenXpp3Reader.read( reader );
             }
             finally
             {
@@ -1051,11 +1047,10 @@ public class ArchivaDavResourceFactory
                                 catch ( DavException e )
                                 {
                                     // TODO: review exception handling
-                                    if ( log.isDebugEnabled() )
-                                    {
-                                        log.debug( "Skipping repository '" + managedRepository + "' for user '"
-                                                       + activePrincipal + "': " + e.getMessage() );
-                                    }
+
+                                    log.debug( "Skipping repository '{}' for user '{}': {}", managedRepository,
+                                               activePrincipal, e.getMessage() );
+
                                 }
 
                             }
@@ -1075,11 +1070,10 @@ public class ArchivaDavResourceFactory
                                 catch ( UnauthorizedException e )
                                 {
                                     // TODO: review exception handling
-                                    if ( log.isDebugEnabled() )
-                                    {
-                                        log.debug( "Skipping repository '" + managedRepository + "' for user '"
-                                                       + activePrincipal + "': " + e.getMessage() );
-                                    }
+
+                                    log.debug( "Skipping repository '{}' for user '{}': {}", managedRepository,
+                                               activePrincipal, e.getMessage() );
+
                                 }
                             }
                         }
@@ -1259,11 +1253,9 @@ public class ArchivaDavResourceFactory
                 catch ( UnauthorizedException e )
                 {
                     // TODO: review exception handling
-                    if ( log.isDebugEnabled() )
-                    {
-                        log.debug( "Skipping repository '" + repository + "' for user '" + activePrincipal + "': "
-                                       + e.getMessage() );
-                    }
+
+                    log.debug( "Skipping repository '{}' for user '{}': {}", repository, activePrincipal,
+                               e.getMessage() );
                 }
             }
             IndexingContext indexingContext = indexMerger.buildMergedIndex( authzRepos, true );

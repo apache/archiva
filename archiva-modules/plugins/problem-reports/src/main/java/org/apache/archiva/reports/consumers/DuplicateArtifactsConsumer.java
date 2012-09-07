@@ -22,22 +22,22 @@ package org.apache.archiva.reports.consumers;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -57,11 +57,9 @@ import java.util.List;
  * Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.
  * <p/>
  * TODO: no need for this to be a scanner - we can just query the database / content repository to get a full list
- *
- *
  */
-@Service( "knownRepositoryContentConsumer#duplicate-artifacts" )
-@Scope( "prototype" )
+@Service ( "knownRepositoryContentConsumer#duplicate-artifacts" )
+@Scope ( "prototype" )
 public class DuplicateArtifactsConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
@@ -92,7 +90,6 @@ public class DuplicateArtifactsConsumer
 
     /**
      * FIXME: can be of other types
-     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -105,10 +102,9 @@ public class DuplicateArtifactsConsumer
 
     /**
      * FIXME: needs to be selected based on the repository in question
-     *
      */
     @Inject
-    @Named( value = "repositoryPathTranslator#maven2" )
+    @Named ( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     private RepositorySession repositorySession;
@@ -201,16 +197,15 @@ public class DuplicateArtifactsConsumer
             for ( ArtifactMetadata dupArtifact : results )
             {
                 String id = path.substring( path.lastIndexOf( "/" ) + 1 );
-                if ( dupArtifact.getId().equals( id )
-                    && dupArtifact.getNamespace().equals( originalArtifact.getNamespace() )
-                    && dupArtifact.getProject().equals( originalArtifact.getProject() )
-                    && dupArtifact.getVersion().equals( originalArtifact.getVersion() ) )
+                if ( dupArtifact.getId().equals( id ) && dupArtifact.getNamespace().equals(
+                    originalArtifact.getNamespace() ) && dupArtifact.getProject().equals(
+                    originalArtifact.getProject() ) && dupArtifact.getVersion().equals(
+                    originalArtifact.getVersion() ) )
                 {
                     // Skip reference to itself.
-                    if ( log.isDebugEnabled() )
-                    {
-                        log.debug( "Not counting duplicate for artifact " + dupArtifact + " for path " + path );
-                    }
+
+                    log.debug( "Not counting duplicate for artifact {} for path {}", dupArtifact, path );
+
                     continue;
                 }
 

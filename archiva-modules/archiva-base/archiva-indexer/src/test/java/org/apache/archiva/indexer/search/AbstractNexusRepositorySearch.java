@@ -235,12 +235,12 @@ public abstract class AbstractNexusRepositorySearch
 
         public void artifactError( ArtifactContext ac, Exception e )
         {
-            log.debug( "artifactError " + ac.getArtifact().getPath(), e );
+            log.debug( "artifactError {}", ac.getArtifact().getPath(), e );
         }
 
         public void artifactDiscovered( ArtifactContext ac )
         {
-            log.debug( "artifactDiscovered {}:", ac.getArtifact().getPath(), ac.getArtifactInfo() );
+            log.debug( "artifactDiscovered {}:{}", ac.getArtifact().getPath(), ac.getArtifactInfo() );
         }
     }
 

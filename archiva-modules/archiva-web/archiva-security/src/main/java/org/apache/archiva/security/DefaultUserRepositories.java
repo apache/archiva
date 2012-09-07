@@ -19,7 +19,6 @@ package org.apache.archiva.security;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
@@ -44,7 +43,7 @@ import java.util.List;
 /**
  * DefaultUserRepositories
  */
-@Service("userRepositories")
+@Service ( "userRepositories" )
 public class DefaultUserRepositories
     implements UserRepositories
 {
@@ -120,11 +119,10 @@ public class DefaultUserRepositories
                 catch ( AuthorizationException e )
                 {
                     // swallow.
-                    if ( log.isDebugEnabled() )
-                    {
-                        log.debug( "Not authorizing '{}' for repository '{}': {}",
-                                   Lists.<Object>newArrayList( principal, repo.getId(), e.getMessage() ) );
-                    }
+
+                    log.debug( "Not authorizing '{}' for repository '{}': {}", principal, repo.getId(),
+                               e.getMessage() );
+
                 }
             }
 
