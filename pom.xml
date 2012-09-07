@@ -71,7 +71,7 @@
   
   <properties>
     <springVersion>3.1.2.RELEASE</springVersion>
-    <slf4jVersion>1.6.6</slf4jVersion>
+    <slf4jVersion>1.7.0</slf4jVersion>
     <logbackVersion>1.0.0</logbackVersion>
     <jacksonVersion>1.9.8</jacksonVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
