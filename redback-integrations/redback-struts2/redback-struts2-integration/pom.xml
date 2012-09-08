@@ -237,37 +237,30 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4jVersion}</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>slf4j-impl</artifactId>
+      <version>${log4jVersion}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>${slf4jVersion}</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-jcl</artifactId>
+      <version>${log4jVersion}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>${logbackVersion}</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4jVersion}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logbackVersion}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-access</artifactId>
-      <version>${logbackVersion}</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j12-api</artifactId>
+      <version>${log4jVersion}</version>
       <scope>test</scope>
     </dependency>
 
