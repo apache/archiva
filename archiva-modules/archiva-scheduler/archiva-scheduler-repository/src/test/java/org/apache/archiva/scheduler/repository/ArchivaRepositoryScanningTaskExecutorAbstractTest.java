@@ -40,6 +40,7 @@ import java.util.List;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@DirtiesContext( classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     extends TestCase
 {
