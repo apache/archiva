@@ -178,6 +178,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>slf4j-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>

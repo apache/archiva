@@ -318,8 +318,27 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-ext</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j12-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>slf4j-impl</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -486,6 +505,12 @@
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-struts2-integration</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
@@ -1312,28 +1337,6 @@
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>override-log4j-with-console-output</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <tasks>
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/log4j.xml"
-                          todir="${project.build.directory}/classes"/>
-                    <copy overwrite="true" file="${basedir}/src/test/tomcat/auto-admin-creation.properties"
-                          todir="${basedir}/target/"/>
-                    <delete dir="${basedir}/src/main/webapp/WEB-INF/lib"/>
-                  </tasks>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <!-- redefine to skip its execution in Tomcat -->
@@ -1468,10 +1471,12 @@
                 <appserver.base>${archivaAppServerBase}</appserver.base>
                 <appserver.home>${archivaAppServerBase}</appserver.home>
                 <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
-                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
-                </redback.admin.creation.file>
+                <redback.admin.creation.file>${basedir}/src/test/tomcat/auto-admin-creation.properties </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               </systemProperties>
+              <additionalClasspathDirs>
+                <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
+              </additionalClasspathDirs>
             </configuration>
             <dependencies>
               <dependency>
@@ -1498,10 +1503,12 @@
                 <appserver.base>${archivaAppServerBase}</appserver.base>
                 <appserver.home>${archivaAppServerBase}</appserver.home>
                 <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
-                <redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties
-                </redback.admin.creation.file>
+                <redback.admin.creation.file>${basedir}/src/test/tomcat/auto-admin-creation.properties </redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               </systemProperties>
+              <additionalClasspathDirs>
+                <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
+              </additionalClasspathDirs>
             </configuration>
             <dependencies>
               <dependency>

@@ -18,27 +18,27 @@
   ~ under the License.
   -->
 
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<configuration status="debug">
+  <appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+  </appenders>
+  <loggers>
 
-  <appender name="console" class="org.apache.log4j.ConsoleAppender">
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
-    </layout>
-  </appender>
+    <logger name="org.apache.archiva.admin.repository.managed" level="debug"/>
 
-  <logger name="org.springframework">
-    <level value="ERROR"/>
-  </logger>
+    <logger name="JPOX" level="error"/>
 
-  <logger name="org.apache.archiva.scheduler.indexing">
-    <level value="debug"/>
-  </logger>
 
-  <root>
-    <priority value ="info" />
-    <appender-ref ref="console" />
-  </root>
+    <logger name="org.springframework" level="error"/>
 
-</log4j:configuration>
+
+    <root level="info">
+      <appender-ref ref="console"/>
+    </root>
+  </loggers>
+</configuration>
+
+
