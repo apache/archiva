@@ -47,6 +47,12 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy-common</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
@@ -62,7 +68,7 @@
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
+      <artifactId>commons-logging</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -132,6 +138,10 @@
           <exclusion>
             <groupId>aopalliance</groupId>
             <artifactId>aopalliance</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
           </exclusion>
         </exclusions>
     </dependency>

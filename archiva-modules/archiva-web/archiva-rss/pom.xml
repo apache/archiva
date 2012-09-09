@@ -63,8 +63,8 @@
       <scope>test</scope>
     </dependency> 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

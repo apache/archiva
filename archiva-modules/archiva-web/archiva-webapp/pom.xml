@@ -111,6 +111,12 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -312,8 +318,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j12-api</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -555,6 +561,12 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-webdav</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -662,10 +674,8 @@
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <version>1.1</version>
-      <!-- provided by jcl-over-slf4j, don't want this in the webapp -->
-      <scope>provided</scope>
+      <artifactId>commons-logging</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
@@ -740,6 +750,10 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>jcl-over-slf4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -774,6 +788,12 @@
       <groupId>org.apache.archiva</groupId>
       <!--  FIXME: temporary coupling to plugin, should be runtime -->
       <artifactId>maven2-repository</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -794,6 +814,10 @@
           <groupId>javax.transaction</groupId>
           <artifactId>jta</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -807,6 +831,10 @@
         <exclusion>
           <groupId>ehcache</groupId>
           <artifactId>ehcache</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

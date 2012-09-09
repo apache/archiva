@@ -74,6 +74,7 @@
     <redback.spring-utils.version>2.0-SNAPSHOT</redback.spring-utils.version>
     <redback.taskqueue.version>2.0-SNAPSHOT</redback.taskqueue.version>
     <slf4j.version>1.7.0</slf4j.version>
+    <log4j.version>2.0-alpha2</log4j.version>
 
     <spring.version>3.1.2.RELEASE</spring.version>
 
@@ -702,11 +703,6 @@
         <version>1.1.2</version>
       </dependency>
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.17</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-lucene-consumers</artifactId>
         <version>${project.version}</version>
@@ -1157,12 +1153,6 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
         <version>${slf4j.version}</version>
         <scope>runtime</scope>
@@ -1179,6 +1169,44 @@
         <version>${slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
+
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-jcl</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j12-api</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
       <dependency>
         <groupId>taglibs</groupId>
         <artifactId>standard</artifactId>
@@ -1500,7 +1528,6 @@
                     <exclude>org.codehaus.plexus:plexus-quartz</exclude>
                     <exclude>org.codehaus.plexus:plexus-spring</exclude>
                     <exclude>org.codehaus.redback:plexus-spring</exclude>
-                    <exclude>commons-logging:commons-logging</exclude>
                     <exclude>org.slf4j:jcl104-over-slf4j</exclude>
                     <exclude>velocity:velocity-dep</exclude>
                     <exclude>velocity:velocity</exclude>
@@ -1522,6 +1549,15 @@
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
                     <exclude>org.codehaus.plexus:plexus-taskqueue</exclude>
+
+
+                    <exclude>commons-logging:commons-logging-api</exclude>
+                    <exclude>log4j:log4j</exclude>
+                    <exclude>org.slf4j:jcl-over-slf4j</exclude>
+                    <exclude>org.slf4j:slf4j-log4j12</exclude>
+
+                    <!-- TODO org.sonatype.sisu:sisu-guava -->
+
                   </excludes>
                 </bannedDependencies>
               </rules>
