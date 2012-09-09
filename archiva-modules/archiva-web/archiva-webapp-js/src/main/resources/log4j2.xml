@@ -21,10 +21,14 @@
 
 <configuration>
 
+  <properties>
+    <property name="logsDirectory">${sys:appserver.base}/logs</property>
+  </properties>
+
   <appenders>
 
-    <RollingFile name="rolling" fileName="${appserver.base}/logs/archiva.log"
-                 filePattern="${appserver.base}/logs/archiva-%d{MM-dd-yy-HH-mm}.log">
+    <RollingFile name="rolling" fileName="${logsDirectory}/archiva.log"
+                 filePattern="${logsDirectory}/archiva-%d{MM-dd-yy-HH-mm}.log">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
       </PatternLayout>
@@ -33,8 +37,8 @@
       </Policies>
     </RollingFile>
 
-    <RollingFile name="auditlog" fileName="${appserver.base}/logs/archiva-audit.log"
-                 filePattern="${appserver.base}/logs/archiva-audit-%d{MM-dd-yy-HH-mm}.log">
+    <RollingFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
+                 filePattern="${logsDirectory}/logs/archiva-audit-%d{MM-dd-yy-HH-mm}.log">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} %m%n</pattern>
       </PatternLayout>
@@ -43,8 +47,8 @@
       </Policies>
     </RollingFile>
 
-    <RollingFile name="redbackAuditLog" fileName="${appserver.base}/logs/archiva-security-audit.log"
-                 filePattern="${appserver.base}/logs/archiva-security-audit.log-%d{MM-dd-yy-HH-mm}.log">
+    <RollingFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
+                 filePattern="${logsDirectory}/archiva-security-audit.log-%d{MM-dd-yy-HH-mm}.log">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n</pattern>
       </PatternLayout>
