@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration>
 
   <appenders>
 
