@@ -440,6 +440,20 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     return str.replace(/\./g,"\\\.");
   }
 
+  activatePopoverDoc=function(){
+    var mainContent=$("#main-content");
+    mainContent.find(".popover-doc" ).popover({html: true, trigger: 'manual'});
+    mainContent.find(".popover-doc" ).on("click",function(){
+      $(this).popover("show");
+    });
+
+    mainContent.find(".popover-doc" ).mouseover(function(){
+      $(this).popover("destroy");
+    });
+
+    mainContent.find(".tooltip-doc" ).tooltip({html: true, trigger: 'hover'});
+  }
+
   //-----------------------------------------
   // extends jquery tmpl to support var def
   //-----------------------------------------

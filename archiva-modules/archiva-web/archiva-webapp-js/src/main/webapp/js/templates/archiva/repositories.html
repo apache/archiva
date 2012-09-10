@@ -207,6 +207,11 @@
           <label class="control-label" for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="controls">
             <input type="text" id="cronExpression" class="required" name="cronExpression" size="40" data-bind="value: managedRepository.cronExpression"/>
+            <a class="btn btn-warning btn-mini popover-doc" id="rowcount-info-button"
+               data-original-title="${$.i18n.prop('cronExpression.help.title')}"
+               data-content="${$.i18n.prop('cronExpression.help.content')}">
+                <i class="icon-question-sign icon-white"></i>
+            </a>
           </div>
         </div>
         <div class="control-group">

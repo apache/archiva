@@ -177,6 +177,10 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
     this.availableLayouts = window.managedRepositoryTypes;
 
+    showCronExpressionDoc=function(){
+      //$.log("showCronExpressionDoc") ;
+    }
+
     this.save=function(){
       var valid = $("#main-content").find("#managed-repository-edit-form").valid();
       if (valid==false) {
@@ -308,6 +312,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       activateManagedRepositoryEditTab();
       mainContent.find("#managed-repository-edit-li a").html($.i18n.prop('edit'));
       activateManagedRepositoryFormValidation();
+      activatePopoverDoc();
     }
 
     scanNow=function(managedRepository){
@@ -946,6 +951,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
         var viewModel = new ManagedRepositoryViewModel(new ManagedRepository(),false,managedRepositoriesViewModel);
         ko.applyBindings(viewModel,mainContent.find("#managed-repository-edit").get(0));
         activateManagedRepositoryFormValidation();
+        activatePopoverDoc();
       }
       if ($(e.target).attr("href")=="#managed-repositories-view") {
         mainContent.find("#managed-repository-edit-li a").html($.i18n.prop("add"));
