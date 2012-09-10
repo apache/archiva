@@ -1503,7 +1503,7 @@
                 <appserver.base>${archivaAppServerBase}</appserver.base>
                 <appserver.home>${archivaAppServerBase}</appserver.home>
                 <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
-                <redback.admin.creation.file>${basedir}/src/test/tomcat/auto-admin-creation.properties </redback.admin.creation.file>
+                <redback.admin.creation.file>${basedir}/src/test/tomcat/auto-admin-creation.properties</redback.admin.creation.file>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               </systemProperties>
               <additionalClasspathDirs>
