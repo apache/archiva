@@ -41,6 +41,8 @@ Browsing
   artifactId and version. When the version is clicked, the Artifact Info page (see the next section) will be
   displayed. There is currently an issue with regard to Maven 1 artifacts, see {{{http://jira.codehaus.org/browse/MRM-585} http://jira.codehaus.org/browse/MRM-585}}.
 
+[../images/browsing.png]
+
 * Artifact Info
 
   Items in the repositories are hyperlinked allowing you easy access to view more information. By clicking on the Group ID or Artifact ID you will be taken to the repository browser. The Artifact Info page is divided into six views:
@@ -48,9 +50,13 @@ Browsing
   1. Info. Basic information about the artifact is displayed here. These are the groupId, artifactId, version and
      packaging. A dependency pom snippet is also available, which a user can just copy and paste in a pom file 
      to declare the artifact as a dependency of the project.
+
+[../images/artifact-info.png]
   
   2. Dependencies. The dependencies of the artifact will be listed here. The user can easily navigate to a specific
      dependency by clicking on the groupId, artifactId, or version link. The scope of the dependency is also shown.
+
+[../images/dependencies.png]
   
   3. Dependency Tree. The dependencies of the artifact are displayed in a tree-like view, which can also be
      navigated.
