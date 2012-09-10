@@ -467,7 +467,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             mainContent.find("#managedrepository-stats-img-"+escapeDot(curRepo.id())).popover(
                 {
                   placement: "left",
-                  html: true
+                  html: true,
+                  trigger:'manual'
                 }
             );
 
