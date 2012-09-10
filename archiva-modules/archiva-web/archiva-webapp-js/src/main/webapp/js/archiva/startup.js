@@ -28,7 +28,15 @@ function() {
   // no cache for ajax queries as we get datas from servers so preventing caching !!
   jQuery.ajaxSetup( {
     cache: false,//!window.archivaDevMode
-    dataType: 'json'
+    dataType: 'json',
+    statusCode: {
+      403: function() {
+        removeSmallSpinnerImg();
+        removeMediumSpinnerImg("#main-content");
+        clearUserMessages();
+        displayErrorMessage($.i18n.prop('authz.karma.needed'));
+      }
+    }
   });
 
 });

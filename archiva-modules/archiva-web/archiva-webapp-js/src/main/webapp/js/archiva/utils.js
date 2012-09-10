@@ -196,17 +196,17 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     $("#small-spinner").remove();
   }
 
-  mediumSpinnerImg=function(){
-    return "<img id=\"medium-spinner\" src=\"images/medium-spinner.gif\"/>";
-  };
-
   removeMediumSpinnerImg=function(){
     $("#medium-spinner").remove();
   }
 
   removeMediumSpinnerImg=function(selector){
-    $(selector+" #medium-spinner").remove();
+    $(selector ).find("#medium-spinner").remove();
   }
+
+  mediumSpinnerImg=function(){
+    return "<img id=\"medium-spinner\" src=\"images/medium-spinner.gif\"/>";
+  };
 
   closeDialogConfirm=function(){
     window.modalConfirmDialog.modal('hide');
