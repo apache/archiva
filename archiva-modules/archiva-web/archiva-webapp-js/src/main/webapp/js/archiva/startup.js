@@ -35,6 +35,12 @@ function() {
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayErrorMessage($.i18n.prop('authz.karma.needed'));
+      },
+      500: function(){
+        removeSmallSpinnerImg();
+        removeMediumSpinnerImg("#main-content");
+        clearUserMessages();
+        displayErrorMessage($.i18n.prop('error.500'));
       }
     }
   });
