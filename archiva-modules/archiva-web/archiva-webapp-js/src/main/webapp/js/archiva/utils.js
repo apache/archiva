@@ -436,6 +436,10 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     return this.substring(idx);
   }
 
+  escapeDot=function(str){
+    return str.replace(/\./g,"\\\.");
+  }
+
   //-----------------------------------------
   // extends jquery tmpl to support var def
   //-----------------------------------------

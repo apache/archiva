@@ -86,13 +86,25 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     }
 
     deleteGroupId=function(groupId){
-      var previousHash=getUrlHash();
-      $.log("previousHash:"+previousHash);
+
       var repoId=getSelectedBrowsingRepository();
       if(!repoId){
-        displayErrorMessage($.i18n.prop('groupId.delete.missing.repoId'));
+        var escapedGroupId=escapeDot(groupId );
+        var selected = $("#main-content" ).find("#delete-"+escapedGroupId );
+        selected.attr("data-content",$.i18n.prop('groupId.delete.missing.repoId'))
+        selected.popover({
+          html:true,
+          template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>',
+          placement:'top',
+          trigger:'manual'});
+        selected.popover('show');
+        selected.mouseover(function(){
+          selected.popover("destroy");
+        });
         return;
       }
+      var previousHash=getUrlHash();
+      $.log("previousHash:"+previousHash);
       openDialogConfirm(function(){
         $.ajax({
           url:"restServices/archivaServices/repositoriesService/deleteGroupId?groupId="+groupId+"&repositoryId="+repoId,
@@ -232,7 +244,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         location+="~"+self.repositoryId;
       }
       location+="/"+groupId;
-      window.sammyArchivaApplication.setLocation(location);    }
+      window.sammyArchivaApplication.setLocation(location);
+    }
 
     displayParent=function(){
       var selectedRepo=getSelectedBrowsingRepository();

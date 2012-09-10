@@ -52,7 +52,7 @@
         {{if browseResultEntry.project}}
           {{if deleteKarma}}
             <li class="browse-list-project">
-              <img src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+              <img id="delete-${browseResultEntry.name}" src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
               <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
             </li>
           {{else}}
@@ -63,7 +63,7 @@
         {{else}}
           {{if deleteKarma}}
             <li class="browse-list">
-              <img src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+              <img id="delete-${browseResultEntry.name}" src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
               <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#" title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
             </li>
           {{else}}
