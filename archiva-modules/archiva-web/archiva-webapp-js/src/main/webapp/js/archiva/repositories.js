@@ -446,7 +446,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       if ($(calculatePopoverId(managedRepository)).html()){
         // we ask stats all the time ? if no uncomment return
         //return;
-        $("#managedrepository-stats-"+managedRepository.id()).append(smallSpinnerImg());
+        $("#managedrepository-stats-"+escapeDot(managedRepository.id())).append(smallSpinnerImg());
       }
       var curRepo=managedRepository;
       var url = "restServices/archivaServices/managedRepositoriesService/getManagedRepositoryStatistics/"+managedRepository.id();
@@ -462,16 +462,16 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             var archivaRepositoryStatistics=mapArchivaRepositoryStatistics(data);
             archivaRepositoryStatistics.managedRepository=curRepo;
             var mainContent = $("#main-content");
-            mainContent.find("#managedrepository-stats-"+curRepo.id()).append($("#managed-repository-stats-tmpl").tmpl(archivaRepositoryStatistics));
-            mainContent.find("#managedrepository-stats-img-"+curRepo.id()).attr("data-content",$(calculatePopoverId(curRepo)).html());
-            mainContent.find("#managedrepository-stats-img-"+curRepo.id()).popover(
+            mainContent.find("#managedrepository-stats-"+escapeDot(curRepo.id())).append($("#managed-repository-stats-tmpl").tmpl(archivaRepositoryStatistics));
+            mainContent.find("#managedrepository-stats-img-"+escapeDot(curRepo.id())).attr("data-content",$(calculatePopoverId(curRepo)).html());
+            mainContent.find("#managedrepository-stats-img-"+escapeDot(curRepo.id())).popover(
                 {
                   placement: "left",
                   html: true
                 }
             );
 
-            mainContent.find("#managedrepository-stats-img-"+curRepo.id()).popover('show');
+            mainContent.find("#managedrepository-stats-img-"+escapeDot(curRepo.id())).popover('show');
             removeSmallSpinnerImg();
           },
           error: function(data) {
@@ -485,7 +485,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     }
 
     calculatePopoverId=function(managedRepository){
-      return "#main-content #managedrepository-stats-"+managedRepository.id() + " #managedrepository-stats-"+managedRepository.id()+"-popover";
+      return "#main-content #managedrepository-stats-"+escapeDot(managedRepository.id()) + " #managedrepository-stats-"+escapeDot(managedRepository.id())+"-popover";
     }
 
     hideStats=function(managedRepository){
