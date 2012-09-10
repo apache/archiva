@@ -116,6 +116,7 @@
 
     <logger name="com.opensymphony.xwork2.ognl.OgnlValueStack" level="error"/>
 
+    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
     <!-- debug wagon transfer -->
     <!--

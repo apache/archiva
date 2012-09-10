@@ -109,13 +109,9 @@
 
     <logger name="SQL" level="error"/>
 
-    <logger name="freemarker" level="warn"/>
-
-    <logger name="org.codehaus.plexus.component.manager.ClassicSingletonComponentManager" level="error"/>
 
 
-    <logger name="com.opensymphony.xwork2.ognl.OgnlValueStack" level="error"/>
-
+    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
     <!-- debug wagon transfer -->
     <!--
