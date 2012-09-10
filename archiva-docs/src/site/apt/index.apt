@@ -29,6 +29,8 @@
   your artifact utilisation with search, browse and reporting, and perform routine
   maintenance on your repositories.
 
+  <<NOTE: This documentation is based on the new UI only.>>
+
   To get started with Archiva, you can read the following documentation:
    
     * {{{./quick-start.html} A Quick Getting Started Guide}}
