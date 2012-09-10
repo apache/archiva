@@ -117,31 +117,39 @@ table.bodyTable tr.b {
             </a>
           </td>
           <td>
+            <a href="../images/tour/search-results.png" class="gallery_image" rel="gallery_image"
+                title="Archiva provide filterable search results.">
+              <img src="../images/tour/search-results.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+              8. RSS Feeds
+            </a>
+          </td>
+          <td>
             <a href="../images/tour/rss.png" class="gallery_image" rel="gallery_image"
                 title="Archiva provides RSS feeds for new artifacts in the repositories and new versions
                           of a specific artifact.">
               <img src="../images/tour/rss.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-              7. RSS Feeds
+              8. RSS Feeds
             </a>
           </td>
+
+        </tr>
+        <tr>
           <td>
             <a href="../images/tour/security.png" class="gallery_image" rel="gallery_image"
                 title="Archiva uses the Redback security framework to provide flexible role-based security controls for repositories.
                           You can use the graphical interface to maintain user accounts, as well as secure repositories for read and/or write
                           access for individuals, or given roles.">
               <img src="../images/tour/security.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-              8. Role-based Security
+              9. Role-based Security
             </a>
           </td>
-        </tr>
-        <tr>             
           <td>
             <a href="../images/tour/reports.png" class="gallery_image" rel="gallery_image"
                 title="Archiva monitors the state of the managed repositories and keeps track of
                           potential problems to allow improvement of metadata and to assist in
                           troubleshooting problems.">
               <img src="../images/tour/reports.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-              9. Integrity Reports
+              10. Integrity Reports
             </a>
           </td>
           <td>
@@ -150,7 +158,7 @@ table.bodyTable tr.b {
                           implementation only covers upload/deploy actions but will include other
                           actions such as artifact delete, repository configuration and more in the future.">
               <img src="../images/tour/audit-log.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-              10. Audit Log Report
+              11. Audit Log Report
             </a>
           </td>
           <td>
@@ -161,7 +169,7 @@ table.bodyTable tr.b {
                           xml configuration files, meaning you can also hand-edit these config files to
                           enable or disable these consumers.">
               <img src="../images/tour/maintenance.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
-              11. Maintenance
+              12. Maintenance
             </a>
           </td>
         </tr>
