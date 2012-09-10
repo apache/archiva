@@ -464,9 +464,15 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       metadatasUrl+="/"+encodeURIComponent(version);
       metadatasUrl+="/"+encodeURIComponent(entry.key());
       var selectedRepo=getSelectedBrowsingRepository();
-      if (selectedRepo){
-        metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+
+      if(!selectedRepo){
+        clearUserMessages();
+        displayErrorMessage($.i18n.prop('repository.selected.missing'));
+        return;
       }
+
+      metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+
       $.ajax(metadatasUrl, {
         type: "DELETE",
         dataType: 'json',
@@ -498,12 +504,21 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         displayErrorMessage( $.i18n.prop("artifact.metadata.value.mandatory"));
         return;
       }
+
+      var selectedRepo=getSelectedBrowsingRepository();
+
+      if(!selectedRepo){
+        clearUserMessages();
+        displayErrorMessage($.i18n.prop('repository.selected.missing'));
+        return;
+      }
+
       var metadatasUrl="restServices/archivaServices/browseService/metadata/"+encodeURIComponent(groupId);
       metadatasUrl+="/"+encodeURIComponent(artifactId);
       metadatasUrl+="/"+encodeURIComponent(version);
       metadatasUrl+="/"+encodeURIComponent(entry.key());
       metadatasUrl+="/"+encodeURIComponent(entry.value());
-      var selectedRepo=getSelectedBrowsingRepository();
+
       if (selectedRepo){
         metadatasUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
       }
