@@ -440,16 +440,21 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     return str.replace(/\./g,"\\\.");
   }
 
+  /**
+   * select class:
+   * * .popover-doc: activate popover with html:true and click trigger
+   * * .tooltip-doc: active tooltip
+   */
   activatePopoverDoc=function(){
     var mainContent=$("#main-content");
-    mainContent.find(".popover-doc" ).popover({html: true, trigger: 'manual'});
-    mainContent.find(".popover-doc" ).on("click",function(){
+    mainContent.find(".popover-doc" ).popover({html: true, trigger: 'click'});
+    /*mainContent.find(".popover-doc" ).on("click",function(){
       $(this).popover("show");
     });
 
     mainContent.find(".popover-doc" ).mouseover(function(){
       $(this).popover("destroy");
-    });
+    });*/
 
     mainContent.find(".tooltip-doc" ).tooltip({html: true, trigger: 'hover'});
   }
