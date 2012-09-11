@@ -36,7 +36,9 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -46,8 +48,6 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.apache.archiva.redback.role.RoleManagerException;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -72,7 +72,7 @@ import java.util.Map;
  *
  * @author Olivier Lamy
  */
-@Service( "managedRepositoryAdmin#default" )
+@Service ( "managedRepositoryAdmin#default" )
 public class DefaultManagedRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
@@ -83,7 +83,7 @@ public class DefaultManagedRepositoryAdmin
     public static final String STAGE_REPO_ID_END = "-stage";
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named ( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Inject
@@ -170,7 +170,7 @@ public class DefaultManagedRepositoryAdmin
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
                                        repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
                                        repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), false );
-
+            repo.setDescription( repoConfig.getDescription() );
             managedRepos.add( repo );
         }
 
@@ -218,8 +218,8 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
                                   managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation,
-                                  getArchivaConfiguration().getConfiguration() ) != null;
+                                  managedRepository.isDeleteReleasedSnapshots(), managedRepository.getDescription(),
+                                  auditInformation, getArchivaConfiguration().getConfiguration() ) != null;
 
         createIndexContext( managedRepository );
         return res;
@@ -231,7 +231,7 @@ public class DefaultManagedRepositoryAdmin
                                                                  boolean releasesIncluded, boolean snapshotsIncluded,
                                                                  boolean stageRepoNeeded, String cronExpression,
                                                                  String indexDir, int daysOlder, int retentionCount,
-                                                                 boolean deteleReleasedSnapshots,
+                                                                 boolean deteleReleasedSnapshots, String description,
                                                                  AuditInformation auditInformation,
                                                                  Configuration config )
         throws RepositoryAdminException
@@ -252,6 +252,7 @@ public class DefaultManagedRepositoryAdmin
         repository.setRetentionCount( retentionCount );
         repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
         repository.setIndexDir( indexDir );
+        repository.setDescription( description );
 
         try
         {
@@ -480,8 +481,8 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
                                   managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), auditInformation,
-                                  getArchivaConfiguration().getConfiguration() );
+                                  managedRepository.isDeleteReleasedSnapshots(), managedRepository.getDescription(),
+                                  auditInformation, getArchivaConfiguration().getConfiguration() );
 
         // Save the repository configuration.
         RepositorySession repositorySession = getRepositorySessionFactory().createSession();
@@ -634,6 +635,8 @@ public class DefaultManagedRepositoryAdmin
         stagingRepository.setRetentionCount( repository.getRetentionCount() );
         stagingRepository.setScanned( repository.isScanned() );
         stagingRepository.setSnapshots( repository.isSnapshots() );
+        // do not duplicate description
+        //stagingRepository.getDescription("")
         return stagingRepository;
     }
 

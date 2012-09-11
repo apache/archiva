@@ -48,7 +48,10 @@ public class ManagedRepositoriesServiceTest
             assertNull( service.getManagedRepository( repo.getId() ) );
         }
         service.addManagedRepository( repo );
-        assertNotNull( service.getManagedRepository( repo.getId() ) );
+        repo = service.getManagedRepository( repo.getId() );
+        assertNotNull( repo );
+
+        assertEquals( getTestManagedRepository().getDescription(), repo.getDescription() );
 
         RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 

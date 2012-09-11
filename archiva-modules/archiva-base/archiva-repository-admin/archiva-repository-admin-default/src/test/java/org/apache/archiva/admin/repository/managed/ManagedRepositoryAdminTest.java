@@ -37,6 +37,7 @@ public class ManagedRepositoryAdminTest
 
 
     String repoId = "test-new-one";
+
     String repoLocation = APPSERVER_BASE_PATH + File.separator + repoId;
 
     @Test
@@ -85,12 +86,19 @@ public class ManagedRepositoryAdminTest
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
         repo.setCronExpression( "0 0 * * * ?" );
+        repo.setDescription( "cool repo" );
         managedRepositoryAdmin.addManagedRepository( repo, false, getFakeAuditInformation() );
         repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertEquals( initialSize + 1, repos.size() );
 
-        assertNotNull( managedRepositoryAdmin.getManagedRepository( repoId ) );
+        ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
+
+        assertNotNull( managedRepository );
+
+        assertEquals( "test repo", managedRepository.getName() );
+
+        assertEquals( "cool repo", managedRepository.getDescription() );
 
         assertTemplateRoleExists( repoId );
 
@@ -142,6 +150,10 @@ public class ManagedRepositoryAdminTest
 
         repo.setName( newName );
 
+        String description = "so great repository";
+
+        repo.setDescription( description );
+
         repo.setLocation( repoLocation );
         repo.setCronExpression( "0 0 * * * ?" );
 
@@ -152,6 +164,7 @@ public class ManagedRepositoryAdminTest
         assertEquals( newName, repo.getName() );
         assertEquals( new File( repoLocation ).getCanonicalPath(), new File( repo.getLocation() ).getCanonicalPath() );
         assertTrue( new File( repoLocation ).exists() );
+        assertEquals( description, repo.getDescription() );
 
         assertTemplateRoleExists( repoId );
 
@@ -300,11 +313,10 @@ public class ManagedRepositoryAdminTest
         assertAuditListenerCallAndUpdateAddAndDelete( true );
 
         mockAuditListener.clearEvents();
-        
+
         new File( repoLocation + STAGE_REPO_ID_END ).delete();
         assertFalse( new File( repoLocation + STAGE_REPO_ID_END ).exists() );
     }
-
 
     //----------------------------------
     // utility methods
@@ -366,7 +378,6 @@ public class ManagedRepositoryAdminTest
         }
 
     }
-
 
 
 }

@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@XmlRootElement( name = "managedRepository" )
+@XmlRootElement (name = "managedRepository")
 public class ManagedRepository
     extends AbstractRepository
     implements Serializable
@@ -93,6 +93,20 @@ public class ManagedRepository
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
         this.stageRepoNeeded = stageRepoNeeded;
+    }
+
+    /**
+     *
+     * @since 1.4-M3
+     */
+    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
+                              boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
+                              boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots,
+                              boolean stageRepoNeeded, String description )
+    {
+        this( id, name, location, layout, snapshots, releases, blockRedeployments, cronExpression, indexDir, scanned,
+              daysOlder, retentionCount, deleteReleasedSnapshots, stageRepoNeeded );
+        setDescription( description );
     }
 
     public String getCronExpression()

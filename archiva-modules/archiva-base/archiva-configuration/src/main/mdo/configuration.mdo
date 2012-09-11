@@ -421,6 +421,14 @@
             The directory for the indexes of this repository.
           </description>
         </field>
+        <field>
+          <name>description</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The description of this repository.
+          </description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>

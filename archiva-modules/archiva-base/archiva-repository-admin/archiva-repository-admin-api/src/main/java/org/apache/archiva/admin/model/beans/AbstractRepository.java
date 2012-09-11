@@ -36,6 +36,11 @@ public class AbstractRepository
 
     private String indexDirectory;
 
+    /**
+     * @since 1.4-M3
+     */
+    private String description;
+
     public AbstractRepository()
     {
         // no op
@@ -90,6 +95,16 @@ public class AbstractRepository
         this.indexDirectory = indexDirectory;
     }
 
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public void setDescription( String description )
+    {
+        this.description = description;
+    }
+
     public int hashCode()
     {
         int result = 17;
@@ -124,6 +139,7 @@ public class AbstractRepository
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", layout='" ).append( layout ).append( '\'' );
         sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
+        sb.append( ", description='" ).append( description ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

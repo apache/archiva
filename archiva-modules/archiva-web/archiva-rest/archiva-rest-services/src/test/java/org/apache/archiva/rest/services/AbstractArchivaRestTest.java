@@ -34,27 +34,27 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.Collections;
 import java.util.Date;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( ArchivaBlockJUnit4ClassRunner.class )
+@RunWith (ArchivaBlockJUnit4ClassRunner.class)
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
@@ -70,41 +70,41 @@ public abstract class AbstractArchivaRestTest
 
     // END SNIPPET: authz-header
 
-    @BeforeClass 
-    public static void chekRepo() {
-        Assume.assumeTrue( !System.getProperty( "appserver.base" ).contains(" ") );
+    @BeforeClass
+    public static void chekRepo()
+    {
+        Assume.assumeTrue( !System.getProperty( "appserver.base" ).contains( " " ) );
         LoggerFactory.getLogger( AbstractArchivaRestTest.class.getName() ).
-                error( "Rest services unit test must be run in a folder with no space" );
+            error( "Rest services unit test must be run in a folder with no space" );
         // skygo: was not possible to fix path in this particular module
         // Skip test if not in proper folder , otherwise test are not fair coz repository
         // cannot have space in their name.
     }
-    
+
     @Override
     @Before
     public void startServer()
         throws Exception
-    {        
+    {
         File appServerBase = new File( System.getProperty( "appserver.base" ) );
 
         removeAppsubFolder( appServerBase, "jcr" );
         removeAppsubFolder( appServerBase, "conf" );
         removeAppsubFolder( appServerBase, "data" );
-        
-        
-        super.startServer();        
+
+        super.startServer();
     }
-    
+
     private void removeAppsubFolder( File appServerBase, String folder )
-       throws Exception
+        throws Exception
     {
-        File directory = new File( appServerBase, folder );        
+        File directory = new File( appServerBase, folder );
         if ( directory.exists() )
         {
             FileUtils.deleteDirectory( directory );
         }
     }
-    
+
     @Override
     protected String getSpringConfigLocation()
     {
@@ -295,7 +295,7 @@ public abstract class AbstractArchivaRestTest
     {
         String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
         return new ManagedRepository( "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
-                                      false, 2, 3, true, false );
+                                      false, 2, 3, true, false, "my nice repo" );
 
     }
 
@@ -394,7 +394,7 @@ public abstract class AbstractArchivaRestTest
         }
 
     }
-    
+
     protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan )
         throws Exception
     {
@@ -412,7 +412,7 @@ public abstract class AbstractArchivaRestTest
         {
             FileUtils.deleteDirectory( badContent );
         }
-        
+
         managedRepository.setLocation( new File( repoPath ).getPath() );
         managedRepository.setIndexDirectory(
             System.getProperty( "java.io.tmpdir" ) + "/target/.index-" + Long.toString( new Date().getTime() ) );
