@@ -281,7 +281,7 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
    * if not error is displayed in #user-messages div
    */
   displayRestError=function(data,idToAppend){
-
+    $.log("displayRestError");
     if (data.redbackRestError){
       displayRedbackError(archivaRestError,idToAppend)
     }
@@ -308,7 +308,7 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     if (data.errorKey && data.errorKey.length>0){
       displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
     } else {
-      $.log("data.errorMessage:"+data.errorMessage);
+      $.log("print data.errorMessage:"+data.errorMessage);
       displayErrorMessage(data.errorMessage,idToAppend);
     }
 

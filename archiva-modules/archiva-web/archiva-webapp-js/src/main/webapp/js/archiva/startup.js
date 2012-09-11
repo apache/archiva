@@ -36,11 +36,12 @@ function() {
         clearUserMessages();
         displayErrorMessage($.i18n.prop('authz.karma.needed'));
       },
-      500: function(){
+      500: function(data){
         removeSmallSpinnerImg();
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
-        displayErrorMessage($.i18n.prop('error.500'));
+        displayRestError($.parseJSON(data.responseText));
+        //displayErrorMessage($.i18n.prop('error.500'));
       }
     }
   });

@@ -199,10 +199,6 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
               displaySuccessMessage($.i18n.prop('managedrepository.updated',self.managedRepository.id()));
               activateManagedRepositoriesGridTab();
               self.managedRepository.modified(false);
-            },
-            error: function(data) {
-              var res = $.parseJSON(data.responseText);
-              displayRestError(res);
             }
           }
         );
