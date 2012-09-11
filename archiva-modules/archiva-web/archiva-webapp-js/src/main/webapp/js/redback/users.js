@@ -167,7 +167,7 @@ define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","kn
             ko.applyBindings(viewModel,mainContent.find("#user-edit-roles-view").get(0));
             mainContent.find("#edit_user_details_pills_headers a:first").tab('show');
 
-            mainContent.find("#edit_user_details_pills_headers").bind('change', function (e) {
+            mainContent.find("#edit_user_details_pills_headers").bind('click', function (e) {
               if ($(e.target).attr("href")=="#user-edit-roles-edit") {
                 editUserRoles(user);
               }
