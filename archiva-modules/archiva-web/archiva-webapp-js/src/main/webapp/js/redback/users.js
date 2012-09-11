@@ -108,10 +108,6 @@ define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","kn
                 displaySuccessMessage( $.i18n.prop("user.deleted", currentUser.username()));
                 self.users.remove(currentUser);
               },
-              error: function(result) {
-               var obj = jQuery.parseJSON(result.responseText);
-               displayRedbackError(obj);
-              },
               complete: function() {
                 closeDialogConfirm();
               }

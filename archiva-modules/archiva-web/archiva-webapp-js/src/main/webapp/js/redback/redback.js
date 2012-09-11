@@ -176,8 +176,6 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
               removeSmallSpinnerImg();
             },
             error: function(result) {
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
               window.modalRegisterWindow.modal('hide');
             }
           });
@@ -205,9 +203,6 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
        },
        error: function(result) {
          $.log("validateKey#error");
-         var obj = jQuery.parseJSON(result.responseText);
-         $.log("validateKey#error response:"+obj);
-         displayRedbackError(obj);
        }
     })
   }

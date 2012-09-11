@@ -113,10 +113,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
             } else {
               displayErrorMessage("user cannot created");
             }
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
         });
     };
@@ -149,10 +145,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
             } else {
               displayErrorMessage("admin user not created");
             }
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
         });
     };
@@ -177,10 +169,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
             } else {
               displayErrorMessage("user cannot be updated");
             }
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
         });
     }
@@ -213,10 +201,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
           dataType: 'json',
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.roles.updated",curUser.username()));
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
         });
     }
@@ -230,10 +214,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.locked",curUser.username()));
             curUser.modified(false);
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
         });
     }
@@ -247,10 +227,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.unlocked",curUser.username()));
             curUser.modified(false);
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
       });
     }
@@ -268,10 +244,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
           success: function(result) {
             displaySuccessMessage($.i18n.prop("user.passwordChangeRequired.updated",curUser.username(),value));
             curUser.modified(false);
-          },
-          error: function(result) {
-            var obj = jQuery.parseJSON(result.responseText);
-            displayRedbackError(obj);
           }
       });
     };
@@ -474,10 +446,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
               displayErrorMessage("issue appended");
             }
             window.modalChangePasswordBox.modal('hide');
-          },
-          error: function(result) {
-           var obj = jQuery.parseJSON(result.responseText);
-           displayRedbackError(obj,"modal-password-change-content");
           }
         });
 
@@ -520,11 +488,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
             success: function(result) {
               clearUserMessages();
               displayInfoMessage($.i18n.prop("password.reset.success"));
-            },
-            error: function(result) {
-              clearUserMessages();
-              var obj = jQuery.parseJSON(result.responseText);
-              displayRedbackError(obj);
             }
           });
         }
@@ -748,11 +711,6 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
           displayErrorMessage("issue appended");
         }
         window.modalChangePasswordBox.modal('hide');
-      },
-      error: function(result) {
-       var obj = jQuery.parseJSON(result.responseText);
-       displayRedbackError(obj);
-       logout(false);
       }
     });
 
