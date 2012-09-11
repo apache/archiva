@@ -60,10 +60,16 @@ Browsing
   
   3. Dependency Tree. The dependencies of the artifact are displayed in a tree-like view, which can also be
      navigated.
-  
+
+[../images/dependency-tree.png]
+
   4. Used By. Lists all the artifacts in the repository which use this artifact.
-  
+
+[../images/used-by.png]
+
   5. Mailing Lists. The project mailing lists available in the artifact's pom are displayed here.
+
+[../images/mailing-lists.png]
 
   6. Download. Clicking on this link will download the artifact to your local machine.
   
