@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -203,9 +204,9 @@ public class Maven2RepositoryMerger
                                        METADATA_FILENAME );
 
             if ( versionMetaDataFileInSourceRepo.exists() )
-            {
+            {//Pattern quote for windows path
                 String relativePathToVersionMetadataFile =
-                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                     versionMetaDataFileInSourceRepo.getAbsolutePath().split( Pattern.quote( sourceRepoPath ) )[1];
                 File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !versionMetaDataFileInTargetRepo.exists() )
@@ -226,7 +227,7 @@ public class Maven2RepositoryMerger
             if ( projectMetadataFileInSourceRepo.exists() )
             {
                 String relativePathToProjectMetadataFile =
-                    projectMetadataFileInSourceRepo.getAbsolutePath().split( sourceRepoPath )[1];
+                    projectMetadataFileInSourceRepo.getAbsolutePath().split( Pattern.quote( sourceRepoPath ) )[1];
                 File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
 
                 if ( !projectMetadataFileInTargetRepo.exists() )
