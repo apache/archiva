@@ -90,6 +90,7 @@
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
+        <th>${$.i18n.prop('description')}</th>
         <th>${$.i18n.prop('managedrepository.pomsnippet')}</th>
         <th title="${$.i18n.prop('managedrepository.stats')}">${$.i18n.prop('managedrepository.stats.grid.header')}</th>
         <th title="${$.i18n.prop('managedrepository.scan.directories')}">${$.i18n.prop('managedrepository.scan.directories.grid.header')}</th>
@@ -144,6 +145,14 @@
             {{else}}
               <td></td>
             {{/if}}
+            <td>
+                {{if row.description()}}
+                <a class="btn btn-warning btn-mini popover-doc" id="managedrepo-description-help"
+                   data-content="${row.description()}" data-title="${$.i18n.prop('description')}">
+                    <i class="icon-question-sign icon-white"></i>
+                </a>
+                {{/if}}
+            </td>
             <td><a href="#" data-bind="click: function(){ showPomSnippet(row) }">${$.i18n.prop('managedrepository.pomsnippet')}</a></td>
             <td id="managedrepository-stats-${row.id()}">
               <img src="images/utilities-system-monitor-22-22.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
@@ -226,6 +235,14 @@
             <input type="text" id="retentionCount" name="retentionCount" size="5" data-bind="value: managedRepository.retentionCount"/>
           </div>
         </div>
+
+        <div class="control-group">
+          <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
+          <div class="controls">
+            <textarea rows="3" id="description" name="description" data-bind="value: managedRepository.description"></textarea>
+          </div>
+        </div>
+
         <div class="control-group">
           <label class="control-label" for="releases">${$.i18n.prop('releases')}</label>
           <div class="controls">

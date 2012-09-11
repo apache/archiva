@@ -33,7 +33,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             ];
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
-                             scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded){
+                             scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description){
 
     var self=this;
 
@@ -95,7 +95,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.blockRedeployments=ko.observable(blockRedeployments?blockRedeployments:false);
     this.blockRedeployments.subscribe(function(newValue){self.modified(true)});
 
-
+    //private String name;
+    this.description=ko.observable(description);
+    this.description.subscribe(function(newValue){self.modified(true)});
 
     this.getTypeLabel=function(){
       for(var i=0;i<window.managedRepositoryTypes.length;i++){
@@ -156,7 +158,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
                                  ,data.releases,
                                  data.blockRedeployments,data.cronExpression,
                                  data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,
-                                 data.stageRepoNeeded);
+                                 data.stageRepoNeeded,data.description);
   }
 
   mapArchivaRepositoryStatistics=function(data){
@@ -900,7 +902,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       });
       var mainContent = $("#main-content");
       ko.applyBindings(managedRepositoriesViewModel,mainContent.find("#managed-repositories-view").get(0));
-
+      activatePopoverDoc();
       mainContent.find("#managed-repositories-pills #managed-repositories-view-a").tab('show');
       removeMediumSpinnerImg("#main-content #managed-repositories-content");
       activateManagedRepositoriesGridTab();
