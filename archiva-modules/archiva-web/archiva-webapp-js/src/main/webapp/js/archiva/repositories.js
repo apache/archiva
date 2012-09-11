@@ -84,15 +84,15 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.stageRepoNeeded.subscribe(function(newValue){self.modified(true)});
 
     //private boolean snapshots = false;
-    this.snapshots=ko.observable(snapshots);
+    this.snapshots=ko.observable(snapshots?snapshots:false);
     this.snapshots.subscribe(function(newValue){self.modified(true)});
 
     //private boolean releases = true;
-    this.releases=ko.observable(releases);
+    this.releases=ko.observable(releases?releases:false);
     this.releases.subscribe(function(newValue){self.modified(true)});
 
     //private boolean blockRedeployments = false;
-    this.blockRedeployments=ko.observable(blockRedeployments);
+    this.blockRedeployments=ko.observable(blockRedeployments?blockRedeployments:false);
     this.blockRedeployments.subscribe(function(newValue){self.modified(true)});
 
 
@@ -228,11 +228,13 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     addManagedRepository=function(managedRepository,completeCallbackFn){
       var curManagedRepository=managedRepository;
       var callbackFn = completeCallbackFn;
+      var dataJson=ko.toJSON(managedRepository);
+      $.log("managedRepository.release:"+managedRepository.releases()+",dataJson:"+dataJson);
       $.ajax("restServices/archivaServices/managedRepositoriesService/addManagedRepository",
         {
           type: "POST",
           contentType: 'application/json',
-          data: ko.toJSON(managedRepository),
+          data: dataJson,
           dataType: 'json',
           success: function(data) {
             curManagedRepository.location(data.location);
