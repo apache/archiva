@@ -25,6 +25,9 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
+import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -34,14 +37,10 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.archiva.redback.components.taskqueue.Task;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,14 +49,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
  * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
  * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
  */
-@Service( "taskExecutor#indexing" )
+@Service ("taskExecutor#indexing")
 public class ArchivaIndexingTaskExecutor
     implements TaskExecutor
 {
@@ -92,6 +90,14 @@ public class ArchivaIndexingTaskExecutor
 
     }
 
+    /**
+     * depending on current {@link Action} you have.
+     * If {@link org.apache.archiva.scheduler.indexing.ArtifactIndexingTask.Action.FINISH} && isExecuteOnEntireRepo:
+     * repository will be scanned.
+     *
+     * @param task
+     * @throws TaskExecutionException
+     */
     public void executeTask( Task task )
         throws TaskExecutionException
     {
@@ -108,9 +114,8 @@ public class ArchivaIndexingTaskExecutor
                 long start = System.currentTimeMillis();
                 nexusIndexer.scan( context, null, indexingTask.isOnlyUpdate() );
                 long end = System.currentTimeMillis();
-                log.info( "indexed maven repository: {}, onlyUpdate: {}, time {} ms",
-                          Arrays.asList( repository.getId(), indexingTask.isOnlyUpdate(), ( end - start ) ).toArray(
-                              new Object[3] ) );
+                log.info( "indexed maven repository: {}, onlyUpdate: {}, time {} ms", repository.getId(),
+                          indexingTask.isOnlyUpdate(), ( end - start ) );
             }
             catch ( IOException e )
             {
@@ -126,7 +131,9 @@ public class ArchivaIndexingTaskExecutor
             {
                 try
                 {
-                    log.debug( "Creating indexing context on resource: {}", indexingTask.getResourceFile().getPath() );
+                    log.debug( "Creating indexing context on resource: {}", ( indexingTask.getResourceFile() == null
+                        ? "none"
+                        : indexingTask.getResourceFile().getPath() ) );
                     context = managedRepositoryAdmin.createIndexContext( repository );
                 }
                 catch ( RepositoryAdminException e )
@@ -144,6 +151,11 @@ public class ArchivaIndexingTaskExecutor
             try
             {
                 File artifactFile = indexingTask.getResourceFile();
+                if ( artifactFile == null )
+                {
+                    log.debug( "no artifact pass in indexing task so skip it" );
+                    return;
+                }
                 ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
 
                 if ( ac != null )
@@ -187,6 +199,7 @@ public class ArchivaIndexingTaskExecutor
                         }
 
                         context.updateTimestamp();
+                        context.commit();
 
                         // close the context if not a repo scan request
                         if ( !indexingTask.isExecuteOnEntireRepo() )
@@ -209,11 +222,6 @@ public class ArchivaIndexingTaskExecutor
                            e );
                 throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
                                                   e );
-            }
-            catch ( IllegalArtifactCoordinateException e )
-            {
-                log.error( "Error occurred while getting artifact context: " + e.getMessage() );
-                throw new TaskExecutionException( "Error occurred while getting artifact context.", e );
             }
         }
 

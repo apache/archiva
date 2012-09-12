@@ -127,7 +127,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( "total hints not 1", 1, results.getTotalHits() );
+        assertEquals( "total hints not 3", 3, results.getTotalHits() );
 
         //TODO: search for class & package names
     }
@@ -194,7 +194,7 @@ public class NexusRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 1, results.getTotalHits() );
+        assertEquals( 2, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );

@@ -211,7 +211,7 @@ public abstract class AbstractNexusRepositorySearch
         }
         // force flushing
         context.getIndexWriter().commit();
-        context.getIndexWriter().close( true );
+        //context.getIndexWriter().close( true );
         // wait for io flush ....
         //Thread.sleep( 2000 );
         context.setSearchable( true );

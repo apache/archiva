@@ -41,7 +41,6 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index.expr.UserInputSearchExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,7 @@ import java.util.Set;
 /**
  * RepositorySearch implementation which uses the Nexus Indexer for searching.
  */
-@Service( "nexusSearch" )
+@Service ("nexusSearch")
 public class NexusRepositorySearch
     implements RepositorySearch
 {
@@ -160,9 +159,9 @@ public class NexusRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.ARTIFACT_ID, new UserInputSearchExpression( searchFields.getArtifactId() ) ),
-                Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
+                                           new UserInputSearchExpression( searchFields.getArtifactId() ) ),
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
@@ -173,15 +172,15 @@ public class NexusRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.PACKAGING, new UserInputSearchExpression( searchFields.getPackaging() ) ),
-                   Occur.MUST );
+            q.add(
+                indexer.constructQuery( MAVEN.PACKAGING, new UserInputSearchExpression( searchFields.getPackaging() ) ),
+                Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.CLASSNAMES, new UserInputSearchExpression( searchFields.getClassName() ) ),
-                Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.CLASSNAMES,
+                                           new UserInputSearchExpression( searchFields.getClassName() ) ), Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleSymbolicName() ) )
@@ -193,9 +192,9 @@ public class NexusRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
         {
-            q.add(
-                indexer.constructQuery( OSGI.VERSION, new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
-                Occur.MUST );
+            q.add( indexer.constructQuery( OSGI.VERSION,
+                                           new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
@@ -241,9 +240,9 @@ public class NexusRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.CLASSIFIER, new UserInputSearchExpression( searchFields.getClassifier() ) ),
-                Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.CLASSIFIER,
+                                           new UserInputSearchExpression( searchFields.getClassifier() ) ),
+                   Occur.MUST );
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
@@ -437,6 +436,7 @@ public class NexusRepositorySearch
         throws RepositorySearchException
     {
         List<IndexingContext> indexContexts = getIndexingContexts( selectedRepos );
+
         if ( indexContexts == null || indexContexts.isEmpty() )
         {
             return Collections.emptyList();
@@ -455,7 +455,9 @@ public class NexusRepositorySearch
         {
             throw new RepositorySearchException( e.getMessage(), e );
         }
+
     }
+
 
     protected List<? extends IndexCreator> getAllIndexCreators()
     {

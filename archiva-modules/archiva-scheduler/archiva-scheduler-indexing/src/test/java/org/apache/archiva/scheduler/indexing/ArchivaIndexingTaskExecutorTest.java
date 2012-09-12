@@ -24,7 +24,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.io.FileUtils;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -48,19 +48,17 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * ArchivaIndexingTaskExecutorTest
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public class ArchivaIndexingTaskExecutorTest
     extends TestCase
 {
@@ -196,10 +194,13 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             Occur.SHOULD );
 
-        IndexSearcher searcher = indexer.getIndexingContexts().get( repositoryConfig.getId() ).getIndexSearcher();
+        IndexingContext ctx = indexer.getIndexingContexts().get( repositoryConfig.getId() );
+
+        IndexSearcher searcher = ctx.acquireIndexSearcher();
         TopDocs topDocs = searcher.search( q, null, 10 );
 
-        searcher.close();
+        //searcher.close();
+        ctx.releaseIndexSearcher( searcher );
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
@@ -282,7 +283,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexingExecutor.executeTask( task );
 
-        task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.FINISH,
+        task = new ArtifactIndexingTask( repositoryConfig, null, ArtifactIndexingTask.Action.FINISH,
                                          getIndexingContext() );
 
         task.setExecuteOnEntireRepo( false );
@@ -316,7 +317,7 @@ public class ArchivaIndexingTaskExecutorTest
     }
 
     private void unzipIndex( String indexDir, String destDir )
-        throws FileNotFoundException, IOException
+        throws IOException
     {
         final int buff = 2048;
 
