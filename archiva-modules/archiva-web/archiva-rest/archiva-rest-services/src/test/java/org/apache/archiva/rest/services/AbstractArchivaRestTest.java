@@ -295,7 +295,7 @@ public abstract class AbstractArchivaRestTest
     {
         String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
         return new ManagedRepository( "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
-                                      false, 2, 3, true, false, "my nice repo" );
+                                      false, 2, 3, true, false, "my nice repo", false );
 
     }
 

@@ -70,6 +70,11 @@ public class ManagedRepository
 
     private boolean resetStats;
 
+    /**
+     * @since 1.4-M3
+     */
+    private boolean skipPackedIndexCreation;
+
     public ManagedRepository()
     {
         // no op
@@ -96,17 +101,17 @@ public class ManagedRepository
     }
 
     /**
-     *
      * @since 1.4-M3
      */
     public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
                               boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots,
-                              boolean stageRepoNeeded, String description )
+                              boolean stageRepoNeeded, String description, boolean skipPackedIndexCreation )
     {
         this( id, name, location, layout, snapshots, releases, blockRedeployments, cronExpression, indexDir, scanned,
               daysOlder, retentionCount, deleteReleasedSnapshots, stageRepoNeeded );
         setDescription( description );
+        setSkipPackedIndexCreation( skipPackedIndexCreation );
     }
 
     public String getCronExpression()
@@ -237,6 +242,16 @@ public class ManagedRepository
         this.resetStats = resetStats;
     }
 
+    public boolean isSkipPackedIndexCreation()
+    {
+        return skipPackedIndexCreation;
+    }
+
+    public void setSkipPackedIndexCreation( boolean skipPackedIndexCreation )
+    {
+        this.skipPackedIndexCreation = skipPackedIndexCreation;
+    }
+
     @Override
     public String toString()
     {
@@ -255,6 +270,7 @@ public class ManagedRepository
         sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );
         sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );
         sb.append( ", resetStats=" ).append( resetStats );
+        sb.append( ", skipPackedIndexCreation=" ).append( skipPackedIndexCreation );
         sb.append( '}' );
         return sb.toString();
     }

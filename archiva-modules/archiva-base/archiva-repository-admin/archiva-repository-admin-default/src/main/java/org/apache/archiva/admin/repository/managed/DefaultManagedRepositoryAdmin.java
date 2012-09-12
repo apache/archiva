@@ -72,7 +72,7 @@ import java.util.Map;
  *
  * @author Olivier Lamy
  */
-@Service ( "managedRepositoryAdmin#default" )
+@Service ("managedRepositoryAdmin#default")
 public class DefaultManagedRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
@@ -83,7 +83,7 @@ public class DefaultManagedRepositoryAdmin
     public static final String STAGE_REPO_ID_END = "-stage";
 
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named (value = "archivaTaskScheduler#repository")
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Inject
@@ -171,6 +171,7 @@ public class DefaultManagedRepositoryAdmin
                                        repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
                                        repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), false );
             repo.setDescription( repoConfig.getDescription() );
+            repo.setSkipPackedIndexCreation( repoConfig.isSkipPackedIndexCreation() );
             managedRepos.add( repo );
         }
 
@@ -219,7 +220,8 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
                                   managedRepository.isDeleteReleasedSnapshots(), managedRepository.getDescription(),
-                                  auditInformation, getArchivaConfiguration().getConfiguration() ) != null;
+                                  managedRepository.isSkipPackedIndexCreation(), auditInformation,
+                                  getArchivaConfiguration().getConfiguration() ) != null;
 
         createIndexContext( managedRepository );
         return res;
@@ -232,6 +234,7 @@ public class DefaultManagedRepositoryAdmin
                                                                  boolean stageRepoNeeded, String cronExpression,
                                                                  String indexDir, int daysOlder, int retentionCount,
                                                                  boolean deteleReleasedSnapshots, String description,
+                                                                 boolean skipPackedIndexCreation,
                                                                  AuditInformation auditInformation,
                                                                  Configuration config )
         throws RepositoryAdminException
@@ -253,6 +256,7 @@ public class DefaultManagedRepositoryAdmin
         repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
         repository.setIndexDir( indexDir );
         repository.setDescription( description );
+        repository.setSkipPackedIndexCreation( skipPackedIndexCreation );
 
         try
         {
@@ -482,7 +486,8 @@ public class DefaultManagedRepositoryAdmin
                                   managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
                                   managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
                                   managedRepository.isDeleteReleasedSnapshots(), managedRepository.getDescription(),
-                                  auditInformation, getArchivaConfiguration().getConfiguration() );
+                                  managedRepository.isSkipPackedIndexCreation(), auditInformation,
+                                  getArchivaConfiguration().getConfiguration() );
 
         // Save the repository configuration.
         RepositorySession repositorySession = getRepositorySessionFactory().createSession();
@@ -635,6 +640,7 @@ public class DefaultManagedRepositoryAdmin
         stagingRepository.setRetentionCount( repository.getRetentionCount() );
         stagingRepository.setScanned( repository.isScanned() );
         stagingRepository.setSnapshots( repository.isSnapshots() );
+        stagingRepository.setSkipPackedIndexCreation( repository.isSkipPackedIndexCreation() );
         // do not duplicate description
         //stagingRepository.getDescription("")
         return stagingRepository;

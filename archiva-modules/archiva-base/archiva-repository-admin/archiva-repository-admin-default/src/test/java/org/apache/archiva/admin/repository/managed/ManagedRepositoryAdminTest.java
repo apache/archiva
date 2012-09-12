@@ -157,6 +157,8 @@ public class ManagedRepositoryAdminTest
         repo.setLocation( repoLocation );
         repo.setCronExpression( "0 0 * * * ?" );
 
+        repo.setSkipPackedIndexCreation( true );
+
         managedRepositoryAdmin.updateManagedRepository( repo, false, getFakeAuditInformation(), false );
 
         repo = managedRepositoryAdmin.getManagedRepository( repoId );
@@ -165,6 +167,7 @@ public class ManagedRepositoryAdminTest
         assertEquals( new File( repoLocation ).getCanonicalPath(), new File( repo.getLocation() ).getCanonicalPath() );
         assertTrue( new File( repoLocation ).exists() );
         assertEquals( description, repo.getDescription() );
+        assertTrue( repo.isSkipPackedIndexCreation() );
 
         assertTemplateRoleExists( repoId );
 

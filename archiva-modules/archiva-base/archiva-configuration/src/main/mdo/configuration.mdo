@@ -648,6 +648,15 @@
           </description>
           <defaultValue>false</defaultValue>
         </field>
+        <field>
+          <name>skipPackedIndexCreation</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            True to not generate packed index (note you won't be able to export your index.
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
     </class>
     <class>

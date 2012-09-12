@@ -236,17 +236,23 @@ public class ArchivaIndexingTaskExecutor
 
             context.optimize();
 
-            File managedRepository = new File( repository.getLocation() );
-            String indexDirectory = repository.getIndexDirectory();
-            final File indexLocation = StringUtils.isBlank( indexDirectory )
-                ? new File( managedRepository, ".indexer" )
-                : new File( indexDirectory );
-            IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
-            indexPacker.packIndex( request );
-            context.updateTimestamp( true );
+            if ( repository.isSkipPackedIndexCreation() )
+            {
+                File managedRepository = new File( repository.getLocation() );
+                String indexDirectory = repository.getIndexDirectory();
+                final File indexLocation = StringUtils.isBlank( indexDirectory )
+                    ? new File( managedRepository, ".indexer" )
+                    : new File( indexDirectory );
+                IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
+                indexPacker.packIndex( request );
+                context.updateTimestamp( true );
 
-            log.debug( "Index file packaged at '{}'.", indexLocation.getPath() );
-
+                log.debug( "Index file packaged at '{}'.", indexLocation.getPath() );
+            }
+            else
+            {
+                log.debug( "skip packed index creation" );
+            }
         }
         catch ( IOException e )
         {
