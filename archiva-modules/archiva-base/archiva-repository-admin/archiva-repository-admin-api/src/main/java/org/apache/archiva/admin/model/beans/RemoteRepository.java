@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@XmlRootElement( name = "remoteRepository" )
+@XmlRootElement ( name = "remoteRepository" )
 public class RemoteRepository
     extends AbstractRepository
     implements Serializable
@@ -84,6 +84,16 @@ public class RemoteRepository
         this.userName = userName;
         this.password = password;
         this.timeout = timeout;
+    }
+
+    /**
+     * @since 1.4-M3
+     */
+    public RemoteRepository( String id, String name, String url, String layout, String userName, String password,
+                             int timeout, String description )
+    {
+        this( id, name, url, layout, userName, password, timeout );
+        setDescription( description );
     }
 
     public String getUrl()

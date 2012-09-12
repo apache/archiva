@@ -35,7 +35,7 @@ public class RemoteRepositoriesServiceTest
 {
 
 
-    @Test( expected = ServerWebApplicationException.class )
+    @Test (expected = ServerWebApplicationException.class)
     public void listRemoteRepositoriesKarmaFailed()
         throws Exception
     {
@@ -85,6 +85,8 @@ public class RemoteRepositoriesServiceTest
         assertEquals( getRemoteRepository().getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
         assertEquals( getRemoteRepository().getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
         assertEquals( getRemoteRepository().getTimeout(), service.getRemoteRepository( "id-new" ).getTimeout() );
+        assertEquals( getRemoteRepository().getDescription(),
+                      service.getRemoteRepository( "id-new" ).getDescription() );
 
         assertEquals( initialSize + 1, service.getRemoteRepositories().size() );
 
@@ -124,6 +126,7 @@ public class RemoteRepositoriesServiceTest
         repo.setPassword( "new password" );
         repo.setUserName( "new username" );
         repo.setUrl( "http://foo.new.org" );
+        repo.setDescription( "foo bar" );
 
         service.updateRemoteRepository( repo );
 
@@ -133,6 +136,7 @@ public class RemoteRepositoriesServiceTest
         assertEquals( repo.getUserName(), service.getRemoteRepository( "id-new" ).getUserName() );
         assertEquals( repo.getPassword(), service.getRemoteRepository( "id-new" ).getPassword() );
         assertEquals( repo.getTimeout(), service.getRemoteRepository( "id-new" ).getTimeout() );
+        assertEquals( repo.getDescription(), service.getRemoteRepository( "id-new" ).getDescription() );
 
         service.deleteRemoteRepository( "id-new" );
 
@@ -144,7 +148,8 @@ public class RemoteRepositoriesServiceTest
 
     RemoteRepository getRemoteRepository()
     {
-        return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120 );
+        return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
+                                     "cool repo" );
     }
 
 

@@ -133,6 +133,7 @@ public class DefaultRemoteRepositoryAdmin
             remoteRepository.setRemoteDownloadTimeout( repositoryConfiguration.getRemoteDownloadTimeout() );
             remoteRepository.setDownloadRemoteIndexOnStartup(
                 repositoryConfiguration.isDownloadRemoteIndexOnStartup() );
+            remoteRepository.setDescription( repositoryConfiguration.getDescription() );
             remoteRepositories.add( remoteRepository );
         }
         return remoteRepositories;
@@ -333,6 +334,7 @@ public class DefaultRemoteRepositoryAdmin
         remoteRepositoryConfiguration.setRemoteDownloadTimeout( remoteRepository.getRemoteDownloadTimeout() );
         remoteRepositoryConfiguration.setDownloadRemoteIndexOnStartup(
             remoteRepository.isDownloadRemoteIndexOnStartup() );
+        remoteRepositoryConfiguration.setDescription( remoteRepository.getDescription() );
         return remoteRepositoryConfiguration;
     }
 

@@ -148,6 +148,7 @@ public abstract class AbstractRepositoryAdminTest
         remoteRepository.setPassword( "toto" );
         remoteRepository.setId( id );
         remoteRepository.setRemoteDownloadNetworkProxyId( "foo" );
+        remoteRepository.setDescription( "cool apache repo" );
         return remoteRepository;
     }
 }
