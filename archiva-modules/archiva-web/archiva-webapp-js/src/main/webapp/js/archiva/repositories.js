@@ -33,7 +33,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             ];
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
-                             scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description){
+                             scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description,
+                             skipPackedIndexCreation){
 
     var self=this;
 
@@ -99,6 +100,10 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.description=ko.observable(description);
     this.description.subscribe(function(newValue){self.modified(true)});
 
+    this.skipPackedIndexCreation=ko.observable(skipPackedIndexCreation?skipPackedIndexCreation:false);
+    this.skipPackedIndexCreation.subscribe(function(newValue){self.modified(true)});
+
+
     this.getTypeLabel=function(){
       for(var i=0;i<window.managedRepositoryTypes.length;i++){
         if (window.managedRepositoryTypes[i].type==self.layout()){
@@ -158,7 +163,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
                                  ,data.releases,
                                  data.blockRedeployments,data.cronExpression,
                                  data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,
-                                 data.stageRepoNeeded,data.description);
+                                 data.stageRepoNeeded,data.description,data.skipPackedIndexCreation);
   }
 
   mapArchivaRepositoryStatistics=function(data){

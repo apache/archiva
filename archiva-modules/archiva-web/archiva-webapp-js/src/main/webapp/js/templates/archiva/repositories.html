@@ -279,6 +279,16 @@
                    data-bind="checked: managedRepository.stageRepoNeeded"/>
           </div>
         </div>
+        <div class="control-group">
+          <label class="control-label" for="skipPackedIndexCreation">${$.i18n.prop('skipPackedIndexCreation')}</label>
+          <div class="controls">
+            <input type="checkbox" id="skipPackedIndexCreation" name="skipPackedIndexCreation" size="5"
+                   data-bind="checked: managedRepository.skipPackedIndexCreation"/>
+          </div>
+        </div>
+
+
+
       </fieldset>
       <button data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
       <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
