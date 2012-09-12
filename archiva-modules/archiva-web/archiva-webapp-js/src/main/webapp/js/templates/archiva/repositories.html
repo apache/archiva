@@ -235,14 +235,12 @@
             <input type="text" id="retentionCount" name="retentionCount" size="5" data-bind="value: managedRepository.retentionCount"/>
           </div>
         </div>
-
         <div class="control-group">
           <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
           <div class="controls">
             <textarea rows="3" id="description" name="description" data-bind="value: managedRepository.description"></textarea>
           </div>
         </div>
-
         <div class="control-group">
           <label class="control-label" for="releases">${$.i18n.prop('releases')}</label>
           <div class="controls">
@@ -380,6 +378,14 @@
               <td></td>
             {{/if}}
             <td>
+                {{if row.description()}}
+                <a class="btn btn-warning btn-mini popover-doc" id="remoterepo-description-help"
+                   data-content="${row.description()}" data-title="${$.i18n.prop('description')}">
+                    <i class="icon-question-sign icon-white"></i>
+                </a>
+                {{/if}}
+            </td>
+            <td>
               <a href="#" data-bind="click: function(){ scheduleDownloadRemoteIndex(row) }">
                 <span class="btn btn-success">
                   <i class="icon-refresh icon-white"/>
@@ -485,12 +491,18 @@
           </div>
         </div>
 
-
         <div class="control-group">
           <label class="control-label" for="downloadRemoteIndexOnStartup">${$.i18n.prop('downloadRemoteIndexOnStartup')}</label>
           <div class="controls">
             <input type="checkbox" id="downloadRemoteIndexOnStartup" name="downloadRemoteIndexOnStartup"
                    data-bind="checked: remoteRepository.downloadRemoteIndexOnStartup"/>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
+          <div class="controls">
+            <textarea rows="3" id="description" name="description" data-bind="value: remoteRepository.description"></textarea>
           </div>
         </div>
 

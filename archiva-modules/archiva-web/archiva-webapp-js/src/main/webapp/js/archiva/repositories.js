@@ -552,7 +552,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
 
   RemoteRepository=function(id,name,layout,indexDirectory,url,userName,password,timeout,downloadRemoteIndex,remoteIndexUrl,
-                            remoteDownloadNetworkProxyId,cronExpression,remoteDownloadTimeout,downloadRemoteIndexOnStartup){
+                            remoteDownloadNetworkProxyId,cronExpression,remoteDownloadTimeout,downloadRemoteIndexOnStartup,
+                            description){
 
     var self=this;
 
@@ -589,7 +590,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.timeout.subscribe(function(newValue){self.modified(true)});
 
     //private boolean downloadRemoteIndex = false;
-    this.downloadRemoteIndex=ko.observable(downloadRemoteIndex);
+    this.downloadRemoteIndex=ko.observable(downloadRemoteIndex?false:downloadRemoteIndex);
     this.downloadRemoteIndex.subscribe(function(newValue){self.modified(true)});
 
     //private String remoteIndexUrl = ".index";
@@ -609,8 +610,11 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.remoteDownloadTimeout.subscribe(function(newValue){self.modified(true)});
 
     //private boolean downloadRemoteIndexOnStartup = false;
-    this.downloadRemoteIndexOnStartup=ko.observable(downloadRemoteIndexOnStartup);
+    this.downloadRemoteIndexOnStartup=ko.observable(downloadRemoteIndexOnStartup?false:downloadRemoteIndexOnStartup);
     this.downloadRemoteIndexOnStartup.subscribe(function(newValue){self.modified(true)});
+
+    this.description=ko.observable(description);
+    this.description.subscribe(function(newValue){self.modified(true)});
 
     this.getTypeLabel=function(){
       for(var i=0;i<window.managedRepositoryTypes.length;i++){
@@ -630,7 +634,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     }
     return new RemoteRepository(data.id,data.name,data.layout,data.indexDirectory,data.url,data.userName,data.password,
                                 data.timeout,data.downloadRemoteIndex,data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
-                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup);
+                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup,data.description);
   }
 
   mapRemoteRepositories=function(data){
@@ -941,6 +945,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-view").get(0));
       mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
       removeMediumSpinnerImg("#main-content #remote-repositories-content");
+      activatePopoverDoc();
     });
 
 
