@@ -192,6 +192,9 @@ public abstract class AbstractRestService
 
             sb.append( "/repository" );
 
+            // FIXME when artifact come from a remote repository when have here the remote repo id
+            // we must replace it with a valid managed one available for the user.
+
             sb.append( '/' ).append( artifact.getContext() );
 
             sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
