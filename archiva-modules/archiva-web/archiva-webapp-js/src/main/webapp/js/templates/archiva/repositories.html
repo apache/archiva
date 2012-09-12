@@ -284,6 +284,11 @@
           <div class="controls">
             <input type="checkbox" id="skipPackedIndexCreation" name="skipPackedIndexCreation" size="5"
                    data-bind="checked: managedRepository.skipPackedIndexCreation"/>
+            <a class="btn btn-warning btn-mini popover-doc" id="rowcount-info-button"
+               data-original-title="${$.i18n.prop('skipPackedIndexCreation.help.title')}"
+               data-content="${$.i18n.prop('skipPackedIndexCreation.help.content')}">
+                <i class="icon-question-sign icon-white"></i>
+            </a>
           </div>
         </div>
 
