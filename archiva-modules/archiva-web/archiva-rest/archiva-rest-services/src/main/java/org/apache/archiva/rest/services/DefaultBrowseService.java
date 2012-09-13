@@ -791,14 +791,14 @@ public class DefaultBrowseService
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
+        boolean snapshot = VersionUtil.isSnapshot( version );
+
         try
         {
             for ( String repoId : selectedRepos )
             {
 
                 ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
-
-                boolean snapshot = VersionUtil.isSnapshot( version );
 
                 if ( ( snapshot && !managedRepository.isSnapshots() ) || ( !snapshot
                     && managedRepository.isSnapshots() ) )
