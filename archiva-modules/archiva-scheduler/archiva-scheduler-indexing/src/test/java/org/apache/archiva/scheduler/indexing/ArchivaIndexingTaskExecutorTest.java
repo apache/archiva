@@ -273,6 +273,7 @@ public class ArchivaIndexingTaskExecutorTest
     public void testPackagedIndex()
         throws Exception
     {
+
         File artifactFile = new File( repositoryConfig.getLocation(),
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
@@ -292,9 +293,16 @@ public class ArchivaIndexingTaskExecutorTest
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
 
+        File indexerDirectory = new File( repositoryConfig.getLocation(), ".indexer" );
+
+        // test packed index file creation
+        assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.zip" ).exists() );
+        assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.properties" ).exists() );
+        assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.gz" ).exists() );
+
         // unpack .zip index
         File destDir = new File( repositoryConfig.getLocation(), ".indexer/tmp" );
-        unzipIndex( new File( repositoryConfig.getLocation(), ".indexer" ).getPath(), destDir.getPath() );
+        unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
