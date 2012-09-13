@@ -795,7 +795,27 @@
           <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>  
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-web-common</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+      <version>${project.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -817,6 +837,7 @@
               <exclude>src/main/webapp/js/*.js</exclude>
               <exclude>src/site/resources/css/*.css</exclude>
               <exclude>src/site/resources/js/*.js</exclude>
+              <exclude>src/test/repositories/test-repo/**</exclude>
             </excludes>
           </configuration>
         </plugin>

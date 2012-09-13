@@ -59,7 +59,7 @@ public class RuntimeInfoServiceTest
     @Override
     protected String getSpringConfigLocation()
     {
-        return "classpath*:META-INF/spring-context.xml,classpath*:META-INF/spring-context-test.xml";
+        return "classpath*:META-INF/spring-context.xml";
     }
 
     protected String getRestServicesPath()
