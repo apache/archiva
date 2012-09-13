@@ -49,6 +49,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -274,6 +275,20 @@ public class ArchivaIndexingTaskExecutorTest
         throws Exception
     {
 
+        File indexerDirectory = new File( repositoryConfig.getLocation(), ".indexer" );
+
+        indexerDirectory.listFiles( new FilenameFilter()
+        {
+            public boolean accept( File file, String s )
+            {
+                if ( s.startsWith( "nexus-maven-repository-index" ) )
+                {
+                    new File( file, s ).delete();
+                }
+                return false;
+            }
+        } );
+
         File artifactFile = new File( repositoryConfig.getLocation(),
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
@@ -291,9 +306,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexingExecutor.executeTask( task );
 
-        assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
-
-        File indexerDirectory = new File( repositoryConfig.getLocation(), ".indexer" );
+        assertTrue( indexerDirectory.exists() );
 
         // test packed index file creation
         assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.zip" ).exists() );
