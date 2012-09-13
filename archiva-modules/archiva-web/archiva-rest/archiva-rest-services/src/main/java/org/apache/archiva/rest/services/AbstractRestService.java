@@ -22,6 +22,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.common.utils.VersionUtil;
@@ -76,6 +77,9 @@ public abstract class AbstractRestService
 
     @Inject
     protected ArchivaAdministration archivaAdministration;
+
+    @Inject
+    protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Context
     protected HttpServletRequest httpServletRequest;

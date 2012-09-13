@@ -54,9 +54,6 @@ public class DefaultManagedRepositoriesService
 {
 
     @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    @Inject
     private RepositoryCommonValidator repositoryCommonValidator;
 
     @Inject

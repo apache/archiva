@@ -329,14 +329,34 @@ function(jquery,ui,sammy,tmpl) {
               return;
             }
           }
-          generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,
-                                                   function(artifactVersionDetailViewModel){
-                                                     $("#main-content #"+tabToActivate).tab('show');
-                                                     if(contentDisplayFn){
-                                                       contentDisplayFn(groupId,artifactId,version,artifactVersionDetailViewModel);
-                                                     }
-                                                   }
-          );
+
+
+          var artifactAvailableUrl="restServices/archivaServices/browseService/artifactAvailable/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
+          artifactAvailableUrl+="/"+encodeURIComponent(version);
+          var selectedRepo=getSelectedBrowsingRepository();
+          if (selectedRepo){
+            artifactAvailableUrl+="?repositoryId="+encodeURIComponent(selectedRepo);
+          }
+          $("#main-content").html( mediumSpinnerImg());
+          $.ajax(artifactAvailableUrl, {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              // TODO take of the result true or false
+              //$.log("artifactAvailable:"+data);
+              generalDisplayArtifactDetailsVersionView(groupId,artifactId,version,repositoryId,
+                                                       function(artifactVersionDetailViewModel){
+                                                         $("#main-content #"+tabToActivate).tab('show');
+                                                         if(contentDisplayFn){
+                                                           contentDisplayFn(groupId,artifactId,version,artifactVersionDetailViewModel);
+                                                         }
+                                                       }
+              );
+
+            }
+          });
+
+
         };
 
         this.get('#artifact/:groupId/:artifactId/:version',function(context){

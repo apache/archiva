@@ -19,7 +19,6 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
@@ -41,6 +40,9 @@ import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
+import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
@@ -64,9 +66,6 @@ import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
-import org.apache.archiva.redback.components.registry.Registry;
-import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -90,11 +89,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * DefaultRepositoryProxyConnectors
  *
- *
  * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
-@Service( "repositoryProxyConnectors#default" )
+@Service ( "repositoryProxyConnectors#default" )
 public class DefaultRepositoryProxyConnectors
     implements RepositoryProxyConnectors, RegistryListener
 {
@@ -104,21 +102,21 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named( value = "archivaConfiguration#default" )
+    @Named ( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      *
      */
     @Inject
-    @Named( value = "repositoryContentFactory#default" )
+    @Named ( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryFactory;
 
     /**
      *
      */
     @Inject
-    @Named( value = "metadataTools#default" )
+    @Named ( value = "metadataTools#default" )
     private MetadataTools metadataTools;
 
     /**
@@ -159,7 +157,7 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named ( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
 
     @Inject
@@ -173,7 +171,7 @@ public class DefaultRepositoryProxyConnectors
 
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ( "unchecked" )
     private void initConnectorsAndNetworkProxies()
     {
 
@@ -444,19 +442,17 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Metadata {} not found on remote repository \"{}\".",
-                               Lists.<Object>newArrayList( logicalPath, targetRepository.getRepository().getId() ), e );
-                }
+
+                log.debug( "Metadata {} not found on remote repository '{}'.", logicalPath,
+                           targetRepository.getRepository().getId(), e );
+
             }
             catch ( NotModifiedException e )
             {
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Metadata {} not updated on remote repository \"{}\".",
-                               Lists.<Object>newArrayList( logicalPath, targetRepository.getRepository().getId() ), e );
-                }
+
+                log.debug( "Metadata {} not updated on remote repository '{}'.", logicalPath,
+                           targetRepository.getRepository().getId(), e );
+
             }
             catch ( ProxyException e )
             {

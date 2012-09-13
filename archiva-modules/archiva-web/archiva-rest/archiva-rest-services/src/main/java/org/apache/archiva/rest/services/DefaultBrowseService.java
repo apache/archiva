@@ -18,8 +18,10 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
@@ -36,6 +38,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVersionComparator;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
+import org.apache.archiva.proxy.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -58,6 +61,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +94,10 @@ public class DefaultBrowseService
 
     @Inject
     private RepositoryContentFactory repositoryContentFactory;
+
+    @Inject
+    @Named ( value = "repositoryProxyConnectors#default" )
+    private RepositoryProxyConnectors connectors;
 
     public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
@@ -268,7 +276,7 @@ public class DefaultBrowseService
                     }
                     catch ( MetadataResolutionException e )
                     {
-                        log.error(
+                        log.warn(
                             "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId
                                 + " in repo " + repoId + ": " + e.getMessage() );
                     }
@@ -778,6 +786,70 @@ public class DefaultBrowseService
         return new ArtifactContent();
     }
 
+    public Boolean artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        List<String> selectedRepos = getSelectedRepos( repositoryId );
+
+        try
+        {
+            for ( String repoId : selectedRepos )
+            {
+
+                ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
+
+                boolean snapshot = VersionUtil.isSnapshot( version );
+
+                if ( ( snapshot && !managedRepository.isSnapshots() ) || ( !snapshot
+                    && managedRepository.isSnapshots() ) )
+                {
+                    continue;
+                }
+                ManagedRepositoryContent managedRepositoryContent =
+                    repositoryContentFactory.getManagedRepositoryContent( repoId );
+                // FIXME default to jar which can be wrong for war zip etc....
+                ArchivaArtifact archivaArtifact =
+                    new ArchivaArtifact( groupId, artifactId, version, "", "jar", repoId );
+                File file = managedRepositoryContent.toFile( archivaArtifact );
+
+                if ( file != null && file.exists() )
+                {
+                    return true;
+                }
+
+                String path = managedRepositoryContent.toPath( archivaArtifact );
+
+                file = connectors.fetchFromProxies( managedRepositoryContent, path );
+
+                if ( file != null && file.exists() )
+                {
+                    // download pom now
+                    String pomPath = StringUtils.substringBeforeLast( path, ".jar" ) + ".pom";
+                    connectors.fetchFromProxies( managedRepositoryContent, pomPath );
+                    return true;
+                }
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+        catch ( RepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+
+        return false;
+    }
+
+    //---------------------------
+    // internals
+    //---------------------------
+
     private void closeQuietly( JarFile jarFile )
     {
         if ( jarFile != null )
@@ -792,10 +864,6 @@ public class DefaultBrowseService
             }
         }
     }
-
-    //---------------------------
-    // internals
-    //---------------------------
 
     protected List<ArtifactContentEntry> readFileEntries( File file, String filterPath, String repoId )
         throws IOException
