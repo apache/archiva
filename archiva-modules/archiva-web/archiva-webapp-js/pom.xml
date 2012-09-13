@@ -797,24 +797,6 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-plus</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-web-common</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
 
   </dependencies>
 
