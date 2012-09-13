@@ -22,6 +22,7 @@ package org.apache.archiva.webdav;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
@@ -52,7 +53,6 @@ import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -248,7 +248,7 @@ public class ArchivaDavResource
         return null;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     public MultiStatusResponse alterProperties( List changeList )
         throws DavException
     {
@@ -316,12 +316,10 @@ public class ArchivaDavResource
             }
 
             queueRepositoryTask( localFile );
-            if ( log.isDebugEnabled() )
-            {
-                log.debug(
-                    "File '" + resource.getDisplayName() + ( exists ? "' modified " : "' created " ) + "(current user '"
-                        + this.principal + "')" );
-            }
+
+            log.debug( "File '{}{}(current user '{}')", resource.getDisplayName(),
+                       ( exists ? "' modified " : "' created " ), this.principal );
+
             triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
         else if ( !inputContext.hasStream() && isCollection() ) // New directory
@@ -400,11 +398,10 @@ public class ArchivaDavResource
 
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( ( resource.isDirectory() ? "Directory '" : "File '" ) + member.getDisplayName()
-                                   + "' removed (current user '" + this.principal + "')" );
-                }
+
+                log.debug( "{}{}' removed (current user '{}')", ( resource.isDirectory() ? "Directory '" : "File '" ),
+                           member.getDisplayName(), this.principal );
+
             }
             catch ( IOException e )
             {
@@ -455,11 +452,10 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
-            if ( log.isDebugEnabled() )
-            {
-                log.debug( ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' moved to '"
-                               + destination + "' (current user '" + this.principal + "')" );
-            }
+
+            log.debug( "{}{}' moved to '{}' (current user '{}')", ( isCollection() ? "Directory '" : "File '" ),
+                       getLocalResource().getName(), destination, this.principal );
+
         }
         catch ( IOException e )
         {
@@ -495,12 +491,10 @@ public class ArchivaDavResource
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
-            if ( log.isDebugEnabled() )
-            {
-                log.debug(
-                    ( isCollection() ? "Directory '" : "File '" ) + getLocalResource().getName() + "' copied to '"
-                        + destination + "' (current user '" + this.principal + "')" );
-            }
+
+            log.debug( "{}{}' copied to '{}' (current user '{)')", ( isCollection() ? "Directory '" : "File '" ),
+                       getLocalResource().getName(), destination, this.principal );
+
         }
         catch ( IOException e )
         {
