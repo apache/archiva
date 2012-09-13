@@ -55,7 +55,7 @@ import java.io.IOException;
  * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
  * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
  */
-@Service ("taskExecutor#indexing")
+@Service ( "taskExecutor#indexing" )
 public class ArchivaIndexingTaskExecutor
     implements TaskExecutor
 {
@@ -154,66 +154,70 @@ public class ArchivaIndexingTaskExecutor
                 if ( artifactFile == null )
                 {
                     log.debug( "no artifact pass in indexing task so skip it" );
-                    return;
                 }
-                ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
-
-                if ( ac != null )
+                else
                 {
-                    if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
-                    {
-                        //IndexSearcher s = context.getIndexSearcher();
-                        //String uinfo = ac.getArtifactInfo().getUinfo();
-                        //TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
+                    ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
 
-                        BooleanQuery q = new BooleanQuery();
-                        q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression(
-                            ac.getArtifactInfo().groupId ) ), BooleanClause.Occur.MUST );
-                        q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression(
-                            ac.getArtifactInfo().artifactId ) ), BooleanClause.Occur.MUST );
-                        q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
-                            ac.getArtifactInfo().version ) ), BooleanClause.Occur.MUST );
-                        if ( ac.getArtifactInfo().classifier != null )
+                    if ( ac != null )
+                    {
+                        if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
-                            q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression(
-                                ac.getArtifactInfo().classifier ) ), BooleanClause.Occur.MUST );
-                        }
-                        if ( ac.getArtifactInfo().packaging != null )
-                        {
-                            q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression(
-                                ac.getArtifactInfo().packaging ) ), BooleanClause.Occur.MUST );
-                        }
-                        FlatSearchRequest flatSearchRequest = new FlatSearchRequest( q, context );
-                        FlatSearchResponse flatSearchResponse = nexusIndexer.searchFlat( flatSearchRequest );
-                        if ( flatSearchResponse.getResults().isEmpty() )
-                        {
-                            log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo() );
-                            nexusIndexer.addArtifactToIndex( ac, context );
+                            //IndexSearcher s = context.getIndexSearcher();
+                            //String uinfo = ac.getArtifactInfo().getUinfo();
+                            //TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
+
+                            BooleanQuery q = new BooleanQuery();
+                            q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression(
+                                ac.getArtifactInfo().groupId ) ), BooleanClause.Occur.MUST );
+                            q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression(
+                                ac.getArtifactInfo().artifactId ) ), BooleanClause.Occur.MUST );
+                            q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
+                                ac.getArtifactInfo().version ) ), BooleanClause.Occur.MUST );
+                            if ( ac.getArtifactInfo().classifier != null )
+                            {
+                                q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression(
+                                    ac.getArtifactInfo().classifier ) ), BooleanClause.Occur.MUST );
+                            }
+                            if ( ac.getArtifactInfo().packaging != null )
+                            {
+                                q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression(
+                                    ac.getArtifactInfo().packaging ) ), BooleanClause.Occur.MUST );
+                            }
+                            FlatSearchRequest flatSearchRequest = new FlatSearchRequest( q, context );
+                            FlatSearchResponse flatSearchResponse = nexusIndexer.searchFlat( flatSearchRequest );
+                            if ( flatSearchResponse.getResults().isEmpty() )
+                            {
+                                log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo() );
+                                nexusIndexer.addArtifactToIndex( ac, context );
+                            }
+                            else
+                            {
+                                log.debug( "Updating artifact '{}' in index..", ac.getArtifactInfo() );
+                                // TODO check if update exists !!
+                                nexusIndexer.deleteArtifactFromIndex( ac, context );
+                                nexusIndexer.addArtifactToIndex( ac, context );
+                            }
+
+                            context.updateTimestamp();
+                            context.commit();
+
+
                         }
                         else
                         {
-                            log.debug( "Updating artifact '{}' in index..", ac.getArtifactInfo() );
-                            // TODO check if update exists !!
+                            log.debug( "Removing artifact '{}' from index..", ac.getArtifactInfo() );
                             nexusIndexer.deleteArtifactFromIndex( ac, context );
-                            nexusIndexer.addArtifactToIndex( ac, context );
-                        }
-
-                        context.updateTimestamp();
-                        context.commit();
-
-                        // close the context if not a repo scan request
-                        if ( !indexingTask.isExecuteOnEntireRepo() )
-                        {
-                            log.debug( "Finishing indexing task on resource file : {}",
-                                       indexingTask.getResourceFile().getPath() );
-                            finishIndexingTask( indexingTask, repository, context );
                         }
                     }
-                    else
-                    {
-                        log.debug( "Removing artifact '{}' from index..", ac.getArtifactInfo() );
-                        nexusIndexer.deleteArtifactFromIndex( ac, context );
-                    }
+                }
+                // close the context if not a repo scan request
+                if ( !indexingTask.isExecuteOnEntireRepo() )
+                {
+                    log.debug( "Finishing indexing task on resource file : {}", indexingTask.getResourceFile() != null
+                        ? indexingTask.getResourceFile().getPath()
+                        : " none " );
+                    finishIndexingTask( indexingTask, repository, context );
                 }
             }
             catch ( IOException e )
@@ -236,7 +240,7 @@ public class ArchivaIndexingTaskExecutor
 
             context.optimize();
 
-            if ( repository.isSkipPackedIndexCreation() )
+            if ( !repository.isSkipPackedIndexCreation() )
             {
                 File managedRepository = new File( repository.getLocation() );
                 String indexDirectory = repository.getIndexDirectory();
