@@ -120,7 +120,7 @@ public class ArchivaDavResourceFactory
 
     private static final String HTTP_PUT_METHOD = "PUT";
 
-    private static final MavenXpp3Reader mavenXpp3Reader = new MavenXpp3Reader();
+    private static final MavenXpp3Reader MAVEN_XPP_3_READER = new MavenXpp3Reader();
 
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
@@ -768,7 +768,7 @@ public class ArchivaDavResourceFactory
             Model model = null;
             try
             {
-                model = mavenXpp3Reader.read( reader );
+                model = MAVEN_XPP_3_READER.read( reader );
             }
             finally
             {
