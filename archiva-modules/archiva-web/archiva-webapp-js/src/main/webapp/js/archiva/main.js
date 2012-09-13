@@ -283,8 +283,7 @@ function(jquery,ui,sammy,tmpl) {
           //searchRequest.selectedRepoIds=repos;
           searchViewModel.searchRequest(searchRequest);
           displaySearch(function(){
-
-            searchViewModel.search("restServices/archivaServices/searchService/searchArtifacts",repos);//,repositoryIds);
+            searchViewModel.search("restServices/archivaServices/searchService/searchArtifacts",repos);
           },searchViewModel);
         };
 
@@ -585,7 +584,7 @@ function(jquery,ui,sammy,tmpl) {
             }
           });
         });
-        //this.get('', function () { this.app.runRoute('get', '#search') });
+        this.get('#welcome', function () { this.app.runRoute('get', '#search') });
       });
   };
 
@@ -652,7 +651,7 @@ function(jquery,ui,sammy,tmpl) {
     $.log("location:"+window.sammyArchivaApplication.getLocation()+",hash:"+hash);
     // by default display search screen
     if(!hash){
-      window.sammyArchivaApplication.setLocation("#search");
+      window.sammyArchivaApplication.setLocation("#welcome");
     }
 
   };
