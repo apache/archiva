@@ -126,35 +126,45 @@ function(jquery,ui,sammy,tmpl) {
   // Change UI with appearance settings //
   //------------------------------------//
   updateAppearanceToolBar=function() {
-      $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
-          type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            var organisationLogo=$("#organisation-logo");
-            if(data.url){
-              var url = data.url.startsWith("http://") || data.url.startsWith("https://") ? data.url : "http://"+data.url;
-              var link="<a href='"+url+"' class='brand'>";
-              if (data.logoLocation) {
-                  link+="<img src='"+data.logoLocation+"' style='max-height: 30px'/>";
-              } else if (data.name) {
-                  link+=data.name;
-              } else {
-                  link+="Archiva";
+    $.ajax("restServices/archivaServices/archivaAdministrationService/registrationDisabled", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        //var disableRegistration=data.disableRegistration;
+        if( data){
+          $.log("disableRegistration");
+          $("#topbar-menu").find("#register-link" ).hide();
+        }
+        $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              var organisationLogo=$("#main-content").find("#organisation-logo");
+              if(data.url){
+                var url = data.url.startsWith("http://") || data.url.startsWith("https://") ? data.url : "http://"+data.url;
+                var link="<a href='"+url+"' class='brand'>";
+                if (data.logoLocation) {
+                    link+="<img src='"+data.logoLocation+"' style='max-height: 30px'/>";
+                } else if (data.name) {
+                    link+=data.name;
+                } else {
+                    link+="Archiva";
+                }
+                link+="</a>";
+                organisationLogo.html(link);
               }
-              link+="</a>";
-              organisationLogo.html(link);
-            }
-            if (!data.url && data.name){
-              organisationLogo.html("<a href='/' class='brand'>"+data.name+"</a>");
-            }
-            if (!data.url && !data.name){
+              if (!data.url && data.name){
+                organisationLogo.html("<a href='/' class='brand'>"+data.name+"</a>");
+              }
+              if (!data.url && !data.name){
+                organisationLogo.html("<a href='/' class='brand'>Archiva</a>");
+              }
+            },
+            error: function() {
               organisationLogo.html("<a href='/' class='brand'>Archiva</a>");
             }
-          },
-          error: function() {
-            organisationLogo.html("<a href='/' class='brand'>Archiva</a>");
-          }
-      });
+        });
+    }});
   };
 
 

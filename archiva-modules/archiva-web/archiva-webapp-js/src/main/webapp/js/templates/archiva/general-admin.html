@@ -328,10 +328,18 @@
         <div class="control-group">
           <label class="control-label" for="maxTotal">${$.i18n.prop('ui-configuration.applicationUrl')}</label>
           <div class="controls">
-            <input type="text" class="xlarge required digits" id="applicationUrl" name="applicationUrl" size="8"
+            <input type="text" class="input-xlarge required digits" id="applicationUrl" name="applicationUrl" size="8"
                    data-bind="value: uiConfiguration().applicationUrl"/>
           </div>
         </div>
+
+        <div class="control-group">
+          <label class="control-label" for="disableRegistration">${$.i18n.prop('ui-configuration.applicationUrl.disableRegistration')}</label>
+          <div class="controls">
+            <input type="checkbox" id="disableRegistration" name="disableRegistration" data-bind="checked: uiConfiguration().disableRegistration"/>
+          </div>
+        </div>
+
       </fieldset>
       <button id="ui-configuration-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
     </form>

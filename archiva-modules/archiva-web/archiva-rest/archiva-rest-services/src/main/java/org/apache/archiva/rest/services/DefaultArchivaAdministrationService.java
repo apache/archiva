@@ -48,7 +48,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "archivaAdministrationService#default" )
+@Service ( "archivaAdministrationService#default" )
 public class DefaultArchivaAdministrationService
     extends AbstractRestService
     implements ArchivaAdministrationService
@@ -57,7 +57,7 @@ public class DefaultArchivaAdministrationService
     private ArchivaAdministration archivaAdministration;
 
     @Inject
-    @Named( value = "managedRepositoryContent#legacy" )
+    @Named ( value = "managedRepositoryContent#legacy" )
     private ManagedRepositoryContent repositoryContent;
 
     @Inject
@@ -342,6 +342,11 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    public Boolean registrationDisabled()
+        throws ArchivaRestServiceException
+    {
+        return getUiConfiguration().isDisableRegistration();
+    }
 
     public UiConfiguration getUiConfiguration()
         throws ArchivaRestServiceException

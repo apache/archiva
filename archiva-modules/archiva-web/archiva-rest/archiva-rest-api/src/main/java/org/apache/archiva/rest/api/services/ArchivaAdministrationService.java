@@ -207,6 +207,13 @@ public interface ArchivaAdministrationService
     UiConfiguration getUiConfiguration()
         throws ArchivaRestServiceException;
 
+    @Path( "registrationDisabled" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
+    Boolean registrationDisabled()
+        throws ArchivaRestServiceException;
+
     @Path( "setUiConfiguration" )
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )

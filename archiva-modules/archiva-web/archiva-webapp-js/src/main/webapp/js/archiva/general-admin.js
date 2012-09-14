@@ -573,14 +573,15 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         dataType: 'json',
         success: function(data){
           mainContent.html($("#ui-configuration-screen").tmpl());
-          var uiConfiguration=new UiConfiguration(data.showFindArtifacts,data.appletFindEnabled,data.disableEasterEggs,data.applicationUrl);
+          var uiConfiguration=new UiConfiguration(data.showFindArtifacts,data.appletFindEnabled,data.disableEasterEggs,
+                                                  data.applicationUrl,data.disableRegistration);
           var uiConfigurationViewModel=new UiConfigurationViewModel(uiConfiguration);
           ko.applyBindings(uiConfigurationViewModel,mainContent.get(0));
         }
     });
   }
 
-  UiConfiguration=function(showFindArtifacts,appletFindEnabled,disableEasterEggs,applicationUrl){
+  UiConfiguration=function(showFindArtifacts,appletFindEnabled,disableEasterEggs,applicationUrl,disableRegistration){
     this.showFindArtifacts = ko.observable(showFindArtifacts);
 
     this.appletFindEnabled = ko.observable(appletFindEnabled);
@@ -588,6 +589,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.disableEasterEggs = ko.observable(disableEasterEggs);
 
     this.applicationUrl = ko.observable(applicationUrl);
+
+    // default to false
+    this.disableRegistration = ko.observable(disableRegistration?disableRegistration:false);
   }
 
   UiConfigurationViewModel=function(uiConfiguration){
