@@ -34,7 +34,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "remoteRepositoriesService#rest" )
+@Service ("remoteRepositoriesService#rest")
 public class DefaultRemoteRepositoriesService
     extends AbstractRestService
     implements RemoteRepositoriesService
@@ -53,13 +53,15 @@ public class DefaultRemoteRepositoriesService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
         }
     }
 
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws ArchivaRestServiceException
     {
+
         List<RemoteRepository> remoteRepositories = getRemoteRepositories();
         for ( RemoteRepository repository : remoteRepositories )
         {
@@ -74,19 +76,43 @@ public class DefaultRemoteRepositoriesService
     public Boolean deleteRemoteRepository( String repositoryId )
         throws Exception
     {
-        return remoteRepositoryAdmin.deleteRemoteRepository( repositoryId, getAuditInformation() );
+        try
+        {
+            return remoteRepositoryAdmin.deleteRemoteRepository( repositoryId, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+        }
     }
 
     public Boolean addRemoteRepository( RemoteRepository remoteRepository )
         throws Exception
     {
-        return remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getAuditInformation() );
+        try
+        {
+            return remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+        }
     }
 
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository )
         throws Exception
     {
-        return remoteRepositoryAdmin.updateRemoteRepository( remoteRepository, getAuditInformation() );
+        try
+        {
+            return remoteRepositoryAdmin.updateRemoteRepository( remoteRepository, getAuditInformation() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+        }
     }
 
 
