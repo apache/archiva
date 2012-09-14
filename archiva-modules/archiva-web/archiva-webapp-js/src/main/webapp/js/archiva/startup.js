@@ -41,6 +41,7 @@ function() {
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayRestError($.parseJSON(data.responseText));
+        $("#main-content" ).html("");
         //displayErrorMessage($.i18n.prop('error.500'));
       }
     }

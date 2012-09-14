@@ -151,14 +151,15 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
   /**
    * open a confirm dialog based on bootstrap modal
    * @param okFn callback function to call on ok confirm
-   * @param okMessage
-   * @param cancelMessage
-   * @param title
+   * @param okMessage message in the ok button
+   * @param cancelMessage message in the cancel button
+   * @param title title of the modal box
+   * @param bodyText html content of the modal box
    */
   openDialogConfirm=function(okFn, okMessage, cancelMessage, title,bodyText){
     var dialogCancel=$("#dialog-confirm-modal-cancel");
     if (window.modalConfirmDialog==null) {
-      window.modalConfirmDialog = $("#dialog-confirm-modal").modal();//{backdrop:'static',show:false}
+      window.modalConfirmDialog = $("#dialog-confirm-modal").modal();
       window.modalConfirmDialog.bind('hidden', function () {
         $("#dialog-confirm-modal-header-title").html("");
         $("#dialog-confirm-modal-body-text").html("");
