@@ -115,10 +115,11 @@ Virtual Repositories
   Below are the steps for setting up the virtual repositories:
 
   [[1]] In the webapp, go to the <<<Repository Groups>>> page. To create a virtual repository or repository group,
-  fill in the <<<Identifier>>> field and click Add Group.
+  go to add tab
 
-  [[2]] To add a repository under this group, choose from the drop-down menu on the lower right hand side of the
-  repository group box and click Add Repository.
+  [[2]] To add a repository drag and drop available repositories.
+
+[../images/repository-groups.png]
 
   [[3]] Now add the virtual repository URL <<<http://[host]:[port]/archiva/repository/[repository_group_id]/>>>
   into your settings.xml the same way you configure regular repositories -- as a <mirror> or as an additional <repository>.
