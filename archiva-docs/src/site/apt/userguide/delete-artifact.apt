@@ -1,7 +1,9 @@
  ------
 Deleting an Artifact
  ------
- 2009-02-25
+ Olivier Lamy
+ ------
+ 2012-09-15
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -19,31 +21,31 @@ Deleting an Artifact
 ~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                          
 ~~ KIND, either express or implied.  See the License for the                       
 ~~ specific language governing permissions and limitations                         
-~~ under the License.                                                              
+~~ under the License.
+
+~~ NOTE: For help with the syntax of this file, see:
+~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
 Deleting an Artifact
 
-  The Delete Artifact feature allows artifacts to be deleted from the managed repositories.
+  The Delete Artifact feature allows groupId or artifacts to be deleted from the managed repositories.
 
 ----
   User must have a Repository Manager role to a repository to be able to delete artifacts from it.
 ----
 
-  To delete artifacts, perform these steps:
+  To delete artifacts, you must simply browse to what you want to delete
 
-  1. From the left navigation menu, click <<Delete Artifact>>. This displays the Delete Artifact page.
+* Delete groupId
 
-  2. Supply the necessary values for the following fields:
+  Use trash icon near the groupId you want to delete
 
-    * Group Id: The group id of the artifact to be deleted.
+[../images/delete-groupid.png]
 
-    * Artifact Id:The name of the artifact to be deleted.
+* Delete artifact
 
-    * Version: The specific version of the artifact to be deleted.
+  Browse to detail view of artifact, go to Artifacts tab then delete the artifact with trash icon
 
-    * Repository Id: Select from the drop-down list the name of the managed repository where the artifact is located.
+[../images/delete-artifact.png]
 
 
-  3. Click Submit.
-
-  If the artifact exists in the specified repository, it will be overwritten and the metadata.xml will also be updated.
