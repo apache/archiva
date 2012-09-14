@@ -47,17 +47,13 @@ function(jquery,ui,sammy,tmpl) {
     // cleanup karmas
     window.redbackModel.operatioNames=[];
     hideElementWithKarma();
-    if (doScreenChange) {
-      screenChange();
-    }
     $("#main-content").html("");
     $.ajax({
       url: 'restServices/redbackServices/loginService/logout',
       complete: function(){
-        if(!doScreenChange){
-          // refresh the screen as no more karmas now
-          window.sammyArchivaApplication.refresh();
-        }
+        // go to welcome on logout
+        window.sammyArchivaApplication.runRoute('get', '#search')
+        window.sammyArchivaApplication.setLocation("#welcome");
       }
 
     });
