@@ -1324,6 +1324,12 @@
           <version>1.4.0+</version>
           <type>String</type>
         </field>
+        <field>
+          <name>disableRegistration</name>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
     </class>
 

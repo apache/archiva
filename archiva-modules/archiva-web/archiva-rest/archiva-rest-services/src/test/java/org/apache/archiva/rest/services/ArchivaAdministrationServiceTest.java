@@ -117,6 +117,7 @@ public class ArchivaAdministrationServiceTest
         assertNotNull( ui );
         // assert default values
         assertFalse( ui.isDisableEasterEggs() );
+        assertFalse( ui.isDisableRegistration() );
         assertTrue( ui.isAppletFindEnabled() );
         assertTrue( ui.isShowFindArtifacts() );
         assertNull( ui.getApplicationUrl() );
@@ -124,6 +125,7 @@ public class ArchivaAdministrationServiceTest
         ui.setAppletFindEnabled( false );
         ui.setShowFindArtifacts( false );
         ui.setDisableEasterEggs( true );
+        ui.setDisableRegistration( true );
         String url = "http://foo.fr/bar";
         ui.setApplicationUrl( url );
 
@@ -132,6 +134,7 @@ public class ArchivaAdministrationServiceTest
         ui = getArchivaAdministrationService().getUiConfiguration();
 
         assertTrue( ui.isDisableEasterEggs() );
+        assertTrue( ui.isDisableRegistration() );
         assertFalse( ui.isAppletFindEnabled() );
         assertFalse( ui.isShowFindArtifacts() );
         assertEquals( url, ui.getApplicationUrl() );

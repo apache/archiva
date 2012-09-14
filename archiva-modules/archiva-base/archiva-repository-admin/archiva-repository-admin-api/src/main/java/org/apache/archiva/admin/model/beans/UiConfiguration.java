@@ -47,6 +47,11 @@ public class UiConfiguration
      */
     private String applicationUrl;
 
+    /**
+     * @since 1.4-M3
+     */
+    private boolean disableRegistration = false;
+
     public UiConfiguration()
     {
         // noop
@@ -92,6 +97,16 @@ public class UiConfiguration
         this.applicationUrl = applicationUrl;
     }
 
+    public boolean isDisableRegistration()
+    {
+        return disableRegistration;
+    }
+
+    public void setDisableRegistration( boolean disableRegistration )
+    {
+        this.disableRegistration = disableRegistration;
+    }
+
     @Override
     public String toString()
     {
@@ -101,6 +116,7 @@ public class UiConfiguration
         sb.append( ", appletFindEnabled=" ).append( appletFindEnabled );
         sb.append( ", disableEasterEggs=" ).append( disableEasterEggs );
         sb.append( ", applicationUrl='" ).append( applicationUrl ).append( '\'' );
+        sb.append( ", disableRegistration=" ).append( disableRegistration );
         sb.append( '}' );
         return sb.toString();
     }

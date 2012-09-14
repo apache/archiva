@@ -226,11 +226,13 @@ public class ArchivaAdministrationTest
         assertFalse( oldUi.isDisableEasterEggs() );
         assertTrue( oldUi.isAppletFindEnabled() );
         assertTrue( oldUi.isShowFindArtifacts() );
+        assertFalse( oldUi.isDisableRegistration() );
 
         UiConfiguration ui = archivaAdministration.getUiConfiguration();
         ui.setAppletFindEnabled( false );
         ui.setShowFindArtifacts( false );
         ui.setDisableEasterEggs( true );
+        ui.setDisableRegistration( true );
 
         archivaAdministration.updateUiConfiguration( ui );
 
@@ -239,7 +241,8 @@ public class ArchivaAdministrationTest
         assertTrue( ui.isDisableEasterEggs() );
         assertFalse( ui.isAppletFindEnabled() );
         assertFalse( ui.isShowFindArtifacts() );
-        
+        assertTrue( ui.isDisableRegistration() );
+
         archivaAdministration.updateUiConfiguration( oldUi );
     }
 
