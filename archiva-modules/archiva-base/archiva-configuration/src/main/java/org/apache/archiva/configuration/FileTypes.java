@@ -44,10 +44,8 @@ import java.util.Map;
 
 /**
  * FileTypes
- *
- *
  */
-@Service( "fileTypes" )
+@Service ("fileTypes")
 public class FileTypes
     implements RegistryListener
 {
@@ -63,7 +61,7 @@ public class FileTypes
      *
      */
     @Inject
-    @Named( value = "archivaConfiguration#default" )
+    @Named (value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**
@@ -108,14 +106,17 @@ public class FileTypes
     {
         Configuration config = archivaConfiguration.getConfiguration();
         Predicate selectedFiletype = new FiletypeSelectionPredicate( id );
-        FileType filetype =
-            (FileType) CollectionUtils.find( config.getRepositoryScanning().getFileTypes(), selectedFiletype );
-
-        if ( ( filetype != null ) && CollectionUtils.isNotEmpty( filetype.getPatterns() ) )
+        RepositoryScanningConfiguration repositoryScanningConfiguration = config.getRepositoryScanning();
+        if ( repositoryScanningConfiguration != null )
         {
-            return filetype.getPatterns();
-        }
+            FileType filetype =
+                (FileType) CollectionUtils.find( config.getRepositoryScanning().getFileTypes(), selectedFiletype );
 
+            if ( ( filetype != null ) && CollectionUtils.isNotEmpty( filetype.getPatterns() ) )
+            {
+                return filetype.getPatterns();
+            }
+        }
         List<String> defaultPatterns = defaultTypeMap.get( id );
 
         if ( CollectionUtils.isEmpty( defaultPatterns ) )

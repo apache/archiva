@@ -31,6 +31,7 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -100,6 +101,7 @@ public class DependencyTreeTest
         configuration.addManagedRepository( repoConfig );
 
         ArchivaConfiguration archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
+        archivaConfiguration.getConfiguration().setRepositoryScanning( new RepositoryScanningConfiguration() );
         archivaConfiguration.save( configuration );
 
         TestMetadataResolver metadataResolver = applicationContext.getBean( TestMetadataResolver.class );
