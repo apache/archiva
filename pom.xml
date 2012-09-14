@@ -101,7 +101,7 @@
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>2.0-SNAPSHOT</plexus-expression-evaluator.version>
     <plexus-utils.version>1.5.5</plexus-utils.version>
-    <asfTomcatMavenPluginVersion>2.0-SNAPSHOT</asfTomcatMavenPluginVersion>
+    <asfTomcatMavenPluginVersion>2.0</asfTomcatMavenPluginVersion>
     <tomcat7Version>7.0.30</tomcat7Version>
   </properties>
 
