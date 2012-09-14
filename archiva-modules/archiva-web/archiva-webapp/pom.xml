@@ -475,10 +475,22 @@
     <dependency>
       <groupId>org.apache.archiva.redback.components.registry</groupId>
       <artifactId>spring-registry-api</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback.components.registry</groupId>
       <artifactId>spring-registry-commons</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback.components.cache</groupId>
@@ -517,7 +529,7 @@
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>jcl-over-slf4j</artifactId>
-        </exclusion>
+        </exclusion>       
       </exclusions>
     </dependency>
     <dependency>
@@ -838,6 +850,12 @@
       <artifactId>struts2-junit-plugin</artifactId>
       <scope>test</scope>
       <version>${struts.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-test</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>jpox</groupId>
