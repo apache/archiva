@@ -65,7 +65,7 @@
     <menu name="Users Guide">
       <item name="Browsing"                  href="/userguide/browsing.html" />
       <item name="Searching"                 href="/userguide/searching.html" />
-      <item name="Identifying an Artifact"   href="/userguide/find-artifact.html" />
+      <!--item name="Identifying an Artifact"   href="/userguide/find-artifact.html" /-->
       <item name="Deleting an Artifact"      href="/userguide/delete-artifact.html" />
       <item name="Using as a repository"     href="/userguide/using-repository.html" />
       <item name="Deploying to repository"   href="/userguide/deploy.html" />
