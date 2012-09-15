@@ -81,7 +81,7 @@
     <jxrVersion>2.3</jxrVersion>
     <javadocPluginVersion>2.8.1</javadocPluginVersion>
 
-    <plexusUtilsPluginsVersion>3.0.6</plexusUtilsPluginsVersion>
+    <plexusUtilsPluginsVersion>3.0.7-SNAPSHOT</plexusUtilsPluginsVersion>
 
   </properties>
 
