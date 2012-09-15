@@ -58,7 +58,7 @@
     <commons-codec.version>1.6</commons-codec.version>
     <commons-collections.version>3.2.1</commons-collections.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
-    <commons-io.version>2.2</commons-io.version>
+    <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <struts.version>2.2.3.1</struts.version>
     <maven3x.version>3.0.4</maven3x.version>
