@@ -39,6 +39,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 /**
  * AbstractRepositoryServletProxiedTestCase
@@ -211,7 +212,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
             destFile.delete();
         }
         destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, null );
+        FileUtils.writeStringToFile( destFile, contents, Charset.forName( "UTF-8" )  );
         return destFile;
     }
 

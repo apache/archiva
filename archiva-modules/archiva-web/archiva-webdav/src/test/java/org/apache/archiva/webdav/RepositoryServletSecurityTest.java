@@ -60,6 +60,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
@@ -407,7 +409,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -463,7 +465,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -501,7 +503,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -552,7 +554,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );

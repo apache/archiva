@@ -36,16 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
  * A dummy wagon implementation
  */
-@Service( "wagon#test" )
+@Service ("wagon#test")
 public class WagonDelegate
     implements Wagon
 {
@@ -91,7 +90,7 @@ public class WagonDelegate
         return delegate.resourceExists( resourceName );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     public List<String> getFileList( String destinationDirectory )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
@@ -164,7 +163,7 @@ public class WagonDelegate
         delegate.connect( source, authenticationInfo, proxyInfoProvider );
     }
 
-    @SuppressWarnings( "deprecation" )
+    @SuppressWarnings ("deprecation")
     public void openConnection()
         throws ConnectionException, AuthenticationException
     {
@@ -247,7 +246,8 @@ public class WagonDelegate
             }
             else
             {
-                FileUtils.writeStringToFile( new File( destination.getAbsolutePath() ), contentToGet, null );
+                FileUtils.writeStringToFile( new File( destination.getAbsolutePath() ), contentToGet,
+                                             Charset.forName( "UTF-8" ) );
             }
         }
         catch ( IOException e )

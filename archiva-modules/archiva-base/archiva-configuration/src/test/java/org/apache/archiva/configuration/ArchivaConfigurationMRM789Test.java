@@ -20,6 +20,7 @@ package org.apache.archiva.configuration;
  */
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.List;
 import javax.inject.Inject;
 import org.apache.archiva.common.utils.FileUtil;
@@ -76,7 +77,7 @@ public class ArchivaConfigurationMRM789Test
                                                                "target/test-classes/org/apache/archiva/configuration/default-archiva.xml" );
 
         FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile,
-                                     null );
+                                     Charset.forName("UTF-8") );
 
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );

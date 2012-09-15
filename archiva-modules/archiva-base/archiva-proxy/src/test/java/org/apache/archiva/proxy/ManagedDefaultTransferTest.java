@@ -19,24 +19,23 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import static org.junit.Assert.*;
 
 /**
  * ManagedDefaultTransferTest
- *
- *
  */
 public class ManagedDefaultTransferTest
     extends AbstractProxyTestCase
@@ -60,7 +59,7 @@ public class ManagedDefaultTransferTest
 
         // Attempt the proxy fetch.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-        assertNull("File should not have been downloaded", downloadedFile);
+        assertNull( "File should not have been downloaded", downloadedFile );
     }
 
     @Test
@@ -206,7 +205,7 @@ public class ManagedDefaultTransferTest
 
         File expectedFile = new File( managedDefaultDir, path );
         File remoteFile = new File( REPOPATH_PROXIED1, path );
-        
+
         // Set the managed File to be newer than local.
         setManagedNewerThanRemote( expectedFile, remoteFile );
 
@@ -226,7 +225,7 @@ public class ManagedDefaultTransferTest
         assertNotModified( expectedFile, originalModificationTime );
         assertNoTempFiles( expectedFile );
     }
-    
+
     /**
      * <p>
      * Request a file, that exists locally, and remotely.
@@ -252,10 +251,10 @@ public class ManagedDefaultTransferTest
 
         File expectedFile = new File( managedDefaultDir, path );
         File remoteFile = new File( REPOPATH_PROXIED1, path );
-        
+
         // Set the managed file to be newer than remote file.
         setManagedOlderThanRemote( expectedFile, remoteFile );
-    
+
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
@@ -317,8 +316,8 @@ public class ManagedDefaultTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1 , false );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 , false );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -329,8 +328,8 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
 
         // TODO: is this check even needed if it passes above? 
-        String actualContents = FileUtils.readFileToString( downloadedFile, null );
-        String badContents = FileUtils.readFileToString( proxied2File, null );
+        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.forName( "UTF-8" ) );
+        String badContents = FileUtils.readFileToString( proxied2File, Charset.forName( "UTF-8" ) );
         assertFalse( "Downloaded file contents should not be that of proxy 2",
                      StringUtils.equals( actualContents, badContents ) );
     }
@@ -400,7 +399,7 @@ public class ManagedDefaultTransferTest
         saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
         wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "transfer failed" ) );
         wagonMockControl.replay();
 
@@ -440,13 +439,13 @@ public class ManagedDefaultTransferTest
 
         File tmpFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
         wagonMock.get( path, tmpFile );
-        
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
 
         wagonMock.get( path, tmpFile );
-        
-        wagonMockControl.setMatcher(customWagonGetMatcher);
+
+        wagonMockControl.setMatcher( customWagonGetMatcher );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
 
         wagonMockControl.replay();
@@ -472,13 +471,13 @@ public class ManagedDefaultTransferTest
 
         File expectedFile = new File( managedDefaultDir, path );
         File remoteFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
-        
+
         // Set the managed file to be newer than remote.
         setManagedNewerThanRemote( expectedFile, remoteFile );
         long expectedTimestamp = expectedFile.lastModified();
-        
+
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-        
+
         assertTrue( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
@@ -533,7 +532,7 @@ public class ManagedDefaultTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false);
+        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -556,7 +555,7 @@ public class ManagedDefaultTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false  );
+        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 

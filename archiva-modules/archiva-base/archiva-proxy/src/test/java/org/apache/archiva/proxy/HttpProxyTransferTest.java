@@ -52,6 +52,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
@@ -206,8 +208,8 @@ public class HttpProxyTransferTest
                       downloadedFile.getCanonicalPath() );
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), downloadedFile.getAbsolutePath() );
 
-        String expectedContents = FileUtils.readFileToString( sourceFile, null );
-        String actualContents = FileUtils.readFileToString( downloadedFile, null );
+        String expectedContents = FileUtils.readFileToString( sourceFile, Charset.forName( "UTF-8" ) );
+        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.forName( "UTF-8") );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
         assertNull( System.getProperty( "http.proxyHost" ) );

@@ -31,6 +31,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -45,15 +46,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import java.nio.charset.Charset;
 
 /**
  * AbstractRepositoryServletTestCase
- *
- *
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/repository-servlet-simple.xml" } )
+@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration ( locations = { "classpath*:/repository-servlet-simple.xml" } )
 public abstract class AbstractRepositoryServletTestCase
     extends TestCase
 {
@@ -183,7 +182,7 @@ public abstract class AbstractRepositoryServletTestCase
         assertTrue( "File <" + actualFile.getAbsolutePath() + "> should be a file (not a dir/link/device/etc).",
                     actualFile.isFile() );
 
-        String actualContents = FileUtils.readFileToString( actualFile, null );
+        String actualContents = FileUtils.readFileToString( actualFile, Charset.forName( "UTF-8" )  );
         assertEquals( "File Contents of <" + actualFile.getAbsolutePath() + ">", expectedContents, actualContents );
     }
 
@@ -296,7 +295,7 @@ public abstract class AbstractRepositoryServletTestCase
     {
         File destFile = new File( repoRootManaged, path );
         destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, null );
+        FileUtils.writeStringToFile( destFile, contents, Charset.forName( "UTF-8" ) );
         return destFile;
     }
 }

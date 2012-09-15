@@ -21,8 +21,9 @@ package org.apache.archiva.converter.artifact;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;
@@ -40,21 +41,19 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * LegacyToDefaultConverterTest
- *
- *
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class LegacyToDefaultConverterTest
     extends TestCase
 {
@@ -84,7 +83,7 @@ public class LegacyToDefaultConverterTest
 
         Map<String, ArtifactRepositoryLayout> layoutsMap = plexusSisuBridge.lookupMap( ArtifactRepositoryLayout.class );
 
-        System.out.println("hints " + layoutsMap.keySet().toString() );
+        System.out.println( "hints " + layoutsMap.keySet().toString() );
 
         ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
 
@@ -700,7 +699,7 @@ public class LegacyToDefaultConverterTest
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
         // clear warning before test related to MRM-1638
-        artifactConverter.clearWarnings(); 
+        artifactConverter.clearWarnings();
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
@@ -746,7 +745,7 @@ public class LegacyToDefaultConverterTest
         Thread.sleep( SLEEP_MILLIS );
 
         // clear warning before test related to MRM-1638
-        artifactConverter.clearWarnings(); 
+        artifactConverter.clearWarnings();
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
@@ -985,9 +984,10 @@ public class LegacyToDefaultConverterTest
     private static void compareFiles( File expectedPomFile, File pomFile )
         throws IOException
     {
-        String expectedContent =
-            normalizeString( org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, null ) );
-        String targetContent = normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, null ) );
+        String expectedContent = normalizeString(
+            org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, Charset.forName( "UTF-8" ) ) );
+        String targetContent =
+            normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, Charset.forName( "UTF-8" ) ) );
         assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
                       targetContent );
     }

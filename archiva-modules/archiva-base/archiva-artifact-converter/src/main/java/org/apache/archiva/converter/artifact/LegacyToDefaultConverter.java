@@ -57,6 +57,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,10 +67,8 @@ import java.util.regex.Matcher;
 
 /**
  * LegacyToDefaultConverter
- *
- *
  */
-@Service( "artifactConverter#legacy-to-default" )
+@Service ("artifactConverter#legacy-to-default")
 public class LegacyToDefaultConverter
     implements ArtifactConverter
 {
@@ -186,7 +185,7 @@ public class LegacyToDefaultConverter
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws ArtifactConversionException
     {
@@ -211,7 +210,7 @@ public class LegacyToDefaultConverter
                 }
 
                 // Even if the checksums for the POM are invalid we should still convert the POM
-                contents = FileUtils.readFileToString( file, null );
+                contents = FileUtils.readFileToString( file, Charset.forName( "UTF-8" ) );
             }
             catch ( IOException e )
             {
@@ -227,7 +226,7 @@ public class LegacyToDefaultConverter
                     boolean matching = false;
                     if ( !force && targetFile.exists() )
                     {
-                        String targetContents = FileUtils.readFileToString( targetFile, null );
+                        String targetContents = FileUtils.readFileToString( targetFile, Charset.forName( "UTF-8" ) );
                         matching = targetContents.equals( contents );
                     }
                     if ( force || !matching )
@@ -328,7 +327,7 @@ public class LegacyToDefaultConverter
         File checksumFile = new File( file.getParentFile(), fileName );
         if ( checksumFile.exists() )
         {
-            String checksum = FileUtils.readFileToString( checksumFile, null );
+            String checksum = FileUtils.readFileToString( checksumFile, Charset.forName( "UTF-8" ) );
             try
             {
                 digester.verify( file, checksum );
@@ -466,7 +465,7 @@ public class LegacyToDefaultConverter
         return result;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact )
     {
         String groupIdKey;

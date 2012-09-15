@@ -26,11 +26,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 /**
- * RepositoryServletTest 
- *
- *
+ * RepositoryServletTest
  */
 public class RepositoryServletNoProxyMetadataTest
     extends AbstractRepositoryServletTestCase
@@ -45,7 +44,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -64,7 +63,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -83,7 +82,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -96,15 +95,17 @@ public class RepositoryServletNoProxyMetadataTest
     public void testGetSnapshotVersionMetadataDefaultLayout()
         throws Exception
     {
-        String assemblyPluginMetadata = "org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-2-SNAPSHOT/maven-metadata.xml";
+        String assemblyPluginMetadata =
+            "org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-2-SNAPSHOT/maven-metadata.xml";
         String expectedMetadataContents = "metadata-for-assembly-plugin-version-2.2-beta-2-SNAPSHOT";
 
         File checksumFile = new File( repoRootInternal, assemblyPluginMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
 
-        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + assemblyPluginMetadata );
+        WebRequest request =
+            new GetMethodWebRequest( "http://machine.com/repository/internal/" + assemblyPluginMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 

@@ -35,6 +35,7 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.index.NexusIndexer;
@@ -55,6 +56,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,17 +64,14 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 
 /**
  * AbstractProxyTestCase
- *
- *
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractProxyTestCase
 {
     @Inject
@@ -330,8 +329,10 @@ public abstract class AbstractProxyTestCase
                       actualFile.getCanonicalPath() );
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), actualFile.getAbsolutePath() );
 
-        String expectedContents = org.apache.commons.io.FileUtils.readFileToString( sourceFile, null );
-        String actualContents = org.apache.commons.io.FileUtils.readFileToString( actualFile, null );
+        String expectedContents =
+            org.apache.commons.io.FileUtils.readFileToString( sourceFile, Charset.forName( "UTF-8" ) );
+        String actualContents =
+            org.apache.commons.io.FileUtils.readFileToString( actualFile, Charset.forName( "UTF-8" ) );
         assertEquals( "Check file contents.", expectedContents, actualContents );
     }
 
@@ -340,7 +341,7 @@ public abstract class AbstractProxyTestCase
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ( "unchecked" )
     protected void assertNoTempFiles( File expectedFile )
     {
         File workingDir = expectedFile.getParentFile();

@@ -20,6 +20,7 @@ package org.apache.archiva.consumers.core.repository;
  */
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
@@ -134,7 +135,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         // check if metadata file was updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.forName( "UTF-8" ) );
 
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
@@ -269,7 +270,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         // check if metadata file was not updated (because nothing was removed)
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.forName( "UTF-8" ) );
 
         String expectedVersions = "<expected><versions><version>2.0.3-SNAPSHOT</version>"
             + "<version>2.0.4-SNAPSHOT</version></versions></expected>";

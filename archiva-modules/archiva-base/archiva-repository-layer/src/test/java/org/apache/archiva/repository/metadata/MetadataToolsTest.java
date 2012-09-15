@@ -46,6 +46,7 @@ import javax.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,20 +56,18 @@ import static org.junit.Assert.*;
 
 /**
  * MetadataToolsTest
- *
- *
  */
-@ContextConfiguration(
+@ContextConfiguration (
     locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
 public class MetadataToolsTest
     extends AbstractRepositoryLayerTestCase
 {
     @Inject
-    @Named( value = "metadataTools#test" )
+    @Named ( value = "metadataTools#test" )
     private MetadataTools tools;
 
     @Inject
-    @Named( value = "archivaConfiguration#mock" )
+    @Named ( value = "archivaConfiguration#mock" )
     protected MockConfiguration config;
 
     @Test
@@ -389,7 +388,7 @@ public class MetadataToolsTest
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
         File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
-        String actualMetadata = FileUtils.readFileToString( metadataFile, null );
+        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.forName( "UTF-8" ) );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )
@@ -404,7 +403,7 @@ public class MetadataToolsTest
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
         File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
-        String actualMetadata = FileUtils.readFileToString( metadataFile, null );
+        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.forName( "UTF-8" ) );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )

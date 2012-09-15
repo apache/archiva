@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.io.File;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
@@ -35,14 +34,19 @@ import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.File;
+import java.nio.charset.Charset;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 /**
  */
-@ContextConfiguration(
+@ContextConfiguration (
     locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-purge-consumer-test.xml" } )
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
@@ -319,7 +323,7 @@ public class RepositoryPurgeConsumerTest
         // check if metadata file wasn't updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.forName( "UTF-8" ) );
 
         String expectedVersions = "<expected><versions><version>2.3-SNAPSHOT</version></versions></expected>";
 
@@ -364,7 +368,7 @@ public class RepositoryPurgeConsumerTest
         // check if metadata file was updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.forName( "UTF-8" ) );
 
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
