@@ -81,6 +81,8 @@
     <jxrVersion>2.3</jxrVersion>
     <javadocPluginVersion>2.8.1</javadocPluginVersion>
 
+    <plexusUtilsPluginsVersion>3.0.6</plexusUtilsPluginsVersion>
+
   </properties>
 
 
@@ -617,7 +619,7 @@
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-utils</artifactId>
-              <version>3.0.6</version>
+              <version>${plexusUtilsPluginsVersion}</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -658,7 +660,7 @@
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-utils</artifactId>
-              <version>3.0.6</version>
+              <version>${plexusUtilsPluginsVersion}</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -731,7 +733,7 @@
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-utils</artifactId>
-              <version>3.0.6</version>
+              <version>${plexusUtilsPluginsVersion}</version>
             </dependency>
           </dependencies>
         </plugin>
