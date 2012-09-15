@@ -985,9 +985,9 @@ public class LegacyToDefaultConverterTest
         throws IOException
     {
         String expectedContent = normalizeString(
-            org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, Charset.forName( "UTF-8" ) ) );
+            org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, Charset.defaultCharset() ) );
         String targetContent =
-            normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, Charset.forName( "UTF-8" ) ) );
+            normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, Charset.defaultCharset() ) );
         assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
                       targetContent );
     }

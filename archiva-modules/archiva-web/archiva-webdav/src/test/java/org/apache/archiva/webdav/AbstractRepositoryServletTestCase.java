@@ -182,7 +182,7 @@ public abstract class AbstractRepositoryServletTestCase
         assertTrue( "File <" + actualFile.getAbsolutePath() + "> should be a file (not a dir/link/device/etc).",
                     actualFile.isFile() );
 
-        String actualContents = FileUtils.readFileToString( actualFile, Charset.forName( "UTF-8" )  );
+        String actualContents = FileUtils.readFileToString( actualFile, Charset.defaultCharset()  );
         assertEquals( "File Contents of <" + actualFile.getAbsolutePath() + ">", expectedContents, actualContents );
     }
 
@@ -295,7 +295,7 @@ public abstract class AbstractRepositoryServletTestCase
     {
         File destFile = new File( repoRootManaged, path );
         destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset() );
         return destFile;
     }
 }

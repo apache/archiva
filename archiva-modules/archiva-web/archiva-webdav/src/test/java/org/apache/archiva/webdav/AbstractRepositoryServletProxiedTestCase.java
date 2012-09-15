@@ -212,7 +212,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
             destFile.delete();
         }
         destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, Charset.forName( "UTF-8" )  );
+        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset()  );
         return destFile;
     }
 

@@ -328,8 +328,8 @@ public class ManagedDefaultTransferTest
         assertNoTempFiles( expectedFile );
 
         // TODO: is this check even needed if it passes above? 
-        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.forName( "UTF-8" ) );
-        String badContents = FileUtils.readFileToString( proxied2File, Charset.forName( "UTF-8" ) );
+        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.defaultCharset() );
+        String badContents = FileUtils.readFileToString( proxied2File, Charset.defaultCharset() );
         assertFalse( "Downloaded file contents should not be that of proxy 2",
                      StringUtils.equals( actualContents, badContents ) );
     }

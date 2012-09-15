@@ -247,7 +247,7 @@ public class WagonDelegate
             else
             {
                 FileUtils.writeStringToFile( new File( destination.getAbsolutePath() ), contentToGet,
-                                             Charset.forName( "UTF-8" ) );
+                                             Charset.defaultCharset() );
             }
         }
         catch ( IOException e )

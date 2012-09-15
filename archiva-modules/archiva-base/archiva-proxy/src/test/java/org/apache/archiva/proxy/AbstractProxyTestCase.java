@@ -330,9 +330,9 @@ public abstract class AbstractProxyTestCase
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), actualFile.getAbsolutePath() );
 
         String expectedContents =
-            org.apache.commons.io.FileUtils.readFileToString( sourceFile, Charset.forName( "UTF-8" ) );
+            org.apache.commons.io.FileUtils.readFileToString( sourceFile, Charset.defaultCharset() );
         String actualContents =
-            org.apache.commons.io.FileUtils.readFileToString( actualFile, Charset.forName( "UTF-8" ) );
+            org.apache.commons.io.FileUtils.readFileToString( actualFile, Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
     }
 

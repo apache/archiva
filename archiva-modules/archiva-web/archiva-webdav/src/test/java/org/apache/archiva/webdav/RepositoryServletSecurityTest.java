@@ -409,7 +409,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -465,7 +465,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -503,7 +503,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -554,7 +554,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.forName( "UTF-8" )  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );

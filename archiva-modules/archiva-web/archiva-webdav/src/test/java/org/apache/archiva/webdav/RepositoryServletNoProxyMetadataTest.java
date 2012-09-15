@@ -44,7 +44,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -63,7 +63,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -82,7 +82,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -102,7 +102,7 @@ public class RepositoryServletNoProxyMetadataTest
         File checksumFile = new File( repoRootInternal, assemblyPluginMetadata );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request =
             new GetMethodWebRequest( "http://machine.com/repository/internal/" + assemblyPluginMetadata );

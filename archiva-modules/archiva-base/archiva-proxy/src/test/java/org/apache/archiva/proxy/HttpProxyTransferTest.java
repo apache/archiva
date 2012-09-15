@@ -208,8 +208,8 @@ public class HttpProxyTransferTest
                       downloadedFile.getCanonicalPath() );
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), downloadedFile.getAbsolutePath() );
 
-        String expectedContents = FileUtils.readFileToString( sourceFile, Charset.forName( "UTF-8" ) );
-        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.forName( "UTF-8") );
+        String expectedContents = FileUtils.readFileToString( sourceFile, Charset.defaultCharset() );
+        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
         assertNull( System.getProperty( "http.proxyHost" ) );

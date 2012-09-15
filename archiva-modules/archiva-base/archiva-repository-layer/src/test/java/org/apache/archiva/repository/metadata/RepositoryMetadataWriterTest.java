@@ -45,7 +45,7 @@ public class RepositoryMetadataWriterTest
     {
         File defaultRepoDir = new File( "src/test/repositories/default-repository" );
         File expectedFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
-        String expectedContent = FileUtils.readFileToString( expectedFile, Charset.forName( "UTF-8" ) );
+        String expectedContent = FileUtils.readFileToString( expectedFile, Charset.defaultCharset() );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
 

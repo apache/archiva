@@ -149,7 +149,7 @@ public class RepositoryServletRepositoryGroupTest
 
         File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
         dummyInternalResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
@@ -170,7 +170,7 @@ public class RepositoryServletRepositoryGroupTest
 
         File dummyReleasesResourceFile = new File( repoRootLast, resourceName );
         dummyReleasesResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
@@ -243,7 +243,7 @@ public class RepositoryServletRepositoryGroupTest
             + "<metadata>\n<groupId>dummy</groupId>\n<artifactId>dummy-merged-metadata-resource</artifactId>\n"
             + "<versioning>\n<latest>1.0</latest>\n<release>1.0</release>\n<versions>\n<version>1.0</version>\n"
             + "<version>2.5</version>\n</versions>\n<lastUpdated>20080708095554</lastUpdated>\n</versioning>\n</metadata>",
-                                     Charset.forName( "UTF-8" ) );
+                                     Charset.defaultCharset() );
 
         //second metadata file
         resourceName = "dummy/dummy-merged-metadata-resource/maven-metadata.xml";
@@ -253,7 +253,7 @@ public class RepositoryServletRepositoryGroupTest
             + "<metadata><groupId>dummy</groupId><artifactId>dummy-merged-metadata-resource</artifactId>"
             + "<versioning><latest>2.0</latest><release>2.0</release><versions><version>1.0</version>"
             + "<version>1.5</version><version>2.0</version></versions><lastUpdated>20080709095554</lastUpdated>"
-            + "</versioning></metadata>", Charset.forName( "UTF-8" ) );
+            + "</versioning></metadata>", Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
@@ -274,11 +274,11 @@ public class RepositoryServletRepositoryGroupTest
         //check if the checksum files were generated
         File checksumFileSha1 = new File( repoRootFirst, resourceName + ".sha1" );
         checksumFileSha1.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( checksumFileSha1, "3290853214d3687134", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( checksumFileSha1, "3290853214d3687134", Charset.defaultCharset() );
 
         File checksumFileMd5 = new File( repoRootFirst, resourceName + ".md5" );
         checksumFileMd5.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( checksumFileMd5, "98745897234eda12836423", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( checksumFileMd5, "98745897234eda12836423", Charset.defaultCharset() );
 
         // request the sha1 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
@@ -308,13 +308,13 @@ public class RepositoryServletRepositoryGroupTest
 
         File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
         dummyInternalResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", Charset.defaultCharset() );
 
         resourceName = "dummy/dummy-artifact/2.0/dummy-artifact-2.0.txt";
 
         File dummyReleasesResourceFile = new File( repoRootLast, resourceName );
         dummyReleasesResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/dummy-artifact/" );

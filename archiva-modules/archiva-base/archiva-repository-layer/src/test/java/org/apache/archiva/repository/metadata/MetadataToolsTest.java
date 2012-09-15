@@ -388,7 +388,7 @@ public class MetadataToolsTest
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
         File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
-        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.forName( "UTF-8" ) );
+        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )
@@ -403,7 +403,7 @@ public class MetadataToolsTest
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
         File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
-        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.forName( "UTF-8" ) );
+        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )

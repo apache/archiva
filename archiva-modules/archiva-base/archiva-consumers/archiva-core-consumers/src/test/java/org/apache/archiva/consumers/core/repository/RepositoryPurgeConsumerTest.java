@@ -323,7 +323,7 @@ public class RepositoryPurgeConsumerTest
         // check if metadata file wasn't updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.forName( "UTF-8" ) );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
         String expectedVersions = "<expected><versions><version>2.3-SNAPSHOT</version></versions></expected>";
 
@@ -368,7 +368,7 @@ public class RepositoryPurgeConsumerTest
         // check if metadata file was updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.forName( "UTF-8" ) );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";

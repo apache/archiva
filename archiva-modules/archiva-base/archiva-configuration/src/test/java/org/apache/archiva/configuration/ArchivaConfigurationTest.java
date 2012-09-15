@@ -695,7 +695,7 @@ public class ArchivaConfigurationTest
         FileUtils.copyFile( getTestFile( "src/test/conf/escape-cron-expressions.xml" ), baseFile );
 
         userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.defaultCharset() );
 
         final ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-cron-expressions" );
 
