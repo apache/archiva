@@ -136,6 +136,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
               displaySuccessMessage( $.i18n.prop("user.admin.created"));
               var onSuccessCall=function(){
                 reccordLoginCookie(currentAdminUser);
+                window.archivaModel.adminExists=true;
                 screenChange();
                 checkCreateAdminLink();
                 checkSecurityLinks();
@@ -261,6 +262,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
         return;
       }
       self.user.createAdmin();
+
       // go to search when admin created
       window.sammyArchivaApplication.setLocation("#search");
     }

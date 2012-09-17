@@ -52,8 +52,7 @@ function(jquery,ui,sammy,tmpl) {
       url: 'restServices/redbackServices/loginService/logout',
       complete: function(){
         // go to welcome on logout
-        window.sammyArchivaApplication.runRoute('get', '#search')
-        window.sammyArchivaApplication.setLocation("#welcome");
+        window.sammyArchivaApplication.setLocation("#search");
       }
 
     });
@@ -601,17 +600,25 @@ function(jquery,ui,sammy,tmpl) {
           $.log("repositoryId:"+repositoryId);
           displayBrowse(true,repositoryId);
         });
+
+        this.get('#welcome', function () {
+          $.log("#welcome hash");
+          checkCreateAdminLink(function(){window.sammyArchivaApplication.setLocation("#search")});
+
+        });
+
         this.get('#:folder', function () {
           var folder = this.params.folder;
           self.activeMenuId(folder);
           var baseItems = self.artifactMenuItems?self.artifactMenuItems:[];
           ko.utils.arrayFirst(baseItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
             if ( p.href == "#"+self.activeMenuId()) {
+              screenChange();
               p.func();
             }
           });
         });
-        this.get('#welcome', function () { this.app.runRoute('get', '#search') });
+
       });
   };
 
@@ -677,7 +684,7 @@ function(jquery,ui,sammy,tmpl) {
     var matches = window.location.toString().match(/^[^#]*(#.+)$/);
     var hash = matches ? matches[1] : '';
     $.log("location:"+window.sammyArchivaApplication.getLocation()+",hash:"+hash);
-    // by default display search screen
+    // by default display welcome screen
     if(!hash){
       window.sammyArchivaApplication.setLocation("#welcome");
     }
