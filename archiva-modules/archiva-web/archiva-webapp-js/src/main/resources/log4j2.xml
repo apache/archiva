@@ -28,7 +28,7 @@
   <appenders>
 
     <RollingFile name="rolling" fileName="${logsDirectory}/archiva.log"
-                 filePattern="${logsDirectory}/archiva-%d{MM-dd-yy-HH-mm}.log">
+                 filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
       </PatternLayout>
@@ -38,7 +38,7 @@
     </RollingFile>
 
     <RollingFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
-                 filePattern="${logsDirectory}/logs/archiva-audit-%d{MM-dd-yy-HH-mm}.log">
+                 filePattern="${logsDirectory}/logs/archiva-audit-%d{MM-dd-yyyy}.log">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} %m%n</pattern>
       </PatternLayout>
@@ -48,7 +48,7 @@
     </RollingFile>
 
     <RollingFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
-                 filePattern="${logsDirectory}/archiva-security-audit.log-%d{MM-dd-yy-HH-mm}.log">
+                 filePattern="${logsDirectory}/archiva-security-audit.log-%d{MM-dd-yyyy}.log">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n</pattern>
       </PatternLayout>
