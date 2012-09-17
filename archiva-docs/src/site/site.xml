@@ -65,13 +65,15 @@
     <menu name="Users Guide">
       <item name="Browsing"                  href="/userguide/browsing.html" />
       <item name="Searching"                 href="/userguide/searching.html" />
+      <!-- not yet in new UI -->
       <!--item name="Identifying an Artifact"   href="/userguide/find-artifact.html" /-->
       <item name="Deleting an Artifact"      href="/userguide/delete-artifact.html" />
       <item name="Using as a repository"     href="/userguide/using-repository.html" />
       <item name="Deploying to repository"   href="/userguide/deploy.html" />
       <item name="Configuring Virtual Repositories"   href="/userguide/virtual-repositories.html" />
       <item name="Rss Feeds in Archiva"      href="/userguide/rss.html"/>
-      <item name="Audit Log Report"      href="/userguide/auditlog-report.html"/>
+      <!-- not yet in new UI -->
+      <!--item name="Audit Log Report"      href="/userguide/auditlog-report.html"/-->
     </menu>
 
     <menu name="Administrators Guide">
