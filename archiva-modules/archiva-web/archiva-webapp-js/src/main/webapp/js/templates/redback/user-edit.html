@@ -198,9 +198,7 @@
               </a>
             </td>
           {{/if}}
-          {{if row.username()=="admin"}}
-            <td></td>
-          {{else}}
+
             {{if row.locked()==true}}
               <td>
                 <a href="#" data-bind="click: function(){ unlock(row) }"><img src="images/system-lock-screen-22-22.png"/></a>
@@ -210,7 +208,7 @@
                 <a href="#" data-bind="click: function(){ lock(row) }"><img src="images/weather-clear-22-22.png"/></a>
               </td>
             {{/if}}
-          {{/if}}
+
           {{if row.username()=="admin"}}
             <td></td>
           {{else}}
