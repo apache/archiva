@@ -887,7 +887,7 @@ public class DefaultUserService
         throws RedbackServiceException
     {
         User user = getUser( username );
-        if ( user == null )
+        if ( user != null )
         {
             user.setLocked( true );
             updateUser( user );
