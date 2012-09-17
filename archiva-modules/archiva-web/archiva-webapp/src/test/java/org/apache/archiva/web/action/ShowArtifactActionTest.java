@@ -391,7 +391,6 @@ public class ShowArtifactActionTest
         action.setGroupId( TEST_GROUP_ID );
         action.setArtifactId( TEST_ARTIFACT_ID );
         action.setVersion( TEST_SNAPSHOT_VERSION );
-        ;
 
         String result = action.artifact();
 
@@ -465,6 +464,7 @@ public class ShowArtifactActionTest
     public void testGetDependees()
         throws Exception
     {
+        setObservableRepos( Arrays.asList( TEST_REPO ) );
         ProjectVersionMetadata versionMetadata = createProjectModel( TEST_VERSION );
         metadataResolver.setProjectVersion( TEST_REPO, TEST_GROUP_ID, TEST_ARTIFACT_ID, versionMetadata );
         ProjectVersionReference dependee1 = createReference( "artifactId1" );
