@@ -4,7 +4,7 @@
  Maria Odea Ching
  Olivier Lamy
  ------
- 2011-10-06
+ 2011-12-18
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -55,4 +55,8 @@ Understanding Consumers in Apache Archiva
   * <create-archiva-metadata> - Take an artifact off of disk and put it into the metadata repository.
 
   * <duplicate-artifacts> - Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.
+
+  []
+
   
+[../images/consumers.png]
