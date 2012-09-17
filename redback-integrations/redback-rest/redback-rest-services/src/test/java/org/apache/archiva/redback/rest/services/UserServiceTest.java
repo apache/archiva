@@ -69,7 +69,7 @@ public class UserServiceTest
         assertFalse( users.isEmpty() );
     }
 
-    @Test( expected = ServerWebApplicationException.class )
+    @Test (expected = ServerWebApplicationException.class)
     public void getUsersWithoutAuthz()
         throws Exception
     {
@@ -377,6 +377,45 @@ public class UserServiceTest
         assertEquals( "toto@tititi.fr", u.getEmail() );
 
         getUserService( authorizationHeader ).deleteUser( "toto" );
+    }
+
+    @Test
+    public void lockUnlockUser()
+        throws Exception
+    {
+        try
+        {
+
+            // START SNIPPET: create-user
+            User user = new User( "toto", "toto the king", "toto@toto.fr", false, false );
+            user.setPassword( "foo123" );
+            user.setPermanent( false );
+            user.setPasswordChangeRequired( false );
+            user.setLocked( false );
+            user.setValidated( true );
+            UserService userService = getUserService( authorizationHeader );
+            userService.createUser( user );
+            // END SNIPPET: create-user
+            user = userService.getUser( "toto" );
+            assertNotNull( user );
+            assertEquals( "toto the king", user.getFullName() );
+            assertEquals( "toto@toto.fr", user.getEmail() );
+            getLoginService( encode( "toto", "foo123" ) ).pingWithAutz();
+
+            userService.lockUser( "toto" );
+
+            assertTrue( userService.getUser( "toto" ).isLocked() );
+
+            userService.unlockUser( "toto" );
+
+            assertFalse( userService.getUser( "toto" ).isLocked() );
+        }
+        finally
+        {
+            getUserService( authorizationHeader ).deleteUser( "toto" );
+            getUserService( authorizationHeader ).removeFromCache( "toto" );
+            assertNull( getUserService( authorizationHeader ).getUser( "toto" ) );
+        }
     }
 
     public void guestUserCreate()
