@@ -222,6 +222,16 @@
       </roles>
       <timezone>+1</timezone>
     </developer>
+    <developer>
+      <id>alecharp</id>
+      <name>Adrien Lecharpentier</name>
+      <email>alecharp@apache.org</email>
+      <organization>ASF</organization>
+      <roles>
+        <role>Committer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
     
     <!-- Emeritus Committers -->
 
@@ -447,9 +457,6 @@
     </contributor>
     <contributor>
       <name>Chris Graham</name>
-    </contributor>
-    <contributor>
-      <name>Adrien Lecharpentier</name>
     </contributor>
     <contributor>
       <name>Fredrik Jonson</name>
