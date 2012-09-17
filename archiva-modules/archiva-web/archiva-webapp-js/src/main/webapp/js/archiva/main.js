@@ -127,15 +127,16 @@ function(jquery,ui,sammy,tmpl) {
       dataType: 'json',
       success: function(data) {
         //var disableRegistration=data.disableRegistration;
+        var topbarMenu=$("#topbar-menu");
         if( data){
           $.log("disableRegistration");
-          $("#topbar-menu").find("#register-link" ).hide();
+          topbarMenu.find("#register-link" ).hide();
         }
         $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
             type: "GET",
             dataType: 'json',
             success: function(data) {
-              var organisationLogo=$("#main-content").find("#organisation-logo");
+              var organisationLogo=topbarMenu.find("#organisation-logo");
               if(data.url){
                 var url = data.url.startsWith("http://") || data.url.startsWith("https://") ? data.url : "http://"+data.url;
                 var link="<a href='"+url+"' class='brand'>";
