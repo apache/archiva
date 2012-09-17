@@ -644,6 +644,7 @@ function(jquery,ui,sammy,tmpl) {
       dataType: 'json',
       success: function(data) {
         var adminExists = data;
+        window.archivaModel.adminExists=adminExists;
         var createAdminLink=$("#create-admin-link");
         if (adminExists == false) {
           createAdminLink.show();

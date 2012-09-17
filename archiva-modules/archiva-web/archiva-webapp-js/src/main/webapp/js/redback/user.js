@@ -277,6 +277,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
       dataType: 'json',
       success: function(data) {
         var adminExists = data;
+        window.archivaModel.adminExists=adminExists;
         if (adminExists == false) {
 
           window.redbackModel.createUser=true;

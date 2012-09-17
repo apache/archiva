@@ -123,6 +123,10 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
     mainContent.removeAttr("data-bind");
     $("#body_content" ).find(".popover" ).hide();
     clearUserMessages();
+    if(window.archivaModel.adminExists==false){
+      displayErrorMessage($.i18n.prop("admin.creation.mandatory"));
+    }
+
   }
 
   /**
