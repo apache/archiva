@@ -37,6 +37,8 @@ Apache Archiva legacy repository support configuration
   reference. Archiva will check that the entered artifact reference matches
   the legacy path, to avoid corrupted data in repository.
 
+[../images/legacy-support-list.png]
+
   For example:
 
     * Path: <<<jaxen/jars/jaxen-1.0-FCS-full.jar>>>
@@ -57,5 +59,7 @@ Apache Archiva legacy repository support configuration
   By default, <<<jaxen-1.0-FCS-full>>> is registered, as it is used by some core
   Maven 1 plugins (however this is not the case if you upgraded from a previous
   version and retained your configuration file).
+
+[../images/legacy-support-add.png]
   
 
