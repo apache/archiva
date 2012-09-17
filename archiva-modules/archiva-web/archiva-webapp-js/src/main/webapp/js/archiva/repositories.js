@@ -728,6 +728,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             activateRemoteRepositoryEditTab();
             mainContent.find("#remote-repository-edit-li a").html($.i18n.prop('edit'));
             activateRemoteRepositoryFormValidation();
+            activatePopoverDoc();
           }
       })
 
@@ -979,6 +980,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
               viewModel.networkProxies(mapNetworkProxies(data));
               ko.applyBindings(viewModel,$("#main-content" ).find("#remote-repository-edit").get(0));
               activateRemoteRepositoryFormValidation();
+              activatePopoverDoc();
             }
         })
       }

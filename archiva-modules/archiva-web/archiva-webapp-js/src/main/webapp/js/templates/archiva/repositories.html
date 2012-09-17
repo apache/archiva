@@ -362,6 +362,7 @@
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
+        <th>${$.i18n.prop('description')}</th>
         <th>${$.i18n.prop('remoterepository.downloadremoteindex')}</th>
       </tr>
   </thead>
@@ -483,6 +484,11 @@
           <label class="control-label" for="cronExpression">${$.i18n.prop('cronExpression')}</label>
           <div class="controls">
             <input type="text" id="cronExpression" name="cronExpression" size="40" data-bind="value: remoteRepository.cronExpression"/>
+            <a class="btn btn-warning btn-mini popover-doc" id="cronExpression-info-button"
+               data-original-title="${$.i18n.prop('cronExpression.help.title')}"
+               data-content="${$.i18n.prop('cronExpression.help.content')}">
+                <i class="icon-question-sign icon-white"></i>
+            </a>
           </div>
         </div>
         <div class="control-group">
