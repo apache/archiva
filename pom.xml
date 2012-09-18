@@ -74,7 +74,7 @@
     <redback.registry.version>2.0-SNAPSHOT</redback.registry.version>
     <redback.spring-utils.version>2.0-SNAPSHOT</redback.spring-utils.version>
     <redback.taskqueue.version>2.0-SNAPSHOT</redback.taskqueue.version>
-    <slf4j.version>1.7.0</slf4j.version>
+    <slf4j.version>1.7.1</slf4j.version>
     <log4j.version>2.0-alpha2</log4j.version>
 
     <spring.version>3.1.2.RELEASE</spring.version>
