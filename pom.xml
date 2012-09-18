@@ -92,7 +92,7 @@
     <httpclient.core.version>4.1.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>7.4.5.v20110725</jettyVersion>
-    <jacksonVersion>1.9.7</jacksonVersion>
+    <jacksonVersion>1.9.9</jacksonVersion>
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
