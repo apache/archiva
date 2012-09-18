@@ -27,8 +27,8 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.filter.IncludesFilter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
@@ -59,7 +59,7 @@ import java.util.regex.Pattern;
 /**
  *
  */
-@Service( "repositoryMerger#maven2" )
+@Service ("repositoryMerger#maven2")
 public class Maven2RepositoryMerger
     implements RepositoryMerger
 {
@@ -80,8 +80,8 @@ public class Maven2RepositoryMerger
 
     @Inject
     public Maven2RepositoryMerger(
-        @Named( value = "archivaConfiguration#default" ) ArchivaConfiguration archivaConfiguration,
-        @Named( value = "repositoryPathTranslator#maven2" ) RepositoryPathTranslator repositoryPathTranslator )
+        @Named (value = "archivaConfiguration#default") ArchivaConfiguration archivaConfiguration,
+        @Named (value = "repositoryPathTranslator#maven2") RepositoryPathTranslator repositoryPathTranslator )
     {
         this.configuration = archivaConfiguration;
         this.pathTranslator = repositoryPathTranslator;
@@ -93,29 +93,59 @@ public class Maven2RepositoryMerger
     }
 
     public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
-        throws Exception
+        throws RepositoryMergerException
     {
 
-        List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts( sourceRepoId );
-        for ( ArtifactMetadata artifactMetadata : artifactsInSourceRepo )
+        try
         {
-            artifactMetadata.setRepositoryId( targetRepoId );
-            createFolderStructure( sourceRepoId, targetRepoId, artifactMetadata );
+            List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts( sourceRepoId );
+            for ( ArtifactMetadata artifactMetadata : artifactsInSourceRepo )
+            {
+                artifactMetadata.setRepositoryId( targetRepoId );
+                createFolderStructure( sourceRepoId, targetRepoId, artifactMetadata );
+            }
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
         }
     }
 
     // TODO when UI needs a subset to merge
     public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId,
                        Filter<ArtifactMetadata> filter )
-        throws Exception
+        throws RepositoryMergerException
     {
-        List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
-        for ( ArtifactMetadata metadata : sourceArtifacts )
+        try
         {
-            if ( filter.accept( metadata ) )
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
+            for ( ArtifactMetadata metadata : sourceArtifacts )
             {
-                createFolderStructure( sourceRepoId, targetRepoId, metadata );
+                if ( filter.accept( metadata ) )
+                {
+                    createFolderStructure( sourceRepoId, targetRepoId, metadata );
+                }
             }
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
         }
     }
 
@@ -206,7 +236,7 @@ public class Maven2RepositoryMerger
             if ( versionMetaDataFileInSourceRepo.exists() )
             {//Pattern quote for windows path
                 String relativePathToVersionMetadataFile =
-                     versionMetaDataFileInSourceRepo.getAbsolutePath().split( Pattern.quote( sourceRepoPath ) )[1];
+                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( Pattern.quote( sourceRepoPath ) )[1];
                 File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !versionMetaDataFileInTargetRepo.exists() )
@@ -352,30 +382,36 @@ public class Maven2RepositoryMerger
 
     public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
                                                            String targetRepo )
-        throws Exception
+        throws RepositoryMergerException
     {
-        List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
-        List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
-        List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
-
-        for ( ArtifactMetadata targetArtifact : targetArtifacts )
+        try
         {
-            for ( ArtifactMetadata sourceArtifact : sourceArtifacts )
+            List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
+            List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
+
+            for ( ArtifactMetadata targetArtifact : targetArtifacts )
             {
-                if ( isEquals( targetArtifact, sourceArtifact ) )
+                for ( ArtifactMetadata sourceArtifact : sourceArtifacts )
                 {
-                    if ( !conflictsArtifacts.contains( sourceArtifact ) )
+                    if ( isEquals( targetArtifact, sourceArtifact ) )
                     {
-                        conflictsArtifacts.add( sourceArtifact );
+                        if ( !conflictsArtifacts.contains( sourceArtifact ) )
+                        {
+                            conflictsArtifacts.add( sourceArtifact );
+                        }
                     }
                 }
             }
-        }
 
-        sourceArtifacts.removeAll( conflictsArtifacts );
-        Filter<ArtifactMetadata> artifactsWithOutConflicts = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-//        merge( sourceRepo, targetRepo, artifactsWithOutConflicts );
-        return conflictsArtifacts;
+            sourceArtifacts.removeAll( conflictsArtifacts );
+
+            return conflictsArtifacts;
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new RepositoryMergerException( e.getMessage(), e );
+        }
     }
 
     private boolean isEquals( ArtifactMetadata sourceArtifact, ArtifactMetadata targetArtifact )

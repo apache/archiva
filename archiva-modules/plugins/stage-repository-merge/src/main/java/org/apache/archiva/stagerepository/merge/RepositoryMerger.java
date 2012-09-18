@@ -28,13 +28,13 @@ import java.util.List;
 public interface RepositoryMerger
 {
     void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
-        throws Exception;
+        throws RepositoryMergerException;
 
     void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId,
                 Filter<ArtifactMetadata> filter )
-        throws Exception;
+        throws RepositoryMergerException;
 
     List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
                                                     String targetRepo )
-        throws Exception;
+        throws RepositoryMergerException;
 }
