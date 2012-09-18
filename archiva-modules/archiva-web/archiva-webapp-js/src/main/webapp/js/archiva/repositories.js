@@ -978,7 +978,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             type: "GET",
             dataType: 'json',
             success: function(data) {
-              var viewModel = new RemoteRepositoryViewModel(new RemoteRepository(),false,remoteRepositoriesViewModel);
+              var remoteRepo=new RemoteRepository();
+              remoteRepo.cronExpression("0 0 08 ? * SUN");
+              var viewModel = new RemoteRepositoryViewModel(remoteRepo,false,remoteRepositoriesViewModel);
               viewModel.networkProxies(mapNetworkProxies(data));
               ko.applyBindings(viewModel,$("#main-content" ).find("#remote-repository-edit").get(0));
               activateRemoteRepositoryFormValidation();
