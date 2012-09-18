@@ -959,7 +959,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     mainContent.find("#managed-repositories-pills").on('show', function (e) {
       var mainContent = $("#main-content");
       if ($(e.target).attr("href")=="#managed-repository-edit") {
-        var viewModel = new ManagedRepositoryViewModel(new ManagedRepository(),false,managedRepositoriesViewModel);
+        var managedRepo=new ManagedRepository();
+        managedRepo.cronExpression("0 0 * * * ?");
+        var viewModel = new ManagedRepositoryViewModel(managedRepo,false,managedRepositoriesViewModel);
         ko.applyBindings(viewModel,mainContent.find("#managed-repository-edit").get(0));
         activateManagedRepositoryFormValidation();
         activatePopoverDoc();
