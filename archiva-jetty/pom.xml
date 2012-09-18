@@ -39,12 +39,6 @@
       <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-docs</artifactId>
-      <type>zip</type>
-      <classifier>docs</classifier>
-    </dependency>
     <!-- Runtime dependencies that need to be included in the generated binaries -->
     <dependency>
       <groupId>org.eclipse.jetty</groupId>

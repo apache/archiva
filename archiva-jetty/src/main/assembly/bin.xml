@@ -115,14 +115,6 @@
       <fileMode>0755</fileMode>
       <directoryMode>0755</directoryMode>
     </dependencySet>
-    <dependencySet>
-      <unpack>true</unpack>
-      <includes>
-        <include>org.apache.archiva:archiva-docs:zip:docs</include>
-      </includes>
-      <fileMode>0755</fileMode>
-      <directoryMode>0755</directoryMode>
-    </dependencySet>
   </dependencySets>
 </assembly>
 
