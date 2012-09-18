@@ -26,6 +26,7 @@ import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
+import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
 import org.apache.archiva.rest.api.services.PingService;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
@@ -54,7 +55,7 @@ import java.util.Date;
 /**
  * @author Olivier Lamy
  */
-@RunWith (ArchivaBlockJUnit4ClassRunner.class)
+@RunWith ( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
@@ -122,6 +123,22 @@ public abstract class AbstractArchivaRestTest
         return getRepositoriesService( null );
     }
 
+    protected MergeRepositoriesService getMergeRepositoriesService()
+    {
+        MergeRepositoriesService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       MergeRepositoriesService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+
+        if ( authorizationHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authorizationHeader );
+        }
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
+        return service;
+    }
 
     protected RepositoriesService getRepositoriesService( String authzHeader )
     {
@@ -398,6 +415,12 @@ public abstract class AbstractArchivaRestTest
     protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan )
         throws Exception
     {
+        createAndIndexRepo( testRepoId, repoPath, scan, false );
+    }
+
+    protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan, boolean stageNeeded )
+        throws Exception
+    {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
         {
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, false );
@@ -417,6 +440,8 @@ public abstract class AbstractArchivaRestTest
         managedRepository.setIndexDirectory(
             System.getProperty( "java.io.tmpdir" ) + "/target/.index-" + Long.toString( new Date().getTime() ) );
 
+        managedRepository.setStageRepoNeeded( stageNeeded );
+
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
 
@@ -435,8 +460,15 @@ public abstract class AbstractArchivaRestTest
     protected void createAndIndexRepo( String testRepoId, String repoPath )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, repoPath, true );
+        createAndIndexRepo( testRepoId, repoPath, true, false );
     }
+
+    protected void createStagedNeededAndIndexRepo( String testRepoId, String repoPath )
+        throws Exception
+    {
+        createAndIndexRepo( testRepoId, repoPath, true, true );
+    }
+
 
     protected void deleteTestRepo( String id )
         throws Exception

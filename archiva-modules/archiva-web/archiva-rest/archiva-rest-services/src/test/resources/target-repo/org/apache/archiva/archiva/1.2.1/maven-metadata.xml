@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<metadata>
+  <groupId>org.apache.archiva</groupId>
+  <artifactId>archiva</artifactId>
+  <version>1.2.1</version>
+  <versioning>
+    <lastUpdated>20100702152308</lastUpdated>
+  </versioning>
+</metadata>

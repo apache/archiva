@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
@@ -29,6 +30,7 @@ import java.util.Date;
  * For more information, see the
  * <a href="{@docRoot}/../metadata-content-model.html" target="_top">Metadata Content Model</a>.
  */
+@XmlRootElement ( name = "artifactMetadata" )
 public class ArtifactMetadata
     extends FacetedMetadata
 {

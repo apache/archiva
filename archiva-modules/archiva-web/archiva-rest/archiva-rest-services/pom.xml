@@ -140,6 +140,10 @@
       <artifactId>archiva-proxy</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>stage-repository-merge</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
     </dependency>
@@ -406,6 +410,8 @@
               <exclude>src/test/repo-with-osgi/**</exclude>
               <exclude>src/test/repo-with-classifier-only/**</exclude>
               <exclude>src/test/repo-with-snapshots/**</exclude>
+              <exclude>src/test/resources/target-repo/**</exclude>
+              <exclude>src/test/resources/test-repository-stage/**</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -442,6 +448,24 @@
             <!--org.apache.jackrabbit.minMemoryPerCache>1</org.apache.jackrabbit.minMemoryPerCache-->
           </systemPropertyVariables>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>test-repository</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>test-repository</includeArtifactIds>
+              <outputDirectory>target/test-repository</outputDirectory>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

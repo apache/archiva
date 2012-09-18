@@ -74,6 +74,7 @@ import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -85,6 +86,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
