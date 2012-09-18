@@ -34,26 +34,26 @@ import java.util.Locale;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-public class ArtifactDownloadInfoBuilder
+public class ArtifactBuilder
 {
 
     private ManagedRepositoryContent managedRepositoryContent;
 
     private ArtifactMetadata artifactMetadata;
 
-    public ArtifactDownloadInfoBuilder()
+    public ArtifactBuilder()
     {
         // no op
     }
 
 
-    public ArtifactDownloadInfoBuilder withManagedRepositoryContent( ManagedRepositoryContent managedRepositoryContent )
+    public ArtifactBuilder withManagedRepositoryContent( ManagedRepositoryContent managedRepositoryContent )
     {
         this.managedRepositoryContent = managedRepositoryContent;
         return this;
     }
 
-    public ArtifactDownloadInfoBuilder forArtifactMetadata( ArtifactMetadata artifactMetadata )
+    public ArtifactBuilder forArtifactMetadata( ArtifactMetadata artifactMetadata )
     {
         this.artifactMetadata = artifactMetadata;
         return this;

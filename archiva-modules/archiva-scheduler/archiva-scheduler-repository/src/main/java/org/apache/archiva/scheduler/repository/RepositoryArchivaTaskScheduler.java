@@ -19,21 +19,21 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.redback.components.scheduler.Scheduler;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
+import org.apache.archiva.redback.components.scheduler.Scheduler;
 import org.apache.archiva.redback.components.taskqueue.TaskQueue;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
-import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -54,7 +54,7 @@ import java.util.Set;
 /**
  * Default implementation of a scheduling component for archiva.
  */
-@Service( "archivaTaskScheduler#repository" )
+@Service ("archivaTaskScheduler#repository")
 public class RepositoryArchivaTaskScheduler
     implements ArchivaTaskScheduler<RepositoryTask>, ConfigurationListener
 {
@@ -73,7 +73,7 @@ public class RepositoryArchivaTaskScheduler
      *
      */
     @Inject
-    @Named( value = "taskQueue#repository-scanning" )
+    @Named (value = "taskQueue#repository-scanning")
     private TaskQueue repositoryScanningQueue;
 
     /**
@@ -86,12 +86,11 @@ public class RepositoryArchivaTaskScheduler
      *
      */
     @Inject
-    @Named( value = "repositoryStatisticsManager#default" )
+    @Named (value = "repositoryStatisticsManager#default")
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
      * TODO: could have multiple implementations
-     *
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -174,7 +173,7 @@ public class RepositoryArchivaTaskScheduler
 
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         synchronized ( repositoryScanningQueue )
@@ -201,7 +200,7 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         synchronized ( repositoryScanningQueue )
@@ -261,6 +260,7 @@ public class RepositoryArchivaTaskScheduler
             }
         }
     }
+
     public void configurationEvent( ConfigurationEvent event )
     {
         if ( event.getType() == ConfigurationEvent.SAVED )
@@ -298,7 +298,7 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig,
                                          MetadataRepository metadataRepository )
         throws MetadataRepositoryException
@@ -334,13 +334,13 @@ public class RepositoryArchivaTaskScheduler
     {
         if ( repoConfig.getRefreshCronExpression() == null )
         {
-            log.warn( "Skipping job, no cron expression for " + repoConfig.getId() );
+            log.warn( "Skipping job, no cron expression for {}", repoConfig.getId() );
             return;
         }
 
         if ( !repoConfig.isScanned() )
         {
-            log.warn( "Skipping job, repository scannable has been disabled for " + repoConfig.getId() );
+            log.warn( "Skipping job, repository scannable has been disabled for {}", repoConfig.getId() );
             return;
         }
 
@@ -349,14 +349,15 @@ public class RepositoryArchivaTaskScheduler
 
         if ( !cronValidator.validate( cronString ) )
         {
-            log.warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId()
-                          + "] is invalid.  Defaulting to hourly." );
+            log.warn( "Cron expression [{}] for repository [{}] is invalid.  Defaulting to hourly.", cronString,
+                      repoConfig.getId() );
             cronString = CRON_HOURLY;
         }
 
         // setup the unprocessed artifact job
         JobDetailImpl repositoryJob =
-            new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, RepositoryTaskJob.class );
+            new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
+                               RepositoryTaskJob.class );
 
         repositoryJob.getJobDataMap().put( TASK_QUEUE, repositoryScanningQueue );
         repositoryJob.getJobDataMap().put( TASK_REPOSITORY, repoConfig.getId() );
@@ -364,7 +365,8 @@ public class RepositoryArchivaTaskScheduler
         try
         {
             CronTriggerImpl trigger =
-                new CronTriggerImpl( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, cronString );
+                new CronTriggerImpl( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
+                                     cronString );
 
             jobs.add( REPOSITORY_JOB + ":" + repoConfig.getId() );
             scheduler.scheduleJob( repositoryJob, trigger );

@@ -72,8 +72,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.retentionCount=ko.observable(retentionCount);
     this.retentionCount.subscribe(function(newValue){self.modified(true)});
 
-    //private boolean scanned = false;
-    this.scanned=ko.observable(scanned);
+    //private boolean scanned = true;
+    this.scanned=ko.observable(scanned?scanned:true);
     this.scanned.subscribe(function(newValue){self.modified(true)});
 
     //private boolean deleteReleasedSnapshots;

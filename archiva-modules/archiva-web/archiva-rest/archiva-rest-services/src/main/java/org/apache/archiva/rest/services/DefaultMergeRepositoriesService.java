@@ -18,6 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -43,15 +44,19 @@ public class DefaultMergeRepositoriesService
     @Named ( value = "repositoryMerger#maven2" )
     private Maven2RepositoryMerger repositoryMerger;
 
-    public List<ArtifactMetadata> getMergeConflictedArtifacts( String repositoryId )
+
+    public List<Artifact> getMergeConflictedArtifacts( String repositoryId )
         throws ArchivaRestServiceException
     {
         String sourceRepoId = repositoryId + "-stage";
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            return repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId,
-                                                             repositoryId );
+            List<ArtifactMetadata> artifactMetadatas =
+                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId,
+                                                          repositoryId );
+
+            return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( Exception e )
         {
@@ -61,5 +66,6 @@ public class DefaultMergeRepositoriesService
         {
             repositorySession.close();
         }
+
     }
 }

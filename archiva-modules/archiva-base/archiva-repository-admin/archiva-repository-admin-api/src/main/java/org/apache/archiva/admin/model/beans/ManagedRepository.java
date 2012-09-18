@@ -51,7 +51,7 @@ public class ManagedRepository
      */
     private ManagedRepository stagingRepository;
 
-    private boolean scanned = false;
+    private boolean scanned = true;
 
 
     /**

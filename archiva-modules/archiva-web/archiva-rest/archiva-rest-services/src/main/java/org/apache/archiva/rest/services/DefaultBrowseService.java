@@ -51,8 +51,8 @@ import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
+import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
-import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -686,25 +686,9 @@ public class DefaultBrowseService
                     metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
                 Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
 
-                for ( ArtifactMetadata artifact : artifacts )
-                {
-
-                    ArtifactDownloadInfoBuilder builder =
-                        new ArtifactDownloadInfoBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
-                            repositoryContentFactory.getManagedRepositoryContent( repoId ) );
-                    Artifact art = builder.build();
-
-                    art.setUrl( getArtifactUrl( art ) );
-                    artifactDownloadInfos.add( art );
-                }
+                return buildArtifacts( artifacts, repositoryId );
 
             }
-        }
-        catch ( RepositoryException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         catch ( MetadataResolutionException e )
         {

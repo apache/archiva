@@ -441,6 +441,7 @@ public abstract class AbstractArchivaRestTest
             System.getProperty( "java.io.tmpdir" ) + "/target/.index-" + Long.toString( new Date().getTime() ) );
 
         managedRepository.setStageRepoNeeded( stageNeeded );
+        managedRepository.setSnapshots( true );
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
@@ -463,10 +464,17 @@ public abstract class AbstractArchivaRestTest
         createAndIndexRepo( testRepoId, repoPath, true, false );
     }
 
-    protected void createStagedNeededAndIndexRepo( String testRepoId, String repoPath )
+    protected void createStagedNeededRepo( String testRepoId, String repoPath, boolean scan )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, repoPath, true, true );
+        createAndIndexRepo( testRepoId, repoPath, scan, true );
+        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+        repositoriesService.scanRepositoryDirectoriesNow( testRepoId );
+        if ( scan )
+        {
+            repositoriesService.scanRepositoryNow( testRepoId + "-stage", true );
+            repositoriesService.scanRepositoryDirectoriesNow( testRepoId + "-stage" );
+        }
     }
 
 

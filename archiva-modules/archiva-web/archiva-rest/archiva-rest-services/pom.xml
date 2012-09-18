@@ -396,6 +396,11 @@
       <version>${tomcat7Version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-metadata-consumer</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
@@ -408,10 +413,9 @@
           <configuration>
             <excludes>
               <exclude>src/test/repo-with-osgi/**</exclude>
+              <exclude>src/test/repo-with-osgi-stage/**</exclude>
               <exclude>src/test/repo-with-classifier-only/**</exclude>
               <exclude>src/test/repo-with-snapshots/**</exclude>
-              <exclude>src/test/resources/target-repo/**</exclude>
-              <exclude>src/test/resources/test-repository-stage/**</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -443,29 +447,12 @@
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <basedir>${basedir}</basedir>
+            <builddir>${project.build.directory}</builddir>
             <org.apache.jackrabbit.maxCacheMemory>1</org.apache.jackrabbit.maxCacheMemory>
             <org.apache.jackrabbit.maxMemoryPerCache>1</org.apache.jackrabbit.maxMemoryPerCache>
             <!--org.apache.jackrabbit.minMemoryPerCache>1</org.apache.jackrabbit.minMemoryPerCache-->
           </systemPropertyVariables>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>test-repository</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeArtifactIds>test-repository</includeArtifactIds>
-              <outputDirectory>target/test-repository</outputDirectory>
-              <excludes>META-INF/**</excludes>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

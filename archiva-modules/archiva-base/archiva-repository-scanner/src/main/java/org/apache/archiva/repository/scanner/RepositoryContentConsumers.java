@@ -22,16 +22,16 @@ package org.apache.archiva.repository.scanner;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.utils.BaseFile;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
-import org.apache.archiva.common.utils.BaseFile;
-import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -47,10 +47,8 @@ import java.util.Map;
 
 /**
  * RepositoryContentConsumerUtil
- *
- *
  */
-@Service("repositoryContentConsumers")
+@Service ("repositoryContentConsumers")
 public class RepositoryContentConsumers
     implements ApplicationContextAware
 {
@@ -163,22 +161,23 @@ public class RepositoryContentConsumers
     public synchronized List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
         throws RepositoryAdminException
     {
-        if ( selectedKnownConsumers == null )
+        // FIXME only for testing
+        if ( selectedKnownConsumers != null )
         {
-            List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
-
-            List<String> knownSelected = getSelectedKnownConsumerIds();
-
-            for ( KnownRepositoryContentConsumer consumer : getAvailableKnownConsumers() )
-            {
-                if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
-                {
-                    ret.add( consumer );
-                }
-            }
-            this.selectedKnownConsumers = ret;
+            return selectedKnownConsumers;
         }
-        return selectedKnownConsumers;
+        List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
+
+        List<String> knownSelected = getSelectedKnownConsumerIds();
+
+        for ( KnownRepositoryContentConsumer consumer : getAvailableKnownConsumers() )
+        {
+            if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            {
+                ret.add( consumer );
+            }
+        }
+        return ret;
     }
 
     /**
@@ -191,23 +190,27 @@ public class RepositoryContentConsumers
     public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
         throws RepositoryAdminException
     {
-        if ( selectedInvalidConsumers == null )
+
+        // FIXME only for testing
+        if ( selectedInvalidConsumers != null )
         {
-            List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
-
-            List<String> invalidSelected = getSelectedInvalidConsumerIds();
-
-            for ( InvalidRepositoryContentConsumer consumer : getAvailableInvalidConsumers() )
-            {
-                if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
-                {
-                    ret.add( consumer );
-                }
-            }
-            selectedInvalidConsumers = ret;
+            return selectedInvalidConsumers;
         }
-        return selectedInvalidConsumers;
+
+        List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
+
+        List<String> invalidSelected = getSelectedInvalidConsumerIds();
+
+        for ( InvalidRepositoryContentConsumer consumer : getAvailableInvalidConsumers() )
+        {
+            if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            {
+                ret.add( consumer );
+            }
+        }
+        return ret;
     }
+
 
     /**
      * Get the list of {@link KnownRepositoryContentConsumer} objects that are

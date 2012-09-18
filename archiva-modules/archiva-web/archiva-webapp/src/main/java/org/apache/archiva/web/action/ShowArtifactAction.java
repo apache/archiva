@@ -38,7 +38,7 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.maven2.model.Artifact;
-import org.apache.archiva.rest.services.utils.ArtifactDownloadInfoBuilder;
+import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -219,7 +219,7 @@ public class ShowArtifactAction
                             this.artifacts.put( artifact.getVersion(), l );
                         }
 
-                        ArtifactDownloadInfoBuilder builder = new ArtifactDownloadInfoBuilder().forArtifactMetadata(
+                        ArtifactBuilder builder = new ArtifactBuilder().forArtifactMetadata(
                             artifact ).withManagedRepositoryContent(
                             repositoryFactory.getManagedRepositoryContent( repositoryId ) );
                         l.add( builder.build() );

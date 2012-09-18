@@ -27,7 +27,8 @@ import java.util.List;
 /**
  * A consumer of content (files) in the repository.
  *
- *
+ * olamy: TODO/FIXME we must review this api, in the current situation we use prototype beans rather than singletons
+ * this is a bit memory consuming the better will be to ConsumerContext bean to transport repository context etc...
  */
 public interface RepositoryContentConsumer
     extends Consumer

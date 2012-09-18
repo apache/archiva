@@ -18,7 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
@@ -45,6 +45,6 @@ public interface MergeRepositoriesService
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
-    List<ArtifactMetadata> getMergeConflictedArtifacts( @PathParam ( "repositoryId" ) String repositoryId )
+    List<Artifact> getMergeConflictedArtifacts( @PathParam ( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 }
