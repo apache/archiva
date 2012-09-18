@@ -18,10 +18,12 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -33,13 +35,22 @@ public class MergeRepositoriesServiceTest
     public void mergeConflictedArtifacts()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        createStagedNeededAndIndexRepo( testRepoId, new File( "target/target-repo" ).getAbsolutePath() );
+        try
+        {
+            String testRepoId = "test-repo";
+            createStagedNeededAndIndexRepo( testRepoId, new File( "target/target-repo" ).getAbsolutePath() );
 
-        MergeRepositoriesService service = getMergeRepositoriesService();
+            MergeRepositoriesService service = getMergeRepositoriesService();
 
-        service.getMergeConflictedArtifacts( testRepoId );
+            List<ArtifactMetadata> artifactMetadatas = service.getMergeConflictedArtifacts( testRepoId );
 
-        deleteTestRepo( testRepoId );
+            log.info( "conflicts: {}", artifactMetadatas );
+
+            deleteTestRepo( testRepoId );
+        } catch( Exception e)
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
     }
 }

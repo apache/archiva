@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,6 +33,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
+@Service ( "mergeRepositoriesService#rest" )
 public class DefaultMergeRepositoriesService
     extends AbstractRestService
     implements MergeRepositoriesService

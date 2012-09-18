@@ -70,6 +70,7 @@
       <ref bean="browseService#rest"/>
       <ref bean="systemStatusService#rest"/>
       <ref bean="reportRepositoriesService#rest" />
+      <ref bean="mergeRepositoriesService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>
