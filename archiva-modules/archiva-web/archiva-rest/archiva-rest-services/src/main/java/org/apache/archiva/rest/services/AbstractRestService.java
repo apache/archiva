@@ -29,6 +29,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
@@ -37,6 +38,8 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
+import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
@@ -87,6 +90,10 @@ public abstract class AbstractRestService
 
     @Inject
     protected RepositoryContentFactory repositoryContentFactory;
+
+    @Inject
+    @Named ( value = "archivaTaskScheduler#repository" )
+    protected RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Context
     protected HttpServletRequest httpServletRequest;
@@ -271,5 +278,27 @@ public abstract class AbstractRestService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
+    }
+
+    protected Boolean doScanRepository( String repositoryId, boolean fullScan )
+    {
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
+        {
+            log.info( "scanning of repository with id {} already scheduled", repositoryId );
+            return Boolean.FALSE;
+        }
+        RepositoryTask task = new RepositoryTask();
+        task.setRepositoryId( repositoryId );
+        task.setScanAll( fullScan );
+        try
+        {
+            repositoryTaskScheduler.queueTask( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            log.error( "failed to schedule scanning of repo with id {}", repositoryId, e );
+            return false;
+        }
+        return true;
     }
 }

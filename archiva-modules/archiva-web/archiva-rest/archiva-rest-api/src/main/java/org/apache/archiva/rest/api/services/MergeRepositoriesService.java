@@ -48,4 +48,16 @@ public interface MergeRepositoriesService
     List<Artifact> getMergeConflictedArtifacts( @PathParam ( "sourceRepositoryId" ) String sourceRepositoryId,
                                                 @PathParam ( "targetRepositoryId" ) String targetRepositoryId )
         throws ArchivaRestServiceException;
+
+    @Path ( "mergeRepositories/{sourceRepositoryId}/{targetRepositoryId}/{skipConflicts}" )
+    @GET
+    @RedbackAuthorization ( noPermission = true )
+    /**
+     * <b>permissions are checked in impl</b>
+     * @since 1.4-M3
+     */
+    void mergeRepositories( @PathParam ( "sourceRepositoryId" ) String sourceRepositoryId,
+                            @PathParam ( "targetRepositoryId" ) String targetRepositoryId,
+                            @PathParam ( "skipConflicts" ) boolean skipConflicts )
+        throws ArchivaRestServiceException;
 }

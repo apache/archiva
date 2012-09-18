@@ -186,6 +186,30 @@ public class MergeAction
         }
     }
 
+    private void mergeWithOutSnapshots( MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
+                                        String sourceRepoId, String repoid )
+        throws Exception
+    {
+        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
+        for ( ArtifactMetadata metadata : sourceArtifacts )
+        {
+
+            if ( metadata.getProjectVersion().contains( VersionUtil.SNAPSHOT ) )
+            {
+                artifactsWithOutSnapshots.add( metadata );
+            }
+            else
+            {
+                triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
+            }
+
+        }
+        sourceArtifacts.removeAll( artifactsWithOutSnapshots );
+
+        Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
+        repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
+    }
+
     public String mergeWithOutConlficts()
     {
         sourceRepoId = repoid + "-stage";
@@ -289,29 +313,6 @@ public class MergeAction
         conflictSourceArtifactsToBeDisplayed.addAll( map.values() );
     }
 
-    private void mergeWithOutSnapshots( MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
-                                        String sourceRepoId, String repoid )
-        throws Exception
-    {
-        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
-        for ( ArtifactMetadata metadata : sourceArtifacts )
-        {
-
-            if ( metadata.getProjectVersion().contains( VersionUtil.SNAPSHOT ) )
-            {
-                artifactsWithOutSnapshots.add( metadata );
-            }
-            else
-            {
-                triggerAuditEvent( repoid, metadata.getId(), AuditEvent.MERGING_REPOSITORIES );
-            }
-
-        }
-        sourceArtifacts.removeAll( artifactsWithOutSnapshots );
-
-        Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-        repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
-    }
 
     private void scanRepository()
     {

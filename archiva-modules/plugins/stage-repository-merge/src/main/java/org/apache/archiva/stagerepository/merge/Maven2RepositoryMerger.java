@@ -35,7 +35,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.xml.XMLException;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,8 +43,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -278,19 +276,9 @@ public class Maven2RepositoryMerger
     private void copyFile( File sourceFile, File targetFile )
         throws IOException
     {
-        FileOutputStream out = new FileOutputStream( targetFile );
-        FileInputStream input = new FileInputStream( sourceFile );
 
-        // IOUtils internally buffers the streams
-        try
-        {
-            IOUtils.copy( input, out );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( out );
-            IOUtils.closeQuietly( input );
-        }
+        FileUtils.copyFile( sourceFile, targetFile );
+
     }
 
     private void updateProjectMetadata( File projectMetaDataFileIntargetRepo, ArtifactMetadata artifactMetadata,

@@ -70,8 +70,6 @@ import org.apache.archiva.scheduler.indexing.ArchivaIndexingTaskExecutor;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
-import org.apache.archiva.scheduler.repository.ArchivaRepositoryScanningTaskExecutor;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.RepositoryTask;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -114,10 +112,6 @@ public class DefaultRepositoriesService
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
-    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
-
-    @Inject
     @Named ( value = "taskExecutor#indexing" )
     private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
 
@@ -157,24 +151,7 @@ public class DefaultRepositoriesService
 
     public Boolean scanRepository( String repositoryId, boolean fullScan )
     {
-        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
-        {
-            log.info( "scanning of repository with id {} already scheduled", repositoryId );
-            return Boolean.FALSE;
-        }
-        RepositoryTask task = new RepositoryTask();
-        task.setRepositoryId( repositoryId );
-        task.setScanAll( fullScan );
-        try
-        {
-            repositoryTaskScheduler.queueTask( task );
-        }
-        catch ( TaskQueueException e )
-        {
-            log.error( "failed to schedule scanning of repo with id {}", repositoryId, e );
-            return false;
-        }
-        return true;
+        return doScanRepository( repositoryId, fullScan );
     }
 
     public Boolean alreadyScanning( String repositoryId )
