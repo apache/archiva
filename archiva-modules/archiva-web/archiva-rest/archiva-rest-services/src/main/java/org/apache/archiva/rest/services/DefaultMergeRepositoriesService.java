@@ -45,18 +45,17 @@ public class DefaultMergeRepositoriesService
     private Maven2RepositoryMerger repositoryMerger;
 
 
-    public List<Artifact> getMergeConflictedArtifacts( String repositoryId )
+    public List<Artifact> getMergeConflictedArtifacts( String sourceRepositoryId, String targetRepositoryId )
         throws ArchivaRestServiceException
     {
-        String sourceRepoId = repositoryId + "-stage";
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             List<ArtifactMetadata> artifactMetadatas =
-                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepoId,
-                                                          repositoryId );
+                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
+                                                          targetRepositoryId );
 
-            return buildArtifacts( artifactMetadatas, repositoryId );
+            return buildArtifacts( artifactMetadatas, sourceRepositoryId );
         }
         catch ( Exception e )
         {

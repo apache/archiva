@@ -37,7 +37,7 @@ import java.util.List;
 @Path ( "/mergeRepositoriesService/" )
 public interface MergeRepositoriesService
 {
-    @Path ( "mergeConflictedArtifacts/{repositoryId}" )
+    @Path ( "mergeConflictedArtifacts/{sourceRepositoryId}/{targetRepositoryId}" )
     @GET
     @Produces ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization ( noPermission = true )
@@ -45,6 +45,7 @@ public interface MergeRepositoriesService
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
-    List<Artifact> getMergeConflictedArtifacts( @PathParam ( "repositoryId" ) String repositoryId )
+    List<Artifact> getMergeConflictedArtifacts( @PathParam ( "sourceRepositoryId" ) String sourceRepositoryId,
+                                                @PathParam ( "targetRepositoryId" ) String targetRepositoryId )
         throws ArchivaRestServiceException;
 }

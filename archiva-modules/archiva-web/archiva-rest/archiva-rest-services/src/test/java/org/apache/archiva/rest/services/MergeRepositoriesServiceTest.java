@@ -80,7 +80,7 @@ public class MergeRepositoriesServiceTest
 
             MergeRepositoriesService service = getMergeRepositoriesService();
 
-            List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( testRepoId );
+            List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( testRepoId + "-stage", testRepoId );
 
             log.info( "conflicts: {}", artifactMetadatas );
 
