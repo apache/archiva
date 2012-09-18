@@ -48,22 +48,22 @@ import java.util.List;
 /**
  *
  */
-@Controller( "mergeAction" )
-@Scope( "prototype" )
+@Controller ("mergeAction")
+@Scope ("prototype")
 public class MergeAction
     extends AbstractActionSupport
     implements Validateable, Preparable, Auditable
 {
 
     @Inject
-    @Named( value = "repositoryMerger#maven2" )
+    @Named (value = "repositoryMerger#maven2")
     private Maven2RepositoryMerger repositoryMerger;
 
     @Inject
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named (value = "archivaTaskScheduler#repository")
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private ManagedRepository repository;
@@ -321,19 +321,19 @@ public class MergeAction
 
         if ( repositoryTaskScheduler.isProcessingRepositoryTask( repoid ) )
         {
-            log.info( "Repository [" + repoid + "] task was already queued." );
+            log.info( "Repository [{}] task was already queued.", repoid );
         }
         else
         {
             try
             {
-                log.info( "Your request to have repository [" + repoid + "] be indexed has been queued." );
+                log.info( "Your request to have repository [{}] be indexed has been queued.", repoid );
                 repositoryTaskScheduler.queueTask( task );
             }
             catch ( TaskQueueException e )
             {
-                log.warn(
-                    "Unable to queue your request to have repository [" + repoid + "] be indexed: " + e.getMessage() );
+                log.warn( "Unable to queue your request to have repository [{}] be indexed: {}", repoid,
+                          e.getMessage() );
             }
         }
     }
