@@ -187,7 +187,7 @@ public class MetadataUpdaterConsumer
             }
             catch ( LayoutException e )
             {
-                log.info( "Not processing path that is not an artifact: " + path + " (" + e.getMessage() + ")" );
+                log.info( "Not processing path that is not an artifact: {} ({})", path, e.getMessage() );
             }
         }
     }
