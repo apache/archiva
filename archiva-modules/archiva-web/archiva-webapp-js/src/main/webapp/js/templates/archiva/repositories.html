@@ -86,14 +86,15 @@
         {{/each}}
         <th>Releases</th>
         <th>Snapshots</th>
-        <th title="${$.i18n.prop('managedrepository.scan.index')}">${$.i18n.prop('managedrepository.scan.grid.header')}</th>
+        <!--th title="${$.i18n.prop('managedrepository.scan.index')}">${$.i18n.prop('managedrepository.scan.grid.header')}</th-->
+        <th>${$.i18n.prop('managedrepository.actions')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
-        <th>${$.i18n.prop('description')}</th>
-        <th>${$.i18n.prop('managedrepository.pomsnippet')}</th>
+        <!--th>${$.i18n.prop('description')}</th-->
+
         <th title="${$.i18n.prop('managedrepository.stats')}">${$.i18n.prop('managedrepository.stats.grid.header')}</th>
-        <th title="${$.i18n.prop('managedrepository.scan.directories')}">${$.i18n.prop('managedrepository.scan.directories.grid.header')}</th>
+        <!--th title="${$.i18n.prop('managedrepository.scan.directories')}">${$.i18n.prop('managedrepository.scan.directories.grid.header')}</th-->
       </tr>
   </thead>
   <tbody>
@@ -117,13 +118,37 @@
                 <img src="images/dialog-error-22-22.png" title="${$.i18n.prop('snapshots.notincluded')}"/>
               {{/if}}
             </td>
-            <td>
-              <a href="#" data-bind="click: function(){ scanNow(row) }">
-                <span class="btn btn-success">
-                  <i class="icon-refresh icon-white"/>
-                </span>
-              </a>
-            </td>
+              <td>
+                <div class="btn-group">
+                  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Actions<span class="caret"></span> </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" data-bind="click: function(){ scanNow(row) }">
+                          <span class="btn btn-success">
+                            <i class="icon-refresh icon-white"></i>
+                          </span>
+                          ${$.i18n.prop('managedrepository.scan.grid.header')}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-bind="click: function(){directoriesScan(row)}">
+                          <span class="btn btn-warning">
+                            <i class="icon-repeat icon-white"></i>
+                          </span>
+                          ${$.i18n.prop('managedrepository.scan.directories.grid.header')}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-bind="click: function(){ showPomSnippet(row) }">
+                            <span class="btn btn-info">
+                              <i class="icon-repeat icon-white"></i>
+                            </span>
+                            ${$.i18n.prop('managedrepository.pomsnippet')}
+                        </a>
+                    </li>
+                  </ul>
+                </div>
+              </td>
             <td>
               <a href="#" data-bind="click: function(){ editManagedRepository(row) }">
                 <span class="btn btn-primary">
@@ -145,27 +170,19 @@
             {{else}}
               <td></td>
             {{/if}}
-            <td>
+            <!--td>
                 {{if row.description()}}
                 <a class="btn btn-warning btn-mini popover-doc" id="managedrepo-description-help"
-                   data-content="${row.description()}" data-title="${$.i18n.prop('description')}">
+                   data-content="${row.description()}" data-title="${$.i18n.prop('description')}"
+                   data-placement="left">
                     <i class="icon-question-sign icon-white"></i>
                 </a>
                 {{/if}}
-            </td>
-            <td><a href="#" data-bind="click: function(){ showPomSnippet(row) }">${$.i18n.prop('managedrepository.pomsnippet')}</a></td>
+            </td-->
             <td id="managedrepository-stats-${row.id()}">
               <img src="images/utilities-system-monitor-22-22.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
                    data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"
                    id="managedrepository-stats-img-${row.id()}"/>
-            </td>
-            <td>
-              <a href="#" data-bind="click: function(){directoriesScan(row)}">
-                <span class="btn btn-warning">
-                  <i class="icon-repeat icon-white"/>
-                </span>
-              </a>
-
             </td>
           </tr>
       {{/each}}
