@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,12 +37,11 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.*;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public class Maven2RepositoryMergerTest
     extends TestCase
 {
@@ -84,6 +84,10 @@ public class Maven2RepositoryMergerTest
     public void testMerge()
         throws Exception
     {
+        String targetRepoPath = "target" + File.separatorChar + "test-repository-target";
+        File mergedArtifact = new File( targetRepoPath,
+                                        "com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
+        assertFalse( mergedArtifact.exists() );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
@@ -97,7 +101,7 @@ public class Maven2RepositoryMergerTest
 
         ManagedRepositoryConfiguration targetRepo = new ManagedRepositoryConfiguration();
         targetRepo.setId( "target-rep" );
-        targetRepo.setLocation( "target" );
+        targetRepo.setLocation( targetRepoPath );
         c.addManagedRepository( testRepo );
         c.addManagedRepository( targetRepo );
         configuration.save( c );
@@ -105,6 +109,7 @@ public class Maven2RepositoryMergerTest
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( getArtifacts() );
         repositoryMerger.merge( metadataRepository, TEST_REPO_ID, "target-rep" );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
+        assertTrue( mergedArtifact.exists() );
     }
 
     @Test

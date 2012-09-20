@@ -261,7 +261,7 @@ public class Maven2RepositoryMerger
                 if ( !projectMetadataFileInTargetRepo.exists() )
                 {
 
-                    copyFile( projectMetadataFileInSourceRepo, projectMetadataFileInSourceRepo );
+                    copyFile( projectMetadataFileInSourceRepo, projectMetadataFileInTargetRepo );
                 }
                 else
                 {
