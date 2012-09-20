@@ -87,7 +87,15 @@ public class Maven2RepositoryMergerTest
         String targetRepoPath = "target" + File.separatorChar + "test-repository-target";
         File mergedArtifact = new File( targetRepoPath,
                                         "com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
+
+        File mavenMetadata = new File( targetRepoPath, "com/example/test/test-artifact/maven-metadata.xml" );
+
+        File pom = new File( targetRepoPath,
+                             "com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.pom" );
+
         assertFalse( mergedArtifact.exists() );
+        assertFalse( mavenMetadata.exists() );
+        assertFalse( pom.exists() );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
@@ -110,6 +118,8 @@ public class Maven2RepositoryMergerTest
         repositoryMerger.merge( metadataRepository, TEST_REPO_ID, "target-rep" );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
         assertTrue( mergedArtifact.exists() );
+        assertTrue( mavenMetadata.exists() );
+        assertTrue( pom.exists() );
     }
 
     @Test
