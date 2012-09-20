@@ -66,12 +66,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * FIXME review the staging mechanism to have a per user session one
  *
  * @author Olivier Lamy
  */
-@Service ("managedRepositoryAdmin#default")
+@Service ( "managedRepositoryAdmin#default" )
 public class DefaultManagedRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
@@ -82,7 +81,7 @@ public class DefaultManagedRepositoryAdmin
     public static final String STAGE_REPO_ID_END = "-stage";
 
     @Inject
-    @Named (value = "archivaTaskScheduler#repository")
+    @Named ( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Inject
@@ -162,13 +161,13 @@ public class DefaultManagedRepositoryAdmin
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
-            // TODO add staging repo information back too
             ManagedRepository repo =
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
                                        repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
-                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), false );
+                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(),
+                                       repoConfig.isStageRepoNeeded() );
             repo.setDescription( repoConfig.getDescription() );
             repo.setSkipPackedIndexCreation( repoConfig.isSkipPackedIndexCreation() );
             managedRepos.add( repo );
@@ -257,6 +256,7 @@ public class DefaultManagedRepositoryAdmin
         repository.setIndexDir( indexDir );
         repository.setDescription( description );
         repository.setSkipPackedIndexCreation( skipPackedIndexCreation );
+        repository.setStageRepoNeeded( stageRepoNeeded );
 
         try
         {

@@ -657,6 +657,15 @@
           </description>
           <defaultValue>false</defaultValue>
         </field>
+        <field>
+          <name>stageRepoNeeded</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            Need a staging repository
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
     </class>
     <class>
