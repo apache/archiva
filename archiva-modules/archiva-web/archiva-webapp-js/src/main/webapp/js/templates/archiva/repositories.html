@@ -146,6 +146,20 @@
                             ${$.i18n.prop('managedrepository.pomsnippet')}
                         </a>
                     </li>
+                    <li>
+                      {{if row.stageRepoNeeded()}}
+                        stage
+                      {{/if}}
+                    </li>
+                    <li>
+                        <!-- todo check archiva-merge-repository operation -->
+                        <a href="#" data-bind="click: function(){ mergeRepo(row) }">
+                            <span class="btn btn-info">
+                              <i class="icon-repeat icon-white"></i>
+                            </span>
+                            ${$.i18n.prop('managedrepository.mergerepo')}
+                        </a>
+                    </li>
                   </ul>
                 </div>
               </td>
@@ -1177,4 +1191,29 @@
     <div>
       <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
     </div>
+</script>
+
+
+<script id="merge-repo-dialog-content" type="text/html">
+    <div class="btn-group btn-group-vertical">
+      {{each(i, repository) repositories}}
+        <button class="btn" type="button" onclick="mergeRepositories(encodeURIComponent('${sourceRepoId}'),encodeURIComponent('${repository.id()}'))">${repository.name()}</button>
+      {{/each}}
+    </div>
+</script>
+
+<script id="merge-repo-skip-conflicts"  type="text/html">
+  <div>
+    <ul>
+      {{each(i, artifact) artifacts}}
+        <li>${artifact.groupId}:${artifact.artifactId}:${artifact.version}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <div>
+    <button class="btn btn-success" onclick="doMerge(encodeURIComponent('${sourceRepository}'),encodeURIComponent('${targetRepository}'),false);" type="button">${$.i18n.prop('managedrepository.merge.domerge')}</button>
+    {{if artifacts.length > 0}}
+      <button class="btn btn-warning" onclick="doMerge(encodeURIComponent('${sourceRepository}'),encodeURIComponent('${targetRepository}'),true);" type="button">${$.i18n.prop('managedrepository.merge.domerge.skipconflicts')}</button>
+    {{/if}}
+  </div>
 </script>

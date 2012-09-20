@@ -50,6 +50,8 @@ public class DefaultMergeRepositoriesService
     implements MergeRepositoriesService
 {
 
+    // FIXME check archiva-merge-repository to sourceRepoId
+
     @Inject
     @Named ( value = "repositoryMerger#maven2" )
     private Maven2RepositoryMerger repositoryMerger;

@@ -526,8 +526,108 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
     }
 
+    mergeRepo=function(managedRepository){
+      $("#user-messages" ).html(mediumSpinnerImg());
+      // is there any artifacts to merge ?
+      var artifactsNumberUrl = "restServices/archivaServices/browseService/artifacts/"+encodeURIComponent(managedRepository.id());
+      $.ajax(artifactsNumberUrl,{
+            type: "GET",
+            dataType: 'json',
+            success: function(data){
+              var artifacts=mapArtifacts(data);
+              $.log("artifactsNumber for '" + managedRepository.id() + "': " + artifacts.length);
+
+              if (artifacts<1){
+                displayWarningMessage($.i18n.prop("managedrepository.merge.noartifacts", managedRepository.id()));
+                return;
+              }
+
+              $.log("merge repo open dialog");
+              var dialogMergeRepo=$("#dialog-modal-merge-repo");
+              if (window.modalMergeRepoDialog==null) {
+                window.modalMergeRepoDialog = dialogMergeRepo.modal();
+
+              }
+
+              loadManagedRepositories(function(data){
+
+                var managedRepositories = $.map(mapManagedRepositories(data), function(item) {
+                    return item.id()==managedRepository.id()?null:item;
+                });
+                $("#dialog-modal-merge-repo-body-text").html($("#merge-repo-dialog-content" )
+                                                                  .tmpl({sourceRepoId:managedRepository.id(),repositories:managedRepositories}));
+                window.modalMergeRepoDialog.modal('show');
+              });
+
+            },
+            complete: function(){
+              $.log("complete removeMediumSpinnerImg");
+              removeMediumSpinnerImg("#user-messages");
+            }
+        }
+      );
 
 
+
+    }
+
+
+  }
+
+
+  mergeRepositories=function(sourceRepository,targetRepository){
+    $.log("mergeRepositories:"+sourceRepository+":"+targetRepository);
+
+    var mergeRepoDialogBodyId="dialog-modal-merge-repo-body-text";
+    var mergeRepoDialogBody=$("#"+mergeRepoDialogBodyId);
+    mergeRepoDialogBody.html(mediumSpinnerImg());
+
+    // check conflicts
+    var url = "restServices/archivaServices/mergeRepositoriesService/mergeConflictedArtifacts/"+encodeURIComponent(sourceRepository);
+    url+="/"+encodeURIComponent(targetRepository);
+    $.ajax(url, {
+        type: "GET",
+        dataType: 'json',
+        success: function(data){
+          var artifacts=mapArtifacts(data);
+          if (artifacts && artifacts.length){
+            // we have conflicts ask to skip or not
+            $.log("conflicts:"+artifacts.length);
+            displayWarningMessage($.i18n.prop("managedrepository.merge.conflicts", artifacts.length),"dialog-modal-merge-repo-body-text");
+            $.tmpl($("#merge-repo-skip-conflicts").html(),
+                { artifacts:artifacts, sourceRepository: sourceRepository, targetRepository:targetRepository })
+                .appendTo( "#dialog-modal-merge-repo-body-text" );
+          } else {
+            doMerge(sourceRepository,targetRepository,false);
+          }
+        },
+        complete: function(){
+          $.log("complete removeMediumSpinnerImg");
+          removeMediumSpinnerImg("#dialog-modal-merge-repo-body-text");
+        }
+    });
+
+
+
+  }
+
+  doMerge=function(sourceRepository,targetRepository,skipConflicts){
+    $.log("doMerge:"+sourceRepository+" to " + targetRepository + ", skipConflicts: " + skipConflicts);
+    window.modalMergeRepoDialog.modal('hide');
+    $("#user-messages" ).html(mediumSpinnerImg());
+    var url = "restServices/archivaServices/mergeRepositoriesService/mergeRepositories/"+encodeURIComponent(sourceRepository);
+    url+="/"+encodeURIComponent(targetRepository);
+    url+="/"+skipConflicts;
+    $.ajax(url, {
+        type: "GET",
+        dataType: 'json',
+        success: function(data){
+          displaySuccessMessage($.i18n.prop("managedrepository.merge.success", sourceRepository,targetRepository));
+        },
+        complete: function(){
+          removeMediumSpinnerImg("#user-messages");
+        }
+    });
   }
 
   activateManagedRepositoriesGridTab=function(){
