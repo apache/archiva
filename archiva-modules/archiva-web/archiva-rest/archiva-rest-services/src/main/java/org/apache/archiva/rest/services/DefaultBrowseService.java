@@ -51,7 +51,6 @@ import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
-import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.commons.collections.CollectionUtils;
@@ -62,6 +61,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
@@ -828,6 +828,24 @@ public class DefaultBrowseService
         }
 
         return false;
+    }
+
+    public Integer getArtifactsNumber( String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            return repositorySession.getRepository().getArtifacts( repositoryId ).size();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
     }
 
     //---------------------------

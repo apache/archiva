@@ -18,8 +18,8 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
@@ -427,5 +427,37 @@ public class BrowseServiceTest
         }
     }
 
+
+    @Test
+    public void artifactsNumber()
+        throws Exception
+    {
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        //WebClient.client( browseService ).accept( MediaType.TEXT_PLAIN );
+
+        try
+        {
+            int number = browseService.getArtifactsNumber( testRepoId );
+
+            log.info( "getArtifactsNumber: {}", number );
+
+            assertTrue( number > 1 );
+        }
+        catch ( Exception e )
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
+    }
 
 }
