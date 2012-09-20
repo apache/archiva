@@ -53,6 +53,7 @@
           <configuration>
             <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/ref/${project.version}</pubScmUrl>
             <checkinComment>Apache Archiva Versionned ref for ${project.version}</checkinComment>
+            <content>${siteFilePath}</content>
           </configuration>
         </plugin>
       </plugins>
