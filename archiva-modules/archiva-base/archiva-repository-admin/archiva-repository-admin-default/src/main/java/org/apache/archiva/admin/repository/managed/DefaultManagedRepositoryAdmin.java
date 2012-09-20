@@ -66,7 +66,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * FIXME remove all generic Exception to have usefull ones
+ *
  * FIXME review the staging mechanism to have a per user session one
  *
  * @author Olivier Lamy
