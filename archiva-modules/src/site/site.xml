@@ -19,6 +19,26 @@
   -->
 
 <project>
+
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>false</sideBarEnabled>
+      <googleSearch>
+        <sitesearch>${project.url}</sitesearch>
+      </googleSearch>
+      <twitter>
+        <user>archiva</user>
+        <showUser>true</showUser>
+        <showFollowers>false</showFollowers>
+      </twitter>
+      <ohloh>
+        <projectId>6670</projectId>
+        <widget>stats</widget>
+      </ohloh>
+    </fluidoSkin>
+
+  </custom>
   <body>
     <breadcrumbs>
 <!-- TODO: need to stop them inheriting 
