@@ -31,6 +31,7 @@
 
   <properties>
     <siteFilePath>${user.home}/archiva-ref-${project.version}/</siteFilePath>
+    <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
     <scmPubCheckoutDirectory>${user.home}/archiva-ref-${project.version}-content</scmPubCheckoutDirectory>
   </properties>
 
