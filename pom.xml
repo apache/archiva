@@ -70,6 +70,7 @@
 
     <scmPubCheckoutDirectory></scmPubCheckoutDirectory>
     <scmTryUpdate>true</scmTryUpdate>
+    <scmPubscmsvnImpl>javasvn</scmPubscmsvnImpl>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
     <maven-scm-provider-svnjava.version>2.0.5</maven-scm-provider-svnjava.version>
     <svnkit.version>1.7.5-v1</svnkit.version>
@@ -742,7 +743,7 @@
             <tryUpdate>${scmTryUpdate}</tryUpdate>
             <skipDeletedFiles>${scmSkipDeletedFiles}</skipDeletedFiles>
             <providerImplementations>
-              <svn>javasvn</svn>
+              <svn>${scmPubscmsvnImpl}</svn>
             </providerImplementations>
             <checkinComment>Apache Archiva Main site deployment</checkinComment>
           </configuration>
