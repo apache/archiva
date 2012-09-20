@@ -277,6 +277,54 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.apache.archiva.redback.struts2*;version=${project.version};-split-package:=merge-first
+            </Export-Package>
+            <Import-Package>
+              javax.annotation,
+              javax.mail.internet,
+              javax.servlet,
+              javax.servlet.http,
+              javax.inject;version="[1,2"),
+              com.google.common.collect,
+              com.opensymphony.module.sitemesh.filter;version="[2.4,3)",
+              com.opensymphony.xwork2*;version="[2.2,3)",
+              org.apache.archiva.redback.authentication;version=${project.version},
+              org.apache.archiva.redback.authorization;version=${project.version},
+              org.apache.archiva.redback.components.cache;version=${project.version},
+              org.apache.archiva.redback.components.registry;version=${project.version},
+              org.apache.archiva.redback.configuration;version=${project.version},
+              org.apache.archiva.redback.integration.checks.xwork;version=${project.version},
+              org.apache.archiva.redback.integration.interceptor;version=${project.version},
+              org.apache.archiva.redback.integration.mail;version=${project.version},
+              org.apache.archiva.redback.integration.model;version=${project.version},
+              org.apache.archiva.redback.integration.reports;version=${project.version},
+              org.apache.archiva.redback.integration.util;version=${project.version},
+              org.apache.archiva.redback.keys;version=${project.version},
+              org.apache.archiva.redback.management;version=${project.version},
+              org.apache.archiva.redback.policy;version=${project.version},
+              org.apache.archiva.redback.rbac;version=${project.version},
+              org.apache.archiva.redback.role;version=${project.version},
+              org.apache.archiva.redback.role.model;version=${project.version},
+              org.apache.archiva.redback.system;version=${project.version},
+              org.apache.archiva.redback.system.check;version=${project.version},
+              org.apache.archiva.redback.users,
+              org.apache.commons.beanutils,
+              org.apache.commons.io,
+              org.apache.commons.lang,
+              org.apache.struts2,
+              org.apache.struts2.dispatcher,
+              org.apache.struts2.interceptor,
+              org.codehaus.plexus.util,
+              org.extremecomponents.table.context,
+              org.extremecomponents.table.limit,
+              org.springframework.*,
+              org.slf4j;resolution:=optional
+            </Import-Package>
+          </instructions>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
