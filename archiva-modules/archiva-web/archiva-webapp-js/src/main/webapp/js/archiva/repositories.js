@@ -567,8 +567,6 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
         }
       );
 
-
-
     }
 
 
@@ -597,6 +595,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             $.tmpl($("#merge-repo-skip-conflicts").html(),
                 { artifacts:artifacts, sourceRepository: sourceRepository, targetRepository:targetRepository })
                 .appendTo( "#dialog-modal-merge-repo-body-text" );
+            $("#dialog-modal-merge-repo-header-title" ).html($.i18n.prop("managedrepository.merge.conflicts.header",sourceRepository,targetRepository));
           } else {
             doMerge(sourceRepository,targetRepository,false);
           }
