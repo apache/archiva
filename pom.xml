@@ -786,15 +786,6 @@
               <version>${svnkit.version}</version>
             </dependency>
           </dependencies>
-          <executions>
-            <execution>
-              <id>scm-publish</id>
-              <phase>site-deploy</phase>
-              <goals>
-                <goal>publish-scm</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
 
       </plugins>
