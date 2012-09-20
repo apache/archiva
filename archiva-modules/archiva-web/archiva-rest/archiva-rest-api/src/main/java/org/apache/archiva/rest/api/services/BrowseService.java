@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.ArtifactContent;
@@ -192,18 +193,18 @@ public interface BrowseService
                                @PathParam ("v") String version, @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ("artifactsNumber/{r}")
+    @Path ("artifacts/{r}")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization (noPermission = true, noRestriction = true)
     /**
      *
-     * return artifacts number in a repository
+     * return List of all artifacts from this repository
      * @param repositoryId
      * @return
      * @throws ArchivaRestServiceException
      * @since 1.4-M3
      */
-    Integer getArtifactsNumber( @PathParam ( "r" ) String repositoryId )
+    List<Artifact> getArtifacts( @PathParam ( "r" ) String repositoryId )
         throws ArchivaRestServiceException;
 }

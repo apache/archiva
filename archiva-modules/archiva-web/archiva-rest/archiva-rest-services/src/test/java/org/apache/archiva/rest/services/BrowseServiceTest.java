@@ -447,7 +447,7 @@ public class BrowseServiceTest
 
         try
         {
-            int number = browseService.getArtifactsNumber( testRepoId );
+            int number = browseService.getArtifacts( testRepoId ).size();
 
             log.info( "getArtifactsNumber: {}", number );
 

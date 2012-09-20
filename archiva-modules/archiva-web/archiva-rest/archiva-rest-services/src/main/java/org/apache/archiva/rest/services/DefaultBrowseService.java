@@ -830,13 +830,14 @@ public class DefaultBrowseService
         return false;
     }
 
-    public Integer getArtifactsNumber( String repositoryId )
+    public List<Artifact> getArtifacts( String repositoryId )
         throws ArchivaRestServiceException
     {
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
-            return repositorySession.getRepository().getArtifacts( repositoryId ).size();
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifacts( repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
         {
