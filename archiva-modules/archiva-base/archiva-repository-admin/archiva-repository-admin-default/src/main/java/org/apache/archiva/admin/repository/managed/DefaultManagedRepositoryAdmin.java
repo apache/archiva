@@ -60,7 +60,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -456,8 +455,8 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
 
-        log.debug( "updateManagedConfiguration repo {} needStage {} resetStats {} ",
-                   Arrays.asList( managedRepository, needStageRepo, resetStats ).toArray() );
+        log.debug( "updateManagedConfiguration repo {} needStage {} resetStats {} ", managedRepository, needStageRepo,
+                   resetStats );
 
         // Ensure that the fields are valid.
 
