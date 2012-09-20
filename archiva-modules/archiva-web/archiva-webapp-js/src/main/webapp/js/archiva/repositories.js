@@ -839,7 +839,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
                     type: "GET",
                     success: function(data) {
                       self.remoteRepositories.remove(remoteRepository);
-                      displaySuccessMessage($.i18n.prop('remoterepository.deleted'));
+                      displaySuccessMessage($.i18n.prop('remoterepository.deleted',remoteRepository.id()));
                     },
                     error: function(data) {
                       var res = $.parseJSON(data.responseText);
