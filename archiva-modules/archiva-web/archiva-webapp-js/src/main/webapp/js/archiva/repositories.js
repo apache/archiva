@@ -361,13 +361,11 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       clearUserMessages();
       openDialogConfirm(
           function(){
-            $("#dialog-confirm-modal").find("#modal-login-footer").append(smallSpinnerImg());
             var url = "restServices/archivaServices/managedRepositoriesService/deleteManagedRepository?";
             url += "repositoryId="+encodeURIComponent(managedRepository.id());
-
             var checked = $("#managedrepository-deletecontent").get(0).checked;
-
             url += "&deleteContent="+(checked==true?"true":"false");
+            $("#dialog-confirm-modal-body-text" ).html(mediumSpinnerImg());
             $.ajax(url,
               {
                 type: "GET",
@@ -381,7 +379,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
                     displayRestError(res);
                   },
                   complete: function(){
-                    removeSmallSpinnerImg();
+                    removeMediumSpinnerImg("#dialog-confirm-modal-body-text");
                     closeDialogConfirm();
                   }
               }
