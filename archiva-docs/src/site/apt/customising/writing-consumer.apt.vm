@@ -81,4 +81,4 @@ mvn archetype:generate \
    -DarchetypeVersion=${project.version}
 +----+
 
-  Note: if you want to use a SNAPSHOT version, replace with the following parameter: -DarchetypeRepository=http://vmbuild.apache.org/archiva/repository/snapshots \
+  Note: if you want to use a SNAPSHOT version, replace with the following parameter: -DarchetypeRepository=https://archiva-repository.apache.org/archiva/repository/snapshots/ \
