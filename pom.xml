@@ -30,7 +30,7 @@
 
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva-parent</artifactId>
-  <version>10-SNAPSHOT</version>
+  <version>9-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Archiva Common Parent Project</name>
