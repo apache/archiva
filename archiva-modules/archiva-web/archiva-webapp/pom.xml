@@ -862,6 +862,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jpox</groupId>
       <artifactId>jpox</artifactId>
       <exclusions>
