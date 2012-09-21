@@ -244,8 +244,17 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
           data: dataJson,
           dataType: 'json',
           success: function(data) {
-            curManagedRepository.location(data.location);
-            self.managedRepositoriesViewModel.managedRepositories.push(curManagedRepository);
+            if (managedRepository.stageRepoNeeded()){
+              $.log("stageRepoNeeded:"+managedRepository.stageRepoNeeded());
+              // reload all to see the new staged repo
+              loadManagedRepositories(function(data){
+                self.managedRepositoriesViewModel.managedRepositories(mapManagedRepositories(data));
+              });
+            } else {
+              curManagedRepository.location(data.location);
+              self.managedRepositoriesViewModel.managedRepositories.push(curManagedRepository);
+            }
+
             displaySuccessMessage($.i18n.prop('managedrepository.added',curManagedRepository.id()));
             curManagedRepository.modified(false);
             activateManagedRepositoriesGridTab();
