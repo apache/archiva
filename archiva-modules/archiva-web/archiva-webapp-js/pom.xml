@@ -418,7 +418,6 @@
     </dependency>
 
     <dependency>
-
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-rest-services</artifactId>
       <exclusions>
@@ -536,6 +535,11 @@
           <artifactId>jcl-over-slf4j</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
     </dependency>
 
     <dependency>
