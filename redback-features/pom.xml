@@ -27,7 +27,7 @@
     <version>2.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>redback-core</artifactId>
+  <artifactId>redback-features</artifactId>
   <packaging>pom</packaging>
   <name>Redback :: Karaf Features</name>
 
