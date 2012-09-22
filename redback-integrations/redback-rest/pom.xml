@@ -28,7 +28,7 @@
   <groupId>org.apache.archiva.redback</groupId>
   <artifactId>redback-rest</artifactId>
   <packaging>pom</packaging>
-  <name>Redback :: REST</name>
+  <name>Redback :: Integration :: REST</name>
   
   <modules>
     <module>redback-rest-api</module>

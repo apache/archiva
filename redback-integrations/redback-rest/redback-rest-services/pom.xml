@@ -29,7 +29,7 @@
 
   <artifactId>redback-rest-services</artifactId>
   <packaging>bundle</packaging>
-  <name>Redback :: REST :: Services</name>
+  <name>Redback :: Integration :: REST :: Services</name>
 
   <properties>
     <tomcatVersion>7.0.30</tomcatVersion>
