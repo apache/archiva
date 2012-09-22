@@ -54,10 +54,14 @@ Staging Repositories
 
 * Merging Repositories
 
-  To merge or promote the artifacts in a staging repository to the managed repository, just click the <<<Merge>>> button
-  in the repository configuration page.
+  To merge or promote the artifacts in a staging repository to the managed repository, just click the <<<Merge this repository>>> button
+  in the repositories configuration page.
 
 [../images/repository-merge.png] Merge Button
+
+  You will be able to select which target repository to use for merging
+
+[../images/repository-merge-select-target.png]
 
   Archiva will check for conflicting artifacts between the two repositories, and list them (if it finds conflicts).
   The user will be asked to choose between two actions:
