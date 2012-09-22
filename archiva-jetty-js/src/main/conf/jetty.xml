@@ -319,9 +319,9 @@
         <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/users;create=true</Set>
         <Set name="username">sa</Set>
         <Set name="maxActive">20</Set>
-        <Set name="RemoveAbandoned">true</Set>
-        <Set name="LogAbandoned">true</Set>
-        <Set name="InitialSize">5</Set>
+        <Set name="removeAbandoned">true</Set>
+        <Set name="logAbandoned">true</Set>
+        <Set name="initialSize">5</Set>
       </New>
     </Arg>
   </New>
