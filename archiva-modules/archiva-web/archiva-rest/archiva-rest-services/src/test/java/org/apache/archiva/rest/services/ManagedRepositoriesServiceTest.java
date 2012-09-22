@@ -139,8 +139,19 @@ public class ManagedRepositoriesServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
+        RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
         createAndIndexRepo( testRepoId,
                             new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).getAbsolutePath() );
+
+        repositoriesService.scanRepositoryDirectoriesNow( testRepoId );
+
+        int timeout = 20000;
+        while ( timeout > 0 && repositoriesService.alreadyScanning( testRepoId ) )
+        {
+            Thread.sleep( 500 );
+            timeout -= 500;
+        }
 
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
 
