@@ -237,14 +237,14 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
+      <groupId>org.apache.logging.log4j.adapters</groupId>
       <artifactId>slf4j-impl</artifactId>
       <version>${log4jVersion}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
+      <groupId>org.apache.logging.log4j.adapters</groupId>
       <artifactId>log4j-jcl</artifactId>
       <version>${log4jVersion}</version>
       <scope>test</scope>
@@ -258,7 +258,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
+      <groupId>org.apache.logging.log4j.adapters</groupId>
       <artifactId>log4j12-api</artifactId>
       <version>${log4jVersion}</version>
       <scope>test</scope>
