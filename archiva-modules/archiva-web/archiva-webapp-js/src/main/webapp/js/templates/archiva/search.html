@@ -437,6 +437,9 @@
       {{/if}}
     {{/each}}
   </select>
+  {{if selected && feedsUrl}}
+    <a href="${feedsUrl}"><img src="images/atom.gif"/></a>
+  {{/if}}
 </script>
 
 <script id="browse-artifact-detail-tmpl" type="text/html">
