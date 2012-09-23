@@ -34,7 +34,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
                              scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description,
-                             skipPackedIndexCreation){
+                             skipPackedIndexCreation,feedsUrl){
 
     var self=this;
 
@@ -103,6 +103,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.skipPackedIndexCreation=ko.observable(skipPackedIndexCreation?skipPackedIndexCreation:false);
     this.skipPackedIndexCreation.subscribe(function(newValue){self.modified(true)});
 
+    this.feedsUrl=feedsUrl;
 
     this.getTypeLabel=function(){
       for(var i=0;i<window.managedRepositoryTypes.length;i++){
@@ -149,9 +150,11 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     this.lastScanDate=ko.observable(lastScanDate);
   }
 
-  mapManagedRepositories=function(data){
+  mapManagedRepositories=function(data,applicationUrl){
     var mappedManagedRepositories = $.map(data, function(item) {
-      return mapManagedRepository(item);
+      var managedRepository = mapManagedRepository(item);
+      managedRepository.feedsUrl=applicationUrl+"/feeds/"+managedRepository.id();
+      return managedRepository;
     });
     return mappedManagedRepositories;
   }
@@ -818,6 +821,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
   RemoteRepositoriesViewModel=function(){
     this.remoteRepositories=ko.observableArray([]);
+    this.applicationUrl=null;
     this.gridViewModel = null;
     var self = this;
 
@@ -991,75 +995,87 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     var managedRepositoriesViewModel = new ManagedRepositoriesViewModel();
     var remoteRepositoriesViewModel = new RemoteRepositoriesViewModel();
 
-    loadManagedRepositories(function(data) {
-      managedRepositoriesViewModel.managedRepositories(mapManagedRepositories(data));
-      managedRepositoriesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
-        data: managedRepositoriesViewModel.managedRepositories,
-        columns: [
-          {
-            headerText: $.i18n.prop('identifier'),
-            rowText: "id"
-          },
-          {
-            headerText: $.i18n.prop('name'),
-            rowText: "name"
-          },
-          {
-          headerText: $.i18n.prop('type'),
-          rowText: "getTypeLabel",
-          // FIXME i18n
-          title: "Repository type (default is Maven 2)"
-          }
-        ],
-        pageSize: 5,
-        gridUpdateCallBack: function(){
-          $("#main-content" ).find("#managed-repositories-table").find("[title]").tooltip();
-        }
-      });
-      var mainContent = $("#main-content");
-      ko.applyBindings(managedRepositoriesViewModel,mainContent.find("#managed-repositories-view").get(0));
-      activatePopoverDoc();
-      mainContent.find("#managed-repositories-pills #managed-repositories-view-a").tab('show');
-      removeMediumSpinnerImg("#main-content #managed-repositories-content");
-      activateManagedRepositoriesGridTab();
-    });
+    $.ajax({
+        url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
+        type: "GET",
+        dataType: 'text',
+        success: function(applicationUrl){
+          $.log("applicationUrl:"+applicationUrl);
+          loadManagedRepositories(function(data) {
 
-    loadRemoteRepositories(function(data) {
-      remoteRepositoriesViewModel.remoteRepositories(mapRemoteRepositories(data));
-      remoteRepositoriesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
-        data: remoteRepositoriesViewModel.remoteRepositories,
-        columns: [
-          {
-            headerText: $.i18n.prop('identifier'),
-            rowText: "id"
-          },
-          {
-            headerText: $.i18n.prop('name'),
-            rowText: "name"
-          },
-          {
-            headerText: $.i18n.prop('url'),
-            rowText: "url"
-          },
-          {
-          headerText: $.i18n.prop('type'),
-          rowText: "getTypeLabel",
-          // FIXME i18n
-          title: "Repository type (default is Maven 2)"
-          }
-        ],
-        pageSize: 5,
-        gridUpdateCallBack: function(){
-          $("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
-        }
-      });
-      var mainContent = $("#main-content");
-      ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-view").get(0));
-      mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
-      removeMediumSpinnerImg("#main-content #remote-repositories-content");
-      activatePopoverDoc();
-    });
 
+            managedRepositoriesViewModel.managedRepositories(
+                mapManagedRepositories(data,applicationUrl?applicationUrl:window.location.toString().substringBeforeLast("/")));
+
+            managedRepositoriesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
+              data: managedRepositoriesViewModel.managedRepositories,
+              columns: [
+                {
+                  headerText: $.i18n.prop('identifier'),
+                  rowText: "id"
+                },
+                {
+                  headerText: $.i18n.prop('name'),
+                  rowText: "name"
+                },
+                {
+                headerText: $.i18n.prop('type'),
+                rowText: "getTypeLabel",
+                // FIXME i18n
+                title: "Repository type (default is Maven 2)"
+                }
+              ],
+              pageSize: 5,
+              gridUpdateCallBack: function(){
+                $("#main-content" ).find("#managed-repositories-table").find("[title]").tooltip();
+              }
+            });
+            var mainContent = $("#main-content");
+            ko.applyBindings(managedRepositoriesViewModel,mainContent.find("#managed-repositories-view").get(0));
+            activatePopoverDoc();
+            mainContent.find("#managed-repositories-pills #managed-repositories-view-a").tab('show');
+            removeMediumSpinnerImg("#main-content #managed-repositories-content");
+            activateManagedRepositoriesGridTab();
+          });
+
+          loadRemoteRepositories(function(data) {
+            remoteRepositoriesViewModel.remoteRepositories(mapRemoteRepositories(data));
+            remoteRepositoriesViewModel.gridViewModel = new ko.simpleGrid.viewModel({
+              data: remoteRepositoriesViewModel.remoteRepositories,
+              columns: [
+                {
+                  headerText: $.i18n.prop('identifier'),
+                  rowText: "id"
+                },
+                {
+                  headerText: $.i18n.prop('name'),
+                  rowText: "name"
+                },
+                {
+                  headerText: $.i18n.prop('url'),
+                  rowText: "url"
+                },
+                {
+                headerText: $.i18n.prop('type'),
+                rowText: "getTypeLabel",
+                // FIXME i18n
+                title: "Repository type (default is Maven 2)"
+                }
+              ],
+              pageSize: 5,
+              gridUpdateCallBack: function(){
+                $("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
+              }
+            });
+            var mainContent = $("#main-content");
+            ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-view").get(0));
+            mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
+            removeMediumSpinnerImg("#main-content #remote-repositories-content");
+            activatePopoverDoc();
+          });
+        }
+    }
+    );
 
 
     mainContent.find("#managed-repositories-pills").on('show', function (e) {

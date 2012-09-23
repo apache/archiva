@@ -92,7 +92,7 @@
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
         <!--th>${$.i18n.prop('description')}</th-->
-
+        <th>${$.i18n.prop('managed.repository.rss.header')}</th>
         <th title="${$.i18n.prop('managedrepository.stats')}">${$.i18n.prop('managedrepository.stats.grid.header')}</th>
         <!--th title="${$.i18n.prop('managedrepository.scan.directories')}">${$.i18n.prop('managedrepository.scan.directories.grid.header')}</th-->
       </tr>
@@ -184,6 +184,9 @@
             {{else}}
               <td></td>
             {{/if}}
+            <td>
+               <a href="${row.feedsUrl}"><img src="images/atom.gif" alt="" title="${$.i18n.prop('managedpository.feeds')} ${row.name()}"/></a>
+            </td>
             <!--td>
                 {{if row.description()}}
                 <a class="btn btn-warning btn-mini popover-doc" id="managedrepo-description-help"
