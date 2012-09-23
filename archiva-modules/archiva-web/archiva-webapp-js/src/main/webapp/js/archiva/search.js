@@ -23,12 +23,13 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
   // browse part
   //-----------------------------------------
 
-  BrowseViewModel=function(browseResultEntries,parentBrowseViewModel,groupId,repositoryId){
+  BrowseViewModel=function(browseResultEntries,parentBrowseViewModel,groupId,repositoryId,feedsUrl){
     var self=this;
     this.browseResultEntries=browseResultEntries;
     this.parentBrowseViewModel=parentBrowseViewModel;
     this.groupId=groupId;
     this.repositoryId=repositoryId;
+    this.feedsUrl=feedsUrl;
     displayGroupId=function(groupId){
       $.log("BrowseViewModel#displayGroupId,self.repositoryId:"+self.repositoryId);
       if(self.repositoryId){
@@ -143,7 +144,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     return breadCrumbEntries;
   }
 
-  displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl,repositoryId){
+  displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl,repositoryId,feedsUrl){
     var mainContent = $("#main-content");
     mainContent.find("#browse_artifact_detail").hide();
     var browseResult=mainContent.find("#browse_result");
@@ -171,7 +172,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             dataType: 'json',
             success: function(data) {
               var browseResultEntries = mapBrowseResultEntries(data);
-              var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId,repositoryId);
+              var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId,repositoryId,feedsUrl);
               ko.applyBindings(browseViewModel,browseBreadCrumb.get(0));
               ko.applyBindings(browseViewModel,browseResult.get(0));
               enableAutocompleBrowse(groupId);
@@ -799,17 +800,19 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                 mainContent.find("#browse_result").html(mediumSpinnerImg());
                 var parentBrowseViewModel=new BrowseViewModel(null,null,null,repositoryId);
                 var url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
+                var feedsUrl=applicationUrl?applicationUrl:window.location.toString().substringBeforeLast("/").substringBeforeLast("/");
                 if (repositoryId){
                   url+="?repositoryId="+repositoryId;
                   // we are browsing a groupId so 2 substringBeforeLast
-                  var feedsUrl=applicationUrl?applicationUrl:window.location.toString().substringBeforeLast("/").substringBeforeLast("/");
+
                   feedsUrl+="/feeds/"+repositoryId;
                   mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" )
                                                                      .tmpl({repositories:data,selected:repositoryId,feedsUrl:feedsUrl}));
                 }else{
-                  mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" ).tmpl({repositories:data,selected:""}));
+                  mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" )
+                                                                     .tmpl({repositories:data,selected:"",feedsUrl:null}));
                 }
-                displayGroupDetail(groupId,parentBrowseViewModel,url,repositoryId);
+                displayGroupDetail(groupId,parentBrowseViewModel,url,repositoryId,feedsUrl);
 
               }
           });

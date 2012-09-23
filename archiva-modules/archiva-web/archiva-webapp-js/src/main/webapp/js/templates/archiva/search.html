@@ -42,6 +42,7 @@
 <script id="browse-groups-tmpl" type="text/html">
   <div>
     <ul>
+
       <!-- if null we are on root level -->
       {{if $root.parentBrowseViewModel}}
         <li class="browse-list" data-bind="click:function(){displayParentGroupId()}">
@@ -58,6 +59,7 @@
           {{else}}
             <li class="browse-list-project">
               <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+              <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"></img></a>
             </li>
           {{/if}}
         {{else}}
