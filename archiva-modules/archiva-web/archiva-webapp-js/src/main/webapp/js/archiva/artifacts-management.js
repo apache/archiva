@@ -56,6 +56,10 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
           dataType: 'json',
           success: function(data) {
             displaySuccessMessage($.i18n.prop("fileupload.artifacts.saved"));
+            self.artifactUploads=[];
+            $("#main-content" ).find("#uploaded-files-list" ).html('');
+            $.ajax("restServices/archivaUiServices/fileUploadService/clearUploadedFiles", {type: "GET", dataType: 'json'});
+            clearForm("#main-content #fileupload");
           },
           error: function(data) {
             var res = $.parseJSON(data.responseText);
