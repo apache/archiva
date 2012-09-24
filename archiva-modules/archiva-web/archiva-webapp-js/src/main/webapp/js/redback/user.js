@@ -117,7 +117,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
         });
     };
 
-    this.createAdmin = function() {
+    this.createAdmin = function(succesCallbackFn,errorCallbackFn) {
       $.log("user.js#createAdmin");
       var valid = $("#user-create").valid();
       $.log("create admin");
@@ -142,9 +142,17 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
                 checkSecurityLinks();
               }
               loginCall(currentAdminUser.username(), currentAdminUser.password(),onSuccessCall);
+              if(succesCallbackFn){
+                succesCallbackFn();
+              }
               return this;
             } else {
               displayErrorMessage("admin user not created");
+            }
+          },
+          error: function(data){
+            if(errorCallbackFn){
+              errorCallbackFn();
             }
           }
         });
@@ -261,10 +269,11 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
       if(! $("#user-create" ).valid() ) {
         return;
       }
-      self.user.createAdmin();
-
-      // go to search when admin created
-      window.sammyArchivaApplication.setLocation("#search");
+      self.user.createAdmin(function(){
+          // go to search when admin created
+          window.sammyArchivaApplication.setLocation("#search");
+        }
+      );
     }
   }
 

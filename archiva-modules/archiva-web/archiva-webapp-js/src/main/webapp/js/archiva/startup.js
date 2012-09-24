@@ -37,11 +37,12 @@ function() {
         displayErrorMessage($.i18n.prop('authz.karma.needed'));
       },
       500: function(data){
+        $.log("error 500:"+data.responseText);
         removeSmallSpinnerImg();
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayRestError($.parseJSON(data.responseText));
-        $("#main-content" ).html("");
+        //$("#main-content" ).html("");
         //displayErrorMessage($.i18n.prop('error.500'));
       }
     }
