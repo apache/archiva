@@ -137,6 +137,10 @@
           <groupId>commons-dbcp</groupId>
           <artifactId>commons-dbcp</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.tika</groupId>
+          <artifactId>tika-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
