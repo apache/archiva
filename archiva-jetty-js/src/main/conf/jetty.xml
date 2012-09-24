@@ -322,6 +322,9 @@
         <Set name="removeAbandoned">true</Set>
         <Set name="logAbandoned">true</Set>
         <Set name="initialSize">5</Set>
+        <Set name="testOnBorrow">true</Set>
+        <!-- very rigourous sql query validation -->
+        <Set name="validationQuery">select 1</Set>
       </New>
     </Arg>
   </New>
