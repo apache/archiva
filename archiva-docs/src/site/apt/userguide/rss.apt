@@ -3,7 +3,7 @@
  ------
  Maria Odea Ching
  ------
- 2008-05-07
+ 2012-09-24
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -41,8 +41,10 @@ RSS Feeds
   1. By copying the default url specified above and adding this to your feed reader. Just make sure to replace the <<<hostname>>>,
      <<<port>>> and <<<repositoryId>>>. The <<<repositoryId>>> is the id of the Archiva repo which you want to monitor.
 
-  2. Via the feed icon in the Repositories page. Right click on the feed icon in the upper right hand corner of the repository
+  2. Via the feed icon in the Repositories page. Right click on the feed icon of the repository
      configuration and copy the link. Then add this link to your feed reader.
+
+[../images/rss-repositories.png]
 
 * New Versions of an Artifact
 
@@ -52,6 +54,8 @@ RSS Feeds
   You could subscribe to the feed the same way as specified in the New Artifacts In Repository section except that in #1, you
   need to specify the <<<groupId>>> and <<<artifactId>>> instead of the <<<repositoryId>>>. And in #2, you need to go to the
   Browse section. The rss feed icon is located in the artifactId level.
+
+[../images/rss-browse.png]
 
 * Authentication
 
