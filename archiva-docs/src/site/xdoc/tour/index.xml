@@ -23,7 +23,6 @@
     <author email="brett@apache.org">Brett Porter</author>
   </properties>
   <head>
-    <script src="../js/jquery-1.8.0.min.js" type="text/javascript"></script>
     <script src="../js/jquery.fancybox.pack-2.1.0.js" type="text/javascript"></script>
     <script src="../js/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
     <script src="../js/tour-index.js" type="text/javascript"></script>
