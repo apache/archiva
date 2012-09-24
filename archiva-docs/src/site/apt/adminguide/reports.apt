@@ -50,12 +50,14 @@ Making the most of Reporting in Apache Archiva
 
   4. End Date - the end date range of the statistics to be displayed.
 
+[../images/repository-statistics-form.png]
+
 ** Contents of the Report
 
   The Repository Statistics Show Report button will display a table containing the statistics of the repository/repositories. See below for
   a sample Repository Statistics report comparing two repositories:
 
-[../images/repository-statistics.jpg] Repository Statistics
+[../images/repository-statistics.png] Repository Statistics
 
   Repository Statistics can be exported to a CSV file. To do this, just click the link on the upper left hand corner above the report.
 
@@ -89,7 +91,7 @@ Making the most of Reporting in Apache Archiva
   configuration you've set. Below is a sample Repository Health report:
   
 
-[../images/archiva-report.jpg] Repository Health Report
+[../images/archiva-report.png] Repository Health Report
   
   You can see in the sample report that there are links to the groupId and artifactId directories 
   of each artifact. Clicking on any of these links will bring you to the appropriate navigation page in the 
