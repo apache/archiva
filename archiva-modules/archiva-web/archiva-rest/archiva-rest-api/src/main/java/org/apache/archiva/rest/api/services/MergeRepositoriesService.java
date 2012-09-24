@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,30 +35,30 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@Path ( "/mergeRepositoriesService/" )
+@Path ("/mergeRepositoriesService/")
 public interface MergeRepositoriesService
 {
-    @Path ( "mergeConflictedArtifacts/{sourceRepositoryId}/{targetRepositoryId}" )
+    @Path ("mergeConflictedArtifacts/{sourceRepositoryId}/{targetRepositoryId}")
     @GET
-    @Produces ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization ( noPermission = true )
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
-    List<Artifact> getMergeConflictedArtifacts( @PathParam ( "sourceRepositoryId" ) String sourceRepositoryId,
-                                                @PathParam ( "targetRepositoryId" ) String targetRepositoryId )
+    List<Artifact> getMergeConflictedArtifacts( @PathParam ("sourceRepositoryId") String sourceRepositoryId,
+                                                @PathParam ("targetRepositoryId") String targetRepositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ( "mergeRepositories/{sourceRepositoryId}/{targetRepositoryId}/{skipConflicts}" )
+    @Path ("mergeRepositories/{sourceRepositoryId}/{targetRepositoryId}/{skipConflicts}")
     @GET
-    @RedbackAuthorization ( noPermission = true )
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
-    void mergeRepositories( @PathParam ( "sourceRepositoryId" ) String sourceRepositoryId,
-                            @PathParam ( "targetRepositoryId" ) String targetRepositoryId,
-                            @PathParam ( "skipConflicts" ) boolean skipConflicts )
+    void mergeRepositories( @PathParam ("sourceRepositoryId") String sourceRepositoryId,
+                            @PathParam ("targetRepositoryId") String targetRepositoryId,
+                            @PathParam ("skipConflicts") boolean skipConflicts )
         throws ArchivaRestServiceException;
 }
