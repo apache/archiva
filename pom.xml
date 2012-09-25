@@ -1148,6 +1148,11 @@
         <version>2.5</version>
       </dependency>
       <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
+      </dependency>
+      <dependency>
         <groupId>opensymphony</groupId>
         <artifactId>sitemesh</artifactId>
         <version>2.4.2</version>
