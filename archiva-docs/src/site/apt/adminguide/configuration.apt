@@ -44,5 +44,7 @@ Runtime Configuration of Apache Archiva
 
     * {{{./appearance-configuration.html} Appearance configuration}}
 
+    * {{{./ui-configuration.html} UI configuration}}
+
     []
 

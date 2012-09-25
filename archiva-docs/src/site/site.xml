@@ -103,6 +103,7 @@
         <item name="Consumers"                href="/adminguide/consumers.html" />
         <item name="Staging Repositories"     href="/adminguide/staging-repositories.html"/>
         <item name="Appearance Configuration" href="/adminguide/appearance-configuration.html"/>
+        <item name="UI Configuration"         href="/adminguide/ui-configuration.html"/>
       </item>
       <item name="Web Services"              href="/adminguide/web-services.html" collapse="true">
         <item name="REST"                    href="/adminguide/webservices/rest.html"/>
