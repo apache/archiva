@@ -42,5 +42,7 @@ Runtime Configuration of Apache Archiva
 
     * {{{./staging-repositories.html} Staging and merging repositories}}
 
+    * {{{./appearance-configuration.html} Appearance configuration}}
+
     []
 
