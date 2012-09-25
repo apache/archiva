@@ -103,21 +103,6 @@
     <url>https://builds.apache.org/view/A-F/view/Archiva/</url>
   </ciManagement>
 
-  <repositories>
-    <repository>
-      <id>archiva-repository.releases</id>
-      <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-
-
   <!-- Developers listed by PMC Chair, PMC, Committers, Contributors, Emeritus all alphabetical-->
   <developers>
     <developer>
