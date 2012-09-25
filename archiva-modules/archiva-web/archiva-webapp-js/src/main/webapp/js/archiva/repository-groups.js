@@ -177,44 +177,53 @@ function() {
     var self=this;
 
     loadManagedRepositories(function(data) {
-      self.repositoryGroupsViewModel.managedRepositories(mapManagedRepositories(data));
 
-      $.ajax("restServices/archivaServices/repositoryGroupService/getRepositoriesGroups", {
+      $.ajax({
+          url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
           type: "GET",
-          dataType: 'json',
-          success: function(data) {
-            var mappedRepositoryGroups=mapRepositoryGroups(data);
-            for(var i=0;i<mappedRepositoryGroups.length;i++){
-              mappedRepositoryGroups[i]
-                  .managedRepositories(self.mapManagedRepositoriesToRepositoryGroup(mappedRepositoryGroups[i]));
-              mappedRepositoryGroups[i].modified(false);
-              $.log("mappedRepositoryGroups.repositories().length:"+mappedRepositoryGroups[i].repositories().length);
-            }
-            mainContent.html($("#repositoryGroupsMain").tmpl());
-            self.repositoryGroupsViewModel.repositoryGroups(mappedRepositoryGroups);
-            $.log("displayRepositoryGroups#applyBindings before");
-            ko.applyBindings(repositoryGroupsViewModel,mainContent.find("#repository-groups-view" ).get(0));
-            $.log("displayRepositoryGroups#applyBindings after");
+          dataType: 'text',
+          success: function(applicationUrl){
+
+            self.repositoryGroupsViewModel.managedRepositories(mapManagedRepositories(data,applicationUrl));
+
+            $.ajax("restServices/archivaServices/repositoryGroupService/getRepositoriesGroups", {
+                type: "GET",
+                dataType: 'json',
+                success: function(data) {
+                  var mappedRepositoryGroups=mapRepositoryGroups(data);
+                  for(var i=0;i<mappedRepositoryGroups.length;i++){
+                    mappedRepositoryGroups[i]
+                        .managedRepositories(self.mapManagedRepositoriesToRepositoryGroup(mappedRepositoryGroups[i]));
+                    mappedRepositoryGroups[i].modified(false);
+                    $.log("mappedRepositoryGroups.repositories().length:"+mappedRepositoryGroups[i].repositories().length);
+                  }
+                  mainContent.html($("#repositoryGroupsMain").tmpl());
+                  self.repositoryGroupsViewModel.repositoryGroups(mappedRepositoryGroups);
+                  $.log("displayRepositoryGroups#applyBindings before");
+                  ko.applyBindings(repositoryGroupsViewModel,mainContent.find("#repository-groups-view" ).get(0));
+                  $.log("displayRepositoryGroups#applyBindings after");
 
 
-            mainContent.find("#repository-groups-view-tabs").on('show', function (e) {
-              if ($(e.target).attr("href")=="#repository-groups-edit") {
-                var repositoryGroup = new RepositoryGroup();
-                var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,false,self.repositoryGroupsViewModel);
-                activateRepositoryGroupEditTab();
-                ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
+                  mainContent.find("#repository-groups-view-tabs").on('show', function (e) {
+                    if ($(e.target).attr("href")=="#repository-groups-edit") {
+                      var repositoryGroup = new RepositoryGroup();
+                      var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,false,self.repositoryGroupsViewModel);
+                      activateRepositoryGroupEditTab();
+                      ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
+                    }
+                    if ($(e.target).attr("href")=="#repository-groups-view") {
+                      mainContent.find("#repository-groups-view-tabs-li-edit a").html($.i18n.prop("add"));
+                      clearUserMessages();
+                    }
+
+                  });
+
+                }
               }
-              if ($(e.target).attr("href")=="#repository-groups-view") {
-                mainContent.find("#repository-groups-view-tabs-li-edit a").html($.i18n.prop("add"));
-                clearUserMessages();
-              }
-
-            });
+            );
 
           }
-        }
-      );
-
+        });
     });
 
     this.mapManagedRepositoriesToRepositoryGroup=function(repositoryGroup){

@@ -34,7 +34,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
                              scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description,
-                             skipPackedIndexCreation,feedsUrl){
+                             skipPackedIndexCreation,feedsUrl,url){
 
     var self=this;
 
@@ -105,6 +105,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
     this.feedsUrl=feedsUrl;
 
+    this.url=url;
+
     this.getTypeLabel=function(){
       for(var i=0;i<window.managedRepositoryTypes.length;i++){
         if (window.managedRepositoryTypes[i].type==self.layout()){
@@ -154,6 +156,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
     var mappedManagedRepositories = $.map(data, function(item) {
       var managedRepository = mapManagedRepository(item);
       managedRepository.feedsUrl=applicationUrl+"/feeds/"+managedRepository.id();
+      managedRepository.url=applicationUrl+"/repository/"+managedRepository.id()
       return managedRepository;
     });
     return mappedManagedRepositories;
