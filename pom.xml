@@ -91,6 +91,16 @@
 
   <repositories>
     <repository>
+      <id>archiva-repository.releases</id>
+      <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
        <id>archiva.snapshots</id>
        <name>Archiva VM Snapshots Repository</name>
        <url>https://archiva-repository.apache.org/archiva/repository/snapshots</url>
