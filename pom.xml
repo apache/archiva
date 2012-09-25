@@ -69,11 +69,11 @@
     <maven.indexer.version>5.0.0</maven.indexer.version>
     <wagon.version>2.2</wagon.version>
     <redback.version>2.0-SNAPSHOT</redback.version>
-    <redback.cache.version>2.0-SNAPSHOT</redback.cache.version>
-    <redback.quartz.version>2.0-SNAPSHOT</redback.quartz.version>
-    <redback.registry.version>2.0-SNAPSHOT</redback.registry.version>
-    <redback.spring-utils.version>2.0-SNAPSHOT</redback.spring-utils.version>
-    <redback.taskqueue.version>2.0-SNAPSHOT</redback.taskqueue.version>
+    <redback.cache.version>2.0</redback.cache.version>
+    <redback.quartz.version>2.0</redback.quartz.version>
+    <redback.registry.version>2.0</redback.registry.version>
+    <redback.spring-utils.version>2.0</redback.spring-utils.version>
+    <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.1</slf4j.version>
     <log4j.version>2.0-beta1</log4j.version>
 
@@ -99,7 +99,7 @@
     <sisu-inject-plexus.version>2.3.0</sisu-inject-plexus.version>
     <sisu-guice.version>3.1.0</sisu-guice.version>
     <plexus-digest.version>1.1</plexus-digest.version>
-    <plexus-expression-evaluator.version>2.0-SNAPSHOT</plexus-expression-evaluator.version>
+    <plexus-expression-evaluator.version>2.0</plexus-expression-evaluator.version>
     <plexus-utils.version>3.0.7</plexus-utils.version>
     <asfTomcatMavenPluginVersion>2.0</asfTomcatMavenPluginVersion>
     <tomcat7Version>7.0.30</tomcat7Version>
@@ -447,7 +447,7 @@
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-jdo2</artifactId>
-        <version>2.0-SNAPSHOT</version>
+        <version>2.0</version>
       </dependency>
 
       <!--
