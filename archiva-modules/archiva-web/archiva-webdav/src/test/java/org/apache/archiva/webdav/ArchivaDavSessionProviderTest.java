@@ -35,16 +35,24 @@ import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
@@ -96,6 +104,74 @@ public class ArchivaDavSessionProviderTest
     private class HttpServletRequestMock
         implements HttpServletRequest
     {
+
+        public boolean authenticate( HttpServletResponse httpServletResponse )
+            throws IOException, ServletException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public void login( String s, String s1 )
+            throws ServletException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public void logout()
+            throws ServletException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public Collection<Part> getParts()
+            throws IOException, ServletException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public Part getPart( String s )
+            throws IOException, ServletException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public ServletContext getServletContext()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public AsyncContext startAsync()
+            throws IllegalStateException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public AsyncContext startAsync( ServletRequest servletRequest, ServletResponse servletResponse )
+            throws IllegalStateException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public boolean isAsyncStarted()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public boolean isAsyncSupported()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public AsyncContext getAsyncContext()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        public DispatcherType getDispatcherType()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
         public Object getAttribute( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
