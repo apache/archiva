@@ -314,7 +314,7 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
       displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
     } else if (data.errorMessages){
       $.each(data.errorMessages, function(index, value) {
-        displayErrorMessage( $.i18n.prop(data.errorMessages[index].errorKey,data.errorMessages[index].args?data.errorMessages[index].args:null));
+        displayErrorMessage( $.i18n.prop(data.errorMessages[index].errorKey,data.errorMessages[index].args?data.errorMessages[index].args:null),idToAppend);
       });
     } else {
       $.log("print data.errorMessage:"+data.errorMessage);

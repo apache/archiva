@@ -556,6 +556,7 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
    * @param registration are we in registration mode ?
    */
   changePasswordBox=function(previousPassword,registration,user,okFn){
+    $.log("changePasswordBox");
     screenChange();
     $.log("changePasswordBox previousPassword:"+previousPassword+",registration:"+registration+",user:"+user);
     if (previousPassword==true){
@@ -715,7 +716,15 @@ define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","kno
           if (registration==true) {
             $.log("changePassword#sucess,registration:"+registration);
             displaySuccessMessage($.i18n.prop('change.password.success.section.title'))
-            loginCall(user.username(), $("#passwordChangeFormNewPassword").val(),successLoginCallbackFn);
+            loginCall(user.username(), $("#passwordChangeFormNewPassword").val(),successLoginCallbackFn,
+                function(data){
+                  displayRestError(data,"modal-password-change-content");
+                }
+                ,function(){
+                  window.modalChangePasswordBox.modal('hide');
+                  window.location=window.location.toString().substringBeforeFirst("?");
+                  window.sammyArchivaApplication.setLocation("#search");
+                });
           } else {
             displaySuccessMessage($.i18n.prop('change.password.success.section.title'));
           }
