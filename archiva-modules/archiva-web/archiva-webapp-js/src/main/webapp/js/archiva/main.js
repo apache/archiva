@@ -327,6 +327,9 @@ function(jquery,ui,sammy,tmpl) {
         var checkArtifactDetailContent=function(groupId,artifactId,version,repositoryId,tabToActivate,idContentToCheck,contentDisplayFn){
           // no need to recalculate all stuff just activate the tab
           var htmlId = idContentToCheck?idContentToCheck:"browse_artifact_detail";
+          // olamy: cause some issues when browsing so desactivate this fix until more check
+          // navigating from dependencies list or dependency or used by of an artifact to fix in search.js
+          /*
           var htmlIdSelect = $("#main-content").find("#"+htmlId );
           if(htmlIdSelect.html()!=null){
             if( $.trim(htmlIdSelect.html().length)>0){
@@ -335,7 +338,7 @@ function(jquery,ui,sammy,tmpl) {
               return;
             }
           }
-
+          */
 
           var artifactAvailableUrl="restServices/archivaServices/browseService/artifactAvailable/"+encodeURIComponent(groupId)+"/"+encodeURIComponent(artifactId);
           artifactAvailableUrl+="/"+encodeURIComponent(version);
