@@ -3,7 +3,7 @@
  ------
  Olivier Lamy
  ------
- 2011-09-29
+ 2012-09-26
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -127,25 +127,24 @@ Installing Standalone Distribution of Apache Archiva
 
   <!-- Users / Security Database -->
 
-  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+  <New id="users" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
-      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
-        <Set name="serverName">localhost</Set>
-        <Set name="databaseName">redback</Set>
-        <Set name="user">archiva</Set>
-        <Set name="password">sa</Set>
-      </New>
-    </Arg>
-  </New>
-
-  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/usersShutdown</Arg>
-    <Arg>
-      <New class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource">
-        <Set name="url">jdbc:mysql://localhost/redback</Set>
-        <Set name="user">archiva</Set>
-        <Set name="password">sa</Set>
+      <New class="org.apache.tomcat.jdbc.pool.DataSource">
+        <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
+        <Set name="url">jdbc:mysql://localhost/archiva</Set>
+        <Set name="username"></Set>
+        <Set name="password"></Set>
+        <Set name="initialSize">15</Set>
+        <!-- depends on your concurrent users numbers -->
+        <Set name="maxActive">30</Set>
+        <Set name="maxWait">10000</Set>
+        <Set name="removeAbandoned">true</Set>
+        <Set name="logAbandoned">true</Set>
+        <Set name="removeAbandonedTimeout">10000</Set>
+        <Set name="testOnBorrow">true</Set>
+        <!-- very rigourous sql query validation -->
+        <Set name="validationQuery">select 1</Set>
       </New>
     </Arg>
   </New>
