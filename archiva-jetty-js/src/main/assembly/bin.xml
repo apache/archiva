@@ -22,6 +22,7 @@
   <formats>
     <format>tar.gz</format>
     <format>zip</format>
+    <format>dir</format>
   </formats>
   <fileSets>
     <fileSet>      
@@ -103,6 +104,10 @@
       <includes>
         <include>LICENSE</include>
       </includes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/contexts</directory>
+      <outputDirectory>contexts</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>

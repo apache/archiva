@@ -339,4 +339,16 @@
       </New>
     </Arg>
   </New>
+
+
+  <!--
+  <New id="ArchivaWebAppContext" class="org.eclipse.jetty.webapp.WebAppContext">
+    <Arg><Ref id="Handlers"/></Arg>
+    <Arg><SystemProperty name="jetty.home" default="."/>/apps/archiva</Arg>
+    <Arg>/</Arg>
+    <Set name="extractWAR">false</Set>
+    <Set name="throwUnavailableOnStartupException">true</Set>
+  </New>
+  -->
+
 </Configure>
