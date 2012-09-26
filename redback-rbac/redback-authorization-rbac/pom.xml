@@ -24,7 +24,7 @@
   <parent>
     <groupId>org.apache.archiva.redback</groupId>
     <artifactId>redback-authorization-providers</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0</version>
     <relativePath>../../redback-authorization/redback-authorization-providers/pom.xml</relativePath>
   </parent>
 
