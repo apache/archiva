@@ -112,7 +112,7 @@ import java.util.Set;
 /**
  *
  */
-@Service ("davResourceFactory#archiva")
+@Service ( "davResourceFactory#archiva" )
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -145,7 +145,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named (value = "repositoryProxyConnectors#default")
+    @Named ( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     /**
@@ -175,7 +175,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named (value = "httpAuthenticator#basic")
+    @Named ( value = "httpAuthenticator#basic" )
     private HttpAuthenticator httpAuth;
 
     @Inject
@@ -208,7 +208,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named (value = "archivaTaskScheduler#repository")
+    @Named ( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
     private ApplicationContext applicationContext;
@@ -847,23 +847,19 @@ public class ArchivaDavResourceFactory
     {
         // [MRM-503] - Metadata file need Pragma:no-cache response
         // header.
-        if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" ) )
+        if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" )
+            || ( (ArchivaDavResource) resource ).getLocalResource().isDirectory() )
         {
             response.setHeader( "Pragma", "no-cache" );
             response.setHeader( "Cache-Control", "no-cache" );
+            response.setDateHeader( "Last-Modified", new Date().getTime() );
         }
         // if the resource is a directory don't cache it as new groupId deployed will be available
         // without need of refreshing browser
-        if ( ( (ArchivaDavResource) resource ).getLocalResource().isDirectory() )
-        {
-            response.setHeader( "Pragma", "no-cache" );
-            response.setHeader( "Cache-Control", "no-cache" );
-            response.setDateHeader( "last-modified", new Date().getTime() );
-        }
         else
         {
             // We need to specify this so connecting wagons can work correctly
-            response.setDateHeader( "last-modified", resource.getModificationTime() );
+            response.setDateHeader( "Last-Modified", resource.getModificationTime() );
         }
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
