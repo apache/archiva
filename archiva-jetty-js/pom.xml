@@ -246,7 +246,6 @@
           <configuration>
             <excludes>
               <exclude>src/main/conf/**</exclude>
-              <exclude>src/main/contexts/**</exclude>
             </excludes>
           </configuration>
         </plugin>
