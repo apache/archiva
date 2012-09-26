@@ -18,7 +18,10 @@
   ~ under the License.
   -->
 
-<project>
+<project xmlns="http://maven.apache.org/DECORATION/1.3.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd"
+  name="Archiva Documentation">
   <bannerLeft>
     <name>Apache Archiva</name>
     <src>http://archiva.apache.org/images/archiva.png</src>
@@ -52,7 +55,7 @@
 
   <body>
     <breadcrumbs>
-      <item name="${project.version}" href="/index.html" />
+      <item name="Apache Archiva" href="http://archiva.apache.org/index.html"/>
     </breadcrumbs>
 
     <menu name="Introduction">
