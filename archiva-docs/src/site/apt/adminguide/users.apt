@@ -1,5 +1,5 @@
  ------
- Understanding Apache Archiva Security
+ Manage Archiva Users
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -19,17 +19,37 @@
 ~~ specific language governing permissions and limitations                         
 ~~ under the License.                                                              
 
-Understanding Apache Archiva Security
+Manage Archiva Users
 
-  Archiva's security is managed by {{{http://archiva.apache.org/redback/} Redback}}. The following document describes how to configure your
-  repository security:
+  Archiva uses the {{{http://archiva.apache.org/redback/} Redback}} security framework for managing repository security. When the server is first started,
+  you will be prompted to create an administration user. This user will be given permission to administer all aspects of the system (as well as
+  access to all of the repositories). This user can then be used to grant permissions to other users.
 
-    * {{{./users.html} Users in Archiva}}
+  A guest user is also created by default, and given read access to the default repositories (<<<internal>>> and <<<snapshots>>>). Repositories with
+  guest user access can be accessed without the use of a username and password (or without being logged in to the web interface).
 
-    * {{{./roles.html} Roles in Archiva}}
+* Manage Users
 
-    * {{{./customising-security.html} Customising Security}}
+  The ui provide a screen to manage your users. You can:
 
-    []
+  * Delete user
 
-  ~~TODO: LDAP
+  * Edit user
+
+  * Block user
+
+  * Force user to change password on next login
+
+  []
+
+[../images/users-list.png]
+
+* User edition
+
+** Screen to manage a user
+
+[../images/user-edit.png]
+
+** Screen to manage user roles
+
+[../images/user-edit-roles.png]
