@@ -50,7 +50,7 @@ Configuration Files of Apache Archiva
 
   The following shows a basic configuration file:
 
-----
++----+
 <configuration>
   <version>2</version>
   <managedRepositories>
@@ -81,6 +81,6 @@ Configuration Files of Apache Archiva
     </proxyConnector>
   </proxyConnectors>
 </configuration>
-----
++----+
 
   ~~TODO: need a full reference
