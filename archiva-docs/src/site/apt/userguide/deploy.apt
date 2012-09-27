@@ -28,9 +28,9 @@ Deploying to Repository
 
  There are different ways on how you can deploy artifacts in an Archiva repository. 
 
-   * {{Maven}} Configuring Maven to deploy to an Archiva repository}}
+   * {{Maven}} Configuring Maven to deploy to an Archiva repository
 
-   * {{Web UI}} Deploying via the Web UI Form}}
+   * {{Web UI}} Deploying via the Web UI Form
    
  Starting with Archiva 1.2.3, it is possible to block re-deployment of released artifacts to a specific repository. This can be configured through the
  repository configuration page by ticking the <<<Block Re-deployment of Released Artifacts>>> checkbox.

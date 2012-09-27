@@ -21,7 +21,7 @@
 
 Configuring Maven 2 to use an Archiva repository
 
-  To get your local Maven 2 installation to use an Archiva proxy you need to add the repositories you require to your 'settings.xml'. This file is usually found in ${user.dir}/.m2/settings.xml (see the {{{http://maven.apache.org/settings.html}Settings Reference}}). 
+  To get your local Maven 2 installation to use an Archiva proxy you need to add the repositories you require to your 'settings.xml'. This file is usually found in $\{user.dir\}/.m2/settings.xml (see the {{{http://maven.apache.org/settings.html}Settings Reference}}). 
 
   How you configure the settings depends on how you would like to utilise the repository. You can add the Archiva repository as an additional repository to others already declared by the project, or lock down the
   environment to only use the Archiva repositories (possibly proxying content from a remote repository).
