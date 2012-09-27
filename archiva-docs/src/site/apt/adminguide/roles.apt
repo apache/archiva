@@ -47,6 +47,20 @@ Understanding Apache Archiva Security Roles
 
     * <Global Repository Manager>: users with this role can write to and administer any repository in the instance
 
+    []
+
+** Roles list
+
+[../images/roles-list.png]
+
+** Role details
+
+[../images/role-detail.png]
+
+** Attach users to a role
+
+[../images/role-users.png]
+
 * General Roles
 
   Archiva also contains the following general roles for security of the instance:
