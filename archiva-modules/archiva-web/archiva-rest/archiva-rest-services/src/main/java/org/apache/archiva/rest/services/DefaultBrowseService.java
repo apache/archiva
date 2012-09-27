@@ -61,7 +61,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
@@ -685,9 +684,10 @@ public class DefaultBrowseService
                 List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
                     metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
                 Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
-
-                return buildArtifacts( artifacts, repoId );
-
+                if ( artifacts != null && !artifacts.isEmpty() )
+                {
+                    return buildArtifacts( artifacts, repoId );
+                }
             }
         }
         catch ( MetadataResolutionException e )
