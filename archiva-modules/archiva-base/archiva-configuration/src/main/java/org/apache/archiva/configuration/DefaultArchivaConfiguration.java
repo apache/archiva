@@ -89,7 +89,7 @@ import java.util.Set;
  * before reading it from the registry.
  * </p>
  */
-@Service( "archivaConfiguration#default" )
+@Service ( "archivaConfiguration#default" )
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
 {
@@ -99,7 +99,7 @@ public class DefaultArchivaConfiguration
      * Plexus registry to read the configuration from.
      */
     @Inject
-    @Named( value = "commons-configuration" )
+    @Named ( value = "commons-configuration" )
     private Registry registry;
 
     @Inject
@@ -182,7 +182,7 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ( "unchecked" )
     private Configuration load()
     {
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
@@ -440,7 +440,7 @@ public class DefaultArchivaConfiguration
         return registry.getSubset( KEY );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ( "unchecked" )
     public synchronized void save( Configuration configuration )
         throws IndeterminateConfigurationException, RegistryException
     {

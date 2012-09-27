@@ -216,7 +216,7 @@
             {{if update}}
               <span class="uneditable-input">${$data.managedRepository.id}</span>
             {{else}}
-              <input type="text" class="xlarge required" id="id" name="id" size="50"
+              <input type="text" class="input-xlarge required" id="id" name="id" size="50"
                      data-bind="value: managedRepository.id,css:{'uneditable-input': update},readonly:update"/>
             {{/if}}
           </div>
@@ -224,20 +224,20 @@
         <div class="control-group">
           <label class="control-label" for="name">${$.i18n.prop('name')}</label>
           <div class="controls">
-            <input type="text" class="xlarge required" id="name" name="name" size="50"
+            <input type="text" class="input-xlarge required" id="name" name="name" size="50"
                    data-bind="value: managedRepository.name"/>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="location">${$.i18n.prop('directory')}</label>
           <div class="controls">
-            <input type="text" class="xlarge required" id="location" name="location" size="50" data-bind="value: managedRepository.location"/>
+            <input type="text" class="input-xxlarge required" id="location" name="location" size="50" data-bind="value: managedRepository.location"/>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="indexDirectory">${$.i18n.prop('index.directory')}</label>
           <div class="controls">
-            <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository.indexDirectory"/>
+            <input type="text" class="input-xxlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository.indexDirectory"/>
           </div>
         </div>
         <div class="control-group">
@@ -458,7 +458,7 @@
             {{if update}}
               <span class="uneditable-input">${$data.remoteRepository.id}</span>
             {{else}}
-              <input type="text" class="xlarge required" id="id" name="id" size="50"
+              <input type="text" class="input-xlarge required" id="id" name="id" size="50"
                      data-bind="value: remoteRepository.id,css:{'uneditable-input': update},readonly:update"/>
             {{/if}}
           </div>
@@ -466,26 +466,26 @@
         <div class="control-group">
           <label class="control-label" for="name">${$.i18n.prop('name')}</label>
           <div class="controls">
-            <input type="text" class="xlarge required" id="name" name="name" size="50"
+            <input type="text" class="input-xlarge required" id="name" name="name" size="50"
                    data-bind="value: remoteRepository.name"/>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="url">${$.i18n.prop('url')}</label>
           <div class="controls">
-            <input type="text" class="xlarge required" id="url" name="location" size="50" data-bind="value: remoteRepository.url"/>
+            <input type="text" class="input-xxlarge required" id="url" name="location" size="50" data-bind="value: remoteRepository.url"/>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="userName">${$.i18n.prop('username')}</label>
           <div class="controls">
-            <input type="text" class="xlarge" id="userName" name="userName" size="50" data-bind="value: remoteRepository.indexDirectory"/>
+            <input type="text" class="input-xlarge" id="userName" name="userName" size="50" data-bind="value: remoteRepository.indexDirectory"/>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="password">${$.i18n.prop('password')}</label>
            <div class="controls">
-             <input type="password" class="xlarge" id="password" name="password" size="50" data-bind="value: remoteRepository.password"/>
+             <input type="password" class="input-xlarge" id="password" name="password" size="50" data-bind="value: remoteRepository.password"/>
           </div>
         </div>
         <div class="control-group">
@@ -511,7 +511,7 @@
         <div class="control-group">
           <label class="control-label" for="remoteIndexUrl">${$.i18n.prop('remoteIndexUrl')}</label>
           <div class="controls">
-            <input type="text" id="remoteIndexUrl" name="remoteIndexUrl" size="5" data-bind="value: remoteRepository.remoteIndexUrl"/>
+            <input type="text" class="input-xxlarge" id="remoteIndexUrl" name="remoteIndexUrl" size="5" data-bind="value: remoteRepository.remoteIndexUrl"/>
           </div>
         </div>
         <div class="control-group">
@@ -528,7 +528,7 @@
         <div class="control-group">
           <label class="control-label" for="indexDirectory">${$.i18n.prop('index.directory')}</label>
           <div class="controls">
-            <input type="text" class="xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: remoteRepository.indexDirectory"/>
+            <input type="text" class="input-xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: remoteRepository.indexDirectory"/>
           </div>
         </div>
         <div class="control-group">
