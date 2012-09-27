@@ -645,7 +645,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
               text=text.replace(/>/g,"&gt;");
               mainContent.find("#artifact-content-text" ).html(text);
               prettyPrint();
-              goToAnchor("artifact-content-text-header");
+              // olamy do not move to anchor to not loose nav history
+              //goToAnchor("artifact-content-text-header");
+              //window.location.href=window.location+"#artifact-content-text-header";
             }
           });
           return;
@@ -679,7 +681,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
                mainContent.find("#artifact-content-text" ).html(text);
                prettyPrint();
-               goToAnchor("artifact-content-text-header");
+               // olamy do not move to anchor to not loose nav history
+               //goToAnchor("artifact-content-text-header");
+               //window.location.href=window.location+"#artifact-content-text-header";
              }
             });
     		  }
