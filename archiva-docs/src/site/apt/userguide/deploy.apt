@@ -51,7 +51,7 @@ Deploying to Repository
 
 +-------------------------------------------------------------------------+
 <settings>
-  ...
+  <!-- omitted xml -->
   <servers>
     <server>
       <id>archiva.internal</id>
@@ -63,9 +63,9 @@ Deploying to Repository
       <username>{archiva-deployment-user}</username>
       <password>{archiva-deployment-pwd}</password>
     </server>
-    ...
+    <!-- omitted xml -->
   </servers>
-  ...
+  <!-- omitted xml -->
 </settings>
 +-------------------------------------------------------------------------+
 
@@ -77,7 +77,7 @@ Deploying to Repository
  
 +-------------------------------------------------------------------------+
 <project>
-  ...
+  <!-- omitted xml -->
   <distributionManagement>
     <repository>
       <id>archiva.internal</id>
@@ -90,7 +90,7 @@ Deploying to Repository
       <url>http://reposerver.mycompany.com:8080/archiva/repository/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
-  ...
+  <!-- omitted xml -->
 </project>
 +-------------------------------------------------------------------------+
 
@@ -103,7 +103,7 @@ Deploying to Repository
  
 +-------------------------------------------------------------------------+
 <project>
-  ...
+  <!-- omitted xml -->
   <distributionManagement>
     <repository>
       <id>archiva.internal</id>
@@ -116,7 +116,7 @@ Deploying to Repository
       <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
-  ...
+  <!-- omitted xml -->
 </project>
 +-------------------------------------------------------------------------+
 
@@ -124,7 +124,7 @@ Deploying to Repository
 
 +-------------------------------------------------------------------------+
 <project>
-  ...
+  <!-- omitted xml -->
   <build>
     <extensions>
       <extension>
@@ -134,7 +134,7 @@ Deploying to Repository
       </extension>
     </extensions>
   </build>
-  ...
+  <!-- omitted xml -->
 </project>
 +-------------------------------------------------------------------------+
 

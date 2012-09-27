@@ -34,7 +34,7 @@ Configuring Maven 2 to use an Archiva repository
 
 +-------------------------------------------------------------------------+
 <settings>
-  ...
+  <!-- omitted xml -->
   <mirrors>
     <mirror>
       <id>archiva.default</id>
@@ -42,7 +42,7 @@ Configuring Maven 2 to use an Archiva repository
       <mirrorOf>external:*</mirrorOf>
     </mirror>
   </mirrors>
-  ...
+  <!-- omitted xml -->
 </settings>
 +-------------------------------------------------------------------------+
 
@@ -55,13 +55,13 @@ Mirror Settings}} for more information.>
   If you have separate Archiva repositories that you wish to use, you can add an extra mirror declaration as needed:
 
 +-------------------------------------------------------------------------+
-    ...
+    <!-- omitted xml -->
     <mirror>
       <id>archiva.apache.snapshots</id>
       <url>http://repo.mycompany.com:8080/archiva/repository/snapshots/</url>
       <mirrorOf>apache.snapshots</mirrorOf>
     </mirror>
-    ...
+    <!-- omitted xml -->
 +-------------------------------------------------------------------------+
 
   <<WARNING:>> Maven, as of version 2.0.8, does not properly report the correct URL in errors when a mirror is used - so although the Archiva instance is being consulted any error messages will still reflect
@@ -75,7 +75,7 @@ Mirror Settings}} for more information.>
 
 +-------------------------------------------------------------------------+
 <settings>
-  ...
+  <!-- omitted xml -->
   <profiles>
     <profile>
       <id>Repository Proxy</id>
@@ -87,23 +87,23 @@ Mirror Settings}} for more information.>
       <!-- ******************************************************* -->
       <repositories>
         <repository>
-          ...
+          <!-- omitted xml -->
         </repository>
-        ...   
+        <!-- omitted xml -->   
       </repositories>
       <!-- ******************************************************* -->
       <!-- repositories for maven plugins -->
       <!-- ******************************************************* -->
       <pluginRepositories>
         <pluginRepository>
-          ...
+          <!-- omitted xml -->
         </pluginRepository>
-        ...   
+        <!-- omitted xml -->   
       </pluginRepositories>
     </profile>
-    ...
+    <!-- omitted xml -->
   </profiles>
-  ...
+  <!-- omitted xml -->
 </settings>
 +-------------------------------------------------------------------------+
 
@@ -130,16 +130,16 @@ Mirror Settings}} for more information.>
 
 +-------------------------------------------------------------------------+
 <settings>
-  ...
+  <!-- omitted xml -->
   <servers>
     <server>
       <id>repository-1</id>
       <username>{archiva-user}</username>
       <password>{archiva-pwd}</password>
     </server>
-    ...
+    <!-- omitted xml -->
   </servers>
-  ...
+  <!-- omitted xml -->
 </settings>
 +-------------------------------------------------------------------------+
 

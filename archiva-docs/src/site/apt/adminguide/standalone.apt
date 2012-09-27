@@ -123,7 +123,7 @@ Installing Standalone Distribution of Apache Archiva
  for more details.
 
 +------+
-  ...
+  <!-- omitted xml -->
 
   <!-- Users / Security Database -->
 
@@ -148,7 +148,7 @@ Installing Standalone Distribution of Apache Archiva
       </New>
     </Arg>
   </New>
-  ...
+  <!-- omitted xml -->
 +------+
 
  More information about using Derby Network Server as an external user database

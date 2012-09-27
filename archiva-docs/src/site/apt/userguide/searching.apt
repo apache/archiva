@@ -59,7 +59,7 @@ Searching
   The repository files that are indexed during repository scan can be configured in the Repository Scanning page, in the
   Repository Scanning - File Types section (indexable-content). By default, the indexable-content file types are:
 
-+-----+
+-----
 **/*.txt
 **/*.TXT
 **/*.block
@@ -69,7 +69,7 @@ Searching
 **/*.xsd
 **/*.dtd
 **/*.tld
-+-----+
+-----
 
 * Quick Search
 

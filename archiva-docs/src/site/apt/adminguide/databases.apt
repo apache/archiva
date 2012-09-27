@@ -53,7 +53,7 @@ Apache Archiva Database
   As a workaround, set the database to UTF-8 encoding after it has been populated. See {{{http://jira.codehaus.org/browse/MRM-1373} MRM-1373}} for more details.
 
 +------+
-...
+<!-- omitted xml -->
 
 <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
   <Arg>jdbc/users</Arg>
@@ -76,7 +76,7 @@ Apache Archiva Database
     </New>
   </Arg>
 </New>
-...
+<!-- omitted xml -->
 +------+
 
 * Backing up the database

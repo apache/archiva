@@ -28,7 +28,7 @@ Virtual Repositories
 
 +-------------------------------------------------------------------------+
 <settings>
-  ...
+  <!-- omitted xml -->
   <profiles>
     <profile>
       <id>Repository Proxy</id>
@@ -68,9 +68,9 @@ Virtual Repositories
         </repository>
       </repositories>
     </profile>
-    ...
+    <!-- omitted xml -->
   </profiles>
-  ...
+  <!-- omitted xml -->
 </settings>
 +-------------------------------------------------------------------------+
 
@@ -78,7 +78,7 @@ Virtual Repositories
 
 +-------------------------------------------------------------------------+
 <settings>
-  ...
+  <!-- omitted xml -->
   <profiles>
     <profile>
       <id>Repository Proxy</id>
@@ -92,9 +92,9 @@ Virtual Repositories
         </repository>
       </repositories>
     </profile>
-    ...
+    <!-- omitted xml -->
   </profiles>
-  ...
+  <!-- omitted xml -->
 </settings>
 +-------------------------------------------------------------------------+
 
