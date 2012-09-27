@@ -42,6 +42,23 @@ Installing Standalone Distribution of Apache Archiva
   when you run the Archiva binaries in Solaris. You need to use a different version of <<<tr>>> in order to get it to work. See
   {{{http://jira.codehaus.org/browse/MRM-1467} MRM-1467}} for more details.
 
+  <<NOTE>>: since 1.4-M3 Archiva is now available on / (ROOT) context.
+
+  If you want to use an other context path, you must edit the file in contexts/archiva.xml
+
++---
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+
+  <!-- contextPath used -->
+  <Set name="contextPath">/</Set>
+  <Set name="war"><SystemProperty name="jetty.home" default="."/>/apps/archiva</Set>
+
+  <Set name="extractWAR">false</Set>
+  <Set name="copyWebDir">false</Set>
+
+</Configure>
++---
+
 * Installing as a Service on Windows
 
   On Windows, to use the <<<start>>> and <<<stop>>> commands you must first install it as a service. This is done by running:
