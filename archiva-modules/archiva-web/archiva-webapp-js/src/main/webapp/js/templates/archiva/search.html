@@ -742,12 +742,12 @@
         {{var entries=treeEntry.artifact.crumbEntries()}}
         {{each(j,crumbEntry) entries}}
           {{if j < entries.length - 2}}
-            <a href="#" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
+            <a class="cursor-hand" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
           {{else j == entries.length - 2}}
-            <a href="#" onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
+            <a class="cursor-hand" onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
           {{else j == entries.length - 1}}
             &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
-             <a href="#" onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
+             <a class="cursor-hand" onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
           {{/if}}
           {{if j < entries.length - 2}}
              &nbsp;/&nbsp;
