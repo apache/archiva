@@ -91,6 +91,7 @@
       <item name="Databases"                    href="/adminguide/databases.html" />
       <item name="Repositories Content Storage" href="/adminguide/repositories-content-storage.html"/>
       <item name="Security"                     href="/adminguide/security.html" collapse="true">
+        <item name="Users"                      href="/adminguide/users.html" />
         <item name="Roles"                      href="/adminguide/roles.html" />
         <item name="Customising"                href="/adminguide/customising-security.html" />
 <!-- TODO: for a future version
