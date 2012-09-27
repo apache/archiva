@@ -686,7 +686,7 @@ public class DefaultBrowseService
                     metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
                 Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
 
-                return buildArtifacts( artifacts, repositoryId );
+                return buildArtifacts( artifacts, repoId );
 
             }
         }
