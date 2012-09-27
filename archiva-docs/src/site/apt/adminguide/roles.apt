@@ -70,6 +70,3 @@ Understanding Apache Archiva Security Roles
     * <User Administrator>: ability to create, edit, and grant roles to other users in the system
 
   The guest and registered user roles do not affect repository access.
-
-~~TODO: walkthrough screens 
-
