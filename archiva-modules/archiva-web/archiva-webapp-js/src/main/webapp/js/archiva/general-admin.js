@@ -521,10 +521,12 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.networkConfiguration=ko.observable(networkConfiguration);
 
     save=function(){
+      $("#user-messages" ).html(mediumSpinnerImg());
+      var mainContent=$("#main-content");
       if (!$("#main-content" ).find("#network-configuration-edit-form").valid()){
         return;
       }
-      clearUserMessages();
+      mainContent.find("#network-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setNetworkConfiguration", {
         type: "POST",
         contentType: 'application/json',
@@ -532,6 +534,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         dataType: 'json',
         success: function(data){
           displaySuccessMessage( $.i18n.prop("network-configuration.updated"));
+        },
+        complete: function(){
+          removeMediumSpinnerImg("#user-messages");
+          mainContent.find("#network-configuration-btn-save" ).button('reset');
         }
       });
     }
