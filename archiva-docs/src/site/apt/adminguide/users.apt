@@ -53,3 +53,13 @@ Manage Archiva Users
 ** Screen to manage user roles
 
 [../images/user-edit-roles.png]
+
+* User registration
+
+** User can registrer using the ui
+
+[../images/user-register.png]
+
+** Fill in the registration form
+
+[../images/user-register-form.png]
