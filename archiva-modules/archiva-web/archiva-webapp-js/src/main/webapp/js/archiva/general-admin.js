@@ -848,6 +848,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           return;
       }
       clearUserMessages();
+      $("#user-messages" ).html(mediumSpinnerImg());
+      $("#main-content" ).find("#appearance-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setOrganisationInformation", {
         type: "POST",
         contentType: "application/json",
@@ -859,6 +861,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         },
         error: function(data){
           displayErrorMessage($.i18n.prop('appearance-configuration.updating-error'));
+        },
+        complete: function(){
+          removeMediumSpinnerImg("#user-messages");
+          $("#main-content" ).find("#appearance-configuration-btn-save" ).button('reset');
         }
       });
     }
