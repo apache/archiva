@@ -598,8 +598,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.uiConfiguration=ko.observable(uiConfiguration);
     var self=this;
     save=function(){
+      var mainContent=$("#main-content" );
       $("#user-messages").html( mediumSpinnerImg());
-      $("#main-content" ).find("#ui-configuration-btn-save" ).button('loading');
+      mainContent.find("#ui-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setUiConfiguration", {
         type: "POST",
         contentType: 'application/json',
@@ -610,7 +611,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         },
         complete: function(){
           removeMediumSpinnerImg("#user-messages");
-          $("#main-content" ).find("#ui-configuration-btn-save" ).button('reset');
+          mainContent.find("#ui-configuration-btn-save" ).button('reset');
         }
       });
     }
@@ -844,12 +845,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.organisationInformation=ko.observable(organisationInformation);
 
     this.save=function(){
-      if (!$("#main-content" ).find("#appearance-configuration-form-id").valid()) {
+      var mainContent=$("#main-content" );
+      if (!mainContent.find("#appearance-configuration-form-id").valid()) {
           return;
       }
       clearUserMessages();
       $("#user-messages" ).html(mediumSpinnerImg());
-      $("#main-content" ).find("#appearance-configuration-btn-save" ).button('loading');
+      mainContent.find("#appearance-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setOrganisationInformation", {
         type: "POST",
         contentType: "application/json",
@@ -864,7 +866,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         },
         complete: function(){
           removeMediumSpinnerImg("#user-messages");
-          $("#main-content" ).find("#appearance-configuration-btn-save" ).button('reset');
+          mainContent.find("#appearance-configuration-btn-save" ).button('reset');
         }
       });
     }
