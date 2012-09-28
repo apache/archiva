@@ -598,6 +598,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.uiConfiguration=ko.observable(uiConfiguration);
     var self=this;
     save=function(){
+      $("#user-messages").html( mediumSpinnerImg());
       $.ajax("restServices/archivaServices/archivaAdministrationService/setUiConfiguration", {
         type: "POST",
         contentType: 'application/json',
@@ -605,6 +606,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         dataType: 'json',
         success: function(data){
           displaySuccessMessage( $.i18n.prop("ui-configuration.updated"));
+        },
+        complete: function(){
+          removeMediumSpinnerImg("#user-messages");
         }
       });
     }
