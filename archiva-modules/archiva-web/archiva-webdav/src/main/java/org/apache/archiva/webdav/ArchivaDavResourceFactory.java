@@ -1120,6 +1120,13 @@ public class ArchivaDavResourceFactory
      */
     private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )
     {
+        // when no repositories configured it's impossible to browse nothing !
+        // at least make possible to see nothing :-)
+        if ( repositories == null || repositories.isEmpty() )
+        {
+            return true;
+        }
+
         boolean allow = false;
 
         // if securitySession != null, it means that the user was prompted for authentication
