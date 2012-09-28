@@ -69,7 +69,7 @@ To deploy Archiva on Tomcat 5.5 and Tomcat 6.0
    instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
    Bug 40668}} for a workaround.
 
-   * The ${appserver.base} java property is used by the Archiva internal logging configuration to determine where to output its logs to.
+   * The $\{appserver.base\} java property is used by the Archiva internal logging configuration to determine where to output its logs to.
      It is important to define this property either in the $CATALINA_OPTS system environment variable if Tomcat is being launched via the
      command line) or the service properties (if being launched as a service or daemon). The format typically expected is
      -Dappserver.base=<SOMEWHERE>. In this example, we'll put the logs in Tomcat's <<<logs>>> directory so we need to set appserver.base
@@ -83,7 +83,7 @@ OR
 set CATALINA_OPTS="-Dappserver.home=%CATALINA_HOME% -Dappserver.base=%CATALINA_HOME%" (for Windows)
 +-----------+
 
-   * If setting the ${appserver.base} and ${appserver.home} using the previous step does not work, you can set it in the unpacked Archiva web application's
+   * If setting the $\{appserver.base\} and $\{appserver.home\} using the previous step does not work, you can set it in the unpacked Archiva web application's
      <<<WEB-INF/classes/application.properties>>> as follows:
 
 +-----------+
@@ -98,7 +98,7 @@ appserver.home=$CATALINA_BASE
 
    * When running Tomcat as a <<Windows>> service, you need to edit <<<regedit>>> and then, in
      <<<HKEY_LOCAL_MACHINE \> SOFTWARE \> Apache Software Foundation \> Procrun 2.0 \> TomcatX \> Parameters \> Java>>>, modify
-     the <<<Options>>> variable. Set the ${appserver.base} property by adding the following parameters at the end:
+     the <<<Options>>> variable. Set the $\{appserver.base\} property by adding the following parameters at the end:
 
 +-----------+
 -Dappserver.base=%CATALINA_HOME% -Dappserver.home=%CATALINA_HOME%
