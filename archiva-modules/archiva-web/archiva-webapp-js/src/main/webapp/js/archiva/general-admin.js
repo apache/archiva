@@ -599,6 +599,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var self=this;
     save=function(){
       $("#user-messages").html( mediumSpinnerImg());
+      $("#main-content" ).find("#ui-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setUiConfiguration", {
         type: "POST",
         contentType: 'application/json',
@@ -609,6 +610,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         },
         complete: function(){
           removeMediumSpinnerImg("#user-messages");
+          $("#main-content" ).find("#ui-configuration-btn-save" ).button('reset');
         }
       });
     }
