@@ -55,11 +55,12 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       });
     }
     addProxyConnectorRule=function(proxyConnectorRule){
+      $("#proxy-connector-rule-add-btn" ).button("loading");
       $.log("addProxyConnectorRule");
-      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/proxyConnectorRule");
+      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/proxyConnectorRule",true);
     }
 
-    this.saveProxyConnectorRule=function(proxyConnectorRule,url){
+    this.saveProxyConnectorRule=function(proxyConnectorRule,url,add,completeFnCallback){
       $.log("saveProxyConnectorRule:"+url);
       $("#user-messages" ).html(mediumSpinnerImg());
       $.ajax(url,
@@ -70,10 +71,12 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
           dataType: 'json',
           success: function(data) {
             $.log("save proxyConnectorRule pattern:"+proxyConnectorRule.pattern());
-            var message=$.i18n.prop(self.update?'proxy-connector-rule.updated':'proxy-connector-rule.added',proxyConnectorRule.pattern());
+            var message=$.i18n.prop(add?'proxy-connector-rule.added':'proxy-connector-rule.updated',proxyConnectorRule.pattern());
             displaySuccessMessage(message);
             proxyConnectorRule.modified(false);
-            self.proxyConnectorRules.push(proxyConnectorRule);
+            if(add){
+              self.proxyConnectorRules.push(proxyConnectorRule);
+            }
             activateProxyConnectorRulesGridTab();
           },
           error: function(data) {
@@ -82,6 +85,9 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
           },
           complete:function(data){
             removeMediumSpinnerImg("#user-messages");
+            if(completeFnCallback){
+              completeFnCallback();
+            }
           }
         }
       );
@@ -89,13 +95,19 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
 
     updateProxyConnectorRule=function(proxyConnectorRule){
       $.log("updateProxyConnectorRule");
-      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/updateProxyConnectorRule");
+      $("#main-content" ).find("#proxy-connectors-rules-edit-div").find("#proxy-connector-rule-update-btn").button("loading");
+      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/updateProxyConnectorRule",
+                                  false,
+                                  function(){
+                                    $("#proxy-connector-rule-update-btn" ).button("reset");
+                                  }
+      );
     }
 
     removeProxyConnectorRule=function(proxyConnectorRule){
 
       //FIXME modal dialog to confirm
-
+      //$("#proxy-connector-rule-delete-btn" ).button("loading");
       $("#user-messages" ).html(mediumSpinnerImg());
       $.ajax("restServices/archivaServices/proxyConnectorRuleService/deleteProxyConnectorRule",
        {
@@ -113,6 +125,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
          },
          complete:function(data){
            removeMediumSpinnerImg("#user-messages");
+           //$("#proxy-connector-rule-delete-btn" ).button("reset");
          }
        }
       );

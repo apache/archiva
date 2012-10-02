@@ -1303,7 +1303,7 @@
               </a>
           </td>
           <td>
-              <a href="#" data-bind="click: function(){ removeProxyConnectorRule(row) }">
+              <a href="#" data-bind="click: function(){ removeProxyConnectorRule(row) }" data-loading-text="${$.i18n.prop('common.loading')}">
                 <span class="btn btn-danger">
                   <i class="icon-trash icon-white"/>
                 </span>
@@ -1311,7 +1311,8 @@
           </td>
           <td>
             {{if row.modified()}}
-              <a href="#" class="btn btn-warning" data-bind="click: function(){ updateProxyConnectorRule(row) }">${$.i18n.prop('save')}</a>
+              <a href="#" id="proxy-connector-rule-update-btn" class="btn btn-warning" data-loading-text="${$.i18n.prop('common.loading')}"
+                 data-bind="click: function(){ updateProxyConnectorRule(row) }">${$.i18n.prop('save')}</a>
             {{/if}}
           </td>
         </tr>
@@ -1357,8 +1358,15 @@
     {{/if}}
     {{if proxyConnectorRule.modified()}}
       <div class="span3">
-        <a href="#" class="btn btn-warning" data-bind="click: function(){addProxyConnectorRule(proxyConnectorRule)}">${$.i18n.prop('save')}</a>
+          {{if update}}
+            <a href="#" class="btn btn-warning" data-loading-text="${$.i18n.prop('common.loading')}"
+             id="proxy-connector-rule-update-btn" data-bind="click: function(){updateProxyConnectorRule(proxyConnectorRule)}">${$.i18n.prop('update')}</a>
+          {{else}}
+            <a href="#" class="btn btn-warning" data-loading-text="${$.i18n.prop('common.loading')}"
+               id="proxy-connector-rule-add-btn" data-bind="click: function(){addProxyConnectorRule(proxyConnectorRule)}">${$.i18n.prop('add')}</a>
+          {{/if}}
       </div>
+
       <br/>
     {{/if}}
     </div>
