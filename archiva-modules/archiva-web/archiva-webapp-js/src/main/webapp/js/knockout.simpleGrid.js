@@ -66,8 +66,10 @@ define("knockout.simpleGrid",["jquery","utils","i18n","knockout"], function() {
 
             // Render the page links
             var pageLinksContainer = $("#"+allBindings.pageLinksId).get(0);
-            ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode")
-              .subscribe(viewModel.pageLinksUpdateCallBack?viewModel.pageLinksUpdateCallBack:function(){});
+            var renderedTemplate = ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode");
+            if (renderedTemplate.subscribe){
+              renderedTemplate.subscribe(viewModel.pageLinksUpdateCallBack?viewModel.pageLinksUpdateCallBack:function(){});
+            }
             if (viewModel.pageLinksUpdateCallBack) viewModel.pageLinksUpdateCallBack();
           }
       };

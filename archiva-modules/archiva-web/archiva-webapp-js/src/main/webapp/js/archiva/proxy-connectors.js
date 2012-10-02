@@ -23,6 +23,8 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
                           disabled,order){
     var self=this;
 
+    this.modified=ko.observable(false);
+
     //private String sourceRepoId;
     this.sourceRepoId=ko.observable(sourceRepoId);
     this.sourceRepoId.subscribe(function(newValue){
@@ -83,7 +85,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
       self.modified(true);
     });
 
-    this.modified=ko.observable(false);
+
 
     this.updatePolicyEntry=function(key,value){
       $.log("updatePolicyEntry:"+key+":"+value);
@@ -275,7 +277,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
     var self=this;
     this.proxyConnectors=ko.observableArray([]);
     this.proxyConnectors.subscribe(function(newValue){
-      $.log("ProxyConnectorsViewModel#proxyConnectors modified")
+      $.log("ProxyConnectorsViewModel#proxyConnectors modified");
       self.proxyConnectors().sort(function(a,b){
         if ( a.sourceRepoId()== b.sourceRepoId()) return a.order() - b.order();
         return (a.sourceRepoId() > b.sourceRepoId())? -1:1;
