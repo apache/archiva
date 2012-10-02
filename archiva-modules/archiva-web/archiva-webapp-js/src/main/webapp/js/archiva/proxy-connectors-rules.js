@@ -104,9 +104,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       );
     }
 
-    removeProxyConnectorRule=function(proxyConnectorRule){
-
-      //FIXME modal dialog to confirm
+    this.deleteProxyConnectorRule=function(proxyConnectorRule){
       //$("#proxy-connector-rule-delete-btn" ).button("loading");
       $("#user-messages" ).html(mediumSpinnerImg());
       $.ajax("restServices/archivaServices/proxyConnectorRuleService/deleteProxyConnectorRule",
@@ -130,6 +128,15 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
          }
        }
       );
+    }
+
+    removeProxyConnectorRule=function(proxyConnectorRule){
+
+      openDialogConfirm(
+          function(){self.deleteProxyConnectorRule(proxyConnectorRule);window.modalConfirmDialog.modal('hide')},
+          $.i18n.prop('ok'), $.i18n.prop('cancel'),
+          $.i18n.prop('proxy-connector-rule.delete.confirm',proxyConnectorRule.pattern()),"");
+
     }
 
     editProxyConnectorRule=function(proxyConnectorRule){
