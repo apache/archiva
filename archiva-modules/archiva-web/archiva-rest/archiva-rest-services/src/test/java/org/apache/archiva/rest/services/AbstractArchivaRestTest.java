@@ -29,6 +29,7 @@ import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
 import org.apache.archiva.rest.api.services.PingService;
+import org.apache.archiva.rest.api.services.ProxyConnectorRuleService;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
@@ -55,7 +56,7 @@ import java.util.Date;
 /**
  * @author Olivier Lamy
  */
-@RunWith (ArchivaBlockJUnit4ClassRunner.class)
+@RunWith ( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
@@ -123,12 +124,10 @@ public abstract class AbstractArchivaRestTest
         return getRepositoriesService( null );
     }
 
-    protected MergeRepositoriesService getMergeRepositoriesService( String authzHeader )
+    protected <T> T getService( Class<T> clazz, String authzHeader )
     {
-        MergeRepositoriesService service =
-            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       MergeRepositoriesService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+        T service = JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/", clazz,
+                                               Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         if ( authzHeader != null )
         {
@@ -140,54 +139,35 @@ public abstract class AbstractArchivaRestTest
         return service;
     }
 
+    protected ProxyConnectorRuleService getProxyConnectorRuleService( String authzHeader )
+    {
+        return getService( ProxyConnectorRuleService.class, authzHeader );
+    }
+
+    protected MergeRepositoriesService getMergeRepositoriesService( String authzHeader )
+    {
+        return getService( MergeRepositoriesService.class, authzHeader );
+    }
+
     protected RepositoriesService getRepositoriesService( String authzHeader )
     {
-        RepositoriesService service =
-            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       RepositoriesService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
-
-        if ( authzHeader != null )
-        {
-            WebClient.client( service ).header( "Authorization", authzHeader );
-        }
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
-        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
-        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
-        return service;
+        return getService( RepositoriesService.class, authzHeader );
 
     }
 
     protected ManagedRepositoriesService getManagedRepositoriesService( String authzHeader )
     {
-        ManagedRepositoriesService service =
-            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                       ManagedRepositoriesService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
-
-        if ( authzHeader != null )
-        {
-            WebClient.client( service ).header( "Authorization", authzHeader );
-        }
-        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
-        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
-        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
-        return service;
-
+        return getService( ManagedRepositoriesService.class, authzHeader );
     }
 
     protected PingService getPingService()
     {
-        return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                          PingService.class,
-                                          Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+        return getService( PingService.class, null );
     }
 
     protected RemoteRepositoriesService getRemoteRepositoriesService()
     {
-        return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-                                          RemoteRepositoriesService.class,
-                                          Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+        return getService( RemoteRepositoriesService.class, null );
 
 
     }

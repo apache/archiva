@@ -71,6 +71,7 @@
       <ref bean="systemStatusService#rest"/>
       <ref bean="reportRepositoriesService#rest" />
       <ref bean="mergeRepositoriesService#rest"/>
+      <ref bean="proxyConnectorRuleService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>
