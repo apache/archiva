@@ -41,7 +41,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@Service ( "proxyConnectorRuleAdmin#default" )
+@Service ("proxyConnectorRuleAdmin#default")
 public class DefaultProxyConnectorRuleAdmin
     extends AbstractRepositoryAdmin
     implements ProxyConnectorRuleAdmin
@@ -125,7 +125,9 @@ public class DefaultProxyConnectorRuleAdmin
 
         for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : configuration.getProxyConnectorRuleConfigurations() )
         {
-            if ( StringUtils.equals( proxyConnectorRuleConfiguration.getPattern(), proxyConnectorRule.getPattern() ) )
+            if ( StringUtils.equals( proxyConnectorRuleConfiguration.getPattern(), proxyConnectorRule.getPattern() )
+                && StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
+                                       proxyConnectorRule.getProxyConnectorRuleType().toString() ) )
             {
                 toSave = true;
             }
@@ -150,7 +152,9 @@ public class DefaultProxyConnectorRuleAdmin
 
         for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : configuration.getProxyConnectorRuleConfigurations() )
         {
-            if ( StringUtils.equals( proxyConnectorRuleConfiguration.getPattern(), proxyConnectorRule.getPattern() ) )
+            if ( StringUtils.equals( proxyConnectorRuleConfiguration.getPattern(), proxyConnectorRule.getPattern() )
+                && StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
+                                       proxyConnectorRule.getProxyConnectorRuleType().toString() ) )
             {
                 List<ProxyConnectorConfiguration> proxyConnectors =
                     new ArrayList<ProxyConnectorConfiguration>( proxyConnectorRule.getProxyConnectors().size() );
