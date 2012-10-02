@@ -22,11 +22,14 @@ package org.apache.archiva.proxy;
 import com.google.common.io.Files;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorRuleConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.Keys;
 import org.apache.archiva.model.RepositoryURL;
@@ -92,7 +95,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
-@Service ( "repositoryProxyConnectors#default" )
+@Service ("repositoryProxyConnectors#default")
 public class DefaultRepositoryProxyConnectors
     implements RepositoryProxyConnectors, RegistryListener
 {
@@ -102,21 +105,21 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named ( value = "archivaConfiguration#default" )
+    @Named (value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      *
      */
     @Inject
-    @Named ( value = "repositoryContentFactory#default" )
+    @Named (value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryFactory;
 
     /**
      *
      */
     @Inject
-    @Named ( value = "metadataTools#default" )
+    @Named (value = "metadataTools#default")
     private MetadataTools metadataTools;
 
     /**
@@ -157,7 +160,7 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named (value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
 
     @Inject
@@ -171,14 +174,19 @@ public class DefaultRepositoryProxyConnectors
 
     }
 
-    @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private void initConnectorsAndNetworkProxies()
     {
 
         ProxyConnectorOrderComparator proxyOrderSorter = new ProxyConnectorOrderComparator();
         this.proxyConnectorMap.clear();
 
-        List<ProxyConnectorConfiguration> proxyConfigs = archivaConfiguration.getConfiguration().getProxyConnectors();
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        List<ProxyConnectorRuleConfiguration> allProxyConnectorRuleConfigurations =
+            configuration.getProxyConnectorRuleConfigurations();
+
+        List<ProxyConnectorConfiguration> proxyConfigs = configuration.getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConfig : proxyConfigs )
         {
             String key = proxyConfig.getSourceRepoId();
@@ -213,6 +221,29 @@ public class DefaultRepositoryProxyConnectors
                     whitelist.addAll( proxyConfig.getWhiteListPatterns() );
                 }
                 connector.setWhitelist( whitelist );
+
+                List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
+                    findProxyConnectorRules( connector.getSourceRepository().getId(),
+                                             connector.getTargetRepository().getId(),
+                                             allProxyConnectorRuleConfigurations );
+
+                if ( !proxyConnectorRuleConfigurations.isEmpty() )
+                {
+                    for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : proxyConnectorRuleConfigurations )
+                    {
+                        if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
+                                                 ProxyConnectorRuleType.BLACK_LIST.getRuleType() ) )
+                        {
+                            connector.getBlacklist().add( proxyConnectorRuleConfiguration.getPattern() );
+                        }
+
+                        if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
+                                                 ProxyConnectorRuleType.WHITE_LIST.getRuleType() ) )
+                        {
+                            connector.getWhitelist().add( proxyConnectorRuleConfiguration.getPattern() );
+                        }
+                    }
+                }
 
                 // Get other connectors
                 List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
@@ -261,6 +292,28 @@ public class DefaultRepositoryProxyConnectors
             this.networkProxyMap.put( key, proxy );
         }
 
+    }
+
+    private List<ProxyConnectorRuleConfiguration> findProxyConnectorRules( String sourceRepository,
+                                                                           String targetRepository,
+                                                                           List<ProxyConnectorRuleConfiguration> all )
+    {
+        List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
+            new ArrayList<ProxyConnectorRuleConfiguration>();
+
+        for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : all )
+        {
+            for ( ProxyConnectorConfiguration proxyConnector : proxyConnectorRuleConfiguration.getProxyConnectors() )
+            {
+                if ( StringUtils.equals( sourceRepository, proxyConnector.getSourceRepoId() ) && StringUtils.equals(
+                    targetRepository, proxyConnector.getTargetRepoId() ) )
+                {
+                    proxyConnectorRuleConfigurations.add( proxyConnectorRuleConfiguration );
+                }
+            }
+        }
+
+        return proxyConnectorRuleConfigurations;
     }
 
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
@@ -1171,7 +1224,7 @@ public class DefaultRepositoryProxyConnectors
     {
         synchronized ( this.proxyConnectorMap )
         {
-            List<ProxyConnector> ret = (List<ProxyConnector>) this.proxyConnectorMap.get( repository.getId() );
+            List<ProxyConnector> ret = this.proxyConnectorMap.get( repository.getId() );
             if ( ret == null )
             {
                 return Collections.emptyList();

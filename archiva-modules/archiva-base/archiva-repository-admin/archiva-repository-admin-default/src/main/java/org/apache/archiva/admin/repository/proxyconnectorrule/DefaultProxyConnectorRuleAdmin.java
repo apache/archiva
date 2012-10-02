@@ -127,7 +127,7 @@ public class DefaultProxyConnectorRuleAdmin
         {
             if ( StringUtils.equals( proxyConnectorRuleConfiguration.getPattern(), proxyConnectorRule.getPattern() )
                 && StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
-                                       proxyConnectorRule.getProxyConnectorRuleType().toString() ) )
+                                       proxyConnectorRule.getProxyConnectorRuleType().getRuleType() ) )
             {
                 toSave = true;
             }
@@ -154,7 +154,7 @@ public class DefaultProxyConnectorRuleAdmin
         {
             if ( StringUtils.equals( proxyConnectorRuleConfiguration.getPattern(), proxyConnectorRule.getPattern() )
                 && StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
-                                       proxyConnectorRule.getProxyConnectorRuleType().toString() ) )
+                                       proxyConnectorRule.getProxyConnectorRuleType().getRuleType() ) )
             {
                 List<ProxyConnectorConfiguration> proxyConnectors =
                     new ArrayList<ProxyConnectorConfiguration>( proxyConnectorRule.getProxyConnectors().size() );

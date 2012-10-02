@@ -137,50 +137,50 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
 
     $('#modal-register-footer').append(smallSpinnerImg());
 
-    $.ajax({
-        url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
-        type: "GET",
-        dataType: 'text',
-        success: function(data){
-          $.log("applicationUrl ok:"+data);
+      $.ajax({
+          url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
+          type: "GET",
+          dataType: 'text',
+          success: function(data){
+            $.log("applicationUrl ok:"+data);
 
-          var user = {
-            username: $("#user-register-form-username").val(),
-            fullName: $("#user-register-form-fullname").val(),
-            email: $("#user-register-form-email").val()
-          };
+            var user = {
+              username: $("#user-register-form-username").val(),
+              fullName: $("#user-register-form-fullname").val(),
+              email: $("#user-register-form-email").val()
+            };
 
-          var userRegistrationRequest=new UserRegistrationRequest(user,data);
-          $.ajax({
-            url:  'restServices/redbackServices/userService/registerUser',
-            data:  JSON.stringify(userRegistrationRequest),
-            type: 'POST',
-            contentType: "application/json",
-            success: function(result){
-              var registered = false;
-              if (result == "-1") {
-                registered = false;
-              } else {
-                registered = true;
-              }
+            var userRegistrationRequest=new UserRegistrationRequest(user,data);
+            $.ajax({
+              url:  'restServices/redbackServices/userService/registerUser',
+              data:  JSON.stringify(userRegistrationRequest),
+              type: 'POST',
+              contentType: "application/json",
+              success: function(result){
+                var registered = false;
+                if (result == "-1") {
+                  registered = false;
+                } else {
+                  registered = true;
+                }
 
-              if (registered == true) {
+                if (registered == true) {
+                  window.modalRegisterWindow.modal('hide');
+                  $("#register-link").hide();
+                  // FIXME i18n
+                  displaySuccessMessage("registered your key has been sent");
+                }
+              },
+              complete: function(){
+                $("#modal-register-ok").removeAttr("disabled");
+                removeSmallSpinnerImg();
+              },
+              error: function(result) {
                 window.modalRegisterWindow.modal('hide');
-                $("#register-link").hide();
-                // FIXME i18n
-                displaySuccessMessage("registered your key has been sent");
               }
-            },
-            complete: function(){
-              $("#modal-register-ok").removeAttr("disabled");
-              removeSmallSpinnerImg();
-            },
-            error: function(result) {
-              window.modalRegisterWindow.modal('hide');
-            }
-          });
-        }
-    });
+            });
+          }
+      });
 
   }
 
