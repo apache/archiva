@@ -19,7 +19,8 @@
 define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl",'i18n',"jquery.cookie","bootstrap","archiva.search",
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
-          "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management"],
+          "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management",
+          "archiva.proxy-connectors-rules"],
 function(jquery,ui,sammy,tmpl) {
 
   /**
@@ -178,6 +179,7 @@ function(jquery,ui,sammy,tmpl) {
               {  text : $.i18n.prop('menu.repository.groups')        , id: "menu-repository-groups-list-a"     , href: "#repositorygroup"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
               {  text : $.i18n.prop('menu.repositories')             , id: "menu-repositories-list-a"           , href: "#repositorylist"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoriesGrid()}},
               {  text : $.i18n.prop('menu.proxy-connectors')         , id: "menu-proxy-connectors-list-a"       , href: "#proxyconnectors"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectors()}},
+              {  text : $.i18n.prop('menu.proxy-connectors-rules')   , id: "menu.proxy-connectors-rules-list-a" , href: "#proxyconnectorsrules" , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectorsRules()}},
               {  text : $.i18n.prop('menu.network-proxies')          , id: "menu-network-proxies-list-a"        , href: "#networkproxies"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}},
               {  text : $.i18n.prop('menu.legacy-artifact-support')  , id: "menu-legacy-support-list-a"         , href: "#legacy"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayLegacyArtifactPathSupport()}},
               {  text : $.i18n.prop('menu.repository-scanning')      , id: "menu-repository-scanning-list-a"    , href: "#scanningList"     , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning()}},
