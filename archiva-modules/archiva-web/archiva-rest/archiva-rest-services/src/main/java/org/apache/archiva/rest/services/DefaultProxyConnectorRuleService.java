@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 import org.apache.archiva.admin.model.proxyconnectorrule.ProxyConnectorRuleAdmin;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorRuleService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-@Service ( "proxyConnectorRuleService#rest" )
+@Service ("proxyConnectorRuleService#rest")
 public class DefaultProxyConnectorRuleService
     extends AbstractRestService
     implements ProxyConnectorRuleService
@@ -53,9 +54,43 @@ public class DefaultProxyConnectorRuleService
         }
     }
 
+    private void validateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+        throws ArchivaRestServiceException
+    {
+        if ( StringUtils.isEmpty( proxyConnectorRule.getPattern() ) )
+        {
+            ArchivaRestServiceException e = new ArchivaRestServiceException( "pattern cannot be empty", null );
+            e.setErrorKey( "proxy-connector-rule.pattern.empty" );
+            throw e;
+        }
+
+        if ( proxyConnectorRule.getProxyConnectors() == null || proxyConnectorRule.getProxyConnectors().isEmpty() )
+        {
+            ArchivaRestServiceException e =
+                new ArchivaRestServiceException( "proxyConnector rule must have proxyConnectors.", null );
+            e.setErrorKey( "proxy-connector-rule.pattern.connectors.empty" );
+            throw e;
+        }
+
+        for ( ProxyConnectorRule proxyConnectorRule1 : getProxyConnectorRules() )
+        {
+            if ( StringUtils.equals( proxyConnectorRule.getPattern(), proxyConnectorRule1.getPattern() )
+                && proxyConnectorRule.getProxyConnectorRuleType() == proxyConnectorRule1.getProxyConnectorRuleType() )
+            {
+                ArchivaRestServiceException e =
+                    new ArchivaRestServiceException( "same ProxyConnector rule already exists.", null );
+                e.setErrorKey( "proxy-connector-rule.pattern.already.exists" );
+                throw e;
+            }
+        }
+    }
+
     public Boolean addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {
+
+        validateProxyConnectorRule( proxyConnectorRule );
+
         try
         {
             proxyConnectorRuleAdmin.addProxyConnectorRule( proxyConnectorRule, getAuditInformation() );

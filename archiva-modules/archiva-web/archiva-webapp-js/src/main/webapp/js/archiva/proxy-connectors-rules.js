@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
+define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstrap","jquery.ui","knockout"
   ,"knockout.simpleGrid","knockout.sortable","archiva.proxy-connectors"], function() {
 
 
@@ -57,7 +57,10 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     addProxyConnectorRule=function(proxyConnectorRule){
       $("#proxy-connector-rule-add-btn" ).button("loading");
       $.log("addProxyConnectorRule");
-      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/proxyConnectorRule",true);
+      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/proxyConnectorRule",true,
+      function(){
+        $("#proxy-connector-rule-add-btn" ).button("reset");
+      });
     }
 
     this.saveProxyConnectorRule=function(proxyConnectorRule,url,add,completeFnCallback){

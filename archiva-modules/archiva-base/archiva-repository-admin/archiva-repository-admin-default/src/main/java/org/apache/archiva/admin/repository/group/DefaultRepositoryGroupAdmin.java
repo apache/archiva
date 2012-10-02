@@ -225,7 +225,7 @@ public class DefaultRepositoryGroupAdmin
                     java.util.List<String> repos = map.get( groupId );
                     if ( repos == null )
                     {
-                        repos = new java.util.ArrayList<String>();
+                        repos = new ArrayList<String>();
                         map.put( groupId, repos );
                     }
                     repos.add( repo.getId() );
@@ -247,7 +247,7 @@ public class DefaultRepositoryGroupAdmin
                 java.util.List<String> groups = map.get( repositoryId );
                 if ( groups == null )
                 {
-                    groups = new java.util.ArrayList<String>();
+                    groups = new ArrayList<String>();
                     map.put( repositoryId, groups );
                 }
                 groups.add( group.getId() );
