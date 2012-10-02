@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.admin.model.proxyconnectorrule.ProxyConnectorRuleAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.io.FileUtils;
@@ -67,6 +68,9 @@ public abstract class AbstractRepositoryAdminTest
 
     @Inject
     protected ProxyConnectorAdmin proxyConnectorAdmin;
+
+    @Inject
+    protected ProxyConnectorRuleAdmin proxyConnectorRuleAdmin;
 
     protected AuditInformation getFakeAuditInformation()
     {

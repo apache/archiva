@@ -1,4 +1,4 @@
-package org.apache.archiva.admin.model.proxyconnector;
+package org.apache.archiva.admin.model.proxyconnectorrule;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,48 +20,47 @@ package org.apache.archiva.admin.model.proxyconnector;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * <b>No update method for changing source and target here as id is : sourceRepoId and targetRepoId, use delete then add.</b>
- *
  * @author Olivier Lamy
- * @since 1.4-M1
+ * @since 1.4-M3
  */
-public interface ProxyConnectorAdmin
+public interface ProxyConnectorRuleAdmin
 {
-    List<ProxyConnector> getProxyConnectors()
-        throws RepositoryAdminException;
-
-    ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
-        throws RepositoryAdminException;
-
-    Boolean addProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
-        throws RepositoryAdminException;
-
-    Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
-        throws RepositoryAdminException;
-
     /**
-     * <b>only for enabled/disable or changing bean values except target/source</b>
-     *
-     * @param proxyConnector
-     * @param auditInformation
      * @return
-     * @throws RepositoryAdminException
+     * @throws org.apache.archiva.admin.model.RepositoryAdminException
+     *
+     * @since 1.4-M3
      */
-    Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
+    List<ProxyConnectorRule> getProxyConnectorRules()
         throws RepositoryAdminException;
 
     /**
-     * @return key/value : managed repo Id / list to proxy connector ordered
+     * @param proxyConnectorRule
      * @throws RepositoryAdminException
+     * @since 1.4-M3
      */
-    Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
+    void addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
+    /**
+     * @param proxyConnectorRule
+     * @throws RepositoryAdminException
+     * @since 1.4-M3
+     */
+    void deleteProxyConnectorRule( ProxyConnectorRule proxyConnectorRule, AuditInformation auditInformation )
+        throws RepositoryAdminException;
+
+    /**
+     * <b>only to update attached proxy connectors to update pattern delete then add</b>
+     * @param proxyConnectorRule
+     * @throws RepositoryAdminException
+     * @since 1.4-M3
+     */
+    void updateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule, AuditInformation auditInformation )
+        throws RepositoryAdminException;
 }

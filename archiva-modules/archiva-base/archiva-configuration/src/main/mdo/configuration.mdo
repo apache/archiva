@@ -168,6 +168,17 @@
             The NetworkConfiguration .
           </description>
         </field>
+        <field>
+          <name>proxyConnectorRuleConfigurations</name>
+          <version>1.4.0+</version>
+          <association>
+            <type>ProxyConnectorRuleConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of ProxyConnectorRuleConfigurations.
+          </description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -925,6 +936,38 @@
           ]]></code>
         </codeSegment>
       </codeSegments>
+    </class>
+
+    <class>
+      <name>ProxyConnectorRuleConfiguration</name>
+      <version>1.4.0+</version>
+      <fields>
+        <field>
+          <name>ruleType</name>
+          <version>1.4.0+</version>
+          <type>String</type>
+          <description>
+            The type if this rule: whiteList, blackList etc..
+          </description>
+        </field>
+        <field>
+          <name>pattern</name>
+          <version>1.4.0+</version>
+          <type>String</type>
+          <description>
+            The pattern for this rule: whiteList, blackList etc..
+          </description>
+        </field>
+        <field>
+          <name>proxyConnectors</name>
+          <version>1.4.0+</version>
+          <description>Associated proxyConnectors configuration.</description>
+          <association>
+            <type>ProxyConnectorConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
     </class>
 
     <class>

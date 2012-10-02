@@ -47,7 +47,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "proxyConnectorAdmin#default" )
+@Service ( "proxyConnectorAdmin#default" )
 public class DefaultProxyConnectorAdmin
     extends AbstractRepositoryAdmin
     implements ProxyConnectorAdmin
@@ -114,6 +114,7 @@ public class DefaultProxyConnectorAdmin
 
     }
 
+    // FIXME take of proxyConnectorRules !
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -133,6 +134,7 @@ public class DefaultProxyConnectorAdmin
         return Boolean.TRUE;
     }
 
+    // FIXME take of proxyConnectorRules !
     public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -206,21 +208,6 @@ public class DefaultProxyConnectorAdmin
 
     protected ProxyConnectorConfiguration getProxyConnectorConfiguration( ProxyConnector proxyConnector )
     {
-        /*
-        ProxyConnectorConfiguration proxyConnectorConfiguration = new ProxyConnectorConfiguration();
-        proxyConnectorConfiguration.setOrder( proxyConnector.getOrder() );
-        proxyConnectorConfiguration.setBlackListPatterns(
-            new ArrayList<String>( proxyConnector.getBlackListPatterns() ) );
-        proxyConnectorConfiguration.setWhiteListPatterns(
-            new ArrayList<String>( proxyConnector.getWhiteListPatterns() ) );
-        proxyConnectorConfiguration.setDisabled( proxyConnector.isDisabled() );
-        proxyConnectorConfiguration.setPolicies( new HashMap( proxyConnector.getPolicies() ) );
-        proxyConnectorConfiguration.setProperties( new HashMap( proxyConnector.getProperties() ) );
-        proxyConnectorConfiguration.setProxyId( proxyConnector.getProxyId() );
-        proxyConnectorConfiguration.setSourceRepoId( proxyConnector.getSourceRepoId() );
-        proxyConnectorConfiguration.setTargetRepoId( proxyConnector.getTargetRepoId() );
-        return proxyConnectorConfiguration;*/
-
         return proxyConnector == null
             ? null
             : new BeanReplicator().replicateBean( proxyConnector, ProxyConnectorConfiguration.class );

@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
+import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
@@ -51,7 +52,7 @@ public class MockRepoAdmin
     implements RemoteRepositoryAdmin, ManagedRepositoryAdmin, ProxyConnectorAdmin, NetworkProxyAdmin
 {
     @Inject
-    @Named( value = "archivaConfiguration#test" )
+    @Named (value = "archivaConfiguration#test")
     private ArchivaConfiguration archivaConfiguration;
 
     public List<RemoteRepository> getRemoteRepositories()
@@ -279,5 +280,29 @@ public class MockRepoAdmin
         return proxyConnectorConfiguration == null
             ? null
             : new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
+    }
+
+    public List<ProxyConnectorRule> getProxyConnectorRules()
+        throws RepositoryAdminException
+    {
+        return null;
+    }
+
+    public void addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+        throws RepositoryAdminException
+    {
+
+    }
+
+    public void deleteProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+        throws RepositoryAdminException
+    {
+
+    }
+
+    public void updateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+        throws RepositoryAdminException
+    {
+
     }
 }
