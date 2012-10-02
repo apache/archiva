@@ -117,6 +117,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
          dataType: 'json',
          success:function(data){
            var message=$.i18n.prop('proxy-connector-rule.deleted',proxyConnectorRule.pattern());
+           self.proxyConnectorRules.remove(proxyConnectorRule);
            displaySuccessMessage(message);
          },
          error: function(data) {
