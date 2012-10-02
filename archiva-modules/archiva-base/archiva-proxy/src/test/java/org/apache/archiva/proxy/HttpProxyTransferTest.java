@@ -35,14 +35,14 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Request;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.AbstractHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -137,6 +137,18 @@ public class HttpProxyTransferTest
 
         Handler handler = new AbstractHandler()
         {
+            public void handle( String s, Request request, HttpServletRequest httpServletRequest,
+                                HttpServletResponse response )
+                throws IOException, ServletException
+            {
+                response.setContentType( "text/plain" );
+                response.setStatus( HttpServletResponse.SC_OK );
+                response.getWriter().print( "get-default-layout-1.0.jar\n\n" );
+                assertNotNull( request.getHeader( "Proxy-Connection" ) );
+
+                ( (Request) request ).setHandled( true );
+            }
+
             public void handle( String target, HttpServletRequest request, HttpServletResponse response, int dispatch )
                 throws IOException, ServletException
             {

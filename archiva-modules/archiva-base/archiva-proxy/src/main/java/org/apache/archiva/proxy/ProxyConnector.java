@@ -29,8 +29,6 @@ import java.util.Map;
 
 /**
  * This represents a connector for a repository to repository proxy.
- *
- *
  */
 public class ProxyConnector
     implements RepositoryConnector
@@ -44,19 +42,24 @@ public class ProxyConnector
     private List<String> whitelist;
 
     private String proxyId;
-    
+
     private int order;
 
     private Map<String, String> policies;
-    
+
     private boolean disabled;
+
+    public ProxyConnector()
+    {
+        // no op
+    }
 
     public boolean isDisabled()
     {
         return disabled;
     }
 
-    public void setDisabled(boolean disabled) 
+    public void setDisabled( boolean disabled )
     {
         this.disabled = disabled;
     }
