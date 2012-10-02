@@ -1229,14 +1229,14 @@
 
     <ul id="proxy-connectors-rules-view-tabs" class="nav nav-tabs">
       <li id="proxy-connectors-rules-view-tabs-li-grid" class="active">
-        <a data-toggle="tab" href="#proxy-connector-rules-view" id="proxy-connectors-rules-view-tabs-a-network-proxies-grid">${$.i18n.prop('proxy-connectors-rules.grid.tab.title')}</a>
+        <a data-toggle="tab" href="#proxy-connector-rules-view" id="proxy-connectors-rules-view-tabs-a-grid">${$.i18n.prop('proxy-connectors-rules.grid.tab.title')}</a>
       </li>
       <li id="proxy-connectors-rules-view-tabs-li-edit">
         <a data-toggle="tab" href="#proxy-connector-rules-edit" id="proxy-connectors-rules-view-tabs-a-edit">${$.i18n.prop('add')}</a>
       </li>
     </ul>
     <div id="proxy-connectors-rules-view-tabs-content" class="tab-content">
-      <div id="proxy-connectors-rules-view-tabs-view" class="tab-pane active">
+      <div id="proxy-connector-rules-view" class="tab-pane active">
         <div id="proxy-connectors-rules-view-tabs-bulk-save-btn" data-bind='template:{name:"proxy-connectors-rules-view-tabs-bulk-save-tmpl"}'></div>
         <table class="table table-striped table-bordered" id="proxy-connectors-rules-view-tabsTable"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-proxy-connectors-rules-grid',pageLinksId:'proxy-connectors-rules-pagination'">
@@ -1285,14 +1285,36 @@
     </thead>
     <tbody>
     {{each(i, row) itemsOnCurrentPage()}}
-    <tr data-bind="css:{ 'modified': row.modified()}">
-      <td>${row.pattern()}</td>
-      <td>${row.proxyConnectorRuleType()}</td>
-      <td>connector</td>
-      <td>edit</td>
-      <td>delete</td>
-      <td>save</td>
-    </tr>
+        <tr data-bind="css:{ 'modified': row.modified()}">
+          <td>${row.pattern()}</td>
+          <td>${row.proxyConnectorRuleType()}</td>
+          <td>
+            <ul>
+            {{each(j,proxyConnector) row.proxyConnectors()}}
+              <li>${proxyConnector.sourceRepoId()} <-> ${proxyConnector.targetRepoId()}</li>
+            {{/each}}
+            </ul>
+          </td>
+          <td>
+              <a href="#" data-bind="click: function(){ editProxyConnectorRule(row) }">
+                <span class="btn btn-primary">
+                  <i class="icon-pencil icon-white"/>
+                </span>
+              </a>
+          </td>
+          <td>
+              <a href="#" data-bind="click: function(){ removeProxyConnectorRule(row) }">
+                <span class="btn btn-danger">
+                  <i class="icon-trash icon-white"/>
+                </span>
+              </a>
+          </td>
+          <td>
+            {{if row.modified()}}
+              <a href="#" class="btn btn-warning" data-bind="click: function(){ updateProxyConnectorRule(row) }">${$.i18n.prop('save')}</a>
+            {{/if}}
+          </td>
+        </tr>
     {{/each}}
     </tbody>
 </script>
@@ -1307,6 +1329,8 @@
       <div class="dotted span8">
         <blockquote>
           ${proxyConnectorRule.pattern()}
+          <br/>
+          ${proxyConnectorRule.proxyConnectorRuleType()}
         </blockquote>
       </div>
     {{else}}
@@ -1320,13 +1344,20 @@
                      data-bind="value:proxyConnectorRule.pattern,css:{'uneditable-input': update},readonly:update"/>
               </div>
             </div>
+            <div class="control-group">
+              <label class="control-label" for="layout">${$.i18n.prop('type')}</label>
+              <div class="controls">
+                <select id="proxy-connector-rule-pattern-type"
+                        data-bind="options: proxyConnectorRulesViewModel.ruleTypes,optionsText: 'label',optionsValue:'type',value: proxyConnectorRule.proxyConnectorRuleType"/>
+              </div>
+            </div>
           </fieldset>
         </form>
       </div>
     {{/if}}
     {{if proxyConnectorRule.modified()}}
       <div class="span3">
-        <a href="#" class="btn btn-warning" data-bind="click: function(){saveRepositoryGroup(repositoryGroup)}">${$.i18n.prop('save')}</a>
+        <a href="#" class="btn btn-warning" data-bind="click: function(){addProxyConnectorRule(proxyConnectorRule)}">${$.i18n.prop('save')}</a>
       </div>
       <br/>
     {{/if}}

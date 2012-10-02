@@ -23,8 +23,12 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
 
   ProxyConnectorRulesViewModel=function(proxyConnectorRules,proxyConnectors){
     var self=this;
-    this.proxyConnectorRules=ko.observableArray(proxyConnectorRules?proxyConnectorRules:[]);
+    this.proxyConnectorRules=ko.observableArray(proxyConnectorRules);
     this.proxyConnectors=proxyConnectors;
+
+    // FIXME get that from a REST service
+    // FIXME i18n
+    this.ruleTypes=[new RuleType("WHITE_LIST"," white list"),new RuleType("BLACK_LIST"," black list")];
 
     this.displayGrid=function(){
       var mainContent = $("#main-content");
@@ -33,14 +37,13 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
         data: self.proxyConnectorRules,
         pageSize: 5,
         gridUpdateCallBack: function(){
-          $("#main-content" ).find("#proxy-connectors-rules-view-tabsTable" ).find("[title]").tooltip();
+          //$("#main-content" ).find("#proxy-connectors-rules-view-tabsTable" ).find("[title]").tooltip();
         }
       });
 
-      ko.applyBindings(self,mainContent.find("#proxy-connectors-rules-view-tabs-view").get(0));
+      ko.applyBindings(self,mainContent.find("#proxy-connector-rules-view").get(0));
 
       removeSmallSpinnerImg();
-
 
       mainContent.find("#proxy-connectors-rules-view-tabs").on('show', function (e) {
         $.log("on show:"+$(e.target).attr("href"));
@@ -49,10 +52,79 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
           ko.applyBindings(proxyConnectorRuleViewModel,mainContent.find("#proxy-connector-rules-edit" ).get(0));
           activateProxyConnectorRulesEditTab();
         }
-
-
       });
     }
+    addProxyConnectorRule=function(proxyConnectorRule){
+      $.log("addProxyConnectorRule");
+      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/proxyConnectorRule");
+    }
+
+    this.saveProxyConnectorRule=function(proxyConnectorRule,url){
+      $.log("saveProxyConnectorRule:"+url);
+      $("#user-messages" ).html(mediumSpinnerImg());
+      $.ajax(url,
+        {
+          type: "POST",
+          contentType: 'application/json',
+          data: ko.toJSON(proxyConnectorRule),
+          dataType: 'json',
+          success: function(data) {
+            $.log("save proxyConnectorRule pattern:"+proxyConnectorRule.pattern());
+            var message=$.i18n.prop(self.update?'proxy-connector-rule.updated':'proxy-connector-rule.added',proxyConnectorRule.pattern());
+            displaySuccessMessage(message);
+            proxyConnectorRule.modified(false);
+            self.proxyConnectorRules.push(proxyConnectorRule);
+            activateProxyConnectorRulesGridTab();
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete:function(data){
+            removeMediumSpinnerImg("#user-messages");
+          }
+        }
+      );
+    }
+
+    updateProxyConnectorRule=function(proxyConnectorRule){
+      $.log("updateProxyConnectorRule");
+      self.saveProxyConnectorRule(proxyConnectorRule,"restServices/archivaServices/proxyConnectorRuleService/updateProxyConnectorRule");
+    }
+
+    removeProxyConnectorRule=function(proxyConnectorRule){
+
+      //FIXME modal dialog to confirm
+
+      $("#user-messages" ).html(mediumSpinnerImg());
+      $.ajax("restServices/archivaServices/proxyConnectorRuleService/deleteProxyConnectorRule",
+       {
+         type:"POST",
+         contentType: 'application/json',
+         data: ko.toJSON(proxyConnectorRule),
+         dataType: 'json',
+         success:function(data){
+           var message=$.i18n.prop('proxy-connector-rule.deleted',proxyConnectorRule.pattern());
+           displaySuccessMessage(message);
+         },
+         error: function(data) {
+           var res = $.parseJSON(data.responseText);
+           displayRestError(res);
+         },
+         complete:function(data){
+           removeMediumSpinnerImg("#user-messages");
+         }
+       }
+      );
+    }
+
+    editProxyConnectorRule=function(proxyConnectorRule){
+      var proxyConnectorRuleViewModel=new ProxyConnectorRuleViewModel(proxyConnectorRule,self,true);
+      ko.applyBindings(proxyConnectorRuleViewModel,$("#main-content").find("#proxy-connector-rules-edit" ).get(0));
+      activateProxyConnectorRulesEditTab();
+
+    }
+
   }
 
   ProxyConnectorRuleViewModel=function(proxyConnectorRule,proxyConnectorRulesViewModel,update){
@@ -63,7 +135,14 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     this.update=update;
 
     proxyConnectorMoved=function(arg){
+      $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
+    }
 
+    saveProxyConnectorRule=function(){
+      $.log("pattern:"+self.proxyConnectorRule.pattern());
+      $.log("proxyConnectorRuleType:"+proxyConnectorRule.proxyConnectorRuleType());
+      $.log("proxyConnectors:"+proxyConnectorRule.proxyConnectors().length);
+      self.proxyConnectorRulesViewModel.saveProxyConnectorRule(self.proxyConnectorRule)
     }
 
   }
@@ -74,7 +153,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     screenChange();
     var mainContent = $("#main-content");
     mainContent.html($("#proxyConnectorsRulesMain").tmpl());
-    mainContent.append(smallSpinnerImg());
+    $("#user-messages").html(mediumSpinnerImg());
     loadAllProxyConnectors(function(data){
       var proxyConnectors = mapProxyConnectors(data);
 
@@ -86,6 +165,9 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
             var proxyConnectorRulesViewModel = new ProxyConnectorRulesViewModel(proxyConnectorRules,proxyConnectors);
             proxyConnectorRulesViewModel.displayGrid();
             activateProxyConnectorRulesGridTab();
+          },
+          complete: function(data){
+            removeMediumSpinnerImg("#user-messages");
           }
 
         });
@@ -123,7 +205,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     if (data==null){
       return null;
     }
-    return new ProxyConnector(data.pattern, data.proxyConnectorRuleType, mapProxyConnectors(data.proxyConnectors));
+    return new ProxyConnectorRule(data.pattern, data.proxyConnectorRuleType, mapProxyConnectors(data.proxyConnectors));
   }
 
   mapProxyConnectorRules=function(data){
@@ -137,9 +219,9 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
   activateProxyConnectorRulesGridTab=function(){
     var mainContent = $("#main-content");
     mainContent.find("#proxy-connectors-rules-view-tabs-content div[class*='tab-pane']").removeClass("active");
-    mainContent.find("#proxy-connectors-rules-view-tabs > li").removeClass("active");
+    mainContent.find("#proxy-connectors-rules-view-tabs li").removeClass("active");
 
-    mainContent.find("#repository-groups-view").addClass("active");
+    mainContent.find("#proxy-connector-rules-view").addClass("active");
     mainContent.find("#proxy-connectors-rules-view-tabs-li-grid").addClass("active");
     mainContent.find("#proxy-connectors-rules-view-tabs-a-edit").html($.i18n.prop("add"));
 
@@ -155,5 +237,9 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     mainContent.find("#proxy-connectors-rules-view-tabs-edit").addClass("active");
   }
 
+  RuleType=function(type,label){
+    this.type=type;
+    this.label=label;
+  }
 
 });

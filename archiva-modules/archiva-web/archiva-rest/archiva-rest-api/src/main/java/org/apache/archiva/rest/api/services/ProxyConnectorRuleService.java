@@ -48,7 +48,7 @@ public interface ProxyConnectorRuleService
         throws ArchivaRestServiceException;
 
     @Path ( "proxyConnectorRule" )
-    @PUT
+    @POST
     @Consumes ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization ( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )

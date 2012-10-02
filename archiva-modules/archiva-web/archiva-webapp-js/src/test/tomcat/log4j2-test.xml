@@ -26,9 +26,9 @@
     </Console>
   </appenders>
   <loggers>
-    <logger name="org.apache.archiva.indexer.search.NexusRepositorySearch" level="debug"/>
+    <logger name="org.apache.archiva.indexer.search.NexusRepositorySearch" level="info"/>
 
-    <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="debug"/>
+    <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
 
     <logger name="JPOX" level="error"/>
 
@@ -36,7 +36,7 @@
     <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
 
-    <logger name="org.apache.archiva.admin.repository.managed" level="debug"/>
+    <logger name="org.apache.archiva.admin.repository.managed" level="info"/>
 
 
     <!-- apache httpclient debug content transfer-->
@@ -61,7 +61,7 @@
 
     <logger name="org.quartz" level="info"/>
 
-    <logger name="org.apache.archiva.indexer.merger" level="debug"/>
+    <logger name="org.apache.archiva.indexer.merger" level="info"/>
 
     <root level="info">
       <appender-ref ref="console"/>
