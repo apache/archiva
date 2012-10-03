@@ -1,5 +1,5 @@
  -----
- Release Notes for Archiva 1.4
+ Release Notes for Archiva ${project.version}
  -----
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -38,7 +38,8 @@ Release Notes for Archiva ${project.version}
 
   Some new features has been added in ${project.version}:
 
-  * Repositories group can now return a merged index in path .indexer .
+  * There is now a new webapp UI based on javascript (legacy webapp is still distributed). <<NOTE>>: most of the UI issues has been fixed
+   in the new UI only.
 
 * Compatibility Changes
 
@@ -57,7 +58,7 @@ Release Notes for Archiva ${project.version}
 
 * Release Notes
 
-  The Archiva ${project.version} feature set can be seen in the {{{./tour/index.html} feature tour}}.
+  The Archiva ${project.version} features set can be seen in the {{{./tour/index.html} feature tour}}.
 
 * Changes in Archiva ${project.version}
 
@@ -65,327 +66,224 @@ Release Notes for Archiva ${project.version}
 
 ** New Feature
 
-    * [MRM-815] - aggregate indices for repository groups
+    * [MRM-648] - Add description field to the different types of repositories
 
-    * [MRM-1547] - release an archetype to create consumer
+    * [MRM-875] - Allow uploading multiple artifacts
 
-    * [MRM-1560] - Add the possibility to schedule retrieve remote indexes when application startup
+    * [MRM-918] - Switch for disabling user registration
 
-** Improvement
+    * [MRM-1668] - download artifacts when coming from search results
 
-    * [MRM-1175] - archiva-consumer-plugin-archetype: generates code that does not compile
-
-    * [MRM-1425] - Add Implementation details to MANIFEST.MF in the produced war
-
-    * [MRM-1426] - Set welcome page in web.xml
-
-    * [MRM-1430] - create test-jar for consumers
-
-    * [MRM-1534] - deprecated configuration warning for default install
-
-    * [MRM-1535] - Invalid reference (result HTTP 404) for css/no-theme/jquery-ui-1.8.14.theme.css
-
-    * [MRM-1538] - Managed Repositories > Show Snippet ought to include a pluginRepositories section
-
-    * [MRM-1539] - Upgrade to Jetty 7
-
-    * [MRM-1545] - upgrade derby version to 10.8.2.2
-
-    * [MRM-1548] - configure a java.io.tmpdir in ./temp for jetty distrib
-
-    * [MRM-1549] - add some initial memory setup in wrapper.conf
-
-    * [MRM-1551] - add rest method to delete artifact.
-
-    * [MRM-1555] - upgrade derby version to 10.8.2.2
-
-** Bug
-
-    * [MRM-684] - Clients timeout due to Archiva blocking when downloading large files
-
-    * [MRM-788] - Database Issue: java.sql.SQLException: Already closed.
-
-    * [MRM-1318] - Nexus index of a repository group is incomplete
-
-    * [MRM-1370] - Artifacts labelled "Distribution-zip" in the orange frame.
-
-    * [MRM-1542] - missing classifier field in the delete artifact web page
-
-    * [MRM-1552] - Perm-Gen space exception on MAC using the wrapper
-
-** Test
-
-    * [MRM-1557] - archive-rest-services unit tests broken
-
-Previous Releases
-
-* Changes in Archiva 1.4-M1
-
-  Released: <<October, 26 2011>>
-
-** New Feature
-
-    * [MRM-980] - Ability to merge repositories
-
-    * [MRM-1361] - Add support for NPanday artifact types
-
-    * [MRM-1362] - Add simple 'CRUD' pages for project-level metadata along with a "generic metadata" plugin
-
-    * [MRM-1409] - Web services for repository merging or artifact promotion
-
-    * [MRM-1417] - Add basic managed repository management support on adding repository, deleting repository, and loading repository by id
-
-    * [MRM-1489] - OBR Repository capability
-
-    * [MRM-1490] - Expose Archiva services trough REST
-
-    * [MRM-1501] - search on artifacts with OSGI Metadatas fields
-
-    * [MRM-1524] - downloading (optionnaly) remote index to display remote artifacts in search results
-
-** Improvement
-
-    * [MRM-811] - Improve error message when pom does not match the artifact's location in the repo
-
-    * [MRM-945] - Change the prompted message for users who do not have access to the repository
-
-    * [MRM-995] - Generated Descriptors are wrong after Eclipse Project Clean
-
-    * [MRM-1125] - default search should be AND not OR for multiple keywords
-
-    * [MRM-1282] - introduce a metadata content repository API
-
-    * [MRM-1283] - migrate Archiva's "browse" functionality to use the metadata content repository API
-
-    * [MRM-1287] - Nexus indexer drags in unnecessary dependencies
-
-    * [MRM-1288] - migrate XMLRPC from DefaultRepositoryBrowsing to the metadata content repository API
-
-    * [MRM-1292] - remove dependency-graph in favour of the maven-dependency-tree library
-
-    * [MRM-1293] - migrate repository statistics to the metadata content repository
-
-    * [MRM-1327] - implement alternative or improve repository metadata storage
-
-    * [MRM-1335] - improve the message appearing when an artifact's metadata is incomplete
-
-    * [MRM-1405] - Do not show the artifact and its pom as separate items in the conflicting artifacts page when merging repos
-
-    * [MRM-1436] - [patch] better map handling
-
-    * [MRM-1437] - [patch] make sure streams get closed
-
-    * [MRM-1448] - classifier / extension combinations containing multiple '.' place the extra part in the classifier
-
-    * [MRM-1452] - Ability to delete managed repository content from XMLRPC
-
-    * [MRM-1461] - Delete repositories gracefully
-
-    * [MRM-1470] - Ability to add a repository relative to Archiva's appserver.base without knowing it's filesystem location
-
-    * [MRM-1471] - Upgrade maven plugin versions (at least compiler plugin to be able to fork tru cli)
-
-    * [MRM-1472] - maven configuration to be able to run tomcat:run
-
-    * [MRM-1473] - remove use of plexus-spring
-
-    * [MRM-1474] - Paths in JavaScript on repository scanning page get remapped incorrectly in CollabNet's Lab Manager
-
-    * [MRM-1478] - Enable DB caching
-
-    * [MRM-1479] - upgrade jquery version 1.6.1
-
-    * [MRM-1481] - Ability to do user management through xmlrpc
-
-    * [MRM-1484] - Upgrade Atlassian XMLRPC Binder to 0.11
-
-    * [MRM-1502] - download artifacts from remote repository create http(s) connection for every artifacts
-
-    * [MRM-1503] - use wagon-http instead of wagon-http-lightweight (as it change proxy network system properties)
-
-    * [MRM-1504] - Add a new module for repository administration management
-
-    * [MRM-1526] - configure http connection pool values for wagon http
-
-** Bug
-
-    * [MRM-404] - formatting in download box can sometimes be cramped
-
-    * [MRM-552] - Download link should be entitled "Plugin", not "Jar" for maven plugins
-
-    * [MRM-585] - Project models for Maven 1 artifacts cannot be found in repo browse
-
-    * [MRM-665] - DependencyTree fetchGraph causes high load with large databases
-
-    * [MRM-786] - Endless loop in "Dependency Tree" in cyclic dependencies?
-
-    * [MRM-816] - Resolution parameters in URL are not expanded
-
-    * [MRM-908] - pom.xml could not be parsed if it contains an UTF8-BOM
-
-    * [MRM-909] - Direct connect proxy setting is ignored after undetermined event
-
-    * [MRM-979] - legacy support: 301 Moved Permanently html document is returned as pom file
-
-    * [MRM-1017] - quicksearch should not NPE without completeQueryString
-
-    * [MRM-1029] - Download box doesn't appear in the DependencyTree tab
-
-    * [MRM-1061] - 'Used By' page incorrect and 'Dependency Tree' page  crash when specifying dependency version using <dependencyManagement> in parent POM.
-
-    * [MRM-1064] - Dependency Tree does not show dependencies correctly
-
-    * [MRM-1070] - Dependencies/Dependency Tree/Used by doesn't work correctly with properties in version
-
-    * [MRM-1111] - upgrade to struts 2.1.8.1
-
-    * [MRM-1120] - groups that only have one subgroup, but also contain artifacts, get collapsed in browse
-
-    * [MRM-1129] - web applications are not indexed for java source code
-
-    * [MRM-1169] - Archiva does not seem to accept files > 2GB
-
-    * [MRM-1173] - Cannot delete patterns with single and double quotes.
-
-    * [MRM-1242] - Incorrect Total File Count in Repository Statistics report
-
-    * [MRM-1248] - Archiva "lends" its network proxy settings to Hudson
-
-    * [MRM-1255] - groupIds that are subsets of another groupId also display artifacts from that group
-
-    * [MRM-1285] - The content of the Downloads box is sometimes too large for the box
-
-    * [MRM-1286] - mailing lists tab doesn't work
-
-    * [MRM-1303] - NullPointerException when deleting an artifact
-
-    * [MRM-1315] - delete artifact action logs to audit log using g:a:v format instead of resource path as others do
-
-    * [MRM-1317] - Pagination is broken in audit log report in trunk
-
-    * [MRM-1323] - archiva webapp tests failed to run in internet explorer
-
-    * [MRM-1324] - Selenium tests fail in full multi-module build
-
-    * [MRM-1342] - repository statistics report doesn't appear to be working correctly
-
-    * [MRM-1344] - multiple versions appear in search results
-
-    * [MRM-1345] - update use of Nexus indexer to use Maven indexer
-
-    * [MRM-1346] - project models are not automatically populated
-
-    * [MRM-1372] - Outdated instruction for Maven and JUnit still in ReadMe.txt for selenium tests
-
-    * [MRM-1393] - Commons configuration bug causes build to fail on Windows 7
-
-    * [MRM-1397] - Staging repo does not capture/reflect the config changes of the managed repo it is attached to in MRM-980 branch
-
-    * [MRM-1398] - Repositories page is broken in MRM-980 branch
-
-    * [MRM-1400] - Metadata is not merged with the metadata in the target repo when merging two repositories
-
-    * [MRM-1401] - Do not allow snapshot artifacts to be merged to a managed repository that only contains releases
-
-    * [MRM-1402] - Audit event name for merged artifacts should be "Promoted Artifact" or "Merged Artifact" instead of "Merging Repositories"
-
-    * [MRM-1403] - An empty "Error Occurred" page is displayed when attempting to merge a staging repo containing an artifact with a classifier
-
-    * [MRM-1404] - Staging repo is not deleted when the managed repo it is attached to was removed
-
-    * [MRM-1406] - The repository specified in the audit logs report for artifact promotion/repo merging events should be the target repository instead of the staging repository
-
-    * [MRM-1408] - Message for successful merging should be shown as an info message instead of as a section heading
-
-    * [MRM-1411] - project information is missing if a POM could not be read correctly
-
-    * [MRM-1412] - 'Property xmlns cannot be set!' error during startup when using with IBM JDK
-
-    * [MRM-1413] - network-proxy configuration doesn't seen to work
-
-    * [MRM-1433] - @Override are on interface methods which is only possible in java 6
-
-    * [MRM-1435] - [patch] fix up useless boxing issues
-
-    * [MRM-1451] - NPE when merging through XMLRPC
-
-    * [MRM-1453] - ShowArtifactActionTest makes invalid comma separator assumptions
-
-    * [MRM-1459] - Error 404 when trying to merge artifacts from staging-repo to a remote repository using maven-stage-plugin's stage:copy
-
-    * [MRM-1475] - Add proxy connector is broken
-
-    * [MRM-1476] - 'Specified key was too long' error during startup when using MySQL databases with UTF8 charset
-
-    * [MRM-1487] - Unable to add a proxy connector
-
-    * [MRM-1488] - Using Archiva as proxy for downloading artifacts is very slow when used with LDAP authentication
-
-    * [MRM-1496] - Broken remote repository confuses Archiva
-
-    * [MRM-1500] - Fix sample on how to use ldap in applicationContext.xml
-
-    * [MRM-1516] - missing dependency on velocity - ClassNotFoundException org.apache.velocity.tools.view.ToolboxManager
-
-    * [MRM-1517] - Longer descriptions of artefacts overlap the Downloads box
-
-    * [MRM-1531] - version sort order in search page is not working fine
-
-** Task
-
-    * [MRM-86] - The operations on the repository must be transactional
-
-    * [MRM-1003] - Repackage sources from org.apache.maven.archiva.. to org.apache.archiva..
-
-    * [MRM-1025] - remove the archiva database
-
-    * [MRM-1299] - migrate RSS to the metadata content repository API
-
-    * [MRM-1300] - migrate search to the metadata repository
-
-    * [MRM-1301] - migrate reports to the metadata repository
-
-    * [MRM-1322] - Fix broken selenium tests
-
-    * [MRM-1332] - remove database scanning configuration and handle upgrade
-
-    * [MRM-1333] - update documentation for database changes
-
-    * [MRM-1387] - Cannot build trunk of Archiva because of dependency missing in Central
-
-    * [MRM-1394] - Replace the use of clickLinkWithText() with getSelenium().open() for accessing navigation menu pages
-
-    * [MRM-1407] - Add documentation for repository staging
-
-    * [MRM-1424] - Implement WS for creating stage reporitory
-
-    * [MRM-1527] - remove http://download.java.net/maven/2/  from default remote repositories (now sync with central)
-
+    []
 
 ** Sub-task
 
-    * [MRM-1505] - api to configure ManagedRepository
+    * [MRM-1569] - rewrite login page
 
-    * [MRM-1506] - api to configure RemoteRepository
+    * [MRM-1570] - rewrite user management page
 
-    * [MRM-1507] - api to configure ProxyConnector
+    * [MRM-1571] - rewrite role management page
 
-    * [MRM-1508] - api to configure RepositoryGroups
+    * [MRM-1572] - rewrite search page
 
-    * [MRM-1509] - change xmlrpc to use new repository administration management api
+    * [MRM-1573] - rewrite browse page
 
-    * [MRM-1510] - api to configure NetworkProxy
+    * [MRM-1574] - rewrite managed/remote repositories admin page
 
-    * [MRM-1511] - api to configure LegacyArtifactPath
+    * [MRM-1575] - rewrite repositories group page
 
-    * [MRM-1513] - Remove DatabaseScanningConfiguration fields
+    * [MRM-1576] - rewrite proxies connector page
 
-    * [MRM-1514] - api to configure OrganisationInformation
+    * [MRM-1577] - rewrite legacy path admin page
 
-    * [MRM-1519] - api to configure WebappConfiguration
+    * [MRM-1578] - rewrite network proxies admin page
 
-    * [MRM-1520] - current first implementation duplicates too much beans so remove beans in rest-api
+    * [MRM-1579] - rewrite repositories scanning admin page
 
+    * [MRM-1580] - rewrite system status page
+
+    * [MRM-1581] - rewrite network configuration page
+
+    * [MRM-1583] - rewrite reports page
+
+    * [MRM-1585] - rewrite appareance page
+
+    * [MRM-1586] - rewrite upload artifact page
+
+    * [MRM-1587] - rewrite delete artifact page
+
+    * [MRM-1589] - review ajax call to have sure we have error callback implemented
+
+    * [MRM-1598] - use bootstrap css 2.1.x
+
+    * [MRM-1614] - html js transversal review
+
+    * [MRM-1615] - Artifact detail view
+
+    * [MRM-1617] - reset password link
+
+    * [MRM-1620] - add a tab to browse artifact content in artifact detail view
+
+    * [MRM-1621] - add download box in artifact detail for new ui
+
+    * [MRM-1639] - History navigation
+
+    * [MRM-1656] - Failed tests: testAddUser(org.apache.archiva.redback.users.cached.CachedUserManagerTest)
+
+    []
+
+** Bug
+
+    * [MRM-640] - breadcrumbs need to incude current doc so you can navigate back to home page
+
+    * [MRM-1536] - Error 500 when naughtily exploring webapp directory hierarchy
+
+    * [MRM-1563] - Project-level metadata not deleted after artifact removal
+
+    * [MRM-1565] - Error 500 when uploading an artifact in web interface
+
+    * [MRM-1567] - Artifact data incomplete
+
+    * [MRM-1568] - Artifact metadata is incomplete, opposite case to MRM-1567
+
+    * [MRM-1590] - Wrong URL returned by SearchService.getArtifactVersions
+
+    * [MRM-1599] - NTLM proxy no longer works
+
+    * [MRM-1607] - maven model build failed when model have jdk profile activation
+
+    * [MRM-1609] - MetadataToolsTest fail in testGatherSnapshotVersionsA
+
+    * [MRM-1611] - Uploading fail on window server.
+
+    * [MRM-1612] - configuration changes spawn an unreasonable number of checks on repository permission templates
+
+    * [MRM-1619] - The modal box when creating a repository with a directory which already exists does not disappear when click ok
+
+    * [MRM-1623] - Archiva Consumers :: Consumers Archetype cannot run integration test
+
+    * [MRM-1625] - java.lang.ArrayIndexOutOfBoundsException from parsing maven-metadata.xml
+
+    * [MRM-1629] - Add a configuration field for the application url
+
+    * [MRM-1632] - Invalid Cron in a job leads jetty to not work anymore
+
+    * [MRM-1635] - Archiva not working on 64 bit Linux - must remove linux-x86-32 wrapper files
+
+    * [MRM-1637] - End of java 1.5 support
+
+    * [MRM-1640] - With the new Fest Assert version, some imports/methods call have to be changed
+
+    * [MRM-1642] - SNAPSHOT build failed
+
+    * [MRM-1644] - Archiva should set cache control headers instead of adding for maven-metadata.xml
+
+    * [MRM-1645] - mvn archetype:generate -DarchetypeCatalog (archetype-catalog.xml) failing with Not a valid artifact path
+
+    * [MRM-1647] - Cannot upload artifact from Web UI
+
+    * [MRM-1649] - Delete artifact in the console doesn't really delete the artifact
+
+    * [MRM-1653] - Bad mod on file in the bundle
+
+    * [MRM-1654] - Bad repository SVN in documentation
+
+    * [MRM-1659] - Cannot connect to PostgreSQL
+
+    * [MRM-1660] - use log4j 2.x
+
+    * [MRM-1664] - Validation error message not visible to user when adding Remote Repository
+
+    * [MRM-1665] - Adding a Snapshot Managed Repository results in Releases being checked too.
+
+    * [MRM-1667] - The role management is not shown on role edit tab
+
+    * [MRM-1672] - Upload Artifact section doesn't clear uploaded artifacts
+
+    * [MRM-1674] - While creating admin account, entering invalid password yields no error message
+
+    * [MRM-1675] - When resetting admin account's password, using invalid new password yields no error message
+
+    * [MRM-1676] - use tomcat-jdbc for connection pooling in embeded distrib.
+
+    * [MRM-1681] - addProxy Connectors Rules screen
+
+    * [MRM-1682] - archiva server has no option to configure the registration mail
+
+    []
+
+** Improvement
+
+    * [MRM-130] - improve search results page
+
+    * [MRM-491] - paginate report pages
+
+    * [MRM-722] - Scan Repository Now should display a confirmation message
+
+    * [MRM-854] - Changing ProxyConnector sorting is painful with many remote repsitories.
+
+    * [MRM-947] - Add some screenshots in "Runtime Configuration" pages
+
+    * [MRM-1030] - Change the web context for jetty deliverable to /  (ROOT context)
+
+    * [MRM-1142] - Improve delete artifact from webapp
+
+    * [MRM-1263] - creating an m2eclipse compatible index should be an optional component
+
+    * [MRM-1543] - artifact display doesn't show eventual classifiers
+
+    * [MRM-1564] - spring 3.1.0 upgrade
+
+    * [MRM-1606] - Upgrade to wagon 2.2
+
+    * [MRM-1610] - Use Jackson as jaxrs provider for cxf for performance reasons
+
+    * [MRM-1624] - Apache project branding requirements: DOAP file [PATCH]
+
+    * [MRM-1626] - Use MavenXpp3Reader as a static variable
+
+    * [MRM-1655] - In interface Scheduler the method schedulJob takes an implementation, not a interface
+
+    * [MRM-1661] - There is no image in the carousel for a couple of seconds
+
+    * [MRM-1662] - Add a link to all screenshots page in the caption of the carousel
+
+    * [MRM-1663] - Missing links on the carousel to force the image to display
+
+    * [MRM-1677] - upgrade jetty 8
+
+    * [MRM-1680] - Delete artifact by groupId/artifactId/versionId in context when authenticated w/ Admin privileges...
+
+    []
+
+** Task
+
+    * [MRM-709] - Use commons-io instead of Plexus Utils
+
+    * [MRM-710] - Use commons-lang instead of Plexus Utils
+
+    * [MRM-1515] - see how to reduce dependencies number
+
+    * [MRM-1566] - remove xml rpc services
+
+    * [MRM-1594] - Upgrade to commons-codec 1.6
+
+    * [MRM-1595] - Upgrade to Guava 11.0.1
+
+    * [MRM-1596] - Upgrade to commons-collections 3.2.1
+
+    * [MRM-1597] - Upgrade to commons-io 2.1
+
+    * [MRM-1604] - Upgrade to maven-bundle-plugin 2.3.7
+
+    * [MRM-1608] - Upgrade to commons-pool 1.6
+
+    * [MRM-1638] - Improve unit test for archiva build
+
+    []
+
+** Wish
+    * [MRM-1628] - Silently ignore request to delete artifacts that does not exist on disk anymore
 
 Previous Releases
 
