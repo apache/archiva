@@ -608,6 +608,8 @@ public class DefaultUserService
                     baseUrl = getBaseUrl();
                 }
 
+                log.debug("register user {} with email {} and app url {}", u.getUsername(), u.getEmail(), baseUrl);
+
                 mailer.sendAccountValidationEmail( Arrays.asList( u.getEmail() ), authkey, baseUrl );
 
                 securityPolicy.setEnabled( false );
