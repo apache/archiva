@@ -140,7 +140,7 @@
     <footer>
       <div class="row span12">Apache ${project.name}, ${project.name}, Apache, the Apache feather logo, and the Apache ${project.name} project logos are trademarks of The Apache Software Foundation.</div>
       <div class="row span12">
-        <a href="${project.url}/privacy-policy.html">Privacy Policy</a>
+        <a href="${project.url}privacy-policy.html">Privacy Policy</a>
       </div>
     </footer>
 
