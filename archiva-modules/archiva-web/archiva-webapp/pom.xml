@@ -1310,6 +1310,7 @@
               <exclude>overlays/**</exclude>
               <exclude>src/appserver-base/conf/**</exclude>
               <exclude>src/appserver-base/logs/**</exclude>
+              <exclude>src/main/webapp/WEB-INF/lib</exclude>
               <exclude>src/main/webapp/js/jquery-1.6.1.min.js</exclude>
               <exclude>src/main/webapp/js/jquery-ui-1.8.14.custom.min.js</exclude>
               <exclude>src/main/webapp/js/md5.js</exclude>
