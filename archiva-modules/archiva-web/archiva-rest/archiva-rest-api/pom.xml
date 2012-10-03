@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-rest</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M3</version>
+    <version>1.4-M4-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-rest-api</artifactId>
   <packaging>bundle</packaging>
