@@ -154,6 +154,13 @@ table.bodyTable tr.b {
               10. Maintenance
             </a>
           </td>
+          <td>
+            <a href="../images/proxy-connectors-rules.png" class="gallery_image" rel="gallery_image"
+                title="Archiva has a screen to configure in a bulk mode black/white list when fetching artifacts from remote repositories.">
+              <img src="../images/proxy-connectors-rules.png" width="150" height="93" style="border: 1px solid silver; margin-left: 0.25em; margin-bottom: 0.25em" alt="" /><br/>
+              11. ProxyConnectors Rules
+            </a>
+          </td>
         </tr>
       </table>
     </section>
