@@ -34,6 +34,8 @@ Runtime Configuration of Apache Archiva
 
     * {{{./network-proxies.html} Configuring network proxies}}
 
+    * {{{./proxy-connector-rules.html} Configuring proxy connectors rules}}
+
     * {{{./network-configuration.html} Network Configuration}}
 
     * {{{./legacy.html} Configuring legacy (maven 1) support}}

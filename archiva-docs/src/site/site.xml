@@ -101,6 +101,7 @@
       <item name="Runtime Configuration"      href="/adminguide/configuration.html" collapse="true">
         <item name="Repositories"             href="/adminguide/repositories.html" />
         <item name="Proxy Connectors"         href="/adminguide/proxy-connectors.html" />
+        <item name="Proxy Connectors Rules"   href="/adminguide/proxy-connector-rules.html"/>
         <item name="Network Proxies"          href="/adminguide/network-proxies.html" />
         <item name="Network Configuration"    href="/adminguide/network-configuration.html" />
         <item name="Legacy (Maven 1) Support" href="/adminguide/legacy.html" />
