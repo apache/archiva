@@ -1287,7 +1287,7 @@
     {{each(i, row) itemsOnCurrentPage()}}
         <tr data-bind="css:{ 'modified': row.modified()}">
           <td>${row.pattern()}</td>
-          <td>${row.proxyConnectorRuleType()}</td>
+          <td><img src="${row.ruleType.image}" title="${row.ruleType.label}"></img></td>
           <td>
             <ul>
             {{each(j,proxyConnector) row.proxyConnectors()}}
@@ -1297,14 +1297,14 @@
           </td>
           <td>
               <a href="#" data-bind="click: function(){ editProxyConnectorRule(row) }">
-                <span class="btn btn-primary">
+                <span class="btn btn-primary" data-loading-text="${$.i18n.prop('common.loading')}">
                   <i class="icon-pencil icon-white"/>
                 </span>
               </a>
           </td>
           <td>
               <a data-bind="click: function(){ removeProxyConnectorRule(row) }" data-loading-text="${$.i18n.prop('common.loading')}">
-                <span class="btn btn-danger">
+                <span class="btn btn-danger" data-loading-text="${$.i18n.prop('common.loading')}">
                   <i class="icon-trash icon-white"/>
                 </span>
               </a>

@@ -19,19 +19,31 @@
 define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstrap","jquery.ui","knockout"
   ,"knockout.simpleGrid","knockout.sortable","archiva.proxy-connectors"], function() {
 
-
-
   ProxyConnectorRulesViewModel=function(proxyConnectorRules,proxyConnectors){
     var self=this;
-    this.proxyConnectorRules=ko.observableArray(proxyConnectorRules);
+    this.proxyConnectorRules=ko.observableArray(proxyConnectorRules?proxyConnectorRules:[]);
     this.proxyConnectors=proxyConnectors;
 
     // FIXME get that from a REST service
     // FIXME i18n
-    this.ruleTypes=[new RuleType("WHITE_LIST"," white list"),new RuleType("BLACK_LIST"," black list")];
+    this.ruleTypes=[new RuleType("BLACK_LIST","Black list","images/red-22-22.png"),new RuleType("WHITE_LIST","White list","images/green-22-22.png")];
+
+    this.findRuleType=function(proxyConnectorRule){
+      var ruleType;
+      $.each(self.ruleTypes, function(index, value) {
+        if(value.type==proxyConnectorRule.proxyConnectorRuleType()){
+          ruleType=value;
+        }
+      });
+      return ruleType;
+    }
 
     this.displayGrid=function(){
       var mainContent = $("#main-content");
+
+      $.each(self.proxyConnectorRules(), function(index, value) {
+        value.ruleType=self.findRuleType(value);
+      });
 
       this.gridViewModel = new ko.simpleGrid.viewModel({
         data: self.proxyConnectorRules,
@@ -78,6 +90,8 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
             displaySuccessMessage(message);
             proxyConnectorRule.modified(false);
             if(add){
+              // add rule type for image
+              proxyConnectorRule.ruleType=self.findRuleType(proxyConnectorRule);
               self.proxyConnectorRules.push(proxyConnectorRule);
             }
             activateProxyConnectorRulesGridTab();
@@ -108,7 +122,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     }
 
     this.deleteProxyConnectorRule=function(proxyConnectorRule){
-      //$("#proxy-connector-rule-delete-btn" ).button("loading");
+      $("#main-content" ).find("proxy-connectors-rules-view-tabsTable").find(".btn").button("loading");
       $("#user-messages" ).html(mediumSpinnerImg());
       $.ajax("restServices/archivaServices/proxyConnectorRuleService/deleteProxyConnectorRule",
        {
@@ -127,7 +141,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
          },
          complete:function(data){
            removeMediumSpinnerImg("#user-messages");
-           //$("#proxy-connector-rule-delete-btn" ).button("reset");
+           $("#main-content" ).find("proxy-connectors-rules-view-tabsTable").find(".btn").button("reset");
          }
        }
       );
@@ -211,6 +225,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       self.modified(true);
     });
 
+    this.ruleType=null;
 
     //private ProxyConnectorRuleType proxyConnectorRuleType;
     this.proxyConnectorRuleType=ko.observable(proxyConnectorRuleType);
@@ -223,6 +238,8 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     this.proxyConnectors.subscribe(function(newValue){
       self.modified(true);
     });
+
+    this.ruleType=null;
   }
 
   mapProxyConnectorRule=function(data){
@@ -261,9 +278,10 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     mainContent.find("#proxy-connectors-rules-view-tabs-edit").addClass("active");
   }
 
-  RuleType=function(type,label){
+  RuleType=function(type,label,image){
     this.type=type;
     this.label=label;
+    this.image=image;
   }
 
 });
