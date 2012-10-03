@@ -260,7 +260,7 @@ BEGIN Silver Egg Techology License -----------------------------------
 END Silver Egg Techology License -------------------------------------
 
 
-For jQuery 1.7.2:
+For jQuery 1.6.1 and 1.8.1:
 
 Copyright (c) 2009 John Resig, http://jquery.com/
 
@@ -284,7 +284,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-For JQuery UI 1.8.16:
+For JQuery UI 1.8.14 and 1.8.23:
 
 Copyright (c) 2009 Paul Bakaus, http://jqueryui.com/
 
@@ -355,7 +355,7 @@ For jQuery Templates Plugin
 Copyright Software Freedom Conservancy, Inc.
 Dual licensed under the MIT or GPL Version 2 licenses. http://jquery.org/license
 
-For  Query Validation Plugin
+For jQuery Validation Plugin
 
 Copyright (c) 2006 - 2011 Jörn Zaefferer
 Dual licensed under the MIT and GPL licenses:
