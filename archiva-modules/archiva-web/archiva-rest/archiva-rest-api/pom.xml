@@ -28,6 +28,11 @@
   <packaging>bundle</packaging>
   <name>Archiva Web :: REST support :: Api</name>
 
+  <properties>
+    <enunciate.version>1.26.1</enunciate.version>
+    <enunciate.debug>false</enunciate.debug>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -94,6 +99,21 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.enunciate</groupId>
+      <artifactId>enunciate-core</artifactId>
+      <scope>provided</scope>
+      <version>${enunciate.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-xc</artifactId>
+      <version>${jacksonVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -136,6 +156,34 @@
           </execution>
         </executions>
       </plugin>
+
+
+     <plugin>
+       <groupId>org.codehaus.enunciate</groupId>
+       <artifactId>maven-enunciate-plugin</artifactId>
+       <version>${enunciate.version}</version>
+       <executions>
+         <execution>
+           <phase>process-classes</phase>
+           <goals>
+             <goal>docs</goal>
+           </goals>
+         </execution>
+       </executions>
+       <configuration>
+         <docsDir>${project.build.outputDirectory}/docs</docsDir>
+         <configFile>src/enunciate/enunciate.xml</configFile>
+         <compileDebug>${enunciate.debug}</compileDebug>
+       </configuration>
+       <dependencies>
+         <dependency>
+           <groupId>org.codehaus.enunciate</groupId>
+           <artifactId>enunciate-docs</artifactId>
+           <version>${enunciate.version}</version>
+         </dependency>
+       </dependencies>
+     </plugin>
+
     </plugins>
   </build>
 

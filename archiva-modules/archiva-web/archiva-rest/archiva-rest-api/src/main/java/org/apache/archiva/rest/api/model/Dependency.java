@@ -38,6 +38,12 @@ public class Dependency
 
     private String scope;
 
+    public Dependency()
+    {
+        // no op
+    }
+
+
     public Dependency( String groupId, String artifactId, String version, String classifier, String type, String scope )
     {
         this.groupId = groupId;

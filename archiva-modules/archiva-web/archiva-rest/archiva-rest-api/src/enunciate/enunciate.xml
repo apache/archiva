@@ -17,19 +17,27 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-web</artifactId>
-    <version>1.4-M4-SNAPSHOT</version>
-  </parent>
-  <artifactId>archiva-rest</artifactId>
-  <name>Archiva Web :: REST support</name>
-  <packaging>pom</packaging>
+<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://enunciate.codehaus.org/schemas/enunciate-1.26.xsd">
+
+  <services>
+    <rest defaultRestSubcontext="restServices"/>
+  </services>
+
   <modules>
-    <module>archiva-rest-api</module>
-    <module>archiva-rest-services</module>
-    <module>archiva-rest-documentor</module>
+
+    <cxf disabled="false"/>
+    <jersey disabled="true" />
+    <c disabled="true"/>
+    <csharp disabled="true"/>
+    <obj-c disabled="true"/>
+    <jaxws-ri disabled="true"/>
+    <jaxws-support disabled="true"/>
+
+    <docs disabled="false" title="Apache Archiva REST API" includeExampleXml="true" includeExampleJson="true"
+          includeDefaultDownloads="false">
+      <war docsDir="apidocs" />
+    </docs>
+
   </modules>
-</project>
+
+</enunciate>

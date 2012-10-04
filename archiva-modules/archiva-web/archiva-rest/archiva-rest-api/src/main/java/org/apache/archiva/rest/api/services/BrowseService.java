@@ -58,6 +58,10 @@ public interface BrowseService
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization (noPermission = true, noRestriction = true)
+    /**
+     * @param groupId groupId to browse
+     * @param repositoryId optionnal (repository to browse if <code>null</code> all available user repositories are used)
+     */
     BrowseResult browseGroupId( @PathParam ("groupId") String groupId,
                                 @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
