@@ -30,6 +30,5 @@
   <modules>
     <module>archiva-rest-api</module>
     <module>archiva-rest-services</module>
-    <module>archiva-rest-documentor</module>
   </modules>
 </project>
