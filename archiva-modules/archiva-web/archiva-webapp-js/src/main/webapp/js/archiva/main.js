@@ -20,7 +20,7 @@ define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl",'i18n',"jquery
          "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management",
-          "archiva.proxy-connectors-rules"],
+          "archiva.proxy-connectors-rules","archiva.docs"],
 function(jquery,ui,sammy,tmpl) {
 
   /**
@@ -195,6 +195,13 @@ function(jquery,ui,sammy,tmpl) {
               {  text : $.i18n.prop('menu.users.manage')    , id: "menu-users-list-a", href: "#users" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayUsersGrid()}},
               {  text : $.i18n.prop('menu.users.roles')     , id: "menu-roles-list-a", href: "#roles" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayRolesGrid()}}
       ];
+
+      this.docsMenuItems = [
+              {  text : $.i18n.prop('menu.docs') , id: null},
+              {  text : $.i18n.prop('menu.docs.rest')    , id: "menu-docs-rest-list-a", href: "#docs-rest", func: function(){displayRestDocs()}},
+              {  text : $.i18n.prop('menu.docs.users')   , id: "menu-docs-users-list-a", href: "#docs-users" , func: function(){displayUsersDocs()}}
+      ];
+
       this.activeMenuId = ko.observable();
           
       window.sammyArchivaApplication = Sammy(function () {
@@ -616,12 +623,18 @@ function(jquery,ui,sammy,tmpl) {
           var folder = this.params.folder;
           self.activeMenuId(folder);
           var baseItems = self.artifactMenuItems?self.artifactMenuItems:[];
-          ko.utils.arrayFirst(baseItems.concat(self.usersMenuItems, self.administrationMenuItems), function(p) {
+          ko.utils.arrayFirst(baseItems.concat(self.usersMenuItems, self.administrationMenuItems,self.docsMenuItems), function(p) {
             if ( p.href == "#"+self.activeMenuId()) {
               screenChange();
               p.func();
             }
           });
+        });
+
+        this.get("#rest-docs-archiva-rest-api/:target",function(){
+          var target=this.params.target;
+          $.log("archiva-rest-docs, target:"+target);
+          goToArchivaRestDoc(target);
         });
 
       });

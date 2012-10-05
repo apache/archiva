@@ -79,6 +79,11 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>RestDocumentation</servlet-name>
+    <servlet-class>org.apache.archiva.rest.docs.RestDocsServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
 
 
   <servlet>
@@ -91,6 +96,11 @@
   <servlet-mapping>
     <servlet-name>RssFeedServlet</servlet-name>
     <url-pattern>/feeds/*</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>RestDocumentation</servlet-name>
+    <url-pattern>/rest-docs/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

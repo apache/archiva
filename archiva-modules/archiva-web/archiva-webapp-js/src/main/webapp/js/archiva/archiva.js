@@ -94,6 +94,7 @@ $.ajax({
                     "archiva.artifacts-management": "archiva/artifacts-management",
                     "archiva.search": "archiva/search",
                     "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
+                    "archiva.docs": "archiva/docs",
                     "archiva.main": "archiva/main"
                 }
             });

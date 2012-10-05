@@ -161,3 +161,18 @@ footer {
 .cursor-hand:hover {
     cursor: pointer;
 }
+
+
+code {
+    background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #DDDDDD;
+    color: #555555;
+    display: block;
+    font: 1.1em "Lucida Sans Unicode",serif;
+    margin-bottom: 12px;
+    max-height: 300px;
+    overflow: auto;
+    padding: 8px 10px;
+    white-space: pre;
+    vertical-align: baseline;
+}

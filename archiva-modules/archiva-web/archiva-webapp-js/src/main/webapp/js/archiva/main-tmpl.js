@@ -21,15 +21,17 @@ require(['jquery',"jquery.tmpl",'i18n',"utils","text!templates/archiva/menu.html
           "text!templates/archiva/modal.html",
           "text!templates/archiva/repositories.html",
           "text!templates/archiva/search.html",
-          "text!templates/archiva/general-admin.html"],
+          "text!templates/archiva/general-admin.html",
+          "text!templates/archiva/docs.html"],
   function(jquery,jqueryTmpl,i18n,utils,menu,generics,modal,repositories,
-           search,general_admin) {
+           search,general_admin,docs) {
     loadArchivaTemplate=function(){
       var htmlFragment=$("#html-fragments");
       // template loading
       htmlFragment.append(menu);
       htmlFragment.append(generics);
       $.tmpl( modal ).appendTo(htmlFragment);
+      $.tmpl( docs ).appendTo(htmlFragment);
       htmlFragment.append(repositories);
       htmlFragment.append(search);
       htmlFragment.append(general_admin);
