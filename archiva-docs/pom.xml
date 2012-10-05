@@ -93,9 +93,34 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>archiva-rest-api-docs-extract</id>
+            <phase>site</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>archiva-rest-api</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/site/</outputDirectory>
+              <excludes>META-INF/**,org/**</excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <finalName>apache-archiva-${project.version}</finalName>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-rest-api</artifactId>
+    </dependency>
+  </dependencies>
 
   <reporting>
     <excludeDefaults>true</excludeDefaults>
