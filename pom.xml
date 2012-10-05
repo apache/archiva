@@ -919,7 +919,8 @@
             <version>${enunciate.version}</version>
             <executions>
               <execution>
-                <phase>process-classes</phase>
+                <id>generate-enunciate-docs</id>
+                <phase>compile</phase>
                 <goals>
                   <goal>docs</goal>
                 </goals>
