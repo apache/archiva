@@ -40,6 +40,8 @@
     <archiva.baseRestUrl />
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
+    <enunciate.docsDir>${project.build.outputDirectory}/rest-docs-archiva-ui</enunciate.docsDir>
+
   </properties>
 
   <dependencies>

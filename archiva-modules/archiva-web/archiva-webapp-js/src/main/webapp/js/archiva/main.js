@@ -637,6 +637,12 @@ function(jquery,ui,sammy,tmpl) {
           goToArchivaRestDoc(target);
         });
 
+        this.get("#rest-docs-archiva-ui/:target",function(){
+          var target=this.params.target;
+          $.log("archiva-rest-docs-ui, target:"+target);
+          goToArchivaRestUiDoc(target);
+        });
+
       });
   };
 

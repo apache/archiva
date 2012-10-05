@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -15,23 +16,28 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
--->
+  -->
+<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://enunciate.codehaus.org/schemas/enunciate-1.26.xsd">
 
-<script id="rest_docs" type="text/html">
-    <div>
-      <div class="page-header">
-        <div><b>${$.i18n.prop('docs.rest.header')}</b></div>
-      </div>
-      <div id="docs_rest_choice">
-        <ul>
-          <li><a onclick="displayArchivaRestDocs();">Archiva Rest Api Docs</a></li>
-          <li><a onclick="displayArchivaRestUIDocs();">Archiva Rest Api UI Docs</a></li>
-        </ul>
-      </div>
-    </div>
-    <div id="rest_docs_content">
-    </div>
-</script>
+  <services>
+    <rest defaultRestSubcontext="archivaUiServices"/>
+  </services>
 
-<script id="users_docs" type="text/html">
-</script>
+  <modules>
+
+    <cxf disabled="false"/>
+    <jersey disabled="true" />
+    <c disabled="true"/>
+    <csharp disabled="true"/>
+    <obj-c disabled="true"/>
+    <jaxws-ri disabled="true"/>
+    <jaxws-support disabled="true"/>
+
+    <docs disabled="false" title="Apache Archiva UI REST API" includeExampleXml="true" includeExampleJson="true"
+          includeDefaultDownloads="false">
+      <war docsDir="apidocs" />
+    </docs>
+
+  </modules>
+
+</enunciate>
