@@ -32,7 +32,9 @@ Using REST Services
   All samples here will use Apache CXF REST client API. By the way you can use some others REST client frameworks.
   NOTE: a wadl is available in your Archiva instance : http(s)://ip:port/../restServices/application.wadl
 
-  Archiva REST api is available here: {{http://archiva.apache.org/docs/${project.version}/rest-docs-archiva-rest-api/index.html}}
+  * Archiva REST api is available here: {{http://archiva.apache.org/docs/${project.version}/rest-docs-archiva-rest-api/index.html}}
+
+  * Archiva UI REST api is available here: {{http://archiva.apache.org/docs/${project.version}/rest-docs-archiva-ui/index.html}}
 
 * Search Service
 
