@@ -82,7 +82,12 @@
     <jxrVersion>2.3</jxrVersion>
     <javadocPluginVersion>2.8.1</javadocPluginVersion>
 
-    <plexusUtilsPluginsVersion>3.0.7</plexusUtilsPluginsVersion>
+    <plexusUtilsPluginsVersion>3.0.8</plexusUtilsPluginsVersion>
+
+    <jacksonVersion>1.9.9</jacksonVersion>
+    <enunciate.docsDir></enunciate.docsDir>
+    <enunciate.version>1.26.1</enunciate.version>
+    <enunciate.debug>false</enunciate.debug>
 
   </properties>
 
@@ -889,6 +894,63 @@
         </pluginManagement>
       </build>
     </profile>
+
+    <profile>
+      <id>enunciate</id>
+      <activation>
+        <file>
+          <exists>${basedir}/src/enunciate/enunciate.xml</exists>
+        </file>
+      </activation>
+
+      <dependencies>
+
+        <dependency>
+          <groupId>org.codehaus.enunciate</groupId>
+          <artifactId>enunciate-core</artifactId>
+          <scope>provided</scope>
+          <version>${enunciate.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-xc</artifactId>
+          <version>${jacksonVersion}</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.enunciate</groupId>
+            <artifactId>maven-enunciate-plugin</artifactId>
+            <version>${enunciate.version}</version>
+            <executions>
+              <execution>
+                <phase>process-classes</phase>
+                <goals>
+                  <goal>docs</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <docsDir>${enunciate.docsDir}</docsDir>
+              <configFile>src/enunciate/enunciate.xml</configFile>
+              <compileDebug>${enunciate.debug}</compileDebug>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.enunciate</groupId>
+                <artifactId>enunciate-docs</artifactId>
+                <version>${enunciate.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+
   </profiles>
 
 </project>
