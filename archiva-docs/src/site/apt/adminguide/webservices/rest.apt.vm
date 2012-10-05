@@ -36,6 +36,8 @@ Using REST Services
 
   * Archiva UI REST api is available here: {{http://archiva.apache.org/docs/${project.version}/rest-docs-archiva-ui/index.html}}
 
+  * Redback REST api is available here: {{http://archiva.apache.org/docs/${project.version}/rest-docs-redback-rest-api/index.html}}
+
 * Search Service
 
    Authentication headers for connect to your Archiva instance :

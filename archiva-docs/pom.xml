@@ -121,6 +121,18 @@
               <excludes>META-INF/**,org/**</excludes>
             </configuration>
           </execution>
+          <execution>
+            <id>redback-rest-api-docs-extract</id>
+            <phase>site</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>redback-rest-api</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/site/</outputDirectory>
+              <excludes>META-INF/**,org/**</excludes>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
@@ -135,6 +147,10 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-web-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rest-api</artifactId>
     </dependency>
   </dependencies>
 
