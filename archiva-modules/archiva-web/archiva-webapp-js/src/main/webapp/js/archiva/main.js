@@ -643,6 +643,12 @@ function(jquery,ui,sammy,tmpl) {
           goToArchivaRestUiDoc(target);
         });
 
+        this.get("#rest-docs-redback-rest-api/:target",function(){
+          var target=this.params.target;
+          $.log("redback-rest-docs, target:"+target);
+          goToRedbackRestDoc(target);
+        });
+
       });
   };
 

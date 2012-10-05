@@ -52,6 +52,22 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
     });
   }
 
+  goToRedbackRestDoc=function(target){
+    $("#main-content" ).html(mediumSpinnerImg());
+    $.ajax({
+      url:"rest-docs/rest-docs-redback-rest-api/"+target,
+      type:"get",
+      dataType: "html",
+      success: function(data){
+        $("#main-content" ).html($("#rest_docs").tmpl());
+        $("#main-content" ).find("#rest_docs_content" ).html(data);
+        prettyPrint();
+      }
+    });
+  }
+  displayRedbackRestDocs=function(){
+    window.sammyArchivaApplication.setLocation("#rest-docs-redback-rest-api/index.html");
+  }
 
   displayArchivaRestUIDocs=function(){
     window.sammyArchivaApplication.setLocation("#rest-docs-archiva-ui/index.html");
