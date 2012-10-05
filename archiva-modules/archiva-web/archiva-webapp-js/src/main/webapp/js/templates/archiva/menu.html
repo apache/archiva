@@ -58,7 +58,7 @@
       <!-- /ko -->
       <!-- ko if: id -->
       <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
-        <a data-bind="text: text, attr: { id: id, href: href}"></a>
+        <a data-bind="text: text, attr: { id: id, href: href, target: target}"></a>
       </li>
       <!-- /ko -->
     </ul>

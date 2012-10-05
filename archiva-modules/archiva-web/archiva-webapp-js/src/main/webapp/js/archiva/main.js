@@ -198,8 +198,8 @@ function(jquery,ui,sammy,tmpl) {
 
       this.docsMenuItems = [
               {  text : $.i18n.prop('menu.docs') , id: null},
-              {  text : $.i18n.prop('menu.docs.rest')    , id: "menu-docs-rest-list-a", href: "#docs-rest", func: function(){displayRestDocs()}},
-              {  text : $.i18n.prop('menu.docs.users')   , id: "menu-docs-users-list-a", href: "#docs-users" , func: function(){displayUsersDocs()}}
+              {  text : $.i18n.prop('menu.docs.rest')    , id: "menu-docs-rest-list-a", href: "#docs-rest", target: "", func: function(){displayRestDocs()}},
+              {  text : $.i18n.prop('menu.docs.users')   , id: "menu-docs-users-list-a", href: "http://archiva.apache.org/docs/"+window.archivaRuntimeInfo.version, target: "_blank", func: function(){displayUsersDocs()}}
       ];
 
       this.activeMenuId = ko.observable();

@@ -59,6 +59,7 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
 
   displayUsersDocs=function(){
     $.log("displayUsersDocs");
+    window.open("");
   }
 
 });
