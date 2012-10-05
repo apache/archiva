@@ -28,8 +28,13 @@
   </parent>
 
   <artifactId>redback-rest-api</artifactId>
-  <packaging>bundle</packaging>
+  <!-- DO NOT USE bundle packaging generated documentation is not included in the jar !!! -->
+  <packaging>jar</packaging>
   <name>Redback :: Integration :: REST :: Api</name>
+
+  <properties>
+    <enunciate.docsDir>${project.build.outputDirectory}/rest-docs-redback-rest-api</enunciate.docsDir>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -82,6 +87,15 @@
             </Import-Package>
           </instructions>
         </configuration>
+        <executions>
+          <execution>
+            <id>create-manifest</id>
+            <phase>process-test-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -94,6 +108,15 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
       </plugin>
     </plugins>
   </build>
