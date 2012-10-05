@@ -39,17 +39,7 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
   }
 
   displayArchivaRestDocs=function(){
-    $.log("displayArchivaRestDocs");
-    $("#main-content" ).html(mediumSpinnerImg());
-    $.ajax({
-      url:"rest-docs/rest-docs-archiva-rest-api/index.html",
-      type:"get",
-      dataType: "html",
-      success: function(data){
-        $("#main-content" ).html($("#rest_docs").tmpl());
-        $("#main-content" ).find("#rest_docs_content" ).html(data);
-      }
-    });
+    window.sammyArchivaApplication.setLocation("#rest-docs-archiva-rest-api/index.html");
   }
 
   loadRestDocs=function(docType, fullPath){
