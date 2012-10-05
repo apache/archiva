@@ -118,7 +118,7 @@
             <configuration>
               <includeArtifactIds>archiva-web-common</includeArtifactIds>
               <outputDirectory>${project.build.directory}/site/</outputDirectory>
-              <excludes>META-INF/**,org/**,WEB-INF/**</excludes>
+              <excludes>META-INF/**,org/**</excludes>
             </configuration>
           </execution>
         </executions>

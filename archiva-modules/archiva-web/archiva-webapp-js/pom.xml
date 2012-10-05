@@ -41,7 +41,6 @@
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
 
-
   </properties>
 
   <dependencies>
@@ -778,31 +777,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>${tomcat7Version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-juli</artifactId>
-      <version>${tomcat7Version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-logging-juli</artifactId>
-      <version>${tomcat7Version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-servlet-api</artifactId>
-      <version>${tomcat7Version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <scope>test</scope>
@@ -1041,8 +1015,6 @@
             <test.useTomcat>${test.useTomcat}</test.useTomcat>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
-            <expectedVersion>${project.version}</expectedVersion>
-            <archiva.logMissingI18n>true</archiva.logMissingI18n>
           </systemPropertyVariables>
         </configuration>
       </plugin>
