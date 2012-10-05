@@ -104,31 +104,7 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <includeArtifactIds>archiva-rest-api</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/site/</outputDirectory>
-              <excludes>META-INF/**,org/**</excludes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>archiva-rest-ui-api-docs-extract</id>
-            <phase>site</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeArtifactIds>archiva-web-common</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/site/</outputDirectory>
-              <excludes>META-INF/**,org/**</excludes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>redback-rest-api-docs-extract</id>
-            <phase>site</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeArtifactIds>redback-rest-api</includeArtifactIds>
+              <includeArtifactIds>archiva-rest-api,archiva-web-common,redback-rest-api</includeArtifactIds>
               <outputDirectory>${project.build.directory}/site/</outputDirectory>
               <excludes>META-INF/**,org/**</excludes>
             </configuration>
