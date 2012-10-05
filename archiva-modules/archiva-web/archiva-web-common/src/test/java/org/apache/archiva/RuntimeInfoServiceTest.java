@@ -1,4 +1,4 @@
-package org.apache.archiva.webapp.ui.services.api;
+package org.apache.archiva;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,7 +18,8 @@ package org.apache.archiva.webapp.ui.services.api;
  * under the License.
  */
 
-import org.apache.archiva.webapp.ui.services.model.ApplicationRuntimeInfo;
+import org.apache.archiva.web.api.RuntimeInfoService;
+import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;

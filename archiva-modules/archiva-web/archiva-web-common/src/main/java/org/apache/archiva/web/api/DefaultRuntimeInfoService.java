@@ -1,4 +1,4 @@
-package org.apache.archiva.webapp.ui.services.api;
+package org.apache.archiva.web.api;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,7 +19,7 @@ package org.apache.archiva.webapp.ui.services.api;
  */
 
 import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
-import org.apache.archiva.webapp.ui.services.model.ApplicationRuntimeInfo;
+import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

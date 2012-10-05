@@ -109,6 +109,18 @@
               <excludes>META-INF/**,org/**</excludes>
             </configuration>
           </execution>
+          <execution>
+            <id>archiva-rest-ui-api-docs-extract</id>
+            <phase>site</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>archiva-web-common</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/site/</outputDirectory>
+              <excludes>META-INF/**,org/**,WEB-INF/**</excludes>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
@@ -119,6 +131,10 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-rest-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-web-common</artifactId>
     </dependency>
   </dependencies>
 

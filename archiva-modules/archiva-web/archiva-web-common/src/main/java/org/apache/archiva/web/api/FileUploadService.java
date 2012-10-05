@@ -1,4 +1,4 @@
-package org.apache.archiva.webapp.ui.services.api;
+package org.apache.archiva.web.api;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,7 +20,7 @@ package org.apache.archiva.webapp.ui.services.api;
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.webapp.ui.services.model.FileMetadata;
+import org.apache.archiva.web.model.FileMetadata;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 

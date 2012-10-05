@@ -1,4 +1,4 @@
-package org.apache.archiva.webapp.ui.services.api;
+package org.apache.archiva.web.api;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,7 +18,7 @@ package org.apache.archiva.webapp.ui.services.api;
  * under the License.
  */
 
-import org.apache.archiva.webapp.ui.services.model.ApplicationRuntimeInfo;
+import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;

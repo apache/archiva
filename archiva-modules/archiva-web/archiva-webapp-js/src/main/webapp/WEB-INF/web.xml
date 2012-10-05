@@ -81,7 +81,7 @@
 
   <servlet>
     <servlet-name>RestDocumentation</servlet-name>
-    <servlet-class>org.apache.archiva.webapp.ui.services.docs.RestDocsServlet</servlet-class>
+    <servlet-class>org.apache.archiva.web.docs.RestDocsServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
 
