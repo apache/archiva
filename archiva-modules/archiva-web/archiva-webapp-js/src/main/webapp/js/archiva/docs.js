@@ -25,42 +25,45 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
   }
 
   goToArchivaRestDoc=function(target){
-    $("#main-content" ).find("#rest_docs_content" ).html(mediumSpinnerImg());
+    var mainContent = $("#main-content");
+    mainContent.find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
       url:"rest-docs/rest-docs-archiva-rest-api/"+target,
       type:"get",
       dataType: "html",
       success: function(data){
-        $("#main-content" ).html($("#rest_docs").tmpl());
-        $("#main-content" ).find("#rest_docs_content" ).html(data);
+        mainContent.html($("#rest_docs").tmpl());
+        mainContent.find("#rest_docs_content" ).html(data);
         prettyPrint();
       }
     });
   }
 
   goToArchivaRestUiDoc=function(target){
-    $("#main-content" ).find("#rest_docs_content" ).html(mediumSpinnerImg());
+    var mainContent = $("#main-content");
+    mainContent.find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
       url:"rest-docs/rest-docs-archiva-ui/"+target,
       type:"get",
       dataType: "html",
       success: function(data){
-        $("#main-content" ).html($("#rest_docs").tmpl());
-        $("#main-content" ).find("#rest_docs_content" ).html(data);
+        mainContent.html($("#rest_docs").tmpl());
+        mainContent.find("#rest_docs_content" ).html(data);
         prettyPrint();
       }
     });
   }
 
   goToRedbackRestDoc=function(target){
-    $("#main-content" ).find("#rest_docs_content" ).html(mediumSpinnerImg());
+    var mainContent = $("#main-content");
+    mainContent.find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
       url:"rest-docs/rest-docs-redback-rest-api/"+target,
       type:"get",
       dataType: "html",
       success: function(data){
-        $("#main-content" ).html($("#rest_docs").tmpl());
-        $("#main-content" ).find("#rest_docs_content" ).html(data);
+        mainContent.html($("#rest_docs").tmpl());
+        mainContent.find("#rest_docs_content" ).html(data);
         prettyPrint();
       }
     });
