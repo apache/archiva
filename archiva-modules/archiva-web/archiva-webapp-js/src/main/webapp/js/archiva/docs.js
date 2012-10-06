@@ -25,7 +25,7 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
   }
 
   goToArchivaRestDoc=function(target){
-    $("#main-content" ).html(mediumSpinnerImg());
+    $("#main-content" ).find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
       url:"rest-docs/rest-docs-archiva-rest-api/"+target,
       type:"get",
@@ -39,7 +39,7 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
   }
 
   goToArchivaRestUiDoc=function(target){
-    $("#main-content" ).html(mediumSpinnerImg());
+    $("#main-content" ).find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
       url:"rest-docs/rest-docs-archiva-ui/"+target,
       type:"get",
@@ -53,7 +53,7 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
   }
 
   goToRedbackRestDoc=function(target){
-    $("#main-content" ).html(mediumSpinnerImg());
+    $("#main-content" ).find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
       url:"rest-docs/rest-docs-redback-rest-api/"+target,
       type:"get",
