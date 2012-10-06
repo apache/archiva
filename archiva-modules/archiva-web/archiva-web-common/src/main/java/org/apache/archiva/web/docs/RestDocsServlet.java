@@ -65,9 +65,7 @@ public class RestDocsServlet
         for ( Iterator<Element> elementIterator = links.iterator(); elementIterator.hasNext(); )
         {
             Element link = elementIterator.next();
-            //link.attr( "onclick", "loadRestDocs('" + startPath + "\',\'"+ "rest-docs/" + startPath + "/" + link.attr( "href" ) + "\');" );
             link.attr( "href", "#" + startPath + "/" + link.attr( "href" ) );
-
         }
 
         Elements codes = body.select( "code" );
@@ -78,14 +76,36 @@ public class RestDocsServlet
             code.attr( "class", code.attr( "class" ) + " nice-code" );
         }
 
-        //res.appendChild( body.child( 1 ) );
+        //default generated enunciate use h1/h2/h3 which is quite big so transform to h3/h4/h5
+
+        Elements headers = body.select( "h1" );
+
+        for ( Iterator<Element> elementIterator = headers.iterator(); elementIterator.hasNext(); )
+        {
+            Element header = elementIterator.next();
+            header.tagName( "h3" );
+        }
+
+        headers = body.select( "h2" );
+
+        for ( Iterator<Element> elementIterator = headers.iterator(); elementIterator.hasNext(); )
+        {
+            Element header = elementIterator.next();
+            header.tagName( "h4" );
+        }
+
+        headers = body.select( "h3" );
+
+        for ( Iterator<Element> elementIterator = headers.iterator(); elementIterator.hasNext(); )
+        {
+            Element header = elementIterator.next();
+            header.tagName( "h5" );
+        }
 
         Document res = new Document( "" );
         res.appendChild( body.select( "div[id=main]" ).first() );
 
         resp.getOutputStream().write( res.outerHtml().getBytes() );
 
-        //IOUtils.copy( is, resp.getOutputStream() );
-        //super.doGet( req, resp );
     }
 }
