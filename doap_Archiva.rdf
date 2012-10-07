@@ -40,6 +40,8 @@ security access management, build artifact storage, delivery, browsing, indexing
         <name>Apache Archiva 1.3.5</name>
         <created>2011-05-17</created>
         <revision>1.3.5</revision>
+        <file-release>http://www.us.apache.org/dist/archiva/1.3.5/binaries/apache-archiva-1.3.5-bin.zip</file-release>
+        <file-release>http://www.us.apache.org/dist/archiva/1.3.5/war/apache-archiva-1.3.5.war</file-release>
       </Version>
     </release>
     <repository>
