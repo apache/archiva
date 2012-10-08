@@ -25,49 +25,40 @@ define("archiva.docs",["jquery","i18n","jquery.tmpl","bootstrap"], function() {
   }
 
   goToArchivaRestDoc=function(target){
-    var mainContent = $("#main-content");
-    mainContent.find("#rest_docs_content" ).html(mediumSpinnerImg());
-    $.ajax({
-      url:"rest-docs/rest-docs-archiva-rest-api/"+target,
-      type:"get",
-      dataType: "html",
-      success: function(data){
-        mainContent.html($("#rest_docs").tmpl());
-        mainContent.find("#rest_docs_content" ).html(data);
-        prettyPrint();
-      }
-    });
+    goToRestDoc(target,"rest-docs/rest-docs-archiva-rest-api");
   }
 
   goToArchivaRestUiDoc=function(target){
+
+    goToRestDoc(target,"rest-docs/rest-docs-archiva-ui");
+  }
+
+  goToRedbackRestDoc=function(target){
+
+    goToRestDoc(target,"rest-docs/rest-docs-redback-rest-api");
+  }
+
+  goToRestDoc=function(target,rootPath){
     var mainContent = $("#main-content");
     mainContent.find("#rest_docs_content" ).html(mediumSpinnerImg());
     $.ajax({
-      url:"rest-docs/rest-docs-archiva-ui/"+target,
+      url:rootPath+"/"+target,
       type:"get",
       dataType: "html",
       success: function(data){
         mainContent.html($("#rest_docs").tmpl());
-        mainContent.find("#rest_docs_content" ).html(data);
+        if(target.endsWith(".xsd")){
+          mainContent.find("#rest_docs_content" ).html("<code id='xsd_content'></code>");
+          mainContent.find("#xsd_content" ).html(data);
+        } else {
+          mainContent.find("#rest_docs_content" ).html(data);
+        }
+
         prettyPrint();
       }
     });
   }
 
-  goToRedbackRestDoc=function(target){
-    var mainContent = $("#main-content");
-    mainContent.find("#rest_docs_content" ).html(mediumSpinnerImg());
-    $.ajax({
-      url:"rest-docs/rest-docs-redback-rest-api/"+target,
-      type:"get",
-      dataType: "html",
-      success: function(data){
-        mainContent.html($("#rest_docs").tmpl());
-        mainContent.find("#rest_docs_content" ).html(data);
-        prettyPrint();
-      }
-    });
-  }
   displayRedbackRestDocs=function(){
     window.sammyArchivaApplication.setLocation("#rest-docs-redback-rest-api/index.html");
   }
