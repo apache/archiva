@@ -22,7 +22,7 @@
   <prerequisites>
     <maven>3.0</maven>
   </prerequisites>
-
+<!-- test new asf infrabot -->
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
