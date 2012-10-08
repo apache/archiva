@@ -18,6 +18,7 @@ package org.apache.archiva.web.docs;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -52,6 +53,12 @@ public class RestDocsServlet
 
         String path = StringUtils.removeStart( req.getPathInfo(), "/" );
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream( path );
+
+        if ( StringUtils.endsWith( path, ".xsd" ) )
+        {
+            IOUtils.copy( is, resp.getOutputStream() );
+            return;
+        }
 
         String startPath = StringUtils.substringBefore( path, "/" );
 
