@@ -54,6 +54,7 @@
     <property name="session" ref="mailSession"/>
   </bean>
 
+  <!-- START SNIPPET: configuration-files-list -->
   <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
@@ -92,7 +93,8 @@
       </value>
     </property>    
   </bean>
-  
+  <!-- END SNIPPET: configuration-files-list -->
+
   <bean name="jdoFactory#users" class="org.apache.archiva.redback.components.jdo.DataSourceConfigurableJdoFactory">
     <property name="connectionFactoryName" value="java:comp/env/jdbc/users"/>
     <property name="shutdownConnectionFactoryName" value="java:comp/env/jdbc/usersShutdown"/>
