@@ -131,12 +131,6 @@
     </dependency>      
 
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils-bean-collections</artifactId>
-      <version>1.7.0</version>
-      <!-- Needed by extremecomponents -->
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
@@ -145,19 +139,7 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jsp-api</artifactId>
-      <scope>provided</scope>
-    </dependency>	  
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
