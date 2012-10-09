@@ -1,6 +1,0 @@
-<project>
-  <groupId>org.apache.archiva</groupId>
-  <artifactId>artifact-to-be-uploaded</artifactId>
-  <version>1.0</version>
-  <packaging>jar</packaging>
-</project>
