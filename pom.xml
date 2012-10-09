@@ -41,7 +41,6 @@
     <module>archiva-cli</module>
     <module>archiva-modules</module>
     <module>archiva-docs</module>
-    <module>archiva-jetty</module>
     <module>archiva-jetty-js</module>
     <!--module>archiva-tomcat-js</module-->
   </modules>
@@ -402,12 +401,6 @@
         <version>${project.version}</version>
         <type>zip</type>
         <classifier>docs</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -1884,14 +1877,6 @@
       </build>
     </profile>
 
-
-    <profile>
-      <!-- profile to run struts webapp it test -->
-      <id>it</id>
-      <modules>
-        <module>archiva-modules/archiva-web/archiva-webapp-test</module>
-      </modules>
-    </profile>
     <profile>
       <!-- profile to run javascript webapp and it tests -->
       <id>it-js</id>
