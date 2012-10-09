@@ -50,7 +50,6 @@
     <module>archiva-test-mocks</module>
     <module>archiva-rest</module>
     <module>archiva-web-common</module>
-    <module>archiva-webapp</module>
     <module>archiva-webapp-js</module>
   </modules>
 
