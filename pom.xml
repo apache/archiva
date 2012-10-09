@@ -293,23 +293,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
-        <artifactId>redback-struts2-content</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva.redback</groupId>
-        <artifactId>redback-struts2-integration</artifactId>
-        <version>${project.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-common-integrations</artifactId>
         <version>${project.version}</version>
       </dependency>
