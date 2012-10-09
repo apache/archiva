@@ -40,4 +40,4 @@ Repositories Content Storage
 
  If you want to change this default location, you must edit the file WEB-INF/applicationContext.xml, uncomment/edit lines and change with your values:
 
-%{snippet|id=jcr-location|ignoreDownloadError=true|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/applicationContext.xml}
+%{snippet|id=jcr-location|ignoreDownloadError=true|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp-js/src/main/webapp/WEB-INF/applicationContext.xml}
