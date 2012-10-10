@@ -77,7 +77,7 @@
     <jacksonVersion>1.9.9</jacksonVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.useagent>true</gpg.useagent>
-    <cxfVersion>2.7.0</cxfVersion>
+    <cxfVersion>2.6.3</cxfVersion>
     <!--
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
