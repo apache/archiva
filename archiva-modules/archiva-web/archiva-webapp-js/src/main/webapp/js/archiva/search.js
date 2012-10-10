@@ -1149,7 +1149,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       return $.isArray(data.browseResultEntries) ?
          $.map(data.browseResultEntries,function(item){
            return new BrowseResultEntry(item.name, item.project);
-         } ).sort(): [data.browseResultEntries];
+         } ).sort(function(a, b){return a.name.localeCompare(b.name)}): [data.browseResultEntries];
     }
     return [];
   }
