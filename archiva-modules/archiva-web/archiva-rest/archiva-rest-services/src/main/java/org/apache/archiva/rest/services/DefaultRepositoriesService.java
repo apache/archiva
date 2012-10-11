@@ -725,6 +725,25 @@ public class DefaultRepositoriesService
 
             log.debug( "artifacts: {}", artifacts );
 
+            if ( artifacts.isEmpty() )
+            {
+                if ( !snapshotVersion )
+                {
+                    // verify metata repository doesn't contains anymore the version
+                    Collection<String> projectVersions =
+                        metadataRepository.getProjectVersions( repositoryId, artifact.getGroupId(),
+                                                               artifact.getArtifactId() );
+
+                    if ( projectVersions.contains( artifact.getVersion() ) )
+                    {
+                        log.warn( "artifact not found when deleted but version still here ! so force cleanup" );
+                        metadataRepository.removeProjectVersion( repositoryId, artifact.getGroupId(),
+                                                                 artifact.getArtifactId(), artifact.getVersion() );
+                    }
+
+                }
+            }
+
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
 
@@ -785,8 +804,6 @@ public class DefaultRepositoriesService
                     triggerAuditEvent( repositoryId, path, AuditEvent.REMOVE_FILE );
                 }
             }
-
-
         }
         catch ( ContentNotFoundException e )
         {

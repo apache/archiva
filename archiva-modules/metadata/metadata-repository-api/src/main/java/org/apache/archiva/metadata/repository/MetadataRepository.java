@@ -112,11 +112,10 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
-     *
      * @param repositoryId
-     * @param namespace (groupId for maven )
-     * @since 1.4-M3
+     * @param namespace    (groupId for maven )
      * @throws MetadataRepositoryException
+     * @since 1.4-M3
      */
     void removeNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException;
@@ -159,6 +158,18 @@ public interface MetadataRepository
 
     Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
+
+    /**
+     *
+     * @param repoId
+     * @param namespace
+     * @param projectId
+     * @param projectVersion
+     * @since 1.4-M4
+     * @throws MetadataResolutionException
+     */
+    void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataRepositoryException;
 
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                String projectVersion )

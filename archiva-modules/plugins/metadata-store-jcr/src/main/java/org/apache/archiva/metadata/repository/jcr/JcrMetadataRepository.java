@@ -1047,6 +1047,33 @@ public class JcrMetadataRepository
 
     }
 
+
+    public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+
+            String path = getProjectPath( repoId, namespace, projectId );
+            Node root = getJcrSession().getRootNode();
+
+            Node nodeAtPath = root.getNode( path );
+
+            for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
+            {
+                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) && StringUtils.equals( projectVersion,
+                                                                                         node.getName() ) )
+                {
+                    node.remove();
+                }
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
     public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 String id )
         throws MetadataRepositoryException
