@@ -43,7 +43,7 @@ public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
 
-    @Test( expected = ServerWebApplicationException.class )
+    @Test ( expected = ServerWebApplicationException.class )
     public void scanRepoKarmaFailed()
         throws Exception
     {
@@ -79,7 +79,7 @@ public class RepositoriesServiceTest
         assertTrue( service.scanRepository( repoId, true ) );
     }
 
-    @Test( expected = ServerWebApplicationException.class )
+    @Test ( expected = ServerWebApplicationException.class )
     public void deleteArtifactKarmaFailed()
         throws Exception
     {
@@ -104,7 +104,7 @@ public class RepositoriesServiceTest
         }
     }
 
-    @Test( expected = ServerWebApplicationException.class )
+    @Test ( expected = ServerWebApplicationException.class )
     public void deleteWithRepoNull()
         throws Exception
     {
@@ -125,6 +125,72 @@ public class RepositoriesServiceTest
         {
             assertEquals( "not http 400 status", 400, e.getStatus() );
             throw e;
+        }
+    }
+
+
+    /**
+     * delete a version of an artifact without packaging
+     *
+     * @throws Exception
+     */
+    @Test
+    public void deleteArtifactVersion()
+        throws Exception
+    {
+        initSourceTargetRepo();
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        List<Artifact> artifacts =
+            browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                    "2.2.2", SOURCE_REPO_ID );
+
+        log.info( "artifacts: {}", artifacts );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
+
+        VersionsList versionsList =
+            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                           SOURCE_REPO_ID );
+        Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 );
+
+        log.info( "artifacts.size: {}", artifacts.size() );
+
+        try
+        {
+            File artifactFile = new File(
+                "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
+
+            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            Artifact artifact = new Artifact();
+            artifact.setGroupId( "org.apache.karaf.features" );
+            artifact.setArtifactId( "org.apache.karaf.features.core" );
+            artifact.setVersion( "2.2.2" );
+            artifact.setContext( SOURCE_REPO_ID );
+
+            RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
+
+            repositoriesService.deleteArtifact( artifact );
+
+            assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+
+            artifacts =
+                browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                        "2.2.2", SOURCE_REPO_ID );
+
+            Assertions.assertThat( artifacts ).isNotNull().isEmpty();
+
+            versionsList = browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                          SOURCE_REPO_ID );
+
+            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 1 );
+
+        }
+        finally
+        {
+            cleanRepos();
         }
     }
 
