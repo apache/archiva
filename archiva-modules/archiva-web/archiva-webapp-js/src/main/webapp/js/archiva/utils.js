@@ -287,6 +287,10 @@ require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
    */
   displayRestError=function(data,idToAppend){
     $.log("displayRestError");
+    // maybe data is just the response so test if if we have a responseText and transform it to json
+    if(data.responseText){
+      data= $.parseJSON(data.responseText);
+    }
     if (data.redbackRestError){
       displayRedbackError(archivaRestError,idToAppend)
     }

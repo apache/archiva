@@ -233,7 +233,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
               displaySuccessMessage( $.i18n.prop('artifact.deleted'));
             },
             error:function(data){
-              displayRestError(data,"user-messages");
+              displayRestError( data,"user-messages");
             },
             complete:function(){
               closeDialogConfirm();
