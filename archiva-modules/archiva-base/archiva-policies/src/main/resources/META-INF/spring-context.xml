@@ -26,7 +26,10 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-  <context:property-placeholder system-properties-mode="FALLBACK"/>
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+       <property name="ignoreUnresolvablePlaceholders" value="true"/>
+       <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_FALLBACK"/>
+  </bean>
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.policies"/>
 
