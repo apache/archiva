@@ -184,7 +184,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
 
   ArtifactDetailViewModel=function(groupId,artifactId){
     var self=this;
-    this.versions=[];
+    this.versions=ko.observableArray([]);
     this.projectVersionMetadata=null;
     this.groupId=groupId;
     this.artifactId=artifactId;
@@ -199,6 +199,50 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       } else {
         $("#main-content").find("#artifact-info" ).show();
       }
+    }
+
+    deleteVersion=function(version){
+      var repoId=getSelectedBrowsingRepository();
+      if(!repoId){
+        var escapedVersion=escapeDot(version);
+        var selected = $("#main-content" ).find("#delete-"+escapedVersion );
+        selected.attr("data-content",$.i18n.prop('version.delete.missing.repoId'))
+        selected.popover({
+          html:true,
+          template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>',
+          placement:'top',
+          trigger:'manual'});
+        selected.popover('show');
+        selected.mouseover(function(){
+          selected.popover("destroy");
+        });
+        return;
+      }
+      $.log("deleteVersion:"+version+',repoId:'+repoId);
+      clearUserMessages();
+        var artifact = new Artifact(repoId,null,self.groupId,self.artifactId,repoId,version);
+        openDialogConfirm(function(){
+          $.ajax({
+            url:"restServices/archivaServices/repositoriesService/deleteArtifact",
+            type:"POST",
+            dataType:"json",
+            contentType: 'application/json',
+            data: ko.toJSON(artifact),
+            success:function(data){
+              self.versions.remove(version);
+              displaySuccessMessage( $.i18n.prop('artifact.deleted'));
+            },
+            error:function(data){
+              displayRestError(data,"user-messages");
+            },
+            complete:function(){
+              closeDialogConfirm();
+            }
+          });
+        }, $.i18n.prop('ok'),
+            $.i18n.prop('cancel'),
+            $.i18n.prop('artifact.delete.confirm.title'),
+            $.i18n.prop('artifact.delete.confirm.save'));
     }
 
     displayArtifactVersionDetail=function(version){
@@ -903,7 +947,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                         type: "GET",
                         dataType: 'json',
                         success: function(data) {
-                          artifactDetailViewModel.versions=mapVersionsList(data);
+                          artifactDetailViewModel.versions=ko.observableArray( mapVersionsList(data));
                           ko.applyBindings(artifactDetailViewModel,mainContent.find("#browse_artifact").get(0));
                           ko.applyBindings(artifactDetailViewModel,mainContent.find("#browse_breadcrumb").get(0));
                          }

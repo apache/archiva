@@ -183,7 +183,11 @@
         <table class="table table-condensed">
         {{each(i,version) versions}}
           <tr>
-            <th><a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
+            {{if deleteKarma}}
+              <th><a id="delete-${version}" href="#" data-bind="click: function(){deleteVersion(version)}"><img src="images/trash.png"/></a>&nbsp;<a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
+            {{else}}
+              <th><a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
+            {{/if}}
           </tr>
         {{/each}}
         </table>
