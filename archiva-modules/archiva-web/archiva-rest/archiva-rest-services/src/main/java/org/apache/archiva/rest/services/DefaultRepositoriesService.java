@@ -682,8 +682,9 @@ public class DefaultRepositoriesService
 
                 if ( !targetPath.exists() )
                 {
-                    throw new ContentNotFoundException(
-                        artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
+                    //throw new ContentNotFoundException(
+                    //    artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
+                    log.warn( "targetPath {} not found skip file deletion", targetPath );
                 }
 
                 // TODO: this should be in the storage mechanism so that it is all tied together
