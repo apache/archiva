@@ -337,5 +337,11 @@ public class NewArtifactsRssFeedProcessorTest
         {
 
         }
+
+        public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+            throws MetadataRepositoryException
+        {
+
+        }
     }
 }

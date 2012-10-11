@@ -260,6 +260,13 @@ public class MockRepositorySessionFactory
                     {
 
                     }
+
+                    public void removeProjectVersion( String repoId, String namespace, String projectId,
+                                                      String projectVersion )
+                        throws MetadataRepositoryException
+                    {
+
+                    }
                 };
             }
         };

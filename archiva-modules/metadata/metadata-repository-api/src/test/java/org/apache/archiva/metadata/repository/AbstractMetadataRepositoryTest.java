@@ -1132,7 +1132,7 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     @Test
-    public void deleteVersion()
+    public void deleteArtifact()
         throws Exception
     {
         ArtifactMetadata artifact = createArtifact();
@@ -1149,6 +1149,24 @@ public abstract class AbstractMetadataRepositoryTest
 
         assertTrue(
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+    }
+
+    @Test
+    public void deleteVersion()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        artifact.addFacet( new TestMetadataFacet( "value" ) );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( 1, repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ).size() );
+
+        repository.removeProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+
+        assertEquals( 0, repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ).size() );
     }
 
     @Test

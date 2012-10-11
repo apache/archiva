@@ -206,4 +206,10 @@ public class TestMetadataRepository
     {
 
     }
+
+    public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+        throws MetadataRepositoryException
+    {
+
+    }
 }
