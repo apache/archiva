@@ -107,6 +107,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       var previousHash=getUrlHash();
       $.log("previousHash:"+previousHash);
       openDialogConfirm(function(){
+        $("#dialog-confirm-modal-ok").button('loading');
         $.ajax({
           url:"restServices/archivaServices/repositoriesService/deleteGroupId?groupId="+groupId+"&repositoryId="+repoId,
           type:"GET",
@@ -119,6 +120,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             displayRestError(data,"user-messages");
           },
           complete:function(){
+            $("#dialog-confirm-modal-ok").button('reset');
             closeDialogConfirm();
           }
         });
@@ -222,6 +224,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       clearUserMessages();
         var artifact = new Artifact(repoId,null,self.groupId,self.artifactId,repoId,version);
         openDialogConfirm(function(){
+          $("#dialog-confirm-modal-ok").button('loading');
           $.ajax({
             url:"restServices/archivaServices/repositoriesService/deleteArtifact",
             type:"POST",
@@ -236,6 +239,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
               displayRestError( data,"user-messages");
             },
             complete:function(){
+              $("#dialog-confirm-modal-ok").button('reset');
               closeDialogConfirm();
             }
           });
@@ -603,6 +607,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       clearUserMessages();
 
       openDialogConfirm(function(){
+        $("#dialog-confirm-modal-ok").button('loading');
         $.ajax({
           url:"restServices/archivaServices/repositoriesService/deleteArtifact",
           type:"POST",
@@ -627,6 +632,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             displayRestError(data,"user-messages");
           },
           complete:function(){
+            $("#dialog-confirm-modal-ok").button('reset');
             closeDialogConfirm();
           }
         });
