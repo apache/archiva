@@ -44,8 +44,9 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
       type: "GET",
       success: function(data) {
         userLogged = data;
+        $.log("userLogged:"+userLogged);
         if (successFn){
-          successFn(userLogged == false ? null : jQuery.parseJSON($.cookie('redback_login')));
+          successFn(userLogged ? jQuery.parseJSON($.cookie('redback_login')):null);
         }
       }
     });

@@ -35,6 +35,10 @@ function() {
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayErrorMessage($.i18n.prop('authz.karma.needed'));
+
+        userLogged(function(user){
+          userLoggedCallbackFn(user);
+        });
       },
       500: function(data){
         $.log("error 500:"+data.responseText);
@@ -42,8 +46,6 @@ function() {
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayRestError($.parseJSON(data.responseText));
-        //$("#main-content" ).html("");
-        //displayErrorMessage($.i18n.prop('error.500'));
       }
     }
   });
