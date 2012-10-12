@@ -649,6 +649,12 @@ function(jquery,ui,sammy,tmpl) {
           goToRedbackRestDoc(target);
         });
 
+        this.get("#managedrepositoryedit/:repositoryId",function(){
+          var repositoryId=this.params.repositoryId;
+          $.log("edit managed repository:"+repositoryId);
+          displayRepositoriesGrid(function(managedRepositoriesViewModel){managedRepositoriesViewModel.editManagedRepositoryWithId(repositoryId)});
+        });
+
       });
   };
 

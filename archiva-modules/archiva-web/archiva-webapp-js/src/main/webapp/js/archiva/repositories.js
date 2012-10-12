@@ -335,6 +335,14 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       activatePopoverDoc();
     }
 
+    this.editManagedRepositoryWithId=function(managedRepositoryId){
+      $.each(self.managedRepositories(), function(index, value) {
+        if(value.id()==managedRepositoryId){
+          editManagedRepository(value);
+        }
+      });
+    }
+
     scanNow=function(managedRepository){
       clearUserMessages();
       openDialogConfirm(
@@ -985,7 +993,12 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
   // Screen loading
   //---------------------------
 
-  displayRepositoriesGrid=function(){
+   /**
+    *
+    * @param successFnManagedRepositories function called on managedRepositoriesViewModel when managed repositories grid has been displayed
+    * @param successFnRemoteRepositories  function called on remoteRepositoriesViewModel when remote repositories grid has been displayed
+    */
+  displayRepositoriesGrid=function(successFnManagedRepositories,successFnRemoteRepositories){
     screenChange();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
@@ -1039,6 +1052,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             mainContent.find("#managed-repositories-pills #managed-repositories-view-a").tab('show');
             removeMediumSpinnerImg("#main-content #managed-repositories-content");
             activateManagedRepositoriesGridTab();
+            if(successFnManagedRepositories){
+              successFnManagedRepositories(managedRepositoriesViewModel);
+            }
           });
 
           loadRemoteRepositories(function(data) {
@@ -1075,6 +1091,9 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
             removeMediumSpinnerImg("#main-content #remote-repositories-content");
             activatePopoverDoc();
+            if(successFnRemoteRepositories){
+              successFnRemoteRepositories();
+            }
           });
         }
     }
