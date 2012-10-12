@@ -995,8 +995,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
 
    /**
     *
-    * @param successFnManagedRepositories function called on managedRepositoriesViewModel when managed repositories grid has been displayed
-    * @param successFnRemoteRepositories  function called on remoteRepositoriesViewModel when remote repositories grid has been displayed
+    * @param successFnManagedRepositories function called with param managedRepositoriesViewModel when managed repositories grid has been displayed
+    * @param successFnRemoteRepositories  function called with param remoteRepositoriesViewModel when remote repositories grid has been displayed
     */
   displayRepositoriesGrid=function(successFnManagedRepositories,successFnRemoteRepositories){
     screenChange();
@@ -1092,7 +1092,7 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             removeMediumSpinnerImg("#main-content #remote-repositories-content");
             activatePopoverDoc();
             if(successFnRemoteRepositories){
-              successFnRemoteRepositories();
+              successFnRemoteRepositories(managedRepositoriesViewModel);
             }
           });
         }
