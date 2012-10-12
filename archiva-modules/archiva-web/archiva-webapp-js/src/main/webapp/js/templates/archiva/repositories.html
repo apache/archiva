@@ -219,6 +219,11 @@
               <input type="text" class="input-xlarge required" id="id" name="id" size="50"
                      data-bind="value: managedRepository.id,css:{'uneditable-input': update},readonly:update"/>
             {{/if}}
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-id-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.id.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.id.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
@@ -226,18 +231,33 @@
           <div class="controls">
             <input type="text" class="input-xlarge required" id="name" name="name" size="50"
                    data-bind="value: managedRepository.name"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-name-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.name.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.name.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="location">${$.i18n.prop('directory')}</label>
           <div class="controls">
             <input type="text" class="input-xxlarge required" id="location" name="location" size="50" data-bind="value: managedRepository.location"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-location-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.location.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.location.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="indexDirectory">${$.i18n.prop('index.directory')}</label>
           <div class="controls">
             <input type="text" class="input-xxlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: managedRepository.indexDirectory"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-indexDirectory-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.indexDirectory.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.indexDirectory.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
@@ -261,42 +281,77 @@
           <label class="control-label" for="daysOlder">${$.i18n.prop('daysOlder')}</label>
           <div class="controls">
             <input type="text" id="daysOlder" class="digits" name="daysOlder" size="5" data-bind="value: managedRepository.daysOlder"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-daysOlder-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.daysOlder.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.daysOlder.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="retentionCount">${$.i18n.prop('retentionCount')}</label>
           <div class="controls">
             <input type="text" id="retentionCount" name="retentionCount" size="5" data-bind="value: managedRepository.retentionCount"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-retentionCount-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.retentionCount.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.retentionCount.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
+          <label class="control-label" for="description">${$.i18n.prop('description')}</label>
           <div class="controls">
             <textarea rows="3" id="description" name="description" data-bind="value: managedRepository.description"></textarea>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-description-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.description.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.description.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="releases">${$.i18n.prop('releases')}</label>
           <div class="controls">
             <input type="checkbox" id="releases" name="releases" size="5" data-bind="checked: managedRepository.releases"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-release-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.release.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.release.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="snapshots">${$.i18n.prop('snapshots')}</label>
           <div class="controls">
             <input type="checkbox" id="snapshots" name="snapshots" size="5" data-bind="checked: managedRepository.snapshots"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-snapshots-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.snapshots.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.snapshots.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="blockRedeployments">${$.i18n.prop('blockRedeployments')}</label>
           <div class="controls">
             <input type="checkbox" id="blockRedeployments" name="blockRedeployments" size="5" data-bind="checked: managedRepository.blockRedeployments"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-blockRedeployments-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.blockRedeployments.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.blockRedeployments.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
           <label class="control-label" for="scanned">${$.i18n.prop('scanned')}</label>
           <div class="controls">
             <input type="checkbox" id="scanned" name="scanned" size="5" data-bind="checked: managedRepository.scanned"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-scanned-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.scanned.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.scanned.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
@@ -304,6 +359,11 @@
           <div class="controls">
             <input type="checkbox" id="deleteReleasedSnapshots" name="deleteReleasedSnapshots" size="5"
                    data-bind="checked: managedRepository.deleteReleasedSnapshots"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-deleteReleasedSnapshots-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.deleteReleasedSnapshots.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.deleteReleasedSnapshots.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
@@ -311,6 +371,11 @@
           <div class="controls">
             <input type="checkbox" id="stageRepoNeeded" name="stageRepoNeeded" size="5"
                    data-bind="checked: managedRepository.stageRepoNeeded"/>
+              <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-stageRepoNeeded-info-button"
+                 data-original-title="${$.i18n.prop('managedRepository.stageRepoNeeded.help.title')}"
+                 data-content="${$.i18n.prop('managedRepository.stageRepoNeeded.help.content')}">
+                  <i class="icon-question-sign icon-white"></i>
+              </a>
           </div>
         </div>
         <div class="control-group">
