@@ -129,6 +129,8 @@ function() {
 
     this.saveRepositoryGroup=function(repositoryGroup){
         clearUserMessages();
+        $("#user-messages").html(mediumSpinnerImg());
+        $("#repository-group-save" ).button('loading');
         $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
           {
             type: "POST",
@@ -144,6 +146,10 @@ function() {
             error: function(data) {
               var res = $.parseJSON(data.responseText);
               displayRestError(res);
+            },
+            complete:function(data){
+              $("#repository-group-save" ).button('reset');
+              removeMediumSpinnerImg("#user-messages");
             }
           }
         );

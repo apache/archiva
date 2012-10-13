@@ -1232,7 +1232,7 @@
   {{/if}}
   {{if repositoryGroup.modified()}}
     <div class="span3">
-      <a href="#" class="btn btn-warning" data-bind="click: function(){saveRepositoryGroup(repositoryGroup)}">${$.i18n.prop('save')}</a>
+      <a href="#" class="btn btn-warning" data-loading-text="${$.i18n.prop('common.loading')}" id="repository-group-save" data-bind="click: function(){saveRepositoryGroup(repositoryGroup)}">${$.i18n.prop('save')}</a>
     </div>
     <br/>
   {{/if}}
