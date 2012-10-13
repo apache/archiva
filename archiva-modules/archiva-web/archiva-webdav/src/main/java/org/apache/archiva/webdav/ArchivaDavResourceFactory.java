@@ -1270,6 +1270,8 @@ public class ArchivaDavResourceFactory
                                e.getMessage() );
                 }
             }
+            log.info( "generate temporary merged index for repository group '{}' for repositories '{}'", groupId,
+                      authzRepos );
             IndexingContext indexingContext = indexMerger.buildMergedIndex( authzRepos, true );
             File mergedRepoDir = indexingContext.getIndexDirectoryFile();
             TemporaryGroupIndex temporaryGroupIndex =
