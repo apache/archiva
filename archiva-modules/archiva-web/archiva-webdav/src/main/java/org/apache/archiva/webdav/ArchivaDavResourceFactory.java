@@ -1356,4 +1356,14 @@ public class ArchivaDavResourceFactory
     {
         this.connectors = connectors;
     }
+
+    public RemoteRepositoryAdmin getRemoteRepositoryAdmin()
+    {
+        return remoteRepositoryAdmin;
+    }
+
+    public void setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
+    {
+        this.remoteRepositoryAdmin = remoteRepositoryAdmin;
+    }
 }

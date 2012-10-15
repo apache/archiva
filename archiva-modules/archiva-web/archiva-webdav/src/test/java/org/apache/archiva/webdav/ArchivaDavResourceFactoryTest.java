@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
@@ -110,6 +111,10 @@ public class ArchivaDavResourceFactoryTest
     DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin;
 
     @Inject
+    RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+
+    @Inject
     DefaultRepositoryGroupAdmin defaultRepositoryGroupAdmin;
 
 
@@ -174,6 +179,7 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setRepositoryFactory( repoFactory );
         resourceFactory.setRepositoryRequest( repoRequest );
         resourceFactory.setConnectors( new OverridingRepositoryProxyConnectors() );
+        resourceFactory.setRemoteRepositoryAdmin( remoteRepositoryAdmin );
     }
 
     private ManagedRepository createManagedRepository( String id, String location, String layout )
