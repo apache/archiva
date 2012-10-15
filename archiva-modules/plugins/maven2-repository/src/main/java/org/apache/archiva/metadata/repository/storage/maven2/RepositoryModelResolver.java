@@ -91,7 +91,7 @@ public class RepositoryModelResolver
         this( new File( managedRepository.getLocation() ), pathTranslator );
 
         this.managedRepository = managedRepository;
-        
+
         this.wagonFactory = wagonFactory;
 
         this.remoteRepositories = remoteRepositories;
@@ -112,7 +112,7 @@ public class RepositoryModelResolver
         if ( !model.exists() )
         {
             /**
-             * 
+             *
              */
             // is a SNAPSHOT ? so we can try to find locally before asking remote repositories.
             if ( StringUtils.contains( version, VersionUtil.SNAPSHOT ) )
@@ -132,21 +132,22 @@ public class RepositoryModelResolver
                     boolean success = getModelFromProxy( remoteRepository, groupId, artifactId, version, filename );
                     if ( success && model.exists() )
                     {
-                        log.info(
-                            "Model '{}' successfully retrieved from remote repository '{}'", 
-                                model.getAbsolutePath(), remoteRepository.getId() );
+                        log.info( "Model '{}' successfully retrieved from remote repository '{}'",
+                                  model.getAbsolutePath(), remoteRepository.getId() );
                         break;
                     }
                 }
                 catch ( ResourceDoesNotExistException e )
                 {
-                    log.info( "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                                 new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
+                    log.info(
+                        "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
+                        new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
                 }
                 catch ( Exception e )
                 {
-                    log.warn( "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                                 new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
+                    log.warn(
+                        "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
+                        new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
 
                     continue;
                 }
@@ -176,11 +177,10 @@ public class RepositoryModelResolver
                         StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
                             + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion + '-'
                             + buildNumber + ".pom";
-                    if ( log.isDebugEnabled() )
-                    {
-                        log.debug( "use snapshot path {} for maven coordinate {}", snapshotPath,
-                                   groupId + ":" + artifactId + ":" + version );
-                    }
+
+                    log.debug( "use snapshot path {} for maven coordinate {}:{}:{}", snapshotPath, groupId, artifactId,
+                               version );
+
                     File model = new File( basedir, snapshotPath );
                     //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
                     if ( model.exists() )
@@ -401,12 +401,12 @@ public class RepositoryModelResolver
         }
         catch ( ConnectionException e )
         {
-            log.error( "Could not connect to {}:{} ",remoteRepository.getName(), e.getMessage() );
+            log.error( "Could not connect to {}:{} ", remoteRepository.getName(), e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            log.error( "Could not connect to {}:{} ",remoteRepository.getName(), e.getMessage() );
+            log.error( "Could not connect to {}:{} ", remoteRepository.getName(), e.getMessage() );
             connected = false;
         }
 
@@ -464,8 +464,8 @@ public class RepositoryModelResolver
                 {
                     if ( newLocation.exists() )
                     {
-                        log.error( "Tried to copy file {} to {} but file with this name already exists.", 
-                                        fileToMove.getName(), newLocation.getAbsolutePath() );
+                        log.error( "Tried to copy file {} to {} but file with this name already exists.",
+                                   fileToMove.getName(), newLocation.getAbsolutePath() );
                     }
                     else
                     {
