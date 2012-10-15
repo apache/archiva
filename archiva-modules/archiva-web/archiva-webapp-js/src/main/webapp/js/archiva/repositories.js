@@ -201,6 +201,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
       }
       $.log("save:"+this.managedRepository.name());
       clearUserMessages();
+      $("#user-messages").html(mediumSpinnerImg());
+      $("#managed-repository-save-button" ).button('loading');
       if (this.update){
         $.ajax("restServices/archivaServices/managedRepositoriesService/updateManagedRepository",
           {
@@ -212,6 +214,10 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
               displaySuccessMessage($.i18n.prop('managedrepository.updated',self.managedRepository.id()));
               activateManagedRepositoriesGridTab();
               self.managedRepository.modified(false);
+            },
+            complete: function(){
+              $("#managed-repository-save-button" ).button('reset');
+              removeMediumSpinnerImg("#user-messages");
             }
           }
         );
@@ -233,6 +239,10 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             }else{
               addManagedRepository(self.managedRepository);
             }
+          },
+          complete: function(){
+            $("#managed-repository-save-button" ).button('reset');
+            removeMediumSpinnerImg("#user-messages");
           }
         });
       }
