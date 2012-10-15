@@ -299,6 +299,7 @@ public class ArchivaDavResourceFactory
                                                        request.getRemoteAddr(), activePrincipal,
                                                        request.getDavSession(), archivaLocator, this, mimeTypes,
                                                        auditListeners, scheduler );
+                    setHeaders( response, locator, resource );
                     return resource;
                 }
             }
