@@ -156,6 +156,11 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
 
   You can also trigger an immediate download of remote index files.
 
+** Maven Index from Remote repositories
+
+  If you have configured download remote index, those files (Maven Indexer project format) will be available in the path
+  http://archiva/repository/id/.index (you can consume those files for IDE)
+
 * Scanning a Repository
 
   Repository scan can be executed on schedule or it can be explicitly executed
