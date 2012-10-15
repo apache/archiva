@@ -158,6 +158,7 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
 
 ** Maven Index from Remote repositories
 
+  <<Since 1.4-M4>>:
   If you have configured download remote index, those files (Maven Indexer project format) will be available in the path
   http://archiva/repository/id/.index (you can consume those files for IDE)
 
