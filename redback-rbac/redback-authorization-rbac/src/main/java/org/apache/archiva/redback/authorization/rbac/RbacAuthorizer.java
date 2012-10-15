@@ -19,10 +19,6 @@ package org.apache.archiva.redback.authorization.rbac;
  * under the License.
  */
 
-import org.apache.archiva.redback.rbac.Permission;
-import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authorization.AuthorizationDataSource;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
@@ -30,16 +26,19 @@ import org.apache.archiva.redback.authorization.Authorizer;
 import org.apache.archiva.redback.authorization.NotAuthorizedException;
 import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluationException;
 import org.apache.archiva.redback.authorization.rbac.evaluator.PermissionEvaluator;
+import org.apache.archiva.redback.rbac.Permission;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,20 +46,19 @@ import java.util.Map;
  * RbacAuthorizer:
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
- *
  */
-@Service( "authorizer#rbac" )
+@Service ( "authorizer#rbac" )
 public class RbacAuthorizer
     implements Authorizer
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named ( value = "rBACManager#cached" )
     private RBACManager manager;
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named ( value = "userManager#configurable" )
     private UserManager userManager;
 
     @Inject
@@ -94,12 +92,10 @@ public class RbacAuthorizer
                 {
                     for ( Permission permission : permissionMap.get( operation.toString() ) )
                     {
-                        if ( log.isDebugEnabled() )
-                        {
-                            log.debug( "checking permission {} for operation {} resource {}",
-                                       Arrays.asList( permission != null ? permission.getName() : "null", operation,
-                                                      resource ).toArray() );
-                        }
+
+                        log.debug( "checking permission {} for operation {} resource {}",
+                                   ( permission != null ? permission.getName() : "null" ), operation, resource );
+
                         if ( evaluator.evaluate( permission, operation, resource, principal ) )
                         {
                             return new AuthorizationResult( true, permission, null );

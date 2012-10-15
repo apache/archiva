@@ -94,10 +94,8 @@ public class UserConfiguration
 
         lookupRegistry = registry.getSubset( PREFIX );
 
-        if ( log.isDebugEnabled() )
-        {
-            log.debug( lookupRegistry.dump() );
-        }
+        log.debug("User configuration {}", lookupRegistry.dump() );
+
     }
 
     private void performLegacyInitialization()
