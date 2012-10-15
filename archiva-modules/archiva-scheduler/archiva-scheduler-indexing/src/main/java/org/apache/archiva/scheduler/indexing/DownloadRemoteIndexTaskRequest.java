@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.updater.IndexUpdater;
 
 /**
@@ -42,6 +43,8 @@ public class DownloadRemoteIndexTaskRequest
     private boolean fullDownload;
 
     private IndexUpdater indexUpdater;
+
+    private IndexPacker indexPacker;
 
     public DownloadRemoteIndexTaskRequest()
     {
@@ -112,6 +115,17 @@ public class DownloadRemoteIndexTaskRequest
     public DownloadRemoteIndexTaskRequest setRemoteRepositoryAdmin( RemoteRepositoryAdmin remoteRepositoryAdmin )
     {
         this.remoteRepositoryAdmin = remoteRepositoryAdmin;
+        return this;
+    }
+
+    public IndexPacker getIndexPacker()
+    {
+        return indexPacker;
+    }
+
+    public DownloadRemoteIndexTaskRequest setIndexPacker( IndexPacker indexPacker )
+    {
+        this.indexPacker = indexPacker;
         return this;
     }
 }

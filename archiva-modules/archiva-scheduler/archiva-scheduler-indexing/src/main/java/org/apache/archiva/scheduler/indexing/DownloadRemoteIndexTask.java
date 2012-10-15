@@ -27,6 +27,8 @@ import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
@@ -78,6 +80,8 @@ public class DownloadRemoteIndexTask
 
     private IndexUpdater indexUpdater;
 
+    private IndexPacker indexPacker;
+
     public DownloadRemoteIndexTask( DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest,
                                     List<String> runningRemoteDownloadIds )
     {
@@ -88,6 +92,7 @@ public class DownloadRemoteIndexTask
         this.runningRemoteDownloadIds = runningRemoteDownloadIds;
         this.indexUpdater = downloadRemoteIndexTaskRequest.getIndexUpdater();
         this.remoteRepositoryAdmin = downloadRemoteIndexTaskRequest.getRemoteRepositoryAdmin();
+        this.indexPacker = downloadRemoteIndexTaskRequest.getIndexPacker();
     }
 
     public void run()
@@ -170,6 +175,13 @@ public class DownloadRemoteIndexTask
             stopWatch.stop();
             log.info( "time to download remote repository index for repository {}: {} s", this.remoteRepository.getId(),
                       ( stopWatch.getTime() / 1000 ) );
+
+            // index packing optionnal ??
+            IndexPackingRequest indexPackingRequest =
+                new IndexPackingRequest( indexingContext, indexingContext.getIndexDirectoryFile() );
+            indexPacker.packIndex( indexPackingRequest );
+            indexingContext.updateTimestamp( true );
+
         }
         catch ( MalformedURLException e )
         {
