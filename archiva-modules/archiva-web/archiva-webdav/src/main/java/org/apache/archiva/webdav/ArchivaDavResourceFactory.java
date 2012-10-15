@@ -20,6 +20,8 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
@@ -179,6 +181,9 @@ public class ArchivaDavResourceFactory
     private HttpAuthenticator httpAuth;
 
     @Inject
+    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+
+    @Inject
     private IndexMerger indexMerger;
 
     @Inject
@@ -277,6 +282,32 @@ public class ArchivaDavResourceFactory
         }
         else
         {
+
+            try
+            {
+                RemoteRepository remoteRepository =
+                    remoteRepositoryAdmin.getRemoteRepository( archivaLocator.getRepositoryId() );
+
+                if ( remoteRepository != null )
+                {
+                    String logicalResource = RepositoryPathUtil.getLogicalResource( locator.getResourcePath() );
+                    IndexingContext indexingContext = remoteRepositoryAdmin.createIndexContext( remoteRepository );
+                    File resourceFile = StringUtils.equals( logicalResource, "/" )
+                        ? new File( indexingContext.getIndexDirectoryFile().getParent() )
+                        : new File( indexingContext.getIndexDirectoryFile().getParent(), logicalResource );
+                    resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), locator.getResourcePath(), null,
+                                                       request.getRemoteAddr(), activePrincipal,
+                                                       request.getDavSession(), archivaLocator, this, mimeTypes,
+                                                       auditListeners, scheduler );
+                    return resource;
+                }
+            }
+            catch ( RepositoryAdminException e )
+            {
+                log.debug( "RepositoryException remote repository with d'{}' not found, msg: {}",
+                           archivaLocator.getRepositoryId(), e.getMessage() );
+            }
+
             ManagedRepositoryContent managedRepository = null;
 
             try
@@ -592,8 +623,8 @@ public class ArchivaDavResourceFactory
                             if ( managedRepository.hasContent( artifact )
                                 && managedRepository.getRepository().isBlockRedeployments() )
                             {
-                                log.warn( "Overwriting released artifacts in repository '" + managedRepository.getId()
-                                              + "' is not allowed." );
+                                log.warn( "Overwriting released artifacts in repository '{}' is not allowed.",
+                                          managedRepository.getId() );
                                 throw new DavException( HttpServletResponse.SC_CONFLICT,
                                                         "Overwriting released artifacts is not allowed." );
                             }

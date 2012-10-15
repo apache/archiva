@@ -52,7 +52,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "remoteRepositoryAdmin#default" )
+@Service ( "remoteRepositoryAdmin#default" )
 public class DefaultRemoteRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements RemoteRepositoryAdmin
@@ -268,13 +268,34 @@ public class DefaultRemoteRepositoryAdmin
             {
                 return indexingContext;
             }
-            // create path
+            // create remote repository path
             File repoDir = new File( appServerBase, "data/remotes/" + remoteRepository.getId() );
             if ( !repoDir.exists() )
             {
                 repoDir.mkdirs();
             }
-            File indexDirectory = new File( repoDir, ".index" );
+
+            File indexDirectory = null;
+
+            // is there configured indexDirectory ?
+            String indexDirectoryPath = remoteRepository.getIndexDirectory();
+
+            if ( StringUtils.isNotBlank( indexDirectoryPath ) )
+            {
+                if ( new File( indexDirectoryPath ).isAbsolute() )
+                {
+                    indexDirectory = new File( indexDirectoryPath );
+                }
+                else
+                {
+                    indexDirectory = new File( repoDir, indexDirectoryPath );
+                }
+            }
+            // if not configured use a default value
+            if ( indexDirectory == null )
+            {
+                indexDirectory = new File( repoDir, ".index" );
+            }
             if ( !indexDirectory.exists() )
             {
                 indexDirectory.mkdirs();
