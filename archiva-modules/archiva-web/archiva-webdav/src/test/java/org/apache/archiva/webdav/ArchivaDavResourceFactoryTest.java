@@ -38,6 +38,7 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.LegacyPathParser;
 import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.RepositoryRequest;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
@@ -57,7 +58,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * ArchivaDavResourceFactoryTest

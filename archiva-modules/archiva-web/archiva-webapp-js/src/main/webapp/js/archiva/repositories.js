@@ -785,6 +785,8 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
         return;
       }
       clearUserMessages();
+      $("#user-messages").html(mediumSpinnerImg());
+      $("#remote-repository-save-button" ).button('loading');
       if (update){
         $.ajax("restServices/archivaServices/remoteRepositoriesService/updateRemoteRepository",
           {
@@ -800,6 +802,10 @@ define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery
             error: function(data) {
               var res = $.parseJSON(data.responseText);
               displayRestError(res);
+            },
+            complete: function(){
+              $("#remote-repository-save-button" ).button('reset');
+              removeMediumSpinnerImg("#user-messages");
             }
           }
         );
