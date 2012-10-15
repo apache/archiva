@@ -312,8 +312,6 @@ public class ArchivaDavResourceFactory
             // this should only be at the project level not version level!
             if ( isProjectReference( requestedResource ) )
             {
-                String artifactId = StringUtils.substringBeforeLast( requestedResource.replace( '\\', '/' ), "/" );
-                artifactId = StringUtils.substringAfterLast( artifactId, "/" );
 
                 ArchivaDavResource res = (ArchivaDavResource) resource;
                 String filePath =
