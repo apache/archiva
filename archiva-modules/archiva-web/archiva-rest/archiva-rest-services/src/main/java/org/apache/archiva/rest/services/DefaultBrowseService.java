@@ -48,6 +48,7 @@ import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
+import org.apache.archiva.rest.api.model.MetadataAddRequest;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
@@ -82,7 +83,7 @@ import java.util.zip.ZipEntry;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@Service ( "browseService#rest" )
+@Service( "browseService#rest" )
 public class DefaultBrowseService
     extends AbstractRestService
     implements BrowseService
@@ -95,7 +96,7 @@ public class DefaultBrowseService
     private RepositoryContentFactory repositoryContentFactory;
 
     @Inject
-    @Named ( value = "repositoryProxyConnectors#default" )
+    @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     public BrowseResult getRootGroups( String repositoryId )
@@ -847,6 +848,23 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
+    }
+
+    public Boolean importMetadata( MetadataAddRequest metadataAddRequest, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        boolean result = true;
+        for ( Map.Entry<String, String> metadata : metadataAddRequest.getMetadatas().entrySet() )
+        {
+            result = addMetadata( metadataAddRequest.getGroupId(), metadataAddRequest.getArtifactId(),
+                                  metadataAddRequest.getVersion(), metadata.getKey(), metadata.getValue(),
+                                  repositoryId );
+            if ( !result )
+            {
+                break;
+            }
+        }
+        return result;
     }
 
     //---------------------------

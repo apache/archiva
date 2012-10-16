@@ -24,6 +24,7 @@ import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
+import org.apache.archiva.rest.api.model.MetadataAddRequest;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -458,6 +459,43 @@ public class BrowseServiceTest
             log.error( e.getMessage(), e );
             throw e;
         }
+    }
+
+    @Test
+    public void metadatainbatchmode()
+        throws Exception
+    {
+
+        String testRepoId = "test-repo";
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath() );
+
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        Map<String, String> inputMetadata = new HashMap<String, String>( 3 );
+        inputMetadata.put( "buildNumber", "1" );
+        inputMetadata.put( "author", "alecharp" );
+        inputMetadata.put( "jenkins_version", "1.486" );
+
+        MetadataAddRequest metadataAddRequest = new MetadataAddRequest();
+        metadataAddRequest.setGroupId( "commons-cli" );
+        metadataAddRequest.setArtifactId( "commons-cli" );
+        metadataAddRequest.setVersion( "1.0" );
+        metadataAddRequest.setMetadatas( inputMetadata );
+        browseService.importMetadata( metadataAddRequest, testRepoId );
+
+        Map<String, String> metadatas =
+            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+
+        assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "buildNumber", "1" ) ).contains(
+            MapEntry.entry( "author", "alecharp" ) ).contains( MapEntry.entry( "jenkins_version", "1.486" ) );
+
+        deleteTestRepo( testRepoId );
     }
 
 }

@@ -21,17 +21,18 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.Entry;
+import org.apache.archiva.rest.api.model.MetadataAddRequest;
 import org.apache.archiva.rest.api.model.VersionsList;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -149,6 +150,12 @@ public interface BrowseService
     Boolean deleteMetadata( @PathParam ("g") String groupId, @PathParam ("a") String artifactId,
                             @PathParam ("v") String version, @PathParam ("key") String key,
                             @QueryParam ("repositoryId") String repositoryId )
+        throws ArchivaRestServiceException;
+
+    @Path( "importMetadata" )
+    @POST
+    @RedbackAuthorization( noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
+    Boolean importMetadata( MetadataAddRequest metadataAddRequest, @QueryParam ("repository") String repository )
         throws ArchivaRestServiceException;
 
     @Path ("artifactContentEntries/{g}/{a}/{v}")
