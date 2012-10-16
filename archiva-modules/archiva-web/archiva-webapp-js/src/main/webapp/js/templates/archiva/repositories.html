@@ -1038,7 +1038,7 @@
         </div>
       </fieldset>
 
-      <button id="proxy-connector-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+      <button id="proxy-connector-btn-save" data-bind="click: save" data-loading-text="${$.i18n.prop('common.loading')}" class="btn">${$.i18n.prop('save')}</button>
       {{if modified()}}
        ${("#network-proxy-btn-save").button('reset')}
       {{/if}}

@@ -533,7 +533,7 @@ public class DefaultArchivaConfiguration
 
     private void escapeCronExpressions( Configuration configuration )
     {
-        for ( ManagedRepositoryConfiguration c : (List<ManagedRepositoryConfiguration>) configuration.getManagedRepositories() )
+        for ( ManagedRepositoryConfiguration c : configuration.getManagedRepositories() )
         {
             c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
         }
