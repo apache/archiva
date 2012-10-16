@@ -143,6 +143,7 @@ public class DefaultProxyConnectorAdmin
             findProxyConnector( proxyConnector.getSourceRepoId(), proxyConnector.getTargetRepoId(), configuration );
         configuration.removeProxyConnector( proxyConnectorConfiguration );
         configuration.addProxyConnector( getProxyConnectorConfiguration( proxyConnector ) );
+        saveConfiguration( configuration );
         triggerAuditEvent( proxyConnector.getSourceRepoId() + "-" + proxyConnector.getTargetRepoId(), null,
                            AuditEvent.MODIFY_PROXY_CONNECTOR, auditInformation );
         return Boolean.TRUE;
