@@ -175,9 +175,24 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     var self=this;
     this.proxyConnectorRule=proxyConnectorRule;
     this.proxyConnectorRulesViewModel=proxyConnectorRulesViewModel;
-    this.availableProxyConnectors=proxyConnectorRulesViewModel.proxyConnectors;
+    this.availableProxyConnectors=ko.observableArray([]);
     this.availableProxyConnectors.id="availableProxyConnectors";
     this.update=update;
+
+
+      $.each(this.proxyConnectorRulesViewModel.proxyConnectors(), function(idx, value) {
+        $.log(idx + ': ' + value.sourceRepoId() +":"+value.targetRepoId());
+        var available=true;
+        // is it in proxyConnectorRule.proxyConnectors
+        $.each(self.proxyConnectorRule.proxyConnectors(),function(index,proxyConnector){
+          if(value.sourceRepoId()==proxyConnector.sourceRepoId() && value.targetRepoId()==proxyConnector.targetRepoId()){
+            available=false;
+          }
+        });
+        if(available==true){
+          self.availableProxyConnectors.push(value);
+        }
+      });
 
     proxyConnectorMoved=function(arg){
       $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
