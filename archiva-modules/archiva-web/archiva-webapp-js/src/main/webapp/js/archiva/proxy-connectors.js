@@ -17,7 +17,8 @@
  * under the License.
  */
 define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
-  ,"knockout.simpleGrid","knockout.sortable"], function() {
+  ,"knockout.simpleGrid","knockout.sortable"],
+  function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   ProxyConnector=function(sourceRepoId,targetRepoId,proxyId,blackListPatterns,whiteListPatterns,policiesEntries,propertiesEntries,
                           disabled,order){

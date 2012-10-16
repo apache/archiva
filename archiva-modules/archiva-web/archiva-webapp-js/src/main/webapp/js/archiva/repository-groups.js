@@ -18,7 +18,7 @@
  */
 define("archiva.repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","knockout"
   ,"knockout.simpleGrid","knockout.sortable"],
-function() {
+function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
   RepositoryGroup=function(id,repositories){
 

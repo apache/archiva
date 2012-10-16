@@ -17,12 +17,14 @@
  * under the License.
  */
 define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstrap","jquery.ui","knockout"
-  ,"knockout.simpleGrid","knockout.sortable","archiva.proxy-connectors"], function() {
+  ,"knockout.simpleGrid","knockout.sortable","archiva.proxy-connectors"],
+  function(jquery,i18n,jqueryTmpl,bootstrap,jqueryUi,ko) {
 
   ProxyConnectorRulesViewModel=function(proxyConnectorRules,proxyConnectors){
     var self=this;
-    this.proxyConnectorRules=ko.observableArray(proxyConnectorRules?proxyConnectorRules:[]);
-    this.proxyConnectors=proxyConnectors;
+    self.proxyConnectorRules=ko.observableArray(proxyConnectorRules?proxyConnectorRules:[]);
+    self.proxyConnectors=ko.observableArray(proxyConnectors);
+    self.proxyConnectors.id="select";
 
     // FIXME get that from a REST service
     // FIXME i18n
@@ -163,17 +165,25 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
 
     }
 
+    remove=function(){
+      $.log("remove");
+    }
+
   }
 
   ProxyConnectorRuleViewModel=function(proxyConnectorRule,proxyConnectorRulesViewModel,update){
     var self=this;
     this.proxyConnectorRule=proxyConnectorRule;
     this.proxyConnectorRulesViewModel=proxyConnectorRulesViewModel;
-    this.availableProxyConnectors=ko.observableArray(proxyConnectorRulesViewModel.proxyConnectors);
+    this.availableProxyConnectors=proxyConnectorRulesViewModel.proxyConnectors;
+    this.availableProxyConnectors.id="availableProxyConnectors";
     this.update=update;
 
     proxyConnectorMoved=function(arg){
       $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
+      self.proxyConnectorRule.modified(true);
+      ///arg.sourceParent.remove(arg.item);
+      //arg.targetParent.push(arg.item);
     }
 
     saveProxyConnectorRule=function(){

@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
-, function() {
+, function(jquery,i18n,jqueryTmpl,choosen,ko,koSimpleGrid) {
 
   //-----------------------------------------
   // browse part

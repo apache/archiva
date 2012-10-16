@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"], function() {
+define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"],
+function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
   /**
    * object model for user with some function to create/update/delete users

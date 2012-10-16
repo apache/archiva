@@ -18,7 +18,7 @@
  */
 define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
   "knockout.sortable","jquery.validate","bootstrap"]
-    , function() {
+    , function(jquery,i18n,utils,jqueryTmpl,ko) {
 
   //-------------------------
   // legacy path part

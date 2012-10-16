@@ -21,7 +21,7 @@ define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl",'i18n',"jquery
           "redback.roles","redback","archiva.general-admin","archiva.repositories",
           "archiva.network-proxies","archiva.proxy-connectors","archiva.repository-groups","archiva.artifacts-management",
           "archiva.proxy-connectors-rules","archiva.docs"],
-function(jquery,ui,sammy,tmpl) {
+function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryValidate,jqueryJson,ko) {
 
   /**
    * reccord a cookie for session with the logged user

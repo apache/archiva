@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
-  ,"knockout.simpleGrid"], function() {
+  ,"knockout.simpleGrid"], function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
 
   NetworkProxy=function(id,protocol,host,port,username,password,useNtlm){

@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"], function() {
+define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"],
+function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
   /**
    * view model used for users grid

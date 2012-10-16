@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout","knockout.simpleGrid"],
-       function() {
+function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   // FIXME this must be dynamic if we do a plugin mechanism with dynamic repositories types
   // FIXME i18n

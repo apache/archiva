@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.roles",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"], function() {
+define("redback.roles",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"],
+function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
   Role = function(name,description,assignable,childRoleNames,parentRoleNames,users,parentsRolesUsers,permissions,otherUsers){
 

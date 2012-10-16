@@ -18,12 +18,12 @@
  */
 
 define("startup",["jquery","sammy","utils"],
-function() {
+function(jquery,sammy,utils) {
 
   // define a container object with various datas
   window.archivaModel = {};
 
-  $.log("devMode:"+window.archivaDevMode);
+  //$.log("devMode:"+window.archivaDevMode);
 
   // no cache for ajax queries as we get datas from servers so preventing caching !!
   jQuery.ajaxSetup( {

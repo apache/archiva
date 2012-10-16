@@ -17,7 +17,7 @@
  * under the License.
  */
 
-require(["jquery","jquery.tmpl","i18n"], function(jquery,jqueryTmpl,i18n) {
+require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i18n,ko) {
 
   loadi18n=function(loadCallback){
     $.log("loadi18n");

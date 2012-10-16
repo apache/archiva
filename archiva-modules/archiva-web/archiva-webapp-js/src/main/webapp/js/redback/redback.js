@@ -17,7 +17,7 @@
  * under the License.
  */
 define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
-  "knockout.simpleGrid","redback.roles","redback.user","redback.users"], function() {
+  "knockout.simpleGrid","redback.roles","redback.user","redback.users"], function(jquery,utils,jqueryValidate,jqueryJson,ko) {
 
   // define a container object with various datas
   window.redbackModel = {userOperationNames:null,key:null,i18n:$.i18n.map};
