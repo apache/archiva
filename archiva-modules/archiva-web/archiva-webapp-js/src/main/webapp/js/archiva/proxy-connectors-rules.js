@@ -232,6 +232,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     //private String sourceRepoId;
     this.pattern=ko.observable(pattern);
     this.pattern.subscribe(function(newValue){
+      $.log("pattern modified");
       self.modified(true);
     });
 

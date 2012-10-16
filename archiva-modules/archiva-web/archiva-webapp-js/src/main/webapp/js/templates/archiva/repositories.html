@@ -1419,9 +1419,9 @@
         </form>
       </div>
     {{/if}}
-    {{if proxyConnectorRule.modified()}}
-      <div class="span3">
-          {{if update}}
+
+      <div class="span3" data-bind="visible: proxyConnectorRule.modified()">
+          {{if update && proxyConnectorRule.modified()}}
             <a href="#" class="btn btn-warning" data-loading-text="${$.i18n.prop('common.loading')}"
              id="proxy-connector-rule-update-btn" data-bind="click: function(){updateProxyConnectorRule(proxyConnectorRule)}">${$.i18n.prop('update')}</a>
           {{else}}
@@ -1431,7 +1431,7 @@
       </div>
 
       <br/>
-    {{/if}}
+
     </div>
 </script>
 
