@@ -217,35 +217,6 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     window.modalConfirmDialog.modal('hide');
   }
 
-  closeDialogConfirmui=function(){
-    $("#dialog-confirm" ).dialog("close");
-  }
-
-  /**
-   * open a confirm dialog with jqueryui
-   * @param okFn callback function to call on ok confirm
-   * @param okMessage
-   * @param cancelMessage
-   * @param title
-   */
-  openDialogConfirmui=function(okFn, okMessage, cancelMessage, title){
-    $("#dialog-confirm" ).dialog({
-      resizable: false,
-      title: title,
-      modal: true,
-      show: 'slide',
-      buttons: [{
-        text: okMessage,
-        click: okFn},
-        {
-        text: cancelMessage,
-        click:function() {
-          $(this).dialog( "close" );
-        }
-      }]
-    });
-  }
-
   mapStringArray=function(data){
     if (data) {
       if ($.isArray(data)){
