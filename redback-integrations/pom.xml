@@ -55,7 +55,6 @@
   <modules>
     <module>redback-common-integrations</module>
     <module>redback-rest</module>
-    <module>redback-jsecurity</module>
     <module>redback-integrations-security</module>
   </modules>
 </project>
