@@ -95,8 +95,10 @@ Understanding Repository Configuration of Apache Archiva
 
   []
 
-  Each repository has its own Webdav url. This allows the user to browse and
-  access the repository via webdav. The url has the following format:
+[../images/managed-repositories.png] Managed Repositories
+
+  Each repository has its own http(s)/webdav url. This allows the user to browse and
+  access the repository via http(s)/webdav. The url has the following format:
 
 +----+
 http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/archiva/repository/releases).
