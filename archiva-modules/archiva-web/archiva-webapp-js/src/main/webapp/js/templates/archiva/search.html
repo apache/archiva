@@ -626,41 +626,10 @@
 
 
   	  <div id="artifact-details-dependencies-content" class="tab-pane">
-        <table class="table">
-          <tbody>
-          {{if projectVersionMetadata.dependencies && projectVersionMetadata.dependencies.length>0}}
-          {{each(i,dependency) projectVersionMetadata.dependencies}}
-            <tr>
-              <th>${dependency.artifactId}</th>
-            </tr>
-            <tr>
-              <td>
-                {{var entries=dependency.crumbEntries()}}
-                {{each(j,crumbEntry) entries}}
-                  {{if j < entries.length - 2}}
-                    <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
-                  {{else j == entries.length - 2}}
-                    <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
-                  {{else j == entries.length - 1}}
-                    &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
-                     <a href="#" data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${dependency.version}</a>&nbsp;
-                  {{/if}}
-                  {{if j < entries.length - 2}}
-                     &nbsp;/&nbsp;
-                  {{/if}}
-                {{/each}}
-
-                {{if dependency.scope}}
-                  |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${dependency.scope}
-                {{/if}}
-              </td>
-            </tr>
-          {{/each}}
-          {{else}}
-            ${$.i18n.prop('browse.artifact.dependencies.none')}
-          {{/if}}
-          </tbody>
-        </table>
+            <table class="table table-striped table-bordered" id="artifact-dependencies-table"
+                   data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_dependenciesGrid',pageLinksId:'dependenciesPagination',data:'dependencies'">
+            </table>
+            <div id="dependenciesPagination"></div>
   	  </div>
 
       <div id="artifact-details-dependency-tree-content" class="tab-pane"></div>
@@ -737,6 +706,42 @@
       </div>
 
     </div>
+  </div>
+</script>
+
+<script id="ko_dependenciesGrid" type="text/html">
+  <tbody>
+
+
+        {{each(i, row) itemsOnCurrentPage()}}
+          <tr>
+            <th>${row.artifactId}</th>
+          </tr>
+          <tr>
+            <td>
+              {{var entries=row.crumbEntries()}}
+              {{each(j,crumbEntry) entries}}
+                {{if j < entries.length - 2}}
+                  <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
+                {{else j == entries.length - 2}}
+                  <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
+                {{else j == entries.length - 1}}
+                  &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+                   <a href="#" data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${row.version}</a>&nbsp;
+                {{/if}}
+                {{if j < entries.length - 2}}
+                   &nbsp;/&nbsp;
+                {{/if}}
+              {{/each}}
+
+              {{if row.scope}}
+                |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${row.scope}
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+
+  </tbody>
 </script>
 
 <script id="dependency_tree_tmpl" type="text/html">

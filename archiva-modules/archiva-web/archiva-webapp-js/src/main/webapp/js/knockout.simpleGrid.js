@@ -43,6 +43,7 @@
           };
           this.gridUpdateCallBack = configuration.gridUpdateCallBack;
           this.pageLinksUpdateCallBack = configuration.pageLinksUpdateCallBack;
+
         }
       };
 

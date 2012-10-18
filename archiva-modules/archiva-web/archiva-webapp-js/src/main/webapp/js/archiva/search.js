@@ -340,6 +340,18 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             dataType: 'json',
             success: function(data) {
               self.projectVersionMetadata=mapProjectVersionMetadata(data);
+
+              //pagination for dependencies
+              self.projectVersionMetadata.dependencies=ko.observableArray(self.projectVersionMetadata.dependencies?self.projectVersionMetadata.dependencies:[]);
+              self.gridViewModel = new ko.simpleGrid.viewModel({
+                data: self.projectVersionMetadata.dependencies(),
+                columns: [],
+                pageSize: 7,
+                gridUpdateCallBack: function(){
+                  // nope
+                }
+              });
+
               ko.applyBindings(self,mainContent.find("#browse_artifact_detail" ).get(0));
               ko.applyBindings(self,mainContent.find("#browse_breadcrumb" ).get(0));
               mainContent.find("#browse-autocomplete" ).hide();
