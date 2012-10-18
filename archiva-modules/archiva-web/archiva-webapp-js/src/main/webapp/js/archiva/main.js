@@ -507,8 +507,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
         var calculateUsedBy=function(groupId,artifactId,version){
           var dependeesContentDiv=$("#main-content" ).find("#artifact-details-used-by-content" );
-          if( $.trim(dependeesContentDiv.html()).length<1){
-            dependeesContentDiv.html(mediumSpinnerImg());
+          //if( $.trim(dependeesContentDiv.html()).length<1){
+            dependeesContentDiv.append(mediumSpinnerImg());
             var dependeesUrl="restServices/archivaServices/browseService/dependees/"+encodeURIComponent(groupId);
             dependeesUrl+="/"+encodeURIComponent(artifactId);
             dependeesUrl+="/"+encodeURIComponent(version);
@@ -521,10 +521,25 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
               dataType: 'json',
               success: function(data) {
                 var artifacts=mapArtifacts(data);
-                dependeesContentDiv.html($("#dependees_tmpl").tmpl({artifacts: artifacts}));
+                //dependeesContentDiv.html($("#dependees_tmpl").tmpl({artifacts: artifacts}));
+                var gridViewModel = new ko.simpleGrid.viewModel({
+                  data: artifacts,
+                  columns: [],
+                  pageSize: 2,
+                  gridUpdateCallBack: function(){
+                    // no op
+                  }
+                });
+                $.log("artifacts:"+artifacts.length);
+                dependeesContentDiv.find("#artifact-usedby-table").attr("data-bind",
+                                         "simpleGrid: gridViewModel,simpleGridTemplate:'dependees_tmpl',pageLinksId:'usedbyPagination',data:'artifacts'");
+                ko.applyBindings({artifacts:artifacts,gridViewModel:gridViewModel},dependeesContentDiv.get(0));
+              },
+              complete: function(){
+                removeMediumSpinnerImg(("#artifact-details-used-by-content"));
               }
             });
-          }
+          //}
         };
 
         this.get('#artifact-used-by/:groupId/:artifactId/:version',function(context){

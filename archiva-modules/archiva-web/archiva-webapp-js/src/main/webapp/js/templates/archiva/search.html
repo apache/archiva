@@ -638,7 +638,11 @@
 
       <div id="artifact-details-download-content" class="tab-pane"></div>
 
-      <div id="artifact-details-used-by-content" class="tab-pane"></div>
+      <div id="artifact-details-used-by-content" class="tab-pane">
+          <table class="table table-striped table-bordered" id="artifact-usedby-table">
+          </table>
+          <div id="usedbyPagination"></div>
+      </div>
 
       <div id="artifact-details-mailing-list-content" class="tab-pane">
         {{if projectVersionMetadata.mailingLists && projectVersionMetadata.mailingLists.length>0}}
@@ -713,33 +717,33 @@
   <tbody>
 
 
-        {{each(i, row) itemsOnCurrentPage()}}
-          <tr>
-            <th>${row.artifactId}</th>
-          </tr>
-          <tr>
-            <td>
-              {{var entries=row.crumbEntries()}}
-              {{each(j,crumbEntry) entries}}
-                {{if j < entries.length - 2}}
-                  <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
-                {{else j == entries.length - 2}}
-                  <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
-                {{else j == entries.length - 1}}
-                  &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
-                   <a href="#" data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${row.version}</a>&nbsp;
-                {{/if}}
-                {{if j < entries.length - 2}}
-                   &nbsp;/&nbsp;
-                {{/if}}
-              {{/each}}
+    {{each(i, row) itemsOnCurrentPage()}}
+      <tr>
+        <th>${row.artifactId}</th>
+      </tr>
+      <tr>
+        <td>
+          {{var entries=row.crumbEntries()}}
+          {{each(j,crumbEntry) entries}}
+            {{if j < entries.length - 2}}
+              <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
+            {{else j == entries.length - 2}}
+              <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
+            {{else j == entries.length - 1}}
+              &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+               <a href="#" data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${row.version}</a>&nbsp;
+            {{/if}}
+            {{if j < entries.length - 2}}
+               &nbsp;/&nbsp;
+            {{/if}}
+          {{/each}}
 
-              {{if row.scope}}
-                |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${row.scope}
-              {{/if}}
-            </td>
-          </tr>
-        {{/each}}
+          {{if row.scope}}
+            |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${row.scope}
+          {{/if}}
+        </td>
+      </tr>
+    {{/each}}
 
   </tbody>
 </script>
@@ -771,8 +775,10 @@
 </script>
 
 <script id="dependees_tmpl" type="text/html">
+    fooo
     <ul>
-    {{each(i,artifact) artifacts}}
+    {{each(i, artifact) itemsOnCurrentPage()}}
+
       <li>
           {{var entries=artifact.crumbEntries()}}
           {{each(j,crumbEntry) entries}}
