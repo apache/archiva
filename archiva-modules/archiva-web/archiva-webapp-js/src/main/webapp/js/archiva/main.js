@@ -525,7 +525,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
                 var gridViewModel = new ko.simpleGrid.viewModel({
                   data: artifacts,
                   columns: [],
-                  pageSize: 2,
+                  pageSize: 7,
                   gridUpdateCallBack: function(){
                     // no op
                   }
