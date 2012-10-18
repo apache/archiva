@@ -201,7 +201,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       }
       $.log("save:"+this.managedRepository.name());
       clearUserMessages();
-      $("#user-messages").html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       $("#managed-repository-save-button" ).button('loading');
       if (this.update){
         $.ajax("restServices/archivaServices/managedRepositoriesService/updateManagedRepository",
@@ -217,7 +218,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
             },
             complete: function(){
               $("#managed-repository-save-button" ).button('reset');
-              removeMediumSpinnerImg("#user-messages");
+              removeMediumSpinnerImg(userMessages);
             }
           }
         );
@@ -795,7 +796,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
         return;
       }
       clearUserMessages();
-      $("#user-messages").html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       $("#remote-repository-save-button" ).button('loading');
       if (update){
         $.ajax("restServices/archivaServices/remoteRepositoriesService/updateRemoteRepository",
@@ -815,7 +817,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
             },
             complete: function(){
               $("#remote-repository-save-button" ).button('reset');
-              removeMediumSpinnerImg("#user-messages");
+              removeMediumSpinnerImg(userMessages);
             }
           }
         );
