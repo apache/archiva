@@ -206,7 +206,12 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
   }
 
   removeMediumSpinnerImg=function(selector){
-    $(selector ).find("#medium-spinner").remove();
+    if (typeof selector == 'string') {
+      $(selector).find("#medium-spinner").remove();
+    } else {
+      selector.find("#medium-spinner").remove();
+    }
+
   }
 
   mediumSpinnerImg=function(){

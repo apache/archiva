@@ -536,7 +536,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
               ko.applyBindings({artifacts:artifacts,gridViewModel:gridViewModel},dependeesContentDiv.get(0));
             },
             complete: function(){
-              removeMediumSpinnerImg(("#artifact-details-used-by-content"));
+              removeMediumSpinnerImg(dependeesContentDiv);
             }
           });
 

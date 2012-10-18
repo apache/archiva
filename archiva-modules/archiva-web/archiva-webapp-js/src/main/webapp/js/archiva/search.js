@@ -1859,10 +1859,11 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     }
     this.search=function(url,repositoriesIds){
 
-      var searchResultsGrid=mainContent.find("#search-results #search-results-grid" );
+      var searchResultsGrid=mainContent.find("#search-results" ).find("#search-results-grid" );
       mainContent.find("#btn-basic-search" ).button("loading");
       mainContent.find("#btn-advanced-search" ).button("loading");
-      $("#user-messages").html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       if (repositoriesIds){
         self.selectedRepoIds=repositoriesIds;
       } else {
@@ -1911,7 +1912,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           complete:function() {
             mainContent.find("#btn-basic-search" ).button("reset");
             mainContent.find("#btn-advanced-search" ).button("reset");
-            removeMediumSpinnerImg("#user-messages");
+            removeMediumSpinnerImg(userMessages);
           }
         }
       );
