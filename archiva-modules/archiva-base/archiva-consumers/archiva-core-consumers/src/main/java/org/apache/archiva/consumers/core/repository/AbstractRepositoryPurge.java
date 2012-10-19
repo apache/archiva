@@ -83,6 +83,7 @@ public abstract class AbstractRepositoryPurge
 
                 // TODO: this needs to be logged
                 artifactFile.delete();
+                //repository.deleteArtifact( reference );
                 repositorySession.save();
 
                 triggerAuditEvent( repository.getRepository().getId(), ArtifactReference.toKey( reference ),

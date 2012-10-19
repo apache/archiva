@@ -223,7 +223,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
           ko.applyBindings(rolesViewModel,mainContent.find("#roles-view").get(0));
           mainContent.find("#roles-view-tabs #roles-view-tabs-a-roles-grid").tab("show");
           activateRolesGridTab();
-          removeMediumSpinnerImg();
+          removeMediumSpinnerImg(mainContent);
         }
       }
     );
