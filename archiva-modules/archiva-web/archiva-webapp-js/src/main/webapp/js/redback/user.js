@@ -77,7 +77,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     this.modified=ko.observable(false);
 
     this.rememberme=false;
-    this.password=null;
+
     this.logged=false;
 
     this.remove = function() {
@@ -413,7 +413,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
       // FIXME check validated
       user.rememberme=window.redbackModel.rememberme;
       if(user.rememberme){
-        user.password=window.redbackModel.password;
+        user.password(window.redbackModel.password);
       }
       $.log("user.rememberme:"+(user.rememberme));
       reccordLoginCookie(user);

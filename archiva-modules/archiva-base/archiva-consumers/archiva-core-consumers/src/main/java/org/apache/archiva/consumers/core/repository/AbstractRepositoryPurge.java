@@ -20,16 +20,24 @@ package org.apache.archiva.consumers.core.repository;
  */
 
 import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +47,7 @@ import java.util.Set;
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
-    protected Logger log = LoggerFactory.getLogger( AbstractRepositoryPurge.class );
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     protected final ManagedRepositoryContent repository;
 
@@ -83,7 +91,82 @@ public abstract class AbstractRepositoryPurge
 
                 // TODO: this needs to be logged
                 artifactFile.delete();
-                //repository.deleteArtifact( reference );
+                try
+                {
+                    repository.deleteArtifact( reference );
+                }
+                catch ( ContentNotFoundException e )
+                {
+                    log.warn( "skip error deleting artifact {}: {}", reference, e.getMessage() );
+                }
+
+                try
+                {
+                    metadataRepository.removeProjectVersion( repository.getId(), reference.getGroupId(),
+                                                             reference.getArtifactId(), reference.getVersion() );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    log.warn( "skip error removeProjectVersion artifact {}: {}", reference, e.getMessage() );
+                }
+
+                boolean snapshotVersion = VersionUtil.isSnapshot( reference.getVersion() );
+
+                try
+                {
+                    if ( snapshotVersion )
+                    {
+                        String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
+                        Collection<ArtifactMetadata> artifacts =
+                            metadataRepository.getArtifacts( repository.getId(), reference.getGroupId(),
+                                                             reference.getArtifactId(), baseVersion );
+                        // cleanup snapshots metadata
+                        for ( ArtifactMetadata artifactMetadata : artifacts )
+                        {
+
+                            // TODO: mismatch between artifact (snapshot) version and project (base) version here
+                            if ( artifactMetadata.getVersion().equals( reference.getVersion() ) )
+                            {
+                                if ( StringUtils.isNotBlank( reference.getClassifier() ) )
+                                {
+
+                                    // cleanup facet which contains classifier information
+                                    MavenArtifactFacet mavenArtifactFacet =
+                                        (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
+
+                                    if ( StringUtils.equals( reference.getClassifier(),
+                                                             mavenArtifactFacet.getClassifier() ) )
+                                    {
+                                        artifactMetadata.removeFacet( MavenArtifactFacet.FACET_ID );
+                                        String groupId = reference.getGroupId(), artifactId = reference.getArtifactId(),
+                                            version = reference.getVersion();
+                                        MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
+                                        mavenArtifactFacetToCompare.setClassifier( reference.getClassifier() );
+                                        metadataRepository.removeArtifact( repository.getId(), groupId, artifactId,
+                                                                           version, mavenArtifactFacetToCompare );
+                                        metadataRepository.save();
+                                    }
+
+                                }
+                                else
+                                {
+                                    metadataRepository.removeArtifact( artifactMetadata, VersionUtil.getBaseVersion(
+                                        reference.getVersion() ) );
+                                }
+
+                            }
+                        }
+                    }
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    log.warn( "skip error deleting metadata {}: {}", reference, e.getMessage() );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+
                 repositorySession.save();
 
                 triggerAuditEvent( repository.getRepository().getId(), ArtifactReference.toKey( reference ),

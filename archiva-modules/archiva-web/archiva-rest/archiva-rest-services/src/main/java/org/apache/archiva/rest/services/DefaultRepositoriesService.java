@@ -766,9 +766,6 @@ public class DefaultRepositoriesService
                             artifactMetadata.removeFacet( MavenArtifactFacet.FACET_ID );
                             String groupId = artifact.getGroupId(), artifactId = artifact.getArtifactId(), version =
                                 artifact.getVersion();
-                            //metadataRepository.updateArtifact( repositoryId, groupId, artifactId, version,
-                            //                                   artifactMetadata );
-                            // String repositoryId, String namespace, String project, String version, String projectId, MetadataFacet metadataFacet
                             MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
                             mavenArtifactFacetToCompare.setClassifier( artifact.getClassifier() );
                             metadataRepository.removeArtifact( repositoryId, groupId, artifactId, version,
