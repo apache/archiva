@@ -164,7 +164,7 @@ public abstract class AbstractRepositoryPurge
                 }
                 catch ( MetadataRepositoryException e )
                 {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    log.warn( "skip error deleting metadata {}: {}", reference, e.getMessage() );
                 }
 
                 repositorySession.save();
