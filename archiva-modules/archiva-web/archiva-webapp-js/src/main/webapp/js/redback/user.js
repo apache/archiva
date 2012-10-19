@@ -76,6 +76,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
     this.modified=ko.observable(false);
 
+    this.rememberme=false;
+    this.password=null;
+    this.logged=false;
+
     this.remove = function() {
       if (ownerViewModel) {
         ownerViewModel.users.destroy(this);
@@ -142,7 +146,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
                 checkCreateAdminLink();
                 checkSecurityLinks();
               }
-              loginCall(currentAdminUser.username(), currentAdminUser.password(),onSuccessCall);
+              loginCall(currentAdminUser.username(), currentAdminUser.password(),false,onSuccessCall);
               if(succesCallbackFn){
                 succesCallbackFn();
               }
@@ -344,6 +348,17 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
       });
     }
 
+    var user=getUserFromLoginCookie();
+    if(user){
+      $.log("found user in cookie rememberme:"+(user.rememberme));
+      if(user.rememberme){
+        $("#user-login-form-username" ).val(user.username);
+        $("#user-login-form-password" ).val(user.password);
+      }
+    } else {
+      $.log("user not in cookie");
+    }
+
     var userLoginForm = $("#user-login-form");
 
     userLoginForm.validate({
@@ -382,6 +397,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     }
     if (logged == true) {
       var user = mapUser(result);
+
       if (user.passwordChangeRequired()==true){
         changePasswordBox(true,false,user);
         return;
@@ -389,10 +405,16 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
       // not really needed as an exception is returned but "ceintures et bretelles" as we said in French :-)
       if (user.locked()==true){
         $.log("user locked");
-        displayErrorMessage($.i18n.prop("accout.locked"));
+        displayErrorMessage($.i18n.prop("account.locked"));
         return
       }
+
       // FIXME check validated
+      user.rememberme=window.redbackModel.rememberme;
+      if(user.rememberme){
+        user.password=window.redbackModel.password;
+      }
+      $.log("user.rememberme:"+(user.rememberme));
       reccordLoginCookie(user);
       $("#login-link").hide();
       $("#logout-link").show();
@@ -426,7 +448,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
    * @param result
    */
   var completeLoginCallbackFn=function(){
-    $("#modal-login-ok").removeAttr("disabled");
+    $("#modal-login-ok").button("reset");
     $("#small-spinner").remove();
     // force current screen reload to consider user karma
     window.sammyArchivaApplication.refresh();
@@ -512,18 +534,24 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
    */
   login=function(){
     $.log("user.js#login");
+
     $("#modal-login-err-message").html("");
 
     var valid = $("#user-login-form").valid();
     if (!valid) {
         return;
     }
-    $("#modal-login-ok").attr("disabled","disabled");
+    $("#modal-login-ok").button("loading");
 
     //#modal-login-footer
     $('#modal-login-footer').append(smallSpinnerImg());
 
-    loginCall($("#user-login-form-username").val(),$("#user-login-form-password").val()
+    var rememberme=($("#user-login-form-rememberme" ).attr('checked')=='checked');
+    $.log("rememberme:"+rememberme);
+    window.redbackModel.rememberme=rememberme;
+    window.redbackModel.password=$("#user-login-form-password").val();
+
+    loginCall($("#user-login-form-username").val(),window.redbackModel.password,rememberme
         ,successLoginCallbackFn,errorLoginCallbackFn,completeLoginCallbackFn);
 
   }
@@ -532,11 +560,12 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
    * call REST method for login
    * @param username
    * @param password
+   * @param rememberme
    * @param successCallbackFn
    * @param errorCallbackFn
    * @param completeCallbackFn
    */
-  loginCall=function(username,password,successCallbackFn, errorCallbackFn, completeCallbackFn) {
+  loginCall=function(username,password,rememberme,successCallbackFn, errorCallbackFn, completeCallbackFn) {
     var url = 'restServices/redbackServices/loginService/logIn';
 
     $.ajax({
@@ -717,7 +746,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
           if (registration==true) {
             $.log("changePassword#sucess,registration:"+registration);
             displaySuccessMessage($.i18n.prop('change.password.success.section.title'))
-            loginCall(user.username(), $("#passwordChangeFormNewPassword").val(),successLoginCallbackFn,
+            loginCall(user.username(), $("#passwordChangeFormNewPassword").val(),true,successLoginCallbackFn,
                 function(data){
                   displayRestError(data,"modal-password-change-content");
                 }

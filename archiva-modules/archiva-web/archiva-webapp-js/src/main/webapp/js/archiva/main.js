@@ -28,19 +28,26 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
    * @param user see user.js
    */
   reccordLoginCookie=function(user) {
-    $.cookie('redback_login', ko.toJSON(user));
+    $.cookie('archiva_login', ko.toJSON(user));
   };
 
   getUserFromLoginCookie=function(){
-    return $.parseJSON($.cookie('redback_login'));
+    var cookieContent=$.cookie('archiva_login');
+    $.log("archiva_login cookie content:"+cookieContent);
+    return $.parseJSON(cookieContent);
   };
 
   deleteLoginCookie=function(){
-    $.cookie('redback_login', null);
+    $.cookie('archiva_login', null);
   };
 
   logout=function(doScreenChange){
-    deleteLoginCookie();
+    //deleteLoginCookie();
+    var user = getUserFromLoginCookie();
+    if(user){
+      user.logged=false;
+      reccordLoginCookie(user);
+    }
     $("#login-link").show();
     $("#register-link").show();
     $("#logout-link").hide();
