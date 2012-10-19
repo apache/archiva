@@ -168,13 +168,13 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   MainMenuViewModel=function() {
       
       var self = this;
-      this.artifactMenuItems = [
+      this.artifactMenuItems = ko.observableArray([
               {  text : $.i18n.prop('menu.artifacts') , id: null},
               {  text : $.i18n.prop('menu.artifacts.search') , id: "menu-find-search-a", href: "#search" , func: function(){displaySearch(this)}},
               {  text : $.i18n.prop('menu.artifacts.browse') , id: "menu-find-browse-a", href: "#browse" , func: function(){displayBrowse(true)}},
               {  text : $.i18n.prop('menu.artifacts.upload') , id: "menu-find-upload-a", href: "#upload" , redback: "{permissions: ['archiva-upload-repository']}", func: function(){displayUploadArtifact(true)}}
-      ];
-      this.administrationMenuItems = [
+      ]);
+      this.administrationMenuItems = ko.observableArray([
               {  text : $.i18n.prop('menu.administration') , id: null},
               {  text : $.i18n.prop('menu.repository.groups')        , id: "menu-repository-groups-list-a"     , href: "#repositorygroup"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
               {  text : $.i18n.prop('menu.repositories')             , id: "menu-repositories-list-a"           , href: "#repositorylist"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoriesGrid()}},
@@ -188,19 +188,19 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
               {  text : $.i18n.prop('menu.appearance-configuration') , id: "menu-appearance-list-a"             , href: "#appearance"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayAppearanceConfiguration()}},
               {  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#uiconfig"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration()}},
               {  text : $.i18n.prop('menu.reports')                  , id: "menu-report-list-a"                 , href: "#reports"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage()}}
-      ];
+      ]);
       
-      this.usersMenuItems = [
+      this.usersMenuItems = ko.observableArray([
               {  text : $.i18n.prop('menu.users') , id: null},
               {  text : $.i18n.prop('menu.users.manage')    , id: "menu-users-list-a", href: "#users" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayUsersGrid()}},
               {  text : $.i18n.prop('menu.users.roles')     , id: "menu-roles-list-a", href: "#roles" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayRolesGrid()}}
-      ];
+      ]);
 
-      this.docsMenuItems = [
+      this.docsMenuItems = ko.observableArray([
               {  text : $.i18n.prop('menu.docs') , id: null},
               {  text : $.i18n.prop('menu.docs.rest')    , id: "menu-docs-rest-list-a", href: "#docs-rest", target: "", func: function(){displayRestDocs()}},
               {  text : $.i18n.prop('menu.docs.users')   , id: "menu-docs-users-list-a", href: "http://archiva.apache.org/docs/"+window.archivaRuntimeInfo.version, target: "_blank", func: function(){displayUsersDocs()}}
-      ];
+      ]);
 
       this.activeMenuId = ko.observable();
           
@@ -637,8 +637,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         this.get('#:folder', function () {
           var folder = this.params.folder;
           self.activeMenuId(folder);
-          var baseItems = self.artifactMenuItems?self.artifactMenuItems:[];
-          ko.utils.arrayFirst(baseItems.concat(self.usersMenuItems, self.administrationMenuItems,self.docsMenuItems), function(p) {
+          var baseItems = self.artifactMenuItems()?self.artifactMenuItems():[];
+          ko.utils.arrayFirst(baseItems.concat(self.usersMenuItems(), self.administrationMenuItems(),self.docsMenuItems()), function(p) {
             if ( p.href == "#"+self.activeMenuId()) {
               screenChange();
               p.func();
