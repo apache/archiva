@@ -556,6 +556,22 @@ public class DefaultManagedRepositoryAdmin
     public IndexingContext createIndexContext( ManagedRepository repository )
         throws RepositoryAdminException
     {
+
+        // take care first about repository location as can be relative
+        File repositoryDirectory = new File( repository.getLocation() );
+
+        if ( !repositoryDirectory.isAbsolute() )
+        {
+            repositoryDirectory =
+                new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
+                          repository.getLocation() );
+        }
+
+        if ( !repositoryDirectory.exists() )
+        {
+            repositoryDirectory.mkdirs();
+        }
+
         try
         {
 
@@ -585,10 +601,7 @@ public class DefaultManagedRepositoryAdmin
                 indexDirectory = new File( managedRepository, ".indexer" );
                 if ( !managedRepository.isAbsolute() )
                 {
-                    indexDirectory = new File(
-                        getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories"
-                            + File.separatorChar +
-                            repository.getLocation(), ".indexer" );
+                    indexDirectory = new File( repositoryDirectory, ".indexer" );
                     repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
                 }
             }
