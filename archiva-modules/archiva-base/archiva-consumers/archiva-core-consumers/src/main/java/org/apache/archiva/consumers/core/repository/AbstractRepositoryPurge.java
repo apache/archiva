@@ -120,40 +120,45 @@ public abstract class AbstractRepositoryPurge
                         Collection<ArtifactMetadata> artifacts =
                             metadataRepository.getArtifacts( repository.getId(), reference.getGroupId(),
                                                              reference.getArtifactId(), baseVersion );
-                        // cleanup snapshots metadata
-                        for ( ArtifactMetadata artifactMetadata : artifacts )
+                        if ( artifacts != null )
                         {
-
-                            // TODO: mismatch between artifact (snapshot) version and project (base) version here
-                            if ( artifactMetadata.getVersion().equals( reference.getVersion() ) )
+                            // cleanup snapshots metadata
+                            for ( ArtifactMetadata artifactMetadata : artifacts )
                             {
-                                if ( StringUtils.isNotBlank( reference.getClassifier() ) )
+
+                                // TODO: mismatch between artifact (snapshot) version and project (base) version here
+                                if ( artifactMetadata.getVersion().equals( reference.getVersion() ) )
                                 {
-
-                                    // cleanup facet which contains classifier information
-                                    MavenArtifactFacet mavenArtifactFacet =
-                                        (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
-
-                                    if ( StringUtils.equals( reference.getClassifier(),
-                                                             mavenArtifactFacet.getClassifier() ) )
+                                    if ( StringUtils.isNotBlank( reference.getClassifier() ) )
                                     {
-                                        artifactMetadata.removeFacet( MavenArtifactFacet.FACET_ID );
-                                        String groupId = reference.getGroupId(), artifactId = reference.getArtifactId(),
-                                            version = reference.getVersion();
-                                        MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
-                                        mavenArtifactFacetToCompare.setClassifier( reference.getClassifier() );
-                                        metadataRepository.removeArtifact( repository.getId(), groupId, artifactId,
-                                                                           version, mavenArtifactFacetToCompare );
-                                        metadataRepository.save();
+
+                                        // cleanup facet which contains classifier information
+                                        MavenArtifactFacet mavenArtifactFacet =
+                                            (MavenArtifactFacet) artifactMetadata.getFacet(
+                                                MavenArtifactFacet.FACET_ID );
+
+                                        if ( StringUtils.equals( reference.getClassifier(),
+                                                                 mavenArtifactFacet.getClassifier() ) )
+                                        {
+                                            artifactMetadata.removeFacet( MavenArtifactFacet.FACET_ID );
+                                            String groupId = reference.getGroupId(), artifactId =
+                                                reference.getArtifactId(),
+                                                version = reference.getVersion();
+                                            MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
+                                            mavenArtifactFacetToCompare.setClassifier( reference.getClassifier() );
+                                            metadataRepository.removeArtifact( repository.getId(), groupId, artifactId,
+                                                                               version, mavenArtifactFacetToCompare );
+                                            metadataRepository.save();
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        metadataRepository.removeArtifact( artifactMetadata, VersionUtil.getBaseVersion(
+                                            reference.getVersion() ) );
                                     }
 
                                 }
-                                else
-                                {
-                                    metadataRepository.removeArtifact( artifactMetadata, VersionUtil.getBaseVersion(
-                                        reference.getVersion() ) );
-                                }
-
                             }
                         }
                     }
