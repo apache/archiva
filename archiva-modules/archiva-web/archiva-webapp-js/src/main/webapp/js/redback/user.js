@@ -354,6 +354,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
       if(user.rememberme){
         $("#user-login-form-username" ).val(user.username);
         $("#user-login-form-password" ).val(user.password);
+        $("#user-login-form-rememberme" ).attr("checked","true");
       }
     } else {
       $.log("user not in cookie");
