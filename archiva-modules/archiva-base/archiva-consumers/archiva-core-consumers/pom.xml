@@ -184,6 +184,8 @@
               org.springframework*;version="[3,4)",
               org.codehaus.plexus.digest,
               org.apache.archiva.redback.components.registry,
+              org.apache.archiva.metadata.model*;version=${project.version},
+              org.apache.archiva.metadata.repository.storage.maven2*;version=${project.version},
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
