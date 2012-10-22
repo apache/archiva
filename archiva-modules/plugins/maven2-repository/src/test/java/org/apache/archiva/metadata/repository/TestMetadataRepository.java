@@ -223,4 +223,11 @@ public class TestMetadataRepository
     {
 
     }
+
+    public void removeProject( String repositoryId, String namespace, String projectId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
 }
