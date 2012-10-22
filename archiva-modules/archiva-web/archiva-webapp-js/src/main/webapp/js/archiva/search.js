@@ -131,7 +131,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       }, $.i18n.prop('ok'),
           $.i18n.prop('cancel'),
           $.i18n.prop('projectId.delete.confirm.title'),
-          $.i18n.prop('projectId.delete.confirm.save',groupId));
+          $.i18n.prop('projectId.delete.confirm.save',groupId,projectId));
       }
     }
 
