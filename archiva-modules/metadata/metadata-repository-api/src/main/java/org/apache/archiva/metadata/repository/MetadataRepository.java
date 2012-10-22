@@ -160,13 +160,12 @@ public interface MetadataRepository
         throws MetadataResolutionException;
 
     /**
-     *
      * @param repoId
      * @param namespace
      * @param projectId
      * @param projectVersion
-     * @since 1.4-M4
      * @throws MetadataResolutionException
+     * @since 1.4-M4
      */
     void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException;
@@ -174,6 +173,18 @@ public interface MetadataRepository
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                String projectVersion )
         throws MetadataResolutionException;
+
+    /**
+     * remove a project
+     * @param repositoryId
+     * @param namespace
+     * @param projectId
+     * @throws MetadataRepositoryException
+     * @since 1.4-M4
+     */
+    void removeProject( String repositoryId, String namespace, String projectId )
+        throws MetadataRepositoryException;
+
 
     void save();
 

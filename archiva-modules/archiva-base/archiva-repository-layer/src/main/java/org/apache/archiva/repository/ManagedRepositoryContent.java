@@ -32,8 +32,6 @@ import java.util.Set;
 /**
  * ManagedRepositoryContent interface for interacting with a managed repository in an abstract way,
  * without the need for processing based on filesystem paths, or working with the database.
- *
- *
  */
 public interface ManagedRepositoryContent
 {
@@ -57,12 +55,21 @@ public interface ManagedRepositoryContent
         throws ContentNotFoundException;
 
     /**
-     * @since 1.4-M3
      * @param groupId
      * @throws ContentNotFoundException
+     * @since 1.4-M3
      */
     void deleteGroupId( String groupId )
         throws ContentNotFoundException;
+
+    /**
+     *
+     * @param namespace groupId for maven
+     * @param projectId artifactId for maven
+     * @throws ContentNotFoundException
+     */
+    void deleteProject( String namespace, String projectId )
+        throws RepositoryException;
 
     /**
      * <p>

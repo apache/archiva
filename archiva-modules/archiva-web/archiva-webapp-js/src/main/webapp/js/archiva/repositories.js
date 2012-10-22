@@ -195,6 +195,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     }
 
     this.save=function(){
+      $.log('managedrepo save');
       var valid = $("#main-content").find("#managed-repository-edit-form").valid();
       if (valid==false) {
           return;

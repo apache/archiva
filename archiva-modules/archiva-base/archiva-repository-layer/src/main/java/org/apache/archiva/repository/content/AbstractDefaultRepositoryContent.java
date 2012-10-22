@@ -19,16 +19,16 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
-import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +38,6 @@ import java.util.List;
 
 /**
  * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
- *
- *
  */
 public abstract class AbstractDefaultRepositoryContent
 {
@@ -120,9 +118,13 @@ public abstract class AbstractDefaultRepositoryContent
         {
             throw new IllegalArgumentException( "Artifact reference cannot be null" );
         }
-
-        String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
-        return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
+        if ( reference.getVersion() != null )
+        {
+            String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
+            return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
+                           reference.getClassifier(), reference.getType() );
+        }
+        return toPath( reference.getGroupId(), reference.getArtifactId(), null, null,
                        reference.getClassifier(), reference.getType() );
     }
 

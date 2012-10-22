@@ -29,6 +29,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,17 +46,15 @@ import java.util.Set;
 
 /**
  * ManagedDefaultRepositoryContent
- *
- *
  */
-@Service( "managedRepositoryContent#default" )
-@Scope( "prototype" )
+@Service ("managedRepositoryContent#default")
+@Scope ("prototype")
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
     @Inject
-    @Named( value = "fileTypes" )
+    @Named (value = "fileTypes")
     private FileTypes filetypes;
 
     private ManagedRepository repository;
@@ -76,6 +75,36 @@ public class ManagedDefaultRepositoryContent
         {
             FileUtils.deleteQuietly( projectDir );
         }
+    }
+
+    public void deleteProject( String namespace, String projectId )
+        throws RepositoryException, ContentNotFoundException
+    {
+        ArtifactReference artifactReference = new ArtifactReference();
+        artifactReference.setGroupId( namespace );
+        artifactReference.setArtifactId( projectId );
+        String path = toPath( artifactReference );
+        File directory = new File( getRepoRoot(), path );
+        if ( !directory.exists() )
+        {
+            throw new ContentNotFoundException( "cannot found project " + namespace + ":" + projectId );
+        }
+        if ( directory.isDirectory() )
+        {
+            try
+            {
+                FileUtils.deleteDirectory( directory );
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryException( e.getMessage(), e );
+            }
+        }
+        else
+        {
+            log.warn( "project {}:{} is not a directory", namespace, projectId );
+        }
+
     }
 
     public void deleteArtifact( ArtifactReference artifactReference )

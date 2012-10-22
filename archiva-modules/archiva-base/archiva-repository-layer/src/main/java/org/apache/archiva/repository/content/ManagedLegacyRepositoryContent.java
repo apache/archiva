@@ -28,6 +28,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -126,6 +127,12 @@ public class ManagedLegacyRepositoryContent
                 }
             }
         }
+    }
+
+    public void deleteProject( String namespace, String projectId )
+        throws RepositoryException
+    {
+        // TODO implements ??
     }
 
     private void deleteSupportFiles( File repoFile )

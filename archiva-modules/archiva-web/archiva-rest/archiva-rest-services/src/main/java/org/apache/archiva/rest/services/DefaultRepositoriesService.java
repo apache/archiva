@@ -851,7 +851,7 @@ public class DefaultRepositoriesService
 
         if ( StringUtils.isEmpty( groupId ) )
         {
-            throw new ArchivaRestServiceException( "artifact.groupId cannot be null", 400, null );
+            throw new ArchivaRestServiceException( "groupId cannot be null", 400, null );
         }
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
@@ -884,6 +884,70 @@ public class DefaultRepositoriesService
             repositorySession.close();
         }
         return true;
+    }
+
+    public Boolean deleteProject( String groupId, String projectId, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
+        }
+
+        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
+        }
+
+        if ( StringUtils.isEmpty( groupId ) )
+        {
+            throw new ArchivaRestServiceException( "groupId cannot be null", 400, null );
+        }
+
+        if ( StringUtils.isEmpty( projectId ) )
+        {
+            throw new ArchivaRestServiceException( "artifactId cannot be null", 400, null );
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
+        try
+        {
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            repository.deleteProject( groupId, projectId );
+        }
+        catch ( ContentNotFoundException e )
+        {
+            log.warn( "skip ContentNotFoundException: {}", e.getMessage() );
+        }
+        catch ( RepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+
+        try
+        {
+
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            metadataRepository.removeProject( repositoryId, groupId, projectId );
+
+            metadataRepository.save();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        finally
+        {
+
+            repositorySession.close();
+        }
+        return true;
+
     }
 
     public Boolean isAuthorizedToDeleteArtifacts( String repoId )

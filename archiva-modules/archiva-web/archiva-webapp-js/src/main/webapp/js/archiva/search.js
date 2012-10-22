@@ -86,6 +86,55 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       return hasKarma('archiva-delete-artifact');
     }
 
+    deleteProject=function(groupId,projectId){
+      $.log("deleteProject:"+groupId+"/"+projectId);
+
+      var repoId=getSelectedBrowsingRepository();
+      if(!repoId){
+        var escapedGroupId=escapeDot(groupId );
+        var selected = $("#main-content" ).find("#delete-"+escapedGroupId );
+        selected.attr("data-content",$.i18n.prop('projectId.delete.missing.repoId'))
+        selected.popover({
+          html:true,
+          template: '<div class="popover"><div class="arrow"></div><div class="popover-inner"><div class="popover-content"><p></p></div></div></div>',
+          placement:'top',
+          trigger:'manual'});
+        selected.popover('show');
+        selected.mouseover(function(){
+          selected.popover("destroy");
+        });
+        return;
+      }
+
+
+      var previousHash=getUrlHash();
+      $.log("previousHash:"+previousHash);
+      openDialogConfirm(function(){
+        $("#dialog-confirm-modal-ok").button('loading');
+        $.ajax({
+          url:"restServices/archivaServices/repositoriesService/project/"+repoId+"/"+groupId+"/"+projectId,
+          type:"DELETE",
+          dataType:"json",
+          success:function(data){
+            window.sammyArchivaApplication.setLocation(previousHash);
+            refreshContent();
+            displaySuccessMessage( $.i18n.prop("projectId.deleted", groupId,projectId));
+          },
+          error:function(data){
+            displayRestError(data,"user-messages");
+          },
+          complete:function(){
+            $("#dialog-confirm-modal-ok").button('reset');
+            closeDialogConfirm();
+          }
+        });
+      }, $.i18n.prop('ok'),
+          $.i18n.prop('cancel'),
+          $.i18n.prop('projectId.delete.confirm.title'),
+          $.i18n.prop('projectId.delete.confirm.save',groupId));
+      }
+    }
+
     deleteGroupId=function(groupId){
 
       var repoId=getSelectedBrowsingRepository();
@@ -129,7 +178,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           $.i18n.prop('cancel'),
           $.i18n.prop('groupId.delete.confirm.title'),
           $.i18n.prop('groupId.delete.confirm.save',groupId));
-    }
+
   }
 
   calculateBreadCrumbEntries=function(groupId){

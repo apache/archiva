@@ -53,7 +53,7 @@
         {{if browseResultEntry.project}}
           {{if deleteKarma}}
             <li class="browse-list-project">
-              <img id="delete-${browseResultEntry.name}" src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+              <img id="delete-${browseResultEntry.name}" src="images/trash.png" data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"/>
               <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
             </li>
           {{else}}

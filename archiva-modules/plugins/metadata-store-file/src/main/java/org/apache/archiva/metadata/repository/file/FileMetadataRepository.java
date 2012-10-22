@@ -1162,6 +1162,11 @@ public class FileMetadataRepository
         return projectVersions;
     }
 
+    public void removeProject( String repositoryId, String namespace, String projectId )
+        throws MetadataRepositoryException
+    {
+        // TODO
+    }
 
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
