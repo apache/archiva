@@ -114,6 +114,13 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     return matches ? matches[1] : null;
   }
 
+  refreshContent=function(){
+    var currentHash=getUrlHash();
+    $.log("getUrlHash:"+currentHash);
+    window.sammyArchivaApplication.runRoute('get',currentHash);
+
+  }
+
   /**
    * clear #main-content and call clearUserMessages
     */

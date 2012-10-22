@@ -114,6 +114,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           dataType:"json",
           success:function(data){
             window.sammyArchivaApplication.setLocation(previousHash);
+            refreshContent();
             displaySuccessMessage( $.i18n.prop("groupdId.deleted", groupId));
           },
           error:function(data){
@@ -233,6 +234,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
             data: ko.toJSON(artifact),
             success:function(data){
               self.versions.remove(version);
+              refreshContent();
               displaySuccessMessage( $.i18n.prop('artifact.deleted'));
             },
             error:function(data){
