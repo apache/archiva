@@ -123,6 +123,19 @@ public interface RepositoriesService
     Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException;
 
+    @Path ("projectVersion/{repositoryId}/{namespace}/{projectId}/{version}")
+    @DELETE
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (noPermission = true)
+    /**
+     * <b>permissions are checked in impl</b>
+     * @since 1.4-M4
+     */
+    Boolean removeProjectVersion( @PathParam ( "repositoryId" ) String repositoryId,
+                                  @PathParam ( "namespace" ) String namespace, @PathParam ( "projectId" ) String projectId,
+                                  @PathParam ( "version" ) String version )
+        throws ArchivaRestServiceException;
+
     @Path ("isAuthorizedToDeleteArtifacts/{repositoryId}")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
@@ -141,16 +154,16 @@ public interface RepositoriesService
     Boolean deleteGroupId( @QueryParam ("groupId") String groupId, @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ( "project/{repositoryId}/{groupId}/{projectId}" )
+    @Path ("project/{repositoryId}/{groupId}/{projectId}")
     @DELETE
-    @Produces ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization ( noPermission = true )
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (noPermission = true)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M4
      */
-    Boolean deleteProject( @PathParam ( "groupId" ) String groupId, @PathParam ( "projectId" ) String projectId,
-                           @PathParam ( "repositoryId" ) String repositoryId )
+    Boolean deleteProject( @PathParam ("groupId") String groupId, @PathParam ("projectId") String projectId,
+                           @PathParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
 

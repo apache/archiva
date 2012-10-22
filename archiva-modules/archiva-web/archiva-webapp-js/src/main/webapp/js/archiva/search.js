@@ -270,17 +270,17 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         });
         return;
       }
-      $.log("deleteVersion:"+version+',repoId:'+repoId);
+
       clearUserMessages();
         var artifact = new Artifact(repoId,null,self.groupId,self.artifactId,repoId,version);
         openDialogConfirm(function(){
+          var url = "restServices/archivaServices/repositoriesService/projectVersion/"+repoId;
+          url+="/"+encodeURIComponent(self.groupId)+"/"+encodeURIComponent(self.artifactId);
+          url+="/"+encodeURIComponent(version);
           $("#dialog-confirm-modal-ok").button('loading');
           $.ajax({
-            url:"restServices/archivaServices/repositoriesService/deleteArtifact",
-            type:"POST",
-            dataType:"json",
-            contentType: 'application/json',
-            data: ko.toJSON(artifact),
+            url:url,
+            type:"DELETE",
             success:function(data){
               self.versions.remove(version);
               refreshContent();

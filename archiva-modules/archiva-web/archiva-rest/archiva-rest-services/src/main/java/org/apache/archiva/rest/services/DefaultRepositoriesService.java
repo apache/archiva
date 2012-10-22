@@ -600,6 +600,109 @@ public class DefaultRepositoriesService
         }
     }
 
+    public Boolean removeProjectVersion( String repositoryId, String namespace, String projectId, String version )
+        throws ArchivaRestServiceException
+    {
+        // if not a generic we can use the standard way to delete artifact
+        if ( !VersionUtil.isGenericSnapshot( version ) )
+        {
+            Artifact artifact = new Artifact( namespace, projectId, version );
+            return deleteArtifact( artifact );
+        }
+
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
+        }
+
+        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        {
+            throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
+        }
+
+        if ( StringUtils.isEmpty( namespace ) )
+        {
+            throw new ArchivaRestServiceException( "groupId cannot be null", 400, null );
+        }
+
+        if ( StringUtils.isEmpty( projectId ) )
+        {
+            throw new ArchivaRestServiceException( "artifactId cannot be null", 400, null );
+        }
+
+        if ( StringUtils.isEmpty( version ) )
+        {
+            throw new ArchivaRestServiceException( "version cannot be null", 400, null );
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
+        try
+        {
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            VersionedReference ref = new VersionedReference();
+            ref.setArtifactId( projectId );
+            ref.setGroupId( namespace );
+            ref.setVersion( version );
+
+            repository.deleteVersion( ref );
+
+            /*
+            ProjectReference projectReference = new ProjectReference();
+            projectReference.setGroupId( namespace );
+            projectReference.setArtifactId( projectId );
+
+            repository.getVersions(  )
+            */
+
+            ArtifactReference artifactReference = new ArtifactReference();
+            artifactReference.setGroupId( namespace );
+            artifactReference.setArtifactId( projectId );
+            artifactReference.setVersion( version );
+
+            MetadataRepository metadataRepository = repositorySession.getRepository();
+
+            Set<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
+            log.debug( "related: {}", related );
+            for ( ArtifactReference artifactRef : related )
+            {
+                repository.deleteArtifact( artifactRef );
+            }
+
+            Collection<ArtifactMetadata> artifacts =
+                metadataRepository.getArtifacts( repositoryId, namespace, projectId, version );
+
+            for ( ArtifactMetadata artifactMetadata : artifacts )
+            {
+                metadataRepository.removeArtifact( artifactMetadata, version );
+            }
+
+            metadataRepository.removeProjectVersion( repositoryId, namespace, projectId, version );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        finally
+        {
+
+            repositorySession.save();
+
+            repositorySession.close();
+        }
+
+        return Boolean.TRUE;
+    }
+
     public Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException
     {
@@ -632,7 +735,8 @@ public class DefaultRepositoriesService
 
         // TODO more control on artifact fields
 
-        boolean snapshotVersion = VersionUtil.isSnapshot( artifact.getVersion() );
+        boolean snapshotVersion =
+            VersionUtil.isSnapshot( artifact.getVersion() ) | VersionUtil.isGenericSnapshot( artifact.getVersion() );
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
