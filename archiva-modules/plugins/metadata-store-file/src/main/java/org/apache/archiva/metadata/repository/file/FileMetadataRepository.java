@@ -1165,7 +1165,18 @@ public class FileMetadataRepository
     public void removeProject( String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
-        // TODO
+        File directory = new File( getDirectory( repositoryId ), namespace + "/" + projectId );
+        try
+        {
+            if ( directory.exists() )
+            {
+                FileUtils.deleteDirectory( directory );
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )

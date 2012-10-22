@@ -1170,6 +1170,25 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     @Test
+    public void deleteProject()
+        throws Exception
+    {
+        ArtifactMetadata artifact = createArtifact();
+        artifact.addFacet( new TestMetadataFacet( "value" ) );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+
+        assertEquals( 1, repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ).size() );
+
+        repository.removeProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+
+        assertEquals( 0, repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ).size() );
+    }
+
+
+    @Test
     public void deleteSnapshotVersion()
         throws Exception
     {
