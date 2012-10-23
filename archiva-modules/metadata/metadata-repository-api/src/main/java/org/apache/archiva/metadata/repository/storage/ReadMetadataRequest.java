@@ -26,7 +26,7 @@ import org.apache.archiva.metadata.repository.filter.Filter;
  */
 public class ReadMetadataRequest
 {
-    private String repoId;
+    private String repositoryId;
 
     private String namespace;
 
@@ -41,34 +41,34 @@ public class ReadMetadataRequest
         // no op
     }
 
-    public ReadMetadataRequest( String repoId, String namespace, String projectId, String projectVersion )
+    public ReadMetadataRequest( String repositoryId, String namespace, String projectId, String projectVersion )
     {
-        this.repoId = repoId;
+        this.repositoryId = repositoryId;
         this.namespace = namespace;
         this.projectId = projectId;
         this.projectVersion = projectVersion;
     }
 
-    public ReadMetadataRequest( String repoId, String namespace, String projectId, String projectVersion,
+    public ReadMetadataRequest( String repositoryId, String namespace, String projectId, String projectVersion,
                                 Filter<String> filter )
     {
-        this( repoId, namespace, projectId, projectVersion );
+        this( repositoryId, namespace, projectId, projectVersion );
         this.filter = filter;
     }
 
-    public String getRepoId()
+    public String getRepositoryId()
     {
-        return repoId;
+        return repositoryId;
     }
 
-    public void setRepoId( String repoId )
+    public void setRepositoryId( String repositoryId )
     {
-        this.repoId = repoId;
+        this.repositoryId = repositoryId;
     }
 
     public ReadMetadataRequest repoId( String repoId )
     {
-        this.repoId = repoId;
+        this.repositoryId = repoId;
         return this;
     }
 

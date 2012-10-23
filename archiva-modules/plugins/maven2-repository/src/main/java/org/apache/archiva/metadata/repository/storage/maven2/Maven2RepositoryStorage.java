@@ -154,7 +154,7 @@ public class Maven2RepositoryStorage
         try
         {
             ManagedRepository managedRepository =
-                managedRepositoryAdmin.getManagedRepository( readMetadataRequest.getRepoId() );
+                managedRepositoryAdmin.getManagedRepository( readMetadataRequest.getRepositoryId() );
 
             String artifactVersion = readMetadataRequest.getProjectVersion();
             if ( VersionUtil.isSnapshot(
@@ -220,7 +220,7 @@ public class Maven2RepositoryStorage
             Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
-            List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( readMetadataRequest.getRepoId() );
+            List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( readMetadataRequest.getRepositoryId() );
             if ( proxyConnectors != null )
             {
                 for ( ProxyConnector proxyConnector : proxyConnectors )
@@ -293,8 +293,8 @@ public class Maven2RepositoryStorage
                                 ? problem.getMessage()
                                 : problem.getException().getMessage() );
                         RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
-                        repoProblemFacet.setRepositoryId( readMetadataRequest.getRepoId() );
-                        repoProblemFacet.setId( readMetadataRequest.getRepoId() );
+                        repoProblemFacet.setRepositoryId( readMetadataRequest.getRepositoryId() );
+                        repoProblemFacet.setId( readMetadataRequest.getRepositoryId() );
                         repoProblemFacet.setMessage( errMsg );
                         repoProblemFacet.setProblem( errMsg );
                         repoProblemFacet.setProject( readMetadataRequest.getProjectId() );
@@ -571,7 +571,7 @@ public class Maven2RepositoryStorage
     public Collection<ArtifactMetadata> readArtifactsMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageRuntimeException
     {
-        File dir = pathTranslator.toFile( getRepositoryBasedir( readMetadataRequest.getRepoId() ),
+        File dir = pathTranslator.toFile( getRepositoryBasedir( readMetadataRequest.getRepositoryId() ),
                                           readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
                                           readMetadataRequest.getProjectVersion() );
 
@@ -584,7 +584,7 @@ public class Maven2RepositoryStorage
             for ( File file : files )
             {
                 ArtifactMetadata metadata =
-                    getArtifactFromFile( readMetadataRequest.getRepoId(), readMetadataRequest.getNamespace(),
+                    getArtifactFromFile( readMetadataRequest.getRepositoryId(), readMetadataRequest.getNamespace(),
                                          readMetadataRequest.getProjectId(), readMetadataRequest.getProjectVersion(),
                                          file );
                 artifacts.add( metadata );
