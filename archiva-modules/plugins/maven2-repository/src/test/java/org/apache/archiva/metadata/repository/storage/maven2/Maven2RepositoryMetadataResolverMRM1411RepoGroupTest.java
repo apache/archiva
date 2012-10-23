@@ -178,7 +178,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "test-artifact-module-a" ).projectVersion( "1.0" );
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
@@ -230,7 +230,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "test-artifact-module-a" ).projectVersion( "1.0" );
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
         assertEquals( "1.0", metadata.getId() );
@@ -257,7 +257,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "missing-parent" ).projectVersion( "1.1" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
@@ -331,7 +331,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_SNAP_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_SNAP_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "test-snapshot-artifact-module-a" ).projectVersion( "1.1-SNAPSHOT" );
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
@@ -374,7 +374,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repository/com/example/test/test-artifact-module-b" );
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "test-artifact-module-b" ).projectVersion( "1.0" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );

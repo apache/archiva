@@ -170,7 +170,7 @@ public class ArchivaMetadataCreationConsumer
             try
             {
                 ReadMetadataRequest readMetadataRequest =
-                    new ReadMetadataRequest().repoId( repoId ).namespace( artifact.getNamespace() ).projectId(
+                    new ReadMetadataRequest().repositoryId( repoId ).namespace( artifact.getNamespace() ).projectId(
                         artifact.getProject() ).projectVersion( projectVersion );
                 versionMetadata = repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
                 createVersionMetadata = true;

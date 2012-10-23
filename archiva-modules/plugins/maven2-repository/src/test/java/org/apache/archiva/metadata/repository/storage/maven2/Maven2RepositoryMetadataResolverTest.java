@@ -147,7 +147,7 @@ public class Maven2RepositoryMetadataResolverTest
         throws Exception
     {
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "org.apache.maven" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "org.apache.maven" ).projectId(
                 "maven-archiver" ).projectVersion( "2.4.1" );
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );

@@ -66,7 +66,7 @@ public class ReadMetadataRequest
         this.repositoryId = repositoryId;
     }
 
-    public ReadMetadataRequest repoId( String repoId )
+    public ReadMetadataRequest repositoryId( String repoId )
     {
         this.repositoryId = repoId;
         return this;

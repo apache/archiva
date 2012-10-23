@@ -26,7 +26,7 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 
 import java.util.Collection;
 
-// FIXME: we should drop the repoId parameters and attach this to an instance of a repository storage
+// FIXME: we should drop the repositoryId parameters and attach this to an instance of a repository storage
 public interface RepositoryStorage
 {
     ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId );

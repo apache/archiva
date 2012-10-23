@@ -100,7 +100,7 @@ public class DefaultMetadataResolver
             try
             {
                 ReadMetadataRequest readMetadataRequest =
-                    new ReadMetadataRequest().repoId( repoId ).namespace( namespace ).projectId(
+                    new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId(
                         projectId ).projectVersion( projectVersion );
                 metadata = repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
 
@@ -314,7 +314,7 @@ public class DefaultMetadataResolver
                     try
                     {
                         ReadMetadataRequest readMetadataRequest =
-                            new ReadMetadataRequest().repoId( repoId ).namespace( namespace ).projectId(
+                            new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId(
                                 projectId ).projectVersion( projectVersion );
                         ProjectVersionMetadata versionMetadata =
                             repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
@@ -373,7 +373,7 @@ public class DefaultMetadataResolver
             ExcludesFilter<String> filter = new ExcludesFilter<String>( createArtifactIdList( artifacts ) );
 
             ReadMetadataRequest readMetadataRequest =
-                new ReadMetadataRequest().repoId( repoId ).namespace( namespace ).projectId( projectId ).projectVersion(
+                new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId( projectId ).projectVersion(
                     projectVersion ).filter( filter );
 
             Collection<ArtifactMetadata> storageArtifacts =

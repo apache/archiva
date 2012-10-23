@@ -94,7 +94,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         // skygo IMHO must fail because TEST_REPO_ID ( is snap ,no release) and we seek for a snapshot
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "org.apache.maven" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "org.apache.maven" ).projectId(
                 "maven-archiver" ).projectVersion( "2.4.1" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
@@ -106,7 +106,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         throws Exception
     {
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "mislocated-pom" ).projectVersion( "1.0" );
         storage.readProjectVersionMetadata( readMetadataRequest );
 
@@ -126,7 +126,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         throws Exception
     {
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "invalid-pom" ).projectVersion( "1.0" );
         storage.readProjectVersionMetadata( readMetadataRequest );
     }
@@ -137,7 +137,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         throws Exception
     {
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+            new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
                 "missing-pom" ).projectVersion( "1.0" );
         storage.readProjectVersionMetadata( readMetadataRequest );
     }
