@@ -288,8 +288,8 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
 
         ReadMetadataRequest readMetadataRequest =
-            new ReadMetadataRequest().namespace( TEST_SNAP_REPO_ID ).namespace( "com.example.test" ).projectId(
-                "test-snapshot-artifact-module-a" ).projectVersion( "1.1-SNAPSHOT" );
+            new ReadMetadataRequest( TEST_SNAP_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
+                                     "1.1-SNAPSHOT" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
