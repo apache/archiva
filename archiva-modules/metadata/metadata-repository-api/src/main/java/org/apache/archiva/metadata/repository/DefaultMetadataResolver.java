@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
@@ -56,7 +57,7 @@ import java.util.List;
  * unknowingly by the caller.
  * <p/>
  */
-@Service( "metadataResolver#default" )
+@Service ("metadataResolver#default")
 public class DefaultMetadataResolver
     implements MetadataResolver
 {
@@ -72,7 +73,7 @@ public class DefaultMetadataResolver
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
      */
     @Inject
-    @Named( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private RepositoryStorage repositoryStorage;
 
     /**
@@ -98,7 +99,10 @@ public class DefaultMetadataResolver
         {
             try
             {
-                metadata = repositoryStorage.readProjectVersionMetadata( repoId, namespace, projectId, projectVersion );
+                ReadMetadataRequest readMetadataRequest =
+                    new ReadMetadataRequest().repoId( repoId ).namespace( namespace ).projectId(
+                        projectId ).projectVersion( projectVersion );
+                metadata = repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
 
                 log.debug( "Resolved project version metadata from storage: {}", metadata );
 
@@ -309,9 +313,11 @@ public class DefaultMetadataResolver
                 {
                     try
                     {
+                        ReadMetadataRequest readMetadataRequest =
+                            new ReadMetadataRequest().repoId( repoId ).namespace( namespace ).projectId(
+                                projectId ).projectVersion( projectVersion );
                         ProjectVersionMetadata versionMetadata =
-                            repositoryStorage.readProjectVersionMetadata( repoId, namespace, projectId,
-                                                                          projectVersion );
+                            repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
                         for ( RepositoryListener listener : listeners )
                         {
                             listener.addArtifact( session, repoId, namespace, projectId, versionMetadata );
@@ -365,8 +371,13 @@ public class DefaultMetadataResolver
             Collection<ArtifactMetadata> artifacts =
                 metadataRepository.getArtifacts( repoId, namespace, projectId, projectVersion );
             ExcludesFilter<String> filter = new ExcludesFilter<String>( createArtifactIdList( artifacts ) );
+
+            ReadMetadataRequest readMetadataRequest =
+                new ReadMetadataRequest().repoId( repoId ).namespace( namespace ).projectId( projectId ).projectVersion(
+                    projectVersion ).filter( filter );
+
             Collection<ArtifactMetadata> storageArtifacts =
-                repositoryStorage.readArtifactsMetadata( repoId, namespace, projectId, projectVersion, filter );
+                repositoryStorage.readArtifactsMetadata( readMetadataRequest );
             if ( storageArtifacts != null && !storageArtifacts.isEmpty() )
             {
 

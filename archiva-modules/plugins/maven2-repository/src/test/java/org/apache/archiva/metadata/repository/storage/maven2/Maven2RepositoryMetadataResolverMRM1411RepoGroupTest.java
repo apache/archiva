@@ -19,15 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Named;
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -42,7 +34,7 @@ import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
@@ -50,25 +42,34 @@ import org.apache.maven.wagon.Wagon;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.springframework.test.context.ContextConfiguration;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named( value = "repositoryStorage#maven2" )
+    @Named ( value = "repositoryStorage#maven2" )
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
-    
+
     private static final String TEST_SNAP_REPO_ID = "tests";
-    
+
     private static final String TEST_REPO_GROUP_ID = "testrg";
 
     private static final String TEST_REMOTE_REPO_ID = "central";
@@ -95,11 +96,11 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     private WagonFactory wagonFactory;
 
     ManagedRepositoryConfiguration testRepo;
-    
+
     ManagedRepositoryConfiguration testRepoS;
-    
+
     Configuration c;
-    
+
     @Before
     @Override
     public void setUp()
@@ -108,21 +109,21 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         super.setUp();
 
         c = new Configuration();
-        
+
         testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
         testRepo.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
         testRepo.setReleases( true );
         testRepo.setSnapshots( false );
         c.addManagedRepository( testRepo );
-       
+
         testRepoS = new ManagedRepositoryConfiguration();
         testRepoS.setId( TEST_SNAP_REPO_ID );
         testRepoS.setLocation( new File( "target/test-repositorys" ).getAbsolutePath() );
         testRepoS.setReleases( false );
         testRepoS.setSnapshots( true );
         c.addManagedRepository( testRepoS );
-        
+
         RemoteRepositoryConfiguration testRemoteRepo = new RemoteRepositoryConfiguration();
         testRemoteRepo.setId( TEST_REMOTE_REPO_ID );
         testRemoteRepo.setLayout( "default" );
@@ -142,24 +143,24 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         proxyConnectors.setTargetRepoId( TEST_REMOTE_REPO_ID );
         proxyConnectors.setDisabled( false );
         c.addProxyConnector( proxyConnectors );
-        
+
         List<String> repos = new ArrayList<String>();
         repos.add( TEST_REPO_ID );
         repos.add( TEST_SNAP_REPO_ID );
 
-        RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration( );
+        RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
         repoGroup.setId( TEST_REPO_GROUP_ID );
         repoGroup.setRepositories( repos );
         c.addRepositoryGroup( repoGroup );
-        
+
         configuration.save( c );
 
-        assertFalse ( c.getManagedRepositories().get( 0 ).isSnapshots() );
-        assertTrue ( c.getManagedRepositories().get( 0 ).isReleases() );
-        
-        assertTrue ( c.getManagedRepositories().get( 1 ).isSnapshots() );
-        assertFalse ( c.getManagedRepositories().get( 1 ).isReleases() );
-        
+        assertFalse( c.getManagedRepositories().get( 0 ).isSnapshots() );
+        assertTrue( c.getManagedRepositories().get( 0 ).isReleases() );
+
+        assertTrue( c.getManagedRepositories().get( 1 ).isSnapshots() );
+        assertFalse( c.getManagedRepositories().get( 1 ).isReleases() );
+
         wagonFactory = mock( WagonFactory.class );
 
         storage.setWagonFactory( wagonFactory );
@@ -176,8 +177,10 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "test-artifact-module-a" ).projectVersion( "1.0" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
@@ -226,8 +229,10 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "test-artifact-module-a" ).projectVersion( "1.0" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
         assertEquals( "1.0", metadata.getId() );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
@@ -251,8 +256,11 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-parent", "1.1" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "missing-parent" ).projectVersion( "1.1" );
+
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
         assertEquals( "1.1", metadata.getId() );
 
@@ -278,9 +286,12 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-root",
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_SNAP_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
-                                                "1.1-SNAPSHOT" );
+
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().namespace( TEST_SNAP_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "test-snapshot-artifact-module-a" ).projectVersion( "1.1-SNAPSHOT" );
+
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
@@ -319,9 +330,10 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
 
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_SNAP_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
-                                                "1.1-SNAPSHOT" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_SNAP_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "test-snapshot-artifact-module-a" ).projectVersion( "1.1-SNAPSHOT" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
@@ -353,7 +365,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
 
         deleteTestArtifactWithParent( paths );
     }
-    
+
     @Test
     public void testGetProjectVersionMetadataWithParentSnapshotVersionAndSnapNotAllowed2()
         throws Exception
@@ -361,9 +373,11 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-b",
                                     "target/test-repository/com/example/test/test-artifact-module-b" );
 
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "test-artifact-module-b",
-                                                "1.0" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "test-artifact-module-b" ).projectVersion( "1.0" );
+
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
 
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
@@ -413,7 +427,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertNull( dependency.getClassifier() );
         assertNull( dependency.getSystemPath() );
     }
-    
+
     private void assertArtifact( ArtifactMetadata artifact, String id, int size, String sha1, String md5 )
     {
         assertEquals( id, artifact.getId() );

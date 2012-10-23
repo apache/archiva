@@ -19,12 +19,11 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -33,16 +32,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+
+@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverManagedReleaseTest
     extends Maven2RepositoryMetadataResolverTest
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named( value = "repositoryStorage#maven2" )
+    @Named ( value = "repositoryStorage#maven2" )
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -79,57 +81,65 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
 
         testRepo.setReleases( true );
         testRepo.setSnapshots( false );
-        
+
         configuration.save( c );
 
-        assertFalse ( c.getManagedRepositories().get( 0 ).isSnapshots() );
-        assertTrue ( c.getManagedRepositories().get( 0 ).isReleases() );
-              
+        assertFalse( c.getManagedRepositories().get( 0 ).isSnapshots() );
+        assertTrue( c.getManagedRepositories().get( 0 ).isReleases() );
+
     }
 
     @Test
     @Override
-    public void testModelWithJdkProfileActivation() 
+    public void testModelWithJdkProfileActivation()
         throws Exception
     {
         // skygo IMHO must fail because TEST_REPO_ID ( is snap ,no release) and we seek for a snapshot
-      
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.maven", "maven-archiver", "2.4.1" );
-    }   
-    
-    @Test( expected = RepositoryStorageRuntimeException.class)
+
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "org.apache.maven" ).projectId(
+                "maven-archiver" ).projectVersion( "2.4.1" );
+
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
+    }
+
+    @Test ( expected = RepositoryStorageRuntimeException.class )
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
         throws Exception
-    {       
-        storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" );        
+    {
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
+                "missing-metadata" ).projectVersion( "1.0-SNAPSHOT" );
+        storage.readProjectVersionMetadata( readMetadataRequest );
     }
-    
-    @Test( expected = RepositoryStorageRuntimeException.class)
+
+    @Test ( expected = RepositoryStorageRuntimeException.class )
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
         throws Exception
     {
-        storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "malformed-metadata",
-                                                "1.0-SNAPSHOT" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "com.example.test" ).projectVersion(
+                "malformed-metadata" ).projectVersion( "1.0-SNAPSHOT" );
+        storage.readProjectVersionMetadata( readMetadataRequest );
     }
-    
-    @Test( expected = RepositoryStorageRuntimeException.class)
+
+    @Test ( expected = RepositoryStorageRuntimeException.class )
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
         throws Exception
     {
         super.testGetProjectVersionMetadataForTimestampedSnapshot();
     }
-    
-    
-    @Test( expected = RepositoryStorageRuntimeException.class)
+
+
+    @Test ( expected = RepositoryStorageRuntimeException.class )
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
         throws Exception
     {
         super.testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata();
     }
-    
+
 }

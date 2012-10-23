@@ -36,6 +36,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
@@ -91,7 +92,7 @@ import java.util.Map;
  * within the session in the context of a single managed repository's resolution needs.
  * <p/>
  */
-@Service( "repositoryStorage#maven2" )
+@Service ("repositoryStorage#maven2")
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
@@ -119,13 +120,13 @@ public class Maven2RepositoryStorage
      *
      */
     @Inject
-    @Named( value = "repositoryPathTranslator#maven2" )
+    @Named (value = "repositoryPathTranslator#maven2")
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
     private WagonFactory wagonFactory;
 
-    private final static Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
+    private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
 
@@ -146,35 +147,39 @@ public class Maven2RepositoryStorage
         return null;
     }
 
-    public ProjectVersionMetadata readProjectVersionMetadata( String repoId, String namespace, String projectId,
-                                                              String projectVersion )
+    public ProjectVersionMetadata readProjectVersionMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException,
         RepositoryStorageRuntimeException
     {
         try
         {
-            ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
+            ManagedRepository managedRepository =
+                managedRepositoryAdmin.getManagedRepository( readMetadataRequest.getRepoId() );
 
-            String artifactVersion = projectVersion;
-            if ( VersionUtil.isSnapshot( projectVersion ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
+            String artifactVersion = readMetadataRequest.getProjectVersion();
+            if ( VersionUtil.isSnapshot(
+                readMetadataRequest.getProjectVersion() ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
             {
                 if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
                 {
-                    throw new RepositoryStorageRuntimeException("lookforsnaponreleaseonly", "managed repo is configured for release only");
+                    throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
+                                                                 "managed repo is configured for release only" );
                 }
-            } 
-            else 
+            }
+            else
             {
                 if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
                 {
-                    throw new RepositoryStorageRuntimeException("lookforsreleaseonsneponly", "managed repo is configured for snapshot only");
+                    throw new RepositoryStorageRuntimeException( "lookforsreleaseonsneponly",
+                                                                 "managed repo is configured for snapshot only" );
                 }
             }
             File basedir = new File( managedRepository.getLocation() );
-            if ( VersionUtil.isSnapshot( projectVersion ) )
+            if ( VersionUtil.isSnapshot( readMetadataRequest.getProjectVersion() ) )
             {
-                File metadataFile =
-                    pathTranslator.toFile( basedir, namespace, projectId, projectVersion, METADATA_FILENAME );
+                File metadataFile = pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(),
+                                                           readMetadataRequest.getProjectId(),
+                                                           readMetadataRequest.getProjectVersion(), METADATA_FILENAME );
                 try
                 {
                     ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
@@ -197,8 +202,10 @@ public class Maven2RepositoryStorage
             }
 
             // TODO: won't work well with some other layouts, might need to convert artifact parts to ID by path translator
-            String id = projectId + "-" + artifactVersion + ".pom";
-            File file = pathTranslator.toFile( basedir, namespace, projectId, projectVersion, id );
+            String id = readMetadataRequest.getProjectId() + "-" + artifactVersion + ".pom";
+            File file =
+                pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
+                                       readMetadataRequest.getProjectVersion(), id );
 
             if ( !file.exists() )
             {
@@ -213,7 +220,7 @@ public class Maven2RepositoryStorage
             Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
-            List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repoId );
+            List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( readMetadataRequest.getRepoId() );
             if ( proxyConnectors != null )
             {
                 for ( ProxyConnector proxyConnector : proxyConnectors )
@@ -273,11 +280,11 @@ public class Maven2RepositoryStorage
                                       "Using defaults for project version metadata.." );
 
                         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
-                        metadata.setId( projectVersion );
+                        metadata.setId( readMetadataRequest.getProjectVersion() );
 
                         MavenProjectFacet facet = new MavenProjectFacet();
-                        facet.setGroupId( namespace );
-                        facet.setArtifactId( projectId );
+                        facet.setGroupId( readMetadataRequest.getNamespace() );
+                        facet.setArtifactId( readMetadataRequest.getProjectId() );
                         facet.setPackaging( "jar" );
                         metadata.addFacet( facet );
 
@@ -286,13 +293,13 @@ public class Maven2RepositoryStorage
                                 ? problem.getMessage()
                                 : problem.getException().getMessage() );
                         RepositoryProblemFacet repoProblemFacet = new RepositoryProblemFacet();
-                        repoProblemFacet.setRepositoryId( repoId );
-                        repoProblemFacet.setId( repoId );
+                        repoProblemFacet.setRepositoryId( readMetadataRequest.getRepoId() );
+                        repoProblemFacet.setId( readMetadataRequest.getRepoId() );
                         repoProblemFacet.setMessage( errMsg );
                         repoProblemFacet.setProblem( errMsg );
-                        repoProblemFacet.setProject( projectId );
-                        repoProblemFacet.setVersion( projectVersion );
-                        repoProblemFacet.setNamespace( namespace );
+                        repoProblemFacet.setProject( readMetadataRequest.getProjectId() );
+                        repoProblemFacet.setVersion( readMetadataRequest.getProjectVersion() );
+                        repoProblemFacet.setNamespace( readMetadataRequest.getNamespace() );
 
                         metadata.addFacet( repoProblemFacet );
 
@@ -304,9 +311,9 @@ public class Maven2RepositoryStorage
             }
 
             // Check if the POM is in the correct location
-            boolean correctGroupId = namespace.equals( model.getGroupId() );
-            boolean correctArtifactId = projectId.equals( model.getArtifactId() );
-            boolean correctVersion = projectVersion.equals( model.getVersion() );
+            boolean correctGroupId = readMetadataRequest.getNamespace().equals( model.getGroupId() );
+            boolean correctArtifactId = readMetadataRequest.getProjectId().equals( model.getArtifactId() );
+            boolean correctVersion = readMetadataRequest.getProjectVersion().equals( model.getVersion() );
             if ( !correctGroupId || !correctArtifactId || !correctVersion )
             {
                 StringBuilder message = new StringBuilder( "Incorrect POM coordinates in '" + file + "':" );
@@ -329,7 +336,7 @@ public class Maven2RepositoryStorage
             ProjectVersionMetadata metadata = new ProjectVersionMetadata();
             metadata.setCiManagement( convertCiManagement( model.getCiManagement() ) );
             metadata.setDescription( model.getDescription() );
-            metadata.setId( projectVersion );
+            metadata.setId( readMetadataRequest.getProjectVersion() );
             metadata.setIssueManagement( convertIssueManagement( model.getIssueManagement() ) );
             metadata.setLicenses( convertLicenses( model.getLicenses() ) );
             metadata.setMailingLists( convertMailingLists( model.getMailingLists() ) );
@@ -561,21 +568,25 @@ public class Maven2RepositoryStorage
         return getSortedFiles( dir, filter );
     }
 
-    public Collection<ArtifactMetadata> readArtifactsMetadata( String repoId, String namespace, String projectId,
-                                                               String projectVersion, Filter<String> filter )
+    public Collection<ArtifactMetadata> readArtifactsMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageRuntimeException
     {
-        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId, projectVersion );
+        File dir = pathTranslator.toFile( getRepositoryBasedir( readMetadataRequest.getRepoId() ),
+                                          readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
+                                          readMetadataRequest.getProjectVersion() );
 
         // all files that are not metadata and not a checksum / signature are considered artifacts
-        File[] files = dir.listFiles( new ArtifactDirectoryFilter( filter ) );
+        File[] files = dir.listFiles( new ArtifactDirectoryFilter( readMetadataRequest.getFilter() ) );
 
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
         if ( files != null )
         {
             for ( File file : files )
             {
-                ArtifactMetadata metadata = getArtifactFromFile( repoId, namespace, projectId, projectVersion, file );
+                ArtifactMetadata metadata =
+                    getArtifactFromFile( readMetadataRequest.getRepoId(), readMetadataRequest.getNamespace(),
+                                         readMetadataRequest.getProjectId(), readMetadataRequest.getProjectVersion(),
+                                         file );
                 artifacts.add( metadata );
             }
         }

@@ -34,6 +34,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
@@ -54,11 +55,9 @@ import java.util.List;
 
 /**
  * Take an artifact off of disk and put it into the metadata repository.
- *
- *
  */
-@Service( "knownRepositoryContentConsumer#create-archiva-metadata" )
-@Scope( "prototype" )
+@Service ("knownRepositoryContentConsumer#create-archiva-metadata")
+@Scope ("prototype")
 public class ArchivaMetadataCreationConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
@@ -98,7 +97,7 @@ public class ArchivaMetadataCreationConsumer
      * factory.
      */
     @Inject
-    @Named( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private RepositoryStorage repositoryStorage;
 
     private static final Logger log = LoggerFactory.getLogger( ArchivaMetadataCreationConsumer.class );
@@ -170,13 +169,16 @@ public class ArchivaMetadataCreationConsumer
             ProjectVersionMetadata versionMetadata = null;
             try
             {
-                versionMetadata = repositoryStorage.readProjectVersionMetadata( repoId, artifact.getNamespace(),
-                                                                                artifact.getProject(), projectVersion );
+                ReadMetadataRequest readMetadataRequest =
+                    new ReadMetadataRequest().repoId( repoId ).namespace( artifact.getNamespace() ).projectId(
+                        artifact.getProject() ).projectVersion( projectVersion );
+                versionMetadata = repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
                 createVersionMetadata = true;
             }
             catch ( RepositoryStorageMetadataNotFoundException e )
             {
-                log.warn( "Missing or invalid POM for artifact:{} (repository:{}); creating empty metadata" , path, repoId );
+                log.warn( "Missing or invalid POM for artifact:{} (repository:{}); creating empty metadata", path,
+                          repoId );
 
                 versionMetadata = new ProjectVersionMetadata();
                 versionMetadata.setId( projectVersion );
@@ -185,7 +187,8 @@ public class ArchivaMetadataCreationConsumer
             }
             catch ( RepositoryStorageMetadataInvalidException e )
             {
-                log.warn( "Error occurred resolving POM for artifact:{} (repository:{}); message: {}" , new Object[] { path, repoId, e.getMessage() } );
+                log.warn( "Error occurred resolving POM for artifact:{} (repository:{}); message: {}",
+                          new Object[]{ path, repoId, e.getMessage() } );
             }
 
             // read the metadata and update it if it is newer or doesn't exist
@@ -202,12 +205,16 @@ public class ArchivaMetadataCreationConsumer
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(), new Object[] { path, repoId, e.getMessage() }, e );
+            log.warn(
+                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(),
+                new Object[]{ path, repoId, e.getMessage() }, e );
             repositorySession.revert();
         }
         catch ( RepositoryStorageRuntimeException e )
         {
-            log.warn( "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(), new Object[] { path, repoId, e.getMessage() }, e );
+            log.warn(
+                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(),
+                new Object[]{ path, repoId, e.getMessage() }, e );
             repositorySession.revert();
         }
         finally

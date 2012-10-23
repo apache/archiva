@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -33,9 +34,11 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
 import org.junit.Before;
@@ -53,21 +56,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import junit.framework.TestCase;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class Maven2RepositoryMetadataResolverTest
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -96,9 +97,9 @@ public class Maven2RepositoryMetadataResolverTest
     private WagonFactory wagonFactory;
 
     ManagedRepositoryConfiguration testRepo;
-    
+
     Configuration c;
-    
+
     @Before
     @Override
     public void setUp()
@@ -113,7 +114,6 @@ public class Maven2RepositoryMetadataResolverTest
         testRepo.setReleases( true );
         testRepo.setSnapshots( true );
         c.addManagedRepository( testRepo );
-       
 
         RemoteRepositoryConfiguration testRemoteRepo = new RemoteRepositoryConfiguration();
         testRemoteRepo.setId( TEST_REMOTE_REPO_ID );
@@ -131,9 +131,9 @@ public class Maven2RepositoryMetadataResolverTest
 
         configuration.save( c );
 
-        assertTrue ( c.getManagedRepositories().get( 0 ).isSnapshots() );
-        assertTrue ( c.getManagedRepositories().get( 0 ).isReleases() );
-        
+        assertTrue( c.getManagedRepositories().get( 0 ).isSnapshots() );
+        assertTrue( c.getManagedRepositories().get( 0 ).isReleases() );
+
         wagonFactory = mock( WagonFactory.class );
 
         storage.setWagonFactory( wagonFactory );
@@ -146,9 +146,10 @@ public class Maven2RepositoryMetadataResolverTest
     public void testModelWithJdkProfileActivation()
         throws Exception
     {
-
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.maven", "maven-archiver", "2.4.1" );
+        ReadMetadataRequest readMetadataRequest =
+            new ReadMetadataRequest().repoId( TEST_REPO_ID ).namespace( "org.apache.maven" ).projectId(
+                "maven-archiver" ).projectVersion( "2.4.1" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
     }
 
@@ -156,8 +157,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadata()
         throws Exception
     {
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "org.apache.archiva", "archiva-common", "1.2.1" ) );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "jar", facet.getPackaging() );
         assertEquals( "http://archiva.apache.org/ref/1.2.1/archiva-base/archiva-common", metadata.getUrl() );
@@ -211,8 +212,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactMetadata()
         throws Exception
     {
-        Collection<ArtifactMetadata> springArtifacts =
-            storage.readArtifactsMetadata( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL );
+        Collection<ArtifactMetadata> springArtifacts = storage.readArtifactsMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( springArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -253,8 +254,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactMetadataSnapshots()
         throws Exception
     {
-        Collection<ArtifactMetadata> testArtifacts =
-            storage.readArtifactsMetadata( TEST_REPO_ID, "com.example.test", "test-artifact", "1.0-SNAPSHOT", ALL );
+        Collection<ArtifactMetadata> testArtifacts = storage.readArtifactsMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "test-artifact", "1.0-SNAPSHOT", ALL ) );
         List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( testArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -336,8 +337,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
         throws Exception
     {
-        ProjectVersionMetadata metadata =
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" );
+        ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" ) );
         MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
         assertEquals( "pom", facet.getPackaging() );
         assertEquals( "http://www.apache.org/", metadata.getUrl() );
@@ -376,7 +377,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         try
         {
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" );
+            storage.readProjectVersionMetadata(
+                new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT" ) );
             fail( "Should not be found" );
         }
         catch ( RepositoryStorageMetadataNotFoundException e )
@@ -391,8 +393,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         try
         {
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "malformed-metadata",
-                                                "1.0-SNAPSHOT" );
+            storage.readProjectVersionMetadata(
+                new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "malformed-metadata", "1.0-SNAPSHOT" ) );
             fail( "Should not be found" );
         }
         catch ( RepositoryStorageMetadataNotFoundException e )
@@ -407,8 +409,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         try
         {
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "incomplete-metadata",
-                                                "1.0-SNAPSHOT" );
+            storage.readProjectVersionMetadata(
+                new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "incomplete-metadata", "1.0-SNAPSHOT" ) );
             fail( "Should not be found" );
         }
         catch ( RepositoryStorageMetadataNotFoundException e )
@@ -423,7 +425,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         try
         {
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" );
+            storage.readProjectVersionMetadata(
+                new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "invalid-pom", "1.0" ) );
             fail( "Should have received an exception due to invalid POM" );
         }
         catch ( RepositoryStorageMetadataInvalidException e )
@@ -438,7 +441,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         try
         {
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "mislocated-pom", "1.0" );
+            storage.readProjectVersionMetadata(
+                new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "mislocated-pom", "1.0" ) );
             fail( "Should have received an exception due to mislocated POM" );
         }
         catch ( RepositoryStorageMetadataInvalidException e )
@@ -453,7 +457,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         try
         {
-            storage.readProjectVersionMetadata( TEST_REPO_ID, "com.example.test", "missing-pom", "1.0" );
+            storage.readProjectVersionMetadata(
+                new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "missing-pom", "1.0" ) );
             fail( "Should not be found" );
         }
         catch ( RepositoryStorageMetadataNotFoundException e )
@@ -551,8 +556,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifacts()
         throws Exception
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
-            storage.readArtifactsMetadata( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) ) );
         assertEquals( 3, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -574,8 +579,8 @@ public class Maven2RepositoryMetadataResolverTest
     {
         ExcludesFilter<String> filter =
             new ExcludesFilter<String>( Collections.singletonList( "plexus-spring-1.2.pom" ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
-            storage.readArtifactsMetadata( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) ) );
         assertEquals( 2, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
@@ -593,9 +598,8 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifactsTimestampedSnapshots()
         throws Exception
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
-            storage.readArtifactsMetadata( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT",
-                                           ALL ) );
+        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+            new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "missing-metadata", "1.0-SNAPSHOT", ALL ) ) );
         assertEquals( 1, artifacts.size() );
 
         ArtifactMetadata artifact = artifacts.get( 0 );
