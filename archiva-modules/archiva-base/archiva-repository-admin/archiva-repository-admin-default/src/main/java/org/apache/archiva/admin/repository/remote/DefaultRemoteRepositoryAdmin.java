@@ -134,6 +134,8 @@ public class DefaultRemoteRepositoryAdmin
             remoteRepository.setDownloadRemoteIndexOnStartup(
                 repositoryConfiguration.isDownloadRemoteIndexOnStartup() );
             remoteRepository.setDescription( repositoryConfiguration.getDescription() );
+            remoteRepository.setExtraHeaders( repositoryConfiguration.getExtraHeaders() );
+            remoteRepository.setExtraParameters( repositoryConfiguration.getExtraParameters() );
             remoteRepositories.add( remoteRepository );
         }
         return remoteRepositories;
@@ -356,6 +358,8 @@ public class DefaultRemoteRepositoryAdmin
         remoteRepositoryConfiguration.setDownloadRemoteIndexOnStartup(
             remoteRepository.isDownloadRemoteIndexOnStartup() );
         remoteRepositoryConfiguration.setDescription( remoteRepository.getDescription() );
+        remoteRepositoryConfiguration.setExtraHeaders( remoteRepository.getExtraHeaders() );
+        remoteRepositoryConfiguration.setExtraParameters( remoteRepository.getExtraParameters() );
         return remoteRepositoryConfiguration;
     }
 

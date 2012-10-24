@@ -27,11 +27,12 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.proxyconnectorrule.ProxyConnectorRuleAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.memory.SimpleUser;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.redback.role.RoleManager;
-import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,20 +40,22 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public abstract class AbstractRepositoryAdminTest
     extends TestCase
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    public static final String APPSERVER_BASE_PATH = AbstractRepositoryAdminTest.fixPath( System.getProperty( "appserver.base" ) );
+    public static final String APPSERVER_BASE_PATH =
+        AbstractRepositoryAdminTest.fixPath( System.getProperty( "appserver.base" ) );
 
     @Inject
     protected MockAuditListener mockAuditListener;
@@ -77,19 +80,20 @@ public abstract class AbstractRepositoryAdminTest
         AuditInformation auditInformation = new AuditInformation( getFakeUser(), "archiva-localhost" );
         return auditInformation;
     }
-    
-   // make a nice repo path to allow unit test to run
-    private static String fixPath ( String path ) 
+
+    // make a nice repo path to allow unit test to run
+    private static String fixPath( String path )
     {
         String SPACE = " ";
         if ( path.contains( SPACE ) )
         {
-            LoggerFactory.getLogger( AbstractRepositoryAdminTest.class.getName() ).error( 
-                    "You are building and testing  with {appserver.base}: \n " + path + " containing space. Consider relocating." );
+            LoggerFactory.getLogger( AbstractRepositoryAdminTest.class.getName() ).error(
+                "You are building and testing  with {appserver.base}: \n " + path
+                    + " containing space. Consider relocating." );
         }
-        return path.replaceAll( SPACE, "&amp;20");
+        return path.replaceAll( SPACE, "&amp;20" );
     }
-    
+
     protected User getFakeUser()
     {
         SimpleUser user = new SimpleUser()
@@ -142,7 +146,7 @@ public abstract class AbstractRepositoryAdminTest
         return getRemoteRepository( "foo" );
     }
 
-    protected RemoteRepository getRemoteRepository(String id)
+    protected RemoteRepository getRemoteRepository( String id )
     {
         RemoteRepository remoteRepository = new RemoteRepository();
         remoteRepository.setUrl( "http://foo.com/maven-it-rocks" );
@@ -153,6 +157,12 @@ public abstract class AbstractRepositoryAdminTest
         remoteRepository.setId( id );
         remoteRepository.setRemoteDownloadNetworkProxyId( "foo" );
         remoteRepository.setDescription( "cool apache repo" );
+        Map<String, String> extraParameters = new HashMap<String, String>();
+        extraParameters.put( "foo", "bar" );
+        remoteRepository.setExtraParameters( extraParameters );
+        Map<String, String> extraHeaders = new HashMap<String, String>();
+        extraHeaders.put( "beer", "wine" );
+        remoteRepository.setExtraHeaders( extraHeaders );
         return remoteRepository;
     }
 }

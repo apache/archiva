@@ -75,6 +75,11 @@ public class RemoteRepositoryAdminTest
         assertEquals( getRemoteRepository().getName(), repo.getName() );
         assertEquals( getRemoteRepository().getTimeout(), repo.getTimeout() );
         assertEquals( getRemoteRepository().getDescription(), repo.getDescription() );
+        assertEquals( 1, remoteRepository.getExtraHeaders().size() );
+        assertEquals( "wine", remoteRepository.getExtraHeaders().get( "beer" ) );
+
+        assertEquals( 1, remoteRepository.getExtraParameters().size() );
+        assertEquals( "bar", remoteRepository.getExtraParameters().get( "foo" ) );
 
         remoteRepositoryAdmin.deleteRemoteRepository( "foo", getFakeAuditInformation() );
 

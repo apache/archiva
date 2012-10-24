@@ -565,6 +565,26 @@
           </description>
           <defaultValue>false</defaultValue>
         </field>
+        <field>
+          <name>extraParameters</name>
+          <version>1.4.0+</version>
+          <type>Map</type>
+          <description>Additionnal request parameters to add to url when requesting remote repositories.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>extraHeaders</name>
+          <version>1.4.0+</version>
+          <type>Map</type>
+          <description>Additionnal http headers to add to url when requesting remote repositories.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
