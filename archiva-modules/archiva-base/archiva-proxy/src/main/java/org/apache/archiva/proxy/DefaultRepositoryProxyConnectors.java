@@ -23,6 +23,7 @@ import com.google.common.io.Files;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
+import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -921,7 +922,7 @@ public class DefaultRepositoryProxyConnectors
             if ( !origFile.exists() )
             {
                 log.debug( "Retrieving {} from {}", remotePath, remoteRepository.getRepository().getName() );
-                wagon.get( remotePath, destFile );
+                wagon.get( addParameters( remotePath, remoteRepository.getRepository() ), destFile );
                 success = true;
 
                 // You wouldn't get here on failure, a WagonException would have been thrown.
@@ -930,7 +931,8 @@ public class DefaultRepositoryProxyConnectors
             else
             {
                 log.debug( "Retrieving {} from {} if updated", remotePath, remoteRepository.getRepository().getName() );
-                success = wagon.getIfNewer( remotePath, destFile, origFile.lastModified() );
+                success = wagon.getIfNewer( addParameters( remotePath, remoteRepository.getRepository() ), destFile,
+                                            origFile.lastModified() );
                 if ( !success )
                 {
                     throw new NotModifiedException(
@@ -1248,6 +1250,29 @@ public class DefaultRepositoryProxyConnectors
             initConnectorsAndNetworkProxies();
         }
     }
+
+    protected String addParameters( String path, RemoteRepository remoteRepository )
+    {
+        if ( remoteRepository.getExtraParameters().isEmpty() )
+        {
+            return path;
+        }
+
+        boolean question = false;
+
+        StringBuilder res = new StringBuilder( path == null ? "" : path );
+
+        for ( Entry<String, String> entry : remoteRepository.getExtraParameters().entrySet() )
+        {
+            if ( !question )
+            {
+                res.append( '?' ).append( entry.getKey() ).append( '=' ).append( entry.getValue() );
+            }
+        }
+
+        return res.toString();
+    }
+
 
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {

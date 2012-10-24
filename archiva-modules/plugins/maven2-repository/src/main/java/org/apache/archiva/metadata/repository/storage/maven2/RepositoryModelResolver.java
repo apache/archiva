@@ -262,7 +262,7 @@ public class RepositoryModelResolver
                         String metadataPath =
                             StringUtils.substringBeforeLast( artifactPath, "/" ) + "/" + METADATA_FILENAME;
 
-                        wagon.get( metadataPath, tmpMetadataResource );
+                        wagon.get( addParameters( metadataPath, remoteRepository ), tmpMetadataResource );
 
                         log.debug( "Successfully downloaded metadata." );
 
@@ -288,7 +288,7 @@ public class RepositoryModelResolver
 
                     log.info( "Retrieving {} from {}", artifactPath, remoteRepository.getName() );
 
-                    wagon.get( artifactPath, tmpResource );
+                    wagon.get( addParameters( artifactPath, remoteRepository ), tmpResource );
 
                     log.debug( "Downloaded successfully." );
 
@@ -426,7 +426,7 @@ public class RepositoryModelResolver
 
         log.info( "Retrieving {} from {}", remotePath, remoteRepository.getName() );
 
-        wagon.get( remotePath, destFile );
+        wagon.get( addParameters( remotePath, remoteRepository ), destFile );
 
         log.debug( "Downloaded successfully." );
 
@@ -484,5 +484,27 @@ public class RepositoryModelResolver
                 }
             }
         }
+    }
+
+    protected String addParameters( String path, RemoteRepository remoteRepository )
+    {
+        if ( remoteRepository.getExtraParameters().isEmpty() )
+        {
+            return path;
+        }
+
+        boolean question = false;
+
+        StringBuilder res = new StringBuilder( path == null ? "" : path );
+
+        for ( Map.Entry<String, String> entry : remoteRepository.getExtraParameters().entrySet() )
+        {
+            if ( !question )
+            {
+                res.append( '?' ).append( entry.getKey() ).append( '=' ).append( entry.getValue() );
+            }
+        }
+
+        return res.toString();
     }
 }
