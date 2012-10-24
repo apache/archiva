@@ -135,8 +135,8 @@ public class DownloadRemoteIndexTask
                 new URL( this.remoteRepository.getUrl() ).getProtocol() + ( ( this.networkProxy != null
                     && this.networkProxy.isUseNtlm() ) ? "-ntlm" : "" );
 
-            final StreamWagon wagon =
-                (StreamWagon) wagonFactory.getWagon( new WagonFactoryRequest().protocol( wagonProtocol ) );
+            final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
+                new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ) );
             int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
             // FIXME olamy having 2 config values
             wagon.setReadTimeout( timeoutInMilliseconds );

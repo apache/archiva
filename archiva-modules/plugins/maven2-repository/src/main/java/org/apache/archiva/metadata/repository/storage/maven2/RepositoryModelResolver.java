@@ -238,9 +238,12 @@ public class RepositoryModelResolver
                 // if it's a ntlm proxy we have to lookup the wagon light which support thats
                 // wagon http client doesn't support that
                 wagon = ( networkProxy != null && networkProxy.isUseNtlm() )
-                    ? wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol + "-ntlm" ) )
-                    : wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol ) );
-                wagon = wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol ) );
+                    ? wagonFactory.getWagon(
+                    new WagonFactoryRequest( "wagon#" + protocol + "-ntlm", remoteRepository.getExtraHeaders() ) )
+                    : wagonFactory.getWagon(
+                        new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ) );
+                wagon = wagonFactory.getWagon(
+                    new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ) );
                 if ( wagon == null )
                 {
                     throw new RuntimeException( "Unsupported remote repository protocol: " + protocol );

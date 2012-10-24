@@ -96,7 +96,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
-@Service ("repositoryProxyConnectors#default")
+@Service ( "repositoryProxyConnectors#default" )
 public class DefaultRepositoryProxyConnectors
     implements RepositoryProxyConnectors, RegistryListener
 {
@@ -106,21 +106,21 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named (value = "archivaConfiguration#default")
+    @Named ( value = "archivaConfiguration#default" )
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      *
      */
     @Inject
-    @Named (value = "repositoryContentFactory#default")
+    @Named ( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryFactory;
 
     /**
      *
      */
     @Inject
-    @Named (value = "metadataTools#default")
+    @Named ( value = "metadataTools#default" )
     private MetadataTools metadataTools;
 
     /**
@@ -161,7 +161,7 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named (value = "archivaTaskScheduler#repository")
+    @Named ( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
 
     @Inject
@@ -175,7 +175,7 @@ public class DefaultRepositoryProxyConnectors
 
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings ( "unchecked" )
     private void initConnectorsAndNetworkProxies()
     {
 
@@ -705,8 +705,10 @@ public class DefaultRepositoryProxyConnectors
                 }
 
                 wagon = ( networkProxy != null && networkProxy.isUseNtlm() )
-                    ? wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol + "-ntlm" ) )
-                    : wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol ) );
+                    ? wagonFactory.getWagon( new WagonFactoryRequest( "wagon#" + protocol + "-ntlm",
+                                                                      remoteRepository.getRepository().getExtraHeaders() ) )
+                    : wagonFactory.getWagon( new WagonFactoryRequest( "wagon#" + protocol,
+                                                                      remoteRepository.getRepository().getExtraHeaders() ) );
                 if ( wagon == null )
                 {
                     throw new ProxyException( "Unsupported target repository protocol: " + protocol );
