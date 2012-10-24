@@ -43,6 +43,7 @@ import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
+import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
@@ -703,8 +704,9 @@ public class DefaultRepositoryProxyConnectors
                     networkProxy = networkProxyAdmin.getNetworkProxy( connector.getProxyId() );
                 }
 
-                wagon = ( networkProxy != null && networkProxy.isUseNtlm() ) ? wagonFactory.getWagon(
-                    "wagon#" + protocol + "-ntlm" ) : wagonFactory.getWagon( "wagon#" + protocol );
+                wagon = ( networkProxy != null && networkProxy.isUseNtlm() )
+                    ? wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol + "-ntlm" ) )
+                    : wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#" + protocol ) );
                 if ( wagon == null )
                 {
                     throw new ProxyException( "Unsupported target repository protocol: " + protocol );

@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
+import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.context.IndexingContext;
@@ -134,7 +135,8 @@ public class DownloadRemoteIndexTask
                 new URL( this.remoteRepository.getUrl() ).getProtocol() + ( ( this.networkProxy != null
                     && this.networkProxy.isUseNtlm() ) ? "-ntlm" : "" );
 
-            final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon( wagonProtocol );
+            final StreamWagon wagon =
+                (StreamWagon) wagonFactory.getWagon( new WagonFactoryRequest().protocol( wagonProtocol ) );
             int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
             // FIXME olamy having 2 config values
             wagon.setReadTimeout( timeoutInMilliseconds );

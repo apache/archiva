@@ -29,13 +29,14 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "wagonFactory" )
+@Service ("wagonFactory")
 public class DefaultWagonFactory
     implements WagonFactory
 {
@@ -52,16 +53,18 @@ public class DefaultWagonFactory
         this.applicationContext = applicationContext;
     }
 
-    public Wagon getWagon( String protocol )
+    public Wagon getWagon( WagonFactoryRequest wagonFactoryRequest )
         throws WagonFactoryException
     {
         try
         {
-            protocol = StringUtils.startsWith( protocol, "wagon#" ) ? protocol : "wagon#" + protocol;
+            String protocol = StringUtils.startsWith( wagonFactoryRequest.getProtocol(), "wagon#" )
+                ? wagonFactoryRequest.getProtocol()
+                : "wagon#" + wagonFactoryRequest.getProtocol();
 
             Wagon wagon = applicationContext.getBean( protocol, Wagon.class );
             wagon.addTransferListener( debugTransferListener );
-            configureUserAgent( wagon );
+            configureUserAgent( wagon, wagonFactoryRequest );
             return wagon;
         }
         catch ( BeansException e )
@@ -70,7 +73,7 @@ public class DefaultWagonFactory
         }
     }
 
-    protected void configureUserAgent( Wagon wagon )
+    protected void configureUserAgent( Wagon wagon, WagonFactoryRequest wagonFactoryRequest )
     {
         try
         {
@@ -82,8 +85,17 @@ public class DefaultWagonFactory
             {
                 headers = new Properties();
             }
-            // FIXME make this configurable !!
-            headers.put( "User-Agent", "Java" );
+
+            headers.put( "User-Agent", wagonFactoryRequest.getUserAgent() );
+
+            if ( !wagonFactoryRequest.getHeaders().isEmpty() )
+            {
+                for ( Map.Entry<String, String> entry : wagonFactoryRequest.getHeaders().entrySet() )
+                {
+                    headers.put( entry.getKey(), entry.getValue() );
+                }
+            }
+
             Method setHttpHeaders = clazz.getMethod( "setHttpHeaders", new Class[]{ Properties.class } );
             setHttpHeaders.invoke( wagon, headers );
 

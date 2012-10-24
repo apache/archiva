@@ -36,6 +36,7 @@ import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
@@ -55,15 +56,15 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named ( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -166,7 +167,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         storage.setWagonFactory( wagonFactory );
 
         Wagon wagon = new MockWagon();
-        when( wagonFactory.getWagon( "wagon#http" ) ).thenReturn( wagon );
+        when( wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#http" ) ) ).thenReturn( wagon );
     }
 
     // Tests for MRM-1411 - START

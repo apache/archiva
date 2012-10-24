@@ -20,20 +20,19 @@ package org.apache.archiva.proxy.common;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the WagonFactory works through Spring to be bound into the RepositoryProxyConnectors implementation.
- * 
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
+@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class WagonFactoryTest
     extends TestCase
 {
@@ -46,13 +45,13 @@ public class WagonFactoryTest
         throws Exception
     {
 
-        Wagon first = factory.getWagon( "wagon#file" );
-        
-        Wagon second = factory.getWagon( "wagon#file" );
+        Wagon first = factory.getWagon( new WagonFactoryRequest().protocol( "wagon#file" ) );
+
+        Wagon second = factory.getWagon( new WagonFactoryRequest().protocol( "wagon#file" ) );
 
         // ensure we support only protocol name too
-        Wagon third = factory.getWagon( "file" );
-        
+        Wagon third = factory.getWagon( new WagonFactoryRequest().protocol( "file" ) );
+
         assertNotSame( first, second );
 
         assertNotSame( first, third );

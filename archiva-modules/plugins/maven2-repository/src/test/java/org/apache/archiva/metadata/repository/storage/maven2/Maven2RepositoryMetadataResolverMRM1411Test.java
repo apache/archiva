@@ -36,6 +36,7 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
@@ -134,7 +135,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         storage.setWagonFactory( wagonFactory );
 
         Wagon wagon = new MockWagon();
-        when( wagonFactory.getWagon( "wagon#http" ) ).thenReturn( wagon );
+        when( wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#http" ) ) ).thenReturn( wagon );
     }
 
     // Tests for MRM-1411 - START
