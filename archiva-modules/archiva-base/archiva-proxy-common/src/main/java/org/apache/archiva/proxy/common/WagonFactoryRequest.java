@@ -99,4 +99,38 @@ public class WagonFactoryRequest
         this.userAgent = userAgent;
         return this;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof WagonFactoryRequest ) )
+        {
+            return false;
+        }
+
+        WagonFactoryRequest that = (WagonFactoryRequest) o;
+
+        if ( protocol != null ? !protocol.equals( that.protocol ) : that.protocol != null )
+        {
+            return false;
+        }
+        if ( userAgent != null ? !userAgent.equals( that.userAgent ) : that.userAgent != null )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = protocol != null ? protocol.hashCode() : 0;
+        result = 31 * result + ( userAgent != null ? userAgent.hashCode() : 0 );
+        return result;
+    }
 }

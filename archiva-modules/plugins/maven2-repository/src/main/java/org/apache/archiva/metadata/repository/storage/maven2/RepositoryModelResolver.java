@@ -242,8 +242,11 @@ public class RepositoryModelResolver
                     new WagonFactoryRequest( "wagon#" + protocol + "-ntlm", remoteRepository.getExtraHeaders() ) )
                     : wagonFactory.getWagon(
                         new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ) );
-                wagon = wagonFactory.getWagon(
-                    new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ) );
+                if ( wagon == null )
+                {
+                    wagon = wagonFactory.getWagon(
+                        new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ) );
+                }
                 if ( wagon == null )
                 {
                     throw new RuntimeException( "Unsupported remote repository protocol: " + protocol );

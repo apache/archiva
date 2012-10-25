@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -135,7 +136,8 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         storage.setWagonFactory( wagonFactory );
 
         Wagon wagon = new MockWagon();
-        when( wagonFactory.getWagon( new WagonFactoryRequest().protocol( "wagon#http" ) ) ).thenReturn( wagon );
+        when( wagonFactory.getWagon(
+            new WagonFactoryRequest( "wagon#http", new HashMap<String, String>() ) ) ).thenReturn( wagon );
     }
 
     // Tests for MRM-1411 - START
@@ -244,8 +246,12 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     public void testGetProjectVersionMetadataWithParentSnapshotVersion()
         throws Exception
     {
+
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
                                     "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
+
+        //copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-root",
+        //                            "target/test-repository/com/example/test/test-snapshot-artifact-root" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
