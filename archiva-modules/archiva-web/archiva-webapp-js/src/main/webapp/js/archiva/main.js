@@ -28,7 +28,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
    * @param user see user.js
    */
   reccordLoginCookie=function(user) {
-    $.cookie('archiva_login', ko.toJSON(user));
+    $.cookie('archiva_login', ko.toJSON(user),{ expires: 7, path: '/' });
   };
 
   getUserFromLoginCookie=function(){
@@ -38,7 +38,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   };
 
   deleteLoginCookie=function(){
-    $.cookie('archiva_login', null);
+    $.cookie('archiva_login', null,{ expires: 7, path: '/' });
   };
 
   logout=function(doScreenChange){
