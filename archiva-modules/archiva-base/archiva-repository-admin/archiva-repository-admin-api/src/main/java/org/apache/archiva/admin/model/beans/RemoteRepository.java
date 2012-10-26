@@ -21,7 +21,9 @@ package org.apache.archiva.admin.model.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,11 +76,25 @@ public class RemoteRepository
     private Map<String, String> extraParameters;
 
     /**
+     * field to ease json mapping wrapper on <code>extraParameters</code> field
+     *
+     * @since 1.4-M4
+     */
+    private List<PropertyEntry> extraParametersEntries;
+
+    /**
      * extraHeaders.
      *
      * @since 1.4-M4
      */
     private Map<String, String> extraHeaders;
+
+    /**
+     * field to ease json mapping wrapper on <code>extraHeaders</code> field
+     *
+     * @since 1.4-M4
+     */
+    private List<PropertyEntry> extraHeadersEntries;
 
 
     public RemoteRepository()
@@ -226,6 +242,35 @@ public class RemoteRepository
         this.extraParameters = extraParameters;
     }
 
+    public void addExtraParameter( String key, String value )
+    {
+        getExtraParameters().put( key, value );
+    }
+
+    public List<PropertyEntry> getExtraParametersEntries()
+    {
+        this.extraParametersEntries = new ArrayList<PropertyEntry>();
+        for ( Map.Entry<String, String> entry : getExtraParameters().entrySet() )
+        {
+            this.extraParametersEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
+        }
+        return this.extraParametersEntries;
+    }
+
+    public void setExtraParametersEntries( List<PropertyEntry> extraParametersEntries )
+    {
+        if ( extraParametersEntries == null )
+        {
+            return;
+        }
+
+        this.extraParametersEntries = extraParametersEntries;
+        for ( PropertyEntry propertyEntry : extraParametersEntries )
+        {
+            this.addExtraParameter( propertyEntry.getKey(), propertyEntry.getValue() );
+        }
+    }
+
     public Map<String, String> getExtraHeaders()
     {
         if ( this.extraHeaders == null )
@@ -239,6 +284,36 @@ public class RemoteRepository
     {
         this.extraHeaders = extraHeaders;
     }
+
+    public void addExtraHeader( String key, String value )
+    {
+        getExtraHeaders().put( key, value );
+    }
+
+    public List<PropertyEntry> getExtraHeadersEntries()
+    {
+        this.extraHeadersEntries = new ArrayList<PropertyEntry>();
+        for ( Map.Entry<String, String> entry : getExtraHeaders().entrySet() )
+        {
+            this.extraHeadersEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
+        }
+        return this.extraHeadersEntries;
+    }
+
+    public void setExtraHeadersEntries( List<PropertyEntry> extraHeadersEntries )
+    {
+        if ( extraHeadersEntries == null )
+        {
+            return;
+        }
+
+        this.extraHeadersEntries = extraHeadersEntries;
+        for ( PropertyEntry propertyEntry : extraHeadersEntries )
+        {
+            this.addExtraHeader( propertyEntry.getKey(), propertyEntry.getValue() );
+        }
+    }
+
 
     @Override
     public String toString()
