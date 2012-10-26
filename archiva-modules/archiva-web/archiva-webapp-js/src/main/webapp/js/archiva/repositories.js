@@ -690,7 +690,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   RemoteRepository=function(id,name,layout,indexDirectory,url,userName,password,timeout,downloadRemoteIndex,remoteIndexUrl,
                             remoteDownloadNetworkProxyId,cronExpression,remoteDownloadTimeout,downloadRemoteIndexOnStartup,
-                            description){
+                            description,extraParametersEntries,extraHeadersEntries){
 
     var self=this;
 
@@ -762,6 +762,16 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       return "no label";
     }
 
+    this.extraParametersEntries=ko.observableArray(extraParametersEntries==null?new Array():extraParametersEntries);
+    this.extraParametersEntries.subscribe(function(newValue){
+      self.modified(true);
+    });
+
+    this.extraHeadersEntries=ko.observableArray(extraHeadersEntries==null?new Array():extraHeadersEntries);
+    this.extraHeadersEntries.subscribe(function(newValue){
+      self.modified(true);
+    });
+
     this.modified=ko.observable(false);
   }
 
@@ -769,9 +779,25 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     if (data==null){
       return null;
     }
+
+    var extraParametersEntries = data.extraParametersEntries == null ? []: $.each(data.extraParametersEntries,function(item){
+      return new Entry(item.key, item.value);
+    });
+    if (!$.isArray(extraParametersEntries)){
+      extraParametersEntries=[];
+    }
+
+    var extraHeadersEntries = data.extraHeadersEntries == null ? []: $.each(data.extraHeadersEntries,function(item){
+      return new Entry(item.key, item.value);
+    });
+    if (!$.isArray(extraHeadersEntries)){
+      extraHeadersEntries=[];
+    }
+
     return new RemoteRepository(data.id,data.name,data.layout,data.indexDirectory,data.url,data.userName,data.password,
                                 data.timeout,data.downloadRemoteIndex,data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
-                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup,data.description);
+                                data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup,data.description,
+                                extraParametersEntries,extraHeadersEntries);
   }
 
   mapRemoteRepositories=function(data){
@@ -847,6 +873,21 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     displayGrid=function(){
       activateRemoteRepositoriesGridTab();
     }
+
+    addExtraParameter=function(){
+
+      var mainContent=$("#main-content");
+      var key=mainContent.find("#extraParameter-key").val();
+      var value=mainContent.find("#extraParameter-value").val();
+      $.log("addExtraParameter="+key+":"+value);
+      var oldTab = self.remoteRepository.extraParametersEntries();
+      oldTab.push(new Entry(key,value));
+      self.remoteRepository.extraParametersEntries(oldTab);
+      mainContent.find("#extraParameter-key").val("");
+      mainContent.find("#extraParameter-value").val("");
+      self.remoteRepository.modified(true);
+    }
+
   }
 
   RemoteRepositoriesViewModel=function(){
@@ -864,10 +905,11 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
             var viewModel = new RemoteRepositoryViewModel(remoteRepository,true,self);
             viewModel.networkProxies(mapNetworkProxies(data));
             var mainContent = $("#main-content");
+
             ko.applyBindings(viewModel,mainContent.find("#remote-repository-edit").get(0));
             activateRemoteRepositoryEditTab();
             mainContent.find("#remote-repository-edit-li a").html($.i18n.prop('edit'));
-            activateRemoteRepositoryFormValidation();
+            activateRemoteRepositoryFormValidation(false);
             activatePopoverDoc();
           }
       })
@@ -969,22 +1011,40 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     }
   }
 
-  activateRemoteRepositoryFormValidation=function(){
+  /**
+   *
+   * @param validateId to validate if id already exists: not needed for update !
+   */
+  activateRemoteRepositoryFormValidation=function(validateId){
     // FIXME find a way to activate cronExpression validation only if downloadRemote is activated !
-    var validator = $("#main-content" ).find("#remote-repository-edit-form").validate({
-      rules: {
-        id: {
-          required: true,
-          remote: {
-            url: "restServices/archivaUiServices/dataValidatorService/remoteRepositoryIdNotExists",
-            type: "get"
+    var validator = null;
+    if (validateId){
+      validator = $("#main-content" ).find("#remote-repository-edit-form").validate({
+        rules: {
+          id: {
+            required: true,
+            remote: {
+              url: "restServices/archivaUiServices/dataValidatorService/remoteRepositoryIdNotExists",
+              type: "get"
+            }
           }
+        },
+        showErrors: function(validator, errorMap, errorList) {
+          customShowError("#main-content #remote-repository-edit-form",validator,errorMap,errorMap);
         }
-      },
-      showErrors: function(validator, errorMap, errorList) {
-        customShowError("#main-content #remote-repository-edit-form",validator,errorMap,errorMap);
-      }
-    });
+      });
+    } else {
+      validator = $("#main-content" ).find("#remote-repository-edit-form").validate({
+        rules: {
+          id: {
+            required: true
+          }
+        },
+        showErrors: function(validator, errorMap, errorList) {
+          customShowError("#main-content #remote-repository-edit-form",validator,errorMap,errorMap);
+        }
+      });
+    }
     validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
     validator.settings.messages["id"]=$.i18n.prop("id.required.or.alreadyexists");
   }
@@ -1145,8 +1205,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
               remoteRepo.cronExpression("0 0 08 ? * SUN");
               var viewModel = new RemoteRepositoryViewModel(remoteRepo,false,remoteRepositoriesViewModel);
               viewModel.networkProxies(mapNetworkProxies(data));
-              ko.applyBindings(viewModel,$("#main-content" ).find("#remote-repository-edit").get(0));
-              activateRemoteRepositoryFormValidation();
+              ko.applyBindings(viewModel,mainContent.find("#remote-repository-edit").get(0));
+              activateRemoteRepositoryFormValidation(true);
               activatePopoverDoc();
             }
         })

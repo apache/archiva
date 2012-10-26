@@ -71,7 +71,146 @@
                   </table>
                   <div id="remote-repositoriesPagination"></div>
               </div>
-              <div id="remote-repository-edit" class="pill-pane" data-bind='template: {name:"remote-repository-edit-tmpl"}'>
+              <div id="remote-repository-edit" class="pill-pane">
+
+
+                  <form id="remote-repository-edit-form" class="well form-horizontal">
+                    <fieldset id="remote-repository-edit-fieldset">
+                      <div class="control-group">
+                        <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+                        <div class="controls">
+                          {{if update}}
+                            <span class="uneditable-input">${$data.remoteRepository.id}</span>
+                          {{else}}
+                            <input type="text" class="input-xlarge required" id="id" name="id" size="50"
+                                   data-bind="value: remoteRepository.id,css:{'uneditable-input': update},readonly:update"/>
+                          {{/if}}
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="name">${$.i18n.prop('name')}</label>
+                        <div class="controls">
+                          <input type="text" class="input-xlarge required" id="name" name="name" size="50"
+                                 data-bind="value: remoteRepository.name"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="url">${$.i18n.prop('url')}</label>
+                        <div class="controls">
+                          <input type="text" class="input-xxlarge required" id="url" name="location" size="50" data-bind="value: remoteRepository.url"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="userName">${$.i18n.prop('username')}</label>
+                        <div class="controls">
+                          <input type="text" class="input-xlarge" id="userName" name="userName" size="50" data-bind="value: remoteRepository.userName"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="password">${$.i18n.prop('password')}</label>
+                         <div class="controls">
+                           <input type="password" class="input-xlarge" id="password" name="password" size="50" data-bind="value: remoteRepository.password"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="timeout">${$.i18n.prop('timeout')}</label>
+                        <div class="controls">
+                          <input type="text" id="timeout" class="digits" name="daysOlder" size="5" data-bind="value: remoteRepository.timeout"/>
+                        </div>
+                      </div>
+
+                      <div class="control-group">
+                        <label class="control-label" for="layout">${$.i18n.prop('type')}</label>
+                        <div class="controls">
+                          <select id="layout" data-bind="options: availableLayouts,optionsText: 'label',optionsValue:'type',value: remoteRepository.layout"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="downloadRemoteIndex">${$.i18n.prop('downloadRemoteIndex')}</label>
+                        <div class="controls">
+                          <input type="checkbox" id="downloadRemoteIndex" name="downloadRemoteIndex" size="5" data-bind="checked: remoteRepository.downloadRemoteIndex"/>
+                        </div>
+                      </div>
+
+                      <div class="control-group">
+                        <label class="control-label" for="remoteIndexUrl">${$.i18n.prop('remoteIndexUrl')}</label>
+                        <div class="controls">
+                          <input type="text" class="input-xxlarge" id="remoteIndexUrl" name="remoteIndexUrl" size="5" data-bind="value: remoteRepository.remoteIndexUrl"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="cronExpression">${$.i18n.prop('cronExpression')}</label>
+                        <div class="controls">
+                          <input type="text" id="cronExpression" name="cronExpression" size="40" data-bind="value: remoteRepository.cronExpression"/>
+                          <a class="btn btn-warning btn-mini popover-doc" id="cronExpression-info-button"
+                             data-original-title="${$.i18n.prop('cronExpression.help.title')}"
+                             data-content="${$.i18n.prop('cronExpression.help.content')}">
+                              <i class="icon-question-sign icon-white"></i>
+                          </a>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="indexDirectory">${$.i18n.prop('index.directory')}</label>
+                        <div class="controls">
+                          <input type="text" class="input-xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: remoteRepository.indexDirectory"/>
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label" for="remoteDownloadTimeout">${$.i18n.prop('remoteDownloadTimeout')}</label>
+                        <div class="controls">
+                          <input type="text" id="remoteDownloadTimeout" class="digits" name="remoteDownloadTimeout" size="5"
+                                 data-bind="value: remoteRepository.remoteDownloadTimeout"/>
+                        </div>
+                      </div>
+
+                      <div class="control-group">
+                        <label class="control-label" for="remoteDownloadNetworkProxyId">${$.i18n.prop('remoteDownloadNetworkProxyId')}</label>
+                        <div class="controls">
+                          <select id="remoteDownloadNetworkProxyId" data-bind="options: networkProxies, optionsText: 'id',optionsValue:'id', value: remoteRepository.remoteDownloadNetworkProxyId, optionsCaption: 'Choose...'"></select>
+                        </div>
+                      </div>
+
+                      <div class="control-group">
+                        <label class="control-label" for="downloadRemoteIndexOnStartup">${$.i18n.prop('downloadRemoteIndexOnStartup')}</label>
+                        <div class="controls">
+                          <input type="checkbox" id="downloadRemoteIndexOnStartup" name="downloadRemoteIndexOnStartup"
+                                 data-bind="checked: remoteRepository.downloadRemoteIndexOnStartup"/>
+                        </div>
+                      </div>
+
+                      <div class="control-group">
+                        <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
+                        <div class="controls">
+                          <textarea rows="3" id="description" name="description" data-bind="value: remoteRepository.description"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="row-fluid">
+                        <div class="control-group span6">
+                          <h4>${$.i18n.prop('remoteRepository.extraParametersEntries')}</h4>
+                          <table class="table">
+                            <thead>
+                              <th><input type="text" id="extraParameter-key"/></th>
+                              <th><input type="text" id="extraParameter-value"/></th>
+                              <th><a href="#" data-bind="click: function(){ addExtraParameter() }">${$.i18n.prop('add')}</a></th>
+                            </thead>
+                            <tbody data-bind="foreach: remoteRepository.extraParametersEntries">
+                              <tr>
+                                <td data-bind="text: key"></td>
+                                <td data-bind="text: value"></td>
+                                <td><a href="#" data-bind="click: function(){ $parent.deleteExtraParameter(key)}">${$.i18n.prop('delete')}</a></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                    </fieldset>
+                    <button data-bind="click: save" data-loading-text="${$.i18n.prop('common.loading')}" id="remote-repository-save-button" class="btn">${$.i18n.prop('save')}</button>
+                    <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
+                  </form>
+
+
               </div>
             </div>
     	</div>
@@ -513,121 +652,7 @@
 
 
 <script id="remote-repository-edit-tmpl" type='text/html'>
-    <form id="remote-repository-edit-form" class="well form-horizontal">
-      <fieldset id="remote-repository-edit-fieldset">
-        <div class="control-group">
-          <label class="control-label" for="id">${$.i18n.prop('id')}</label>
-          <div class="controls">
-            {{if update}}
-              <span class="uneditable-input">${$data.remoteRepository.id}</span>
-            {{else}}
-              <input type="text" class="input-xlarge required" id="id" name="id" size="50"
-                     data-bind="value: remoteRepository.id,css:{'uneditable-input': update},readonly:update"/>
-            {{/if}}
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="name">${$.i18n.prop('name')}</label>
-          <div class="controls">
-            <input type="text" class="input-xlarge required" id="name" name="name" size="50"
-                   data-bind="value: remoteRepository.name"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="url">${$.i18n.prop('url')}</label>
-          <div class="controls">
-            <input type="text" class="input-xxlarge required" id="url" name="location" size="50" data-bind="value: remoteRepository.url"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="userName">${$.i18n.prop('username')}</label>
-          <div class="controls">
-            <input type="text" class="input-xlarge" id="userName" name="userName" size="50" data-bind="value: remoteRepository.userName"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="password">${$.i18n.prop('password')}</label>
-           <div class="controls">
-             <input type="password" class="input-xlarge" id="password" name="password" size="50" data-bind="value: remoteRepository.password"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="timeout">${$.i18n.prop('timeout')}</label>
-          <div class="controls">
-            <input type="text" id="timeout" class="digits" name="daysOlder" size="5" data-bind="value: remoteRepository.timeout"/>
-          </div>
-        </div>
 
-        <div class="control-group">
-          <label class="control-label" for="layout">${$.i18n.prop('type')}</label>
-          <div class="controls">
-            <select id="layout" data-bind="options: availableLayouts,optionsText: 'label',optionsValue:'type',value: remoteRepository.layout"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="downloadRemoteIndex">${$.i18n.prop('downloadRemoteIndex')}</label>
-          <div class="controls">
-            <input type="checkbox" id="downloadRemoteIndex" name="downloadRemoteIndex" size="5" data-bind="checked: remoteRepository.downloadRemoteIndex"/>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="remoteIndexUrl">${$.i18n.prop('remoteIndexUrl')}</label>
-          <div class="controls">
-            <input type="text" class="input-xxlarge" id="remoteIndexUrl" name="remoteIndexUrl" size="5" data-bind="value: remoteRepository.remoteIndexUrl"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="cronExpression">${$.i18n.prop('cronExpression')}</label>
-          <div class="controls">
-            <input type="text" id="cronExpression" name="cronExpression" size="40" data-bind="value: remoteRepository.cronExpression"/>
-            <a class="btn btn-warning btn-mini popover-doc" id="cronExpression-info-button"
-               data-original-title="${$.i18n.prop('cronExpression.help.title')}"
-               data-content="${$.i18n.prop('cronExpression.help.content')}">
-                <i class="icon-question-sign icon-white"></i>
-            </a>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="indexDirectory">${$.i18n.prop('index.directory')}</label>
-          <div class="controls">
-            <input type="text" class="input-xlarge" id="indexDirectory" name="indexDirectory" size="50" data-bind="value: remoteRepository.indexDirectory"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="remoteDownloadTimeout">${$.i18n.prop('remoteDownloadTimeout')}</label>
-          <div class="controls">
-            <input type="text" id="remoteDownloadTimeout" class="digits" name="remoteDownloadTimeout" size="5"
-                   data-bind="value: remoteRepository.remoteDownloadTimeout"/>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="remoteDownloadNetworkProxyId">${$.i18n.prop('remoteDownloadNetworkProxyId')}</label>
-          <div class="controls">
-            <select id="remoteDownloadNetworkProxyId" data-bind="options: networkProxies, optionsText: 'id',optionsValue:'id', value: remoteRepository.remoteDownloadNetworkProxyId, optionsCaption: 'Choose...'"></select>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="downloadRemoteIndexOnStartup">${$.i18n.prop('downloadRemoteIndexOnStartup')}</label>
-          <div class="controls">
-            <input type="checkbox" id="downloadRemoteIndexOnStartup" name="downloadRemoteIndexOnStartup"
-                   data-bind="checked: remoteRepository.downloadRemoteIndexOnStartup"/>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
-          <div class="controls">
-            <textarea rows="3" id="description" name="description" data-bind="value: remoteRepository.description"></textarea>
-          </div>
-        </div>
-
-      </fieldset>
-      <button data-bind="click: save" data-loading-text="${$.i18n.prop('common.loading')}" id="remote-repository-save-button" class="btn">${$.i18n.prop('save')}</button>
-      <button data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
-    </form>
 </script>
 
 <script id="remote-repository-scan-modal-tmpl" type='text/html'>
