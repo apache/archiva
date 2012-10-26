@@ -877,7 +877,12 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     addExtraParameter=function(){
 
       var mainContent=$("#main-content");
+      mainContent.find("#extra-parameters-error" ).html("");
       var key=mainContent.find("#extraParameter-key").val();
+      if($.trim(key).length<1){
+        displayErrorMessage( $.i18n.prop("key.empty.error.message"),"extra-parameters-error");
+        return;
+      }
       var value=mainContent.find("#extraParameter-value").val();
       $.log("addExtraParameter="+key+":"+value);
       var oldTab = self.remoteRepository.extraParametersEntries();
@@ -893,6 +898,37 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
         var entry=self.remoteRepository.extraParametersEntries()[i];
         if (entry.key==key){
           self.remoteRepository.extraParametersEntries.remove(entry);
+          self.remoteRepository.modified(true);
+        }
+      }
+    }
+
+    addExtraHeader=function(){
+
+      var mainContent=$("#main-content");
+      mainContent.find("#extra-headers-error" ).html("");
+      var key=mainContent.find("#extraHeader-key").val();
+      if( $.trim(key).length<1){
+        if($.trim(key).length<1){
+          displayErrorMessage( $.i18n.prop("key.empty.error.message"),"extra-headers-error");
+          return;
+        }
+      }
+      var value=mainContent.find("#extraHeader-value").val();
+      $.log("addExtraParameter="+key+":"+value);
+      var oldTab = self.remoteRepository.extraHeadersEntries();
+      oldTab.push(new Entry(key,value));
+      self.remoteRepository.extraHeadersEntries(oldTab);
+      mainContent.find("#extraHeader-key").val("");
+      mainContent.find("#extraHeader-value").val("");
+      self.remoteRepository.modified(true);
+    }
+
+    deleteExtraHeader=function(key){
+      for(var i=0;i<self.remoteRepository.extraHeadersEntries().length;i++){
+        var entry=self.remoteRepository.extraHeadersEntries()[i];
+        if (entry.key==key){
+          self.remoteRepository.extraHeadersEntries.remove(entry);
           self.remoteRepository.modified(true);
         }
       }
