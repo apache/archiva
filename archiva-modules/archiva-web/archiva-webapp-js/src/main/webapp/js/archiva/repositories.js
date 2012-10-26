@@ -888,6 +888,16 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       self.remoteRepository.modified(true);
     }
 
+    deleteExtraParameter=function(key){
+      for(var i=0;i<self.remoteRepository.extraParametersEntries().length;i++){
+        var entry=self.remoteRepository.extraParametersEntries()[i];
+        if (entry.key==key){
+          self.remoteRepository.extraParametersEntries.remove(entry);
+          self.remoteRepository.modified(true);
+        }
+      }
+    }
+
   }
 
   RemoteRepositoriesViewModel=function(){
