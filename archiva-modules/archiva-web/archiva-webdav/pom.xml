@@ -38,6 +38,7 @@
     -->
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
+    <webdav.argLine>-Xmx512m -Xms512m -client</webdav.argLine>
   </properties>
 
   <dependencies>
@@ -276,7 +277,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx512m -Xms512m -client</argLine>
+          <argLine>${webdav.argLine}</argLine>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
