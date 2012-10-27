@@ -31,7 +31,7 @@ Repository APIs
     A repository request works in the following sequence:
 
         [[1]] the user requests a project's metadata using a
-              {{{./apidocs/org/apache/archiva/metadata/repository/MetadataResolver.html} MetadataResolver}}
+              {{{./apidocs/reference/org/apache/archiva/metadata/repository/MetadataResolver.html} MetadataResolver}}
 
         [[2]] the resolvers are chained together to locate the source of the metadata, and to determine where the most
               up to date copy is. Included by default are the metadata repository and repository storage
@@ -46,5 +46,5 @@ Repository APIs
     will be made available for plugins such as purging, etc.
 
     More information can be found in the
-    {{{./apidocs/org/apache/archiva/metadata/repository/storage/StorageMetadataResolver.html} storage metadata resolver}}
+    {{{./apidocs/reference/org/apache/archiva/metadata/repository/storage/StorageMetadataResolver.html} storage metadata resolver}}
     class.
