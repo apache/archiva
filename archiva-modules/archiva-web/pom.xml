@@ -23,7 +23,7 @@
   </parent>
 
   <artifactId>archiva-web</artifactId>
-  <name>Archiva Web</name>
+  <name>Archiva :: Web</name>
   <packaging>pom</packaging>
 
   <properties>

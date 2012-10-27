@@ -26,7 +26,7 @@
   </parent>
 
   <artifactId>archiva-base</artifactId>
-  <name>Archiva Base</name>
+  <name>Archiva :: Base</name>
   <packaging>pom</packaging>
 
   <modules>

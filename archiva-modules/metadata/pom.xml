@@ -25,7 +25,7 @@
     <version>1.4-M4-SNAPSHOT</version>
   </parent>
   <artifactId>metadata</artifactId>
-  <name>Archiva Metadata</name>
+  <name>Archiva :: Metadata</name>
   <packaging>pom</packaging>
   <modules>
     <module>metadata-model</module>

@@ -25,7 +25,7 @@
     <version>1.4-M4-SNAPSHOT</version>
   </parent>
   <artifactId>plugins</artifactId>
-  <name>Archiva Core Plugins</name>
+  <name>Archiva :: Core Plugins</name>
   <packaging>pom</packaging>
   <modules>
     <module>metadata-store-file</module>
