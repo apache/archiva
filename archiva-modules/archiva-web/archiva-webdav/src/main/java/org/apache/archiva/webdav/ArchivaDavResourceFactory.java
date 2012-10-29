@@ -734,7 +734,7 @@ public class ArchivaDavResourceFactory
                     repositoryLayout = "maven2";
                 }
                 RepositoryStorage repositoryStorage =
-                    this.applicationContext.getBean( repositoryLayout, RepositoryStorage.class );
+                    this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
                 repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
 
                 File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
