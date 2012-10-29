@@ -30,13 +30,12 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.junit.Assert.*;
 
 /**
- * AbstractDefaultRepositoryContentTestCase 
- *
- *
+ * AbstractDefaultRepositoryContentTestCase
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractDefaultRepositoryContentTestCase
+    extends AbstractRepositoryLayerTestCase
 {
     @Test
     public void testBadPathMissingType()
@@ -47,7 +46,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     @Test
     public void testBadPathReleaseInSnapshotDir()
     {
-        assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar", "non snapshot artifact inside of a snapshot dir" );
+        assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar",
+                       "non snapshot artifact inside of a snapshot dir" );
     }
 
     @Test
@@ -82,10 +82,12 @@ public abstract class AbstractDefaultRepositoryContentTestCase
                        "wrong artifact id" );
     }
 
-    /** 
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
@@ -104,7 +106,9 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodButOddVersionSpecJavaxComm()
@@ -144,7 +148,9 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
@@ -241,14 +247,17 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String version = "0.3";
         String classifier = null;
         String type = "pom";
-        String path = "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
+        String path =
+            "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
      * Test the classifier, and java-source type spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodFooLibSources()
@@ -266,7 +275,9 @@ public abstract class AbstractDefaultRepositoryContentTestCase
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodSnapshotMavenTest()
@@ -277,7 +288,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String version = "3.1-beta-1-20050831.101112-42";
         String classifier = null;
         String type = "jar";
-        String path = "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
+        String path =
+            "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
@@ -299,7 +311,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
-    
+
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
@@ -410,8 +422,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                           String version, String classifier, String type )
     {
-        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier
-            + ":" + type;
+        String expectedId =
+            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 
@@ -430,7 +442,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         try
         {
             toArtifactReference( path );
-            fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+            fail(
+                "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )
         {
@@ -462,7 +475,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
     }
 
-    private ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier,
+    protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier,
                                               String type )
     {
         ArtifactReference artifact = new ArtifactReference();

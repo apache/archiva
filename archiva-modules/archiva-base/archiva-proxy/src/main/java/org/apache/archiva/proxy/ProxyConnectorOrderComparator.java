@@ -19,6 +19,8 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
+import org.apache.archiva.proxy.model.ProxyConnector;
+
 import java.util.Comparator;
 
 /**

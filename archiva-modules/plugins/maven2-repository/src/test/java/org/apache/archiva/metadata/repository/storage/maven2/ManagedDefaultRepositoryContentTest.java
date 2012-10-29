@@ -49,22 +49,21 @@ import static org.junit.Assert.fail;
 
 /**
  * ManagedDefaultRepositoryContentTest
- *
- *
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ManagedDefaultRepositoryContentTest
-    extends AbstractRepositoryLayerTestCase
+    extends AbstractDefaultRepositoryContentTestCase
 {
     @Inject
-    @Named( value = "managedRepositoryContent#default" )
+    @Named ( value = "managedRepositoryContent#default" )
     private ManagedRepositoryContent repoContent;
 
     @Inject
     FileTypes fileTypes;
 
-    @Inject @Named(value = "archivaConfiguration#default")
+    @Inject
+    @Named ( value = "archivaConfiguration#default" )
     ArchivaConfiguration archivaConfiguration;
 
     @Before
@@ -75,9 +74,7 @@ public class ManagedDefaultRepositoryContentTest
 
         ManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
 
-
-        FileType fileType =
-            (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         fileType.addPattern( "**/*.xml" );
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
 

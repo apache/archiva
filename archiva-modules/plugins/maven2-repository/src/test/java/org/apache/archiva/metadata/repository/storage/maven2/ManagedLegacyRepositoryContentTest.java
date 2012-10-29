@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ManagedLegacyRepositoryContentTest
-    extends AbstractRepositoryLayerTestCase
+    extends AbstractDefaultRepositoryContentTestCase
 {
     @Inject
     @Named( value = "managedRepositoryContent#legacy" )

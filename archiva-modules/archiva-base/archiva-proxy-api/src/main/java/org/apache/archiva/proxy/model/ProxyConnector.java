@@ -1,4 +1,4 @@
-package org.apache.archiva.proxy;
+package org.apache.archiva.proxy.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

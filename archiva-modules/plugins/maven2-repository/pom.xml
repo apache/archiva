@@ -44,13 +44,17 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-maven2-metadata</artifactId>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>problem-reports</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
