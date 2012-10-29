@@ -36,6 +36,7 @@ import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
@@ -81,14 +82,10 @@ import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.model.DistributionManagement;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -100,8 +97,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -733,7 +728,14 @@ public class ArchivaDavResourceFactory
 
             if ( artifact != null )
             {
-                applyServerSideRelocation( managedRepository, artifact );
+                String repositoryLayout = managedRepository.getRepository().getLayout();
+                if ( StringUtils.equalsIgnoreCase( "default", repositoryLayout ) )
+                {
+                    repositoryLayout = "maven2";
+                }
+                RepositoryStorage repositoryStorage =
+                    this.applicationContext.getBean( repositoryLayout, RepositoryStorage.class );
+                repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
 
                 File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
 
@@ -756,93 +758,6 @@ public class ArchivaDavResourceFactory
                                     "Unable to fetch artifact resource." );
         }
         return false;
-    }
-
-    /**
-     * A relocation capable client will request the POM prior to the artifact, and will then read meta-data and do
-     * client side relocation. A simplier client (like maven 1) will only request the artifact and not use the
-     * metadatas.
-     * <p/>
-     * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
-     * metadatas and serving the expected artifact.
-     */
-    protected void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
-        throws ProxyDownloadException
-    {
-        if ( "pom".equals( artifact.getType() ) )
-        {
-            return;
-        }
-
-        // Build the artifact POM reference
-        ArtifactReference pomReference = new ArtifactReference();
-        pomReference.setGroupId( artifact.getGroupId() );
-        pomReference.setArtifactId( artifact.getArtifactId() );
-        pomReference.setVersion( artifact.getVersion() );
-        pomReference.setType( "pom" );
-
-        // Get the artifact POM from proxied repositories if needed
-        connectors.fetchFromProxies( managedRepository, pomReference );
-
-        // Open and read the POM from the managed repo
-        File pom = managedRepository.toFile( pomReference );
-
-        if ( !pom.exists() )
-        {
-            return;
-        }
-
-        try
-        {
-            // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
-            FileReader reader = new FileReader( pom );
-            Model model = null;
-            try
-            {
-                model = MAVEN_XPP_3_READER.read( reader );
-            }
-            finally
-            {
-                if ( reader != null )
-                {
-                    reader.close();
-                }
-            }
-
-            DistributionManagement dist = model.getDistributionManagement();
-            if ( dist != null )
-            {
-                Relocation relocation = dist.getRelocation();
-                if ( relocation != null )
-                {
-                    // artifact is relocated : update the repositoryPath
-                    if ( relocation.getGroupId() != null )
-                    {
-                        artifact.setGroupId( relocation.getGroupId() );
-                    }
-                    if ( relocation.getArtifactId() != null )
-                    {
-                        artifact.setArtifactId( relocation.getArtifactId() );
-                    }
-                    if ( relocation.getVersion() != null )
-                    {
-                        artifact.setVersion( relocation.getVersion() );
-                    }
-                }
-            }
-        }
-        catch ( FileNotFoundException e )
-        {
-            // Artifact has no POM in repo : ignore
-        }
-        catch ( IOException e )
-        {
-            // Unable to read POM : ignore.
-        }
-        catch ( XmlPullParserException e )
-        {
-            // Invalid POM : ignore
-        }
     }
 
     // TODO: remove?
