@@ -44,9 +44,9 @@ public class RepositoryTaskJob
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         setJobDataMap( dataMap );
 
-        TaskQueue taskQueue = (TaskQueue) dataMap.get( RepositoryArchivaTaskScheduler.TASK_QUEUE );
+        TaskQueue taskQueue = (TaskQueue) dataMap.get( DefaultRepositoryArchivaTaskScheduler.TASK_QUEUE );
 
-        String repositoryId = (String) dataMap.get( RepositoryArchivaTaskScheduler.TASK_REPOSITORY );
+        String repositoryId = (String) dataMap.get( DefaultRepositoryArchivaTaskScheduler.TASK_REPOSITORY );
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
 

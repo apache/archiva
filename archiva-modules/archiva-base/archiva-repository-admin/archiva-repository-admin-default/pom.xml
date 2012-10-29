@@ -37,13 +37,17 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-security-common</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-scheduler-repository</artifactId>
+      <artifactId>archiva-scheduler-repository-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>repository-statistics</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -56,6 +60,10 @@
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback.components</groupId>
+      <artifactId>spring-taskqueue</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.beanlib</groupId>

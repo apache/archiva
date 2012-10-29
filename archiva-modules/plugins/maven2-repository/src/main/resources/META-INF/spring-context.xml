@@ -31,4 +31,11 @@
   <context:component-scan base-package="org.apache.archiva.dependency.tree.maven2,org.apache.archiva.metadata.repository.storage.maven2,
                                         org.apache.archiva.repository.content.maven2,org.apache.archiva.repository.content.legacy"/>
 
+
+  <bean name="pathParser#legacy" class="org.apache.archiva.repository.content.LegacyPathParser">
+    <constructor-arg>
+      <ref bean="archivaConfiguration#default"/>
+    </constructor-arg>
+  </bean>
+
 </beans>

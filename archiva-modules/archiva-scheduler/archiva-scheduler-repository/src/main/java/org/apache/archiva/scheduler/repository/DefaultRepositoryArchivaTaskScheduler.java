@@ -55,10 +55,10 @@ import java.util.Set;
  * Default implementation of a scheduling component for archiva.
  */
 @Service ("archivaTaskScheduler#repository")
-public class RepositoryArchivaTaskScheduler
-    implements ArchivaTaskScheduler<RepositoryTask>, ConfigurationListener
+public class DefaultRepositoryArchivaTaskScheduler
+    implements RepositoryArchivaTaskScheduler, ConfigurationListener
 {
-    private Logger log = LoggerFactory.getLogger( RepositoryArchivaTaskScheduler.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     /**
      *
@@ -200,8 +200,7 @@ public class RepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings ("unchecked")
-    private boolean isProcessingRepositoryTask( RepositoryTask task )
+    public boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         synchronized ( repositoryScanningQueue )
         {

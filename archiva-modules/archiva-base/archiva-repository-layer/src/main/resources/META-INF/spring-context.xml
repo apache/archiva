@@ -30,10 +30,4 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.repository"/>
 
-  <bean name="pathParser#legacy" class="org.apache.archiva.repository.content.LegacyPathParser">
-    <constructor-arg>
-      <ref bean="archivaConfiguration#default"/>
-    </constructor-arg>
-  </bean>
-
 </beans>

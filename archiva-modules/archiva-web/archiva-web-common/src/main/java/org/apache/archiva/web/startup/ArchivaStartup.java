@@ -23,7 +23,7 @@ import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.redback.components.scheduler.DefaultScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.archiva.redback.components.taskqueue.Task;
@@ -52,7 +52,7 @@ public class ArchivaStartup
 
     private ThreadedTaskQueueExecutor tqeIndexing;
 
-    private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
+    private DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     private PlexusSisuBridge plexusSisuBridge;
 
@@ -66,7 +66,7 @@ public class ArchivaStartup
         SecuritySynchronization securitySync = wac.getBean( SecuritySynchronization.class );
 
         repositoryTaskScheduler =
-            wac.getBean( "archivaTaskScheduler#repository", RepositoryArchivaTaskScheduler.class );
+            wac.getBean( "archivaTaskScheduler#repository", DefaultRepositoryArchivaTaskScheduler.class );
 
         Properties archivaRuntimeProperties = wac.getBean( "archivaRuntimeProperties", Properties.class );
 
