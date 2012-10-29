@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  *
  */
 public class ManagedLegacyRepositoryContentTest
-    extends AbstractDefaultRepositoryContentTestCase
+    extends AbstractLegacyRepositoryContentTestCase
 {
     @Inject
     @Named( value = "managedRepositoryContent#legacy" )
