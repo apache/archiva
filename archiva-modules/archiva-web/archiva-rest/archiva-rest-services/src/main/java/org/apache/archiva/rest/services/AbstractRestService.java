@@ -39,7 +39,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;

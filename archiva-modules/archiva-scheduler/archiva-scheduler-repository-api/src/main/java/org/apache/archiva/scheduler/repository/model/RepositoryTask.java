@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.repository;
+package org.apache.archiva.scheduler.repository.model;
 
 import org.apache.archiva.redback.components.taskqueue.Task;
 

@@ -58,7 +58,7 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

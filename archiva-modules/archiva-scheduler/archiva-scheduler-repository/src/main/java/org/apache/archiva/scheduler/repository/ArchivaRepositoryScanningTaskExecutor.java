@@ -32,6 +32,7 @@ import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.apache.archiva.redback.components.taskqueue.Task;

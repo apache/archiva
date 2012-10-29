@@ -61,7 +61,7 @@ import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataMerge;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.archiva.webdav.util.RepositoryPathUtil;

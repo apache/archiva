@@ -44,7 +44,7 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.AbstractRestService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.web.model.FileMetadata;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;

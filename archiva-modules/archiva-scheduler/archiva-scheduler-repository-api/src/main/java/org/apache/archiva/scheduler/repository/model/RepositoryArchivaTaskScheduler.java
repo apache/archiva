@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.repository;
+package org.apache.archiva.scheduler.repository.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

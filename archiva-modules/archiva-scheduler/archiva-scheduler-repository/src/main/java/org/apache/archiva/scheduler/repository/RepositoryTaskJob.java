@@ -22,6 +22,7 @@ package org.apache.archiva.scheduler.repository;
 import org.apache.archiva.redback.components.scheduler.AbstractJob;
 import org.apache.archiva.redback.components.taskqueue.TaskQueue;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

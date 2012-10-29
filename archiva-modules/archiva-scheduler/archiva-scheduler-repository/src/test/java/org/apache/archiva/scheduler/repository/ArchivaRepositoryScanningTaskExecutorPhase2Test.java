@@ -22,11 +22,10 @@ package org.apache.archiva.scheduler.repository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
 import java.util.Calendar;

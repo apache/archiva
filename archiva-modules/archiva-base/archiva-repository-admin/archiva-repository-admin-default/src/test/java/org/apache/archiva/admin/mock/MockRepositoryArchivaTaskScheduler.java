@@ -19,8 +19,8 @@ package org.apache.archiva.admin.mock;
  */
 
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
-import org.apache.archiva.scheduler.repository.RepositoryArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.springframework.stereotype.Service;
 
 /**

@@ -70,7 +70,7 @@ import org.apache.archiva.scheduler.indexing.ArchivaIndexingTaskExecutor;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
-import org.apache.archiva.scheduler.repository.RepositoryTask;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.xml.XMLException;
