@@ -277,7 +277,8 @@
               org.apache.archiva.proxy,
               org.apache.archiva.repository,
               org.apache.archiva.repository.content,
-              org.apache.archiva.repository.layout
+              org.apache.archiva.repository.layout,
+              org.apache.archiva.proxy.model
             </Import-Package>
           </instructions>
         </configuration>
