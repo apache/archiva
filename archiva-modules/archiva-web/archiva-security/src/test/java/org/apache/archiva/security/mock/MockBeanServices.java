@@ -43,7 +43,7 @@ import java.util.Collection;
 /**
  * @author Olivier Lamy
  */
-public class MockRepositoryStorage
+public class MockBeanServices
     implements RepositoryStorage, RepositoryListener, RepositoryArchivaTaskScheduler
 {
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )

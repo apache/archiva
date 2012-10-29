@@ -101,9 +101,9 @@
     </property>
   </bean>
 
-  <bean name="repositoryStorage#maven2" class="org.apache.archiva.security.mock.MockRepositoryStorage"/>
+  <bean name="repositoryStorage#maven2" class="org.apache.archiva.security.mock.MockBeanServices"/>
 
-  <bean name="archivaTaskScheduler#repository" class="org.apache.archiva.security.mock.MockRepositoryStorage"/>
+  <bean name="archivaTaskScheduler#repository" class="org.apache.archiva.security.mock.MockBeanServices"/>
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
