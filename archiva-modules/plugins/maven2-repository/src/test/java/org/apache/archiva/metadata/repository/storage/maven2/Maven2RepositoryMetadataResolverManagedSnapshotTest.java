@@ -33,9 +33,6 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration (
-    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public class Maven2RepositoryMetadataResolverManagedSnapshotTest
     extends Maven2RepositoryMetadataResolverTest
 {
