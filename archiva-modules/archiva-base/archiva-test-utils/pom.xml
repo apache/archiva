@@ -26,7 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-test-utils</artifactId>
-  <name>Archiva :: Test Utility</name>
+  <name>Archiva Base :: Test Utility</name>
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>

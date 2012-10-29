@@ -27,7 +27,7 @@
   </parent>
   <artifactId>archiva-artifact-converter</artifactId>
   <packaging>bundle</packaging>
-  <name>Archiva Artifact Converter</name>
+  <name>Archiva Base :: Artifact Converter</name>
   <description>Converts between Legacy and Modern Layout Artifacts.</description>
   <dependencies>
     <dependency>
