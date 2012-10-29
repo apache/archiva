@@ -30,12 +30,11 @@ import static org.junit.Assert.*;
 
 /**
  * AbstractLegacyRepositoryContentTestCase
- *
- *
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractLegacyRepositoryContentTestCase
+    extends AbstractRepositoryLayerTestCase
 {
     @Test
     public void testBadPathArtifactIdMissingA()
@@ -71,7 +70,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
@@ -89,7 +90,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodButOddVersionSpecJavaxComm()
@@ -107,7 +110,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
@@ -175,7 +180,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 
     /**
      * Test the classifier.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodFooLibJavadoc()
@@ -193,7 +200,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 
     /**
      * Test the classifier, and java-source type spec.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodFooLibSources()
@@ -250,7 +259,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     *
      * @throws org.apache.archiva.repository.layout.LayoutException
+     *
      */
     @Test
     public void testGoodSnapshotMavenTest()
@@ -349,7 +360,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     }
 
     /**
-     * [MRM-768] Artifact type "maven-plugin" does not distinguish maven1 and maven2 plugins. 
+     * [MRM-768] Artifact type "maven-plugin" does not distinguish maven1 and maven2 plugins.
      * This produces conflicts when m2 plugins are stored in legacy-layout repository
      */
     @Test
@@ -367,9 +378,11 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 
     /**
      * Perform a roundtrip through the layout routines to determine success.
+     *
      * @param classifier TODO
      */
-    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier, String type )
+    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier,
+                               String type )
         throws LayoutException
     {
         ArtifactReference expectedArtifact = createArtifact( groupId, artifactId, version, classifier, type );
@@ -402,7 +415,8 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertEquals( expectedId + " - Type", type, actualReference.getType() );
     }
 
-    protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier, String type )
+    protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier,
+                                                String type )
     {
         ArtifactReference artifact = new ArtifactReference();
         artifact.setGroupId( groupId );
@@ -419,7 +433,8 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         try
         {
             toArtifactReference( path );
-            fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+            fail(
+                "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )
         {

@@ -32,7 +32,7 @@
                                         org.apache.archiva.repository.content.maven2,org.apache.archiva.repository.content.legacy"/>
 
 
-  <bean name="pathParser#legacy" class="org.apache.archiva.repository.content.LegacyPathParser">
+  <bean name="pathParser#legacy" class="org.apache.archiva.repository.content.legacy.LegacyPathParser">
     <constructor-arg>
       <ref bean="archivaConfiguration#default"/>
     </constructor-arg>
