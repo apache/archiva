@@ -99,6 +99,10 @@
       <artifactId>archiva-plexus-bridge</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-scheduler-repository</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
