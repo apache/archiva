@@ -22,11 +22,12 @@ package org.apache.archiva.webdav;
 import org.apache.jackrabbit.webdav.DavSession;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class ArchivaDavSession
     implements DavSession
 {
-    private final HashSet<String> lockTokens = new HashSet<String>();
+    private final Set<String> lockTokens = new HashSet<String>();
 
     public void addLockToken( String token )
     {
@@ -35,7 +36,7 @@ public class ArchivaDavSession
 
     public String[] getLockTokens()
     {
-        return (String[]) lockTokens.toArray( new String[lockTokens.size()] );
+        return lockTokens.toArray( new String[lockTokens.size()] );
     }
 
     public void removeLockToken( String token )

@@ -103,6 +103,7 @@ public class IndexWriter
         writer.println( "th td:nth-child(2){width:150px;}" );
         writer.println( "th td:nth-child(3){width:150px;}" );
         writer.println( "</style>" );
+        writer.println( "<link rel=\"shortcut icon\" href=\"../../favicon.ico\"/>" );
         writer.println( "</head>" );
         writer.println( "<body>" );
         writer.println( "<h3>Collection: /" + logicalResource + "</h3>" );
