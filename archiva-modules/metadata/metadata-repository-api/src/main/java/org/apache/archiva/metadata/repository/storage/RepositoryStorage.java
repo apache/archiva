@@ -23,6 +23,9 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.policies.ProxyDownloadException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 
 import java.util.Collection;
 
@@ -53,4 +56,7 @@ public interface RepositoryStorage
     // FIXME: reconsider this API, do we want to expose storage format in the form of a path?
     ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
         throws RepositoryStorageRuntimeException;
+
+    void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
+        throws ProxyDownloadException;
 }

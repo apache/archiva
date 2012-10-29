@@ -64,6 +64,10 @@
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>maven2-repository</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-i18n</artifactId>
     </dependency>
@@ -115,6 +119,7 @@
               org.apache.maven.model*,
               org.codehaus.plexus.digest,
               org.codehaus.plexus.util*,
+              org.apache.archiva.repository.content.maven2,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>

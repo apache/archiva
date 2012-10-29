@@ -29,7 +29,7 @@ import org.apache.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.archiva.converter.artifact.ArtifactConverter;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.content.ManagedDefaultRepositoryContent;
+import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;

@@ -33,7 +33,7 @@ public class ArtifactFilenameFilter
 
     public ArtifactFilenameFilter()
     {
-
+        // no op
     }
 
     public ArtifactFilenameFilter( String filename )

@@ -46,6 +46,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
     <dependency>
@@ -83,7 +87,10 @@
               javax.inject,
               org.apache.archiva.metadata.model;version=${project.version},
               org.springframework.stereotype;version="[3,4)",
-              org.slf4j;resolution:=optional
+              org.slf4j;resolution:=optional,
+              org.apache.archiva.model,
+              org.apache.archiva.policies,
+              org.apache.archiva.repository
             </Import-Package>
           </instructions>
         </configuration>

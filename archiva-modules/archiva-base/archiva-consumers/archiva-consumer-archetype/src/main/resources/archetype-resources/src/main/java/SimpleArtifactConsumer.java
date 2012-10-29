@@ -28,8 +28,6 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 
@@ -160,7 +158,6 @@ public class SimpleArtifactConsumer
 
     @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         propertyNameTriggers = new ArrayList();
         propertyNameTriggers.add( "repositoryScanning" );

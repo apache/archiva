@@ -20,10 +20,10 @@ package org.apache.archiva.metadata.repository.stats;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.storage.maven2.MavenArtifactFacet;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

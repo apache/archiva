@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.slf4j.Logger;

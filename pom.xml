@@ -165,6 +165,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-model-maven2</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-maven2-model</artifactId>
         <version>${project.version}</version>
       </dependency>

@@ -132,10 +132,10 @@ public class AutoRenameConsumer
             Iterator<String> itExtensions = this.extensionRenameMap.keySet().iterator();
             while ( itExtensions.hasNext() )
             {
-                String extension = (String) itExtensions.next();
+                String extension = itExtensions.next();
                 if ( path.endsWith( extension ) )
                 {
-                    String fixedExtension = (String) this.extensionRenameMap.get( extension );
+                    String fixedExtension = this.extensionRenameMap.get( extension );
                     String correctedPath = path.substring( 0, path.length() - extension.length() ) + fixedExtension;
                     File to = new File( this.repositoryDir, correctedPath );
                     try

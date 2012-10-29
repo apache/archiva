@@ -43,18 +43,24 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataI
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
+import org.apache.archiva.policies.ProxyDownloadException;
+import org.apache.archiva.proxy.RepositoryProxyConnectors;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
 import org.apache.maven.model.MailingList;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Organization;
+import org.apache.maven.model.Relocation;
 import org.apache.maven.model.Scm;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
@@ -62,6 +68,8 @@ import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -71,6 +79,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,7 +101,7 @@ import java.util.Map;
  * within the session in the context of a single managed repository's resolution needs.
  * <p/>
  */
-@Service ("repositoryStorage#maven2")
+@Service ( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
@@ -120,17 +129,23 @@ public class Maven2RepositoryStorage
      *
      */
     @Inject
-    @Named (value = "repositoryPathTranslator#maven2")
+    @Named ( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
     private WagonFactory wagonFactory;
+
+    @Inject
+    @Named ( value = "repositoryProxyConnectors#default" )
+    private RepositoryProxyConnectors connectors;
 
     private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
 
     private static final String METADATA_FILENAME = METADATA_FILENAME_START + ".xml";
+
+    private static final MavenXpp3Reader MAVEN_XPP_3_READER = new MavenXpp3Reader();
 
 
     @PostConstruct
@@ -614,6 +629,88 @@ public class Maven2RepositoryStorage
         return metadata;
     }
 
+    public void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
+        throws ProxyDownloadException
+    {
+        if ( "pom".equals( artifact.getType() ) )
+        {
+            return;
+        }
+
+        // Build the artifact POM reference
+        ArtifactReference pomReference = new ArtifactReference();
+        pomReference.setGroupId( artifact.getGroupId() );
+        pomReference.setArtifactId( artifact.getArtifactId() );
+        pomReference.setVersion( artifact.getVersion() );
+        pomReference.setType( "pom" );
+
+        // Get the artifact POM from proxied repositories if needed
+        connectors.fetchFromProxies( managedRepository, pomReference );
+
+        // Open and read the POM from the managed repo
+        File pom = managedRepository.toFile( pomReference );
+
+        if ( !pom.exists() )
+        {
+            return;
+        }
+
+        try
+        {
+            // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
+            FileReader reader = new FileReader( pom );
+            Model model = null;
+            try
+            {
+                model = MAVEN_XPP_3_READER.read( reader );
+            }
+            finally
+            {
+                if ( reader != null )
+                {
+                    reader.close();
+                }
+            }
+
+            DistributionManagement dist = model.getDistributionManagement();
+            if ( dist != null )
+            {
+                Relocation relocation = dist.getRelocation();
+                if ( relocation != null )
+                {
+                    // artifact is relocated : update the repositoryPath
+                    if ( relocation.getGroupId() != null )
+                    {
+                        artifact.setGroupId( relocation.getGroupId() );
+                    }
+                    if ( relocation.getArtifactId() != null )
+                    {
+                        artifact.setArtifactId( relocation.getArtifactId() );
+                    }
+                    if ( relocation.getVersion() != null )
+                    {
+                        artifact.setVersion( relocation.getVersion() );
+                    }
+                }
+            }
+        }
+        catch ( FileNotFoundException e )
+        {
+            // Artifact has no POM in repo : ignore
+        }
+        catch ( IOException e )
+        {
+            // Unable to read POM : ignore.
+        }
+        catch ( XmlPullParserException e )
+        {
+            // Invalid POM : ignore
+        }
+    }
+
+    //-----------------------------
+    // internal
+    //-----------------------------
     private static void populateArtifactMetadataFromFile( ArtifactMetadata metadata, File file )
     {
         metadata.setWhenGathered( new Date() );

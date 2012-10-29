@@ -65,6 +65,14 @@
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model-maven2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-plexus-bridge</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
       <exclusions>

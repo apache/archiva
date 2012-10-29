@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.springframework.stereotype.Service;
 
 /**
