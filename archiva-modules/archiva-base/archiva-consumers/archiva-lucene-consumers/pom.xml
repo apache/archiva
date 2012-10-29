@@ -97,6 +97,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>maven2-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-jcr</artifactId>
       <scope>test</scope>
     </dependency>
