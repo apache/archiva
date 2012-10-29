@@ -139,6 +139,7 @@
               org.apache.archiva.configuration;version=${project.version},
               org.apache.archiva.metadata.repository*;version=${project.version},
               org.apache.archiva.repository.scanner;version=${project.version},
+              org.apache.archiva.scheduler.repository.model;version=${project.version},
               org.apache.archiva.scheduler;version=${project.version},
               org.apache.commons.lang;version="[2.4,3)",
               org.codehaus.plexus.personality.plexus.lifecycle.phase,
