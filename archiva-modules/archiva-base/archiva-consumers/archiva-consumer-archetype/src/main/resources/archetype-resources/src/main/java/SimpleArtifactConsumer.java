@@ -47,7 +47,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 @Scope("prototype")
 public class SimpleArtifactConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener
 {
 
     private Logger log = LoggerFactory.getLogger( SimpleArtifactConsumer.class );

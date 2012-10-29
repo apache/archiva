@@ -60,6 +60,12 @@
       <version>${archiva.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>maven2-repository</artifactId>
+      <version>${archiva.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>2.5.2</version>
