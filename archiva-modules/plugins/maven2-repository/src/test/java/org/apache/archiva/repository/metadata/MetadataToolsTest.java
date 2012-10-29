@@ -30,7 +30,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.MockConfiguration;
+import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.io.FileUtils;

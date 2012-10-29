@@ -37,7 +37,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
  *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public abstract class AbstractRepositoryLayerTestCase
 {
     @Rule

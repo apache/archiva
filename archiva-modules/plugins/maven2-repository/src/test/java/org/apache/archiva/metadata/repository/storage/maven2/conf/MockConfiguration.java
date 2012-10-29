@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.metadata.repository.storage.maven2.conf;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -40,6 +40,7 @@ import java.util.Set;
 public class MockConfiguration
     implements ArchivaConfiguration
 {
+
     private Configuration configuration = new Configuration();
 
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
