@@ -19,32 +19,26 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverManagedReleaseTest
     extends Maven2RepositoryMetadataResolverTest
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named ( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -66,9 +60,6 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
     private static final String EMPTY_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-
-    @Inject
-    private ArchivaConfiguration configuration;
 
     private WagonFactory wagonFactory;
 
@@ -103,7 +94,7 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshotMissingMetadata()
         throws Exception
@@ -114,7 +105,7 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
         storage.readProjectVersionMetadata( readMetadataRequest );
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshotMalformedMetadata()
         throws Exception
@@ -125,7 +116,7 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
         storage.readProjectVersionMetadata( readMetadataRequest );
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshot()
         throws Exception
@@ -134,7 +125,7 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
     }
 
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForTimestampedSnapshotIncompleteMetadata()
         throws Exception

@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
@@ -34,16 +33,16 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration (
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public class Maven2RepositoryMetadataResolverManagedSnapshotTest
     extends Maven2RepositoryMetadataResolverTest
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named ( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -64,10 +63,8 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
 
     private static final String EMPTY_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
-    private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
-    @Inject
-    private ArchivaConfiguration configuration;
+    private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
 
     @Before
@@ -86,7 +83,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         assertFalse( c.getManagedRepositories().get( 0 ).isReleases() );
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testModelWithJdkProfileActivation()
         throws Exception
@@ -100,7 +97,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata( readMetadataRequest );
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForMislocatedPom()
         throws Exception
@@ -120,7 +117,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         // super test is on release
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForInvalidPom()
         throws Exception
@@ -131,7 +128,7 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         storage.readProjectVersionMetadata( readMetadataRequest );
     }
 
-    @Test ( expected = RepositoryStorageRuntimeException.class )
+    @Test (expected = RepositoryStorageRuntimeException.class)
     @Override
     public void testGetProjectVersionMetadataForMissingPom()
         throws Exception

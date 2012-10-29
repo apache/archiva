@@ -56,8 +56,10 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith (ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
+
+@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration (
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     extends TestCase
 {
@@ -92,6 +94,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
     @Inject
+    @Named (value = "archivaConfiguration#default")
     private ArchivaConfiguration configuration;
 
     private WagonFactory wagonFactory;

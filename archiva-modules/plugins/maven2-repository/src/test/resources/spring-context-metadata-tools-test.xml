@@ -27,7 +27,8 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
 
-
+  <bean name="archivaConfiguration#mock" class="org.apache.archiva.repository.MockConfiguration"/>
+  <alias name="archivaConfiguration#mock" alias="archivaConfiguration#default"/>
   <bean name="metadataTools#test" class="org.apache.archiva.repository.metadata.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>

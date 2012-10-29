@@ -35,7 +35,7 @@ public class TestMetadataResolver
                                                          String projectId, String projectVersion )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession session, String repoId,
@@ -43,38 +43,38 @@ public class TestMetadataResolver
                                                                          String projectVersion )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> resolveRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> resolveNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> resolveProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<String> resolveProjectVersions( RepositorySession session, String repoId, String namespace,
                                                       String projectId )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession session, String repoId, String namespace,
                                                           String projectId, String projectVersion )
         throws MetadataResolutionException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }

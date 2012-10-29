@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Test;
@@ -32,10 +33,11 @@ import static org.junit.Assert.*;
  * AbstractLegacyRepositoryContentTestCase
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public abstract class AbstractLegacyRepositoryContentTestCase
     extends AbstractRepositoryLayerTestCase
 {
+
     @Test
     public void testBadPathArtifactIdMissingA()
     {
@@ -47,6 +49,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
     {
         assertBadPath( "groupId/jars/1.0.jar", "artifactId is missing" );
     }
+
 
     @Test
     public void testBadPathMissingType()
@@ -60,6 +63,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         // NEW
         assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
     }
+
 
     @Test
     public void testBadPathWrongPackageExtension()

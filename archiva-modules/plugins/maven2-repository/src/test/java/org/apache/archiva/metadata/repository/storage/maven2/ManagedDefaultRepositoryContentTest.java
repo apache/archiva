@@ -50,8 +50,6 @@ import static org.junit.Assert.fail;
 /**
  * ManagedDefaultRepositoryContentTest
  */
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ManagedDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase
 {

@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
  *
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public class LegacyPathParserTest
 {
     private LegacyPathParser parser;

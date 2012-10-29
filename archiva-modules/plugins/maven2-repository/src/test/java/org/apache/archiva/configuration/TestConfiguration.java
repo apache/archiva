@@ -47,17 +47,17 @@ public class TestConfiguration
 
     public void addListener( ConfigurationListener listener )
     {
-        throw new UnsupportedOperationException();
+        // no op
     }
 
     public void removeListener( ConfigurationListener listener )
     {
-        throw new UnsupportedOperationException();
+        // no op
     }
 
     public void addChangeListener( RegistryListener listener )
     {
-        throw new UnsupportedOperationException();
+        // no op
     }
 
     public void reload()

@@ -16,7 +16,7 @@
 -->
 <!--+
     | This is the main Maven file that contains all global settings, management and information.
-    | @version $Id$
+    | @version $Id: cocoon-1.pom 580582 2007-09-29 13:37:01Z joakime $
     +-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   

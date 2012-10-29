@@ -62,15 +62,16 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith (ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration (
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" })
 public class Maven2RepositoryMetadataResolverTest
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named ( value = "repositoryStorage#maven2" )
+    @Named (value = "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -94,7 +95,8 @@ public class Maven2RepositoryMetadataResolverTest
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
     @Inject
-    private ArchivaConfiguration configuration;
+    @Named ( value = "archivaConfiguration#default" )
+    protected ArchivaConfiguration configuration;
 
     private WagonFactory wagonFactory;
 

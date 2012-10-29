@@ -72,6 +72,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -136,8 +137,7 @@ public class Maven2RepositoryStorage
     private WagonFactory wagonFactory;
 
     @Inject
-    @Named ( value = "repositoryProxyConnectors#default" )
-    private RepositoryProxyConnectors connectors;
+    private ApplicationContext applicationContext;
 
     private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
@@ -643,6 +643,9 @@ public class Maven2RepositoryStorage
         pomReference.setArtifactId( artifact.getArtifactId() );
         pomReference.setVersion( artifact.getVersion() );
         pomReference.setType( "pom" );
+
+        RepositoryProxyConnectors connectors =
+            applicationContext.getBean( "repositoryProxyConnectors#default", RepositoryProxyConnectors.class );
 
         // Get the artifact POM from proxied repositories if needed
         connectors.fetchFromProxies( managedRepository, pomReference );
