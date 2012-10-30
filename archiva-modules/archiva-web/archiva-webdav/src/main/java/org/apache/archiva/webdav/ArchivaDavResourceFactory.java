@@ -729,12 +729,7 @@ public class ArchivaDavResourceFactory
             if ( artifact != null )
             {
                 String repositoryLayout = managedRepository.getRepository().getLayout();
-                // FIXME we could prevent that with renaming bean repositoryStorage#maven2 to repositoryStorage#default
-                if ( StringUtils.equalsIgnoreCase( "default", repositoryLayout ) || StringUtils.equalsIgnoreCase(
-                    "legacy", repositoryLayout ) )
-                {
-                    repositoryLayout = "maven2";
-                }
+
                 RepositoryStorage repositoryStorage =
                     this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
                 repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
