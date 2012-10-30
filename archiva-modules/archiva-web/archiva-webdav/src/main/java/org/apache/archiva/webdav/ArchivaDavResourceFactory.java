@@ -117,8 +117,6 @@ public class ArchivaDavResourceFactory
 
     private static final String HTTP_PUT_METHOD = "PUT";
 
-    private static final MavenXpp3Reader MAVEN_XPP_3_READER = new MavenXpp3Reader();
-
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     /**

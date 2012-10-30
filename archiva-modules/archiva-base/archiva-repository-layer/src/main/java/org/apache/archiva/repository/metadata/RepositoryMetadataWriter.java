@@ -87,7 +87,7 @@ public class RepositoryMetadataWriter
         if ( CollectionUtils.isNotEmpty( metadata.getPlugins() ) )
         {
             Element plugins = root.addElement( "plugins" );
-            for ( Plugin plugin : (List<Plugin>) metadata.getPlugins() )
+            for ( Plugin plugin : metadata.getPlugins() )
             {
                 Element p = plugins.addElement( "plugin" );
                 p.addElement( "prefix" ).setText( plugin.getPrefix() );
@@ -119,7 +119,7 @@ public class RepositoryMetadataWriter
                 Iterator<String> it = metadata.getAvailableVersions().iterator();
                 while ( it.hasNext() )
                 {
-                    String version = (String) it.next();
+                    String version = it.next();
                     versions.addElement( "version" ).setText( version );
                 }
             }
