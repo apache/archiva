@@ -109,7 +109,7 @@ import java.util.Set;
 /**
  *
  */
-@Service ( "davResourceFactory#archiva" )
+@Service ("davResourceFactory#archiva")
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -142,7 +142,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named ( value = "repositoryProxyConnectors#default" )
+    @Named (value = "repositoryProxyConnectors#default")
     private RepositoryProxyConnectors connectors;
 
     /**
@@ -172,7 +172,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named ( value = "httpAuthenticator#basic" )
+    @Named (value = "httpAuthenticator#basic")
     private HttpAuthenticator httpAuth;
 
     @Inject
@@ -208,7 +208,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named (value = "archivaTaskScheduler#repository")
     private RepositoryArchivaTaskScheduler scheduler;
 
     private ApplicationContext applicationContext;
@@ -729,7 +729,8 @@ public class ArchivaDavResourceFactory
             if ( artifact != null )
             {
                 String repositoryLayout = managedRepository.getRepository().getLayout();
-                if ( StringUtils.equalsIgnoreCase( "default", repositoryLayout ) )
+                if ( StringUtils.equalsIgnoreCase( "default", repositoryLayout ) || StringUtils.equalsIgnoreCase(
+                    "legacy", repositoryLayout ) )
                 {
                     repositoryLayout = "maven2";
                 }
