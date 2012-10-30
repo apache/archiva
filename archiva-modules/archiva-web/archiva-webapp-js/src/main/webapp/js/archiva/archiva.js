@@ -65,7 +65,7 @@ $.ajax({
                     "jquery.ui": "jquery-ui-1.8.23.custom.min",
                     "jquery.ui.widget": "jquery.ui.widget-1.8.18",
                     "jquery.cookie": "jquery.cookie.1.0.0",
-                    "bootstrap": "bootstrap.2.1.1",
+                    "bootstrap": "bootstrap.2.2.0",
                     "choosen": "chosen.jquery-0.9.8",
                     "jquery.validate": "jquery.validate-1.9.0",
                     "jquery.json": "jquery.json-2.3.min",
