@@ -42,7 +42,9 @@
   </div>
   <div class="modal-footer" id="modal-login-footer">
     <div class="pull-left">
-      <input type="checkbox" id="user-login-form-rememberme">${$.i18n.prop('rememberme')}</input>
+      <label class="checkbox">
+        <input type="checkbox" id="user-login-form-rememberme">${$.i18n.prop('rememberme')}
+      </label>
     </div>
     <button class="btn btn-primary" id="modal-login-ok" data-loading-text="${$.i18n.prop('common.loading')}">${$.i18n.prop('login')}</button>
     <button class="btn btn-info" id="modal-login-password-reset">${$.i18n.prop('password.reset')}</button>
