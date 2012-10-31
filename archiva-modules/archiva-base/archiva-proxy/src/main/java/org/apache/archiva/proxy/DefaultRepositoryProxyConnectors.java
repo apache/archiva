@@ -552,6 +552,107 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
+    /**
+     * @param connector
+     * @param remoteRepository
+     * @param tmpMd5
+     * @param tmpSha1
+     * @param tmpResource
+     * @param url
+     * @param remotePath
+     * @param resource
+     * @param workingDirectory
+     * @param repository
+     * @throws ProxyException
+     * @throws NotModifiedException
+     */
+    protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository, File tmpMd5,
+                                      File tmpSha1, File tmpResource, String url, String remotePath, File resource,
+                                      File workingDirectory, ManagedRepositoryContent repository )
+        throws ProxyException, NotModifiedException, RepositoryAdminException
+    {
+        Wagon wagon = null;
+        try
+        {
+            RepositoryURL repoUrl = remoteRepository.getURL();
+            String protocol = repoUrl.getProtocol();
+            NetworkProxy networkProxy = null;
+            if ( StringUtils.isNotBlank( connector.getProxyId() ) )
+            {
+                networkProxy = networkProxyAdmin.getNetworkProxy( connector.getProxyId() );
+            }
+            WagonFactoryRequest wagonFactoryRequest = new WagonFactoryRequest( "wagon#" + protocol,
+                                                                               remoteRepository.getRepository().getExtraHeaders() ).networkProxy(
+                networkProxy );
+            wagon = wagonFactory.getWagon( wagonFactoryRequest );
+            if ( wagon == null )
+            {
+                throw new ProxyException( "Unsupported target repository protocol: " + protocol );
+            }
+
+            if ( wagon == null )
+            {
+                throw new ProxyException( "Unsupported target repository protocol: " + protocol );
+            }
+
+            boolean connected = connectToRepository( connector, wagon, remoteRepository );
+            if ( connected )
+            {
+                transferArtifact( wagon, remoteRepository, remotePath, repository, resource, workingDirectory,
+                                  tmpResource );
+
+                // TODO: these should be used to validate the download based on the policies, not always downloaded
+                // to
+                // save on connections since md5 is rarely used
+                transferChecksum( wagon, remoteRepository, remotePath, repository, resource, workingDirectory, ".sha1",
+                                  tmpSha1 );
+                transferChecksum( wagon, remoteRepository, remotePath, repository, resource, workingDirectory, ".md5",
+                                  tmpMd5 );
+            }
+        }
+        catch ( NotFoundException e )
+        {
+            urlFailureCache.cacheFailure( url );
+            throw e;
+        }
+        catch ( NotModifiedException e )
+        {
+            // Do not cache url here.
+            throw e;
+        }
+        catch ( ProxyException e )
+        {
+            urlFailureCache.cacheFailure( url );
+            throw e;
+        }
+        catch ( WagonFactoryException e )
+        {
+            throw new ProxyException( e.getMessage(), e );
+        }
+        finally
+        {
+            if ( wagon != null )
+            {
+                try
+                {
+                    wagon.disconnect();
+                }
+                catch ( ConnectionException e )
+                {
+                    log.warn( "Unable to disconnect wagon.", e );
+                }
+            }
+        }
+    }
+
+    private void transferArtifact( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
+                                   ManagedRepositoryContent repository, File resource, File tmpDirectory,
+                                   File destFile )
+        throws ProxyException
+    {
+        transferSimpleFile( wagon, remoteRepository, remotePath, repository, resource, destFile );
+    }
+
     private long getLastModified( File file )
     {
         if ( !file.exists() || !file.isFile() )
@@ -689,84 +790,17 @@ public class DefaultRepositoryProxyConnectors
             return null;
         }
 
-        File tmpMd5 = null;
-        File tmpSha1 = null;
-        File tmpResource = null;
-
         File workingDirectory = createWorkingDirectory( repository );
+        File tmpResource = new File( workingDirectory, resource.getName() );
+        File tmpMd5 = new File( workingDirectory, resource.getName() + ".md5" );
+        File tmpSha1 = new File( workingDirectory, resource.getName() + ".sha1" );
+
         try
         {
             Wagon wagon = null;
-            try
-            {
-                RepositoryURL repoUrl = remoteRepository.getURL();
-                String protocol = repoUrl.getProtocol();
-                NetworkProxy networkProxy = null;
-                if ( StringUtils.isNotBlank( connector.getProxyId() ) )
-                {
-                    networkProxy = networkProxyAdmin.getNetworkProxy( connector.getProxyId() );
-                }
 
-                wagon = ( networkProxy != null && networkProxy.isUseNtlm() )
-                    ? wagonFactory.getWagon( new WagonFactoryRequest( "wagon#" + protocol + "-ntlm",
-                                                                      remoteRepository.getRepository().getExtraHeaders() ) )
-                    : wagonFactory.getWagon( new WagonFactoryRequest( "wagon#" + protocol,
-                                                                      remoteRepository.getRepository().getExtraHeaders() ) );
-                if ( wagon == null )
-                {
-                    throw new ProxyException( "Unsupported target repository protocol: " + protocol );
-                }
-
-                boolean connected = connectToRepository( connector, wagon, remoteRepository );
-                if ( connected )
-                {
-                    tmpResource = new File( workingDirectory, resource.getName() );
-                    transferSimpleFile( wagon, remoteRepository, remotePath, repository, resource, tmpResource );
-
-                    // TODO: these should be used to validate the download based on the policies, not always downloaded
-                    // to
-                    // save on connections since md5 is rarely used
-                    tmpSha1 =
-                        transferChecksum( wagon, remoteRepository, remotePath, repository, resource, workingDirectory,
-                                          ".sha1" );
-                    tmpMd5 =
-                        transferChecksum( wagon, remoteRepository, remotePath, repository, resource, workingDirectory,
-                                          ".md5" );
-                }
-            }
-            catch ( NotFoundException e )
-            {
-                urlFailureCache.cacheFailure( url );
-                throw e;
-            }
-            catch ( NotModifiedException e )
-            {
-                // Do not cache url here.
-                throw e;
-            }
-            catch ( ProxyException e )
-            {
-                urlFailureCache.cacheFailure( url );
-                throw e;
-            }
-            catch ( WagonFactoryException e )
-            {
-                throw new ProxyException( e.getMessage(), e );
-            }
-            finally
-            {
-                if ( wagon != null )
-                {
-                    try
-                    {
-                        wagon.disconnect();
-                    }
-                    catch ( ConnectionException e )
-                    {
-                        log.warn( "Unable to disconnect wagon.", e );
-                    }
-                }
-            }
+            transferResources( connector, remoteRepository, tmpMd5, tmpSha1, tmpResource, url, remotePath, resource,
+                               workingDirectory, repository );
 
             // Handle post-download policies.
             try
@@ -858,8 +892,9 @@ public class DefaultRepositoryProxyConnectors
      * @param ext              the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
-    private File transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                   ManagedRepositoryContent repository, File resource, File tmpDirectory, String ext )
+    private void transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
+                                   ManagedRepositoryContent repository, File resource, File tmpDirectory, String ext,
+                                   File destFile )
         throws ProxyException
     {
         String url = remoteRepository.getURL().getUrl() + remotePath + ext;
@@ -867,10 +902,8 @@ public class DefaultRepositoryProxyConnectors
         // Transfer checksum does not use the policy.
         if ( urlFailureCache.hasFailedBefore( url ) )
         {
-            return null;
+            return;
         }
-
-        File destFile = new File( tmpDirectory, resource.getName() + ext );
 
         try
         {
@@ -895,7 +928,6 @@ public class DefaultRepositoryProxyConnectors
             // Critical issue, pass it on.
             throw e;
         }
-        return destFile;
     }
 
     /**
