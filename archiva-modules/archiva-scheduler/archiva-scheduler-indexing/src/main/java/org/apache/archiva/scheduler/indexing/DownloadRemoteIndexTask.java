@@ -132,12 +132,11 @@ public class DownloadRemoteIndexTask
             tempIndexDirectory.deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
 
-            String wagonProtocol =
-                new URL( this.remoteRepository.getUrl() ).getProtocol() + ( ( this.networkProxy != null
-                    && this.networkProxy.isUseNtlm() ) ? "-ntlm" : "" );
+            String wagonProtocol = new URL( this.remoteRepository.getUrl() ).getProtocol();
 
             final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
-                new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ) );
+                new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ).networkProxy(
+                    this.networkProxy ) );
             int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
             // FIXME olamy having 2 config values
             wagon.setReadTimeout( timeoutInMilliseconds );

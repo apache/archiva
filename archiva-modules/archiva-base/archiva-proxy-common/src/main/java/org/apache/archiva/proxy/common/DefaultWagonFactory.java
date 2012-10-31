@@ -62,6 +62,13 @@ public class DefaultWagonFactory
                 ? wagonFactoryRequest.getProtocol()
                 : "wagon#" + wagonFactoryRequest.getProtocol();
 
+            // if it's a ntlm proxy we have to lookup the wagon light which support thats
+            // wagon http client doesn't support that
+            if ( wagonFactoryRequest.getNetworkProxy() != null && wagonFactoryRequest.getNetworkProxy().isUseNtlm() )
+            {
+                protocol = protocol + "-ntlm";
+            }
+
             Wagon wagon = applicationContext.getBean( protocol, Wagon.class );
             wagon.addTransferListener( debugTransferListener );
             configureUserAgent( wagon, wagonFactoryRequest );

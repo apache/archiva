@@ -18,6 +18,8 @@ package org.apache.archiva.proxy.common;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.NetworkProxy;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,8 @@ public class WagonFactoryRequest
     private Map<String, String> headers = new HashMap<String, String>();
 
     private String userAgent = "Java-Archiva";
+
+    private NetworkProxy networkProxy;
 
     public WagonFactoryRequest()
     {
@@ -97,6 +101,22 @@ public class WagonFactoryRequest
     public WagonFactoryRequest userAgent( String userAgent )
     {
         this.userAgent = userAgent;
+        return this;
+    }
+
+    public NetworkProxy getNetworkProxy()
+    {
+        return networkProxy;
+    }
+
+    public void setNetworkProxy( NetworkProxy networkProxy )
+    {
+        this.networkProxy = networkProxy;
+    }
+
+    public WagonFactoryRequest networkProxy( NetworkProxy networkProxy )
+    {
+        this.networkProxy = networkProxy;
         return this;
     }
 
