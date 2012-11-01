@@ -70,9 +70,9 @@
   </distributionManagement>
   
   <properties>
-    <springVersion>3.1.2.RELEASE</springVersion>
+    <springVersion>3.1.3.RELEASE</springVersion>
     <slf4jVersion>1.7.1</slf4jVersion>
-    <log4jVersion>2.0-beta1</log4jVersion>
+    <log4jVersion>2.0-beta2</log4jVersion>
 
     <jacksonVersion>1.9.9</jacksonVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
