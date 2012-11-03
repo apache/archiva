@@ -80,10 +80,14 @@
         <configuration>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <configLocation>config/maven_checks.xml</configLocation>
-          <reportSets>
-            <report>checkstyle</report>
-          </reportSets>
         </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>checksyle</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
       <plugin>
         <!-- No need for the standard project reports -->
