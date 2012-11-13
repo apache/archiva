@@ -83,7 +83,6 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -908,7 +907,7 @@ public class DefaultRepositoryProxyConnectors
         try
         {
             transferSimpleFile( wagon, remoteRepository, remotePath + ext, repository, resource, destFile );
-            log.debug( "Checksum {} Downloaded: {} to move to {}", Arrays.asList( url, destFile, resource ).toArray() );
+            log.debug( "Checksum {} Downloaded: {} to move to {}", url, destFile, resource );
         }
         catch ( NotFoundException e )
         {
