@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"],
-function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
+define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid","purl"],
+function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
   /**
    * object model for user with some function to create/update/delete users
@@ -482,6 +482,19 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
               displayErrorMessage("issue appended");
             }
             window.modalChangePasswordBox.modal('hide');
+            var curHash = getUrlHash();
+            var url = $.url(window.location);
+            var newLocation=url.attr("path");
+            var requestLang=url.param("request_lang");
+            if(requestLang){
+              newLocation+="?request_lang="+requestLang;
+            }
+            if(curHash){
+              newLocation+="#"+curHash;
+            }else{
+              newLocation+="#search";
+            }
+            window.location=newLocation;
           }
         });
 

@@ -77,6 +77,7 @@ $.ajax({
                     "jquery.fileupload.ip":"jquery.fileupload-ip-1.0.6",
                     "jquery.fileupload.ui":"jquery.fileupload-ui-6.6.3",
                     "tmpl": "tmpl.min",
+                    "purl": "purl-2.2.1",
                     "prettify": "prettify",
                     "sammy": "sammy.0.7.1",
                     "jqueryFileTree": "jqueryFileTree-1.0.1",
