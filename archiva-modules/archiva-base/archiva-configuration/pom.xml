@@ -150,6 +150,14 @@
               <generatorId>registry-writer</generatorId>
             </configuration>
           </execution>
+          <execution>
+            <id>site-docs</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>xdoc</goal>
+              <goal>xsd</goal>
+            </goals>
+          </execution>
         </executions>
         <configuration>
           <version>1.4.1</version>
