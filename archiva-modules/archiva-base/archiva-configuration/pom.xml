@@ -155,7 +155,6 @@
             <phase>pre-site</phase>
             <goals>
               <goal>xdoc</goal>
-              <goal>xsd</goal>
             </goals>
           </execution>
         </executions>
