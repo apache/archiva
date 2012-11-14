@@ -498,7 +498,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
           },
            statusCode: {
              500: function(data){
-               clearUserMessages();
+               $("#modal-password-change-err-message" ).html('');
                displayRestError($.parseJSON(data.responseText),"modal-password-change-err-message");
                $("#modal-password-change-err-message" ).show();
              }
