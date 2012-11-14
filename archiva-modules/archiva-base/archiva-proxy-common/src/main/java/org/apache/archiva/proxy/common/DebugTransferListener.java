@@ -23,8 +23,6 @@ import org.apache.maven.wagon.events.TransferListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
 /**
  * @author Olivier Lamy
  * @since 1.4-M1
@@ -60,10 +58,8 @@ public class DebugTransferListener
 
     public void transferError( TransferEvent transferEvent )
     {
-        log.debug( "transferError for resource {} on repository url {}",
-                   Arrays.asList( transferEvent.getResource().getName(),
-                                  transferEvent.getWagon().getRepository().getUrl() ).toArray( new String[2] ),
-                   transferEvent.getException() );
+        log.debug( "transferError for resource {} on repository url {}", transferEvent.getResource().getName(),
+                   transferEvent.getWagon().getRepository().getUrl(), transferEvent.getException() );
     }
 
     public void debug( String s )
