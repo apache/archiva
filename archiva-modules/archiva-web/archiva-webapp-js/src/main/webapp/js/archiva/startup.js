@@ -35,7 +35,6 @@ function(jquery,sammy,utils) {
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayErrorMessage($.i18n.prop('authz.karma.needed'));
-
         userLogged(function(user){
           userLoggedCallbackFn(user);
         });

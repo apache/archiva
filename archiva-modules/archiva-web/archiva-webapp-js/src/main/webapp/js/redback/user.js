@@ -495,7 +495,14 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
               newLocation+="#search";
             }
             window.location=newLocation;
-          }
+          },
+           statusCode: {
+             500: function(data){
+               clearUserMessages();
+               displayRestError($.parseJSON(data.responseText),"modal-password-change-err-message");
+               $("#modal-password-change-err-message" ).show();
+             }
+           }
         });
 
       }
