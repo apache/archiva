@@ -97,7 +97,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j.adapters</groupId>
-      <artifactId>slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j-impl</artifactId>
       <version>${log4jVersion}</version>
       <scope>runtime</scope>
     </dependency>
