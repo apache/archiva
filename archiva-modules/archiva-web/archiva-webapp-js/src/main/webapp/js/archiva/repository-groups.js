@@ -111,7 +111,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
     this.editRepositoryGroup=function(repositoryGroup){
 
-
+      var mainContent=$("#main-content");
       $.ajax({
           url: "restServices/archivaServices/archivaAdministrationService/applicationUrl",
           type: "GET",
@@ -121,8 +121,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             var repositoryGroupViewModel=new RepositoryGroupViewModel(repositoryGroup,true,self);
             repositoryGroupViewModel.applicationUrl=applicationUrl;
             activateRepositoryGroupEditTab();
-            ko.applyBindings(repositoryGroupViewModel,$("#main-content").find("#repository-groups-edit" ).get(0));
-            $("#main-content" ).find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
+            ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
+            mainContent.find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
           }
         });
     }
