@@ -400,7 +400,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
             url += "repositoryId="+encodeURIComponent(managedRepository.id());
             var checked = $("#managedrepository-deletecontent").get(0).checked;
             url += "&deleteContent="+(checked==true?"true":"false");
-            $("#dialog-confirm-modal-body-text" ).html(mediumSpinnerImg());
+            var dialogText=$("#dialog-confirm-modal-body-text" );
+            dialogText.html(mediumSpinnerImg());
             $.ajax(url,
               {
                 type: "GET",
@@ -414,7 +415,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
                     displayRestError(res);
                   },
                   complete: function(){
-                    removeMediumSpinnerImg("#dialog-confirm-modal-body-text");
+                    removeMediumSpinnerImg(dialogText);
                     closeDialogConfirm();
                   }
               }
@@ -967,7 +968,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       clearUserMessages();
       openDialogConfirm(
           function(){
-            $("#dialog-confirm-modal-body-text" ).html(mediumSpinnerImg());
+            var dialogText=$("#dialog-confirm-modal-body-text" );
+            dialogText.html(mediumSpinnerImg());
             $.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+encodeURIComponent(remoteRepository.id()),
                   {
                     type: "GET",
@@ -980,7 +982,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
                       displayRestError(res);
                     },
                     complete:function(){
-                      removeMediumSpinnerImg($("#dialog-confirm-modal-body-text" ));
+                      removeMediumSpinnerImg(dialogText);
                       closeDialogConfirm();
                     }
                   }
