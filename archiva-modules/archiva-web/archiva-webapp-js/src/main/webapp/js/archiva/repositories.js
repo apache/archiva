@@ -860,6 +860,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
               self.remoteRepositoriesViewModel.remoteRepositories.push(self.remoteRepository);
               displaySuccessMessage($.i18n.prop('remoterepository.added'));
               activateRemoteRepositoriesGridTab();
+              removeMediumSpinnerImg(userMessages);
             },
             error: function(data) {
               var res = $.parseJSON(data.responseText);
