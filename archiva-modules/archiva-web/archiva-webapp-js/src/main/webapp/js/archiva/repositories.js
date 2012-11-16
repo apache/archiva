@@ -966,7 +966,9 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     removeRemoteRepository=function(remoteRepository){
       clearUserMessages();
       openDialogConfirm(
-          function(){$.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+encodeURIComponent(remoteRepository.id()),
+          function(){
+            $("#dialog-confirm-modal-body-text" ).html(mediumSpinnerImg());
+            $.ajax("restServices/archivaServices/remoteRepositoriesService/deleteRemoteRepository/"+encodeURIComponent(remoteRepository.id()),
                   {
                     type: "GET",
                     success: function(data) {
@@ -978,6 +980,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
                       displayRestError(res);
                     },
                     complete:function(){
+                      removeMediumSpinnerImg($("#dialog-confirm-modal-body-text" ));
                       closeDialogConfirm();
                     }
                   }
