@@ -73,6 +73,13 @@ Installing Standalone Distribution of Apache Archiva
   This procedure installs the service to run as the local system user. You must ensure that it has access to read the installation, and to write
   to the logs and data directories.
 
+  Note on last Windows version, you need to configure correctly path to your java executable.
+  In wrapper.conf file:
+
+---
+wrapper.java.command=fullpath to your java executable
+---
+
   You can later remove the service with:
 
 ----
