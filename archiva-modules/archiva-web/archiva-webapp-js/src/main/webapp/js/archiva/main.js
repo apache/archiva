@@ -677,6 +677,14 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           displayRepositoriesGrid(function(managedRepositoriesViewModel){managedRepositoriesViewModel.editManagedRepositoryWithId(repositoryId)});
         });
 
+        this.get("#repositorygroupedit/:groupId",function(){
+          var groupId=this.params.groupId;
+          $.log("edit repository group:"+groupId);
+          displayRepositoryGroups(function(repositoryGroupsViewModel){repositoryGroupsViewModel.editRepositoryGroupWithId(groupId)});
+
+        });
+
+
       });
   };
 

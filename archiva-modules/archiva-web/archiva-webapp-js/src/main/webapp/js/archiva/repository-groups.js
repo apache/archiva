@@ -127,6 +127,15 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
         });
     }
 
+    this.editRepositoryGroupWithId=function(repositoryGroupId){
+
+      $.each(self.repositoryGroups(), function(index, value) {
+        if(value.id()==repositoryGroupId){
+          self.editRepositoryGroup(value);
+        }
+      });
+    }
+
     this.saveRepositoryGroup=function(repositoryGroup){
         clearUserMessages();
         $("#user-messages").html(mediumSpinnerImg());
@@ -187,7 +196,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
   }
 
-  displayRepositoryGroups=function(){
+  displayRepositoryGroups=function(successFn){
     screenChange();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
@@ -236,6 +245,10 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
                     }
 
                   });
+
+                  if(successFn){
+                    successFn(self.repositoryGroupsViewModel);
+                  }
 
                 }
               }
