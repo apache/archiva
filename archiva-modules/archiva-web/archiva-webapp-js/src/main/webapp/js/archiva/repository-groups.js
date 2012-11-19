@@ -61,6 +61,10 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       }
       self.repositoryGroup.repositories(repositories);
       self.repositoryGroup.modified(true);
+      $("#main-content").find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).off("click");
+      $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).off("click");
+      self.renderSortableAvailables(self.repositoryGroupsViewModel);
+      self.renderSortableChoosed(self.repositoryGroupsViewModel);
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
@@ -75,23 +79,52 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       $.log("removeRepository:"+id);
     }
 
+    this.removeAvailable=function(idVal){
+      for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
+        if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
+          self.availableRepositories.remove(repositoryGroupsViewModel.managedRepositories()[i]);
+        }
+      }
+
+      for(var i= 0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
+        if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
+          $.log("find repo to add");
+          self.repositoryGroup.repositories.push(idVal);
+          self.repositoryGroup.managedRepositories.push(findManagedRepository(idVal,self.repositoryGroupsViewModel.managedRepositories()));
+        }
+      }
+      $("#main-content").find("#repository-groups-edit-order-div").find("#minus-"+idVal ).on("click",function(){
+        var idVal = $(this).attr("id");
+        idVal=idVal.substringAfterFirst("minus-");
+        self.removeChoosed(idVal);
+      });
+    }
+
     this.renderSortableAvailables=function(repositoryGroupsViewModel){
       $("#main-content").find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("plus-");
-        for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
-          if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
-            self.availableRepositories.remove(repositoryGroupsViewModel.managedRepositories()[i]);
-          }
-        }
+        self.removeAvailable(idVal);
+      });
+    }
 
-        for(var i= 0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
-          if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
-            $.log("find repo to add");
-            self.repositoryGroup.repositories.push(idVal);
-            self.repositoryGroup.managedRepositories.push(findManagedRepository(idVal,self.repositoryGroupsViewModel.managedRepositories()));
-          }
+    this.removeChoosed=function(idVal){
+      for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
+        if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
+          self.availableRepositories.push(repositoryGroupsViewModel.managedRepositories()[i]);
         }
+      }
+
+      for(var i= 0;i<self.repositoryGroup.repositories().length;i++){
+        if(self.repositoryGroup.repositories()[i]==idVal){
+          self.repositoryGroup.repositories.remove(self.repositoryGroup.repositories()[i]);
+          self.repositoryGroup.managedRepositories.remove(findManagedRepository(idVal,self.repositoryGroupsViewModel.managedRepositories()));
+        }
+      }
+      $("#main-content").find("#repository-groups-edit-available-repositories").find("#plus-"+idVal ).on("click",function(){
+        var idVal = $(this).attr("id");
+        idVal=idVal.substringAfterFirst("plus-");
+        self.removeAvailable(idVal);
       });
     }
 
@@ -99,19 +132,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("minus-");
-        for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
-          if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
-            self.availableRepositories.push(repositoryGroupsViewModel.managedRepositories()[i]);
-          }
-        }
-
-        for(var i= 0;i<self.repositoryGroup.repositories().length;i++){
-          if(self.repositoryGroup.repositories()[i]==idVal){
-            $.log("find repo to remove");
-            self.repositoryGroup.repositories.remove(self.repositoryGroup.repositories()[i]);
-            self.repositoryGroup.managedRepositories.remove(findManagedRepository(idVal,self.repositoryGroupsViewModel.managedRepositories()));
-          }
-        }
+        self.removeChoosed(idVal);
       });
     }
   }
