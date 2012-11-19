@@ -204,7 +204,8 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
     this.save=function(){
       //FIXME data controls !!!
       clearUserMessages();
-      $("#user-messages" ).html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       $("#proxy-connector-btn-save" ).button("loading");
       // update is delete then add
       if (this.update){
@@ -224,7 +225,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
               displayRestError(res);
             },
             complete: function(){
-              removeMediumSpinnerImg("#user-messages");
+              removeMediumSpinnerImg(userMessages);
               $("#proxy-connector-btn-save" ).button("reset");
             }
           }
@@ -248,7 +249,7 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
               displayRestError(res);
             },
             complete: function(){
-              removeMediumSpinnerImg("#user-messages");
+              removeMediumSpinnerImg(userMessages);
               $("#proxy-connector-btn-save" ).button("reset");
             }
           }

@@ -521,9 +521,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.networkConfiguration=ko.observable(networkConfiguration);
 
     save=function(){
-      $("#user-messages" ).html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       var mainContent=$("#main-content");
-      if (!$("#main-content" ).find("#network-configuration-edit-form").valid()){
+      if (!mainContent.find("#network-configuration-edit-form").valid()){
         return;
       }
       mainContent.find("#network-configuration-btn-save" ).button('loading');
@@ -536,7 +537,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           displaySuccessMessage( $.i18n.prop("network-configuration.updated"));
         },
         complete: function(){
-          removeMediumSpinnerImg("#user-messages");
+          removeMediumSpinnerImg(userMessages);
           mainContent.find("#network-configuration-btn-save" ).button('reset');
         }
       });
@@ -605,7 +606,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var self=this;
     save=function(){
       var mainContent=$("#main-content" );
-      $("#user-messages").html( mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html( mediumSpinnerImg());
       mainContent.find("#ui-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setUiConfiguration", {
         type: "POST",
@@ -616,7 +618,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           displaySuccessMessage( $.i18n.prop("ui-configuration.updated"));
         },
         complete: function(){
-          removeMediumSpinnerImg("#user-messages");
+          removeMediumSpinnerImg(userMessages);
           mainContent.find("#ui-configuration-btn-save" ).button('reset');
         }
       });
@@ -856,7 +858,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           return;
       }
       clearUserMessages();
-      $("#user-messages" ).html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       mainContent.find("#appearance-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setOrganisationInformation", {
         type: "POST",
@@ -871,7 +874,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           displayErrorMessage($.i18n.prop('appearance-configuration.updating-error'));
         },
         complete: function(){
-          removeMediumSpinnerImg("#user-messages");
+          removeMediumSpinnerImg(userMessages);
           mainContent.find("#appearance-configuration-btn-save" ).button('reset');
         }
       });

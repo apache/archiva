@@ -86,15 +86,12 @@
         {{/each}}
         <th>Releases</th>
         <th>Snapshots</th>
-        <!--th title="${$.i18n.prop('managedrepository.scan.index')}">${$.i18n.prop('managedrepository.scan.grid.header')}</th-->
         <th>${$.i18n.prop('managedrepository.actions')}</th>
         <th>${$.i18n.prop('edit')}</th>
         <th>${$.i18n.prop('delete')}</th>
         <th>${$.i18n.prop('modified')}</th>
-        <!--th>${$.i18n.prop('description')}</th-->
         <th>${$.i18n.prop('managed.repository.rss.header')}</th>
         <th title="${$.i18n.prop('managedrepository.stats')}">${$.i18n.prop('managedrepository.stats.grid.header')}</th>
-        <!--th title="${$.i18n.prop('managedrepository.scan.directories')}">${$.i18n.prop('managedrepository.scan.directories.grid.header')}</th-->
       </tr>
   </thead>
   <tbody>
@@ -187,15 +184,6 @@
             <td>
                <a href="${row.feedsUrl}"><img src="images/atom.gif" alt="" title="${$.i18n.prop('managedrepository.feeds')} ${row.name()}"/></a>
             </td>
-            <!--td>
-                {{if row.description()}}
-                <a class="btn btn-warning btn-mini popover-doc" id="managedrepo-description-help"
-                   data-content="${row.description()}" data-title="${$.i18n.prop('description')}"
-                   data-placement="left">
-                    <i class="icon-question-sign icon-white"></i>
-                </a>
-                {{/if}}
-            </td-->
             <td id="managedrepository-stats-${row.id()}">
               <img src="images/utilities-system-monitor-22-22.png" data-original-title="${$.i18n.prop('managedrepository.stats')}"
                    data-bind="event: { mouseover: function(){ showStats(row) }, mouseout: function(){ hideStats(row) },}"

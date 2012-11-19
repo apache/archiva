@@ -88,7 +88,8 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
 
     this.saveProxyConnectorRule=function(proxyConnectorRule,url,add,completeFnCallback){
       $.log("saveProxyConnectorRule:"+url);
-      $("#user-messages" ).html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       $.ajax(url,
         {
           type: "POST",
@@ -112,7 +113,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
             displayRestError(res);
           },
           complete:function(data){
-            removeMediumSpinnerImg("#user-messages");
+            removeMediumSpinnerImg(userMessages);
             if(completeFnCallback){
               completeFnCallback();
             }
@@ -134,7 +135,8 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
 
     this.deleteProxyConnectorRule=function(proxyConnectorRule){
       $("#main-content" ).find("proxy-connectors-rules-view-tabsTable").find(".btn").button("loading");
-      $("#user-messages" ).html(mediumSpinnerImg());
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
       $.ajax("restServices/archivaServices/proxyConnectorRuleService/deleteProxyConnectorRule",
        {
          type:"POST",
@@ -151,7 +153,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
            displayRestError(res);
          },
          complete:function(data){
-           removeMediumSpinnerImg("#user-messages");
+           removeMediumSpinnerImg(userMessages);
            $("#main-content" ).find("proxy-connectors-rules-view-tabsTable").find(".btn").button("reset");
          }
        }
@@ -278,7 +280,8 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     screenChange();
     var mainContent = $("#main-content");
     mainContent.html($("#proxyConnectorsRulesMain").tmpl());
-    $("#user-messages").html(mediumSpinnerImg());
+    var userMessages=$("#user-messages");
+    userMessages.html(mediumSpinnerImg());
     loadAllProxyConnectors(function(data){
       var proxyConnectors = mapProxyConnectors(data);
 
@@ -292,7 +295,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
             activateProxyConnectorRulesGridTab();
           },
           complete: function(data){
-            removeMediumSpinnerImg("#user-messages");
+            removeMediumSpinnerImg(userMessages);
           }
 
         });

@@ -207,7 +207,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
     this.saveRepositoryGroup=function(repositoryGroup){
         clearUserMessages();
-        $("#user-messages").html(mediumSpinnerImg());
+        var userMessages=$("#user-messages");
+        userMessages.html(mediumSpinnerImg());
         $("#repository-group-save" ).button('loading');
         $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
           {
@@ -227,7 +228,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             },
             complete:function(data){
               $("#repository-group-save" ).button('reset');
-              removeMediumSpinnerImg("#user-messages");
+              removeMediumSpinnerImg(userMessages);
             }
           }
         );
