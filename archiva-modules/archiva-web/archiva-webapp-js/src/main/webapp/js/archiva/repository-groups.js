@@ -61,8 +61,9 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       }
       self.repositoryGroup.repositories(repositories);
       self.repositoryGroup.modified(true);
-      $("#main-content").find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).off("click");
-      $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).off("click");
+      var mainContent=$("#main-content");
+      mainContent.find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).off("click");
+      mainContent.find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).off("click");
       self.renderSortableAvailables(self.repositoryGroupsViewModel);
       self.renderSortableChoosed(self.repositoryGroupsViewModel);
     }
