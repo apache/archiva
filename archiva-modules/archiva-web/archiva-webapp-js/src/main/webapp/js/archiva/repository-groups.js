@@ -75,21 +75,31 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       $.log("removeRepository:"+id);
     }
 
-    this.renderSortableAvailables=function(){
-      $.log("renderSortableAvailables");
-      //$("#main-content").find("#repository-groups-edit-available-repositories" ).find(".icon-minus-sign" ).hide();
+    this.renderSortableAvailables=function(repositoryGroupsViewModel){
+      $("#main-content").find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).on("click",function(){
+        var idVal = $(this).attr("id");
+        idVal=idVal.substringAfterFirst("plus-");
+        for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
+          if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
+            self.availableRepositories.remove(repositoryGroupsViewModel.managedRepositories()[i]);
+          }
+        }
+        $.log("size before:"+self.repositoryGroup.repositories().length+","+self.repositoryGroup.managedRepositories().length);
 
-    }
-
-    this.removeChoosed=function(id){
-      $.log("removeChoosed:"+id);
+        for(var i= 0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
+          if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
+            $.log("find repo to add");
+            self.repositoryGroup.repositories.push(idVal);
+            self.repositoryGroup.managedRepositories.push(findManagedRepository(idVal,self.repositoryGroupsViewModel.managedRepositories()));
+          }
+        }
+      });
     }
 
     this.renderSortableChoosed=function(repositoryGroupsViewModel){
       $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("minus-");
-        $.log("renderSortableChoosed:"+idVal);
         for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
           if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
             self.availableRepositories.push(repositoryGroupsViewModel.managedRepositories()[i]);
@@ -106,9 +116,6 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             repositories.push(self.repositoryGroup.managedRepositories()[i].id());
           }
         }
-        //self.repositoryGroup.repositories(repositories);
-        //self.repositoryGroup.modified(true);
-        $.log("size after:"+self.repositoryGroup.repositories().length+","+self.repositoryGroup.managedRepositories().length);
       });
     }
   }
@@ -165,6 +172,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             activateRepositoryGroupEditTab();
             ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
             repositoryGroupViewModel.renderSortableChoosed(self);
+            repositoryGroupViewModel.renderSortableAvailables(self);
             mainContent.find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
           }
         });
@@ -280,7 +288,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
                       activateRepositoryGroupEditTab();
                       ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
-                      repositoryGroupViewModel.renderSortableChoosed();
+                      repositoryGroupViewModel.renderSortableChoosed(self.repositoryGroupsViewModel);
+                      repositoryGroupViewModel.renderSortableAvailables(self.repositoryGroupsViewModel);
                     }
                     if ($(e.target).attr("href")=="#repository-groups-view") {
                       mainContent.find("#repository-groups-view-tabs-li-edit a").html($.i18n.prop("add"));
