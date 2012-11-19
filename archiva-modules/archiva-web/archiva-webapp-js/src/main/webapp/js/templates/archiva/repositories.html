@@ -1383,15 +1383,15 @@
             <div class="span6 dotted">
               <div id="proxy-connectors-rules-edit-div" data-bind='template:{name:"proxy-connectors-rules-edit-tmpl"}'></div>
               <div id="proxy-connectors-rules-edit-order-div" style="min-height: 80px"
-                 data-bind="sortable: { template: 'proxy-connectors-rules-edit-proxy-connectors-tmpl',data:proxyConnectorRule.proxyConnectors,afterMove:proxyConnectorMoved}">
+                 data-bind="sortable: { template: 'proxy-connectors-rules-edit-proxy-connectors-tmpl-choosen',data:proxyConnectorRule.proxyConnectors,afterMove:proxyConnectorMoved}">
               </div>
             </div>
 
             <div class="span6 dotted">
               <h5>${$.i18n.prop('proxy-connector-rules.available.proxyConnectors')}</h5>
               <br/>
-              <div id="proxy-connectors-rules-available-repositories" style="min-height: 80px"
-                   data-bind="sortable: { template: 'proxy-connectors-rules-edit-proxy-connectors-tmpl',data:availableProxyConnectors,afterMove:proxyConnectorMoved}">
+              <div id="proxy-connectors-rules-available-proxy-connectors" style="min-height: 80px"
+                   data-bind="sortable: { template: 'proxy-connectors-rules-edit-proxy-connectors-tmpl-availables',data:availableProxyConnectors,afterMove:proxyConnectorMoved}">
 
               </div>
             </div>
@@ -1507,11 +1507,22 @@
     </div>
 </script>
 
-<script id="proxy-connectors-rules-edit-proxy-connectors-tmpl" type="text/html">
-    <div class="well draggable-item">
-      <blockquote>
-        ${$data.sourceRepoId()} <-> ${$data.targetRepoId()}
-      </blockquote>
+<script id="proxy-connectors-rules-edit-proxy-connectors-tmpl-choosen" type="text/html">
+  <div class="well draggable-item">
+    <i class="icon-minus-sign cursor-hand pull-right" data-source-repoId="${$data.sourceRepoId()}" data-target-repoId="${$data.targetRepoId()}"/>
+    <blockquote>
+      ${$data.sourceRepoId()} <-> ${$data.targetRepoId()}
+    </blockquote>
 
-    </div>
+  </div>
+</script>
+
+<script id="proxy-connectors-rules-edit-proxy-connectors-tmpl-availables" type="text/html">
+  <div class="well draggable-item">
+    <i class="icon-plus-sign cursor-hand pull-right" data-source-repoId="${$data.sourceRepoId()}" data-target-repoId="${$data.targetRepoId()}"/>
+    <blockquote>
+      ${$data.sourceRepoId()} <-> ${$data.targetRepoId()}
+    </blockquote>
+
+  </div>
 </script>

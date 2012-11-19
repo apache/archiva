@@ -40,6 +40,15 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       return ruleType;
     }
 
+    this.findProxyConnector=function(sourceRepoId,targetRepoId){
+      for(var i=0;i<self.proxyConnectors().length;i++){
+        var proxyConnector=self.proxyConnectors()[i];
+        if(proxyConnector.sourceRepoId()==sourceRepoId && proxyConnector.targetRepoId()==targetRepoId){
+          return proxyConnector;
+        }
+      }
+    }
+
     this.displayGrid=function(){
       var mainContent = $("#main-content");
 
@@ -57,7 +66,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
 
       ko.applyBindings(self,mainContent.find("#proxy-connector-rules-view").get(0));
 
-      removeSmallSpinnerImg();
+      removeSmallSpinnerImg(mainContent);
 
       mainContent.find("#proxy-connectors-rules-view-tabs").on('show', function (e) {
         $.log("on show:"+$(e.target).attr("href"));
@@ -162,12 +171,17 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       var proxyConnectorRuleViewModel=new ProxyConnectorRuleViewModel(proxyConnectorRule,self,true);
       ko.applyBindings(proxyConnectorRuleViewModel,$("#main-content").find("#proxy-connector-rules-edit" ).get(0));
       activateProxyConnectorRulesEditTab();
-
+      proxyConnectorRuleViewModel.activateRemoveChoosen(self);
+      proxyConnectorRuleViewModel.activateRemoveAvailable(self);
     }
+
+
 
     remove=function(){
       $.log("remove");
     }
+
+
 
   }
 
@@ -180,32 +194,74 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     this.update=update;
 
 
-      $.each(this.proxyConnectorRulesViewModel.proxyConnectors(), function(idx, value) {
-        $.log(idx + ': ' + value.sourceRepoId() +":"+value.targetRepoId());
-        var available=true;
-        // is it in proxyConnectorRule.proxyConnectors
-        $.each(self.proxyConnectorRule.proxyConnectors(),function(index,proxyConnector){
-          if(value.sourceRepoId()==proxyConnector.sourceRepoId() && value.targetRepoId()==proxyConnector.targetRepoId()){
-            available=false;
-          }
-        });
-        if(available==true){
-          self.availableProxyConnectors.push(value);
+    $.each(this.proxyConnectorRulesViewModel.proxyConnectors(), function(idx, value) {
+      $.log(idx + ': ' + value.sourceRepoId() +":"+value.targetRepoId());
+      var available=true;
+      // is it in proxyConnectorRule.proxyConnectors
+      $.each(self.proxyConnectorRule.proxyConnectors(),function(index,proxyConnector){
+        if(value.sourceRepoId()==proxyConnector.sourceRepoId() && value.targetRepoId()==proxyConnector.targetRepoId()){
+          available=false;
         }
       });
+      if(available==true){
+        self.availableProxyConnectors.push(value);
+      }
+    });
 
     proxyConnectorMoved=function(arg){
       $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
       self.proxyConnectorRule.modified(true);
-      ///arg.sourceParent.remove(arg.item);
-      //arg.targetParent.push(arg.item);
+      self.activateRemoveChoosen(self.proxyConnectorRulesViewModel);
     }
 
     saveProxyConnectorRule=function(){
-      $.log("pattern:"+self.proxyConnectorRule.pattern());
-      $.log("proxyConnectorRuleType:"+proxyConnectorRule.proxyConnectorRuleType());
-      $.log("proxyConnectors:"+proxyConnectorRule.proxyConnectors().length);
       self.proxyConnectorRulesViewModel.saveProxyConnectorRule(self.proxyConnectorRule)
+    }
+
+    this.removeChoosen=function(proxyConnectorRulesViewModel,sourceRepoId,targetRepoId){
+      $.log("removeChoosen:"+sourceRepoId+":"+targetRepoId);
+
+      $.log("size before:"+self.proxyConnectorRule.proxyConnectors().length);
+      var proxyConnectorToRemove=null;
+      for(var i=0;i<self.proxyConnectorRule.proxyConnectors().length;i++){
+        if(self.proxyConnectorRule.proxyConnectors()[i].sourceRepoId()==sourceRepoId &&
+            self.proxyConnectorRule.proxyConnectors()[i].targetRepoId()==targetRepoId){
+          $.log("found");
+          proxyConnectorToRemove=self.proxyConnectorRule.proxyConnectors()[i];
+        }
+      }
+      self.proxyConnectorRule.proxyConnectors.remove(proxyConnectorToRemove);
+      self.availableProxyConnectors.push(proxyConnectorToRemove);
+      $.log("size after:"+self.proxyConnectorRule.proxyConnectors().length);
+    }
+
+    this.activateRemoveChoosen=function(proxyConnectorRulesViewModel){
+      $("#main-content" ).find("#proxy-connectors-rules-edit-order-div" ).find(".icon-minus-sign" ).on("click", function(){
+        self.removeChoosen(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
+      });
+    }
+
+    this.removeAvailable=function(proxyConnectorRulesViewModel,sourceRepoId,targetRepoId){
+      $.log("removeAvailable:"+sourceRepoId+":"+targetRepoId);
+
+      $.log("size before:"+self.availableProxyConnectors().length);
+      var proxyConnectorToAdd=null;
+      for(var i=0;i<self.availableProxyConnectors().length;i++){
+        if(self.availableProxyConnectors()[i].sourceRepoId()==sourceRepoId &&
+            self.availableProxyConnectors()[i].targetRepoId()==targetRepoId){
+          $.log("found");
+          proxyConnectorToAdd=self.availableProxyConnectors()[i];
+        }
+      }
+      self.proxyConnectorRule.proxyConnectors.push(proxyConnectorToAdd);
+      self.availableProxyConnectors.remove(proxyConnectorToAdd);
+      $.log("size after:"+self.proxyConnectorRule.proxyConnectors().length);
+    }
+
+    this.activateRemoveAvailable=function(proxyConnectorRulesViewModel){
+      $("#main-content" ).find("#proxy-connectors-rules-available-proxy-connectors" ).find(".icon-plus-sign" ).on("click", function(){
+        self.removeAvailable(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
+      });
     }
 
   }
@@ -247,7 +303,6 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
     //private String sourceRepoId;
     this.pattern=ko.observable(pattern);
     this.pattern.subscribe(function(newValue){
-      $.log("pattern modified");
       self.modified(true);
     });
 
