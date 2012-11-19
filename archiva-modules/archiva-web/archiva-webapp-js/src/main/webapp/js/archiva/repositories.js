@@ -1175,7 +1175,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
               ],
               pageSize: 5,
               gridUpdateCallBack: function(){
-                $("#main-content" ).find("#managed-repositories-table").find("[title]").tooltip();
+                // a bit ugly
+                //$("#main-content" ).find("#managed-repositories-table").find("[title]").tooltip({animation:"false"});
               }
             });
             var mainContent = $("#main-content");
@@ -1215,7 +1216,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
               ],
               pageSize: 5,
               gridUpdateCallBack: function(){
-                $("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
+                //$("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
               }
             });
             var mainContent = $("#main-content");
