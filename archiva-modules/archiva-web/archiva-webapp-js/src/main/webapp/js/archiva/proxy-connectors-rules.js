@@ -233,6 +233,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       $("#main-content" ).find("#proxy-connectors-rules-available-proxy-connectors" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).on("click", function(){
         self.removeAvailable(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
       });
+      $("#main-content" ).find("#proxy-connectors-rules-edit-order-div" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).off("click");
     }
 
     this.activateRemoveChoosen=function(proxyConnectorRulesViewModel){
@@ -259,6 +260,7 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       $("#main-content" ).find("#proxy-connectors-rules-edit-order-div" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).on("click", function(){
         self.removeChoosen(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
       });
+      $("#main-content" ).find("#proxy-connectors-rules-available-proxy-connectors" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).off("click");
     }
 
     this.activateRemoveAvailable=function(proxyConnectorRulesViewModel){
