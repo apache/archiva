@@ -62,6 +62,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       self.repositoryGroup.repositories(repositories);
       self.repositoryGroup.modified(true);
     }
+
     this.saveRepositoryGroup=function(repositoryGroup){
       if (self.update){
         self.repositoryGroupsViewModel.saveRepositoryGroup(repositoryGroup);
@@ -73,6 +74,43 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
     this.removeRepository=function(id){
       $.log("removeRepository:"+id);
     }
+
+    this.renderSortableAvailables=function(){
+      $.log("renderSortableAvailables");
+      //$("#main-content").find("#repository-groups-edit-available-repositories" ).find(".icon-minus-sign" ).hide();
+
+    }
+
+    this.removeChoosed=function(id){
+      $.log("removeChoosed:"+id);
+    }
+
+    this.renderSortableChoosed=function(repositoryGroupsViewModel){
+      $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).on("click",function(){
+        var idVal = $(this).attr("id");
+        idVal=idVal.substringAfterFirst("minus-");
+        $.log("renderSortableChoosed:"+idVal);
+        for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
+          if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
+            self.availableRepositories.push(repositoryGroupsViewModel.managedRepositories()[i]);
+          }
+        }
+        $.log("size before:"+self.repositoryGroup.repositories().length+","+self.repositoryGroup.managedRepositories().length);
+        var repositories=[];
+        for(var i= 0;i<self.repositoryGroup.repositories().length;i++){
+          if(self.repositoryGroup.repositories()[i]==idVal){
+            $.log("find repo to remove");
+            self.repositoryGroup.repositories.remove(self.repositoryGroup.repositories()[i]);
+            self.repositoryGroup.managedRepositories.remove(findManagedRepository(idVal,self.repositoryGroupsViewModel.managedRepositories()));
+          } else {
+            repositories.push(self.repositoryGroup.managedRepositories()[i].id());
+          }
+        }
+        //self.repositoryGroup.repositories(repositories);
+        //self.repositoryGroup.modified(true);
+        $.log("size after:"+self.repositoryGroup.repositories().length+","+self.repositoryGroup.managedRepositories().length);
+      });
+    }
   }
 
   RepositoryGroupsViewModel=function(){
@@ -80,6 +118,10 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
     this.repositoryGroups=ko.observableArray([]);
     this.managedRepositories=ko.observableArray([]);
     this.applicationUrl="";
+
+    this.removeFromList=function(managedRepository){
+      $.log("removeFromList");
+    }
 
     this.findManagedRepository=function(id){
       return findManagedRepository(id,self.managedRepositories());
@@ -122,6 +164,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             repositoryGroupViewModel.applicationUrl=applicationUrl;
             activateRepositoryGroupEditTab();
             ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
+            repositoryGroupViewModel.renderSortableChoosed(self);
             mainContent.find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
           }
         });
@@ -230,7 +273,6 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
                   ko.applyBindings(self.repositoryGroupsViewModel,mainContent.find("#repository-groups-view" ).get(0));
                   $.log("displayRepositoryGroups#applyBindings after");
 
-
                   mainContent.find("#repository-groups-view-tabs").on('show', function (e) {
                     if ($(e.target).attr("href")=="#repository-groups-edit") {
                       var repositoryGroup = new RepositoryGroup();
@@ -238,6 +280,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
                       activateRepositoryGroupEditTab();
                       ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
+                      repositoryGroupViewModel.renderSortableChoosed();
                     }
                     if ($(e.target).attr("href")=="#repository-groups-view") {
                       mainContent.find("#repository-groups-view-tabs-li-edit a").html($.i18n.prop("add"));

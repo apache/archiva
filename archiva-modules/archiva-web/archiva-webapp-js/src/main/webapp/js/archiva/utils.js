@@ -429,7 +429,7 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     if (idx<0){
       return "";
     }
-    return this.substring(idx);
+    return this.substring(idx+str.length);
   }
 
   escapeDot=function(str){
