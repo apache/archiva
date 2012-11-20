@@ -19,20 +19,18 @@ package org.apache.archiva.redback.integration.checks.security;
  * under the License.
  */
 
-import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.role.RoleManagerException;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.configuration.UserConfiguration;
-import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.apache.archiva.redback.rbac.Role;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -51,7 +48,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 2.0
  */
-@Service( "environmentCheck#adminAutoCreateCheck" )
+@Service ("environmentCheck#adminAutoCreateCheck")
 public class AdminAutoCreateCheck
     implements EnvironmentCheck
 {
@@ -67,7 +64,7 @@ public class AdminAutoCreateCheck
     public static final String ADMIN_PASSWORD_KEY = "redback.admin.password";
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named (value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
@@ -80,7 +77,7 @@ public class AdminAutoCreateCheck
     private RoleManager roleManager;
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named (value = "rBACManager#cached")
     private RBACManager rbacManager;
 
     public void validateEnvironment( List<String> violations )
@@ -101,34 +98,6 @@ public class AdminAutoCreateCheck
         }
     }
 
-    private void checkAdminKarma( User u )
-    {
-        try
-        {
-            Collection<Role> roles = rbacManager.getEffectivelyAssignedRoles( getAdminUid() );
-            boolean adminRole = false;
-            for ( Role role : roles )
-            {
-                if ( StringUtils.equals( "system-administrator", role.getName() ) )
-                {
-                    adminRole = true;
-                }
-            }
-            if ( !adminRole )
-            {
-                assignAdminRole( u );
-            }
-        }
-        catch ( RbacManagerException e )
-        {
-            log.warn( "fail to checkAdminKarma {}", e, e.getMessage() );
-        }
-        catch ( RoleManagerException e )
-        {
-            log.warn( "fail to assignAdmin role {}", e, e.getMessage() );
-        }
-    }
-
     private void useForceAdminCreationFile()
     {
         try
@@ -136,16 +105,16 @@ public class AdminAutoCreateCheck
             String forceAdminFilePath = System.getProperty( FORCE_ADMIN_FILE_PATH );
             if ( StringUtils.isBlank( forceAdminFilePath ) )
             {
-                log.info( FORCE_ADMIN_FILE_PATH + " system props is empty don't use an auto creation admin " );
+                log.info( "{} system props is empty don't use an auto creation admin ", FORCE_ADMIN_FILE_PATH );
                 return;
             }
             File file = new File( forceAdminFilePath );
             if ( !file.exists() )
             {
-                log.warn( "file set in sysprops " + FORCE_ADMIN_FILE_PATH + " not exists skip admin auto creation" );
+                log.warn( "file set in sysprops {} not exists skip admin auto creation", FORCE_ADMIN_FILE_PATH );
                 return;
             }
-            log.debug( "user {} not found try auto creation" );
+            log.debug( "user {} not found try auto creation", getAdminUid() );
             Properties properties = new Properties();
             FileInputStream fis = new FileInputStream( file );
             try
@@ -154,7 +123,7 @@ public class AdminAutoCreateCheck
             }
             catch ( Exception e )
             {
-                log.warn( "error loading properties from file " + forceAdminFilePath + " skip admin auto creation" );
+                log.warn( "error loading properties from file {} skip admin auto creation", forceAdminFilePath );
                 return;
             }
             finally
@@ -169,19 +138,19 @@ public class AdminAutoCreateCheck
 
             if ( StringUtils.isBlank( password ) )
             {
-                log.warn( "property " + ADMIN_PASSWORD_KEY + " not set skip auto admin creation" );
+                log.warn( "property {} not set skip auto admin creation", ADMIN_PASSWORD_KEY );
                 return;
             }
 
             if ( StringUtils.isBlank( email ) )
             {
-                log.warn( "property " + ADMIN_EMAIL_KEY + " not set skip auto admin creation" );
+                log.warn( "property not set skip auto admin creation", ADMIN_EMAIL_KEY );
                 return;
             }
 
             if ( StringUtils.isBlank( fullName ) )
             {
-                log.warn( "property " + ADMIN_FULL_NAME_KEY + " not set skip auto admin creation" );
+                log.warn( "property {} not set skip auto admin creation", ADMIN_FULL_NAME_KEY );
                 return;
             }
 
@@ -212,7 +181,7 @@ public class AdminAutoCreateCheck
         }
         catch ( Exception e )
         {
-            log.warn( "failed to automatically create an admin account " + e.getMessage(), e );
+            log.warn( "failed to automatically create an admin account {}", e.getMessage(), e );
         }
     }
 
