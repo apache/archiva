@@ -51,7 +51,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 2.0
  */
-@Service( "AdminAutoCreateCheck" )
+@Service( "environmentCheck#adminAutoCreateCheck" )
 public class AdminAutoCreateCheck
     implements EnvironmentCheck
 {
