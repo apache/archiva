@@ -47,7 +47,7 @@ public class CachedUserManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userManager#jdo" )
+    @Named( value = "userManager#configurable" )
     private UserManager userImpl;
 
     @Inject
