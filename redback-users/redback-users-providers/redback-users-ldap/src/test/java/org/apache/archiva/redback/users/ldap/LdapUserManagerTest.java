@@ -212,8 +212,8 @@ public class LdapUserManagerTest
         assertEquals( "jesse", jesse.getPrincipal().toString() );
         assertEquals( "jesse@apache.org", jesse.getEmail() );
         assertEquals( "foo", jesse.getFullName() );
-        System.out.println( "=====>"+jesse.getEncodedPassword());
-        System.out.println( "=====>"+passwordEncoder.encodePassword( "foo" ));
+        log.info( "=====>"+jesse.getEncodedPassword());
+        log.info( "=====>"+passwordEncoder.encodePassword( "foo" ));
         assertTrue( passwordEncoder.isPasswordValid( jesse.getEncodedPassword(), "foo" ) );
 
     }

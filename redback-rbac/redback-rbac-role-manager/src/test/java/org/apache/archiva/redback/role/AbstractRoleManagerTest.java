@@ -30,6 +30,8 @@ import org.apache.archiva.redback.role.model.ModelTemplate;
 import org.apache.archiva.redback.role.util.RoleModelUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,6 +48,8 @@ import java.util.List;
 public abstract class AbstractRoleManagerTest
     extends TestCase
 {
+
+    protected Logger logger = LoggerFactory.getLogger( getClass() );
 
     protected RBACManager rbacManager;
 
@@ -112,7 +116,7 @@ public abstract class AbstractRoleManagerTest
 
         for ( String roleName : assignments )
         {
-            System.out.println( roleName );
+            logger.info( roleName );
             assertTrue( "Test Role".equals( roleName ) || "Foo 2 - frigid".equals( roleName ) || "Test Role 1".equals( roleName ) );
         }
     }

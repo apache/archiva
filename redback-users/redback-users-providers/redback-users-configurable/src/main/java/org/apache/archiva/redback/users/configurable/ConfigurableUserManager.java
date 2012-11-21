@@ -60,8 +60,9 @@ public class ConfigurableUserManager
                 "User Manager Configuration Missing: " + USER_MANAGER_IMPL + " configuration property" );
         }
 
+        log.info( "use userManager impl with key: '{}'", userManagerRole );
+
         userManagerImpl = applicationContext.getBean( "userManager#" + userManagerRole, UserManager.class );
-        // (UserManager) container.lookup( UserManager.class.getName(), userManagerRole );
     }
 
     public User addUser( User user )

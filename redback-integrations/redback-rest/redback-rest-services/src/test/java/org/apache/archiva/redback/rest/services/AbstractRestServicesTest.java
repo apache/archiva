@@ -78,7 +78,7 @@ public abstract class AbstractRestServicesTest
 
     protected String getSpringConfigLocation()
     {
-        return "classpath*:META-INF/spring-context.xml";
+        return "classpath*:spring-context.xml,classpath*:META-INF/spring-context.xml";
     }
 
 

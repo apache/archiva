@@ -23,6 +23,8 @@ import org.apache.archiva.redback.rbac.RBACManagerListener;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,8 @@ public class RbacManagerEventTracker
     public List<String> addedPermissionNames = new ArrayList<String>();
 
     public List<String> removedPermissionNames = new ArrayList<String>();
+
+    protected Logger logger = LoggerFactory.getLogger( getClass() );
 
     public void rbacInit( boolean freshdb )
     {
@@ -107,6 +111,6 @@ public class RbacManagerEventTracker
 
     private void log( String msg )
     {
-        System.out.println( "[RBAC Event Tracker] " + msg );
+        logger.info( "[RBAC Event Tracker] : {}", msg );
     }
 }

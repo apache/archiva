@@ -29,6 +29,8 @@ import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.tests.utils.RBACDefaults;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -42,6 +44,8 @@ public class AbstractRbacManagerPerformanceTestCase
     private RBACManager rbacManager;
 
     private RBACDefaults rbacDefaults;
+
+    protected Logger logger = LoggerFactory.getLogger( getClass() );
 
     public void setRbacManager( RBACManager store )
     {
@@ -92,7 +96,7 @@ public class AbstractRbacManagerPerformanceTestCase
         double ratio = (double) elapsed / (double) ONESECOND; // ratio of time to 1 second.
         double opsPerSecond = (double) iterations / ratio;
 
-        System.out.println( "Performance " + msg + ": " + opsPerSecond + " operations per second. (effective)" );
+        logger.info( "Performance {}: {} operations per second. (effective)", msg, opsPerSecond );
 
         if ( opsPerSecond < threshold )
         {
@@ -107,7 +111,7 @@ public class AbstractRbacManagerPerformanceTestCase
             stats.append( "\nRatio          : " ).append( Double.toString( ratio ) );
             stats.append( "\nOps per second : " ).append( Double.toString( opsPerSecond ) );
 
-            System.out.println( stats.toString() );
+            logger.info( stats.toString() );
 
             fail( "Performance Error: " + msg + " expecting greater than [" + threshold + "], actual [" + opsPerSecond
                 + "]" );
