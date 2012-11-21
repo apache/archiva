@@ -19,6 +19,8 @@ package org.apache.archiva.redback.authentication;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -26,7 +28,6 @@ import java.util.Map;
  * AuthenticationResult: wrapper object for information that comes back from the authentication system
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- *
  */
 public class AuthenticationResult
     implements Serializable
@@ -35,10 +36,17 @@ public class AuthenticationResult
 
     private String principal;
 
+    /**
+     * as we can search the User store it here for reuse.
+     *
+     * @since 2.1
+     */
+    private User user;
+
     // TODO: why aren't these just thrown from the authenticate() method?
     private Exception exception;
 
-    private Map<String,String> exceptionsMap;
+    private Map<String, String> exceptionsMap;
 
     public AuthenticationResult()
     {
@@ -54,7 +62,8 @@ public class AuthenticationResult
         this.exception = exception;
     }
 
-    public AuthenticationResult( boolean authenticated, String principal, Exception exception, Map<String,String> exceptionsMap )
+    public AuthenticationResult( boolean authenticated, String principal, Exception exception,
+                                 Map<String, String> exceptionsMap )
     {
         isAuthenticated = authenticated;
         this.principal = principal;
@@ -77,9 +86,28 @@ public class AuthenticationResult
         return exception;
     }
 
-    public Map<String,String> getExceptionsMap()
+    public Map<String, String> getExceptionsMap()
     {
         return exceptionsMap;
+    }
+
+    /**
+     * <b>can be <code>null</code></b>
+     */
+    public User getUser()
+    {
+        return user;
+    }
+
+    public void setUser( User user )
+    {
+        this.user = user;
+    }
+
+    public AuthenticationResult user( User user )
+    {
+        this.setUser( user );
+        return this;
     }
 
     public String toString()

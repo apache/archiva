@@ -20,22 +20,22 @@ package org.apache.archiva.redback.rest.services.interceptors;
  */
 
 
-import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.cxf.jaxrs.ext.RequestHandler;
-import org.apache.cxf.jaxrs.model.ClassResourceInfo;
-import org.apache.cxf.message.Message;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticationException;
 import org.apache.archiva.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.cxf.jaxrs.ext.RequestHandler;
+import org.apache.cxf.jaxrs.model.ClassResourceInfo;
+import org.apache.cxf.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -54,17 +54,17 @@ import javax.ws.rs.core.Response;
  * @author Olivier Lamy
  * @since 1.3
  */
-@Service( "authenticationInterceptor#rest" )
+@Service ("authenticationInterceptor#rest")
 public class AuthenticationInterceptor
     extends AbstractInterceptor
     implements RequestHandler
 {
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named (value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
-    @Named( value = "httpAuthenticator#basic" )
+    @Named (value = "httpAuthenticator#basic")
     private HttpBasicAuthentication httpAuthenticator;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -108,8 +108,9 @@ public class AuthenticationInterceptor
                     {
                         return null;
                     }
-                    // FIXME this is already called previously but authenticationResult doesn't return that
-                    User user = userManager.findUser( (String) authenticationResult.getPrincipal() );
+
+                    User user = authenticationResult.getUser() == null ? userManager.findUser(
+                        authenticationResult.getPrincipal() ) : authenticationResult.getUser();
                     RedbackRequestInformation redbackRequestInformation =
                         new RedbackRequestInformation( user, request.getRemoteAddr() );
 
@@ -132,8 +133,11 @@ public class AuthenticationInterceptor
             {
                 throw new HttpAuthenticationException( "You are not authenticated." );
             }
-            // FIXME this is already called previously but authenticationResult doesn't return that
-            User user = userManager.findUser( (String) authenticationResult.getPrincipal() );
+
+            User user = authenticationResult.getUser() == null
+                ? userManager.findUser( authenticationResult.getPrincipal() )
+                : authenticationResult.getUser();
+
             RedbackRequestInformation redbackRequestInformation =
                 new RedbackRequestInformation( user, request.getRemoteAddr() );
 

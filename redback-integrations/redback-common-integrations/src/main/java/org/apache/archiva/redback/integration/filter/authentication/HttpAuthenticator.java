@@ -67,7 +67,7 @@ public abstract class HttpAuthenticator
 
             setSecuritySession( securitySession, httpSession );
 
-            return securitySession.getAuthenticationResult();
+            return securitySession.getAuthenticationResult().user( securitySession.getUser() );
         }
         catch ( AuthenticationException e )
         {
