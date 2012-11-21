@@ -36,7 +36,7 @@ public class AuthenticationResult
     /**
      * FIXME olamy this Object is a pain !!!
      */
-    private Object principal;
+    private String principal;
 
     // TODO: why aren't these just thrown from the authenticate() method?
     private Exception exception;
@@ -50,14 +50,14 @@ public class AuthenticationResult
         this.exception = null;
     }
 
-    public AuthenticationResult( boolean authenticated, Object principal, Exception exception )
+    public AuthenticationResult( boolean authenticated, String principal, Exception exception )
     {
         isAuthenticated = authenticated;
         this.principal = principal;
         this.exception = exception;
     }
 
-    public AuthenticationResult( boolean authenticated, Object principal, Exception exception, Map<String,String> exceptionsMap )
+    public AuthenticationResult( boolean authenticated, String principal, Exception exception, Map<String,String> exceptionsMap )
     {
         isAuthenticated = authenticated;
         this.principal = principal;
@@ -70,7 +70,7 @@ public class AuthenticationResult
         return isAuthenticated;
     }
 
-    public Object getPrincipal()
+    public String getPrincipal()
     {
         return principal;
     }
