@@ -71,7 +71,7 @@ public class LockedAdminEnvironmentCheck
      */
     public void validateEnvironment( List<String> violations )
     {
-        if ( !checked && !userManager.isReadOnly() )
+        if ( !checked ) //&& !userManager.isReadOnly() )
         {
             List<String> roles = new ArrayList<String>();
             roles.add( RedbackRoleConstants.SYSTEM_ADMINISTRATOR_ROLE );

@@ -98,7 +98,7 @@ public class LdapBindAuthenticator
             + ( mapper.getUserFilter() != null ? mapper.getUserFilter() : "" ) + "(" + mapper.getUserIdAttribute() + "="
             + source.getPrincipal() + "))";
 
-        log.info( "Searching for users with filter: \'{}\'" + " from base dn: {}", filter, mapper.getUserBaseDn() );
+        log.info( "Searching for users with filter: '{}'" + " from base dn: {}", filter, mapper.getUserBaseDn() );
                                                               
         LdapConnection ldapConnection = getLdapConnection();
         LdapConnection authLdapConnection = null;
@@ -135,7 +135,7 @@ public class LdapBindAuthenticator
                 }
             }
 
-            log.info( "Attempting Authenication: + {}", userDn );
+            log.info( "Attempting Authenication: {}", userDn );
 
             authLdapConnection = connectionFactory.getConnection( userDn, source.getPassword() );
 

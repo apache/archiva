@@ -19,20 +19,20 @@ package org.apache.archiva.redback.authentication.users;
  * under the License.
  */
 
-import org.apache.archiva.redback.authentication.Authenticator;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.PasswordEncoder;
-import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.PolicyViolationException;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,16 +46,15 @@ import java.util.Map;
  * {@link Authenticator} implementation that uses a wrapped {@link UserManager} to authenticate.
  *
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
- *
  */
-@Service( "authenticator#user-manager" )
+@Service ("authenticator#user-manager")
 public class UserManagerAuthenticator
     implements Authenticator
 {
-    private Logger log = LoggerFactory.getLogger( UserManagerAuthenticator.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userManager#jdo" )
+    @Named (value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
@@ -148,7 +147,7 @@ public class UserManagerAuthenticator
         }
         catch ( UserNotFoundException e )
         {
-            log.warn( "Login for user " + source.getPrincipal() + " failed. user not found." );
+            log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
             resultException = e;
             authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                           "Login for user \" + source.getPrincipal() + \" failed. user not found." );
