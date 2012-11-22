@@ -28,20 +28,20 @@ public class AuthorizationDataSource
 {
     private String principal;
 
-    User user;
+    private User user;
 
-    Object permission;
+    private String permission;
 
-    Object resource;
+    private String resource;
 
-    public AuthorizationDataSource( String principal, User user, Object permission )
+    public AuthorizationDataSource( String principal, User user, String permission )
     {
         this.principal = principal;
         this.user = user;
         this.permission = permission;
     }
 
-    public AuthorizationDataSource( String principal, User user, Object permission, Object resource )
+    public AuthorizationDataSource( String principal, User user, String permission, String resource )
     {
         this.principal = principal;
         this.user = user;
@@ -69,22 +69,22 @@ public class AuthorizationDataSource
         this.user = user;
     }
 
-    public Object getPermission()
+    public String getPermission()
     {
         return permission;
     }
 
-    public void setPermission( Object permission )
+    public void setPermission( String permission )
     {
         this.permission = permission;
     }
 
-    public Object getResource()
+    public String getResource()
     {
         return resource;
     }
 
-    public void setResource( Object resource )
+    public void setResource( String resource )
     {
         this.resource = resource;
     }
