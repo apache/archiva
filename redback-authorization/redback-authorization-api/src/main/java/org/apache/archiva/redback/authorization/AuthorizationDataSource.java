@@ -26,7 +26,7 @@ import org.apache.archiva.redback.users.User;
  */
 public class AuthorizationDataSource
 {
-    Object principal;
+    private String principal;
 
     User user;
 
@@ -34,14 +34,14 @@ public class AuthorizationDataSource
 
     Object resource;
 
-    public AuthorizationDataSource( Object principal, User user, Object permission )
+    public AuthorizationDataSource( String principal, User user, Object permission )
     {
         this.principal = principal;
         this.user = user;
         this.permission = permission;
     }
 
-    public AuthorizationDataSource( Object principal, User user, Object permission, Object resource )
+    public AuthorizationDataSource( String principal, User user, Object permission, Object resource )
     {
         this.principal = principal;
         this.user = user;
@@ -49,7 +49,7 @@ public class AuthorizationDataSource
         this.resource = resource;
     }
 
-    public Object getPrincipal()
+    public String getPrincipal()
     {
         return principal;
     }
