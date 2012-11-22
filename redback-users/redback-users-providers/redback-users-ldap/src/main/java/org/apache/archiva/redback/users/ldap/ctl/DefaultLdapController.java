@@ -144,7 +144,7 @@ public class DefaultLdapController
         String finalFilter = "(&(objectClass=" + mapper.getUserObjectClass() + ")" +
             ( mapper.getUserFilter() != null ? mapper.getUserFilter() : "" ) + query.getLdapFilter(mapper) + ")";
 
-        log.info( "Searching for users with filter: \'{}\'" + " from base dn: {}",finalFilter, mapper.getUserBaseDn() );
+        log.debug( "Searching for users with filter: '{}'" + " from base dn: {}",finalFilter, mapper.getUserBaseDn() );
 
         return context.search( mapper.getUserBaseDn(), finalFilter, ctls );
     }
@@ -257,7 +257,8 @@ public class DefaultLdapController
     {
         String username = key.toString();
 
-        log.info( "Searching for user: {}", username );
+        log.debug( "Searching for user: {}", username );
+
         LdapUserQuery query = new LdapUserQuery();
         query.setUsername( username );
 
@@ -269,6 +270,8 @@ public class DefaultLdapController
             if ( result.hasMoreElements() )
             {
                 SearchResult next = result.nextElement();
+
+                log.info( "Found user: {}", username );
 
                 return mapper.getUser( next.getAttributes() );
             }
