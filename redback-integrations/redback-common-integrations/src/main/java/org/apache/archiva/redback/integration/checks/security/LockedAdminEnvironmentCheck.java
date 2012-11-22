@@ -19,14 +19,14 @@ package org.apache.archiva.redback.integration.checks.security;
  * under the License.
  */
 
-import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.apache.archiva.redback.system.check.EnvironmentCheck;
-import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.integration.role.RoleConstants;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class LockedAdminEnvironmentCheck
         if ( !checked && !userManager.isReadOnly() )
         {
             List<String> roles = new ArrayList<String>();
-            roles.add( RoleConstants.SYSTEM_ADMINISTRATOR_ROLE );
+            roles.add( RedbackRoleConstants.SYSTEM_ADMINISTRATOR_ROLE );
 
             List<UserAssignment> systemAdminstrators;
             try
