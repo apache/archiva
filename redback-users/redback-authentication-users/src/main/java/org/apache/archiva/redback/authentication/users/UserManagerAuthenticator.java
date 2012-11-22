@@ -129,7 +129,7 @@ public class UserManagerAuthenticator
             }
             else
             {
-                log.warn( "Password is Invalid for user " + source.getPrincipal() + "." );
+                log.warn( "Password is Invalid for user {}.", source.getPrincipal() );
                 authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                               "Password is Invalid for user " + source.getPrincipal() + "." );
 
@@ -150,7 +150,7 @@ public class UserManagerAuthenticator
             log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
             resultException = e;
             authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                          "Login for user \" + source.getPrincipal() + \" failed. user not found." );
+                                          "Login for user " + source.getPrincipal() + " failed. user not found." );
         }
 
         return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultExceptionsMap );

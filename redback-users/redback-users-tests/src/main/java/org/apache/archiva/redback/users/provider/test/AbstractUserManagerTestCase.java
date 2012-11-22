@@ -21,29 +21,28 @@ package org.apache.archiva.redback.users.provider.test;
 
 import junit.framework.TestCase;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.apache.archiva.redback.users.PermanentUserException;
-import org.apache.archiva.redback.users.UserManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.util.List;
-import org.springframework.test.annotation.DirtiesContext;
 
 /**
- * AbstractUserManagerTestCase 
+ * AbstractUserManagerTestCase
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml","classpath*:/spring-context.xml"} )
-@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
+@RunWith ( SpringJUnit4ClassRunner.class )
+@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@DirtiesContext ( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public class AbstractUserManagerTestCase
     extends TestCase
 {
@@ -56,16 +55,16 @@ public class AbstractUserManagerTestCase
 
     @Inject
     private UserSecurityPolicy securityPolicy;
-    
+
     private UserManagerEventTracker eventTracker;
 
-    
+
     private static final int EVENTTRACKERCOUNT = 2;
     // assertCleanUserManager
     // getEventTracker().userManagerInit( true ); is 1
     // userManager.getUsers() is 2
     // only on clear context
-    
+
     public UserManager getUserManager()
     {
         return userManager;
@@ -100,7 +99,8 @@ public class AbstractUserManagerTestCase
         getEventTracker().userManagerInit( true );
         assertNotNull( getUserManager() );
 
-        assertEquals( "New UserManager should contain no users. " + userManager.getUsers(), 0, userManager.getUsers().size() );
+        assertEquals( "New UserManager should contain no users. " + userManager.getUsers(), 0,
+                      userManager.getUsers().size() );
     }
 
     @Test
@@ -131,7 +131,7 @@ public class AbstractUserManagerTestCase
         {
             // Expected Path.
         }
-        
+
         try
         {
             String username = "";
@@ -142,7 +142,7 @@ public class AbstractUserManagerTestCase
         {
             // Expected Path.
         }
-        
+
         try
         {
             String username = "   ";
@@ -172,53 +172,55 @@ public class AbstractUserManagerTestCase
         assertEquals( 1, userManager.getUsers().size() );
 
         /* Fetch user from userManager using principal returned earlier */
-        User actual = userManager.findUser( added.getPrincipal() );
+        User actual = userManager.findUser( added.getUsername() );
         assertEquals( added, actual );
         
         /* Check into the event tracker. */
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
     }
 
     @Test
-    public void testAddFindUserLockedStatus() throws UserNotFoundException {
-		assertCleanUserManager();
-		securityPolicy.setEnabled(false);
+    public void testAddFindUserLockedStatus()
+        throws UserNotFoundException
+    {
+        assertCleanUserManager();
+        securityPolicy.setEnabled( false );
 
-		User smcqueen = getUserManager().createUser("smcqueen", "Steve McQueen", "the cooler king");
+        User smcqueen = getUserManager().createUser( "smcqueen", "Steve McQueen", "the cooler king" );
 
-		smcqueen.setLocked( true );
-		
+        smcqueen.setLocked( true );
+
 		/*
 		 * Keep a reference to the object that was added. Since it has the
 		 * actual principal that was managed by jpox/jdo.
 		 */
-		User added = userManager.addUser( smcqueen );
+        User added = userManager.addUser( smcqueen );
 
-		assertTrue( added.isLocked() );
-		
-		assertEquals(1, userManager.getUsers().size());
+        assertTrue( added.isLocked() );
+
+        assertEquals( 1, userManager.getUsers().size() );
 
 		/* Fetch user from userManager using principal returned earlier */
-		User actual = userManager.findUser(added.getPrincipal());
-		assertEquals(added, actual);
+        User actual = userManager.findUser( added.getUsername() );
+        assertEquals( added, actual );
 
-		assertTrue( actual.isLocked() );
+        assertTrue( actual.isLocked() );
 		
 		/* Check into the event tracker. */
-		assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit);
-		assertNotNull(getEventTracker().lastDbFreshness);
-		assertTrue(getEventTracker().lastDbFreshness.booleanValue());
+        assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
+        assertNotNull( getEventTracker().lastDbFreshness );
+        assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
 
-		assertEquals(1, getEventTracker().addedUsernames.size());
-		assertEquals(0, getEventTracker().removedUsernames.size());
-		assertEquals(0, getEventTracker().updatedUsernames.size());
-	}
+        assertEquals( 1, getEventTracker().addedUsernames.size() );
+        assertEquals( 0, getEventTracker().removedUsernames.size() );
+        assertEquals( 0, getEventTracker().updatedUsernames.size() );
+    }
 
     @Test
     public void testAddFindUserByUsername()
@@ -240,7 +242,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
@@ -264,7 +266,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
@@ -292,7 +294,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
@@ -312,7 +314,7 @@ public class AbstractUserManagerTestCase
 
         assertEquals( 1, um.getUsers().size() );
 
-        um.deleteUser( user.getPrincipal() );
+        um.deleteUser( user.getUsername() );
         assertEquals( 0, um.getUsers().size() );
 
         // attempt finding a non-existent user
@@ -330,7 +332,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 1, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
@@ -364,7 +366,7 @@ public class AbstractUserManagerTestCase
         User user = um.findUser( "root" );
         assertNotNull( user );
         assertEquals( "root@somedomain.com", user.getEmail() );
-        assertEquals( "root", user.getPrincipal() );
+        assertEquals( "root", user.getUsername() );
         assertEquals( "Root User", user.getFullName() );
         // test if the plain string password is encoded and NULL'ified
         assertNull( user.getPassword() );
@@ -386,7 +388,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 3, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
@@ -520,7 +522,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 0, getEventTracker().updatedUsernames.size() );
@@ -562,7 +564,7 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
         assertEquals( 1, getEventTracker().updatedUsernames.size() );
@@ -585,13 +587,14 @@ public class AbstractUserManagerTestCase
 
         try
         {
-            um.deleteUser( user.getPrincipal() );
-            fail("Deleting permanent user shold throw PermanentUserException.");
-        } catch( PermanentUserException e )
+            um.deleteUser( user.getUsername() );
+            fail( "Deleting permanent user shold throw PermanentUserException." );
+        }
+        catch ( PermanentUserException e )
         {
             // do nothing, expected route.
         }
-        
+
         assertEquals( 1, um.getUsers().size() );
 
         // attempt to finding user
@@ -604,10 +607,11 @@ public class AbstractUserManagerTestCase
         assertEquals( EVENTTRACKERCOUNT, getEventTracker().countInit );
         assertNotNull( getEventTracker().lastDbFreshness );
         assertTrue( getEventTracker().lastDbFreshness.booleanValue() );
-        
+
         assertEquals( 1, getEventTracker().addedUsernames.size() );
         assertEquals( 0, getEventTracker().removedUsernames.size() );
-        assertEquals( 0, getEventTracker().updatedUsernames.size() );    }
+        assertEquals( 0, getEventTracker().updatedUsernames.size() );
+    }
 
     public UserManagerEventTracker getEventTracker()
     {

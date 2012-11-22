@@ -197,7 +197,7 @@ public class DefaultUserService
         }
         try
         {
-            roleManager.assignRole( RedbackRoleConstants.REGISTERED_USER_ROLE_ID, u.getPrincipal().toString() );
+            roleManager.assignRole( RedbackRoleConstants.REGISTERED_USER_ROLE_ID, u.getUsername() );
         }
         catch ( RoleManagerException rpe )
         {
@@ -417,7 +417,7 @@ public class DefaultUserService
             org.apache.archiva.redback.users.User user = userManager.createGuestUser();
             user.setPasswordChangeRequired( false );
             user = userManager.updateUser( user, false );
-            roleManager.assignRole( "guest", user.getPrincipal().toString() );
+            roleManager.assignRole( "guest", user.getUsername() );
             return getSimpleUser( user );
         }
         catch ( RoleManagerException e )
@@ -478,7 +478,7 @@ public class DefaultUserService
 
         try
         {
-            roleManager.assignRole( "system-administrator", user.getPrincipal().toString() );
+            roleManager.assignRole( "system-administrator", user.getUsername() );
         }
         catch ( RoleManagerException e )
         {
@@ -584,7 +584,7 @@ public class DefaultUserService
 
         try
         {
-            roleManager.assignRole( RedbackRoleConstants.REGISTERED_USER_ROLE_ID, u.getPrincipal().toString() );
+            roleManager.assignRole( RedbackRoleConstants.REGISTERED_USER_ROLE_ID, u.getUsername() );
         }
         catch ( RoleManagerException rpe )
         {
@@ -599,7 +599,7 @@ public class DefaultUserService
             try
             {
                 AuthenticationKey authkey =
-                    securitySystem.getKeyManager().createKey( u.getPrincipal().toString(), "New User Email Validation",
+                    securitySystem.getKeyManager().createKey( u.getUsername(), "New User Email Validation",
                                                               securityPolicy.getUserValidationSettings().getEmailValidationTimeout() );
 
                 String baseUrl = userRegistrationRequest.getApplicationUrl();
@@ -658,7 +658,7 @@ public class DefaultUserService
             user.setPasswordChangeRequired( true );
             user.setEncodedPassword( "" );
 
-            principal = user.getPrincipal().toString();
+            principal = user.getUsername();
 
             TokenBasedAuthenticationDataSource authsource = new TokenBasedAuthenticationDataSource();
             authsource.setPrincipal( principal );

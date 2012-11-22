@@ -188,7 +188,7 @@ public class AdminAutoCreateCheck
     private void assignAdminRole( User user )
         throws RoleManagerException
     {
-        roleManager.assignRole( "system-administrator", user.getPrincipal().toString() );
+        roleManager.assignRole( "system-administrator", user.getUsername() );
     }
 
     private String getAdminUid()

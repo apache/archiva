@@ -209,11 +209,11 @@ public class LdapUserManagerTest
 
         assertNotNull( jesse );
 
-        assertEquals( "jesse", jesse.getPrincipal().toString() );
+        assertEquals( "jesse", jesse.getUsername() );
         assertEquals( "jesse@apache.org", jesse.getEmail() );
         assertEquals( "foo", jesse.getFullName() );
-        log.info( "=====>"+jesse.getEncodedPassword());
-        log.info( "=====>"+passwordEncoder.encodePassword( "foo" ));
+        log.info( "=====>{}",jesse.getEncodedPassword());
+        log.info( "=====>{}",passwordEncoder.encodePassword( "foo" ));
         assertTrue( passwordEncoder.isPasswordValid( jesse.getEncodedPassword(), "foo" ) );
 
     }

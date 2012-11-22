@@ -44,16 +44,16 @@ import javax.annotation.Resource;
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  */
-@Service( "authenticator#keystore" )
+@Service ("authenticator#keystore")
 public class KeyStoreAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    @Resource( name = "keyManager#cached" )
+    @Resource (name = "keyManager#cached")
     private KeyManager keystore;
 
-    @Resource( name = "userManager#configurable" )
+    @Resource (name = "userManager#configurable")
     private UserManager userManager;
 
     public String getId()
@@ -104,7 +104,7 @@ public class KeyStoreAuthenticator
         }
         catch ( UserNotFoundException e )
         {
-            log.warn( "Login for user " + source.getPrincipal() + " failed. user not found." );
+            log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
             return new AuthenticationResult( false, null, e );
         }
     }

@@ -100,7 +100,7 @@ public class HttpDigestAuthentication
 
             // Lookup password for presented username
             User user = findUser( digestHeader.username );
-            authDataSource.setPrincipal( user.getPrincipal().toString() );
+            authDataSource.setPrincipal( user.getUsername() );
 
             String serverSideHash = generateDigestHash( digestHeader, user.getPassword(), request.getMethod() );
 

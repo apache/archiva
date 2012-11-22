@@ -191,7 +191,7 @@ public abstract class HttpAuthenticator
             User user = securitySystem.getUserManager().findUser( principal );
             httpSession.setAttribute( SecuritySession.USERKEY, user );
 
-            return user.getPrincipal().toString();
+            return user.getUsername();
 
         }
         catch ( UserNotFoundException e )

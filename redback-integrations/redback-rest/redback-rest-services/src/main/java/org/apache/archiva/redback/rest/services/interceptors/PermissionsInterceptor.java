@@ -19,16 +19,16 @@ package org.apache.archiva.redback.rest.services.interceptors;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.system.SecuritySystem;
-import org.apache.archiva.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,18 +42,18 @@ import javax.ws.rs.core.Response;
  * @author Olivier Lamy
  * @since 1.3
  */
-@Service( "permissionInterceptor#rest" )
+@Service ("permissionInterceptor#rest")
 public class PermissionsInterceptor
     extends AbstractInterceptor
     implements RequestHandler
 {
 
     @Inject
-    @Named( value = "securitySystem" )
+    @Named (value = "securitySystem")
     private SecuritySystem securitySystem;
 
     @Inject
-    @Named( value = "httpAuthenticator#basic" )
+    @Named (value = "httpAuthenticator#basic")
     private HttpBasicAuthentication httpAuthenticator;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -96,7 +96,7 @@ public class PermissionsInterceptor
                             }
                             else
                             {
-                                log.debug( "user {} not authorized for permission {}", session.getUser().getPrincipal(),
+                                log.debug( "user {} not authorized for permission {}", session.getUser().getUsername(),
                                            permission );
                             }
                         }

@@ -32,8 +32,6 @@ public class LdapUser
     implements User, Serializable
 {
 
-    private String key;
-
     private String username;
 
     private String fullName;
@@ -67,10 +65,9 @@ public class LdapUser
 
     public LdapUser( String username )
     {
-        key = username;
         this.username = username;
-        previousEncodedPasswords = new ArrayList<String>( 0 );
-        failedLoginAttempts = 0;
+        this.previousEncodedPasswords = new ArrayList<String>( 0 );
+        this.failedLoginAttempts = 0;
     }
 
     public LdapUser( String username, String fullName, String email )
@@ -136,10 +133,6 @@ public class LdapUser
         return previousEncodedPasswords;
     }
 
-    public Object getPrincipal()
-    {
-        return key;
-    }
 
     public String getUsername()
     {

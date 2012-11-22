@@ -116,7 +116,7 @@ public class RbacAuthorizer
             {
                 // Set permissions = manager.getAssignedPermissions( principal.toString(), operation );
                 Map<String, List<Permission>> permissionMap =
-                    manager.getAssignedPermissionMap( guest.getPrincipal().toString() );
+                    manager.getAssignedPermissionMap( guest.getUsername() );
 
                 if ( permissionMap.keySet().contains( operation.toString() ) )
                 {
@@ -124,7 +124,7 @@ public class RbacAuthorizer
                     {
                         log.debug( "checking permission {}", permission.getName() );
 
-                        if ( evaluator.evaluate( permission, operation, resource, guest.getPrincipal() ) )
+                        if ( evaluator.evaluate( permission, operation, resource, guest.getUsername() ) )
                         {
                             return new AuthorizationResult( true, permission, null );
                         }

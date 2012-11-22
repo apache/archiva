@@ -102,11 +102,11 @@ public class LdapUserManager
         }
         catch ( LdapControllerException e )
         {
-            log.error( "Error mapping user: " + user.getPrincipal() + " to LDAP attributes.", e );
+            log.error( "Error mapping user: " + user.getUsername() + " to LDAP attributes.", e );
         }
         catch ( MappingException e )
         {
-            log.error( "Error mapping user: " + user.getPrincipal() + " to LDAP attributes.", e );
+            log.error( "Error mapping user: " + user.getUsername() + " to LDAP attributes.", e );
         }
         finally
         {
@@ -422,11 +422,11 @@ public class LdapUserManager
         }
         catch ( LdapControllerException e )
         {
-            log.error( "Failed to update user: " + user.getPrincipal(), e );
+            log.error( "Failed to update user: " + user.getUsername(), e );
         }
         catch ( MappingException e )
         {
-            log.error( "Failed to update user: " + user.getPrincipal(), e );
+            log.error( "Failed to update user: " + user.getUsername(), e );
         }
         finally
         {

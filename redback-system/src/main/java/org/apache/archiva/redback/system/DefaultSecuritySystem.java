@@ -161,7 +161,7 @@ public class DefaultSecuritySystem
             User user = session.getUser();
             if ( user != null )
             {
-                source = new AuthorizationDataSource( user.getPrincipal(), user, permission, resource );
+                source = new AuthorizationDataSource( user.getUsername(), user, permission, resource );
             }
         }
 

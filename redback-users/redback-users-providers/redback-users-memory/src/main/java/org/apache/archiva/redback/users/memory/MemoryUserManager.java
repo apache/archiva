@@ -134,7 +134,7 @@ public class MemoryUserManager
     private void saveUser( User user )
     {
         triggerInit();
-        users.put( user.getPrincipal(), user );
+        users.put( user.getUsername(), user );
     }
 
     public User updateUser( User user )
@@ -209,7 +209,7 @@ public class MemoryUserManager
             throw new PermanentUserException( "Cannot delete permanent user." );
         }
 
-        users.remove( user.getPrincipal() );
+        users.remove( user.getUsername() );
 
         fireUserManagerUserRemoved( user );
     }

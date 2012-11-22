@@ -68,7 +68,7 @@ public class CachedUserManager
     {
         if ( user != null )
         {
-            usersCache.remove( user.getPrincipal() );
+            usersCache.remove( user.getUsername() );
         }
         return this.userImpl.addUser( user );
     }
@@ -82,7 +82,7 @@ public class CachedUserManager
     {
         if ( user != null )
         {
-            usersCache.remove( user.getPrincipal() );
+            usersCache.remove( user.getUsername() );
         }
         this.userImpl.addUserUnchecked( user );
     }
@@ -235,7 +235,7 @@ public class CachedUserManager
     {
         if ( user != null )
         {
-            usersCache.remove( user.getPrincipal() );
+            usersCache.remove( user.getUsername() );
         }
         return this.userImpl.updateUser( user, passwordChangeRequired );
     }
@@ -269,7 +269,7 @@ public class CachedUserManager
 
         if ( user != null )
         {
-            usersCache.remove( user.getPrincipal() );
+            usersCache.remove( user.getUsername() );
         }
     }
 
@@ -282,7 +282,7 @@ public class CachedUserManager
 
         if ( user != null )
         {
-            usersCache.remove( user.getPrincipal() );
+            usersCache.remove( user.getUsername() );
         }
     }
 
@@ -295,7 +295,7 @@ public class CachedUserManager
 
         if ( user != null )
         {
-            usersCache.remove( user.getPrincipal() );
+            usersCache.remove( user.getUsername() );
         }
     }
 

@@ -33,13 +33,6 @@ public interface User
     extends Serializable
 {
 
-    /**
-     * This is the object used to track the user within the provider.
-     *
-     * @return the principal for this user.
-     */
-    Object getPrincipal();
-
     // --------------------------------------------------------------------
     // Standard User Requirements.
     // --------------------------------------------------------------------

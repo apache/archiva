@@ -121,11 +121,6 @@ public class SimpleUser
         return previousEncodedPasswords;
     }
 
-    public Object getPrincipal()
-    {
-        return username;
-    }
-
     public String getUsername()
     {
         return username;

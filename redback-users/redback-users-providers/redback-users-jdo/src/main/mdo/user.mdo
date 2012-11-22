@@ -147,13 +147,9 @@
               public JdoUser()
               {
                  // Intentionally initialize List to avoid JPOX NullPointerException Issues.
-              	 previousEncodedPasswords = new java.util.ArrayList();
+              	 previousEncodedPasswords = new java.util.ArrayList<String>();
               }
 
-              public Object getPrincipal()
-              {
-                 return username;
-              }
           ]]></code>
         </codeSegment>
       </codeSegments>
