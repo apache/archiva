@@ -67,13 +67,13 @@ public class BypassSecuritySystem
         return new DefaultSecuritySession( result );
     }
 
-    public AuthorizationResult authorize( SecuritySession session, Object permission )
+    public AuthorizationResult authorize( SecuritySession session, String permission )
         throws AuthorizationException
     {
         return new AuthorizationResult( true, session.getUser(), null );
     }
 
-    public AuthorizationResult authorize( SecuritySession session, Object permission, Object resource )
+    public AuthorizationResult authorize( SecuritySession session, String permission, String resource )
         throws AuthorizationException
     {
         return new AuthorizationResult( true, session.getUser(), null );
@@ -116,14 +116,14 @@ public class BypassSecuritySystem
         return true;
     }
 
-    public boolean isAuthorized( SecuritySession session, Object permission )
+    public boolean isAuthorized( SecuritySession session, String permission )
         throws AuthorizationException
     {
         // Always true
         return true;
     }
 
-    public boolean isAuthorized( SecuritySession session, Object permission, Object resource )
+    public boolean isAuthorized( SecuritySession session, String permission, String resource )
         throws AuthorizationException
     {
         // Always true

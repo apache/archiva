@@ -88,13 +88,13 @@ public class SecuritySystemStub
         return session;
     }
 
-    public AuthorizationResult authorize( SecuritySession arg0, Object arg1 )
+    public AuthorizationResult authorize( SecuritySession arg0, String arg1 )
         throws AuthorizationException
     {
         return null;
     }
 
-    public AuthorizationResult authorize( SecuritySession arg0, Object arg1, Object arg2 )
+    public AuthorizationResult authorize( SecuritySession arg0, String arg1, String arg2 )
         throws AuthorizationException
     {
         AuthorizationResult result = new AuthorizationResult( true, arg1, null );
@@ -560,13 +560,13 @@ public class SecuritySystemStub
         return false;
     }
 
-    public boolean isAuthorized( SecuritySession arg0, Object arg1 )
+    public boolean isAuthorized( SecuritySession arg0, String arg1 )
         throws AuthorizationException
     {
         return false;
     }
 
-    public boolean isAuthorized( SecuritySession arg0, Object arg1, Object arg2 )
+    public boolean isAuthorized( SecuritySession arg0, String arg1, String arg2 )
         throws AuthorizationException
     {
         if ( repoIds.contains( arg2 ) )
