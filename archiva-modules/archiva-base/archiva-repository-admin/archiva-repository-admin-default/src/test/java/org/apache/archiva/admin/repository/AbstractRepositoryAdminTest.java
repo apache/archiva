@@ -96,15 +96,7 @@ public abstract class AbstractRepositoryAdminTest
 
     protected User getFakeUser()
     {
-        SimpleUser user = new SimpleUser()
-        {
-            @Override
-            public Object getPrincipal()
-            {
-                return "root";
-            }
-
-        };
+        SimpleUser user = new SimpleUser();
 
         user.setUsername( "root" );
         user.setFullName( "The top user" );

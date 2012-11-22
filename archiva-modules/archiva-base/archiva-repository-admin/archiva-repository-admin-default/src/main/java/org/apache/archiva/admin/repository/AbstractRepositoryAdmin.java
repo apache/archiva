@@ -63,7 +63,7 @@ public abstract class AbstractRepositoryAdmin
     {
         User user = auditInformation == null ? null : auditInformation.getUser();
         AuditEvent event =
-            new AuditEvent( repositoryId, user == null ? "null" : (String) user.getPrincipal(), resource, action );
+            new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
         event.setRemoteIP( auditInformation == null ? "null" : auditInformation.getRemoteAddr() );
 
         for ( AuditListener listener : getAuditListeners() )

@@ -139,11 +139,11 @@ public abstract class AbstractSecurityTest
 
         // Setup Admin User.
         User adminUser = createUser( USER_ADMIN, "Admin User" );
-        roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_SYSTEM_ADMIN, adminUser.getPrincipal().toString() );
+        roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_SYSTEM_ADMIN, adminUser.getUsername() );
 
         // Setup Guest User.
         User guestUser = createUser( USER_GUEST, "Guest User" );
-        roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GUEST, guestUser.getPrincipal().toString() );
+        roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GUEST, guestUser.getUsername() );
     }
 
     protected void restoreGuestInitialValues( String userId )

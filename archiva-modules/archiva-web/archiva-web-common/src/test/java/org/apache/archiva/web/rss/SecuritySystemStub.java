@@ -160,24 +160,20 @@ public class SecuritySystemStub
             {
                 return new User()
                 {
-                    public Object getPrincipal()
+
+                    public String getUsername()
                     {
                         return "guest";
                     }
 
-                    public String getUsername()
-                    {
-                        return null;  //To change body of implemented methods use File | Settings | File Templates.
-                    }
-
                     public void setUsername( String name )
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public String getFullName()
                     {
-                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                        return null;
                     }
 
                     public void setFullName( String name )
@@ -349,19 +345,15 @@ public class SecuritySystemStub
             {
                 return new User()
                 {
-                    public Object getPrincipal()
+
+                    public String getUsername()
                     {
                         return "guest";
                     }
 
-                    public String getUsername()
-                    {
-                        return null;  //To change body of implemented methods use File | Settings | File Templates.
-                    }
-
                     public void setUsername( String name )
                     {
-                        //To change body of implemented methods use File | Settings | File Templates.
+
                     }
 
                     public String getFullName()
