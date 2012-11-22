@@ -53,10 +53,10 @@ public interface SecuritySystem
     // Authorization
     // ----------------------------------------------------------------------------
 
-    AuthorizationResult authorize( SecuritySession session, Object permission )
+    AuthorizationResult authorize( SecuritySession session, String permission )
         throws AuthorizationException;
 
-    boolean isAuthorized( SecuritySession session, Object permission )
+    boolean isAuthorized( SecuritySession session, String permission )
         throws AuthorizationException;
 
     /**
@@ -67,10 +67,10 @@ public interface SecuritySystem
      * @return
      * @throws AuthorizationException
      */
-    AuthorizationResult authorize( SecuritySession session, Object permission, Object resource )
+    AuthorizationResult authorize( SecuritySession session, String permission, String resource )
         throws AuthorizationException;
 
-    boolean isAuthorized( SecuritySession session, Object permission, Object resource )
+    boolean isAuthorized( SecuritySession session, String permission, String resource )
         throws AuthorizationException;
 
     // ----------------------------------------------------------------------------

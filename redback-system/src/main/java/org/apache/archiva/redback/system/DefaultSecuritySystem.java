@@ -145,13 +145,13 @@ public class DefaultSecuritySystem
     // Authorization: delegate to the authorizer
     // ----------------------------------------------------------------------------
 
-    public AuthorizationResult authorize( SecuritySession session, Object permission )
+    public AuthorizationResult authorize( SecuritySession session, String permission )
         throws AuthorizationException
     {
         return authorize( session, permission, null );
     }
 
-    public AuthorizationResult authorize( SecuritySession session, Object permission, Object resource )
+    public AuthorizationResult authorize( SecuritySession session, String permission, String resource )
         throws AuthorizationException
     {
         AuthorizationDataSource source = null;
@@ -173,13 +173,13 @@ public class DefaultSecuritySystem
         return authorizer.isAuthorized( source );
     }
 
-    public boolean isAuthorized( SecuritySession session, Object permission )
+    public boolean isAuthorized( SecuritySession session, String permission )
         throws AuthorizationException
     {
         return isAuthorized( session, permission, null );
     }
 
-    public boolean isAuthorized( SecuritySession session, Object permission, Object resource )
+    public boolean isAuthorized( SecuritySession session, String permission, String resource )
         throws AuthorizationException
     {
         return authorize( session, permission, resource ).isAuthorized();
