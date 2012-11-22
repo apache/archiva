@@ -55,7 +55,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     // cleanup karmas
     window.redbackModel.operatioNames=[];
     hideElementWithKarma();
-    $("#main-content").html("");
+    $("#main-content").empty();
+    $("#user-messages" ).empty();
     $.ajax({
       url: 'restServices/redbackServices/loginService/logout',
       complete: function(){
