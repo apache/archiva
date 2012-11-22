@@ -498,7 +498,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
           },
            statusCode: {
              500: function(data){
-               $("#modal-password-change-err-message" ).html('');
+               $("#modal-password-change-err-message" ).empty();
                displayRestError($.parseJSON(data.responseText),"modal-password-change-err-message");
                $("#modal-password-change-err-message" ).show();
              }
@@ -556,7 +556,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
   login=function(){
     $.log("user.js#login");
 
-    $("#modal-login-err-message").html("");
+    $("#modal-login-err-message").empty();
 
     var valid = $("#user-login-form").valid();
     if (!valid) {
@@ -653,7 +653,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
   editUserDetailsBox=function(){
     clearUserMessages();
     $("#modal-user-edit-err-message").hide();
-    $("#modal-user-edit-err-message").html("");
+    $("#modal-user-edit-err-message").empty();
     if (window.modalEditUserBox == null) {
       window.modalEditUserBox = $("#modal-user-edit").modal({backdrop:'static',show:false});
       window.modalEditUserBox.bind('hidden', function () {
@@ -702,7 +702,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
    * @param user
    */
   editUserDetails=function(user){
-    $("#modal-user-edit-err-message").html("");
+    $("#modal-user-edit-err-message").empty();
     $.ajax("restServices/redbackServices/userService/updateMe", {
         data: ko.toJSON(user),
         contentType: 'application/json',

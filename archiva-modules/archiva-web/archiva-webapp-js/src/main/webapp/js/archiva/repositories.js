@@ -880,7 +880,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     addExtraParameter=function(){
 
       var mainContent=$("#main-content");
-      mainContent.find("#extra-parameters-error" ).html("");
+      mainContent.find("#extra-parameters-error" ).empty();
       var key=mainContent.find("#extraParameter-key").val();
       if($.trim(key).length<1){
         displayErrorMessage( $.i18n.prop("key.empty.error.message"),"extra-parameters-error");
@@ -909,7 +909,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     addExtraHeader=function(){
 
       var mainContent=$("#main-content");
-      mainContent.find("#extra-headers-error" ).html("");
+      mainContent.find("#extra-headers-error" ).empty();
       var key=mainContent.find("#extraHeader-key").val();
       if( $.trim(key).length<1){
         if($.trim(key).length<1){

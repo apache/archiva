@@ -126,7 +126,7 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     */
   screenChange=function(){
     var mainContent=$("#main-content");
-    mainContent.html("");
+    mainContent.empty();
     mainContent.removeAttr("data-bind");
     $("#body_content" ).find(".popover" ).hide();
     clearUserMessages();
@@ -142,7 +142,7 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
    */
   clearUserMessages=function(idToAppend){
     var textId = idToAppend ? $("#"+idToAppend) : $("#user-messages");
-    $(textId).html('');
+    $(textId).empty();
   }
 
   /**
@@ -172,8 +172,8 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     if (window.modalConfirmDialog==null) {
       window.modalConfirmDialog = $("#dialog-confirm-modal").modal();
       window.modalConfirmDialog.bind('hidden', function () {
-        $("#dialog-confirm-modal-header-title").html("");
-        $("#dialog-confirm-modal-body-text").html("");
+        $("#dialog-confirm-modal-header-title").empty();
+        $("#dialog-confirm-modal-body-text").empty();
       })
       dialogCancel.on("click", function(){
         window.modalConfirmDialog.modal('hide');

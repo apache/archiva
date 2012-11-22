@@ -46,7 +46,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     this.addUser=function() {
       clearUserMessages();
       var mainContent = $("#main-content");
-      mainContent.find("#createUserForm").html("");
+      mainContent.find("#createUserForm").empty();
       mainContent.find("#user-edit").remove();
       mainContent.find("#user-create").show();
       var viewModel = new UserViewModel(new User(),false,self);

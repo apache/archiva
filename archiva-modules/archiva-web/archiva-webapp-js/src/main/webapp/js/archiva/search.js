@@ -567,7 +567,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       self.groupId=groupId;
       self.artifactId=artifactId;
       self.version=version;
-      $("#main-content" ).find("#browse_artifact_detail" ).html("");
+      $("#main-content" ).find("#browse_artifact_detail" ).empty();
 
       window.sammyArchivaApplication.setLocation(location);
     }
@@ -734,8 +734,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
     $.get(artifactDownloadInfosUrl,function(data){
       $("#artifact-details-files-content" ).html($("#artifact-details-files-content_tmpl").tmpl({artifactDownloadInfos:data}));
       mainContent.find("#artifact-content-list-files li" ).on("click",function(){
-        mainContent.find("#artifact_content_tree").html("");
-        mainContent.find("#artifact-content-text" ).html("");
+        mainContent.find("#artifact_content_tree").empty();
+        mainContent.find("#artifact-content-text" ).empty();
         var idValue = $(this ).attr("id");
         var splitted = idValue.split(":");
 
