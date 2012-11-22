@@ -25,6 +25,8 @@ function(jquery,sammy,utils) {
 
   //$.log("devMode:"+window.archivaDevMode);
 
+
+
   // no cache for ajax queries as we get datas from servers so preventing caching !!
   jQuery.ajaxSetup( {
     cache: false,//!window.archivaDevMode
@@ -37,6 +39,9 @@ function(jquery,sammy,utils) {
         displayErrorMessage($.i18n.prop('authz.karma.needed'));
         userLogged(function(user){
           userLoggedCallbackFn(user);
+        },function(){
+          $.log("not logged");
+          loginBox();
         });
       },
       500: function(data){

@@ -158,6 +158,7 @@ public class DefaultUserRepositories
         }
 
         AuthenticationResult authn = new AuthenticationResult( true, principal, null );
+        authn.setUser( user );
         return new DefaultSecuritySession( authn, user );
     }
 

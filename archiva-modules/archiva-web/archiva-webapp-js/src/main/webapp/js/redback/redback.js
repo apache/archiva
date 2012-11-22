@@ -35,7 +35,7 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
   /**
    * call successFn on success with passing user object coming from cookie
    */
-  userLogged=function(successFn) {
+  userLogged=function(successFn,notLoggedFn) {
     // call restServices/redbackServices/loginService/isLogged to know
     // if a session exists and check the cookie
     $.log("userLogged");
@@ -47,6 +47,11 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
         $.log("userLogged:"+userLogged);
         if (successFn){
           successFn(userLogged ? getUserFromLoginCookie():null);
+        }
+        if(!userLogged){
+          if(notLoggedFn){
+            notLoggedFn();
+          }
         }
       }
     });
