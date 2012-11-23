@@ -24,6 +24,7 @@ import org.apache.archiva.redback.common.ldap.LdapUser;
 import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
@@ -49,6 +50,7 @@ import java.util.List;
 @Service( "userManager#ldap" )
 public class LdapUserManager
     extends AbstractUserManager
+    implements UserManager
 {
     @Inject
     @Named( value = "ldapConnectionFactory#configurable" )

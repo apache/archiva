@@ -198,4 +198,12 @@ public interface UserManager
 
     User updateUser( User user, boolean passwordChangeRequired )
         throws UserNotFoundException;
+
+
+    /**
+     * consumer of user manager can use it to reload various configuration
+     * with the configurable implementation is possible to change dynamically the real implementation used.
+     * @since 2.1
+     */
+    void initialize();
 }

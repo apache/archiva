@@ -25,6 +25,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+
 /**
  * AbstractUserManager
  *
@@ -138,5 +140,11 @@ public abstract class AbstractUserManager
 
         user = addUser( user );
         return user;
+    }
+
+    public void initialize()
+    {
+        // no op prevent sub classes to need implement this method
+        // sub classes can implement their own
     }
 }

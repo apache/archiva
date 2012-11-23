@@ -37,6 +37,7 @@ import java.util.List;
 @Service( "userManager#configurable" )
 public class ConfigurableUserManager
     extends AbstractUserManager
+    implements UserManager
 {
     @Inject
     @Named( value = "userConfiguration" )

@@ -318,4 +318,9 @@ public class CachedUserManager
     {
         this.usersCache = usersCache;
     }
+
+    public void initialize()
+    {
+        // no op configurable impl do the job
+    }
 }
