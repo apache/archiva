@@ -178,5 +178,8 @@ public class ConfigurableUserManager
         return userManagerImpl.userExists( principal );
     }
 
-
+    public void setUserManagerImpl( UserManager userManagerImpl )
+    {
+        this.userManagerImpl = userManagerImpl;
+    }
 }
