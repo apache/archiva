@@ -68,6 +68,12 @@ public class User
      */
     private List<String> assignedRoles;
 
+    /**
+     * with some userManagerImpl it's not possible to edit users;
+     * @since 1.4-M4
+     */
+    private boolean readOnly;
+
     public User()
     {
         // no op
@@ -239,6 +245,16 @@ public class User
         this.assignedRoles = assignedRoles;
     }
 
+    public boolean isReadOnly()
+    {
+        return readOnly;
+    }
+
+    public void setReadOnly( boolean readOnly )
+    {
+        this.readOnly = readOnly;
+    }
+
     @Override
     public String toString()
     {
@@ -258,6 +274,7 @@ public class User
         sb.append( ", timestampLastPasswordChange='" ).append( timestampLastPasswordChange ).append( '\'' );
         sb.append( ", previousPassword='" ).append( previousPassword ).append( '\'' );
         sb.append( ", assignedRoles=" ).append( assignedRoles );
+        sb.append( ", readOnly=" ).append( readOnly );
         sb.append( '}' );
         return sb.toString();
     }

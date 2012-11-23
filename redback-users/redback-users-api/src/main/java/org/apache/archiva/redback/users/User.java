@@ -291,4 +291,5 @@ public interface User
      * Sets the Last Successful Login Date for this account.
      */
     void setLastLoginDate( Date date );
+
 }

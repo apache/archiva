@@ -279,4 +279,9 @@ public class DefaultSecuritySystem
     {
         this.policy = policy;
     }
+
+    public boolean userManagerReadOnly()
+    {
+        return userManager.isReadOnly();
+    }
 }

@@ -140,7 +140,7 @@ public class DefaultLoginService
                     return null;
                 }
                 User restUser = buildRestUser( user );
-
+                restUser.setReadOnly( securitySystem.userManagerReadOnly() );
                 // here create an http session
                 httpAuthenticator.authenticate( authDataSource, httpServletRequest.getSession( true ) );
                 return restUser;
