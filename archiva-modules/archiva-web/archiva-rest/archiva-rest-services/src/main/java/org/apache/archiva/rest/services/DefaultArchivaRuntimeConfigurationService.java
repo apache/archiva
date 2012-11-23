@@ -21,23 +21,30 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service ( "archivaRuntimeConfigurationService#rest" )
+@Service ("archivaRuntimeConfigurationService#rest")
 public class DefaultArchivaRuntimeConfigurationService
     extends AbstractRestService
     implements ArchivaRuntimeConfigurationService
 {
     @Inject
     private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
+
+    @Inject
+    @Named ( value = "userManager#archiva" )
+    private UserManager userManager;
 
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
         throws ArchivaRestServiceException
@@ -57,7 +64,18 @@ public class DefaultArchivaRuntimeConfigurationService
     {
         try
         {
+            // has user manager impl changed ?
+            boolean userManagerChanged = !StringUtils.equals( archivaRuntimeConfiguration.getUserManagerImpl(),
+                                                             archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfigurationAdmin().getUserManagerImpl() );
             archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
+
+            if ( userManagerChanged )
+            {
+                log.info( "user manager impl changed to {} reload it",
+                          archivaRuntimeConfiguration.getUserManagerImpl() );
+                userManager.initialize();
+            }
+
             return Boolean.TRUE;
         }
         catch ( RepositoryAdminException e )

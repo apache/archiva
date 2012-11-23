@@ -136,7 +136,7 @@
     </property>
   </bean>
   
-
+  <alias name="userManager#archiva" alias="userManager#configurable"/>
     
     <!-- <component>
       <role>org.apache.archiva.webdav.util.MimeTypes</role>

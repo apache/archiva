@@ -34,7 +34,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.web.spring, org.apache.archiva.web.startup, org.apache.archiva.web.runtime, org.apache.archiva.web.api"/>
+  <context:component-scan base-package="org.apache.archiva.web.spring, org.apache.archiva.web.startup, org.apache.archiva.web.runtime, org.apache.archiva.web.api,, org.apache.archiva.web.security"/>
 
   <util:properties id="archivaRuntimeProperties" location="classpath:application.properties" />
 
