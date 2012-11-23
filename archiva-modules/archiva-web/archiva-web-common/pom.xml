@@ -432,7 +432,6 @@
             <Bundle-SymbolicName>org.apache.archiva.web.common</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.apache.archiva.web.spring;version=${project.version},
               org.apache.archiva.web.startup;version=${project.version}
             </Export-Package>
             <Import-Package>
