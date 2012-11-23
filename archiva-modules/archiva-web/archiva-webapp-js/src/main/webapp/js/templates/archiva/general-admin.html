@@ -904,6 +904,7 @@
             ${$.i18n.prop('runtime-configuration.usermanager.label')}
           </label>
           <div class="controls">
+            <select data-bind="options: userManagerImplementationInformations,optionsValue: 'beanId', optionsText: 'description', value: archivaRuntimeConfiguration().userManagerImpl, optionsCaption: 'Choose...'"></select>
             <input type="text" id="userManagerImpl" name="userManagerImpl" class="input-small required"
                     data-bind="value: archivaRuntimeConfiguration().userManagerImpl"/>
           </div>
