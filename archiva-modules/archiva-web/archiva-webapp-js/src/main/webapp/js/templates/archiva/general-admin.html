@@ -885,3 +885,31 @@
     {{/each}}
     </tbody>
 </script>
+
+<script type="text/html" id="runtime-configuration-main">
+  <div class="page-header">
+    <h2>${$.i18n.prop('runtime-configuration.title')}</h2>
+  </div>
+  <div id="runtime-configuration-content" data-bind='template: {name:"runtime-configuration-content-tmpl"}'>
+
+  </div>
+</script>
+
+<script type="text/html" id="runtime-configuration-content-tmpl">
+  <div class="well">
+    <form class="form-horizontal" id="runtime-configuration-form-id">
+      <fieldset id="form-runtime-configuration">
+        <div class="control-group">
+          <label for="userManagerImpl" class="control-label">
+            ${$.i18n.prop('runtime-configuration.usermanager.label')}
+          </label>
+          <div class="controls">
+            <input type="text" id="userManagerImpl" name="userManagerImpl" class="input-small required"
+                    data-bind="value: archivaRuntimeConfiguration().userManagerImpl"/>
+          </div>
+        </div>
+        <button data-bind="click: saveArchivaRuntimeConfiguration" class="btn">${$.i18n.prop('save')}</button>
+      </fieldset>
+    </form>
+  </div>
+</script>

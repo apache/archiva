@@ -1147,7 +1147,70 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         ko.applyBindings( statisticsReportViewModel, mainContent.get( 0 ) );
         ko.applyBindings( healthReportViewModel, mainContent.get( 0 ) );
       }
-    })
+    });
+  }
+
+
+  ArchivaRuntimeConfiguration=function(userManagerImpl){
+    this.userManagerImpl=ko.observable(userManagerImpl);
+  }
+
+  ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration){
+    this.archivaRuntimeConfiguration=ko.observable(archivaRuntimeConfiguration);
+    self=this;
+
+    saveArchivaRuntimeConfiguration=function(){
+      $.log("saveArchivaRuntimeConfiguration");
+
+
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      $("#repository-group-save" ).button('loading');
+      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration",
+        {
+          type: "PUT",
+          contentType: 'application/json',
+          data:ko.toJSON(self.archivaRuntimeConfiguration),
+          dataType: 'json',
+          success: function(data) {
+            var message=$.i18n.prop('archiva-runtime-configuration.updated');
+            displaySuccessMessage(message);
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete:function(data){
+            removeMediumSpinnerImg(userMessages);
+          }
+        }
+      );
+
+    }
+  }
+
+  displayRuntimeConfiguration=function(){
+    $.log("displayRuntimeConfiguration");
+    var mainContent = $("#main-content");
+    mainContent.html(mediumSpinnerImg());
+
+
+    $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        var archivaRuntimeConfiguration = mapArchivaRuntimeConfiguration(data);
+        var archivaRuntimeConfigurationViewModel = new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration);
+        mainContent.html( $( "#runtime-configuration-main" ).tmpl( ) );
+        ko.applyBindings(archivaRuntimeConfigurationViewModel,$("#runtime-configuration-content" ).get(0));
+      }
+    });
+
+  }
+
+  mapArchivaRuntimeConfiguration=function(data){
+    return new ArchivaRuntimeConfiguration(data.userManagerImpl);
   }
 
 });
