@@ -32,7 +32,6 @@ import java.util.List;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- * @version "Id$
  */
 @Service( "userManager#configurable" )
 public class ConfigurableUserManager
@@ -178,4 +177,6 @@ public class ConfigurableUserManager
     {
         return userManagerImpl.userExists( principal );
     }
+
+
 }
