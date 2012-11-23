@@ -22,13 +22,19 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -43,8 +49,11 @@ public class DefaultArchivaRuntimeConfigurationService
     private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
 
     @Inject
-    @Named ( value = "userManager#archiva" )
+    @Named ( value = "userManager#configurable" )
     private UserManager userManager;
+
+    @Inject
+    private ApplicationContext applicationContext;
 
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
         throws ArchivaRestServiceException
@@ -66,7 +75,7 @@ public class DefaultArchivaRuntimeConfigurationService
         {
             // has user manager impl changed ?
             boolean userManagerChanged = !StringUtils.equals( archivaRuntimeConfiguration.getUserManagerImpl(),
-                                                             archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfigurationAdmin().getUserManagerImpl() );
+                                                              archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfigurationAdmin().getUserManagerImpl() );
             archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
 
             if ( userManagerChanged )
@@ -83,6 +92,35 @@ public class DefaultArchivaRuntimeConfigurationService
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
+    }
+
+    public List<UserManagerImplementationInformation> getUserManagerImplementationInformations()
+        throws ArchivaRestServiceException
+    {
+
+        Map<String, UserManager> beans = applicationContext.getBeansOfType( UserManager.class );
+
+        if ( beans.isEmpty() )
+        {
+            return Collections.emptyList();
+        }
+
+        List<UserManagerImplementationInformation> informations =
+            new ArrayList<UserManagerImplementationInformation>( beans.size() );
+
+        for ( Map.Entry<String, UserManager> entry : beans.entrySet() )
+        {
+            UserManager userManager = applicationContext.getBean( entry.getKey(), UserManager.class );
+            if ( userManager.isFinalImplementation() )
+            {
+                UserManagerImplementationInformation information = new UserManagerImplementationInformation();
+                information.setBeanId( StringUtils.substringAfter( entry.getKey(), "#" ) );
+                information.setDescriptionKey( userManager.getDescriptionKey() );
+                informations.add( information );
+            }
+        }
+
+        return informations;
     }
 }
 

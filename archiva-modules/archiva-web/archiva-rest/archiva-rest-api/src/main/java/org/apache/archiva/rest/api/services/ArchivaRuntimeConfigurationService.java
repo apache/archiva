@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -28,6 +29,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -49,5 +51,12 @@ public interface ArchivaRuntimeConfigurationService
     @Consumes ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization ( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     Boolean updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+        throws ArchivaRestServiceException;
+
+    @Path ( "userManagerImplementationInformation" )
+    @GET
+    @Produces ( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization ( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    List<UserManagerImplementationInformation> getUserManagerImplementationInformations()
         throws ArchivaRestServiceException;
 }

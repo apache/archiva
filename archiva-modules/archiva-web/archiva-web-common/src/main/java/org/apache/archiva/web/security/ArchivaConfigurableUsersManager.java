@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 /**
  * @author Olivier Lamy
+ * @since 1.4-M4
  */
 @Service ( "userManager#archiva" )
 public class ArchivaConfigurableUsersManager
@@ -59,5 +60,10 @@ public class ArchivaConfigurableUsersManager
             log.error( e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.usermanager.configurable.archiva";
     }
 }
