@@ -505,4 +505,9 @@ public class LdapUserManager
     {
         return true;
     }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.usermanager.ldap";
+    }
 }

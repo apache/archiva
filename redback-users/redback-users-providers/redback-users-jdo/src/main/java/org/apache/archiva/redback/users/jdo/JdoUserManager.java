@@ -490,4 +490,9 @@ public class JdoUserManager
     {
         return true;
     }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.usermanager.jdo";
+    }
 }

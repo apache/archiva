@@ -182,4 +182,9 @@ public class ConfigurableUserManager
     {
         this.userManagerImpl = userManagerImpl;
     }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.usermanager.configurable";
+    }
 }

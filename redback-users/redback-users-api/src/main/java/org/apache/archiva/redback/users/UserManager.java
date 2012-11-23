@@ -212,4 +212,10 @@ public interface UserManager
      * @return true if this implementation is a final one and not a wrapper (configurable, cached)
      */
     boolean isFinalImplementation();
+
+    /**
+     * @since 2.1
+     * @return a key to be able to customize label in UI
+     */
+    String getDescriptionKey();
 }

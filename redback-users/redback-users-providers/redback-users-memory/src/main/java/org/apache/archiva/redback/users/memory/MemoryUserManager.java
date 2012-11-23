@@ -314,4 +314,9 @@ public class MemoryUserManager
             hasTriggeredInit = true;
         }
     }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.usermanager.memory";
+    }
 }

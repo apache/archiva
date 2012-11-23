@@ -328,4 +328,9 @@ public class CachedUserManager
     {
         return false;
     }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.usermanager.cached";
+    }
 }
