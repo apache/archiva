@@ -143,7 +143,7 @@ public class ConfigurableUserManager
 
     public String getId()
     {
-        return ConfigurableUserManager.class.getName() + " wrapping " + userManagerImpl.getId();
+        return "configurable";
     }
 
     public List<User> getUsers()

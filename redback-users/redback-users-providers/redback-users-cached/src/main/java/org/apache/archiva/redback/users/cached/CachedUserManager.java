@@ -204,7 +204,7 @@ public class CachedUserManager
 
     public String getId()
     {
-        return "Cached User Manager [" + this.userImpl.getId() + "]";
+        return "cached";
     }
 
     public List<User> getUsers()
@@ -322,5 +322,10 @@ public class CachedUserManager
     public void initialize()
     {
         // no op configurable impl do the job
+    }
+
+    public boolean isFinalImplementation()
+    {
+        return false;
     }
 }

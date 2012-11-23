@@ -147,4 +147,9 @@ public abstract class AbstractUserManager
         // no op prevent sub classes to need implement this method
         // sub classes can implement their own
     }
+
+    public boolean isFinalImplementation()
+    {
+        return false;
+    }
 }

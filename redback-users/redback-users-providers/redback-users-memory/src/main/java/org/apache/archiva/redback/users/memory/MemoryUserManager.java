@@ -55,25 +55,7 @@ public class MemoryUserManager
 
     public String getId()
     {
-        Properties props = new Properties();
-        URL url = this
-            .getClass()
-            .getResource(
-                "META-INF/maven/org/codehaus/plexus/redback/redback-users-memory/pom.properties" );
-
-        if ( url != null )
-        {
-            try
-            {
-                props.load( url.openStream() );
-                return "MemoryUserManager - " + props.getProperty( "version" );
-            }
-            catch ( IOException e )
-            {
-                // Fall thru
-            }
-        }
-        return "MemoryUserManager - (unknown version)";
+        return "memory";
     }
     
     public boolean isReadOnly()

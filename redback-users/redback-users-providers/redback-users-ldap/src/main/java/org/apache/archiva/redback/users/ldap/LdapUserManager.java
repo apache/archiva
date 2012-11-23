@@ -358,7 +358,7 @@ public class LdapUserManager
 
     public String getId()
     {
-        return "LDAP User-Manager: " + getClass().getName();
+        return "ldap";
     }
 
     /**
@@ -501,4 +501,8 @@ public class LdapUserManager
         ldapCacheService.removeLdapUserDn( username );
     }
 
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
 }

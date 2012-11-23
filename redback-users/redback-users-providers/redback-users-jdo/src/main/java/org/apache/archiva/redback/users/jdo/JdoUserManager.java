@@ -65,7 +65,7 @@ public class JdoUserManager
 
     public String getId()
     {
-        return "JDO UserManager - " + this.getClass().getName();
+        return "jdo";
     }
 
 
@@ -484,5 +484,10 @@ public class JdoUserManager
     public UserSecurityPolicy getUserSecurityPolicy()
     {
         return userSecurityPolicy;
+    }
+
+    public boolean isFinalImplementation()
+    {
+        return true;
     }
 }

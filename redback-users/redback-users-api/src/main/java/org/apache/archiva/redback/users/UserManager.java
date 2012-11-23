@@ -206,4 +206,10 @@ public interface UserManager
      * @since 2.1
      */
     void initialize();
+
+    /**
+     * @since 2.1
+     * @return true if this implementation is a final one and not a wrapper (configurable, cached)
+     */
+    boolean isFinalImplementation();
 }
