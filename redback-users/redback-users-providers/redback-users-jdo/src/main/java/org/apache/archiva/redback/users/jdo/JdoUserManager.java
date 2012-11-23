@@ -21,6 +21,8 @@ package org.apache.archiva.redback.users.jdo;
 
 import org.apache.archiva.redback.components.jdo.JdoFactory;
 import org.apache.archiva.redback.components.jdo.PlexusJdoUtils;
+import org.apache.archiva.redback.components.jdo.PlexusObjectNotFoundException;
+import org.apache.archiva.redback.components.jdo.PlexusStoreException;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.PermanentUserException;
@@ -28,8 +30,6 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.apache.archiva.redback.components.jdo.PlexusObjectNotFoundException;
-import org.apache.archiva.redback.components.jdo.PlexusStoreException;
 import org.codehaus.plexus.util.StringUtils;
 import org.jpox.JDOClassLoaderResolver;
 import org.springframework.stereotype.Service;
@@ -49,14 +49,13 @@ import java.util.List;
  * JdoUserManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service( "userManager#jdo" )
+@Service ("userManager#jdo")
 public class JdoUserManager
     extends AbstractUserManager
 {
     @Inject
-    @Named( value = "jdoFactory#users" )
+    @Named (value = "jdoFactory#users")
     private JdoFactory jdoFactory;
 
     @Inject
@@ -105,7 +104,7 @@ public class JdoUserManager
         return getAllObjectsDetached( ordering );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private List<User> getAllObjectsDetached( String ordering )
     {
         return PlexusJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoUser.class, ordering, (String) null );
@@ -126,7 +125,7 @@ public class JdoUserManager
         return findUsers( "email", emailKey, orderAscending );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     public List<User> findUsersByQuery( UserQuery userQuery )
     {
         JdoUserQuery uq = (JdoUserQuery) userQuery;
@@ -170,7 +169,7 @@ public class JdoUserManager
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings ("unchecked")
     private List<User> findUsers( String searchField, String searchKey, boolean ascendingUsername )
     {
         PersistenceManager pm = getPersistenceManager();
@@ -377,7 +376,7 @@ public class JdoUserManager
             userSecurityPolicy.extensionChangePassword( user, passwordChangeRequired );
         }
 
-        updateObject( user );
+        user = (User) updateObject( user );
 
         fireUserManagerUserUpdated( user );
 
