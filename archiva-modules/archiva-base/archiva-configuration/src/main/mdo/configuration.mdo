@@ -169,6 +169,17 @@
           </description>
         </field>
         <field>
+          <name>runtimeConfiguration</name>
+          <version>1.4.0+</version>
+          <association>
+            <type>RuntimeConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The RuntimeConfiguration.
+          </description>
+        </field>
+        <field>
           <name>proxyConnectorRuleConfigurations</name>
           <version>1.4.0+</version>
           <association>
@@ -1435,6 +1446,24 @@
         </field>
       </fields>
     </class>
+
+    <class>
+      <name>RuntimeConfiguration</name>
+      <version>1.4.0+</version>
+      <description>
+        The runtime configuration.
+      </description>
+      <fields>
+        <field>
+          <name>userManagerImpl</name>
+          <description>The user manager impl to use.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+          <defaultValue>jdo</defaultValue>
+        </field>
+      </fields>
+    </class>
+
   </classes>
 </model>
 
