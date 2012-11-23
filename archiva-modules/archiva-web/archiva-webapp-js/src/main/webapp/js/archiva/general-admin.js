@@ -1174,7 +1174,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           data:ko.toJSON(self.archivaRuntimeConfiguration),
           dataType: 'json',
           success: function(data) {
-            var message=$.i18n.prop('archiva-runtime-configuration.updated');
+            var message=$.i18n.prop('archiva-runtime-configuration.updated',self.archivaRuntimeConfiguration().userManagerImpl());
             displaySuccessMessage(message);
           },
           error: function(data) {

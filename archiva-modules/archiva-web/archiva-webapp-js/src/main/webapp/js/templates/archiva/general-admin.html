@@ -905,8 +905,6 @@
           </label>
           <div class="controls">
             <select data-bind="options: userManagerImplementationInformations,optionsValue: 'beanId', optionsText: 'description', value: archivaRuntimeConfiguration().userManagerImpl, optionsCaption: 'Choose...'"></select>
-            <input type="text" id="userManagerImpl" name="userManagerImpl" class="input-small required"
-                    data-bind="value: archivaRuntimeConfiguration().userManagerImpl"/>
           </div>
         </div>
         <button data-bind="click: saveArchivaRuntimeConfiguration" id="archiva-runtime-configuration-save" class="btn">${$.i18n.prop('save')}</button>
