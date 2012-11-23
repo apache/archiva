@@ -130,6 +130,16 @@ public class SecuritySystemStub
         return new UserManager()
         {
 
+            public String getDescriptionKey()
+            {
+                return "French wine is better than Australian wine !";
+            }
+
+            public boolean isFinalImplementation()
+            {
+                return false;
+            }
+
             public void initialize()
             {
                 // no op
