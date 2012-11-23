@@ -137,6 +137,10 @@
   </bean>
   
   <alias name="userManager#archiva" alias="userManager#configurable"/>
+
+  <bean name="ldapConnectionFactory" class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
+    <property name="userConf" ref="userConfiguration"/>
+  </bean>
     
     <!-- <component>
       <role>org.apache.archiva.webdav.util.MimeTypes</role>
@@ -153,7 +157,7 @@
        Ldap Authentication can be enabled by setting enabling these components and setting the following configuration options in your security.properties file
 
        ============================================================
-       user.manager.impl=ldap
+
        ldap.bind.authenticator.enabled=true
        redback.default.admin=admin
        security.policy.password.expiration.enabled=false
@@ -183,12 +187,6 @@
     
     this component manages the connection to the ldap server
      -->
-
-
-    <bean name="ldapConnectionFactory" class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
-      <property name="userConf" ref="userConfiguration"/>
-    </bean>
-
 
     
     <!-- 
