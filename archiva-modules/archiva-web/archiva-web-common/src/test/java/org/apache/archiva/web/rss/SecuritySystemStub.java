@@ -19,22 +19,22 @@ package org.apache.archiva.web.rss;
  * under the License.
  */
 
-import org.apache.archiva.redback.keys.KeyManager;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.users.UserManagerListener;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.archiva.redback.users.UserQuery;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.keys.KeyManager;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerListener;
+import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.redback.users.UserQuery;
 import org.apache.archiva.redback.users.jdo.JdoUser;
 
 import java.util.ArrayList;
@@ -45,8 +45,6 @@ import java.util.Map;
 
 /**
  * SecuritySystem stub used for testing.
- *
- *
  */
 public class SecuritySystemStub
     implements SecuritySystem
@@ -131,29 +129,35 @@ public class SecuritySystemStub
     {
         return new UserManager()
         {
+
+            public void initialize()
+            {
+                // no op
+            }
+
             public boolean isReadOnly()
             {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
+                return false;
             }
 
             public String getId()
             {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public void addUserManagerListener( UserManagerListener listener )
             {
-                //To change body of implemented methods use File | Settings | File Templates.
+                // no op
             }
 
             public void removeUserManagerListener( UserManagerListener listener )
             {
-                //To change body of implemented methods use File | Settings | File Templates.
+                // no op
             }
 
             public User createUser( String username, String fullName, String emailAddress )
             {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
             public User createGuestUser()
