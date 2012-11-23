@@ -58,11 +58,13 @@ public class DefaultArchivaRuntimeConfigurationService
         try
         {
             archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
+            return Boolean.TRUE;
         }
         catch ( RepositoryAdminException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
+
     }
 }
 

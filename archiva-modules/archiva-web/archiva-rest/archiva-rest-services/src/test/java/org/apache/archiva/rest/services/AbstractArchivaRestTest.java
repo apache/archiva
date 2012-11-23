@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
+import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -213,6 +214,20 @@ public abstract class AbstractArchivaRestTest
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        ArchivaAdministrationService.class,
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
+
+        WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
+        return service;
+    }
+
+    protected ArchivaRuntimeConfigurationService getArchivaRuntimeConfigurationService()
+    {
+        ArchivaRuntimeConfigurationService service = JAXRSClientFactory.create(
+            getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+            ArchivaRuntimeConfigurationService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
