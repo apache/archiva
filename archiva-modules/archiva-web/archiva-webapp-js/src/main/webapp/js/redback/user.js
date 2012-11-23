@@ -693,7 +693,9 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
     var editUserDetailViewModel=new EditUserDetailViewModel(currentUser);
     ko.applyBindings(editUserDetailViewModel,$("#modal-user-edit-content").get(0));
 
-    //$("#modal-user-edit-content").html($("#modal-user-edit-tmpl").tmpl({user: currentUser} ));
+    if(currentUser.readOnly){
+      $("#modal-user-edit-footer" ).hide();
+    }
 
     window.modalEditUserBox.modal('show');
     $("#user-edit-form").validate({
