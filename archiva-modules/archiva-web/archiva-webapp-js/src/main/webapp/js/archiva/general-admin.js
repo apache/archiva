@@ -1161,8 +1161,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     saveArchivaRuntimeConfiguration=function(){
       $.log("saveArchivaRuntimeConfiguration");
-
-
+      $("#archiva-runtime-configuration-save" ).button('loading');
       clearUserMessages();
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
@@ -1183,6 +1182,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           },
           complete:function(data){
             removeMediumSpinnerImg(userMessages);
+            $("#archiva-runtime-configuration-save" ).button('reset');
           }
         }
       );
