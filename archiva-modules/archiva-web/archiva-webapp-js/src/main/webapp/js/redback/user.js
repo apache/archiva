@@ -36,7 +36,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
    * @param ownerViewModel
    */
   User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,
-                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel) {
+                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel,readOnly) {
     var self=this;
     // Potentially Editable Field.
     this.username = ko.observable(username);
@@ -75,6 +75,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
     this.assignedRoles.subscribe(function(newValue){self.modified(true)});
 
     this.modified=ko.observable(false);
+
+    this.readOnly=readOnly;
 
     this.rememberme=false;
 
@@ -647,6 +649,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
     $("#modal-password-change").focus();
   }
 
+  EditUserDetailViewModel=function(user){
+    this.user=user;
+  }
+
   /**
    * display modal box for updating current user details
    */
@@ -678,9 +684,17 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       });
     }
     var currentUser = getUserFromLoginCookie();
-    $("#modal-user-edit").find("#username").html(currentUser.username);
+    /*$("#modal-user-edit").find("#username").html(currentUser.username);
     $("#modal-user-edit").find("#fullname").val(currentUser.fullName);
-    $("#modal-user-edit").find("#email").val(currentUser.email);
+    $("#modal-user-edit").find("#email").val(currentUser.email);*/
+
+    $("#modal-user-edit-content" ).attr("data-bind",'template: {name:"modal-user-edit-tmpl"}');
+
+    var editUserDetailViewModel=new EditUserDetailViewModel(currentUser);
+    ko.applyBindings(editUserDetailViewModel,$("#modal-user-edit-content").get(0));
+
+    //$("#modal-user-edit-content").html($("#modal-user-edit-tmpl").tmpl({user: currentUser} ));
+
     window.modalEditUserBox.modal('show');
     $("#user-edit-form").validate({
       rules: {
@@ -710,7 +724,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
         dataType: 'json',
         success: function(result) {
           var created = result;
-          // FIXME i18n
           if (created == true) {
             displaySuccessMessage( $.i18n.prop("user.details.updated"));
             window.modalEditUserBox.modal('hide');
@@ -796,7 +809,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
   mapUser=function(data) {
     return new User(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,
                     data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,
-                    data.locked,data.passwordChangeRequired,self);
+                    data.locked,data.passwordChangeRequired,self,data.readOnly);
   }
 
 

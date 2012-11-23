@@ -577,4 +577,8 @@ public class SecuritySystemStub
         return false;
     }
 
+    public boolean userManagerReadOnly()
+    {
+        return true;
+    }
 }

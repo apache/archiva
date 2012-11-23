@@ -129,4 +129,9 @@ public class BypassSecuritySystem
         // Always true
         return true;
     }
+
+    public boolean userManagerReadOnly()
+    {
+        return true;
+    }
 }

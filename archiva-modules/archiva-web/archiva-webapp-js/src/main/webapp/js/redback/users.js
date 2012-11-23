@@ -121,6 +121,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     }
 
     editUserBox=function(user) {
+      $.log("editUserBox");
       clearUserMessages();
       activateUsersEditTab();
       var mainContent = $("#main-content");
@@ -144,7 +145,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
             mainContent.find("#users-view-tabs-li-user-edit a").html($.i18n.prop("edit"));
 
-            mainContent.find("#user-create #user-create-form-cancel-button").on("click", function(e) {
+            mainContent.find("#user-create" ).find("#user-create-form-cancel-button").on("click", function(e) {
               e.preventDefault();
               activateUsersGridTab();
             });
