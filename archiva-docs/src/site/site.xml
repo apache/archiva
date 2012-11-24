@@ -109,6 +109,7 @@
         <item name="Staging Repositories"     href="/adminguide/staging-repositories.html"/>
         <item name="Appearance Configuration" href="/adminguide/appearance-configuration.html"/>
         <item name="UI Configuration"         href="/adminguide/ui-configuration.html"/>
+        <item name="Runtime Configuration"    href="/adminguide/runtime-configuration.html"/>
       </item>
       <item name="REST Apis"                    href="/adminguide/webservices/rest.html"/>
 
