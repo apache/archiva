@@ -2,7 +2,7 @@
  Configuration Files of Apache Archiva
  ------
  ------
- 2011-09-16
+ 2012-11-24
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -47,6 +47,8 @@ Configuration Files of Apache Archiva
 
   When modified in the GUI, the file is written back to the location it was initially read from, with the home directory taking priority if both exist. When using a
   standalone installation, it is highly recommended that a configuration file is only maintained in one of the locations.
+
+  For a complete reference of the configuration file see: {{{http://archiva.apache.org/ref/${project.version}/archiva-base/archiva-configuration/configuration.html}Reference}}
 
   The following shows a basic configuration file:
 
