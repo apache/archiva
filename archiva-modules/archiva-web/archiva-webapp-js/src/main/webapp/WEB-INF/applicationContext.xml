@@ -180,7 +180,7 @@
 
        until this process is better documented, the following is the document for configuration ldap with redback
       
-       http://redback.codehaus.org/integration/ldap.html
+       http://archiva.apache.org/redback/integration/ldap.html
     -->
 
     <!--
