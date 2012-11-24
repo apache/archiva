@@ -22,7 +22,7 @@
   <id>configuration</id>
   <name>Configuration</name>
   <description>
-    Configuration for the Maven Repository Manager.
+    Configuration format for Archiva (Maven Repository Manager).
   </description>
   <defaults>
     <default>
