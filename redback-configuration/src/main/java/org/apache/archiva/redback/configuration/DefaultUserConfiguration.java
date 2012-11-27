@@ -43,6 +43,7 @@ import java.util.List;
  */
 @Service( "userConfiguration" )
 public class DefaultUserConfiguration
+    implements UserConfiguration
 {
     private static final String DEFAULT_CONFIG_RESOURCE = "org/apache/archiva/redback/config-defaults.properties";
 

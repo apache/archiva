@@ -21,7 +21,7 @@ package org.apache.archiva.redback.authentication.ldap;
 
 import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
-import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -65,7 +65,7 @@ public class LdapBindAuthenticator
 
     @Inject
     @Named( value = "userConfiguration" )
-    private DefaultUserConfiguration config;
+    private UserConfiguration config;
 
     @Inject
     private LdapCacheService ldapCacheService;

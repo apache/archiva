@@ -19,7 +19,7 @@ package org.apache.archiva.redback.policy;
  * under the License.
  */
 
-import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.policy.rules.MustHavePasswordRule;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class DefaultUserSecurityPolicy
 
     @Inject
     @Named( value = "userConfiguration" )
-    private DefaultUserConfiguration config;
+    private UserConfiguration config;
 
     @Inject
     @Named( value = "passwordEncoder#sha256" )
@@ -402,12 +402,12 @@ public class DefaultUserSecurityPolicy
         return signonCookieSettings;
     }
 
-    public DefaultUserConfiguration getConfig()
+    public UserConfiguration getConfig()
     {
         return config;
     }
 
-    public void setConfig( DefaultUserConfiguration config )
+    public void setConfig( UserConfiguration config )
     {
         this.config = config;
     }

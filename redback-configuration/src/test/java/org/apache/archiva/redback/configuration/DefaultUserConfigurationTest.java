@@ -42,7 +42,7 @@ public class DefaultUserConfigurationTest
 {
 
     @Inject  @Named(value = "test")
-    DefaultUserConfiguration config;
+    UserConfiguration config;
 
     private void assertEmpty( String str )
     {

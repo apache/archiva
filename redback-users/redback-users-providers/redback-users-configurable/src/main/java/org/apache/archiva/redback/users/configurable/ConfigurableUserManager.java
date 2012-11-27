@@ -16,7 +16,7 @@ package org.apache.archiva.redback.users.configurable;
  * limitations under the License.
  */
 
-import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
@@ -40,7 +40,7 @@ public class ConfigurableUserManager
 {
     @Inject
     @Named( value = "userConfiguration" )
-    private DefaultUserConfiguration config;
+    private UserConfiguration config;
 
     @Inject
     private ApplicationContext applicationContext;

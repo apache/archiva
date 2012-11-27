@@ -22,7 +22,7 @@ package org.apache.archiva.redback.policy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 
 /**
  * Base class for cookie settings. These will only differ by their configuration keys.
@@ -35,7 +35,7 @@ public abstract class AbstractCookieSettings
     implements CookieSettings
 {
     @Inject @Named(value="userConfiguration")
-    protected DefaultUserConfiguration config;
+    protected UserConfiguration config;
 
     /**
      * Timeout (in minutes) for the sign on cookie.

@@ -19,7 +19,7 @@ package org.apache.archiva.redback.common.ldap.connection;
  * under the License.
  */
 
-import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -90,7 +90,7 @@ public class ConfigurableLdapConnectionFactory
 
     @Inject
     @Named( value = "userConfiguration" )
-    private DefaultUserConfiguration userConf;
+    private UserConfiguration userConf;
 
     // ----------------------------------------------------------------------
     // Component Lifecycle
@@ -267,12 +267,12 @@ public class ConfigurableLdapConnectionFactory
         this.extraProperties = extraProperties;
     }
 
-    public DefaultUserConfiguration getUserConf()
+    public UserConfiguration getUserConf()
     {
         return userConf;
     }
 
-    public void setUserConf( DefaultUserConfiguration userConf )
+    public void setUserConf( UserConfiguration userConf )
     {
         this.userConf = userConf;
     }
