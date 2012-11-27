@@ -16,7 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.policy.PasswordRule;
 
 import javax.inject.Inject;
@@ -34,7 +34,7 @@ public abstract class AbstractPasswordRule
     protected boolean enabled = true;
 
     @Inject @Named (value="userConfiguration")
-    protected UserConfiguration config;
+    protected DefaultUserConfiguration config;
 
     public boolean isEnabled()
     {

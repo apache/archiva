@@ -25,7 +25,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class VelocityMailGenerator
 
     @Inject
     @Named( value = "userConfiguration" )
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     // FIXME use the spring directly 
     @Inject
@@ -130,12 +130,12 @@ public class VelocityMailGenerator
     }
 
 
-    public UserConfiguration getConfig()
+    public DefaultUserConfiguration getConfig()
     {
         return config;
     }
 
-    public void setConfig( UserConfiguration config )
+    public void setConfig( DefaultUserConfiguration config )
     {
         this.config = config;
     }

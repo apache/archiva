@@ -19,9 +19,9 @@ package org.apache.archiva.redback.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.rest.api.services.UserService;
 
@@ -44,7 +44,7 @@ public class FakeCreateAdminServiceImpl
     private UserManager userManager;
 
     @Inject
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     @Inject
     private RoleManager roleManager;

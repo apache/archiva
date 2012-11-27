@@ -23,7 +23,7 @@ import net.sf.ehcache.CacheManager;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
 import org.apache.archiva.redback.components.cache.Cache;
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.integration.mail.Mailer;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
@@ -87,7 +87,7 @@ public class DefaultUserService
     private SecuritySystem securitySystem;
 
     @Inject
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     @Inject
     private RoleManager roleManager;

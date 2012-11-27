@@ -20,7 +20,6 @@ package org.apache.archiva.redback.configuration;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,19 +30,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * UserConfigurationTest
+ * DefaultUserConfigurationTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-public class UserConfigurationTest
+public class DefaultUserConfigurationTest
     extends TestCase
 {
 
     @Inject  @Named(value = "test")
-    UserConfiguration config;
+    DefaultUserConfiguration config;
 
     private void assertEmpty( String str )
     {

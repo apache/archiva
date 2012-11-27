@@ -42,7 +42,7 @@
     </property>
   </bean>
 
-  <bean name="userConfiguration#custom-url" class="org.apache.archiva.redback.configuration.UserConfiguration">
+  <bean name="userConfiguration#custom-url" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
     <property name="configs">
       <list>
         <value>src/test/config/mail.properties</value>

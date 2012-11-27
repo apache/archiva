@@ -20,7 +20,7 @@ package org.apache.archiva.redback.common.jdo;
  */
 
 import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.interpolation.PropertiesBasedValueSource;
@@ -48,7 +48,7 @@ public class UserConfigurableJdoFactory
 
     @Inject
     @Named( value = "userConfiguration" )
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     private String getConfigString( String key, String currentValue, String defaultValue )
     {
@@ -116,12 +116,12 @@ public class UserConfigurableJdoFactory
         super.initialize();
     }
 
-    public UserConfiguration getConfig()
+    public DefaultUserConfiguration getConfig()
     {
         return config;
     }
 
-    public void setConfig( UserConfiguration config )
+    public void setConfig( DefaultUserConfiguration config )
     {
         this.config = config;
     }

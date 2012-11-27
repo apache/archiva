@@ -19,7 +19,7 @@ package org.apache.archiva.redback.common.ldap;
  * under the License.
  */
 
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -81,7 +81,7 @@ public class LdapUserMapper
 
     @Inject
     @Named( value = "userConfiguration" )
-    private UserConfiguration userConf;
+    private DefaultUserConfiguration userConf;
 
     @PostConstruct
     public void initialize()
@@ -301,12 +301,12 @@ public class LdapUserMapper
             getPasswordAttribute() };
     }
 
-    public UserConfiguration getUserConf()
+    public DefaultUserConfiguration getUserConf()
     {
         return userConf;
     }
 
-    public void setUserConf( UserConfiguration userConf )
+    public void setUserConf( DefaultUserConfiguration userConf )
     {
         this.userConf = userConf;
     }

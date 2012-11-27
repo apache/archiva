@@ -34,7 +34,7 @@
     <property name="password" value=""/>
   </bean>
 
-  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.UserConfiguration">
+  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
     <property name="registry" ref="test-conf"/>
   </bean>
 

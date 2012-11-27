@@ -33,7 +33,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.policy.UserValidationSettings;
@@ -66,7 +66,7 @@ public class MailerImpl
     private SecuritySystem securitySystem;
 
     @Inject  @Named(value="userConfiguration")
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     public void sendAccountValidationEmail( Collection<String> recipients, AuthenticationKey authkey, String baseUrl )
     {

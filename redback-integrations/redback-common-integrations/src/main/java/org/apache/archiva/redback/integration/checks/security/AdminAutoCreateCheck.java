@@ -20,7 +20,7 @@ package org.apache.archiva.redback.integration.checks.security;
  */
 
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
@@ -68,7 +68,7 @@ public class AdminAutoCreateCheck
     private UserManager userManager;
 
     @Inject
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     @Inject
     protected SecuritySystem securitySystem;

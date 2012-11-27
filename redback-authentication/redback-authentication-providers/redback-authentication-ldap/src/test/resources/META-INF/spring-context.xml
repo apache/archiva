@@ -56,7 +56,7 @@
     <property name="userConf" ref="userConfiguration"/>
   </bean>
 
-  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.UserConfiguration"
+  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration"
       init-method="initialize">
     <property name="configs">
       <list>

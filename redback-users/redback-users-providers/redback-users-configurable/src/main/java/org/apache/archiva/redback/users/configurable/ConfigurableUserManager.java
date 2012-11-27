@@ -16,11 +16,11 @@ package org.apache.archiva.redback.users.configurable;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.users.UserQuery;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class ConfigurableUserManager
 {
     @Inject
     @Named( value = "userConfiguration" )
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     @Inject
     private ApplicationContext applicationContext;

@@ -19,7 +19,7 @@ package org.apache.archiva.redback.policy;
  * under the License.
  */
 
-import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.DefaultUserConfiguration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -36,7 +36,7 @@ public class DefaultUserValidationSettings
     implements UserValidationSettings
 {
     @Resource (name="userConfiguration")
-    private UserConfiguration config;
+    private DefaultUserConfiguration config;
 
     private boolean emailValidationRequired;
 
