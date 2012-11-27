@@ -40,49 +40,23 @@ import java.util.Properties;
 public class ConfigurableLdapConnectionFactory
     implements LdapConnectionFactory
 {
-    /**
-     *
-     */
+
     private String hostname;
 
-    /**
-     *
-     */
     private int port;
 
-    /**
-     *
-     */
     private boolean ssl;
 
-    /**
-     *
-     */
     private String baseDn;
 
-    /**
-     *
-     */
     private String contextFactory;
 
-    /**
-     *
-     */
     private String bindDn;
 
-    /**
-     *
-     */
     private String password;
 
-    /**
-     *
-     */
     private String authenticationMethod;
 
-    /**
-     *
-     */
     private Properties extraProperties;
 
     private LdapConnectionConfiguration configuration;

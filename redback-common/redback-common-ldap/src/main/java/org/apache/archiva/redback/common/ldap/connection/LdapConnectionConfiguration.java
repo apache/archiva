@@ -72,36 +72,7 @@ public class LdapConnectionConfiguration
 
     public LdapConnectionConfiguration()
     {
-    }
-
-    public LdapConnectionConfiguration( String hostname, int port, LdapName baseDn, String contextFactory,
-                                        LdapName bindDn, String password, String authenticationMethod,
-                                        Properties extraProperties )
-        throws LdapException
-    {
-        this.hostname = hostname;
-
-        this.port = port;
-
-        if ( baseDn != null )
-        {
-            this.baseDn = new LdapName( baseDn.getRdns() );
-        }
-
-        this.contextFactory = contextFactory;
-
-        if ( bindDn != null )
-        {
-            this.bindDn = new LdapName( bindDn.getRdns() );
-        }
-
-        this.password = password;
-
-        this.authenticationMethod = authenticationMethod;
-
-        this.extraProperties = extraProperties;
-
-        check();
+        // no op
     }
 
     public LdapConnectionConfiguration( String hostname, int port, String baseDn, String contextFactory, String bindDn,
