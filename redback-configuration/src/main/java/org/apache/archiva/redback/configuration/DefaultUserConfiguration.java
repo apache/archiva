@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * ConfigurationFactory
- *
+ * @since 2.1
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
  */

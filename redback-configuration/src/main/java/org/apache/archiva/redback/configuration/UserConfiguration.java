@@ -25,10 +25,11 @@ import java.util.List;
 
 /**
  * @author Olivier Lamy
+ * @since 2.1 moved to an interface
  */
 public interface UserConfiguration
 {
-    @PostConstruct
+
     void initialize()
         throws RegistryException;
 
@@ -44,7 +45,6 @@ public interface UserConfiguration
 
     boolean getBoolean( String key, boolean defaultValue );
 
-    @SuppressWarnings( "unchecked" )
     List<String> getList( String key );
 
     String getConcatenatedList( String key, String defaultValue );
