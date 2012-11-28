@@ -1461,6 +1461,82 @@
           <type>String</type>
           <defaultValue>jdo</defaultValue>
         </field>
+        <field>
+          <name>ldapConfiguration</name>
+          <description>the ldap configuration</description>
+          <version>1.4.0+</version>
+          <association>
+            <type>LdapConfiguration</type>
+          </association>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>LdapConfiguration</name>
+      <version>1.4.0+</version>
+      <description>
+        The LDAP configuration.
+      </description>
+      <fields>
+        <field>
+          <name>hostName</name>
+          <description>The LDAP host.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>port</name>
+          <description>The LDAP port.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>ssl</name>
+          <description>ssl LDAP connection.</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+        </field>
+        <field>
+          <name>baseDn</name>
+          <description>The LDAP base dn.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>contextFactory</name>
+          <description>contextFactory to use.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>bindDn</name>
+          <description>The LDAP bind dn.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>password</name>
+          <description>The LDAP password.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>authenticationMethod</name>
+          <description>The LDAP authenticationMethod.</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>extraProperties</name>
+          <version>1.4.0+</version>
+          <type>Map</type>
+          <description>Additionnal properties to use for ldap connection.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
       </fields>
     </class>
 
