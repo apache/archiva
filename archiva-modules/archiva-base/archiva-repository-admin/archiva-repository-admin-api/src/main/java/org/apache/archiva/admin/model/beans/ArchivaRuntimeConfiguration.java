@@ -25,11 +25,13 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement ( name = "archivaRuntimeConfiguration" )
+@XmlRootElement (name = "archivaRuntimeConfiguration")
 public class ArchivaRuntimeConfiguration
     implements Serializable
 {
     private String userManagerImpl = "jdo";
+
+    private ArchivaLdapConfiguration archivaLdapConfiguration;
 
     public ArchivaRuntimeConfiguration()
     {
@@ -44,5 +46,15 @@ public class ArchivaRuntimeConfiguration
     public void setUserManagerImpl( String userManagerImpl )
     {
         this.userManagerImpl = userManagerImpl;
+    }
+
+    public ArchivaLdapConfiguration getArchivaLdapConfiguration()
+    {
+        return archivaLdapConfiguration;
+    }
+
+    public void setArchivaLdapConfiguration( ArchivaLdapConfiguration archivaLdapConfiguration )
+    {
+        this.archivaLdapConfiguration = archivaLdapConfiguration;
     }
 }

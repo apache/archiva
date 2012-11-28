@@ -1151,8 +1151,39 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
 
-  ArchivaRuntimeConfiguration=function(userManagerImpl){
+  ArchivaRuntimeConfiguration=function(userManagerImpl,archivaLdapConfiguration){
     this.userManagerImpl=ko.observable(userManagerImpl);
+    this.archivaLdapConfiguration=ko.observable(archivaLdapConfiguration);
+  }
+
+  ArchivaLdapConfiguration=function(hostName,port,ssl,baseDn,contextFactory,bindDn,password,authenticationMethod,
+                                    extraProperties){
+    //private String hostName;
+    this.hostName=ko.observable(hostName);
+
+    //private String port;
+    this.port=ko.observable(port);
+
+    //private boolean ssl = false;
+    this.ssl=ko.observable(ssl);
+
+    //private String baseDn;
+    this.baseDn=ko.observable(baseDn);
+
+    //private String contextFactory;
+    this.contextFactory=ko.observable(contextFactory);
+
+    //private String bindDn;
+    this.bindDn=ko.observable(bindDn);
+
+    //private String password;
+    this.password=ko.observable(password);
+
+    //private String authenticationMethod;
+    this.authenticationMethod=ko.observable(authenticationMethod);
+
+    //private Map<String, String> extraProperties = new HashMap<String, String>();
+    this.extraProperties=ko.observableArray(extraProperties);
   }
 
   ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration,userManagerImplementationInformations){
