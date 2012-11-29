@@ -864,7 +864,7 @@ public class NexusRepositorySearchTest
         File indexDirectory = new File( repo, ".index" );
         FileUtils.copyDirectoryStructure( new File( "src/test/repo-release" ), repo );
 
-        createIndex( repo.getPath(), Collections.<File>emptyList(), false );
+        createIndex( "repo-release", Collections.<File>emptyList(), false );
 
         nexusIndexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo, indexDirectory,
                                          repo.toURI().toURL().toExternalForm(),
@@ -872,6 +872,10 @@ public class NexusRepositorySearchTest
 
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 300 );
+
+        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+
+        archivaConfigControl.replay();
 
         SearchResults searchResults = search.search( null, Arrays.asList( REPO_RELEASE ), "org.example", limits,
                                                      Collections.<String>emptyList() );
@@ -889,5 +893,7 @@ public class NexusRepositorySearchTest
         log.info( "results: {}", searchResults.getHits().size() );
 
         assertEquals( 255, searchResults.getHits().size() );
+
+        archivaConfigControl.verify();
     }
 }
