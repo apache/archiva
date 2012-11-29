@@ -64,6 +64,9 @@ public abstract class AbstractNexusRepositorySearch
 
     public static String TEST_REPO_2 = "nexus-search-test-repo-2";
 
+
+    public static String REPO_RELEASE = "repo-release";
+
     NexusRepositorySearch search;
 
     ArchivaConfiguration archivaConfig;
@@ -114,13 +117,13 @@ public abstract class AbstractNexusRepositorySearch
         config = new Configuration();
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
+        config.addManagedRepository( createRepositoryConfig( REPO_RELEASE ) );
     }
 
     @After
     public void tearDown()
         throws Exception
     {
-
         for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
         {
             nexusIndexer.removeIndexingContext( indexingContext, true );
@@ -211,9 +214,6 @@ public abstract class AbstractNexusRepositorySearch
         }
         // force flushing
         context.getIndexWriter().commit();
-        //context.getIndexWriter().close( true );
-        // wait for io flush ....
-        //Thread.sleep( 2000 );
         context.setSearchable( true );
 
     }

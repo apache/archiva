@@ -49,11 +49,11 @@ public class SearchResultLimits
     /**
      * Set page size for maximum # of hits to return per page.
      *
-     * @param pageSize size of page by # of hits. (maximum value is 200)
+     * @param pageSize size of page by # of hits.
      */
     public void setPageSize( int pageSize )
     {
-        this.pageSize = Math.min( 200, pageSize );
+        this.pageSize = pageSize;
     }
 
     public int getSelectedPage()
