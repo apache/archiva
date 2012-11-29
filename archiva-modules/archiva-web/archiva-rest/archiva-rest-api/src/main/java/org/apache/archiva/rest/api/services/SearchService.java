@@ -42,17 +42,14 @@ public interface SearchService
     * query for an artifact based on a checksum
     * query for all available versions of an artifact, sorted in version significance order
     * query for an artifact's direct dependencies
+    * <b>search will be apply on all repositories the current user has karma</b>
     * TODO query for an artifact's dependency tree (as with mvn dependency:tree - no duplicates should be included)
     * TODO query for all artifacts that depend on a given artifact
     */
-
     @Path( "quickSearch" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    /**
-     * <b>search will be apply on all repositories the current user has karma</b>
-     */
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
