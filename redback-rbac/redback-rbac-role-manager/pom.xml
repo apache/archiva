@@ -102,6 +102,7 @@
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
+        <version>1.6</version>
         <executions>
           <execution>
             <goals>
@@ -111,7 +112,10 @@
               <goal>stax-writer</goal>
             </goals>
             <configuration>
-              <model>src/main/mdo/redback-role-profiles.mdo</model>
+              <useJava5>true</useJava5>
+              <models>
+                <model>src/main/mdo/redback-role-profiles.mdo</model>
+              </models>
               <version>1.0.0</version>
             </configuration>
           </execution>

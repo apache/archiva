@@ -112,11 +112,11 @@ public class DefaultRoleManager
 
             RedbackRoleModel roleModel = reader.read( inputStreamReader );
 
-            for ( ModelApplication app : (List<ModelApplication>) roleModel.getApplications() )
+            for ( ModelApplication app : roleModel.getApplications() )
             {
                 if ( !knownResources.containsKey( app.getId() ) )
                 {
-                    log.info( "loading " + app.getId() );
+                    log.info( "loading {}", app.getId() );
                     loadApplication( app );
                 }
             }
@@ -143,7 +143,7 @@ public class DefaultRoleManager
     public void loadRoleModel( RedbackRoleModel roleModel )
         throws RoleManagerException
     {
-        for ( ModelApplication app : (List<ModelApplication>) roleModel.getApplications() )
+        for ( ModelApplication app : roleModel.getApplications() )
         {
             if ( !knownResources.containsKey( app.getId() ) )
             {

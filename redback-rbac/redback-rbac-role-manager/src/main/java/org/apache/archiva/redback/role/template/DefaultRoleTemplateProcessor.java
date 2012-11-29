@@ -65,9 +65,9 @@ public class DefaultRoleTemplateProcessor
     public void create( RedbackRoleModel model, String templateId, String resource )
         throws RoleManagerException
     {
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( templateId.equals( template.getId() ) )
                 {
@@ -89,9 +89,9 @@ public class DefaultRoleTemplateProcessor
     public void remove( RedbackRoleModel model, String templateId, String resource )
         throws RoleManagerException
     {
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( templateId.equals( template.getId() ) )
                 {

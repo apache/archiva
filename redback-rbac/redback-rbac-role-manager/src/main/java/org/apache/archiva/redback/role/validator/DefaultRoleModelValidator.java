@@ -96,7 +96,7 @@ public class DefaultRoleModelValidator
     {
         // validate model has name
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
             if ( application.getId() == null )
             {
@@ -110,7 +110,7 @@ public class DefaultRoleModelValidator
             }
 
             // validate resource bits
-            for ( ModelResource resource : (List<ModelResource>) application.getResources() )
+            for ( ModelResource resource : application.getResources() )
             {
                 if ( resource.getName() == null )
                 {
@@ -124,7 +124,7 @@ public class DefaultRoleModelValidator
             }
 
             // validate the operations
-            for ( ModelOperation operation : (List<ModelOperation>) application.getOperations() )
+            for ( ModelOperation operation : application.getOperations() )
             {
                 if ( operation.getName() == null )
                 {
@@ -137,7 +137,7 @@ public class DefaultRoleModelValidator
                 }
             }
 
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 if ( role.getId() == null )
                 {
@@ -151,7 +151,7 @@ public class DefaultRoleModelValidator
 
                 if ( role.getPermissions() != null )
                 {
-                    for ( ModelPermission permission : (List<ModelPermission>) role.getPermissions() )
+                    for ( ModelPermission permission : role.getPermissions() )
                     {
                         if ( permission.getName() == null )
                         {
@@ -176,7 +176,7 @@ public class DefaultRoleModelValidator
                 }
             }
 
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( template.getId() == null )
                 {
@@ -190,7 +190,7 @@ public class DefaultRoleModelValidator
 
                 if ( template.getPermissions() != null )
                 {
-                    for ( ModelPermission permission : (List<ModelPermission>) template.getPermissions() )
+                    for ( ModelPermission permission : template.getPermissions() )
                     {
                         if ( permission.getName() == null )
                         {
@@ -222,19 +222,18 @@ public class DefaultRoleModelValidator
      *
      * @param model
      */
-    @SuppressWarnings( "unchecked" )
     private void validateOperationClosure( RedbackRoleModel model )
     {
         List<String> operationIdList = RoleModelUtils.getOperationIdList( model );
 
         // check the operations in role permissions
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 if ( role.getPermissions() != null )
                 {
-                    for ( ModelPermission permission : (List<ModelPermission>) role.getPermissions() )
+                    for ( ModelPermission permission : role.getPermissions() )
                     {
                         if ( !operationIdList.contains( permission.getOperation() ) )
                         {
@@ -246,11 +245,11 @@ public class DefaultRoleModelValidator
             }
 
             // check the operations in template permissions
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( template.getPermissions() != null )
                 {
-                    for ( ModelPermission permission : (List<ModelPermission>) template.getPermissions() )
+                    for ( ModelPermission permission : template.getPermissions() )
                     {
                         if ( !operationIdList.contains( permission.getOperation() ) )
                         {
@@ -263,17 +262,16 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings( "unchecked" )
     private void validateResourceClosure( RedbackRoleModel model )
     {
         List<String> resourceIdList = RoleModelUtils.getResourceIdList( model );
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 if ( role.getPermissions() != null )
                 {
-                    for ( ModelPermission permission : (List<ModelPermission>) role.getPermissions() )
+                    for ( ModelPermission permission : role.getPermissions() )
                     {
                         if ( !resourceIdList.contains( permission.getResource() ) )
                         {
@@ -286,17 +284,16 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings( "unchecked" )
     private void validateChildRoleClosure( RedbackRoleModel model )
     {
         List<String> roleIdList = RoleModelUtils.getRoleIdList( model );
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 if ( role.getChildRoles() != null )
                 {
-                    for ( String childRoleId : (List<String>) role.getChildRoles() )
+                    for ( String childRoleId : role.getChildRoles() )
                     {
                         if ( !roleIdList.contains( childRoleId ) )
                         {
@@ -307,11 +304,11 @@ public class DefaultRoleModelValidator
                 }
             }
 
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( template.getChildRoles() != null )
                 {
-                    for ( String childRoleId : (List<String>) template.getChildRoles() )
+                    for ( String childRoleId : template.getChildRoles() )
                     {
                         if ( !roleIdList.contains( childRoleId ) )
                         {
@@ -329,13 +326,13 @@ public class DefaultRoleModelValidator
     {
         List roleIdList = RoleModelUtils.getRoleIdList( model );
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 if ( role.getParentRoles() != null )
                 {
-                    for ( String parentRoleId : (List<String>) role.getParentRoles() )
+                    for ( String parentRoleId : role.getParentRoles() )
                     {
                         if ( !roleIdList.contains( parentRoleId ) )
                         {
@@ -346,11 +343,11 @@ public class DefaultRoleModelValidator
                 }
             }
 
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( template.getParentRoles() != null )
                 {
-                    for ( String parentRoleId : (List<String>) template.getParentRoles() )
+                    for ( String parentRoleId : template.getParentRoles() )
                     {
                         if ( !roleIdList.contains( parentRoleId ) )
                         {
@@ -363,7 +360,6 @@ public class DefaultRoleModelValidator
         }
     }
 
-    @SuppressWarnings( "unchecked" )
     private void validateTemplateClosure( RedbackRoleModel model )
     {
         List templateIdList = RoleModelUtils.getTemplateIdList( model );
@@ -371,13 +367,13 @@ public class DefaultRoleModelValidator
         // template name prefix must be unique
         List<String> templateNamePrefixList = new ArrayList<String>();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( template.getParentTemplates() != null )
                 {
-                    for ( String parentTemplateId : (List<String>) template.getParentTemplates() )
+                    for ( String parentTemplateId : template.getParentTemplates() )
                     {
                         if ( !templateIdList.contains( parentTemplateId ) )
                         {
@@ -390,7 +386,7 @@ public class DefaultRoleModelValidator
 
                 if ( template.getChildTemplates() != null )
                 {
-                    for ( String childTemplateId : (List<String>) template.getChildTemplates() )
+                    for ( String childTemplateId : template.getChildTemplates() )
                     {
                         if ( !templateIdList.contains( childTemplateId ) )
                         {

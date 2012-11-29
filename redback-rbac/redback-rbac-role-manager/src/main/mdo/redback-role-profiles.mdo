@@ -18,7 +18,7 @@
   ~ under the License.
 -->
 
-<model>
+<model xml.namespace="http://archiva.apache.org/redback/role/${version}">
   <id>redback-role-model</id>
   <name>RedbackRoleModel</name>
   <description></description>

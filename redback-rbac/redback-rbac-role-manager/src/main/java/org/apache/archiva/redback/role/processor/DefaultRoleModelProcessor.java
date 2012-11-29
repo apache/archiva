@@ -80,9 +80,9 @@ public class DefaultRoleModelProcessor
     private void processResources( RedbackRoleModel model )
         throws RoleManagerException
     {
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelResource profileResource : (List<ModelResource>) application.getResources() )
+            for ( ModelResource profileResource : application.getResources() )
             {
                 try
                 {
@@ -115,9 +115,9 @@ public class DefaultRoleModelProcessor
     private void processOperations( RedbackRoleModel model )
         throws RoleManagerException
     {
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelOperation profileOperation : (List<ModelOperation>) application.getOperations() )
+            for ( ModelOperation profileOperation : application.getOperations() )
             {
                 try
                 {

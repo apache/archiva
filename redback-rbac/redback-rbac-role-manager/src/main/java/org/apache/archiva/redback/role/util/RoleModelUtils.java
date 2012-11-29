@@ -42,12 +42,12 @@ import java.util.List;
 public class RoleModelUtils
 {
 
-    @SuppressWarnings( "unchecked" )
+
     public static List<ModelRole> getRoles( RedbackRoleModel model )
     {
         List<ModelRole> roleList = new ArrayList<ModelRole>( );
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
             roleList.addAll( application.getRoles() );
         }
@@ -55,12 +55,11 @@ public class RoleModelUtils
         return roleList;
     }
 
-    @SuppressWarnings( "unchecked" )
     public static List<ModelTemplate> getTemplates( RedbackRoleModel model )
     {
         List<ModelTemplate> templateList = new ArrayList<ModelTemplate>();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
             templateList.addAll( application.getTemplates() );
         }
@@ -73,9 +72,9 @@ public class RoleModelUtils
     {
         List<String> operationsIdList = new ArrayList<String>();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelOperation operation : (List<ModelOperation>) application.getOperations() )
+            for ( ModelOperation operation : application.getOperations() )
             {
                 operationsIdList.add( operation.getId() );
             }
@@ -89,9 +88,9 @@ public class RoleModelUtils
     {
         List<String> resourceIdList = new ArrayList<String>();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelResource resource : (List<ModelResource>) application.getResources() )
+            for ( ModelResource resource : application.getResources() )
             {
                 resourceIdList.add( resource.getId() );
             }
@@ -100,14 +99,13 @@ public class RoleModelUtils
         return resourceIdList;
     }
 
-    @SuppressWarnings( "unchecked" )
     public static List<String> getRoleIdList( RedbackRoleModel model )
     {
         List<String> roleIdList = new ArrayList<String>();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 roleIdList.add( role.getId() );
             }
@@ -116,14 +114,14 @@ public class RoleModelUtils
         return roleIdList;
     }
 
-    @SuppressWarnings( "unchecked" )
+
     public static List<String> getTemplateIdList( RedbackRoleModel model )
     {
         List<String> templateIdList = new ArrayList<String>();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 templateIdList.add( template.getId() );
             }
@@ -145,9 +143,9 @@ public class RoleModelUtils
     {
         ModelRole mrole = null;
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 if ( roleId.equals( role.getId() ) )
                 {
@@ -171,9 +169,9 @@ public class RoleModelUtils
     {
         ModelTemplate mtemplate = null;
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 if ( templateId.equals( template.getId() ) )
                 {
@@ -197,9 +195,9 @@ public class RoleModelUtils
     {
         ModelOperation moperation = null;
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelOperation operation : (List<ModelOperation>) application.getOperations() )
+            for ( ModelOperation operation : application.getOperations() )
             {
                 if ( operationId.equals( operation.getId() ) )
                 {
@@ -216,9 +214,9 @@ public class RoleModelUtils
     {
         ModelResource mresource = null;
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelResource resource : (List<ModelResource>) application.getResources() )
+            for ( ModelResource resource : application.getResources() )
             {
                 if ( resourceId.equals( resource.getId() ) )
                 {
@@ -236,15 +234,15 @@ public class RoleModelUtils
     {
         DAG roleGraph = new DAG();
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelRole role : (List<ModelRole>) application.getRoles() )
+            for ( ModelRole role : application.getRoles() )
             {
                 roleGraph.addVertex( role.getId() );
 
                 if ( role.getChildRoles() != null )
                 {
-                    for ( String childRole : (List<String>) role.getChildRoles() )
+                    for ( String childRole : role.getChildRoles() )
                     {
                         roleGraph.addVertex( childRole );
 
@@ -254,7 +252,7 @@ public class RoleModelUtils
 
                 if ( role.getParentRoles() != null )
                 {
-                    for ( String parentRole : (List<String>) role.getParentRoles() )
+                    for ( String parentRole : role.getParentRoles() )
                     {
                         roleGraph.addVertex( parentRole );
 
@@ -273,15 +271,15 @@ public class RoleModelUtils
     {
         DAG templateGraph = generateRoleGraph( model );
 
-        for ( ModelApplication application : (List<ModelApplication>) model.getApplications() )
+        for ( ModelApplication application : model.getApplications() )
         {
-            for ( ModelTemplate template : (List<ModelTemplate>) application.getTemplates() )
+            for ( ModelTemplate template : application.getTemplates() )
             {
                 templateGraph.addVertex( template.getId() );
 
                 if ( template.getChildRoles() != null )
                 {
-                    for ( String childRole : (List<String>) template.getChildRoles() )
+                    for ( String childRole : template.getChildRoles() )
                     {
                         templateGraph.addVertex( childRole );
 
@@ -291,7 +289,7 @@ public class RoleModelUtils
 
                 if ( template.getParentRoles() != null )
                 {
-                    for ( String parentRole : (List<String>) template.getParentRoles() )
+                    for ( String parentRole : template.getParentRoles() )
                     {
                         templateGraph.addVertex( parentRole );
 
@@ -301,7 +299,7 @@ public class RoleModelUtils
 
                 if ( template.getChildTemplates() != null )
                 {
-                    for ( String childTemplate : (List<String>) template.getChildTemplates() )
+                    for ( String childTemplate : template.getChildTemplates() )
                     {
                         templateGraph.addVertex( childTemplate );
 
@@ -311,7 +309,7 @@ public class RoleModelUtils
 
                 if ( template.getParentTemplates() != null )
                 {
-                    for ( String parentTemplate : (List<String>) template.getParentTemplates() )
+                    for ( String parentTemplate : template.getParentTemplates() )
                     {
                         templateGraph.addVertex( parentTemplate );
 
