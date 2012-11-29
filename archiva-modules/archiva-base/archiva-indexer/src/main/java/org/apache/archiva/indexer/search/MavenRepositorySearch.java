@@ -58,10 +58,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * RepositorySearch implementation which uses the Nexus Indexer for searching.
+ * RepositorySearch implementation which uses the Maven Indexer for searching.
  */
 @Service ("nexusSearch")
-public class NexusRepositorySearch
+public class MavenRepositorySearch
     implements RepositorySearch
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -74,13 +74,13 @@ public class NexusRepositorySearch
 
     private MavenIndexerUtils mavenIndexerUtils;
 
-    protected NexusRepositorySearch()
+    protected MavenRepositorySearch()
     {
         // for test purpose
     }
 
     @Inject
-    public NexusRepositorySearch( PlexusSisuBridge plexusSisuBridge, ManagedRepositoryAdmin managedRepositoryAdmin,
+    public MavenRepositorySearch( PlexusSisuBridge plexusSisuBridge, ManagedRepositoryAdmin managedRepositoryAdmin,
                                   MavenIndexerUtils mavenIndexerUtils, ProxyConnectorAdmin proxyConnectorAdmin )
         throws PlexusSisuBridgeException
     {

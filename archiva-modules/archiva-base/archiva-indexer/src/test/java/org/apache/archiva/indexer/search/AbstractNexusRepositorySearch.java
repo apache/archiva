@@ -67,7 +67,7 @@ public abstract class AbstractNexusRepositorySearch
 
     public static String REPO_RELEASE = "repo-release";
 
-    NexusRepositorySearch search;
+    MavenRepositorySearch search;
 
     ArchivaConfiguration archivaConfig;
 
@@ -107,7 +107,7 @@ public abstract class AbstractNexusRepositorySearch
         DefaultProxyConnectorAdmin defaultProxyConnectorAdmin = new DefaultProxyConnectorAdmin();
         defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
 
-        search = new NexusRepositorySearch( plexusSisuBridge, defaultManagedRepositoryAdmin, mavenIndexerUtils,
+        search = new MavenRepositorySearch( plexusSisuBridge, defaultManagedRepositoryAdmin, mavenIndexerUtils,
                                             defaultProxyConnectorAdmin );
 
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
