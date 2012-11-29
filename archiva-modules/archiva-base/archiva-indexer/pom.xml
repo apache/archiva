@@ -166,7 +166,7 @@
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes>
-              <exclude>src/test/nexus-search-test-repo*/**</exclude>
+              <exclude>src/test/maven-search-test-repo*/**</exclude>
               <exclude>src/test/repo-release*/**</exclude>
             </excludes>
           </configuration>
