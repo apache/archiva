@@ -37,8 +37,8 @@ import java.util.List;
 
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
-public class NexusRepositorySearchTest
-    extends AbstractNexusRepositorySearch
+public class MavenRepositorySearchTest
+    extends AbstractMavenRepositorySearch
 {
 
 

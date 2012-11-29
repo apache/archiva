@@ -30,7 +30,7 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
  * @author Olivier Lamy
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
-public class NexusRepositorySearchPaginateTest
+public class MavenRepositorySearchPaginateTest
     extends TestCase
 {
     @Test

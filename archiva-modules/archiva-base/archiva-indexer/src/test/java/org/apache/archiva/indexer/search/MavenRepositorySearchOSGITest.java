@@ -29,8 +29,8 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-public class NexusRepositorySearchOSGITest
-    extends AbstractNexusRepositorySearch
+public class MavenRepositorySearchOSGITest
+    extends AbstractMavenRepositorySearch
 {
 
     @Test
