@@ -60,9 +60,9 @@ public abstract class AbstractMavenRepositorySearch
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    public static String TEST_REPO_1 = "nexus-search-test-repo";
+    public static String TEST_REPO_1 = "maven-search-test-repo";
 
-    public static String TEST_REPO_2 = "nexus-search-test-repo-2";
+    public static String TEST_REPO_2 = "maven-search-test-repo-2";
 
 
     public static String REPO_RELEASE = "repo-release";
