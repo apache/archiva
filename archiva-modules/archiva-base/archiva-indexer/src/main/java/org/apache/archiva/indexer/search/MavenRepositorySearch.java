@@ -60,7 +60,7 @@ import java.util.Set;
 /**
  * RepositorySearch implementation which uses the Maven Indexer for searching.
  */
-@Service ("nexusSearch")
+@Service ("repositorySearch#maven")
 public class MavenRepositorySearch
     implements RepositorySearch
 {
