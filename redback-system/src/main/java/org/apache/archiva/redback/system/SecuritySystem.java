@@ -91,10 +91,6 @@ public interface SecuritySystem
     
     UserSecurityPolicy getPolicy();
 
-    String getUserManagementId();
-    String getAuthenticatorId();
-    String getAuthorizerId();
-
     /**
      * @since 2.1
      * @return is it possible to modify user datas (some userManager cannot i.e ldap)
