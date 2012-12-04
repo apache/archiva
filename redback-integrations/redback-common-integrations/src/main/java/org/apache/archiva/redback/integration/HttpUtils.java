@@ -19,16 +19,15 @@ package org.apache.archiva.redback.integration;
  * under the License.
  */
 
-import java.util.Properties;
+import org.apache.commons.lang.StringUtils;
 
-import org.codehaus.plexus.util.StringUtils;
+import java.util.Properties;
 
 /**
  * Collection of Utility methods useful in an Http environment.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
- * @todo should move this to plexus-utils or plexus-utils-web
  */
 public class HttpUtils
 {

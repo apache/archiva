@@ -20,7 +20,7 @@ package org.apache.archiva.redback.system;
  */
 
 /**
- * SecuritySystemConstants - constants for use with contexts that use plexus-security. 
+ * SecuritySystemConstants - constants for use with contexts that use redback.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *

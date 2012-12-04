@@ -31,7 +31,6 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -128,7 +127,7 @@ public class AdminAutoCreateCheck
             }
             finally
             {
-                IOUtil.close( fis );
+                IOUtils.close( fis );
             }
 
             // ensure we have all properties
