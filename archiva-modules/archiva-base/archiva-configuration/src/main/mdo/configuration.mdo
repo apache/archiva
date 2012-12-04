@@ -1535,6 +1535,12 @@
           <type>String</type>
         </field>
         <field>
+          <name>bindAuthenticatorEnabled</name>
+          <description>The LDAP authenticator enabled.</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+        </field>
+        <field>
           <name>extraProperties</name>
           <version>1.4.0+</version>
           <type>Map</type>
