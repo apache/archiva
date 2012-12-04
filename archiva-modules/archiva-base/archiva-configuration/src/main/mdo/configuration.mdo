@@ -1496,7 +1496,7 @@
           <name>port</name>
           <description>The LDAP port.</description>
           <version>1.4.0+</version>
-          <type>String</type>
+          <type>int</type>
         </field>
         <field>
           <name>ssl</name>
