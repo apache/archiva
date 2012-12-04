@@ -274,6 +274,7 @@
               org.apache.archiva.redback.components.registry,
               org.apache.archiva.redback.components.taskqueue,
               org.apache.archiva.redback.components.scheduler,
+              org.apache.archiva.redback.configuration,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
