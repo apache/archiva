@@ -22,6 +22,7 @@ package org.apache.archiva.redback.authentication;
 import org.apache.archiva.redback.users.User;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**

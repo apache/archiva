@@ -29,4 +29,9 @@ public class AuthenticationConstants
     // for User Manager Authenticator
     public static final String AUTHN_NO_SUCH_USER = "1";
 
+    /**
+     * @since 2.1
+     */
+    public static final String AUTHN_RUNTIME_EXCEPTION = "2";
+
 }

@@ -46,21 +46,21 @@ import java.util.Map;
 public class DefaultAuthenticationManager
     implements AuthenticationManager
 {
-    
+
     private List<Authenticator> authenticators;
 
     @Inject
     private ApplicationContext applicationContext;
-    
+
     @SuppressWarnings("unchecked")
     @PostConstruct
     public void initialize()
     {
-        this.authenticators = new ArrayList<Authenticator>
-       ( applicationContext.getBeansOfType( Authenticator.class ).values() );
+        this.authenticators =
+            new ArrayList<Authenticator>( applicationContext.getBeansOfType( Authenticator.class ).values() );
     }
-    
-    
+
+
     public String getId()
     {
         return "Default Authentication Manager - " + this.getClass().getName() + " : managed authenticators - " +
@@ -77,13 +77,13 @@ public class DefaultAuthenticationManager
         }
 
         // put AuthenticationResult exceptions in a map
-        Map<String,String> authnResultExceptionsMap = new HashMap<String,String>();
+        Map<String, String> authnResultExceptionsMap = new HashMap<String, String>();
         for ( Authenticator authenticator : authenticators )
         {
             if ( authenticator.supportsDataSource( source ) )
             {
                 AuthenticationResult authResult = authenticator.authenticate( source );
-                Map<String,String> exceptionsMap = authResult.getExceptionsMap();
+                Map<String, String> exceptionsMap = authResult.getExceptionsMap();
 
                 if ( authResult.isAuthenticated() )
                 {
@@ -94,6 +94,16 @@ public class DefaultAuthenticationManager
                 {
                     authnResultExceptionsMap.putAll( exceptionsMap );
                 }
+                else
+                {
+                    if ( authResult.getException() != null )
+                    {
+                        authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
+                                                      authResult.getException().getMessage() );
+                    }
+                }
+
+
             }
         }
 
