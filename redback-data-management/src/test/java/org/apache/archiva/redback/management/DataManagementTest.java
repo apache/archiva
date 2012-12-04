@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
@@ -245,7 +246,15 @@ public class DataManagementTest
 
         File backupFile = new File( targetDirectory, "rbac.xml" );
 
-        IOUtils.copy( getClass().getResourceAsStream( "/expected-rbac.xml" ), new FileWriter( backupFile ) );
+        InputStream is = getClass().getResourceAsStream( "/expected-rbac.xml" );
+
+        FileWriter fw = new FileWriter( backupFile );
+
+        IOUtils.copy( is, fw);
+
+        is.close();
+
+        fw.close();
 
         dataManagementTool.restoreRBACDatabase( manager, targetDirectory );
 
@@ -324,7 +333,11 @@ public class DataManagementTest
 
         File backupFile = new File( targetDirectory, "users.xml" );
 
-        IOUtils.copy( getClass().getResourceAsStream( "/expected-users.xml" ), new FileWriter( backupFile ) );
+        FileWriter fw = new FileWriter( backupFile );
+
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-users.xml" ), fw );
+
+        fw.close();
 
         dataManagementTool.restoreUsersDatabase( manager, targetDirectory );
 
@@ -377,7 +390,11 @@ public class DataManagementTest
 
         File backupFile = new File( targetDirectory, "keys.xml" );
 
-        IOUtils.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), new FileWriter( backupFile ) );
+        FileWriter fw = new FileWriter( backupFile );
+
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), fw);
+
+        fw.close();
 
         dataManagementTool.restoreKeysDatabase( manager, targetDirectory );
 
