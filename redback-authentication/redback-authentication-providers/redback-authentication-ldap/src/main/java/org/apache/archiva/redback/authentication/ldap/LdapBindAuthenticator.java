@@ -94,23 +94,25 @@ public class LdapBindAuthenticator
         ctls.setDerefLinkFlag( true );
         ctls.setSearchScope( SearchControls.SUBTREE_SCOPE );
 
-        String filter = "(&(objectClass=" + mapper.getUserObjectClass() + ")"
-            + ( mapper.getUserFilter() != null ? mapper.getUserFilter() : "" ) + "(" + mapper.getUserIdAttribute() + "="
-            + source.getPrincipal() + "))";
+        String filter = "(&(objectClass=" + mapper.getUserObjectClass() + ")" + ( mapper.getUserFilter() != null
+            ? mapper.getUserFilter()
+            : "" ) + "(" + mapper.getUserIdAttribute() + "=" + source.getPrincipal() + "))";
 
         log.debug( "Searching for users with filter: '{}' from base dn: {}", filter, mapper.getUserBaseDn() );
-                                                              
-        LdapConnection ldapConnection = getLdapConnection();
+
+        LdapConnection ldapConnection = null;
         LdapConnection authLdapConnection = null;
         NamingEnumeration<SearchResult> results = null;
         try
         {
+            ldapConnection = getLdapConnection();
             // check the cache for user's userDn in the ldap server
             String userDn = ldapCacheService.getLdapUserDn( source.getPrincipal() );
-            
-            if( userDn == null )
+
+            if ( userDn == null )
             {
-                log.debug( "userDn for user {} not found in cache. Retrieving from ldap server..", source.getPrincipal() );
+                log.debug( "userDn for user {} not found in cache. Retrieving from ldap server..",
+                           source.getPrincipal() );
 
                 DirContext context = ldapConnection.getDirContext();
 
@@ -168,16 +170,9 @@ public class LdapBindAuthenticator
     }
 
     private LdapConnection getLdapConnection()
+        throws LdapException
     {
-        try
-        {
-            return connectionFactory.getConnection();
-        }
-        catch ( LdapException e )
-        {
-            log.warn( "failed to get a ldap connection " + e.getMessage(), e );
-            throw new RuntimeException( "failed to get a ldap connection " + e.getMessage(), e );
-        }
+        return connectionFactory.getConnection();
     }
 
     private void closeLdapConnection( LdapConnection ldapConnection )
