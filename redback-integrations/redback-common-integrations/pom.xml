@@ -215,6 +215,7 @@
               org.apache.velocity*;version="[1.7,2)",
               org.codehaus.plexus.util;version="[3,4)",
               org.springframework*;version="[3,4)",
+              org.apache.commons.io,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>

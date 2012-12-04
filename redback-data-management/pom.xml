@@ -101,6 +101,7 @@
               org.apache.archiva.redback.rbac*;version=${project.version},
               org.apache.archiva.redback.users*;version=${project.version},
               org.codehaus.plexus.util;version="[3,4)",
+              org.apache.commons.io,
               org.springframework.stereotype;version="[3,4)"
             </Import-Package>
           </instructions>
