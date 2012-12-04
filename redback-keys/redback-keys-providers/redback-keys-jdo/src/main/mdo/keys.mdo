@@ -52,10 +52,6 @@
       <interfaces>
         <interface>org.apache.archiva.redback.keys.AuthenticationKey</interface>
       </interfaces>
-      <description>
-        @plexus.component role="org.apache.archiva.redback.keys.AuthenticationKey"
-        role-hint="jdo"
-      </description>
       <fields>
         <field jpox.primary-key="true"
                jpox.value-strategy="off"

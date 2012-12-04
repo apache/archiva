@@ -21,7 +21,8 @@ package org.apache.archiva.redback.integration.model;
 
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
+
 
 import java.io.Serializable;
 
@@ -29,7 +30,6 @@ import java.io.Serializable;
  * UserCredentials
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 public abstract class UserCredentials
     implements Serializable

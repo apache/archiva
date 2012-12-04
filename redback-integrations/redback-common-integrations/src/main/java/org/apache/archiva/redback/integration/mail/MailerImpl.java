@@ -38,7 +38,7 @@ import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.policy.UserValidationSettings;
 import org.apache.archiva.redback.system.SecuritySystem;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;

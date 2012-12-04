@@ -29,12 +29,12 @@ import org.apache.archiva.redback.role.model.ModelTemplate;
 import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.apache.archiva.redback.role.model.io.stax.RedbackRoleModelStaxReader;
 import org.apache.archiva.redback.role.processor.RoleModelProcessor;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.role.template.RoleTemplateProcessor;
 import org.apache.archiva.redback.role.util.RoleModelUtils;
 import org.apache.archiva.redback.role.validator.RoleModelValidator;
-import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -135,7 +135,7 @@ public class DefaultRoleManager
         }
         finally
         {
-            IOUtil.close( inputStreamReader );
+            IOUtils.closeQuietly( inputStreamReader );
         }
     }
 

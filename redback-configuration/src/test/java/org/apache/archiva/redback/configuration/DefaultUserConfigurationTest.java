@@ -20,7 +20,7 @@ package org.apache.archiva.redback.configuration;
  */
 
 import junit.framework.TestCase;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

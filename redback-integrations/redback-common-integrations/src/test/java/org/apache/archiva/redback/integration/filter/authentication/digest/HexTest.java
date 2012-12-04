@@ -21,8 +21,6 @@ package org.apache.archiva.redback.integration.filter.authentication.digest;
 
 import junit.framework.TestCase;
 
-import org.codehaus.plexus.digest.Hex;
-
 public class HexTest
     extends TestCase
 {

@@ -44,7 +44,7 @@ public interface UtilServices
 
     /**
      * <b>not intended to be exposed as a REST service.</b>
-     * will load i18N resource org/codehaus/plexus/redback/users/messages in default en then in the asked locale.
+     * will load i18N resource org/apache/archiva/redback/users/messages in default en then in the asked locale.
      * @param locale
      * @return
      * @throws RedbackServiceException

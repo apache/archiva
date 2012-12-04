@@ -28,13 +28,13 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.tests.utils.RBACDefaults;
 import org.apache.archiva.redback.users.User;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,10 +134,10 @@ public class DataManagementTest
 
         StringWriter sw = new StringWriter();
 
-        IOUtil.copy( getClass().getResourceAsStream( "/expected-rbac.xml" ), sw );
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-rbac.xml" ), sw );
 
         XMLAssert.assertXMLEqual( new StringReader( sw.toString() ),
-                                  new StringReader( FileUtils.fileRead( backupFile ) ) );
+                                  new StringReader( FileUtils.readFileToString( backupFile ) ) );
 
     }
 
@@ -173,9 +173,9 @@ public class DataManagementTest
 
         StringWriter sw = new StringWriter();
 
-        IOUtil.copy( getClass().getResourceAsStream( "/expected-users.xml" ), sw );
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-users.xml" ), sw );
 
-        String actual = FileUtils.fileRead( backupFile ).trim();
+        String actual = FileUtils.readFileToString( backupFile ).trim();
         String expected = sw.toString().trim();
 
         XMLAssert.assertXMLEqual( removeTimestampVariance( expected ), removeTimestampVariance( actual ) );
@@ -215,9 +215,9 @@ public class DataManagementTest
 
         StringWriter sw = new StringWriter();
 
-        IOUtil.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), sw );
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), sw );
 
-        String actual = FileUtils.fileRead( backupFile ).trim();
+        String actual = FileUtils.readFileToString( backupFile ).trim();
         String expected = sw.toString().trim();
 
         XMLAssert.assertXMLEqual( removeKeyAndTimestampVariance( expected ), removeKeyAndTimestampVariance( actual ) );
@@ -245,7 +245,7 @@ public class DataManagementTest
 
         File backupFile = new File( targetDirectory, "rbac.xml" );
 
-        IOUtil.copy( getClass().getResourceAsStream( "/expected-rbac.xml" ), new FileWriter( backupFile ) );
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-rbac.xml" ), new FileWriter( backupFile ) );
 
         dataManagementTool.restoreRBACDatabase( manager, targetDirectory );
 
@@ -324,7 +324,7 @@ public class DataManagementTest
 
         File backupFile = new File( targetDirectory, "users.xml" );
 
-        IOUtil.copy( getClass().getResourceAsStream( "/expected-users.xml" ), new FileWriter( backupFile ) );
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-users.xml" ), new FileWriter( backupFile ) );
 
         dataManagementTool.restoreUsersDatabase( manager, targetDirectory );
 
@@ -377,7 +377,7 @@ public class DataManagementTest
 
         File backupFile = new File( targetDirectory, "keys.xml" );
 
-        IOUtil.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), new FileWriter( backupFile ) );
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), new FileWriter( backupFile ) );
 
         dataManagementTool.restoreKeysDatabase( manager, targetDirectory );
 

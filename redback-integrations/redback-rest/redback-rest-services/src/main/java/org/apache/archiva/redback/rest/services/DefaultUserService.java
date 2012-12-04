@@ -796,7 +796,7 @@ public class DefaultUserService
     {
         RedbackServiceException redbackServiceException =
             new RedbackServiceException( "issues during validating user" );
-        if ( org.codehaus.plexus.util.StringUtils.isEmpty( user.getUsername() ) )
+        if ( StringUtils.isEmpty( user.getUsername() ) )
         {
             redbackServiceException.addErrorMessage( new ErrorMessage( "username.required", null ) );
         }
@@ -808,17 +808,17 @@ public class DefaultUserService
             }
         }
 
-        if ( org.codehaus.plexus.util.StringUtils.isEmpty( user.getFullName() ) )
+        if ( StringUtils.isEmpty( user.getFullName() ) )
         {
             redbackServiceException.addErrorMessage( new ErrorMessage( "fullName.required", null ) );
         }
 
-        if ( org.codehaus.plexus.util.StringUtils.isEmpty( user.getEmail() ) )
+        if ( StringUtils.isEmpty( user.getEmail() ) )
         {
             redbackServiceException.addErrorMessage( new ErrorMessage( "email.required", null ) );
         }
 
-        if ( !org.codehaus.plexus.util.StringUtils.equals( user.getPassword(), user.getConfirmPassword() ) )
+        if ( !StringUtils.equals( user.getPassword(), user.getConfirmPassword() ) )
         {
             redbackServiceException.addErrorMessage( new ErrorMessage( "passwords.does.not.match", null ) );
         }

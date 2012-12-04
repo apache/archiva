@@ -30,7 +30,7 @@ import org.apache.archiva.redback.keys.KeyManagerException;
 import org.apache.archiva.redback.keys.KeyNotFoundException;
 import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.system.SecuritySystem;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

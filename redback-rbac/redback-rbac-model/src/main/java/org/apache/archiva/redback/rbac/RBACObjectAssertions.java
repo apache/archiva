@@ -16,7 +16,8 @@ package org.apache.archiva.redback.rbac;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.util.StringUtils;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * RBACObjectAssertions 

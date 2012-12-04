@@ -55,7 +55,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.jdo.UserDatabase;
 import org.apache.archiva.redback.users.jdo.io.stax.UsersManagementStaxReader;
 import org.apache.archiva.redback.users.jdo.io.stax.UsersManagementStaxWriter;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -92,7 +92,7 @@ public class JdoDataManagementTool
         }
         finally
         {
-            IOUtil.close( fileWriter );
+            IOUtils.closeQuietly( fileWriter );
         }
     }
 
@@ -110,7 +110,7 @@ public class JdoDataManagementTool
         }
         finally
         {
-            IOUtil.close( fileWriter );
+            IOUtils.closeQuietly( fileWriter );
         }
     }
 
@@ -137,7 +137,7 @@ public class JdoDataManagementTool
         }
         finally
         {
-            IOUtil.close( fileWriter );
+            IOUtils.closeQuietly( fileWriter );
         }
     }
 
@@ -156,7 +156,7 @@ public class JdoDataManagementTool
         }
         finally
         {
-            IOUtil.close( fileReader );
+            IOUtils.closeQuietly( fileReader );
         }
 
         Map<String, Permission> permissionMap = new HashMap<String, Permission>();
@@ -245,7 +245,7 @@ public class JdoDataManagementTool
         }
         finally
         {
-            IOUtil.close( fileReader );
+            IOUtils.closeQuietly( fileReader );
         }
 
         for ( User user : (List<User>) database.getUsers() )
@@ -269,7 +269,7 @@ public class JdoDataManagementTool
         }
         finally
         {
-            IOUtil.close( fileReader );
+            IOUtils.closeQuietly( fileReader );
         }
 
         for ( AuthenticationKey key : (List<AuthenticationKey>) database.getKeys() )

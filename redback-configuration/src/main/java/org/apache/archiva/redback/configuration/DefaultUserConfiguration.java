@@ -52,7 +52,7 @@ public class DefaultUserConfiguration
     /**
      *
      *
-     * @deprecated Please configure the Plexus registry instead
+     * @deprecated Please configure the Redback registry instead
      */
     private List<String> configs;
 
@@ -111,7 +111,7 @@ public class DefaultUserConfiguration
             {
                 // TODO: plexus should be able to do this on it's own.
                 log.warn(
-                    "DEPRECATED: the <configs> elements is deprecated. Please configure the Plexus registry instead" );
+                    "DEPRECATED: the <configs> elements is deprecated. Please configure the Redback registry instead" );
             }
 
             for ( String configName : configs )
