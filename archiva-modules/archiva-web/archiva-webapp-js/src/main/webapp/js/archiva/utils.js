@@ -253,12 +253,13 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
       $.log("displayRedbackError with array");
       for(var i=0; i<obj.errorMessages.length; i++ ) {
         if(obj.errorMessages[i].errorKey) {
-          $.log("displayRedbackError with array loop");
           displayErrorMessage($.i18n.prop( obj.errorMessages[i].errorKey, obj.errorMessages[i].args ),idToAppend);
+        }
+        if(obj.errorMessages[i].message) {
+          displayErrorMessage(obj.errorMessages[i].message,idToAppend);
         }
       }
     } else {
-      $.log("displayRedbackError no array");
       displayErrorMessage($.i18n.prop( obj.errorMessages.errorKey, obj.errorMessages.args ),idToAppend);
     }
   }
@@ -301,7 +302,9 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
       displayErrorMessage($.i18n.prop( data.errorKey ),idToAppend);
     } else if (data.errorMessages){
       $.each(data.errorMessages, function(index, value) {
-        displayErrorMessage( $.i18n.prop(data.errorMessages[index].errorKey,data.errorMessages[index].args?data.errorMessages[index].args:null),idToAppend);
+        if(data.errorMessages[index].errorKey) {
+          displayErrorMessage( $.i18n.prop(data.errorMessages[index].errorKey,data.errorMessages[index].args?data.errorMessages[index].args:null),idToAppend);
+        }
       });
     } else {
       $.log("print data.errorMessage:"+data.errorMessage);
@@ -395,6 +398,13 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
   //------------------------------------
   // utils javascript string extensions
   //------------------------------------
+
+  String.prototype.isEmpty = function(str) {
+    return ($.trim(this ).length < 1);
+  }
+  String.prototype.isNotEmpty = function(str) {
+    return ($.trim(this ).length > 0);
+  }
 
   String.prototype.endsWith = function(str) {
     return (this.match(str+"$")==str)

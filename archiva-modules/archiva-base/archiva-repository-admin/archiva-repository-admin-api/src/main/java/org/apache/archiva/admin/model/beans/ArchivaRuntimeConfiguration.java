@@ -25,13 +25,18 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement (name = "archivaRuntimeConfiguration")
+@XmlRootElement(name = "archivaRuntimeConfiguration")
 public class ArchivaRuntimeConfiguration
     implements Serializable
 {
     private String userManagerImpl = "jdo";
 
     private ArchivaLdapConfiguration archivaLdapConfiguration;
+
+    /**
+     * flag to know if redback configuration has been checked/migrated.
+     */
+    private boolean migratedFromRedbackConfiguration = false;
 
     public ArchivaRuntimeConfiguration()
     {
@@ -56,5 +61,25 @@ public class ArchivaRuntimeConfiguration
     public void setArchivaLdapConfiguration( ArchivaLdapConfiguration archivaLdapConfiguration )
     {
         this.archivaLdapConfiguration = archivaLdapConfiguration;
+    }
+
+    public boolean isMigratedFromRedbackConfiguration()
+    {
+        return migratedFromRedbackConfiguration;
+    }
+
+    public void setMigratedFromRedbackConfiguration( boolean migratedFromRedbackConfiguration )
+    {
+        this.migratedFromRedbackConfiguration = migratedFromRedbackConfiguration;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ArchivaRuntimeConfiguration{" +
+            "userManagerImpl='" + userManagerImpl + '\'' +
+            ", archivaLdapConfiguration=" + archivaLdapConfiguration +
+            ", migratedFromRedbackConfiguration=" + migratedFromRedbackConfiguration +
+            '}';
     }
 }

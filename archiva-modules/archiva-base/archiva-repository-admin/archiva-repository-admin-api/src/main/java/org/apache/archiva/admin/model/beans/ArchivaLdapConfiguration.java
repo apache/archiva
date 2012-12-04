@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement ( name = "archivaLdapConfiguration" )
+@XmlRootElement( name = "archivaLdapConfiguration" )
 public class ArchivaLdapConfiguration
 {
 
@@ -39,7 +39,7 @@ public class ArchivaLdapConfiguration
     /**
      * The LDAP port.
      */
-    private String port;
+    private int port;
 
     /**
      * ssl LDAP connection.
@@ -72,6 +72,11 @@ public class ArchivaLdapConfiguration
     private String authenticationMethod;
 
     /**
+     *
+     */
+    private boolean bindAuthenticatorEnabled;
+
+    /**
      * Field extraProperties.
      */
     private Map<String, String> extraProperties = new HashMap<String, String>();
@@ -91,12 +96,12 @@ public class ArchivaLdapConfiguration
         this.hostName = hostName;
     }
 
-    public String getPort()
+    public int getPort()
     {
         return port;
     }
 
-    public void setPort( String port )
+    public void setPort( int port )
     {
         this.port = port;
     }
@@ -169,5 +174,15 @@ public class ArchivaLdapConfiguration
     public void setExtraProperties( Map<String, String> extraProperties )
     {
         this.extraProperties = extraProperties;
+    }
+
+    public boolean isBindAuthenticatorEnabled()
+    {
+        return bindAuthenticatorEnabled;
+    }
+
+    public void setBindAuthenticatorEnabled( boolean bindAuthenticatorEnabled )
+    {
+        this.bindAuthenticatorEnabled = bindAuthenticatorEnabled;
     }
 }

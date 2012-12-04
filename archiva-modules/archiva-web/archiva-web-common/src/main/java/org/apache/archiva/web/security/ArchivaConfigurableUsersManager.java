@@ -48,7 +48,7 @@ public class ArchivaConfigurableUsersManager
         try
         {
             String userManagerImplStr =
-                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfigurationAdmin().getUserManagerImpl();
+                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpl();
             log.info( "use userManagerImpl: '{}'", userManagerImplStr );
             UserManager userManagerImpl =
                 applicationContext.getBean( "userManager#" + userManagerImplStr, UserManager.class );

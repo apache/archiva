@@ -27,7 +27,7 @@ import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
  */
 public interface ArchivaRuntimeConfigurationAdmin
 {
-    ArchivaRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
+    ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws RepositoryAdminException;
 
     void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )

@@ -18,7 +18,9 @@ package org.apache.archiva.admin.repository.runtime;
  * under the License.
  */
 
+import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.ArchivaLdapConfiguration;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
@@ -26,20 +28,72 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RuntimeConfiguration;
 import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service ( "archivaRuntimeConfigurationAdmin#default" )
+@Service( "archivaRuntimeConfigurationAdmin#default" )
 public class DefaultArchivaRuntimeConfigurationAdmin
     extends AbstractRepositoryAdmin
     implements ArchivaRuntimeConfigurationAdmin
 {
 
+    @Inject
+    @Named( value = "userConfiguration" )
+    UserConfiguration userConfiguration;
 
-    public ArchivaRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
+    @PostConstruct
+    public void initialize()
+        throws RepositoryAdminException
+    {
+        ArchivaRuntimeConfiguration archivaRuntimeConfiguration = getArchivaRuntimeConfiguration();
+        // migrate or not data from redback
+        if ( !archivaRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
+        {
+            // so migrate if available
+            String userManagerImpl = userConfiguration.getString( "user.manager.impl" );
+            if ( StringUtils.isNotEmpty( userManagerImpl ) )
+            {
+                archivaRuntimeConfiguration.setUserManagerImpl( userManagerImpl );
+            }
+
+            // now ldap
+
+            ArchivaLdapConfiguration archivaLdapConfiguration =
+                archivaRuntimeConfiguration.getArchivaLdapConfiguration();
+            if ( archivaLdapConfiguration == null )
+            {
+                archivaLdapConfiguration = new ArchivaLdapConfiguration();
+                archivaRuntimeConfiguration.setArchivaLdapConfiguration( archivaLdapConfiguration );
+            }
+
+            archivaLdapConfiguration.setHostName( userConfiguration.getString( "ldap.config.hostname", null ) );
+            archivaLdapConfiguration.setPort( userConfiguration.getInt( "ldap.config.port", -1 ) );
+            archivaLdapConfiguration.setSsl( userConfiguration.getBoolean( "ldap.config.ssl", false ) );
+            archivaLdapConfiguration.setBaseDn( userConfiguration.getConcatenatedList( "ldap.config.base.dn", null ) );
+            archivaLdapConfiguration.setContextFactory(
+                userConfiguration.getString( "ldap.config.context.factory", null ) );
+            archivaLdapConfiguration.setBindDn( userConfiguration.getConcatenatedList( "ldap.config.bind.dn", null ) );
+            archivaLdapConfiguration.setPassword( userConfiguration.getString( "ldap.config.password", null ) );
+            archivaLdapConfiguration.setAuthenticationMethod(
+                userConfiguration.getString( "ldap.config.authentication.method", null ) );
+
+            archivaRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
+
+            updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
+        }
+
+    }
+
+    public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws RepositoryAdminException
     {
         return build( getArchivaConfiguration().getConfiguration().getRuntimeConfiguration() );
@@ -67,15 +121,11 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     private ArchivaRuntimeConfiguration build( RuntimeConfiguration runtimeConfiguration )
     {
-        ArchivaRuntimeConfiguration archivaRuntimeConfiguration = new ArchivaRuntimeConfiguration();
-        archivaRuntimeConfiguration.setUserManagerImpl( runtimeConfiguration.getUserManagerImpl() );
-        return archivaRuntimeConfiguration;
+        return new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
     }
 
     private RuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
     {
-        RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration();
-        runtimeConfiguration.setUserManagerImpl( archivaRuntimeConfiguration.getUserManagerImpl() );
-        return runtimeConfiguration;
+        return new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RuntimeConfiguration.class );
     }
 }

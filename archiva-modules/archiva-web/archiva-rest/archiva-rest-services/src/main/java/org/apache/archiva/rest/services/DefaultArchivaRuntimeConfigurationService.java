@@ -60,7 +60,7 @@ public class DefaultArchivaRuntimeConfigurationService
     {
         try
         {
-            return archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfigurationAdmin();
+            return archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration();
         }
         catch ( RepositoryAdminException e )
         {
@@ -75,7 +75,7 @@ public class DefaultArchivaRuntimeConfigurationService
         {
             // has user manager impl changed ?
             boolean userManagerChanged = !StringUtils.equals( archivaRuntimeConfiguration.getUserManagerImpl(),
-                                                              archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfigurationAdmin().getUserManagerImpl() );
+                                                              archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpl() );
             archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
 
             if ( userManagerChanged )
