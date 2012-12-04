@@ -29,6 +29,7 @@ import org.apache.archiva.redback.keys.memory.MemoryAuthenticationKey;
 import org.apache.archiva.redback.keys.memory.MemoryKeyManager;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.rest.api.model.ErrorMessage;
 import org.apache.archiva.redback.rest.api.model.LoginRequest;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.services.LoginService;
@@ -46,7 +47,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -144,6 +148,17 @@ public class DefaultLoginService
                 // here create an http session
                 httpAuthenticator.authenticate( authDataSource, httpServletRequest.getSession( true ) );
                 return restUser;
+            }
+            if ( securitySession.getAuthenticationResult() != null
+                && securitySession.getAuthenticationResult().getExceptionsMap() != null )
+            {
+                List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
+                for ( Map.Entry<String, String> entry : securitySession.getAuthenticationResult().getExceptionsMap().entrySet() )
+                {
+                    errorMessages.add( new ErrorMessage( entry.getValue() ) );
+                }
+
+                throw new RedbackServiceException( errorMessages );
             }
             return null;
         }
