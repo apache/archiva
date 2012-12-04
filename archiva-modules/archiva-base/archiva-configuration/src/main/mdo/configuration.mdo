@@ -1455,6 +1455,13 @@
       </description>
       <fields>
         <field>
+          <name>migratedFromRedbackConfiguration</name>
+          <description>flag to know if redback configuration has been checked/migrated.</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
           <name>userManagerImpl</name>
           <description>The user manager impl to use.</description>
           <version>1.4.0+</version>
