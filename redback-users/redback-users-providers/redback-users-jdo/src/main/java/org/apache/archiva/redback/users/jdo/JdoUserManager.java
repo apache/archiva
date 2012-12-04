@@ -20,9 +20,9 @@ package org.apache.archiva.redback.users.jdo;
  */
 
 import org.apache.archiva.redback.components.jdo.JdoFactory;
-import org.apache.archiva.redback.components.jdo.PlexusJdoUtils;
-import org.apache.archiva.redback.components.jdo.PlexusObjectNotFoundException;
-import org.apache.archiva.redback.components.jdo.PlexusStoreException;
+import org.apache.archiva.redback.components.jdo.RedbackJdoUtils;
+import org.apache.archiva.redback.components.jdo.RedbackObjectNotFoundException;
+import org.apache.archiva.redback.components.jdo.RedbackStoreException;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.PermanentUserException;
@@ -107,7 +107,7 @@ public class JdoUserManager
     @SuppressWarnings ("unchecked")
     private List<User> getAllObjectsDetached( String ordering )
     {
-        return PlexusJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoUser.class, ordering, (String) null );
+        return RedbackJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoUser.class, ordering, (String) null );
     }
 
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
@@ -276,7 +276,7 @@ public class JdoUserManager
 
             fireUserManagerUserRemoved( user );
 
-            PlexusJdoUtils.removeObject( getPersistenceManager(), user );
+            RedbackJdoUtils.removeObject( getPersistenceManager(), user );
         }
         catch ( UserNotFoundException e )
         {
@@ -303,8 +303,8 @@ public class JdoUserManager
 
     public void eraseDatabase()
     {
-        PlexusJdoUtils.removeAll( getPersistenceManager(), JdoUser.class );
-        PlexusJdoUtils.removeAll( getPersistenceManager(), UsersManagementModelloMetadata.class );
+        RedbackJdoUtils.removeAll( getPersistenceManager(), JdoUser.class );
+        RedbackJdoUtils.removeAll( getPersistenceManager(), UsersManagementModelloMetadata.class );
     }
 
     public User findUser( Object principal )
@@ -317,14 +317,14 @@ public class JdoUserManager
 
         try
         {
-            return (User) PlexusJdoUtils.getObjectById( getPersistenceManager(), JdoUser.class, principal.toString(),
-                                                        null );
+            return (User) RedbackJdoUtils.getObjectById( getPersistenceManager(), JdoUser.class, principal.toString(),
+                                                         null );
         }
-        catch ( PlexusObjectNotFoundException e )
+        catch ( RedbackObjectNotFoundException e )
         {
             throw new UserNotFoundException( "Unable to find user: " + e.getMessage(), e );
         }
-        catch ( PlexusStoreException e )
+        catch ( RedbackStoreException e )
         {
             throw new UserNotFoundException( "Unable to find user: " + e.getMessage(), e );
         }
@@ -407,7 +407,7 @@ public class JdoUserManager
 
     private Object addObject( Object object )
     {
-        return PlexusJdoUtils.addObject( getPersistenceManager(), object );
+        return RedbackJdoUtils.addObject( getPersistenceManager(), object );
     }
 
     private Object getObjectById( String id, String fetchGroup )
@@ -415,13 +415,13 @@ public class JdoUserManager
     {
         try
         {
-            return PlexusJdoUtils.getObjectById( getPersistenceManager(), JdoUser.class, id, fetchGroup );
+            return RedbackJdoUtils.getObjectById( getPersistenceManager(), JdoUser.class, id, fetchGroup );
         }
-        catch ( PlexusObjectNotFoundException e )
+        catch ( RedbackObjectNotFoundException e )
         {
             throw new UserNotFoundException( e.getMessage() );
         }
-        catch ( PlexusStoreException e )
+        catch ( RedbackStoreException e )
         {
             throw new UserManagerException( "Unable to get object '" + JdoUser.class.getName() + "', id '" + id +
                                                 "', fetch-group '" + fetchGroup + "' from jdo store.", e );
@@ -435,7 +435,7 @@ public class JdoUserManager
             throw new UserManagerException( "Unable to remove null object" );
         }
 
-        PlexusJdoUtils.removeObject( getPersistenceManager(), o );
+        RedbackJdoUtils.removeObject( getPersistenceManager(), o );
         return o;
     }
 
@@ -444,9 +444,9 @@ public class JdoUserManager
     {
         try
         {
-            return PlexusJdoUtils.updateObject( getPersistenceManager(), object );
+            return RedbackJdoUtils.updateObject( getPersistenceManager(), object );
         }
-        catch ( PlexusStoreException e )
+        catch ( RedbackStoreException e )
         {
             throw new UserManagerException(
                 "Unable to update the '" + object.getClass().getName() + "' object in the jdo database.", e );
@@ -455,7 +455,7 @@ public class JdoUserManager
 
     private void rollback( Transaction tx )
     {
-        PlexusJdoUtils.rollbackIfActive( tx );
+        RedbackJdoUtils.rollbackIfActive( tx );
     }
 
     private boolean hasTriggeredInit = false;

@@ -20,9 +20,9 @@ package org.apache.archiva.redback.keys.jdo;
  */
 
 import org.apache.archiva.redback.components.jdo.JdoFactory;
-import org.apache.archiva.redback.components.jdo.PlexusJdoUtils;
-import org.apache.archiva.redback.components.jdo.PlexusObjectNotFoundException;
-import org.apache.archiva.redback.components.jdo.PlexusStoreException;
+import org.apache.archiva.redback.components.jdo.RedbackJdoUtils;
+import org.apache.archiva.redback.components.jdo.RedbackObjectNotFoundException;
+import org.apache.archiva.redback.components.jdo.RedbackStoreException;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.AbstractKeyManager;
 import org.apache.archiva.redback.keys.KeyManagerException;
@@ -78,13 +78,13 @@ public class JdoKeyManager
 
     public AuthenticationKey addKey( AuthenticationKey key )
     {
-        return (AuthenticationKey) PlexusJdoUtils.addObject( getPersistenceManager(), key );
+        return (AuthenticationKey) RedbackJdoUtils.addObject( getPersistenceManager(), key );
     }
 
     public void eraseDatabase()
     {
-        PlexusJdoUtils.removeAll( getPersistenceManager(), JdoAuthenticationKey.class );
-        PlexusJdoUtils.removeAll( getPersistenceManager(), RedbackKeyManagementJdoModelloMetadata.class );
+        RedbackJdoUtils.removeAll( getPersistenceManager(), JdoAuthenticationKey.class );
+        RedbackJdoUtils.removeAll( getPersistenceManager(), RedbackKeyManagementJdoModelloMetadata.class );
     }
 
     public AuthenticationKey findKey( String key )
@@ -97,9 +97,8 @@ public class JdoKeyManager
 
         try
         {
-            JdoAuthenticationKey authkey = (JdoAuthenticationKey) PlexusJdoUtils.getObjectById( getPersistenceManager(),
-                                                                                                JdoAuthenticationKey.class,
-                                                                                                key );
+            JdoAuthenticationKey authkey = (JdoAuthenticationKey) RedbackJdoUtils.getObjectById(
+                getPersistenceManager(), JdoAuthenticationKey.class, key );
 
             if ( authkey == null )
             {
@@ -109,11 +108,11 @@ public class JdoKeyManager
 
             return authkey;
         }
-        catch ( PlexusObjectNotFoundException e )
+        catch ( RedbackObjectNotFoundException e )
         {
             throw new KeyNotFoundException( e.getMessage() );
         }
-        catch ( PlexusStoreException e )
+        catch ( RedbackStoreException e )
         {
             throw new KeyManagerException(
                 "Unable to get " + JdoAuthenticationKey.class.getName() + "', key '" + key + "' from jdo store." );
@@ -123,7 +122,7 @@ public class JdoKeyManager
     public void deleteKey( AuthenticationKey authkey )
         throws KeyManagerException
     {
-        PlexusJdoUtils.removeObject( getPersistenceManager(), authkey );
+        RedbackJdoUtils.removeObject( getPersistenceManager(), authkey );
     }
 
     public void deleteKey( String key )
@@ -132,7 +131,7 @@ public class JdoKeyManager
         try
         {
             AuthenticationKey authkey = findKey( key );
-            PlexusJdoUtils.removeObject( getPersistenceManager(), authkey );
+            RedbackJdoUtils.removeObject( getPersistenceManager(), authkey );
         }
         catch ( KeyNotFoundException e )
         {
@@ -143,7 +142,7 @@ public class JdoKeyManager
     @SuppressWarnings( "unchecked" )
     public List<AuthenticationKey> getAllKeys()
     {
-        return PlexusJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoAuthenticationKey.class );
+        return RedbackJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoAuthenticationKey.class );
     }
 
     @PostConstruct
