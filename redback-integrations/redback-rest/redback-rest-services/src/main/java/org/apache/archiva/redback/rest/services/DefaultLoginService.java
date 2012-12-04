@@ -155,7 +155,7 @@ public class DefaultLoginService
                 List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
                 for ( Map.Entry<String, String> entry : securitySession.getAuthenticationResult().getExceptionsMap().entrySet() )
                 {
-                    errorMessages.add( new ErrorMessage( entry.getValue() ) );
+                    errorMessages.add( new ErrorMessage().message( entry.getValue() ) );
                 }
 
                 throw new RedbackServiceException( errorMessages );

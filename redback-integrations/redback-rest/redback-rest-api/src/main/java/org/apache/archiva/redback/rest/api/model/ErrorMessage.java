@@ -33,6 +33,11 @@ public class ErrorMessage
 
     private String[] args;
 
+    /**
+     * @since 2.1 for message without any key
+     */
+    private String message;
+
     private static final String[] EMPTY = new String[0];
 
     public ErrorMessage()
@@ -70,5 +75,21 @@ public class ErrorMessage
     public void setArgs( String[] args )
     {
         this.args = args;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public void setMessage( String message )
+    {
+        this.message = message;
+    }
+
+    public ErrorMessage message( String message )
+    {
+        this.message = message;
+        return this;
     }
 }
