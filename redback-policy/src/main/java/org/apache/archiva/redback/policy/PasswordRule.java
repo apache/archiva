@@ -56,4 +56,9 @@ public interface PasswordRule
      * @param user the User to test.    
      */
     void testPassword( PasswordRuleViolations violations, User user );
+
+    /**
+     * to use in case of configuration change.
+     */
+    void initialize();
 }
