@@ -20,6 +20,8 @@ package org.apache.archiva.admin.model.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -37,6 +39,8 @@ public class ArchivaRuntimeConfiguration
      * flag to know if redback configuration has been checked/migrated.
      */
     private boolean migratedFromRedbackConfiguration = false;
+
+    private Map<String, String> configurationProperties;
 
     public ArchivaRuntimeConfiguration()
     {
@@ -73,6 +77,20 @@ public class ArchivaRuntimeConfiguration
         this.migratedFromRedbackConfiguration = migratedFromRedbackConfiguration;
     }
 
+    public Map<String, String> getConfigurationProperties()
+    {
+        if ( this.configurationProperties == null )
+        {
+            this.configurationProperties = new HashMap<String, String>();
+        }
+        return configurationProperties;
+    }
+
+    public void setConfigurationProperties( Map<String, String> configurationProperties )
+    {
+        this.configurationProperties = configurationProperties;
+    }
+
     @Override
     public String toString()
     {
@@ -80,6 +98,7 @@ public class ArchivaRuntimeConfiguration
             "userManagerImpl='" + userManagerImpl + '\'' +
             ", archivaLdapConfiguration=" + archivaLdapConfiguration +
             ", migratedFromRedbackConfiguration=" + migratedFromRedbackConfiguration +
+            ", configurationProperties=" + configurationProperties +
             '}';
     }
 }

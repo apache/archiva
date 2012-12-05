@@ -1474,6 +1474,16 @@
             <type>LdapConfiguration</type>
           </association>
         </field>
+        <field>
+          <name>configurationProperties</name>
+          <description>extra properties for redback configuration. String/String</description>
+          <version>1.4.0+</version>
+          <type>Map</type>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
       </fields>
     </class>
 
