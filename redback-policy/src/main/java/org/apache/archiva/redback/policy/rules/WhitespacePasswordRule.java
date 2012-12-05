@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
@@ -25,8 +26,6 @@ import javax.annotation.PostConstruct;
 
 /**
  * Basic Password Rule. Checks that password does not have whitespaces in it.
- *
- *
  */
 @Service("passwordRule#no-whitespaces")
 public class WhitespacePasswordRule
@@ -44,7 +43,7 @@ public class WhitespacePasswordRule
         if ( user.getPassword() != null )
         {
             char[] password = user.getPassword().toCharArray();
-    
+
             for ( int i = 0; i < password.length; i++ )
             {
                 if ( Character.isWhitespace( password[i] ) )
@@ -59,6 +58,6 @@ public class WhitespacePasswordRule
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.nowhitespace.enabled" );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_NOWHITTESPACE_ENABLED );
     }
 }

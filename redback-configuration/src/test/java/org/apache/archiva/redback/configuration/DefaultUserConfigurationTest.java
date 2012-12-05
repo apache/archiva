@@ -33,7 +33,6 @@ import javax.inject.Named;
  * DefaultUserConfigurationTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
@@ -41,7 +40,8 @@ public class DefaultUserConfigurationTest
     extends TestCase
 {
 
-    @Inject  @Named(value = "test")
+    @Inject
+    @Named( value = "test" )
     UserConfiguration config;
 
     private void assertEmpty( String str )
@@ -100,8 +100,9 @@ public class DefaultUserConfigurationTest
     @Test
     public void testConcatenatedList()
     {
-        assertEquals( "uid=brett,dc=codehaus,dc=org", config.getConcatenatedList( "ldap.bind.dn", null ) );
-        assertEquals( "dc=codehaus,dc=org", config.getConcatenatedList( "ldap.base.dn", null ) );
+        assertEquals( "uid=brett,dc=codehaus,dc=org",
+                      config.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, null ) );
+        assertEquals( "dc=codehaus,dc=org", config.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, null ) );
         assertEquals( "foo", config.getConcatenatedList( "short.list", null ) );
         assertEquals( "bar,baz", config.getConcatenatedList( "no.list", "bar,baz" ) );
     }

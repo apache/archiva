@@ -38,7 +38,7 @@ public class SignonCookieSettings
     public void initialize()
     {
         // cookie timeouts in the configuration settings is labeled to be in minutes, so adjust to minutes
-        cookieTimeout = config.getInt( "security.signon.timeout" ) * 60;
+        cookieTimeout = config.getInt( UserConfigurationKeys.SIGNON_TIMEOUT ) * 60;
         domain = config.getString( UserConfigurationKeys.SIGNON_DOMAIN );
         path = config.getString( UserConfigurationKeys.SIGNON_PATH );
     }

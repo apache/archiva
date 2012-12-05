@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
@@ -30,7 +31,6 @@ import java.util.Iterator;
  * the {@link User#getPreviousEncodedPasswords()} to ensure that a password is not reused.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service("passwordRule#reuse")
 public class ReusePasswordRule
@@ -108,13 +108,13 @@ public class ReusePasswordRule
         if ( hasReusedPassword( user, password ) )
         {
             violations.addViolation( REUSE_VIOLATION,
-                                     new String[]{String.valueOf( getPreviousPasswordCount() )} ); //$NON-NLS-1$
+                                     new String[]{ String.valueOf( getPreviousPasswordCount() ) } ); //$NON-NLS-1$
         }
     }
 
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.reuse.enabled" );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_REUSE_ENABLED );
     }
 }

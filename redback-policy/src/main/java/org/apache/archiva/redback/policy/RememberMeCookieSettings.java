@@ -44,9 +44,9 @@ public class RememberMeCookieSettings
     @PostConstruct
     public void initialize()
     {
-        this.cookieTimeout = config.getInt( "security.rememberme.timeout" );
+        this.cookieTimeout = config.getInt( UserConfigurationKeys.REMEMBERME_TIMEOUT );
         this.domain = config.getString( UserConfigurationKeys.REMEMBER_ME_DOMAIN );
         this.path = config.getString( UserConfigurationKeys.REMEMBER_ME_PATH );
-        this.enabled = config.getBoolean( "security.rememberme.enabled" );
+        this.enabled = config.getBoolean( UserConfigurationKeys.REMEMBER_ME_ENABLED );
     }
 }

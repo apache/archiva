@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
@@ -29,15 +30,11 @@ import javax.annotation.PostConstruct;
  * numerical characters contained within.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("passwordRule#numerical-count")
+@Service( "passwordRule#numerical-count" )
 public class NumericalPasswordRule
     extends AbstractPasswordRule
 {
-    public static final String MINIMUM = "security.policy.password.rule.numericalcount.minimum";
-
-    public static final String NUMERICAL_COUNT_VIOLATION = "user.password.violation.numeric";
 
     private int minimumCount;
 
@@ -95,15 +92,15 @@ public class NumericalPasswordRule
     {
         if ( countDigitCharacters( user.getPassword() ) < this.minimumCount )
         {
-            violations.addViolation( NUMERICAL_COUNT_VIOLATION,
-                                     new String[]{String.valueOf( minimumCount )} ); //$NON-NLS-1$
+            violations.addViolation( UserConfigurationKeys.NUMERICAL_COUNT_VIOLATION,
+                                     new String[]{ String.valueOf( minimumCount ) } ); //$NON-NLS-1$
         }
     }
 
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.numericalcount.enabled" );
-        this.minimumCount = config.getInt( MINIMUM );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_NUMERICALCOUNT_ENABLED );
+        this.minimumCount = config.getInt( UserConfigurationKeys.MINIMUM );
     }
 }

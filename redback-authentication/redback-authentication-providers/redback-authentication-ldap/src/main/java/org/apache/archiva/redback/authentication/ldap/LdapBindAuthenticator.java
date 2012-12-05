@@ -23,6 +23,7 @@ import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -83,9 +84,9 @@ public class LdapBindAuthenticator
     {
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) s;
 
-        if ( !config.getBoolean( "ldap.bind.authenticator.enabled" ) || (
-            !config.getBoolean( "ldap.bind.authenticator.allowEmptyPasswords", false ) && StringUtils.isEmpty(
-                source.getPassword() ) ) )
+        if ( !config.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED ) || (
+            !config.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ALLOW_EMPTY_PASSWORDS, false )
+                && StringUtils.isEmpty( source.getPassword() ) ) )
         {
             return new AuthenticationResult( false, source.getPrincipal(), null );
         }

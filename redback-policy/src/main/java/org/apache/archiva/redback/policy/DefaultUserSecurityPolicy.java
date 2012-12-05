@@ -41,45 +41,34 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@Service( "userSecurityPolicy" )
+@Service("userSecurityPolicy")
 public class DefaultUserSecurityPolicy
     implements UserSecurityPolicy
 {
     private static final String ENABLEMENT_KEY = "UserSecurityPolicy" + ":ENABLED";
 
-    public static final String PASSWORD_RETENTION_COUNT = "security.policy.password.previous.count";
-
-    public static final String LOGIN_ATTEMPT_COUNT = "security.policy.allowed.login.attempt";
-
-    public static final String PASSWORD_EXPIRATION_ENABLED = "security.policy.password.expiration.enabled";
-
-    public static final String PASSWORD_EXPIRATION = "security.policy.password.expiration.days";
-
-
-    public static final String UNLOCKABLE_ACCOUNTS = "security.policy.unlockable.accounts";
-
-    private static final Logger log = LoggerFactory.getLogger( DefaultUserSecurityPolicy.class );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     private PasswordRule defaultPasswordRule = new MustHavePasswordRule();
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named(value = "userConfiguration")
     private UserConfiguration config;
 
     @Inject
-    @Named( value = "passwordEncoder#sha256" )
+    @Named(value = "passwordEncoder#sha256")
     private PasswordEncoder passwordEncoder;
 
     @Inject
-    @Named( value = "userValidationSettings" )
+    @Named(value = "userValidationSettings")
     private UserValidationSettings userValidationSettings;
 
     @Inject
-    @Named( value = "cookieSettings#rememberMe" )
+    @Named(value = "cookieSettings#rememberMe")
     private CookieSettings rememberMeCookieSettings;
 
     @Inject
-    @Named( value = "cookieSettings#signon" )
+    @Named(value = "cookieSettings#signon")
     private CookieSettings signonCookieSettings;
 
     // TODO use something more generic to be able to do change about container
@@ -107,7 +96,7 @@ public class DefaultUserSecurityPolicy
     //  Component lifecycle
     // ---------------------------------------
     // TODO move this to constructor
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     @PostConstruct
     public void initialize()
     {
@@ -141,11 +130,11 @@ public class DefaultUserSecurityPolicy
 
     private void configurePolicy()
     {
-        this.previousPasswordsCount = config.getInt( PASSWORD_RETENTION_COUNT );
-        this.loginAttemptCount = config.getInt( LOGIN_ATTEMPT_COUNT );
-        this.passwordExpirationEnabled = config.getBoolean( PASSWORD_EXPIRATION_ENABLED );
-        this.passwordExpirationDays = config.getInt( PASSWORD_EXPIRATION );
-        this.unlockableAccounts = config.getList( UNLOCKABLE_ACCOUNTS );
+        this.previousPasswordsCount = config.getInt( UserConfigurationKeys.PASSWORD_RETENTION_COUNT );
+        this.loginAttemptCount = config.getInt( UserConfigurationKeys.LOGIN_ATTEMPT_COUNT );
+        this.passwordExpirationEnabled = config.getBoolean( UserConfigurationKeys.PASSWORD_EXPIRATION_ENABLED );
+        this.passwordExpirationDays = config.getInt( UserConfigurationKeys.PASSWORD_EXPIRATION );
+        this.unlockableAccounts = config.getList( UserConfigurationKeys.UNLOCKABLE_ACCOUNTS );
     }
 
 

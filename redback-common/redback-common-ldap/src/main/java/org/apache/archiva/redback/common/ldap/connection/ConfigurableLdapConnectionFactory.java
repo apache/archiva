@@ -76,12 +76,12 @@ public class ConfigurableLdapConnectionFactory
         {
             configuration = new LdapConnectionConfiguration();
             configuration.setHostname( userConf.getString( UserConfigurationKeys.LDAP_HOSTNAME, hostname ) );
-            configuration.setPort( userConf.getInt( "ldap.config.port", port ) );
-            configuration.setSsl( userConf.getBoolean( "ldap.config.ssl", ssl ) );
-            configuration.setBaseDn( userConf.getConcatenatedList( "ldap.config.base.dn", baseDn ) );
+            configuration.setPort( userConf.getInt( UserConfigurationKeys.LDAP_PORT, port ) );
+            configuration.setSsl( userConf.getBoolean( UserConfigurationKeys.LDAP_SSL, ssl ) );
+            configuration.setBaseDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, baseDn ) );
             configuration.setContextFactory(
                 userConf.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, contextFactory ) );
-            configuration.setBindDn( userConf.getConcatenatedList( "ldap.config.bind.dn", bindDn ) );
+            configuration.setBindDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, bindDn ) );
             configuration.setPassword( userConf.getString( UserConfigurationKeys.LDAP_PASSWORD, password ) );
             configuration.setAuthenticationMethod(
                 userConf.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, authenticationMethod ) );

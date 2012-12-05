@@ -45,17 +45,29 @@ public interface UserConfigurationKeys
 
     String REMEMBER_ME_DOMAIN = "security.rememberme.domain";
 
+    String REMEMBER_ME_ENABLED = "security.rememberme.enabled";
+
     String SIGNON_DOMAIN = "security.signon.domain";
 
     String SIGNON_PATH = "security.signon.path";
 
+    String SIGNON_TIMEOUT = "security.signon.timeout";
+
     String LDAP_HOSTNAME = "ldap.config.hostname";
+
+    String LDAP_PORT = "ldap.config.port";
+
+    String LDAP_SSL = "ldap.config.ssl";
 
     String LDAP_CONTEX_FACTORY = "ldap.config.context.factory";
 
     String LDAP_PASSWORD = "ldap.config.password";
 
     String LDAP_AUTHENTICATION_METHOD = "ldap.config.authentication.method";
+
+    String LDAP_BASEDN = "ldap.config.base.dn";
+
+    String LDAP_BINDDN = "ldap.config.bind.dn";
 
     String APPLICATION_URL = "application.url";
 
@@ -69,7 +81,60 @@ public interface UserConfigurationKeys
 
     String LDAP_MAPPER_USER_ATTRIBUTE_ID = "ldap.config.mapper.attribute.user.id";
 
-    String LDAP_MAPPER_USER_ATTRIBUTE_OBJECT_CLASS =  "ldap.config.mapper.attribute.user.object.class";
+    String LDAP_MAPPER_USER_ATTRIBUTE_OBJECT_CLASS = "ldap.config.mapper.attribute.user.object.class";
 
     String LDAP_MAPPER_USER_ATTRIBUTE_FILTER = "ldap.config.mapper.attribute.user.filter";
+
+    String LDAP_MAX_RESULT_COUNT = "ldap.config.max.result.count";
+
+    String LDAP_BIND_AUTHENTICATOR_ENABLED = "ldap.bind.authenticator.enabled";
+
+    String LDAP_BIND_AUTHENTICATOR_ALLOW_EMPTY_PASSWORDS = "ldap.bind.authenticator.allowEmptyPasswords";
+
+    String PASSWORD_RETENTION_COUNT = "security.policy.password.previous.count";
+
+    String LOGIN_ATTEMPT_COUNT = "security.policy.allowed.login.attempt";
+
+    String PASSWORD_EXPIRATION_ENABLED = "security.policy.password.expiration.enabled";
+
+    String PASSWORD_EXPIRATION = "security.policy.password.expiration.days";
+
+    String UNLOCKABLE_ACCOUNTS = "security.policy.unlockable.accounts";
+
+    String EMAIL_VALIDATION_TIMEOUT = "email.validation.timeout";
+
+    String EMAIL_VALIDATION_REQUIRED = "email.validation.required";
+
+    String REMEMBERME_TIMEOUT = "security.rememberme.timeout";
+
+    String ALPHA_COUNT_MIN = "security.policy.password.rule.alphacount.minimum";
+
+    String ALPHA_COUNT_VIOLATION = "user.password.violation.alpha";
+
+    String CHARACTER_LENGTH_MIN = "security.policy.password.rule.characterlength.minimum";
+
+    String CHARACTER_LENGTH_MAX = "security.policy.password.rule.characterlength.maximum";
+
+    String CHARACTER_LENGTH_MISCONFIGURED_VIOLATION = "user.password.violation.length.misconfigured";
+
+    String CHARACTER_LENGTH_VIOLATION = "user.password.violation.length";
+
+    String MINIMUM = "security.policy.password.rule.numericalcount.minimum";
+
+    String NUMERICAL_COUNT_VIOLATION = "user.password.violation.numeric";
+
+    String POLICY_PASSWORD_RULE_ALPHANUMERIC_ENABLED = "security.policy.password.rule.alphanumeric.enabled";
+
+    String POLICY_PASSWORD_RULE_ALPHACOUNT_ENABLED = "security.policy.password.rule.alphacount.enabled";
+
+    String POLICY_PASSWORD_RULE_CHARACTERLENGTH_ENABLED = "security.policy.password.rule.characterlength.enabled";
+
+    String POLICY_PASSWORD_RULE_MUSTHAVE_ENABLED = "security.policy.password.rule.musthave.enabled";
+
+    String POLICY_PASSWORD_RULE_NUMERICALCOUNT_ENABLED = "security.policy.password.rule.numericalcount.enabled";
+
+    String POLICY_PASSWORD_RULE_REUSE_ENABLED = "security.policy.password.rule.reuse.enabled";
+
+    String POLICY_PASSWORD_RULE_NOWHITTESPACE_ENABLED = "security.policy.password.rule.nowhitespace.enabled";
+
 }

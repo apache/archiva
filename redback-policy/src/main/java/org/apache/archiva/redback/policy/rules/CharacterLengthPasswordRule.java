@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
@@ -29,20 +30,11 @@ import javax.annotation.PostConstruct;
  * {@link #setMaximumCharacters(int)} characters in length.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("passwordRule#character-length")
+@Service( "passwordRule#character-length" )
 public class CharacterLengthPasswordRule
     extends AbstractPasswordRule
 {
-    public static final String CHARACTER_LENGTH_MIN = "security.policy.password.rule.characterlength.minimum";
-
-    public static final String CHARACTER_LENGTH_MAX = "security.policy.password.rule.characterlength.maximum";
-
-    public static final String CHARACTER_LENGTH_MISCONFIGURED_VIOLATION =
-        "user.password.violation.length.misconfigured";
-
-    public static final String CHARACTER_LENGTH_VIOLATION = "user.password.violation.length";
 
     public static final int DEFAULT_CHARACTER_LENGTH_MAX = 8;
 
@@ -81,8 +73,9 @@ public class CharacterLengthPasswordRule
         {
             /* this should caught up front during the configuration of the component */
             // TODO: Throw runtime exception instead?
-            violations.addViolation( CHARACTER_LENGTH_MISCONFIGURED_VIOLATION, new String[]{
-                String.valueOf( minimumCharacters ), String.valueOf( maximumCharacters )} ); //$NON-NLS-1$
+            violations.addViolation( UserConfigurationKeys.CHARACTER_LENGTH_MISCONFIGURED_VIOLATION,
+                                     new String[]{ String.valueOf( minimumCharacters ),
+                                         String.valueOf( maximumCharacters ) } ); //$NON-NLS-1$
         }
 
         String password = user.getPassword();
@@ -90,16 +83,17 @@ public class CharacterLengthPasswordRule
         if ( StringUtils.isEmpty( password ) || password.length() < minimumCharacters ||
             password.length() > maximumCharacters )
         {
-            violations.addViolation( CHARACTER_LENGTH_VIOLATION, new String[]{String.valueOf( minimumCharacters ),
-                String.valueOf( maximumCharacters )} ); //$NON-NLS-1$
+            violations.addViolation( UserConfigurationKeys.CHARACTER_LENGTH_VIOLATION,
+                                     new String[]{ String.valueOf( minimumCharacters ),
+                                         String.valueOf( maximumCharacters ) } ); //$NON-NLS-1$
         }
     }
 
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.characterlength.enabled" );
-        this.minimumCharacters = config.getInt( CHARACTER_LENGTH_MIN );
-        this.maximumCharacters = config.getInt( CHARACTER_LENGTH_MAX );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_CHARACTERLENGTH_ENABLED );
+        this.minimumCharacters = config.getInt( UserConfigurationKeys.CHARACTER_LENGTH_MIN );
+        this.maximumCharacters = config.getInt( UserConfigurationKeys.CHARACTER_LENGTH_MAX );
     }
 }

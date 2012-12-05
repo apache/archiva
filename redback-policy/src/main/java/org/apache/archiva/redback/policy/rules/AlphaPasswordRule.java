@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
@@ -29,15 +30,11 @@ import javax.annotation.PostConstruct;
  * alpha characters contained within.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("passwordRule#alpha-count")
+@Service( "passwordRule#alpha-count" )
 public class AlphaPasswordRule
     extends AbstractPasswordRule
 {
-    public static final String ALPHA_COUNT_MIN = "security.policy.password.rule.alphacount.minimum";
-
-    public static final String ALPHA_COUNT_VIOLATION = "user.password.violation.alpha";
 
     private int minimumCount;
 
@@ -95,15 +92,15 @@ public class AlphaPasswordRule
     {
         if ( countAlphaCharacters( user.getPassword() ) < this.minimumCount )
         {
-            violations.addViolation( ALPHA_COUNT_VIOLATION,
-                                     new String[]{String.valueOf( minimumCount )} ); //$NON-NLS-1$
+            violations.addViolation( UserConfigurationKeys.ALPHA_COUNT_VIOLATION,
+                                     new String[]{ String.valueOf( minimumCount ) } ); //$NON-NLS-1$
         }
     }
 
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.alphacount.enabled" );
-        this.minimumCount = config.getInt( ALPHA_COUNT_MIN );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_ALPHACOUNT_ENABLED );
+        this.minimumCount = config.getInt( UserConfigurationKeys.ALPHA_COUNT_MIN );
     }
 }

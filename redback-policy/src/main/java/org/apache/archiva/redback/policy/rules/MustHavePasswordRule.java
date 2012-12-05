@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
@@ -28,7 +29,6 @@ import javax.annotation.PostConstruct;
  * Basic Password Rule, Checks for non-empty Passwords in non guest users.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service("passwordRule#must-have")
 public class MustHavePasswordRule
@@ -52,6 +52,6 @@ public class MustHavePasswordRule
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.musthave.enabled" );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_MUSTHAVE_ENABLED );
     }
 }

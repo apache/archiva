@@ -35,7 +35,7 @@ import java.util.Date;
 /**
  * @author <a href="jesse@codehaus.org"> jesse
  */
-@Service( "userMapper#ldap" )
+@Service("userMapper#ldap")
 public class LdapUserMapper
     implements UserMapper
 {
@@ -80,7 +80,7 @@ public class LdapUserMapper
     int maxResultCount = 0;
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named(value = "userConfiguration")
     private UserConfiguration userConf;
 
     @PostConstruct
@@ -97,7 +97,7 @@ public class LdapUserMapper
         userObjectClass =
             userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_OBJECT_CLASS, userObjectClass );
         userFilter = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_FILTER, userFilter );
-        maxResultCount = userConf.getInt( "ldap.config.max.result.count", maxResultCount );
+        maxResultCount = userConf.getInt( UserConfigurationKeys.LDAP_MAX_RESULT_COUNT, maxResultCount );
     }
 
     public Attributes getCreationAttributes( User user, boolean encodePasswordIfChanged )

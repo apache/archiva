@@ -62,8 +62,8 @@ public class DefaultUserValidationSettings
     @PostConstruct
     public void initialize()
     {
-        this.emailValidationRequired = config.getBoolean( "email.validation.required" );
-        this.emailValidationTimeout = config.getInt( "email.validation.timeout" );
+        this.emailValidationRequired = config.getBoolean( UserConfigurationKeys.EMAIL_VALIDATION_REQUIRED );
+        this.emailValidationTimeout = config.getInt( UserConfigurationKeys.EMAIL_VALIDATION_TIMEOUT );
         this.emailSubject = config.getString( UserConfigurationKeys.EMAIL_VALIDATION_SUBJECT );
     }
 }

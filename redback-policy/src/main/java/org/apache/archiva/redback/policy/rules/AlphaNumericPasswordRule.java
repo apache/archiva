@@ -16,6 +16,7 @@ package org.apache.archiva.redback.policy.rules;
  * limitations under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
@@ -25,7 +26,6 @@ import javax.annotation.PostConstruct;
 
 /**
  * Basic Password Rule. Checks that password only contains alpha-numeric characters.
- *
  */
 @Service("passwordRule#alpha-numeric")
 public class AlphaNumericPasswordRule
@@ -56,6 +56,6 @@ public class AlphaNumericPasswordRule
     @PostConstruct
     public void initialize()
     {
-        enabled = config.getBoolean( "security.policy.password.rule.alphanumeric.enabled" );
+        enabled = config.getBoolean( UserConfigurationKeys.POLICY_PASSWORD_RULE_ALPHANUMERIC_ENABLED );
     }
 }

@@ -176,7 +176,6 @@ public class DefaultUserConfiguration
 
     public String getConcatenatedList( String key, String defaultValue )
     {
-        String concatenatedList;
         List<String> list = getList( key );
         if ( !list.isEmpty() )
         {
@@ -189,14 +188,11 @@ public class DefaultUserConfiguration
                 }
                 s.append( value );
             }
-            concatenatedList = s.toString();
+            log.debug( "getList for key {} return {}", key, s.toString() );
+            return s.toString();
         }
-        else
-        {
-            concatenatedList = defaultValue;
-        }
-
-        return concatenatedList;
+        log.debug( "getList for key {} return {}", key, defaultValue );
+        return defaultValue;
     }
 
     /**
