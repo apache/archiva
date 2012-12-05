@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement(name = "archivaRuntimeConfiguration")
+@XmlRootElement(name = "redbackRuntimeConfiguration")
 public class ArchivaRuntimeConfiguration
     implements Serializable
 {

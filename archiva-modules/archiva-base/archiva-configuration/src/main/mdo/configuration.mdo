@@ -169,15 +169,13 @@
           </description>
         </field>
         <field>
-          <name>runtimeConfiguration</name>
+          <name>redbackRuntimeConfiguration</name>
           <version>1.4.0+</version>
           <association>
-            <type>RuntimeConfiguration</type>
+            <type>RedbackRuntimeConfiguration</type>
             <multiplicity>1</multiplicity>
           </association>
-          <description>
-            The RuntimeConfiguration.
-          </description>
+          <description>The RedbackRuntimeConfiguration.</description>
         </field>
         <field>
           <name>proxyConnectorRuleConfigurations</name>
@@ -1448,7 +1446,7 @@
     </class>
 
     <class>
-      <name>RuntimeConfiguration</name>
+      <name>RedbackRuntimeConfiguration</name>
       <version>1.4.0+</version>
       <description>
         The runtime configuration.

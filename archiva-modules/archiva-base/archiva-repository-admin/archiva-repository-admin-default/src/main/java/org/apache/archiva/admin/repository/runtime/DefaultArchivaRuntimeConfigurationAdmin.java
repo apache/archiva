@@ -26,7 +26,7 @@ import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.RuntimeConfiguration;
+import org.apache.archiva.configuration.RedbackRuntimeConfiguration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.commons.lang.StringUtils;
@@ -96,15 +96,15 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws RepositoryAdminException
     {
-        return build( getArchivaConfiguration().getConfiguration().getRuntimeConfiguration() );
+        return build( getArchivaConfiguration().getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
     public void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws RepositoryAdminException
     {
-        RuntimeConfiguration runtimeConfiguration = build( archivaRuntimeConfiguration );
+        RedbackRuntimeConfiguration runtimeConfiguration = build( archivaRuntimeConfiguration );
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        configuration.setRuntimeConfiguration( runtimeConfiguration );
+        configuration.setRedbackRuntimeConfiguration( runtimeConfiguration );
         try
         {
             getArchivaConfiguration().save( configuration );
@@ -119,13 +119,13 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
     }
 
-    private ArchivaRuntimeConfiguration build( RuntimeConfiguration runtimeConfiguration )
+    private ArchivaRuntimeConfiguration build( RedbackRuntimeConfiguration runtimeConfiguration )
     {
         return new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
     }
 
-    private RuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+    private RedbackRuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
     {
-        return new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RuntimeConfiguration.class );
+        return new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RedbackRuntimeConfiguration.class );
     }
 }
