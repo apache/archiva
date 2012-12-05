@@ -48,7 +48,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 {
 
     @Inject
-    @Named(value = "userConfiguration")
+    @Named(value = "userConfiguration#redback")
     UserConfiguration userConfiguration;
 
     @PostConstruct
