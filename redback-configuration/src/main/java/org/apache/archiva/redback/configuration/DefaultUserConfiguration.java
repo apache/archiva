@@ -37,11 +37,11 @@ import java.util.List;
 
 /**
  * ConfigurationFactory
- * @since 2.1
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @since 2.1
  */
-@Service( "userConfiguration" )
+@Service("userConfiguration")
 public class DefaultUserConfiguration
     implements UserConfiguration
 {
@@ -50,8 +50,6 @@ public class DefaultUserConfiguration
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     /**
-     *
-     *
      * @deprecated Please configure the Redback registry instead
      */
     private List<String> configs;
@@ -61,7 +59,7 @@ public class DefaultUserConfiguration
     private static final String PREFIX = "org.apache.archiva.redback";
 
     @Inject
-    @Named( value = "commons-configuration" )
+    @Named(value = "commons-configuration")
     private Registry registry;
 
     //TODO move this method call in the constructor
@@ -95,7 +93,7 @@ public class DefaultUserConfiguration
 
         lookupRegistry = registry.getSubset( PREFIX );
 
-        log.debug("User configuration {}", lookupRegistry.dump() );
+        log.debug( "User configuration {}", lookupRegistry.dump() );
 
     }
 
@@ -162,7 +160,7 @@ public class DefaultUserConfiguration
         return lookupRegistry.getBoolean( key, defaultValue );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public List<String> getList( String key )
     {
         return lookupRegistry.getList( key );
