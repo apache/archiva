@@ -29,6 +29,7 @@ import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RedbackRuntimeConfiguration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -40,26 +41,27 @@ import javax.inject.Named;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "archivaRuntimeConfigurationAdmin#default" )
+@Service("archivaRuntimeConfigurationAdmin#default")
 public class DefaultArchivaRuntimeConfigurationAdmin
     extends AbstractRepositoryAdmin
     implements ArchivaRuntimeConfigurationAdmin
 {
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named(value = "userConfiguration")
     UserConfiguration userConfiguration;
 
     @PostConstruct
     public void initialize()
         throws RepositoryAdminException
     {
+
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration = getArchivaRuntimeConfiguration();
         // migrate or not data from redback
         if ( !archivaRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
         {
             // so migrate if available
-            String userManagerImpl = userConfiguration.getString( "user.manager.impl" );
+            String userManagerImpl = userConfiguration.getString( UserConfigurationKeys.USER_MANAGER_IMPL );
             if ( StringUtils.isNotEmpty( userManagerImpl ) )
             {
                 archivaRuntimeConfiguration.setUserManagerImpl( userManagerImpl );
@@ -75,16 +77,18 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 archivaRuntimeConfiguration.setArchivaLdapConfiguration( archivaLdapConfiguration );
             }
 
-            archivaLdapConfiguration.setHostName( userConfiguration.getString( "ldap.config.hostname", null ) );
-            archivaLdapConfiguration.setPort( userConfiguration.getInt( "ldap.config.port", -1 ) );
-            archivaLdapConfiguration.setSsl( userConfiguration.getBoolean( "ldap.config.ssl", false ) );
+            archivaLdapConfiguration.setHostName(
+                userConfiguration.getString( UserConfigurationKeys.LDAP_HOSTNAME, null ) );
+            archivaLdapConfiguration.setPort( userConfiguration.getInt( UserConfigurationKeys.LDAP_PORT, -1 ) );
+            archivaLdapConfiguration.setSsl( userConfiguration.getBoolean( UserConfigurationKeys.LDAP_SSL, false ) );
             archivaLdapConfiguration.setBaseDn( userConfiguration.getConcatenatedList( "ldap.config.base.dn", null ) );
             archivaLdapConfiguration.setContextFactory(
-                userConfiguration.getString( "ldap.config.context.factory", null ) );
+                userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, null ) );
             archivaLdapConfiguration.setBindDn( userConfiguration.getConcatenatedList( "ldap.config.bind.dn", null ) );
-            archivaLdapConfiguration.setPassword( userConfiguration.getString( "ldap.config.password", null ) );
+            archivaLdapConfiguration.setPassword(
+                userConfiguration.getString( UserConfigurationKeys.LDAP_PASSWORD, null ) );
             archivaLdapConfiguration.setAuthenticationMethod(
-                userConfiguration.getString( "ldap.config.authentication.method", null ) );
+                userConfiguration.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, null ) );
 
             archivaRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
