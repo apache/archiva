@@ -20,6 +20,7 @@ package org.apache.archiva.redback.common.ldap.connection;
  */
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +35,6 @@ import java.util.Properties;
 
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
- *
  */
 @Service( "ldapConnectionFactory#configurable" )
 public class ConfigurableLdapConnectionFactory
@@ -75,15 +75,16 @@ public class ConfigurableLdapConnectionFactory
         try
         {
             configuration = new LdapConnectionConfiguration();
-            configuration.setHostname( userConf.getString( "ldap.config.hostname", hostname ) );
+            configuration.setHostname( userConf.getString( UserConfigurationKeys.LDAP_HOSTNAME, hostname ) );
             configuration.setPort( userConf.getInt( "ldap.config.port", port ) );
             configuration.setSsl( userConf.getBoolean( "ldap.config.ssl", ssl ) );
             configuration.setBaseDn( userConf.getConcatenatedList( "ldap.config.base.dn", baseDn ) );
-            configuration.setContextFactory( userConf.getString( "ldap.config.context.factory", contextFactory ) );
+            configuration.setContextFactory(
+                userConf.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, contextFactory ) );
             configuration.setBindDn( userConf.getConcatenatedList( "ldap.config.bind.dn", bindDn ) );
-            configuration.setPassword( userConf.getString( "ldap.config.password", password ) );
+            configuration.setPassword( userConf.getString( UserConfigurationKeys.LDAP_PASSWORD, password ) );
             configuration.setAuthenticationMethod(
-                userConf.getString( "ldap.config.authentication.method", authenticationMethod ) );
+                userConf.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, authenticationMethod ) );
             configuration.setExtraProperties( extraProperties );
         }
         catch ( InvalidNameException e )

@@ -20,6 +20,7 @@ package org.apache.archiva.redback.common.ldap;
  */
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,6 @@ import java.util.Date;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- *
  */
 @Service( "userMapper#ldap" )
 public class LdapUserMapper
@@ -86,14 +86,17 @@ public class LdapUserMapper
     @PostConstruct
     public void initialize()
     {
-        emailAttribute = userConf.getString( "ldap.config.mapper.attribute.email", emailAttribute );
-        fullNameAttribute = userConf.getString( "ldap.config.mapper.attribute.fullname", fullNameAttribute );
-        passwordAttribute = userConf.getString( "ldap.config.mapper.attribute.password", passwordAttribute );
-        userIdAttribute = userConf.getString( "ldap.config.mapper.attribute.user.id", userIdAttribute );
+        emailAttribute = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_EMAIL, emailAttribute );
+        fullNameAttribute =
+            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_FULLNAME, fullNameAttribute );
+        passwordAttribute =
+            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_PASSWORD, passwordAttribute );
+        userIdAttribute = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_ID, userIdAttribute );
         userBaseDn = userConf.getConcatenatedList( "ldap.config.mapper.attribute.user.base.dn",
                                                    userConf.getConcatenatedList( "ldap.config.base.dn", userBaseDn ) );
-        userObjectClass = userConf.getString( "ldap.config.mapper.attribute.user.object.class", userObjectClass );
-        userFilter = userConf.getString( "ldap.config.mapper.attribute.user.filter", userFilter );
+        userObjectClass =
+            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_OBJECT_CLASS, userObjectClass );
+        userFilter = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_FILTER, userFilter );
         maxResultCount = userConf.getInt( "ldap.config.max.result.count", maxResultCount );
     }
 

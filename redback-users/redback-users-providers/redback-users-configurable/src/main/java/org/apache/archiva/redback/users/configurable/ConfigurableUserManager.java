@@ -52,7 +52,7 @@ public class ConfigurableUserManager
     @PostConstruct
     public void initialize()
     {
-        String userManagerRole = config.getString();
+        String userManagerRole = config.getString( UserConfigurationKeys.USER_MANAGER_IMPL );
 
         if ( userManagerRole == null )
         {

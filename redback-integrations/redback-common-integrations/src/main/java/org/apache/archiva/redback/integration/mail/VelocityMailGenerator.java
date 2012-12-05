@@ -94,7 +94,7 @@ public class VelocityMailGenerator
     {
         VelocityContext context = new VelocityContext();
 
-        context.put( "applicationUrl", config.getString( "application.url", appUrl ) );
+        context.put( "applicationUrl", config.getString( UserConfigurationKeys.APPLICATION_URL, appUrl ) );
 
         String feedback = config.getString( UserConfigurationKeys.EMAIL_FEEDBACK_PATH );
 
@@ -108,7 +108,8 @@ public class VelocityMailGenerator
             context.put( "feedback", feedback );
         }
 
-        context.put( "urlPath", config.getString( "email.url.path", "security/login!login.action" ) );
+        context.put( "urlPath",
+                     config.getString( UserConfigurationKeys.EMAIL_URL_PATH, "security/login!login.action" ) );
 
         context.put( "authkey", authkey.getKey() );
 

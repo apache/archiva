@@ -24,30 +24,52 @@ package org.apache.archiva.redback.configuration;
  */
 public interface UserConfigurationKeys
 {
-    static final String USER_MANAGER_IMPL = "user.manager.impl";
+    String USER_MANAGER_IMPL = "user.manager.impl";
 
-    static final String DEFAULT_ADMIN = "redback.default.admin";
+    String DEFAULT_ADMIN = "redback.default.admin";
 
-    static final String EMAIL_FROM_ADDRESS = "email.from.address";
+    String EMAIL_FROM_ADDRESS = "email.from.address";
 
-    static final String EMAIL_FROM_NAME = "email.from.name";
+    String EMAIL_FROM_NAME = "email.from.name";
 
-    static final String EMAIL_FEEDBACK_PATH = "email.feedback.path";
+    String EMAIL_FEEDBACK_PATH = "email.feedback.path";
 
-    static final String APPLICATION_TIMESTAMP = "application.timestamp";
+    String APPLICATION_TIMESTAMP = "application.timestamp";
 
-    static final String PASSWORD_ENCODER = "security.policy.password.encoder";
+    String PASSWORD_ENCODER = "security.policy.password.encoder";
 
 
-    static final String EMAIL_VALIDATION_SUBJECT = "email.validation.subject";
+    String EMAIL_VALIDATION_SUBJECT = "email.validation.subject";
 
-    static final String REMEMBER_ME_PATH = "security.rememberme.path";
+    String REMEMBER_ME_PATH = "security.rememberme.path";
 
-    static final String REMEMBER_ME_DOMAIN = "security.rememberme.domain";
+    String REMEMBER_ME_DOMAIN = "security.rememberme.domain";
 
-    static final String SIGNON_DOMAIN = "security.signon.domain";
+    String SIGNON_DOMAIN = "security.signon.domain";
 
-    static final String SIGNON_PATH = "security.signon.path";
+    String SIGNON_PATH = "security.signon.path";
 
-    static final String USER_MANAGER_IMPL = "user.manager.impl";
+    String LDAP_HOSTNAME = "ldap.config.hostname";
+
+    String LDAP_CONTEX_FACTORY = "ldap.config.context.factory";
+
+    String LDAP_PASSWORD = "ldap.config.password";
+
+    String LDAP_AUTHENTICATION_METHOD = "ldap.config.authentication.method";
+
+    String APPLICATION_URL = "application.url";
+
+    String EMAIL_URL_PATH = "email.url.path";
+
+    String LDAP_MAPPER_ATTRIBUTE_EMAIL = "ldap.config.mapper.attribute.email";
+
+    String LDAP_MAPPER_ATTRIBUTE_FULLNAME = "ldap.config.mapper.attribute.fullname";
+
+    String LDAP_MAPPER_ATTRIBUTE_PASSWORD = "ldap.config.mapper.attribute.password";
+
+    String LDAP_MAPPER_ATTRIBUTE_ID = "ldap.config.mapper.attribute.user.id";
+
+    String LDAP_MAPPER_ATTRIBUTE_OBJECT_CLASS =  "ldap.config.mapper.attribute.user.object.class";
+
+    String LDAP_MAPPER_ATTRIBUTE_FILTER = "ldap.config.mapper.attribute.user.filter";
 }
