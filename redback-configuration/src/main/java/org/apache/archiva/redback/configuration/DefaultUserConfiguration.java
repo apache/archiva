@@ -66,34 +66,42 @@ public class DefaultUserConfiguration
 
     @PostConstruct
     public void initialize()
-        throws RegistryException
+        throws UserConfigurationException
     {
-        performLegacyInitialization();
 
         try
         {
-            registry.addConfigurationFromResource( DEFAULT_CONFIG_RESOURCE, PREFIX );
+            performLegacyInitialization();
+
+            try
+            {
+                registry.addConfigurationFromResource( DEFAULT_CONFIG_RESOURCE, PREFIX );
+            }
+            catch ( RegistryException e )
+            {
+                // Ok, not found in context classloader; try the one in this jar.
+
+                ClassLoader prevCl = Thread.currentThread().getContextClassLoader();
+                try
+                {
+
+                    Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+                    registry.addConfigurationFromResource( DEFAULT_CONFIG_RESOURCE, PREFIX );
+                }
+                finally
+                {
+                    Thread.currentThread().setContextClassLoader( prevCl );
+                }
+            }
+
+            lookupRegistry = registry.getSubset( PREFIX );
+
+            log.debug( "User configuration {}", lookupRegistry.dump() );
         }
         catch ( RegistryException e )
         {
-            // Ok, not found in context classloader; try the one in this jar.
-
-            ClassLoader prevCl = Thread.currentThread().getContextClassLoader();
-            try
-            {
-
-                Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-                registry.addConfigurationFromResource( DEFAULT_CONFIG_RESOURCE, PREFIX );
-            }
-            finally
-            {
-                Thread.currentThread().setContextClassLoader( prevCl );
-            }
+            throw new UserConfigurationException( e.getMessage(), e );
         }
-
-        lookupRegistry = registry.getSubset( PREFIX );
-
-        log.debug( "User configuration {}", lookupRegistry.dump() );
 
     }
 

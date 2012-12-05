@@ -8,7 +8,7 @@ package org.apache.archiva.redback.configuration;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,34 +18,15 @@ package org.apache.archiva.redback.configuration;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.registry.RegistryException;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
-
 /**
  * @author Olivier Lamy
- * @since 2.1 moved to an interface
+ * @since 2.1
  */
-public interface UserConfiguration
+public class UserConfigurationException
+    extends Exception
 {
-
-    void initialize()
-        throws UserConfigurationException;
-
-    String getString( String key );
-
-    String getString( String key, String defaultValue );
-
-    int getInt( String key );
-
-    int getInt( String key, int defaultValue );
-
-    boolean getBoolean( String key );
-
-    boolean getBoolean( String key, boolean defaultValue );
-
-    List<String> getList( String key );
-
-    String getConcatenatedList( String key, String defaultValue );
+    public UserConfigurationException( String message, Throwable t )
+    {
+        super( message, t );
+    }
 }
