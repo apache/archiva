@@ -19,6 +19,7 @@ package org.apache.archiva.redback.policy;
  * under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.AbstractCookieSettings;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +29,8 @@ import javax.annotation.PostConstruct;
  * SignonCookieSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("cookieSettings#signon")
+@Service( "cookieSettings#signon" )
 public class SignonCookieSettings
     extends AbstractCookieSettings
 {
@@ -39,8 +39,8 @@ public class SignonCookieSettings
     {
         // cookie timeouts in the configuration settings is labeled to be in minutes, so adjust to minutes
         cookieTimeout = config.getInt( "security.signon.timeout" ) * 60;
-        domain = config.getString( "security.signon.domain" );
-        path = config.getString( "security.signon.path" );
+        domain = config.getString( UserConfigurationKeys.SIGNON_DOMAIN );
+        path = config.getString( UserConfigurationKeys.SIGNON_PATH );
     }
 
     public boolean isEnabled()

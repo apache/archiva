@@ -21,6 +21,7 @@ package org.apache.archiva.redback.integration.checks.security;
 
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
@@ -48,7 +49,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 2.0
  */
-@Service ("environmentCheck#adminAutoCreateCheck")
+@Service( "environmentCheck#adminAutoCreateCheck" )
 public class AdminAutoCreateCheck
     implements EnvironmentCheck
 {
@@ -64,7 +65,7 @@ public class AdminAutoCreateCheck
     public static final String ADMIN_PASSWORD_KEY = "redback.admin.password";
 
     @Inject
-    @Named (value = "userManager#configurable")
+    @Named( value = "userManager#configurable" )
     private UserManager userManager;
 
     @Inject
@@ -77,7 +78,7 @@ public class AdminAutoCreateCheck
     private RoleManager roleManager;
 
     @Inject
-    @Named (value = "rBACManager#cached")
+    @Named( value = "rBACManager#cached" )
     private RBACManager rbacManager;
 
     public void validateEnvironment( List<String> violations )
@@ -193,6 +194,6 @@ public class AdminAutoCreateCheck
 
     private String getAdminUid()
     {
-        return config.getString( "redback.default.admin" );
+        return config.getString( UserConfigurationKeys.DEFAULT_ADMIN );
     }
 }

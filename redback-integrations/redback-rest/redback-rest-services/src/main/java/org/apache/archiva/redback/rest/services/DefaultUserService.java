@@ -24,6 +24,7 @@ import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.integration.mail.Mailer;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
@@ -493,7 +494,7 @@ public class DefaultUserService
     {
         try
         {
-            userManager.findUser( config.getString( "redback.default.admin" ) );
+            userManager.findUser( config.getString( UserConfigurationKeys.DEFAULT_ADMIN ) );
             return Boolean.TRUE;
         }
         catch ( UserNotFoundException e )
@@ -609,7 +610,7 @@ public class DefaultUserService
                     baseUrl = getBaseUrl();
                 }
 
-                log.debug("register user {} with email {} and app url {}", u.getUsername(), u.getEmail(), baseUrl);
+                log.debug( "register user {} with email {} and app url {}", u.getUsername(), u.getEmail(), baseUrl );
 
                 mailer.sendAccountValidationEmail( Arrays.asList( u.getEmail() ), authkey, baseUrl );
 

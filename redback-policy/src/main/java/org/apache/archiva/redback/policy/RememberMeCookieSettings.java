@@ -19,6 +19,7 @@ package org.apache.archiva.redback.policy;
  * under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.AbstractCookieSettings;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +29,8 @@ import javax.annotation.PostConstruct;
  * RememberMeCookieSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("cookieSettings#rememberMe")
+@Service( "cookieSettings#rememberMe" )
 public class RememberMeCookieSettings
     extends AbstractCookieSettings
 {
@@ -45,8 +45,8 @@ public class RememberMeCookieSettings
     public void initialize()
     {
         this.cookieTimeout = config.getInt( "security.rememberme.timeout" );
-        this.domain = config.getString( "security.rememberme.domain" );
-        this.path = config.getString( "security.rememberme.path" );
+        this.domain = config.getString( UserConfigurationKeys.REMEMBER_ME_DOMAIN );
+        this.path = config.getString( UserConfigurationKeys.REMEMBER_ME_PATH );
         this.enabled = config.getBoolean( "security.rememberme.enabled" );
     }
 }

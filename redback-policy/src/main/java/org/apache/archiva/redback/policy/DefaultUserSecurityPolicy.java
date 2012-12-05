@@ -20,6 +20,7 @@ package org.apache.archiva.redback.policy;
  */
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.policy.rules.MustHavePasswordRule;
 import org.slf4j.Logger;
@@ -39,7 +40,6 @@ import java.util.List;
  * User Security Policy.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service( "userSecurityPolicy" )
 public class DefaultUserSecurityPolicy
@@ -55,7 +55,6 @@ public class DefaultUserSecurityPolicy
 
     public static final String PASSWORD_EXPIRATION = "security.policy.password.expiration.days";
 
-    public static final String PASSWORD_ENCODER = "security.policy.password.encoder";
 
     public static final String UNLOCKABLE_ACCOUNTS = "security.policy.unlockable.accounts";
 
@@ -132,7 +131,7 @@ public class DefaultUserSecurityPolicy
 
     private void configureEncoder()
     {
-        String encoder = config.getString( PASSWORD_ENCODER );
+        String encoder = config.getString( UserConfigurationKeys.PASSWORD_ENCODER );
 
         if ( encoder != null )
         {

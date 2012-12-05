@@ -20,6 +20,7 @@ package org.apache.archiva.redback.policy;
  */
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -29,13 +30,12 @@ import javax.annotation.Resource;
  * DefaultUserValidationSettings
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("userValidationSettings")
+@Service( "userValidationSettings" )
 public class DefaultUserValidationSettings
     implements UserValidationSettings
 {
-    @Resource (name="userConfiguration")
+    @Resource( name = "userConfiguration" )
     private UserConfiguration config;
 
     private boolean emailValidationRequired;
@@ -64,6 +64,6 @@ public class DefaultUserValidationSettings
     {
         this.emailValidationRequired = config.getBoolean( "email.validation.required" );
         this.emailValidationTimeout = config.getInt( "email.validation.timeout" );
-        this.emailSubject = config.getString( "email.validation.subject" );
+        this.emailSubject = config.getString( UserConfigurationKeys.EMAIL_VALIDATION_SUBJECT );
     }
 }

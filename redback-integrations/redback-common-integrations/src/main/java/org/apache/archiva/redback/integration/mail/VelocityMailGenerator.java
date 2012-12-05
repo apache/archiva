@@ -20,6 +20,7 @@ package org.apache.archiva.redback.integration.mail;
  */
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -40,21 +41,20 @@ import java.util.Locale;
  * Mail generator component implementation using velocity.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- *
  */
-@Service( "mailGenerator#velocity" )
+@Service("mailGenerator#velocity")
 public class VelocityMailGenerator
     implements MailGenerator
 {
     private Logger log = LoggerFactory.getLogger( VelocityMailGenerator.class );
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named(value = "userConfiguration")
     private UserConfiguration config;
 
     // FIXME use the spring directly 
     @Inject
-    @Named( value = "velocityEngine#redback" )
+    @Named(value = "velocityEngine#redback")
     private VelocityEngine velocityEngine;
 
     public String generateMail( String templateName, AuthenticationKey authkey, String baseUrl )
@@ -96,7 +96,7 @@ public class VelocityMailGenerator
 
         context.put( "applicationUrl", config.getString( "application.url", appUrl ) );
 
-        String feedback = config.getString( "email.feedback.path" );
+        String feedback = config.getString( UserConfigurationKeys.EMAIL_FEEDBACK_PATH );
 
         if ( feedback != null )
         {
@@ -114,7 +114,8 @@ public class VelocityMailGenerator
 
         context.put( "accountId", authkey.getForPrincipal() );
 
-        SimpleDateFormat dateformatter = new SimpleDateFormat( config.getString( "application.timestamp" ), Locale.US );
+        SimpleDateFormat dateformatter =
+            new SimpleDateFormat( config.getString( UserConfigurationKeys.APPLICATION_TIMESTAMP ), Locale.US );
 
         context.put( "requestedOn", dateformatter.format( authkey.getDateCreated() ) );
 

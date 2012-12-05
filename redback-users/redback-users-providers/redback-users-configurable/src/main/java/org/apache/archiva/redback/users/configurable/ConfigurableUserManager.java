@@ -17,6 +17,7 @@ package org.apache.archiva.redback.users.configurable;
  */
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
@@ -47,17 +48,16 @@ public class ConfigurableUserManager
 
     private UserManager userManagerImpl;
 
-    public static final String USER_MANAGER_IMPL = "user.manager.impl";
 
     @PostConstruct
     public void initialize()
     {
-        String userManagerRole = config.getString( USER_MANAGER_IMPL );
+        String userManagerRole = config.getString();
 
         if ( userManagerRole == null )
         {
-            throw new RuntimeException(
-                "User Manager Configuration Missing: " + USER_MANAGER_IMPL + " configuration property" );
+            throw new RuntimeException( "User Manager Configuration Missing: " + UserConfigurationKeys.USER_MANAGER_IMPL
+                                            + " configuration property" );
         }
 
         log.info( "use userManager impl with key: '{}'", userManagerRole );

@@ -34,6 +34,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.policy.UserValidationSettings;
@@ -48,24 +49,26 @@ import org.springframework.stereotype.Service;
  * Mailer
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service("mailer")
+@Service( "mailer" )
 public class MailerImpl
     implements Mailer
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
-    
-    @Inject  @Named(value="mailGenerator#velocity")
+
+    @Inject
+    @Named( value = "mailGenerator#velocity" )
     private MailGenerator generator;
 
-    @Inject  @Named(value="mailSender")
+    @Inject
+    @Named( value = "mailSender" )
     private JavaMailSender javaMailSender;
 
     @Inject
     private SecuritySystem securitySystem;
 
-    @Inject  @Named(value="userConfiguration")
+    @Inject
+    @Named( value = "userConfiguration" )
     private UserConfiguration config;
 
     public void sendAccountValidationEmail( Collection<String> recipients, AuthenticationKey authkey, String baseUrl )
@@ -94,23 +97,21 @@ public class MailerImpl
             return;
         }
 
-        String fromAddress = config.getString( "email.from.address" );
-        String fromName = config.getString( "email.from.name" );
+        String fromAddress = config.getString( UserConfigurationKeys.EMAIL_FROM_ADDRESS );
+        String fromName = config.getString( UserConfigurationKeys.EMAIL_FROM_NAME );
 
         if ( StringUtils.isEmpty( fromAddress ) )
         {
             fromAddress = System.getProperty( "user.name" ) + "@localhost";
         }
 
-        
-
         // TODO: Allow for configurable message headers.
 
         try
         {
-            
+
             MimeMessage message = javaMailSender.createMimeMessage();
-            
+
             message.setSubject( subject );
             message.setText( content );
 
@@ -119,17 +120,17 @@ public class MailerImpl
             message.setFrom( from );
 
             List<Address> tos = new ArrayList<Address>();
-            
+
             for ( String mailbox : recipients )
             {
                 InternetAddress to = new InternetAddress( mailbox.trim() );
 
-                tos.add( to );                
+                tos.add( to );
             }
 
-            message.setRecipients(Message.RecipientType.TO, tos.toArray(new Address[tos.size()]));
+            message.setRecipients( Message.RecipientType.TO, tos.toArray( new Address[tos.size()] ) );
 
-            log.debug("mail content {}", content );
+            log.debug( "mail content {}", content );
 
             javaMailSender.send( message );
         }
@@ -140,10 +141,10 @@ public class MailerImpl
         catch ( MessagingException e )
         {
             log.error( "Unable to send message, subject [" + subject + "]", e );
-        }       
+        }
         catch ( UnsupportedEncodingException e )
         {
             log.error( "Unable to send message, subject [" + subject + "]", e );
-        }                
+        }
     }
 }
