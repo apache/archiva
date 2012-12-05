@@ -86,17 +86,17 @@ public class LdapUserMapper
     @PostConstruct
     public void initialize()
     {
-        emailAttribute = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_EMAIL, emailAttribute );
+        emailAttribute = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_EMAIL, emailAttribute );
         fullNameAttribute =
-            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_FULLNAME, fullNameAttribute );
+            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_FULLNAME, fullNameAttribute );
         passwordAttribute =
-            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_PASSWORD, passwordAttribute );
-        userIdAttribute = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_ID, userIdAttribute );
+            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_PASSWORD, passwordAttribute );
+        userIdAttribute = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_ID, userIdAttribute );
         userBaseDn = userConf.getConcatenatedList( "ldap.config.mapper.attribute.user.base.dn",
                                                    userConf.getConcatenatedList( "ldap.config.base.dn", userBaseDn ) );
         userObjectClass =
-            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_OBJECT_CLASS, userObjectClass );
-        userFilter = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_ATTRIBUTE_FILTER, userFilter );
+            userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_OBJECT_CLASS, userObjectClass );
+        userFilter = userConf.getString( UserConfigurationKeys.LDAP_MAPPER_USER_ATTRIBUTE_FILTER, userFilter );
         maxResultCount = userConf.getInt( "ldap.config.max.result.count", maxResultCount );
     }
 

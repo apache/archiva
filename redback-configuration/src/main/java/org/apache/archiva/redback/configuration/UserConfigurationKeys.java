@@ -61,15 +61,15 @@ public interface UserConfigurationKeys
 
     String EMAIL_URL_PATH = "email.url.path";
 
-    String LDAP_MAPPER_ATTRIBUTE_EMAIL = "ldap.config.mapper.attribute.email";
+    String LDAP_MAPPER_USER_ATTRIBUTE_EMAIL = "ldap.config.mapper.attribute.email";
 
-    String LDAP_MAPPER_ATTRIBUTE_FULLNAME = "ldap.config.mapper.attribute.fullname";
+    String LDAP_MAPPER_USER_ATTRIBUTE_FULLNAME = "ldap.config.mapper.attribute.fullname";
 
-    String LDAP_MAPPER_ATTRIBUTE_PASSWORD = "ldap.config.mapper.attribute.password";
+    String LDAP_MAPPER_USER_ATTRIBUTE_PASSWORD = "ldap.config.mapper.attribute.password";
 
-    String LDAP_MAPPER_ATTRIBUTE_ID = "ldap.config.mapper.attribute.user.id";
+    String LDAP_MAPPER_USER_ATTRIBUTE_ID = "ldap.config.mapper.attribute.user.id";
 
-    String LDAP_MAPPER_ATTRIBUTE_OBJECT_CLASS =  "ldap.config.mapper.attribute.user.object.class";
+    String LDAP_MAPPER_USER_ATTRIBUTE_OBJECT_CLASS =  "ldap.config.mapper.attribute.user.object.class";
 
-    String LDAP_MAPPER_ATTRIBUTE_FILTER = "ldap.config.mapper.attribute.user.filter";
+    String LDAP_MAPPER_USER_ATTRIBUTE_FILTER = "ldap.config.mapper.attribute.user.filter";
 }
