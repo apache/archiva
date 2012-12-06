@@ -70,7 +70,7 @@
     </property>
   </bean>
 
-  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
+  <bean name="userConfiguration#default" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
     <property name="registry" ref="test-conf"/>
   </bean>
 

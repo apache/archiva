@@ -80,7 +80,7 @@ public class LdapUserMapper
     int maxResultCount = 0;
 
     @Inject
-    @Named(value = "userConfiguration")
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     @PostConstruct

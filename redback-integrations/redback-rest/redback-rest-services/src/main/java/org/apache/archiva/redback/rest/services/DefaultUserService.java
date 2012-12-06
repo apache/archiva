@@ -88,7 +88,7 @@ public class DefaultUserService
     private SecuritySystem securitySystem;
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration config;
 
     @Inject

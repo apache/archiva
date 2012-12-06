@@ -43,7 +43,7 @@
     <property name="contextFactory" value="com.sun.jndi.ldap.LdapCtxFactory"/>
     <property name="password" value="secret"/>
     <property name="bindDn" value="uid=admin,ou=system"/>
-    <property name="userConf" ref="userConfiguration"/>
+    <property name="userConf" ref="userConfiguration#default"/>
   </bean>
 
   <bean name="userMapper#ldap" class="org.apache.archiva.redback.common.ldap.LdapUserMapper">
@@ -53,10 +53,10 @@
     <property name="userIdAttribute" value="cn"/>
     <property name="userBaseDn" value="dc=redback,dc=plexus,dc=codehaus,dc=org"/>
     <property name="userObjectClass" value="inetOrgPerson"/>
-    <property name="userConf" ref="userConfiguration"/>
+    <property name="userConf" ref="userConfiguration#default"/>
   </bean>
 
-  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration"
+  <bean name="userConfiguration#default" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration"
       init-method="initialize">
     <property name="configs">
       <list>

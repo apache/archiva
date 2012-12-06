@@ -47,7 +47,7 @@ public class UserConfigurableJdoFactory
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration config;
 
     private String getConfigString( String key, String currentValue, String defaultValue )

@@ -41,7 +41,7 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @since 2.1
  */
-@Service("userConfiguration")
+@Service("userConfiguration#default")
 public class DefaultUserConfiguration
     implements UserConfiguration
 {

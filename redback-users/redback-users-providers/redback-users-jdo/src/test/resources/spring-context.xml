@@ -27,14 +27,14 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
   <bean name="jdoFactory#users" class="org.apache.archiva.redback.common.jdo.UserConfigurableJdoFactory">
-    <property name="config" ref="userConfiguration"/>
+    <property name="config" ref="userConfiguration#default"/>
     <property name="driverName" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:mem:redback-users-tests" />
     <property name="userName" value="sa"/>
     <property name="password" value=""/>
   </bean>
 
-  <bean name="userConfiguration" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
+  <bean name="userConfiguration#default" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
     <property name="registry" ref="test-conf"/>
   </bean>
 

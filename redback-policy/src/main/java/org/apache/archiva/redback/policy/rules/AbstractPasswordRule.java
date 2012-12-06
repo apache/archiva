@@ -33,7 +33,7 @@ public abstract class AbstractPasswordRule
 {
     protected boolean enabled = true;
 
-    @Inject @Named (value="userConfiguration")
+    @Inject @Named (value="userConfiguration#default")
     protected UserConfiguration config;
 
     public boolean isEnabled()

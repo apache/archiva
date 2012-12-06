@@ -44,7 +44,7 @@ public class FakeCreateAdminServiceImpl
     private UserManager userManager;
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration config;
 
     @Inject

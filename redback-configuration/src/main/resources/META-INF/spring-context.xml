@@ -29,6 +29,6 @@
   <context:annotation-config />
   <context:component-scan base-package="org.apache.archiva.redback.configuration"/>
 
-  <alias name="userConfiguration" alias="userConfiguration#redback"/>
+  <alias name="userConfiguration#default" alias="userConfiguration#redback"/>
  
 </beans>

@@ -34,7 +34,7 @@ import org.apache.archiva.redback.configuration.UserConfiguration;
 public abstract class AbstractCookieSettings
     implements CookieSettings
 {
-    @Inject @Named(value="userConfiguration")
+    @Inject @Named(value="userConfiguration#default")
     protected UserConfiguration config;
 
     /**

@@ -35,7 +35,7 @@ import javax.annotation.Resource;
 public class DefaultUserValidationSettings
     implements UserValidationSettings
 {
-    @Resource( name = "userConfiguration" )
+    @Resource( name = "userConfiguration#default" )
     private UserConfiguration config;
 
     private boolean emailValidationRequired;

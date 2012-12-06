@@ -68,7 +68,7 @@ public class LdapBindAuthenticator
     private LdapConnectionFactory connectionFactory;
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration config;
 
     @Inject

@@ -63,7 +63,7 @@ public class ConfigurableLdapConnectionFactory
 
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration userConf;
 
     // ----------------------------------------------------------------------

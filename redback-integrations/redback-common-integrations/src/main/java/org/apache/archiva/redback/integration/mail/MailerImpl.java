@@ -68,7 +68,7 @@ public class MailerImpl
     private SecuritySystem securitySystem;
 
     @Inject
-    @Named( value = "userConfiguration" )
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration config;
 
     public void sendAccountValidationEmail( Collection<String> recipients, AuthenticationKey authkey, String baseUrl )

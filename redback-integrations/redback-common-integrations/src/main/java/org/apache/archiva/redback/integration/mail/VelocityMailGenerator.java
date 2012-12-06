@@ -49,7 +49,7 @@ public class VelocityMailGenerator
     private Logger log = LoggerFactory.getLogger( VelocityMailGenerator.class );
 
     @Inject
-    @Named(value = "userConfiguration")
+    @Named(value = "userConfiguration#default")
     private UserConfiguration config;
 
     // FIXME use the spring directly 
