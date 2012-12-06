@@ -72,5 +72,5 @@
     <property name="servletAuth" ref="servletAuthenticator"/>
   </bean>
   -->
-
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
 </beans>
