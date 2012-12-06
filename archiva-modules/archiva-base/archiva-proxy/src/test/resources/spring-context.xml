@@ -83,4 +83,6 @@
   <bean name="wagon#test" class="org.apache.archiva.proxy.WagonDelegate" scope="singleton"/>
   <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
 
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+
 </beans>
