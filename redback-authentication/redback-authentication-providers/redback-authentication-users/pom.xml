@@ -25,7 +25,6 @@
     <groupId>org.apache.archiva.redback</groupId>
     <artifactId>redback-authentication-providers</artifactId>
     <version>2.1-SNAPSHOT</version>
-    <relativePath>../../redback-authentication/redback-authentication-providers/pom.xml</relativePath>
   </parent>
 
   <artifactId>redback-authentication-users</artifactId>
