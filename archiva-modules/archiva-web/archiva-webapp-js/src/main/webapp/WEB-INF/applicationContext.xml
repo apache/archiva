@@ -21,7 +21,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
-       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
@@ -30,6 +29,8 @@
            http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
   <context:property-placeholder location="classpath:application.properties"/>
+
+  <alias name="userConfiguration#archiva" alias="userConfiguration#default" />
 
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
         init-method="initialize"/>
@@ -139,7 +140,7 @@
   <alias name="userManager#archiva" alias="userManager#configurable"/>
 
   <bean name="ldapConnectionFactory" class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
-    <property name="userConf" ref="userConfiguration"/>
+    <property name="userConf" ref="userConfiguration#default"/>
   </bean>
     
     <!-- <component>
