@@ -49,5 +49,5 @@
       </props>
     </property>
   </bean>
-
+  <alias name="userConfiguration#archiva" alias="userConfiguration#default"/>
 </beans>

@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.beans.ArchivaLdapConfiguration;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RedbackRuntimeConfiguration;
@@ -32,6 +33,8 @@ import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationException;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -45,9 +48,13 @@ import java.util.List;
  */
 @Service( "userConfiguration#archiva" )
 public class DefaultArchivaRuntimeConfigurationAdmin
-    extends AbstractRepositoryAdmin
     implements ArchivaRuntimeConfigurationAdmin, UserConfiguration
 {
+
+    protected Logger log = LoggerFactory.getLogger( getClass() );
+
+    @Inject
+    private ArchivaConfiguration archivaConfiguration;
 
     @Inject
     @Named( value = "userConfiguration#redback" )
@@ -110,18 +117,18 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
     {
-        return build( getArchivaConfiguration().getConfiguration().getRedbackRuntimeConfiguration() );
+        return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
     public void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws RepositoryAdminException
     {
         RedbackRuntimeConfiguration runtimeConfiguration = build( archivaRuntimeConfiguration );
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        Configuration configuration = archivaConfiguration.getConfiguration();
         configuration.setRedbackRuntimeConfiguration( runtimeConfiguration );
         try
         {
-            getArchivaConfiguration().save( configuration );
+            archivaConfiguration.save( configuration );
         }
         catch ( RegistryException e )
         {
@@ -135,7 +142,15 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     private ArchivaRuntimeConfiguration build( RedbackRuntimeConfiguration runtimeConfiguration )
     {
-        return new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
+        ArchivaRuntimeConfiguration archivaRuntimeConfiguration = new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
+
+        if (archivaRuntimeConfiguration.getArchivaLdapConfiguration() == null)
+        {
+            // prevent NPE
+            archivaRuntimeConfiguration.setArchivaLdapConfiguration( new ArchivaLdapConfiguration() );
+        }
+
+        return archivaRuntimeConfiguration;
     }
 
     private RedbackRuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )

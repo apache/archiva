@@ -52,5 +52,5 @@
   </bean>
 
   <bean name="repositorySessionFactory" class="org.apache.archiva.webtest.memory.TestRepositorySessionFactory"/>
-
+  <alias name="userConfiguration#archiva" alias="userConfiguration#default"/>
 </beans>
