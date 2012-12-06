@@ -42,4 +42,6 @@
     <property name="password" value=""/>
   </bean>
 
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+
 </beans>

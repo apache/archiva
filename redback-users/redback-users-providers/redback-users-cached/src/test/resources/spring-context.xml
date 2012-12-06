@@ -42,5 +42,6 @@
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
 
 </beans>

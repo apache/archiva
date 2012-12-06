@@ -55,4 +55,6 @@
     <property name="velocityEngine" ref="velocityEngine#redback"/>
   </bean>
 
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+
 </beans>

@@ -55,5 +55,6 @@
     <property name="userObjectClass" value="inetOrgPerson"/>
     <property name="userConf" ref="userConfiguration#default"/>
   </bean>
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
 
 </beans>

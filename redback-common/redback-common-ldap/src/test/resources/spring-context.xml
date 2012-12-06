@@ -23,12 +23,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean name="userConfiguration#default" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
+  <bean name="userConfiguration#redback" class="org.apache.archiva.redback.configuration.DefaultUserConfiguration">
     <property name="configs">
       <list>
         <value>src/test/resources/test.properties</value>
       </list>
     </property>
   </bean>
+
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
  
 </beans>
