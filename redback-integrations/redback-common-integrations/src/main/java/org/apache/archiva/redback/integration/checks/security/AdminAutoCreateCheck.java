@@ -69,6 +69,7 @@ public class AdminAutoCreateCheck
     private UserManager userManager;
 
     @Inject
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration config;
 
     @Inject
