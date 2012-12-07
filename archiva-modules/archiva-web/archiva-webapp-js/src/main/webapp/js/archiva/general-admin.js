@@ -1159,8 +1159,16 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   mapArchivaRuntimeConfiguration=function(data){
-    return new ArchivaRuntimeConfiguration(data.userManagerImpl,mapArchivaLdapConfiguration(data.archivaLdapConfiguration,data.migratedFromRedbackConfiguration,
-                                            data.configurationProperties));
+
+    var configurationProperties = data.configurationProperties == null ? []: $.each(data.configurationProperties,function(item){
+      return new Entry(item.key, item.value);
+    });
+    if (!$.isArray(configurationProperties)){
+        configurationProperties=[];
+    }
+
+    return new ArchivaRuntimeConfiguration(data.userManagerImpl,mapArchivaLdapConfiguration(data.archivaLdapConfiguration),data.migratedFromRedbackConfiguration,
+                                           configurationProperties);
   }
 
   ArchivaLdapConfiguration=function(hostName,port,ssl,baseDn,contextFactory,bindDn,password,authenticationMethod,
@@ -1195,8 +1203,14 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   mapArchivaLdapConfiguration=function(data){
       if(data){
+        var extraProperties = data.extraProperties == null ? []: $.each(data.extraProperties,function(item){
+            return new Entry(item.key, item.value);
+        });
+        if (!$.isArray(extraProperties)){
+            extraProperties=[];
+        }
         return new ArchivaLdapConfiguration(data.hostName,data.port,data.ssl,data.baseDn,data.contextFactory,data.bindDn,data.password,
-                                    data.authenticationMethod,data.extraProperties);
+                                    data.authenticationMethod,extraProperties);
       }
       return null;
   }
