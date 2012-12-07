@@ -30,9 +30,9 @@
   <url>http://archiva.apache.org/ref/${project.version}</url>
 
   <properties>
-    <siteFilePath>${user.home}/archiva-ref-${project.version}/</siteFilePath>
+    <siteFilePath>${user.home}/archiva-sites/archiva-ref-${project.version}/</siteFilePath>
     <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
-    <scmPubCheckoutDirectory>${user.home}/archiva-ref-${project.version}-content</scmPubCheckoutDirectory>
+    <scmPubCheckoutDirectory>${user.home}/archiva-sites/archiva-ref-${project.version}-content</scmPubCheckoutDirectory>
   </properties>
 
   <modules>
