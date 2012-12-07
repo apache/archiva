@@ -1151,9 +1151,16 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
 
-  ArchivaRuntimeConfiguration=function(userManagerImpl,archivaLdapConfiguration){
+  ArchivaRuntimeConfiguration=function(userManagerImpl,archivaLdapConfiguration,migratedFromRedbackConfiguration,configurationProperties){
     this.userManagerImpl=ko.observable(userManagerImpl);
     this.archivaLdapConfiguration=ko.observable(archivaLdapConfiguration);
+    this.migratedFromRedbackConfiguration=ko.observable(migratedFromRedbackConfiguration);
+    this.configurationProperties=ko.observableArray(configurationProperties?configurationProperties:[]);
+  }
+
+  mapArchivaRuntimeConfiguration=function(data){
+    return new ArchivaRuntimeConfiguration(data.userManagerImpl,mapArchivaLdapConfiguration(data.archivaLdapConfiguration,data.migratedFromRedbackConfiguration,
+                                            data.configurationProperties));
   }
 
   ArchivaLdapConfiguration=function(hostName,port,ssl,baseDn,contextFactory,bindDn,password,authenticationMethod,
@@ -1184,6 +1191,14 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     //private Map<String, String> extraProperties = new HashMap<String, String>();
     this.extraProperties=ko.observableArray(extraProperties);
+  }
+
+  mapArchivaLdapConfiguration=function(data){
+      if(data){
+        return new ArchivaLdapConfiguration(data.hostName,data.port,data.ssl,data.baseDn,data.contextFactory,data.bindDn,data.password,
+                                    data.authenticationMethod,data.extraProperties);
+      }
+      return null;
   }
 
   ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration,userManagerImplementationInformations){
@@ -1268,8 +1283,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   }
 
-  mapArchivaRuntimeConfiguration=function(data){
-    return new ArchivaRuntimeConfiguration(data.userManagerImpl);
-  }
+
 
 });
