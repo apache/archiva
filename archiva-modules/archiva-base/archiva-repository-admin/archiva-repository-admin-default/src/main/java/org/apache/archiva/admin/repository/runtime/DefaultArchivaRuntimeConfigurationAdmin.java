@@ -20,10 +20,9 @@ package org.apache.archiva.admin.repository.runtime;
 
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ArchivaLdapConfiguration;
+import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
-import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
@@ -79,28 +78,28 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
                 // now ldap
 
-                ArchivaLdapConfiguration archivaLdapConfiguration =
-                    archivaRuntimeConfiguration.getArchivaLdapConfiguration();
-                if ( archivaLdapConfiguration == null )
+                LdapConfiguration ldapConfiguration =
+                    archivaRuntimeConfiguration.getLdapConfiguration();
+                if ( ldapConfiguration == null )
                 {
-                    archivaLdapConfiguration = new ArchivaLdapConfiguration();
-                    archivaRuntimeConfiguration.setArchivaLdapConfiguration( archivaLdapConfiguration );
+                    ldapConfiguration = new LdapConfiguration();
+                    archivaRuntimeConfiguration.setLdapConfiguration( ldapConfiguration );
                 }
 
-                archivaLdapConfiguration.setHostName(
+                ldapConfiguration.setHostName(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_HOSTNAME, null ) );
-                archivaLdapConfiguration.setPort( userConfiguration.getInt( UserConfigurationKeys.LDAP_PORT, -1 ) );
-                archivaLdapConfiguration.setSsl(
+                ldapConfiguration.setPort( userConfiguration.getInt( UserConfigurationKeys.LDAP_PORT, -1 ) );
+                ldapConfiguration.setSsl(
                     userConfiguration.getBoolean( UserConfigurationKeys.LDAP_SSL, false ) );
-                archivaLdapConfiguration.setBaseDn(
+                ldapConfiguration.setBaseDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, null ) );
-                archivaLdapConfiguration.setContextFactory(
+                ldapConfiguration.setContextFactory(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, null ) );
-                archivaLdapConfiguration.setBindDn(
+                ldapConfiguration.setBindDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, null ) );
-                archivaLdapConfiguration.setPassword(
+                ldapConfiguration.setPassword(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_PASSWORD, null ) );
-                archivaLdapConfiguration.setAuthenticationMethod(
+                ldapConfiguration.setAuthenticationMethod(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, null ) );
 
                 archivaRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
@@ -144,10 +143,10 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration = new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
 
-        if (archivaRuntimeConfiguration.getArchivaLdapConfiguration() == null)
+        if (archivaRuntimeConfiguration.getLdapConfiguration() == null)
         {
             // prevent NPE
-            archivaRuntimeConfiguration.setArchivaLdapConfiguration( new ArchivaLdapConfiguration() );
+            archivaRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
         }
 
         return archivaRuntimeConfiguration;
@@ -155,7 +154,8 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     private RedbackRuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
     {
-        return new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RedbackRuntimeConfiguration.class );
+        RedbackRuntimeConfiguration redbackRuntimeConfiguration = new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RedbackRuntimeConfiguration.class );
+        return redbackRuntimeConfiguration;
     }
 
     // wrapper for UserConfiguration to intercept values (and store it not yet migrated
@@ -199,19 +199,19 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_HOSTNAME.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getHostName();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getHostName();
         }
         if ( UserConfigurationKeys.LDAP_CONTEX_FACTORY.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getContextFactory();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getContextFactory();
         }
         if ( UserConfigurationKeys.LDAP_PASSWORD.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getPassword();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getPassword();
         }
         if ( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getAuthenticationMethod();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getAuthenticationMethod();
         }
 
         ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
@@ -271,7 +271,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_PORT.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getPort();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getPort();
         }
 
 
@@ -327,7 +327,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().isSsl();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().isSsl();
         }
 
         ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
@@ -378,11 +378,11 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_BASEDN.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getBaseDn();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getBaseDn();
         }
         if ( UserConfigurationKeys.LDAP_BINDDN.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getArchivaLdapConfiguration().getBindDn();
+            return getArchivaRuntimeConfiguration().getLdapConfiguration().getBindDn();
         }
         return userConfiguration.getConcatenatedList( key, defaultValue );
     }

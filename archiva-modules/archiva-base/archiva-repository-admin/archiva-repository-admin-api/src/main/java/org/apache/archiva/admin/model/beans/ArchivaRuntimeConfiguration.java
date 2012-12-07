@@ -33,7 +33,7 @@ public class ArchivaRuntimeConfiguration
 {
     private String userManagerImpl = "jdo";
 
-    private ArchivaLdapConfiguration archivaLdapConfiguration;
+    private LdapConfiguration ldapConfiguration;
 
     /**
      * flag to know if redback configuration has been checked/migrated.
@@ -57,14 +57,14 @@ public class ArchivaRuntimeConfiguration
         this.userManagerImpl = userManagerImpl;
     }
 
-    public ArchivaLdapConfiguration getArchivaLdapConfiguration()
+    public LdapConfiguration getLdapConfiguration()
     {
-        return archivaLdapConfiguration;
+        return ldapConfiguration;
     }
 
-    public void setArchivaLdapConfiguration( ArchivaLdapConfiguration archivaLdapConfiguration )
+    public void setLdapConfiguration( LdapConfiguration ldapConfiguration )
     {
-        this.archivaLdapConfiguration = archivaLdapConfiguration;
+        this.ldapConfiguration = ldapConfiguration;
     }
 
     public boolean isMigratedFromRedbackConfiguration()
@@ -96,7 +96,7 @@ public class ArchivaRuntimeConfiguration
     {
         return "ArchivaRuntimeConfiguration{" +
             "userManagerImpl='" + userManagerImpl + '\'' +
-            ", archivaLdapConfiguration=" + archivaLdapConfiguration +
+            ", ldapConfiguration=" + ldapConfiguration +
             ", migratedFromRedbackConfiguration=" + migratedFromRedbackConfiguration +
             ", configurationProperties=" + configurationProperties +
             '}';

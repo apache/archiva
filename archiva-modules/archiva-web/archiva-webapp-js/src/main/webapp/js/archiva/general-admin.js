@@ -1167,11 +1167,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         configurationProperties=[];
     }
 
-    return new ArchivaRuntimeConfiguration(data.userManagerImpl,mapArchivaLdapConfiguration(data.archivaLdapConfiguration),data.migratedFromRedbackConfiguration,
+    return new ArchivaRuntimeConfiguration(data.userManagerImpl,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration,
                                            configurationProperties);
   }
 
-  ArchivaLdapConfiguration=function(hostName,port,ssl,baseDn,contextFactory,bindDn,password,authenticationMethod,
+  LdapConfiguration=function(hostName,port,ssl,baseDn,contextFactory,bindDn,password,authenticationMethod,
                                     extraProperties){
     //private String hostName;
     this.hostName=ko.observable(hostName);
@@ -1201,7 +1201,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.extraProperties=ko.observableArray(extraProperties);
   }
 
-  mapArchivaLdapConfiguration=function(data){
+  mapLdapConfiguration=function(data){
       if(data){
         var extraProperties = data.extraProperties == null ? []: $.each(data.extraProperties,function(item){
             return new Entry(item.key, item.value);

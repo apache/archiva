@@ -26,8 +26,8 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement( name = "archivaLdapConfiguration" )
-public class ArchivaLdapConfiguration
+@XmlRootElement( name = "ldapConfiguration" )
+public class LdapConfiguration
 {
 
 
@@ -81,7 +81,7 @@ public class ArchivaLdapConfiguration
      */
     private Map<String, String> extraProperties = new HashMap<String, String>();
 
-    public ArchivaLdapConfiguration()
+    public LdapConfiguration()
     {
         // no op
     }
