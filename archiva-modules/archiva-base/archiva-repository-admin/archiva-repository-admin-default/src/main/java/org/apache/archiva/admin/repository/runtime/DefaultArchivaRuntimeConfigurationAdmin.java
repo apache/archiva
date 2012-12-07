@@ -78,8 +78,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
                 // now ldap
 
-                LdapConfiguration ldapConfiguration =
-                    archivaRuntimeConfiguration.getLdapConfiguration();
+                LdapConfiguration ldapConfiguration = archivaRuntimeConfiguration.getLdapConfiguration();
                 if ( ldapConfiguration == null )
                 {
                     ldapConfiguration = new LdapConfiguration();
@@ -89,8 +88,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 ldapConfiguration.setHostName(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_HOSTNAME, null ) );
                 ldapConfiguration.setPort( userConfiguration.getInt( UserConfigurationKeys.LDAP_PORT, -1 ) );
-                ldapConfiguration.setSsl(
-                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_SSL, false ) );
+                ldapConfiguration.setSsl( userConfiguration.getBoolean( UserConfigurationKeys.LDAP_SSL, false ) );
                 ldapConfiguration.setBaseDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, null ) );
                 ldapConfiguration.setContextFactory(
@@ -141,9 +139,10 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     private ArchivaRuntimeConfiguration build( RedbackRuntimeConfiguration runtimeConfiguration )
     {
-        ArchivaRuntimeConfiguration archivaRuntimeConfiguration = new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
+        ArchivaRuntimeConfiguration archivaRuntimeConfiguration =
+            new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
 
-        if (archivaRuntimeConfiguration.getLdapConfiguration() == null)
+        if ( archivaRuntimeConfiguration.getLdapConfiguration() == null )
         {
             // prevent NPE
             archivaRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
@@ -154,7 +153,13 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     private RedbackRuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
     {
-        RedbackRuntimeConfiguration redbackRuntimeConfiguration = new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RedbackRuntimeConfiguration.class );
+        RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+            new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RedbackRuntimeConfiguration.class );
+
+        redbackRuntimeConfiguration.setLdapConfiguration(
+            new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getLdapConfiguration(),
+                                                org.apache.archiva.configuration.LdapConfiguration.class ) );
+
         return redbackRuntimeConfiguration;
     }
 
@@ -274,7 +279,6 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             return getArchivaRuntimeConfiguration().getLdapConfiguration().getPort();
         }
 
-
         ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
@@ -338,7 +342,6 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
 
         boolean value = userConfiguration.getBoolean( key );
-
 
         conf.getConfigurationProperties().put( key, Boolean.toString( value ) );
         try
