@@ -86,8 +86,8 @@
      -->
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
-    <siteDeployDirectory>${user.home}/redback-core-site-deploy</siteDeployDirectory>
-    <scmPubCheckoutDirectory>${user.home}/redback-core-site-content</scmPubCheckoutDirectory>
+    <siteDeployDirectory>${user.home}/archiva-sites/redback-core-site-deploy</siteDeployDirectory>
+    <scmPubCheckoutDirectory>${user.home}/archiva-sites/redback-core-site-content</scmPubCheckoutDirectory>
 
   </properties>
 
