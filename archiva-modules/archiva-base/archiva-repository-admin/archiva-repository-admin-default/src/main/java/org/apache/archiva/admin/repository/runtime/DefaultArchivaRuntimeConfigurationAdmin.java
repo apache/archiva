@@ -142,6 +142,13 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration =
             new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
 
+        if ( runtimeConfiguration.getLdapConfiguration() != null )
+        {
+            archivaRuntimeConfiguration.setLdapConfiguration(
+                new BeanReplicator().replicateBean( runtimeConfiguration.getLdapConfiguration(),
+                                                    LdapConfiguration.class ) );
+        }
+
         if ( archivaRuntimeConfiguration.getLdapConfiguration() == null )
         {
             // prevent NPE

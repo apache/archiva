@@ -20,14 +20,16 @@ package org.apache.archiva.admin.model.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement(name = "redbackRuntimeConfiguration")
+@XmlRootElement( name = "redbackRuntimeConfiguration" )
 public class ArchivaRuntimeConfiguration
     implements Serializable
 {
@@ -41,6 +43,11 @@ public class ArchivaRuntimeConfiguration
     private boolean migratedFromRedbackConfiguration = false;
 
     private Map<String, String> configurationProperties;
+
+    /**
+     * field to ease json mapping wrapper on <code>configurationProperties</code> field
+     */
+    private List<PropertyEntry> configurationPropertiesEntries;
 
     public ArchivaRuntimeConfiguration()
     {
@@ -89,6 +96,29 @@ public class ArchivaRuntimeConfiguration
     public void setConfigurationProperties( Map<String, String> configurationProperties )
     {
         this.configurationProperties = configurationProperties;
+    }
+
+    public List<PropertyEntry> getConfigurationPropertiesEntries()
+    {
+        configurationPropertiesEntries = new ArrayList<PropertyEntry>( getConfigurationProperties().size() );
+        for ( Map.Entry<String, String> entry : getConfigurationProperties().entrySet() )
+        {
+            configurationPropertiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
+        }
+        return configurationPropertiesEntries;
+    }
+
+    public void setConfigurationPropertiesEntries( List<PropertyEntry> configurationPropertiesEntries )
+    {
+        this.configurationPropertiesEntries = configurationPropertiesEntries;
+        if ( configurationPropertiesEntries != null )
+        {
+            this.configurationProperties = new HashMap<String, String>( configurationPropertiesEntries.size() );
+            for ( PropertyEntry propertyEntry : configurationPropertiesEntries )
+            {
+                this.configurationProperties.put( propertyEntry.getKey(), propertyEntry.getValue() );
+            }
+        }
     }
 
     @Override

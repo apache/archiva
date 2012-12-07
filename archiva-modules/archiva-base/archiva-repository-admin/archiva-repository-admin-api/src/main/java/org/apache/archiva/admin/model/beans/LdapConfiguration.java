@@ -19,7 +19,9 @@ package org.apache.archiva.admin.model.beans;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,6 +82,11 @@ public class LdapConfiguration
      * Field extraProperties.
      */
     private Map<String, String> extraProperties = new HashMap<String, String>();
+
+    /**
+     * field to ease json mapping wrapper on <code>extraProperties</code> field
+     */
+    private List<PropertyEntry> extraPropertiesEntries;
 
     public LdapConfiguration()
     {
@@ -184,5 +191,27 @@ public class LdapConfiguration
     public void setBindAuthenticatorEnabled( boolean bindAuthenticatorEnabled )
     {
         this.bindAuthenticatorEnabled = bindAuthenticatorEnabled;
+    }
+
+    public List<PropertyEntry> getExtraPropertiesEntries()
+    {
+        extraPropertiesEntries = new ArrayList<PropertyEntry>( getExtraProperties().size() );
+        for ( Map.Entry<String, String> entry : getExtraProperties().entrySet() )
+        {
+            extraPropertiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
+        }
+        return extraPropertiesEntries;
+    }
+
+    public void setExtraPropertiesEntries( List<PropertyEntry> extraPropertiesEntries )
+    {
+        this.extraPropertiesEntries = extraPropertiesEntries;
+        if ( extraPropertiesEntries != null )
+        {
+            for ( PropertyEntry propertyEntry : extraPropertiesEntries )
+            {
+                this.extraProperties.put( propertyEntry.getKey(), propertyEntry.getValue() );
+            }
+        }
     }
 }
