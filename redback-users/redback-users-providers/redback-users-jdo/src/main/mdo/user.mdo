@@ -149,6 +149,10 @@
                  // Intentionally initialize List to avoid JPOX NullPointerException Issues.
               	 previousEncodedPasswords = new java.util.ArrayList<String>();
               }
+              public String getUserManagerId()
+              {
+                return "jdo";
+              }
 
           ]]></code>
         </codeSegment>

@@ -70,9 +70,16 @@ public class User
 
     /**
      * with some userManagerImpl it's not possible to edit users;
-     * @since 1.4-M4
+     * @since 2.1
      */
     private boolean readOnly;
+
+    /**
+     * as we can user multiple userManagers implementation we must track from which one this one comes.
+     * @since 2.1
+     * @return userManager id
+     */
+    private String userManagerId;
 
     public User()
     {
@@ -255,28 +262,37 @@ public class User
         this.readOnly = readOnly;
     }
 
+    public String getUserManagerId()
+    {
+        return userManagerId;
+    }
+
+    public void setUserManagerId( String userManagerId )
+    {
+        this.userManagerId = userManagerId;
+    }
+
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "User" );
-        sb.append( "{username='" ).append( username ).append( '\'' );
-        sb.append( ", fullName='" ).append( fullName ).append( '\'' );
-        sb.append( ", email='" ).append( email ).append( '\'' );
-        sb.append( ", validated=" ).append( validated );
-        sb.append( ", locked=" ).append( locked );
-        sb.append( ", password='" ).append( password ).append( '\'' );
-        sb.append( ", passwordChangeRequired=" ).append( passwordChangeRequired );
-        sb.append( ", permanent=" ).append( permanent );
-        sb.append( ", confirmPassword='" ).append( confirmPassword ).append( '\'' );
-        sb.append( ", timestampAccountCreation='" ).append( timestampAccountCreation ).append( '\'' );
-        sb.append( ", timestampLastLogin='" ).append( timestampLastLogin ).append( '\'' );
-        sb.append( ", timestampLastPasswordChange='" ).append( timestampLastPasswordChange ).append( '\'' );
-        sb.append( ", previousPassword='" ).append( previousPassword ).append( '\'' );
-        sb.append( ", assignedRoles=" ).append( assignedRoles );
-        sb.append( ", readOnly=" ).append( readOnly );
-        sb.append( '}' );
-        return sb.toString();
+        return "User{" +
+            "username='" + username + '\'' +
+            ", fullName='" + fullName + '\'' +
+            ", email='" + email + '\'' +
+            ", validated=" + validated +
+            ", locked=" + locked +
+            //", password='" + password + '\'' +
+            ", passwordChangeRequired=" + passwordChangeRequired +
+            ", permanent=" + permanent +
+            ", confirmPassword='" + confirmPassword + '\'' +
+            ", timestampAccountCreation='" + timestampAccountCreation + '\'' +
+            ", timestampLastLogin='" + timestampLastLogin + '\'' +
+            ", timestampLastPasswordChange='" + timestampLastPasswordChange + '\'' +
+            ", previousPassword='" + previousPassword + '\'' +
+            ", assignedRoles=" + assignedRoles +
+            ", readOnly=" + readOnly +
+            ", userManagerId='" + userManagerId + '\'' +
+            '}';
     }
 
     @Override

@@ -292,4 +292,11 @@ public interface User
      */
     void setLastLoginDate( Date date );
 
+    /**
+     * as we can user multiple userManagers implementation we must track from which one this one comes.
+     * @since 2.1
+     * @return userManager id
+     */
+    String getUserManagerId();
+
 }

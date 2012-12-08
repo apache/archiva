@@ -63,6 +63,11 @@ public class LdapUser
 
     private Attributes originalAttributes;
 
+    /**
+     * @since 2.1
+     */
+    private String userManagerId = "ldap";
+
     public LdapUser( String username )
     {
         this.username = username;
@@ -237,6 +242,11 @@ public class LdapUser
     public void setOriginalAttributes( Attributes originalAttributes )
     {
         this.originalAttributes = originalAttributes;
+    }
+
+    public String getUserManagerId()
+    {
+        return userManagerId;
     }
 
 }

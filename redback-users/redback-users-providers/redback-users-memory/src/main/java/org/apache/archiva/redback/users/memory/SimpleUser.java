@@ -215,4 +215,9 @@ public class SimpleUser
     {
         this.validated = validated;
     }
+
+    public String getUserManagerId()
+    {
+        return "simple";
+    }
 }
