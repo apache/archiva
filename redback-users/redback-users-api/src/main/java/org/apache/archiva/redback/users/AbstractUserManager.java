@@ -152,4 +152,9 @@ public abstract class AbstractUserManager
     {
         return false;
     }
+
+    protected List<UserManagerListener> getListeners()
+    {
+        return listeners;
+    }
 }
