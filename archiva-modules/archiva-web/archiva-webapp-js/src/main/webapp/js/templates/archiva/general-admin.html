@@ -891,24 +891,145 @@
     <h2>${$.i18n.prop('runtime-configuration.title')}</h2>
   </div>
   <div id="runtime-configuration-content" data-bind='template: {name:"runtime-configuration-content-tmpl"}'>
-
   </div>
 </script>
 
 <script type="text/html" id="runtime-configuration-content-tmpl">
-  <div class="well">
-    <form class="form-horizontal" id="runtime-configuration-form-id">
-      <fieldset id="form-runtime-configuration">
-        <div class="control-group">
-          <label for="userManagerImpl" class="control-label">
-            ${$.i18n.prop('runtime-configuration.usermanager.label')}
-          </label>
-          <div class="controls">
-            <select data-bind="options: userManagerImplementationInformations,optionsValue: 'beanId', optionsText: 'description', value: archivaRuntimeConfiguration().userManagerImpl, optionsCaption: 'Choose...'"></select>
-          </div>
-        </div>
-        <button data-bind="click: saveArchivaRuntimeConfiguration" id="archiva-runtime-configuration-save" class="btn">${$.i18n.prop('save')}</button>
-      </fieldset>
-    </form>
+  <ul class="nav nav-tabs">
+    <li class="active" id="redback-runtime-general-li"><a href="#redback-runtime-general-content" data-toggle="tab">${$.i18n.prop('redback.runtime.general.title')}</a></li>
+    <li id="redback-runtime-ldap-li"><a href="#redback-runtime-ldap-content" data-toggle="tab">${$.i18n.prop('redback.runtime.ldap.title')}</a></li>
+    <li id="redback-runtime-properties-li"><a href="#redback-runtime-properties-content" data-toggle="tab">${$.i18n.prop('redback.runtime.properties.title')}</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="redback-runtime-general-content">
+      <div class="well">
+        <form class="form-horizontal" id="runtime-configuration-form-id">
+          <fieldset id="form-runtime-configuration">
+            <div class="control-group">
+              <label for="userManagerImpl" class="control-label">
+                ${$.i18n.prop('runtime-configuration.usermanager.label')}
+              </label>
+
+              <div class="controls">
+                <select id="userManagerImpl"
+                        data-bind="options: userManagerImplementationInformations,optionsValue: 'beanId', optionsText: 'description', value: archivaRuntimeConfiguration().userManagerImpl, optionsCaption: 'Choose...'"></select>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="redback-runtime-ldap-content">
+      <div class="well">
+        <form class="form-horizontal" id="redback-runtime-ldap-form-id">
+          <fieldset id="redback-runtime-ldap-form">
+            <div class="control-group">
+              <label for="ldap-host" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.host.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-host" name="ldap-host" class="input-xlarge required"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().hostName"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="ldap-port" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.port.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-port" name="ldap-port" class="input-large required"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().port"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="ldap-baseDn" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.baseDn.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-baseDn" name="ldap-baseDn" class="input-xxlarge required"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().baseDn"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="ldap-ssl" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.ssl.label')}
+              </label>
+              <div class="controls">
+                <input type="checkbox" id="ldap-ssl" name="ldap-ssl"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().ssl"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="ldap-password" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.password.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-password" name="ldap-password" class="input-xlarge required"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().password"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="ldap-context-factory" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.contextFactory.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-context-factory" name="ldap-context-factory" class="input-xlarge required"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().contextFactory"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="ldap-authenticationMethod" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.authenticationMethod.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-authenticationMethod" name="ldap-authenticationMethod" class="input-xlarge required"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().authenticationMethod"/>
+              </div>
+            </div>
+            <!-- TODO extraPropertiesEntries -->
+          </fieldset>
+        </form>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="redback-runtime-properties-content">
+      <div class="well">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>key</th>
+              <th>value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{each(i, property) archivaRuntimeConfiguration().configurationPropertiesEntries}}
+              <tr>
+                <td>
+                  {{var key = property.key}}
+                  <a class="popover-doc"
+                     data-original-title="${$.i18n.prop(key+'.help.title')}"
+                     data-content="${$.i18n.prop(key+'.help.content')}">
+                    <span class="btn btn-info"><i class="icon-question-sign icon-white"></i></span>
+                  </a>
+                </td>
+                <td><input type="text" class="input-xxlarge" value="${property.key}"></td>
+                <td><input type="text" class="input-xlarge" value="${property.value}"></td>
+              </tr>
+            {{/each}}
+          </tbody>
+
+        </table>
+      </div>
+    </div>
   </div>
+
+  <div>
+    <button data-bind="click: saveArchivaRuntimeConfiguration" id="archiva-runtime-configuration-save"
+            class="btn">${$.i18n.prop('save')}
+    </button>
+  </div>
+
 </script>

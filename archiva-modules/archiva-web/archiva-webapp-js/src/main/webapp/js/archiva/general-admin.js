@@ -1288,6 +1288,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
               new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration,userManagerImplementationInformations);
           mainContent.html( $( "#runtime-configuration-main" ).tmpl( ) );
           ko.applyBindings(archivaRuntimeConfigurationViewModel,$("#runtime-configuration-content" ).get(0));
+          activatePopoverDoc();
         }
       });
 
