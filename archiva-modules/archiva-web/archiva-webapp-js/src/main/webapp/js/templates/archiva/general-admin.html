@@ -930,7 +930,7 @@
                 ${$.i18n.prop('redback.runtime.ldap.host.label')}
               </label>
               <div class="controls">
-                <input type="text" id="ldap-host" name="ldap-host" class="input-xlarge required"
+                <input type="text" id="ldap-host" name="ldap-host" class="input-xlarge"
                        data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().hostName"/>
               </div>
             </div>
@@ -939,7 +939,7 @@
                 ${$.i18n.prop('redback.runtime.ldap.port.label')}
               </label>
               <div class="controls">
-                <input type="text" id="ldap-port" name="ldap-port" class="input-large required"
+                <input type="text" id="ldap-port" name="ldap-port" class="input-large"
                        data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().port"/>
               </div>
             </div>
@@ -948,7 +948,7 @@
                 ${$.i18n.prop('redback.runtime.ldap.baseDn.label')}
               </label>
               <div class="controls">
-                <input type="text" id="ldap-baseDn" name="ldap-baseDn" class="input-xxlarge required"
+                <input type="text" id="ldap-baseDn" name="ldap-baseDn" class="input-xxlarge"
                        data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().baseDn"/>
               </div>
             </div>
@@ -966,7 +966,7 @@
                 ${$.i18n.prop('redback.runtime.ldap.password.label')}
               </label>
               <div class="controls">
-                <input type="text" id="ldap-password" name="ldap-password" class="input-xlarge required"
+                <input type="text" id="ldap-password" name="ldap-password" class="input-xlarge"
                        data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().password"/>
               </div>
             </div>
@@ -975,7 +975,7 @@
                 ${$.i18n.prop('redback.runtime.ldap.contextFactory.label')}
               </label>
               <div class="controls">
-                <input type="text" id="ldap-context-factory" name="ldap-context-factory" class="input-xlarge required"
+                <input type="text" id="ldap-context-factory" name="ldap-context-factory" class="input-xlarge"
                        data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().contextFactory"/>
               </div>
             </div>
@@ -984,7 +984,7 @@
                 ${$.i18n.prop('redback.runtime.ldap.authenticationMethod.label')}
               </label>
               <div class="controls">
-                <input type="text" id="ldap-authenticationMethod" name="ldap-authenticationMethod" class="input-xlarge required"
+                <input type="text" id="ldap-authenticationMethod" name="ldap-authenticationMethod" class="input-xlarge"
                        data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().authenticationMethod"/>
               </div>
             </div>
@@ -1010,7 +1010,7 @@
                 <td>
                   {{var key = property.key}}
                   <a class="popover-doc"
-                     data-original-title="${$.i18n.prop(key+'.help.title')}"
+                     data-original-title="${$.i18n.prop('redback.runtime.properties.help.title')}"
                      data-content="${$.i18n.prop(key+'.help.content')}">
                     <span class="btn btn-info"><i class="icon-question-sign icon-white"></i></span>
                   </a>
