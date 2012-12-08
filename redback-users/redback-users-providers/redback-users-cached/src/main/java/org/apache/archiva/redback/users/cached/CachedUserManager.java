@@ -93,13 +93,6 @@ public class CachedUserManager
         return this.userImpl.createUser( username, fullName, emailAddress );
     }
 
-    public void deleteUser( Object principal )
-        throws UserNotFoundException
-    {
-        usersCache.remove( principal );
-        this.userImpl.deleteUser( principal );
-    }
-
     public void deleteUser( String username )
         throws UserNotFoundException
     {
@@ -152,22 +145,6 @@ public class CachedUserManager
         {
             User user = this.userImpl.getGuestUser();
             usersCache.put( GUEST_USERNAME, user );
-            return user;
-        }
-    }
-
-    public User findUser( Object principal )
-        throws UserNotFoundException
-    {
-        Object el = usersCache.get( principal );
-        if ( el != null )
-        {
-            return (User) el;
-        }
-        else
-        {
-            User user = this.userImpl.findUser( principal );
-            usersCache.put( principal, user );
             return user;
         }
     }
@@ -240,14 +217,14 @@ public class CachedUserManager
         return this.userImpl.updateUser( user, passwordChangeRequired );
     }
 
-    public boolean userExists( Object principal )
+    public boolean userExists( String userName )
     {
-        if ( usersCache.hasKey( principal ) )
+        if ( usersCache.hasKey( userName ) )
         {
             return true;
         }
 
-        return this.userImpl.userExists( principal );
+        return this.userImpl.userExists( userName );
     }
 
     public void userManagerInit( boolean freshDatabase )

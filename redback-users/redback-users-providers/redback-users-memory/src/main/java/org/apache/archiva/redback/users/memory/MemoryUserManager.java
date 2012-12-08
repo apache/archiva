@@ -138,21 +138,7 @@ public class MemoryUserManager
         return user;
     }
 
-    public User findUser( Object principal )
-        throws UserNotFoundException
-    {
-        triggerInit();
-        User user = users.get( principal );
-
-        if ( user == null )
-        {
-            throw new UserNotFoundException( "Cannot find the user with the principal '" + principal + "'." );
-        }
-
-        return user;
-    }
-
-    public boolean userExists( Object principal )
+    public boolean userExists( String principal )
     {
         try
         {
@@ -165,11 +151,6 @@ public class MemoryUserManager
         }
     }
 
-    public void deleteUser( Object principal )
-        throws UserNotFoundException
-    {
-        deleteUser( principal.toString() );
-    }
 
     public User createUser( String username, String fullName, String emailAddress )
     {

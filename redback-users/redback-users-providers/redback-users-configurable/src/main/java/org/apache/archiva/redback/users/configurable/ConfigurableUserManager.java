@@ -85,12 +85,6 @@ public class ConfigurableUserManager
         return userManagerImpl.createUserQuery();
     }
 
-    public void deleteUser( Object principal )
-        throws UserNotFoundException
-    {
-        userManagerImpl.deleteUser( principal );
-    }
-
     public void deleteUser( String username )
         throws UserNotFoundException
     {
@@ -106,12 +100,6 @@ public class ConfigurableUserManager
         throws UserNotFoundException
     {
         return userManagerImpl.findUser( username );
-    }
-
-    public User findUser( Object principal )
-        throws UserNotFoundException
-    {
-        return userManagerImpl.findUser( principal );
     }
 
     @Override
@@ -173,9 +161,9 @@ public class ConfigurableUserManager
         return userManagerImpl.updateUser( user, passwordChangeRequired );
     }
 
-    public boolean userExists( Object principal )
+    public boolean userExists( String userName )
     {
-        return userManagerImpl.userExists( principal );
+        return userManagerImpl.userExists( userName );
     }
 
     public void setUserManagerImpl( UserManager userManagerImpl )

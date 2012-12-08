@@ -151,31 +151,12 @@ public interface UserManager
     List<User> findUsersByQuery( UserQuery query );
 
     /**
-     * Find a User using the principal.
-     *
-     * @param principal the principal to look for.
-     * @return the user.
-     * @throws UserNotFoundException if the user was not found.
-     */
-    User findUser( Object principal )
-        throws UserNotFoundException;
-
-    /**
      * true if the user exists, false if it doesn't
      *
      * @param principal
      * @return true, if user exists
      */
-    boolean userExists( Object principal );
-
-    /**
-     * Delete a user using the principal.
-     *
-     * @param principal the principal to look for.
-     * @throws UserNotFoundException the user was not found.
-     */
-    void deleteUser( Object principal )
-        throws UserNotFoundException;
+    boolean userExists( String principal );
 
     /**
      * Delete a user using the username.

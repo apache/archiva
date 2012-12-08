@@ -109,7 +109,7 @@ public class AbstractUserManagerTestCase
         try
         {
             Object obj = null;
-            getUserManager().findUser( obj );
+            getUserManager().findUser( null );
             fail( "findUser() with null Object Should have thrown a UserNotFoundException." );
         }
         catch ( UserNotFoundException e )

@@ -127,29 +127,6 @@ public class LdapUserManager
         return new LdapUserQuery();
     }
 
-    public void deleteUser( Object principal )
-        throws UserNotFoundException
-    {
-        if ( principal != null )
-        {
-            clearFromCache( principal.toString() );
-        }
-
-        LdapConnection ldapConnection = getLdapConnection();
-        try
-        {
-            DirContext context = ldapConnection.getDirContext();
-            controller.removeUser( principal, context );
-        }
-        catch ( LdapControllerException e )
-        {
-            log.error( "Failed to delete user: {}", principal, e );
-        }
-        finally
-        {
-            closeLdapConnection( ldapConnection );
-        }
-    }
 
     public void deleteUser( String username )
         throws UserNotFoundException
@@ -243,58 +220,6 @@ public class LdapUserManager
             throw new UserNotFoundException( "Guest user doesn't exist." );
         }
         return guestUser;
-    }
-
-    public User findUser( Object principal )
-        throws UserNotFoundException
-    {
-        if ( principal == null )
-        {
-            throw new UserNotFoundException( "Unable to find user based on null principal." );
-        }
-
-        if ( GUEST_USERNAME.equals( principal.toString() ) )
-        {
-            return getGuestUser();
-        }
-
-        // REDBACK-289/MRM-1488
-        // look for the user in the cache first
-        LdapUser ldapUser = ldapCacheService.getUser( principal.toString() );
-        if ( ldapUser != null )
-        {
-            log.debug( "User {} found in cache.", principal );
-            return ldapUser;
-        }
-
-        LdapConnection ldapConnection = getLdapConnection();
-        try
-        {
-            DirContext context = ldapConnection.getDirContext();
-
-            User user = controller.getUser( principal, context );
-
-            // REDBACK-289/MRM-1488
-            log.debug( "Adding user {} to cache..", principal );
-
-            ldapCacheService.addUser( (LdapUser) user );
-
-            return user;
-        }
-        catch ( LdapControllerException e )
-        {
-            log.error( "Failed to find user: {}", principal, e );
-            return null;
-        }
-        catch ( MappingException e )
-        {
-            log.error( "Failed to map user: {}", principal, e );
-            return null;
-        }
-        finally
-        {
-            closeLdapConnection( ldapConnection );
-        }
     }
 
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
@@ -437,7 +362,7 @@ public class LdapUserManager
         return user;
     }
 
-    public boolean userExists( Object principal )
+    public boolean userExists( String principal )
     {
         if ( principal == null )
         {

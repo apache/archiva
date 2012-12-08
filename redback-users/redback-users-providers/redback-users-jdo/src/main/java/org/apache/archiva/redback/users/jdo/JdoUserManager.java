@@ -242,27 +242,6 @@ public class JdoUserManager
         return (User) addObject( user );
     }
 
-    public void deleteUser( Object principal )
-    {
-        try
-        {
-            User user = findUser( principal );
-
-            if ( user.isPermanent() )
-            {
-                throw new PermanentUserException( "Cannot delete permanent user [" + user.getUsername() + "]." );
-            }
-
-            fireUserManagerUserRemoved( user );
-
-            removeObject( user );
-        }
-        catch ( UserNotFoundException e )
-        {
-            log.warn( "Unable to delete user " + principal + ", user not found.", e );
-        }
-    }
-
     public void deleteUser( String username )
     {
         try
@@ -307,29 +286,6 @@ public class JdoUserManager
         RedbackJdoUtils.removeAll( getPersistenceManager(), UsersManagementModelloMetadata.class );
     }
 
-    public User findUser( Object principal )
-        throws UserNotFoundException
-    {
-        if ( principal == null )
-        {
-            throw new UserNotFoundException( "Unable to find user based on null principal." );
-        }
-
-        try
-        {
-            return (User) RedbackJdoUtils.getObjectById( getPersistenceManager(), JdoUser.class, principal.toString(),
-                                                         null );
-        }
-        catch ( RedbackObjectNotFoundException e )
-        {
-            throw new UserNotFoundException( "Unable to find user: " + e.getMessage(), e );
-        }
-        catch ( RedbackStoreException e )
-        {
-            throw new UserNotFoundException( "Unable to find user: " + e.getMessage(), e );
-        }
-    }
-
     public User findUser( String username )
         throws UserNotFoundException
     {
@@ -341,7 +297,7 @@ public class JdoUserManager
         return (User) getObjectById( username, null );
     }
 
-    public boolean userExists( Object principal )
+    public boolean userExists( String principal )
     {
         try
         {
