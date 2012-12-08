@@ -105,6 +105,7 @@ public class User
         this.setValidated( user.isValidated() );
         this.setPasswordChangeRequired( user.isPasswordChangeRequired() );
         this.setPermanent( user.isPermanent() );
+        this.setUserManagerId( user.getUserManagerId() );
 
         setTimestampAccountCreation( DateUtils.formatWithAge( user.getAccountCreationDate(), "ago" ) );
         setTimestampLastLogin( DateUtils.formatWithAge( user.getLastLoginDate(), "ago" ) );
