@@ -537,21 +537,9 @@ public class SecuritySystemStub
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
-            public User findUser( Object principal )
-                throws UserNotFoundException
-            {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public boolean userExists( Object principal )
+            public boolean userExists( String principal )
             {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            public void deleteUser( Object principal )
-                throws UserNotFoundException
-            {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void deleteUser( String username )
