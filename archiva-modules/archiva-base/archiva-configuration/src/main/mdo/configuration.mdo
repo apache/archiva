@@ -1460,11 +1460,13 @@
           <defaultValue>false</defaultValue>
         </field>
         <field>
-          <name>userManagerImpl</name>
-          <description>The user manager impl to use.</description>
+          <name>userManagerImpls</name>
+          <description>The user manager impls to use.</description>
           <version>1.4.0+</version>
-          <type>String</type>
-          <defaultValue>jdo</defaultValue>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
         </field>
         <field>
           <name>ldapConfiguration</name>

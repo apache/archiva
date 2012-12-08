@@ -1151,8 +1151,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
 
-  ArchivaRuntimeConfiguration=function(userManagerImpl,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries){
-    this.userManagerImpl=ko.observable(userManagerImpl);
+  ArchivaRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries){
+    this.userManagerImpls=ko.observableArray(userManagerImpls);
     this.ldapConfiguration=ko.observable(ldapConfiguration);
     this.migratedFromRedbackConfiguration=ko.observable(migratedFromRedbackConfiguration);
     this.configurationPropertiesEntries=ko.observableArray(configurationPropertiesEntries?configurationPropertiesEntries:[]);

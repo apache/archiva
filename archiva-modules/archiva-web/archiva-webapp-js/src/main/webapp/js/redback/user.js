@@ -34,9 +34,11 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
    * @param locked
    * @param passwordChangeRequired
    * @param ownerViewModel
+   * @param readOnly
+   * @param uuserManagerId
    */
   User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,
-                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel,readOnly) {
+                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel,readOnly,userManagerId) {
     var self=this;
     // Potentially Editable Field.
     this.username = ko.observable(username);
@@ -77,6 +79,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
     this.modified=ko.observable(false);
 
     this.readOnly=readOnly;
+
+    this.userManagerId=userManagerId;
 
     this.rememberme=false;
 
@@ -811,7 +815,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
   mapUser=function(data) {
     return new User(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,
                     data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,
-                    data.locked,data.passwordChangeRequired,self,data.readOnly);
+                    data.locked,data.passwordChangeRequired,self,data.readOnly,data.userManagerId);
   }
 
 

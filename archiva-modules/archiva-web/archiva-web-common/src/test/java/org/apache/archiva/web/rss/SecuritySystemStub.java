@@ -319,6 +319,11 @@ public class SecuritySystemStub
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
+
+                    public String getUserManagerId()
+                    {
+                        return "mock";
+                    }
                 };
             }
 
@@ -503,6 +508,11 @@ public class SecuritySystemStub
                     public void setLastLoginDate( Date date )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+                    public String getUserManagerId()
+                    {
+                        return "mock";
                     }
                 };
             }

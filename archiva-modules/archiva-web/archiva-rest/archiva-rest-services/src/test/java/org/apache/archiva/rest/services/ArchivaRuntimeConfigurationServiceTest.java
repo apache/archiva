@@ -24,6 +24,7 @@ import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
 import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class ArchivaRuntimeConfigurationServiceTest
     {
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration =
             getArchivaRuntimeConfigurationService().getArchivaRuntimeConfigurationAdmin();
-        assertEquals( "jdo", archivaRuntimeConfiguration.getUserManagerImpl() );
+        assertEquals( "jdo", archivaRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
     }
 
     @Test
@@ -47,14 +48,14 @@ public class ArchivaRuntimeConfigurationServiceTest
     {
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration =
             getArchivaRuntimeConfigurationService().getArchivaRuntimeConfigurationAdmin();
-        assertEquals( "jdo", archivaRuntimeConfiguration.getUserManagerImpl() );
+        assertEquals( "jdo", archivaRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
-        archivaRuntimeConfiguration.setUserManagerImpl( "foo" );
+        archivaRuntimeConfiguration.setUserManagerImpls( Arrays.asList( "foo" ) );
 
         getArchivaRuntimeConfigurationService().updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
 
         archivaRuntimeConfiguration = getArchivaRuntimeConfigurationService().getArchivaRuntimeConfigurationAdmin();
-        assertEquals( "foo", archivaRuntimeConfiguration.getUserManagerImpl() );
+        assertEquals( "foo", archivaRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
     }
 

@@ -40,7 +40,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service ("archivaRuntimeConfigurationService#rest")
+@Service( "archivaRuntimeConfigurationService#rest" )
 public class DefaultArchivaRuntimeConfigurationService
     extends AbstractRestService
     implements ArchivaRuntimeConfigurationService
@@ -49,7 +49,7 @@ public class DefaultArchivaRuntimeConfigurationService
     private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
 
     @Inject
-    @Named ( value = "userManager#configurable" )
+    @Named( value = "userManager#configurable" )
     private UserManager userManager;
 
     @Inject
@@ -74,14 +74,14 @@ public class DefaultArchivaRuntimeConfigurationService
         try
         {
             // has user manager impl changed ?
-            boolean userManagerChanged = !StringUtils.equals( archivaRuntimeConfiguration.getUserManagerImpl(),
-                                                              archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpl() );
+            boolean userManagerChanged = archivaRuntimeConfiguration.getUserManagerImpls().size()
+                != archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls().size();
             archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
 
             if ( userManagerChanged )
             {
-                log.info( "user manager impl changed to {} reload it",
-                          archivaRuntimeConfiguration.getUserManagerImpl() );
+                log.info( "user managerImpls changed to {} so reload it",
+                          archivaRuntimeConfiguration.getUserManagerImpls() );
                 userManager.initialize();
             }
 

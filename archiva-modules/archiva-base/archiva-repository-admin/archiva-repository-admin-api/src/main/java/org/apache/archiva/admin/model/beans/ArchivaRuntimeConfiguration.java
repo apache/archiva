@@ -29,11 +29,15 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement( name = "redbackRuntimeConfiguration" )
+@XmlRootElement(name = "redbackRuntimeConfiguration")
 public class ArchivaRuntimeConfiguration
     implements Serializable
 {
-    private String userManagerImpl = "jdo";
+
+    /**
+     * Field userManagerImpls.
+     */
+    private List<String> userManagerImpls = new ArrayList<String>();
 
     private LdapConfiguration ldapConfiguration;
 
@@ -54,14 +58,14 @@ public class ArchivaRuntimeConfiguration
         // no op
     }
 
-    public String getUserManagerImpl()
+    public List<String> getUserManagerImpls()
     {
-        return userManagerImpl;
+        return userManagerImpls;
     }
 
-    public void setUserManagerImpl( String userManagerImpl )
+    public void setUserManagerImpls( List<String> userManagerImpls )
     {
-        this.userManagerImpl = userManagerImpl;
+        this.userManagerImpls = userManagerImpls;
     }
 
     public LdapConfiguration getLdapConfiguration()
@@ -125,10 +129,11 @@ public class ArchivaRuntimeConfiguration
     public String toString()
     {
         return "ArchivaRuntimeConfiguration{" +
-            "userManagerImpl='" + userManagerImpl + '\'' +
+            "userManagerImpls=" + userManagerImpls +
             ", ldapConfiguration=" + ldapConfiguration +
             ", migratedFromRedbackConfiguration=" + migratedFromRedbackConfiguration +
             ", configurationProperties=" + configurationProperties +
+            ", configurationPropertiesEntries=" + configurationPropertiesEntries +
             '}';
     }
 }

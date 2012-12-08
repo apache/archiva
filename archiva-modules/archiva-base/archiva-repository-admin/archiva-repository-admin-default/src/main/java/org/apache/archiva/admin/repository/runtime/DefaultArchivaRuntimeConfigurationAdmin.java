@@ -73,7 +73,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 String userManagerImpl = userConfiguration.getString( UserConfigurationKeys.USER_MANAGER_IMPL );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
-                    archivaRuntimeConfiguration.setUserManagerImpl( userManagerImpl );
+                    archivaRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
                 }
 
                 // now ldap
@@ -177,7 +177,8 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.USER_MANAGER_IMPL.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getUserManagerImpl();
+            // possible false for others than archiva user manager
+            return getArchivaRuntimeConfiguration().getUserManagerImpls().get( 0 );
         }
 
         ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
