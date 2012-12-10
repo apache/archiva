@@ -27,7 +27,6 @@ import javax.naming.spi.StateFactory;
 
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
- *
  */
 public interface LdapConnectionFactory
 {
@@ -46,5 +45,7 @@ public interface LdapConnectionFactory
     void addObjectFactory( Class<? extends ObjectFactory> objectFactoryClass );
 
     void addStateFactory( Class<? extends StateFactory> objectFactoryClass );
+
+    void initialize();
 
 }
