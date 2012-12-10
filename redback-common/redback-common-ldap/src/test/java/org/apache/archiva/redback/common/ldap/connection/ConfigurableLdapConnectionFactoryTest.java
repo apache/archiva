@@ -42,7 +42,7 @@ public class ConfigurableLdapConnectionFactoryTest
     @Test
     public void testConfiguration()
     {
-        assertEquals( "dc=codehaus,dc=org", factory.getConfiguration().getBaseDn().toString() );
-        assertEquals( "uid=user,dc=codehaus,dc=org", factory.getConfiguration().getBindDn().toString() );
+        assertEquals( "dc=codehaus,dc=org", factory.getLdapConnectionConfiguration().getBaseDn().toString() );
+        assertEquals( "uid=user,dc=codehaus,dc=org", factory.getLdapConnectionConfiguration().getBindDn().toString() );
     }
 }
