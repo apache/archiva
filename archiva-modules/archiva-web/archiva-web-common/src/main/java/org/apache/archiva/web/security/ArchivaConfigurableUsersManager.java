@@ -31,13 +31,15 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("userManager#archiva")
+@Service( "userManager#archiva" )
 public class ArchivaConfigurableUsersManager
     extends ConfigurableUserManager
 {
@@ -48,7 +50,9 @@ public class ArchivaConfigurableUsersManager
     @Inject
     private ApplicationContext applicationContext;
 
-    private List<UserManager> userManagers;
+    private Map<String, UserManager> userManagerPerId;
+
+    private List<UserManagerListener> listeners = new ArrayList<UserManagerListener>();
 
     @Override
     public void initialize()
@@ -59,12 +63,12 @@ public class ArchivaConfigurableUsersManager
                 archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls();
             log.info( "use userManagerImpls: '{}'", userManagerImpls );
 
-            userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
+            userManagerPerId = new LinkedHashMap<String, UserManager>( userManagerImpls.size() );
             for ( String id : userManagerImpls )
             {
                 UserManager userManagerImpl = applicationContext.getBean( "userManager#" + id, UserManager.class );
                 setUserManagerImpl( userManagerImpl );
-                userManagers.add( userManagerImpl );
+                userManagerPerId.put( id, userManagerImpl );
             }
         }
         catch ( RepositoryAdminException e )
@@ -78,20 +82,36 @@ public class ArchivaConfigurableUsersManager
     @Override
     public User addUser( User user )
     {
-        return super.addUser( user );    //To change body of overridden methods use File | Settings | File Templates.
+        return userManagerPerId.get( user.getUserManagerId() ).addUser( user );
     }
 
     @Override
     public void addUserUnchecked( User user )
     {
-        super.addUserUnchecked( user );    //To change body of overridden methods use File | Settings | File Templates.
+        userManagerPerId.get( user.getUserManagerId() ).addUserUnchecked( user );
+    }
+
+    protected UserManager findFirstWritable()
+    {
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            if ( !userManager.isReadOnly() )
+            {
+                return userManager;
+            }
+        }
+        return null;
     }
 
     @Override
     public User createUser( String username, String fullName, String emailAddress )
     {
-        return super.createUser( username, fullName,
-                                 emailAddress );    //To change body of overridden methods use File | Settings | File Templates.
+        UserManager userManager = findFirstWritable();
+        if ( userManager == null )
+        {
+            throw new RuntimeException( "impossible to find a writable userManager" );
+        }
+        return userManager.createUser( username, fullName, emailAddress );
     }
 
     @Override
@@ -100,183 +120,276 @@ public class ArchivaConfigurableUsersManager
         return super.createUserQuery();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
-    @Override
-    public void deleteUser( Object principal )
-        throws UserNotFoundException
-    {
-        super.deleteUser( principal );    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     @Override
     public void deleteUser( String username )
         throws UserNotFoundException
     {
-        super.deleteUser( username );    //To change body of overridden methods use File | Settings | File Templates.
+        UserManager userManager = findFirstWritable();
+        if ( userManager == null )
+        {
+            throw new RuntimeException( "impossible to find a writable userManager" );
+        }
+        userManager.deleteUser( username );
     }
 
     @Override
     public void eraseDatabase()
     {
-        super.eraseDatabase();    //To change body of overridden methods use File | Settings | File Templates.
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            userManager.eraseDatabase();
+        }
     }
 
     @Override
     public User findUser( String username )
         throws UserNotFoundException
     {
-        return super.findUser(
-            username );    //To change body of overridden methods use File | Settings | File Templates.
+        User user = null;
+        UserNotFoundException lastException = null;
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            try
+            {
+                user = userManager.findUser( username );
+                if ( user != null )
+                {
+                    return user;
+                }
+            }
+            catch ( UserNotFoundException e )
+            {
+                lastException = e;
+            }
+        }
+
+        if ( user == null )
+        {
+            throw lastException;
+        }
+
+        return user;
     }
 
-    @Override
-    public User findUser( Object principal )
-        throws UserNotFoundException
-    {
-        return super.findUser(
-            principal );    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     @Override
     public User getGuestUser()
         throws UserNotFoundException
     {
-        return super.getGuestUser();    //To change body of overridden methods use File | Settings | File Templates.
+        User user = null;
+        UserNotFoundException lastException = null;
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            try
+            {
+                user = userManager.getGuestUser();
+                if ( user != null )
+                {
+                    return user;
+                }
+            }
+            catch ( UserNotFoundException e )
+            {
+                lastException = e;
+            }
+        }
+
+        if ( user == null )
+        {
+            throw lastException;
+        }
+
+        return user;
     }
 
     @Override
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
     {
-        return super.findUsersByEmailKey( emailKey,
-                                          orderAscending );    //To change body of overridden methods use File | Settings | File Templates.
+        List<User> users = new ArrayList<User>();
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            List<User> found = userManager.findUsersByEmailKey( emailKey, orderAscending );
+            if ( found != null )
+            {
+                users.addAll( found );
+            }
+        }
+        return users;
     }
 
     @Override
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
     {
-        return super.findUsersByFullNameKey( fullNameKey,
-                                             orderAscending );    //To change body of overridden methods use File | Settings | File Templates.
+        List<User> users = new ArrayList<User>();
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );
+            if ( found != null )
+            {
+                users.addAll( found );
+            }
+        }
+        return users;
     }
 
     @Override
     public List<User> findUsersByQuery( UserQuery query )
     {
-        return super.findUsersByQuery(
-            query );    //To change body of overridden methods use File | Settings | File Templates.
+        List<User> users = new ArrayList<User>();
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            List<User> found = userManager.findUsersByQuery( query );
+            if ( found != null )
+            {
+                users.addAll( found );
+            }
+        }
+        return users;
     }
 
     @Override
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
     {
-        return super.findUsersByUsernameKey( usernameKey,
-                                             orderAscending );    //To change body of overridden methods use File | Settings | File Templates.
+        List<User> users = new ArrayList<User>();
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            List<User> found = userManager.findUsersByUsernameKey( usernameKey, orderAscending );
+            if ( found != null )
+            {
+                users.addAll( found );
+            }
+        }
+        return users;
     }
 
     @Override
     public String getId()
     {
-        return super.getId();    //To change body of overridden methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public List<User> getUsers()
     {
-        return super.getUsers();    //To change body of overridden methods use File | Settings | File Templates.
+        List<User> users = new ArrayList<User>();
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            List<User> found = userManager.getUsers();
+            if ( found != null )
+            {
+                users.addAll( found );
+            }
+        }
+        return users;
     }
 
     @Override
     public List<User> getUsers( boolean orderAscending )
     {
-        return super.getUsers(
-            orderAscending );    //To change body of overridden methods use File | Settings | File Templates.
+        List<User> users = new ArrayList<User>();
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            List<User> found = userManager.getUsers( orderAscending );
+            if ( found != null )
+            {
+                users.addAll( found );
+            }
+        }
+        return users;
     }
 
     @Override
     public boolean isReadOnly()
     {
-        return super.isReadOnly();    //To change body of overridden methods use File | Settings | File Templates.
+        //olamy: must be it depends :-)
+        return true;
     }
 
     @Override
     public User updateUser( User user )
         throws UserNotFoundException
     {
-        return super.updateUser( user );    //To change body of overridden methods use File | Settings | File Templates.
+        return userManagerPerId.get( user.getUserManagerId() ).updateUser( user );
     }
 
     @Override
     public User updateUser( User user, boolean passwordChangeRequired )
         throws UserNotFoundException
     {
-        return super.updateUser( user,
-                                 passwordChangeRequired );    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean userExists( Object principal )
-    {
-        return super.userExists(
-            principal );    //To change body of overridden methods use File | Settings | File Templates.
+        return userManagerPerId.get( user.getUserManagerId() ).updateUser( user, passwordChangeRequired );
     }
 
     @Override
     public void setUserManagerImpl( UserManager userManagerImpl )
     {
-        super.setUserManagerImpl(
-            userManagerImpl );    //To change body of overridden methods use File | Settings | File Templates.
+        log.error( "setUserManagerImpl cannot be used in this implementation" );
     }
 
     @Override
     public void addUserManagerListener( UserManagerListener listener )
     {
-        super.addUserManagerListener(
-            listener );    //To change body of overridden methods use File | Settings | File Templates.
+        this.listeners.add( listener );
     }
 
     @Override
     public void removeUserManagerListener( UserManagerListener listener )
     {
-        super.removeUserManagerListener(
-            listener );    //To change body of overridden methods use File | Settings | File Templates.
+        this.listeners.remove( listener );
     }
 
     @Override
     protected void fireUserManagerInit( boolean freshDatabase )
     {
-        super.fireUserManagerInit(
-            freshDatabase );    //To change body of overridden methods use File | Settings | File Templates.
+        for ( UserManagerListener listener : listeners )
+        {
+            listener.userManagerInit( freshDatabase );
+        }
     }
 
     @Override
     protected void fireUserManagerUserAdded( User addedUser )
     {
-        super.fireUserManagerUserAdded(
-            addedUser );    //To change body of overridden methods use File | Settings | File Templates.
+        for ( UserManagerListener listener : listeners )
+        {
+            listener.userManagerUserAdded( addedUser );
+        }
     }
 
     @Override
     protected void fireUserManagerUserRemoved( User removedUser )
     {
-        super.fireUserManagerUserRemoved(
-            removedUser );    //To change body of overridden methods use File | Settings | File Templates.
+        for ( UserManagerListener listener : listeners )
+        {
+            listener.userManagerUserRemoved( removedUser );
+        }
     }
 
     @Override
     protected void fireUserManagerUserUpdated( User updatedUser )
     {
-        super.fireUserManagerUserUpdated(
-            updatedUser );    //To change body of overridden methods use File | Settings | File Templates.
+        for ( UserManagerListener listener : listeners )
+        {
+            listener.userManagerUserUpdated( updatedUser );
+        }
     }
 
     @Override
     public User createGuestUser()
     {
-        return super.createGuestUser();    //To change body of overridden methods use File | Settings | File Templates.
+        return findFirstWritable().createGuestUser();
     }
 
     @Override
     public boolean isFinalImplementation()
     {
-        return super.isFinalImplementation();    //To change body of overridden methods use File | Settings | File Templates.
+        return false;
     }
 
     public String getDescriptionKey()

@@ -224,7 +224,6 @@ define("archiva.proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstra
       for(var i=0;i<self.proxyConnectorRule.proxyConnectors().length;i++){
         if(self.proxyConnectorRule.proxyConnectors()[i].sourceRepoId()==sourceRepoId &&
             self.proxyConnectorRule.proxyConnectors()[i].targetRepoId()==targetRepoId){
-          $.log("found");
           proxyConnectorToRemove=self.proxyConnectorRule.proxyConnectors()[i];
         }
       }

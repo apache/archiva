@@ -1167,7 +1167,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         configurationPropertiesEntries=[];
     }
 
-    return new ArchivaRuntimeConfiguration(data.userManagerImpl,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration,
+    return new ArchivaRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration,
                                            configurationPropertiesEntries);
   }
 
@@ -1215,9 +1215,53 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration,userManagerImplementationInformations){
+    var self=this;
     this.archivaRuntimeConfiguration=ko.observable(archivaRuntimeConfiguration);
     this.userManagerImplementationInformations=ko.observable(userManagerImplementationInformations);
-    var self=this;
+
+    this.usedUserManagerImpls=ko.observableArray([]);
+
+    findUserManagerImplementationInformation=function(id){
+      for(var i= 0;i<self.userManagerImplementationInformations().length;i++){
+        $.log(id+""+self.userManagerImplementationInformations()[i].beanId);
+        if(id==self.userManagerImplementationInformations()[i].beanId){
+          return self.userManagerImplementationInformations()[i];
+        }
+      }
+    }
+
+    for(var i= 0;i<archivaRuntimeConfiguration.userManagerImpls().length;i++){
+      var id=archivaRuntimeConfiguration.userManagerImpls()[i];
+      $.log("id:"+id);
+      var userManagerImplementationInformation=findUserManagerImplementationInformation(id);
+
+      if(userManagerImplementationInformation!=null){
+        this.usedUserManagerImpls.push(userManagerImplementationInformation);
+      }
+    }
+
+    isUsedUserManagerImpl=function(userManagerImplementationInformation){
+      for(var i=0;i<self.usedUserManagerImpls().length;i++){
+        if(self.usedUserManagerImpls()[i].beanId==userManagerImplementationInformation.beanId){
+          return true;
+        }
+      }
+      return false;
+    }
+
+    this.availableUserManagerImpls=ko.observableArray([]);
+
+    for(var i=0;i<self.userManagerImplementationInformations().length;i++){
+      if(!isUsedUserManagerImpl(self.userManagerImplementationInformations()[i])){
+        self.availableUserManagerImpls.push(self.userManagerImplementationInformations()[i]);
+      }
+
+    }
+
+    userManagerImplMoved=function(arg){
+      $.log("userManagerImplMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
+      //self.usedUserManagerImpls().push(self.availableUserManagerImpls()[arg.sourceIndex]);
+    }
 
     saveArchivaRuntimeConfiguration=function(){
       $.log("saveArchivaRuntimeConfiguration");
@@ -1250,10 +1294,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
   }
 
-  UserManagerImplementationInformation=function(beanId,descriptionKey){
+  UserManagerImplementationInformation=function(beanId,descriptionKey,readOnly){
     this.beanId=beanId;
     this.descriptionKey=descriptionKey;
     this.description= $.i18n.prop(descriptionKey);
+    this.readOnly=readOnly;
   }
 
   mapUserManagerImplementationInformations=function(data){
@@ -1266,7 +1311,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     if(data==null){
       return null;
     }
-    return new UserManagerImplementationInformation(data.beanId,data.descriptionKey);
+    return new UserManagerImplementationInformation(data.beanId,data.descriptionKey,data.readOnly);
   }
 
   displayRuntimeConfiguration=function(){
@@ -1286,7 +1331,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           var archivaRuntimeConfiguration = mapArchivaRuntimeConfiguration(data);
           var archivaRuntimeConfigurationViewModel =
               new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration,userManagerImplementationInformations);
-          mainContent.html( $( "#runtime-configuration-main" ).tmpl( ) );
+          mainContent.html( $( "#runtime-configuration-main" ).tmpl() );
           ko.applyBindings(archivaRuntimeConfigurationViewModel,$("#runtime-configuration-content" ).get(0));
           activatePopoverDoc();
         }

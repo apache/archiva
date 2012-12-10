@@ -116,6 +116,7 @@ public class DefaultArchivaRuntimeConfigurationService
                 UserManagerImplementationInformation information = new UserManagerImplementationInformation();
                 information.setBeanId( StringUtils.substringAfter( entry.getKey(), "#" ) );
                 information.setDescriptionKey( userManager.getDescriptionKey() );
+                information.setReadOnly( userManager.isReadOnly() );
                 informations.add( information );
             }
         }

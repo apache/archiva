@@ -33,15 +33,18 @@ public class UserManagerImplementationInformation
 
     private String descriptionKey;
 
+    private boolean readOnly;
+
     public UserManagerImplementationInformation()
     {
         // no op
     }
 
-    public UserManagerImplementationInformation( String beanId, String descriptionKey )
+    public UserManagerImplementationInformation( String beanId, String descriptionKey, boolean readOnly )
     {
         this.beanId = beanId;
         this.descriptionKey = descriptionKey;
+        this.readOnly = readOnly;
     }
 
     public String getBeanId()
@@ -62,6 +65,16 @@ public class UserManagerImplementationInformation
     public void setDescriptionKey( String descriptionKey )
     {
         this.descriptionKey = descriptionKey;
+    }
+
+    public boolean isReadOnly()
+    {
+        return readOnly;
+    }
+
+    public void setReadOnly( boolean readOnly )
+    {
+        this.readOnly = readOnly;
     }
 
     @Override

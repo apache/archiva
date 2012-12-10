@@ -744,7 +744,7 @@
                     <div style="min-height: 40px"
                          data-bind="sortable: {template: 'statistics-repositories-order-tmpl',data:availableRepositories}">
                     </div>
-                </div>
+                  </div>
                 </div>
               </div>
               <div class="span6 well">
@@ -842,9 +842,9 @@
 </script>
 
 <script id="statistics-repositories-order-tmpl" type="text/html">
-    <div class="well draggable-item">
-        ${$data}
-    </div>
+  <div class="well draggable-item">
+    ${$data}
+  </div>
 </script>
 
 <script id="report-health" type="text/html">
@@ -904,20 +904,23 @@
   <div class="tab-content">
     <div class="tab-pane active" id="redback-runtime-general-content">
       <div class="well">
-        <form class="form-horizontal" id="runtime-configuration-form-id">
-          <fieldset id="form-runtime-configuration">
-            <div class="control-group">
-              <label for="userManagerImpl" class="control-label">
-                ${$.i18n.prop('runtime-configuration.usermanager.label')}
-              </label>
-
-              <div class="controls">
-                <select id="userManagerImpl"
-                        data-bind="options: userManagerImplementationInformations,optionsValue: 'beanId', optionsText: 'description', value: archivaRuntimeConfiguration().userManagerImpl, optionsCaption: 'Choose...'"></select>
-              </div>
+        <div class="row-fluid">
+          <div class="span4 dotted">
+            <h5></h5>
+            <hr/>
+            <div style="min-height: 40px" id="user-mananagers-sortables-choosed"
+                 data-bind="sortable: { template: 'redback-runtime-general-content-usermanagers', data:usedUserManagerImpls}">
             </div>
-          </fieldset>
-        </form>
+          </div>
+
+          <div class="span4 dotted">
+            <h5></h5>
+            <hr/>
+            <div style="min-height: 40px"id="user-mananagers-sortables-availables"
+                 data-bind="sortable: {template: 'redback-runtime-general-content-usermanagers',data:availableUserManagerImpls}">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1032,4 +1035,10 @@
     </button>
   </div>
 
+</script>
+
+<script id="redback-runtime-general-content-usermanagers" type="text/html">
+  <div class="well draggable-item">
+    ${$data.description}
+  </div>
 </script>
