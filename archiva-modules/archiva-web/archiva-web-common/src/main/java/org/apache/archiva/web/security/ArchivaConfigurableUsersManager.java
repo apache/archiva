@@ -346,7 +346,8 @@ public class ArchivaConfigurableUsersManager
     @Override
     public void setUserManagerImpl( UserManager userManagerImpl )
     {
-        log.error( "setUserManagerImpl cannot be used in this implementation" );
+        // not possible here but we know so no need of log.error
+        log.debug( "setUserManagerImpl cannot be used in this implementation" );
     }
 
     @Override
