@@ -59,7 +59,7 @@ public class ConfigurableLdapConnectionFactory
 
     private Properties extraProperties;
 
-    private LdapConnectionConfiguration configuration;
+    private LdapConnectionConfiguration ldapConnectionConfiguration;
 
 
     @Inject
@@ -74,18 +74,18 @@ public class ConfigurableLdapConnectionFactory
     {
         try
         {
-            configuration = new LdapConnectionConfiguration();
-            configuration.setHostname( userConf.getString( UserConfigurationKeys.LDAP_HOSTNAME, hostname ) );
-            configuration.setPort( userConf.getInt( UserConfigurationKeys.LDAP_PORT, port ) );
-            configuration.setSsl( userConf.getBoolean( UserConfigurationKeys.LDAP_SSL, ssl ) );
-            configuration.setBaseDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, baseDn ) );
-            configuration.setContextFactory(
+            ldapConnectionConfiguration = new LdapConnectionConfiguration();
+            ldapConnectionConfiguration.setHostname( userConf.getString( UserConfigurationKeys.LDAP_HOSTNAME, hostname ) );
+            ldapConnectionConfiguration.setPort( userConf.getInt( UserConfigurationKeys.LDAP_PORT, port ) );
+            ldapConnectionConfiguration.setSsl( userConf.getBoolean( UserConfigurationKeys.LDAP_SSL, ssl ) );
+            ldapConnectionConfiguration.setBaseDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, baseDn ) );
+            ldapConnectionConfiguration.setContextFactory(
                 userConf.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, contextFactory ) );
-            configuration.setBindDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, bindDn ) );
-            configuration.setPassword( userConf.getString( UserConfigurationKeys.LDAP_PASSWORD, password ) );
-            configuration.setAuthenticationMethod(
+            ldapConnectionConfiguration.setBindDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, bindDn ) );
+            ldapConnectionConfiguration.setPassword( userConf.getString( UserConfigurationKeys.LDAP_PASSWORD, password ) );
+            ldapConnectionConfiguration.setAuthenticationMethod(
                 userConf.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, authenticationMethod ) );
-            configuration.setExtraProperties( extraProperties );
+            ldapConnectionConfiguration.setExtraProperties( extraProperties );
         }
         catch ( InvalidNameException e )
         {
@@ -100,19 +100,19 @@ public class ConfigurableLdapConnectionFactory
     public LdapConnection getConnection()
         throws LdapException
     {
-        return new LdapConnection( configuration, null );
+        return new LdapConnection( getLdapConnectionConfiguration(), null );
     }
 
     public LdapConnection getConnection( Rdn subRdn )
         throws LdapException
     {
-        return new LdapConnection( configuration, subRdn );
+        return new LdapConnection( getLdapConnectionConfiguration(), subRdn );
     }
 
     public LdapConnection getConnection( String bindDn, String password )
         throws LdapException
     {
-        return new LdapConnection( configuration, bindDn, password );
+        return new LdapConnection( getLdapConnectionConfiguration(), bindDn, password );
     }
 
     public LdapName getBaseDnLdapName()
@@ -130,12 +130,12 @@ public class ConfigurableLdapConnectionFactory
 
     public void addObjectFactory( Class<? extends ObjectFactory> objectFactoryClass )
     {
-        configuration.getObjectFactories().add( objectFactoryClass );
+        getLdapConnectionConfiguration().getObjectFactories().add( objectFactoryClass );
     }
 
     public void addStateFactory( Class<? extends StateFactory> stateFactoryClass )
     {
-        configuration.getStateFactories().add( stateFactoryClass );
+        getLdapConnectionConfiguration().getStateFactories().add( stateFactoryClass );
     }
 
     // ----------------------------------------------------------------------
@@ -144,12 +144,17 @@ public class ConfigurableLdapConnectionFactory
 
     public String toString()
     {
-        return "{ConfigurableLdapConnectionFactory: configuration: " + configuration + "}";
+        return "{ConfigurableLdapConnectionFactory: configuration: " + getLdapConnectionConfiguration() + "}";
     }
 
-    public LdapConnectionConfiguration getConfiguration()
+    public LdapConnectionConfiguration getLdapConnectionConfiguration()
     {
-        return configuration;
+        return ldapConnectionConfiguration;
+    }
+
+    public void setLdapConnectionConfiguration( LdapConnectionConfiguration ldapConnectionConfiguration )
+    {
+        this.ldapConnectionConfiguration = ldapConnectionConfiguration;
     }
 
     public String getHostname()
