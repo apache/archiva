@@ -1270,6 +1270,15 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       $("#repository-group-save" ).button('loading');
+      self.archivaRuntimeConfiguration().userManagerImpls=ko.observableArray([]);
+      $.log("length:"+self.usedUserManagerImpls().length);
+      for(var i=0;i<self.usedUserManagerImpls().length;i++){
+        var beanId=self.usedUserManagerImpls()[i].beanId;
+        $.log("beanId:"+beanId);
+        self.archivaRuntimeConfiguration().userManagerImpls.push(beanId);
+      }
+      $.log("length:"+self.archivaRuntimeConfiguration().userManagerImpls().length);
+      $.log("json:"+ko.toJSON(self.archivaRuntimeConfiguration));
       $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration",
         {
           type: "PUT",
@@ -1277,7 +1286,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           data:ko.toJSON(self.archivaRuntimeConfiguration),
           dataType: 'json',
           success: function(data) {
-            var message=$.i18n.prop('archiva-runtime-configuration.updated',self.archivaRuntimeConfiguration().userManagerImpl());
+            var message=$.i18n.prop('archiva-runtime-configuration.updated');//,self.archivaRuntimeConfiguration().userManagerImpl());
             displaySuccessMessage(message);
           },
           error: function(data) {
