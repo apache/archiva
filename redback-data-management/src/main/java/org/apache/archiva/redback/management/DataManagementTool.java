@@ -23,6 +23,7 @@ import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
+import org.apache.archiva.redback.users.UserManagerException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -38,7 +39,7 @@ public interface DataManagementTool
         throws RbacManagerException, IOException, XMLStreamException;
 
     void backupUserDatabase( UserManager manager, File backupDirectory )
-        throws IOException, XMLStreamException;
+        throws IOException, XMLStreamException, UserManagerException;
 
     void backupKeyDatabase( KeyManager manager, File backupDirectory )
         throws IOException, XMLStreamException;
@@ -47,7 +48,7 @@ public interface DataManagementTool
         throws IOException, XMLStreamException, RbacManagerException;
 
     void restoreUsersDatabase( UserManager manager, File backupDirectory )
-        throws IOException, XMLStreamException;
+        throws IOException, XMLStreamException, UserManagerException;
 
     void restoreKeysDatabase( KeyManager manager, File backupDirectory )
         throws IOException, XMLStreamException;

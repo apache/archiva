@@ -21,6 +21,7 @@ import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
 import org.springframework.context.ApplicationContext;
@@ -66,16 +67,19 @@ public class ConfigurableUserManager
     }
 
     public User addUser( User user )
+        throws UserManagerException
     {
         return userManagerImpl.addUser( user );
     }
 
     public void addUserUnchecked( User user )
+        throws UserManagerException
     {
         userManagerImpl.addUserUnchecked( user );
     }
 
     public User createUser( String username, String fullName, String emailAddress )
+        throws UserManagerException
     {
         return userManagerImpl.createUser( username, fullName, emailAddress );
     }
@@ -86,7 +90,7 @@ public class ConfigurableUserManager
     }
 
     public void deleteUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         userManagerImpl.deleteUser( username );
     }
@@ -97,34 +101,38 @@ public class ConfigurableUserManager
     }
 
     public User findUser( String username )
-        throws UserNotFoundException
+        throws UserManagerException, UserNotFoundException
     {
         return userManagerImpl.findUser( username );
     }
 
     @Override
     public User getGuestUser()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return userManagerImpl.getGuestUser();
     }
 
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
+        throws UserManagerException
     {
         return userManagerImpl.findUsersByEmailKey( emailKey, orderAscending );
     }
 
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
+        throws UserManagerException
     {
         return userManagerImpl.findUsersByFullNameKey( fullNameKey, orderAscending );
     }
 
     public List<User> findUsersByQuery( UserQuery query )
+        throws UserManagerException
     {
         return userManagerImpl.findUsersByQuery( query );
     }
 
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
+        throws UserManagerException
     {
         return userManagerImpl.findUsersByUsernameKey( usernameKey, orderAscending );
     }
@@ -135,11 +143,13 @@ public class ConfigurableUserManager
     }
 
     public List<User> getUsers()
+        throws UserManagerException
     {
         return userManagerImpl.getUsers();
     }
 
     public List<User> getUsers( boolean orderAscending )
+        throws UserManagerException
     {
         return userManagerImpl.getUsers( orderAscending );
     }
@@ -150,18 +160,19 @@ public class ConfigurableUserManager
     }
 
     public User updateUser( User user )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return updateUser( user, false );
     }
 
     public User updateUser( User user, boolean passwordChangeRequired )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return userManagerImpl.updateUser( user, passwordChangeRequired );
     }
 
     public boolean userExists( String userName )
+        throws UserManagerException
     {
         return userManagerImpl.userExists( userName );
     }

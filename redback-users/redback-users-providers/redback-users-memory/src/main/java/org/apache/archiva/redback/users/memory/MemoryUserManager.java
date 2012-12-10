@@ -24,6 +24,7 @@ import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.PermanentUserException;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserQuery;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.memory.util.UserSorter;
@@ -163,7 +164,7 @@ public class MemoryUserManager
     }
 
     public void deleteUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         User user = findUser( username );
 

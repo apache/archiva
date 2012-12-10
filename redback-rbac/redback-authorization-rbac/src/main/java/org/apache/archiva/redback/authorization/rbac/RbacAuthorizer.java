@@ -32,6 +32,7 @@ import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,18 +48,18 @@ import java.util.Map;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  */
-@Service ( "authorizer#rbac" )
+@Service("authorizer#rbac")
 public class RbacAuthorizer
     implements Authorizer
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named ( value = "rBACManager#cached" )
+    @Named(value = "rBACManager#cached")
     private RBACManager manager;
 
     @Inject
-    @Named ( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
@@ -115,8 +116,7 @@ public class RbacAuthorizer
             if ( !guest.isLocked() )
             {
                 // Set permissions = manager.getAssignedPermissions( principal.toString(), operation );
-                Map<String, List<Permission>> permissionMap =
-                    manager.getAssignedPermissionMap( guest.getUsername() );
+                Map<String, List<Permission>> permissionMap = manager.getAssignedPermissionMap( guest.getUsername() );
 
                 if ( permissionMap.keySet().contains( operation.toString() ) )
                 {
@@ -150,6 +150,10 @@ public class RbacAuthorizer
         catch ( RbacManagerException rme )
         {
             return new AuthorizationResult( false, null, rme );
+        }
+        catch ( UserManagerException e )
+        {
+            return new AuthorizationResult( false, null, e );
         }
     }
 

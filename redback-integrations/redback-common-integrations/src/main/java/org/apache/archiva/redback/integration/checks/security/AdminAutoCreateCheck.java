@@ -30,6 +30,7 @@ import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +50,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 2.0
  */
-@Service( "environmentCheck#adminAutoCreateCheck" )
+@Service("environmentCheck#adminAutoCreateCheck")
 public class AdminAutoCreateCheck
     implements EnvironmentCheck
 {
@@ -65,11 +66,11 @@ public class AdminAutoCreateCheck
     public static final String ADMIN_PASSWORD_KEY = "redback.admin.password";
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration config;
 
     @Inject
@@ -79,7 +80,7 @@ public class AdminAutoCreateCheck
     private RoleManager roleManager;
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named(value = "rBACManager#cached")
     private RBACManager rbacManager;
 
     public void validateEnvironment( List<String> violations )
@@ -91,10 +92,12 @@ public class AdminAutoCreateCheck
             {
                 useForceAdminCreationFile();
             }
-
-
         }
         catch ( UserNotFoundException e )
+        {
+            useForceAdminCreationFile();
+        }
+        catch ( UserManagerException e )
         {
             useForceAdminCreationFile();
         }

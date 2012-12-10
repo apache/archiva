@@ -26,7 +26,7 @@ package org.apache.archiva.redback.users;
  *
  */
 public class UserManagerException
-    extends RuntimeException
+    extends Exception
 {
 
     public UserManagerException()

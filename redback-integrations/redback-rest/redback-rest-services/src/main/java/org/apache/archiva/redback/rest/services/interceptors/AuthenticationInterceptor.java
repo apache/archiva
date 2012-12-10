@@ -32,6 +32,7 @@ import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
@@ -54,17 +55,17 @@ import javax.ws.rs.core.Response;
  * @author Olivier Lamy
  * @since 1.3
  */
-@Service ("authenticationInterceptor#rest")
+@Service("authenticationInterceptor#rest")
 public class AuthenticationInterceptor
     extends AbstractInterceptor
     implements RequestHandler
 {
     @Inject
-    @Named (value = "userManager#configurable")
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
-    @Named (value = "httpAuthenticator#basic")
+    @Named(value = "httpAuthenticator#basic")
     private HttpBasicAuthentication httpAuthenticator;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -166,6 +167,11 @@ public class AuthenticationInterceptor
         catch ( AuthenticationException e )
         {
             log.debug( "failed to authenticate for path {}", message.get( Message.REQUEST_URI ) );
+            return Response.status( Response.Status.FORBIDDEN ).build();
+        }
+        catch ( UserManagerException e )
+        {
+            log.debug( "UserManagerException: {} for path", e.getMessage(), message.get( Message.REQUEST_URI ) );
             return Response.status( Response.Status.FORBIDDEN ).build();
         }
     }

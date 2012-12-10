@@ -36,6 +36,7 @@ import org.apache.archiva.redback.rest.api.services.LoginService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +180,14 @@ public class DefaultLoginService
         {
             return buildRestUser( e.getUser() );
         }
+        catch ( UserManagerException e )
+        {
+            log.info( "UserManagerException: {}", e.getMessage() );
+            List<ErrorMessage> errorMessages =
+                Arrays.asList( new ErrorMessage().message( "UserManagerException: " + e.getMessage() ) );
+            throw new RedbackServiceException( errorMessages );
+        }
+
     }
 
     public Boolean isLogged()

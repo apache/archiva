@@ -31,13 +31,12 @@ import javax.annotation.PostConstruct;
  * AbstractUserManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 public abstract class AbstractUserManager
     implements UserManager
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
-    
+
     private List<UserManagerListener> listeners = new ArrayList<UserManagerListener>();
 
     public void addUserManagerListener( UserManagerListener listener )
@@ -114,12 +113,13 @@ public abstract class AbstractUserManager
     }
 
     public User getGuestUser()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return findUser( GUEST_USERNAME );
     }
 
     public User createGuestUser()
+        throws UserManagerException
     {
         try
         {

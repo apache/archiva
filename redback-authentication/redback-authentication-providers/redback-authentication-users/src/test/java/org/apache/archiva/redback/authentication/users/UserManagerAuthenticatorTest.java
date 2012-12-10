@@ -24,6 +24,7 @@ import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
@@ -46,8 +47,8 @@ import java.util.Date;
  *
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public class UserManagerAuthenticatorTest
     extends TestCase
 {
@@ -117,7 +118,7 @@ public class UserManagerAuthenticatorTest
 
     @Test
     public void testAuthenticateLockedPassword()
-        throws AuthenticationException, MustChangePasswordException, UserNotFoundException
+        throws AuthenticationException, MustChangePasswordException, UserNotFoundException, UserManagerException
     {
         userSecurityPolicy.setEnabled( true );
 
@@ -156,7 +157,7 @@ public class UserManagerAuthenticatorTest
 
     @Test
     public void testAuthenticateExpiredPassword()
-        throws AuthenticationException, AccountLockedException, UserNotFoundException
+        throws AuthenticationException, AccountLockedException, UserNotFoundException, UserManagerException
     {
         userSecurityPolicy.setEnabled( true );
         userSecurityPolicy.setPasswordExpirationDays( 15 );

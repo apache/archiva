@@ -32,6 +32,7 @@ import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,16 +45,16 @@ import javax.annotation.Resource;
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  */
-@Service ("authenticator#keystore")
+@Service("authenticator#keystore")
 public class KeyStoreAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    @Resource (name = "keyManager#cached")
+    @Resource(name = "keyManager#cached")
     private KeyManager keystore;
 
-    @Resource (name = "userManager#configurable")
+    @Resource(name = "userManager#configurable")
     private UserManager userManager;
 
     public String getId()
@@ -105,6 +106,11 @@ public class KeyStoreAuthenticator
         catch ( UserNotFoundException e )
         {
             log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
+            return new AuthenticationResult( false, null, e );
+        }
+        catch ( UserManagerException e )
+        {
+            log.warn( "Login fail for user {} failed. message: {}", source.getPrincipal(), e.getMessage() );
             return new AuthenticationResult( false, null, e );
         }
     }

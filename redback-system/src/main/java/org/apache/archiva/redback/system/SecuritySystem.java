@@ -22,6 +22,7 @@ package org.apache.archiva.redback.system;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -34,7 +35,6 @@ import org.apache.archiva.redback.users.UserManager;
  * SecuritySystem:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
 public interface SecuritySystem
 {
@@ -44,10 +44,12 @@ public interface SecuritySystem
     // ----------------------------------------------------------------------------
 
     SecuritySession authenticate( AuthenticationDataSource source )
-        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException;
+        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException,
+        UserManagerException;
 
     boolean isAuthenticated( AuthenticationDataSource source )
-        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException;
+        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException,
+        UserManagerException;
 
     // ----------------------------------------------------------------------------
     // Authorization
@@ -61,6 +63,7 @@ public interface SecuritySystem
 
     /**
      * return AuthorizationResult without changing authorization
+     *
      * @param session
      * @param permission
      * @param resource
@@ -78,22 +81,22 @@ public interface SecuritySystem
     // ----------------------------------------------------------------------------
 
     UserManager getUserManager();
-    
+
     // ----------------------------------------------------------------------------
     // Key Management
     // ----------------------------------------------------------------------------
-    
+
     KeyManager getKeyManager();
 
     // ----------------------------------------------------------------------------
     // Policy Management
     // ----------------------------------------------------------------------------
-    
+
     UserSecurityPolicy getPolicy();
 
     /**
-     * @since 2.1
      * @return is it possible to modify user datas (some userManager cannot i.e ldap)
+     * @since 2.1
      */
     boolean userManagerReadOnly();
 }

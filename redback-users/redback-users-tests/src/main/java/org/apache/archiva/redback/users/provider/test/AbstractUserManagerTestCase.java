@@ -24,6 +24,7 @@ import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.PermanentUserException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
 import org.junit.Test;
@@ -40,9 +41,9 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@RunWith ( SpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-@DirtiesContext ( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AbstractUserManagerTestCase
     extends TestCase
 {
@@ -93,6 +94,7 @@ public class AbstractUserManagerTestCase
     }
 
     protected void assertCleanUserManager()
+        throws UserManagerException
     {
 
         getUserManager().eraseDatabase();
@@ -105,6 +107,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testFindUserByNullPrincipal()
+        throws UserManagerException
     {
         try
         {
@@ -120,6 +123,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testFindUserByEmptyUsername()
+        throws UserManagerException
     {
         try
         {
@@ -157,7 +161,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testAddFindUserByPrincipal()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         assertCleanUserManager();
         securityPolicy.setEnabled( false );
@@ -187,7 +191,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testAddFindUserLockedStatus()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         assertCleanUserManager();
         securityPolicy.setEnabled( false );
@@ -197,7 +201,7 @@ public class AbstractUserManagerTestCase
         smcqueen.setLocked( true );
 
 		/*
-		 * Keep a reference to the object that was added. Since it has the
+         * Keep a reference to the object that was added. Since it has the
 		 * actual principal that was managed by jpox/jdo.
 		 */
         User added = userManager.addUser( smcqueen );
@@ -224,7 +228,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testAddFindUserByUsername()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         assertCleanUserManager();
         securityPolicy.setEnabled( false );
@@ -396,6 +400,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testFindUsersByQuery()
+        throws UserManagerException
     {
         assertCleanUserManager();
         securityPolicy.setEnabled( false );
@@ -572,7 +577,7 @@ public class AbstractUserManagerTestCase
 
     @Test
     public void testDeletePermanentUser()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         assertCleanUserManager();
         securityPolicy.setEnabled( false );

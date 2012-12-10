@@ -22,6 +22,7 @@ package org.apache.archiva.redback.integration.filter.authentication;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
@@ -43,7 +44,6 @@ import java.io.IOException;
  * HttpAuthenticator
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 public abstract class HttpAuthenticator
 {
@@ -79,6 +79,11 @@ public abstract class HttpAuthenticator
         {
             log.info( "Login attempt against unknown user: {}", ds );
             throw new HttpAuthenticationException( "User name or password invalid." );
+        }
+        catch ( UserManagerException e )
+        {
+            log.info( "UserManagerException: {}", e.getMessage() );
+            throw new HttpAuthenticationException( e.getMessage(), e );
         }
     }
 
@@ -176,28 +181,5 @@ public abstract class HttpAuthenticator
         httpSession.setAttribute( SecuritySession.USERKEY, user );
     }
 
-    public String storeDefaultUser( String principal, HttpSession httpSession )
-    {
-        httpSession.setAttribute( SecuritySession.SESSION_KEY, null );
-        httpSession.setAttribute( SecuritySession.USERKEY, null );
 
-        if ( StringUtils.isEmpty( principal ) )
-        {
-            return null;
-        }
-
-        try
-        {
-            User user = securitySystem.getUserManager().findUser( principal );
-            httpSession.setAttribute( SecuritySession.USERKEY, user );
-
-            return user.getUsername();
-
-        }
-        catch ( UserNotFoundException e )
-        {
-            log.warn( "Default User '" + principal + "' not found.", e );
-            return null;
-        }
-    }
 }

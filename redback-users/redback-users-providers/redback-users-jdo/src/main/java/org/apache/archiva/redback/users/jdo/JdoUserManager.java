@@ -50,12 +50,12 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@Service ("userManager#jdo")
+@Service("userManager#jdo")
 public class JdoUserManager
     extends AbstractUserManager
 {
     @Inject
-    @Named (value = "jdoFactory#users")
+    @Named(value = "jdoFactory#users")
     private JdoFactory jdoFactory;
 
     @Inject
@@ -104,7 +104,7 @@ public class JdoUserManager
         return getAllObjectsDetached( ordering );
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     private List<User> getAllObjectsDetached( String ordering )
     {
         return RedbackJdoUtils.getAllObjectsDetached( getPersistenceManager(), JdoUser.class, ordering, (String) null );
@@ -125,7 +125,7 @@ public class JdoUserManager
         return findUsers( "email", emailKey, orderAscending );
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     public List<User> findUsersByQuery( UserQuery userQuery )
     {
         JdoUserQuery uq = (JdoUserQuery) userQuery;
@@ -169,7 +169,7 @@ public class JdoUserManager
         }
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     private List<User> findUsers( String searchField, String searchKey, boolean ascendingUsername )
     {
         PersistenceManager pm = getPersistenceManager();
@@ -209,6 +209,7 @@ public class JdoUserManager
     }
 
     public User addUser( User user )
+        throws UserManagerException
     {
         if ( !( user instanceof JdoUser ) )
         {
@@ -243,6 +244,7 @@ public class JdoUserManager
     }
 
     public void deleteUser( String username )
+        throws UserManagerException
     {
         try
         {
@@ -264,6 +266,7 @@ public class JdoUserManager
     }
 
     public void addUserUnchecked( User user )
+        throws UserManagerException
     {
         if ( !( user instanceof JdoUser ) )
         {
@@ -287,7 +290,7 @@ public class JdoUserManager
     }
 
     public User findUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( StringUtils.isEmpty( username ) )
         {
@@ -298,6 +301,7 @@ public class JdoUserManager
     }
 
     public boolean userExists( String principal )
+        throws UserManagerException
     {
         try
         {
@@ -311,13 +315,13 @@ public class JdoUserManager
     }
 
     public User updateUser( User user )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return updateUser( user, false );
     }
 
     public User updateUser( User user, boolean passwordChangeRequired )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( !( user instanceof JdoUser ) )
         {
@@ -385,6 +389,7 @@ public class JdoUserManager
     }
 
     private Object removeObject( Object o )
+        throws UserManagerException
     {
         if ( o == null )
         {

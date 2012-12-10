@@ -24,6 +24,7 @@ import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -45,9 +46,8 @@ import javax.inject.Named;
  * DefaultSecuritySystem:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
-@Service( "securitySystem" )
+@Service("securitySystem")
 public class DefaultSecuritySystem
     implements SecuritySystem
 {
@@ -57,15 +57,15 @@ public class DefaultSecuritySystem
     private AuthenticationManager authnManager;
 
     @Inject
-    @Named( value = "authorizer#rbac" )
+    @Named(value = "authorizer#rbac")
     private Authorizer authorizer;
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
-    @Named( value = "keyManager#cached" )
+    @Named(value = "keyManager#cached")
     private KeyManager keyManager;
 
     @Inject
@@ -92,10 +92,12 @@ public class DefaultSecuritySystem
      * @throws UserNotFoundException
      * @throws MustChangePasswordException
      * @throws org.apache.archiva.redback.policy.AccountLockedException
+     *
      * @throws MustChangePasswordException
      */
     public SecuritySession authenticate( AuthenticationDataSource source )
-        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException
+        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException,
+        UserManagerException
     {
         // Perform Authentication.
         AuthenticationResult result = authnManager.authenticate( source );
@@ -105,7 +107,7 @@ public class DefaultSecuritySystem
         // Process Results.
         if ( result.isAuthenticated() )
         {
-            log.debug( "User '{}' authenticated.", result.getPrincipal());
+            log.debug( "User '{}' authenticated.", result.getPrincipal() );
             User user = userManager.findUser( result.getPrincipal() );
             if ( user != null )
             {
@@ -127,7 +129,8 @@ public class DefaultSecuritySystem
     }
 
     public boolean isAuthenticated( AuthenticationDataSource source )
-        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException
+        throws AuthenticationException, UserNotFoundException, AccountLockedException, MustChangePasswordException,
+        UserManagerException
     {
         return authenticate( source ).getAuthenticationResult().isAuthenticated();
     }

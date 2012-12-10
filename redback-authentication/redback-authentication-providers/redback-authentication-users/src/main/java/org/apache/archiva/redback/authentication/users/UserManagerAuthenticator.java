@@ -32,6 +32,7 @@ import org.apache.archiva.redback.policy.PolicyViolationException;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +48,14 @@ import java.util.Map;
  *
  * @author <a href='mailto:rahul.thakur.xdev@gmail.com'>Rahul Thakur</a>
  */
-@Service ("authenticator#user-manager")
+@Service("authenticator#user-manager")
 public class UserManagerAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named (value = "userManager#configurable")
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
@@ -151,6 +152,14 @@ public class UserManagerAuthenticator
             resultException = e;
             authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                           "Login for user " + source.getPrincipal() + " failed. user not found." );
+        }
+        catch ( UserManagerException e )
+        {
+            log.warn( "Login for user {} failed, message: {}", source.getPrincipal(), e.getMessage() );
+            resultException = e;
+            authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
+                                          "Login for user " + source.getPrincipal() + " failed, message: "
+                                              + e.getMessage() );
         }
 
         return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultExceptionsMap );

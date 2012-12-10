@@ -20,6 +20,7 @@ package org.apache.archiva.redback.rest.services.utils;
 
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.PasswordRuleViolationException;
@@ -32,13 +33,14 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-@Service( "passwordValidator#rest" )
+@Service("passwordValidator#rest")
 public class PasswordValidator
 {
 
@@ -48,7 +50,6 @@ public class PasswordValidator
     private SecuritySystem securitySystem;
 
     /**
-     *
      * @param password
      * @param principal
      * @return encoded password
@@ -96,6 +97,13 @@ public class PasswordValidator
                     errorMessages.add( new ErrorMessage( violation ) );
                 }
             }
+            throw new RedbackServiceException( errorMessages );
+        }
+        catch ( UserManagerException e )
+        {
+            log.info( "UserManagerException: {}", e.getMessage() );
+            List<ErrorMessage> errorMessages =
+                Arrays.asList( new ErrorMessage().message( "UserManagerException: " + e.getMessage() ) );
             throw new RedbackServiceException( errorMessages );
         }
 

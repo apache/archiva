@@ -21,6 +21,7 @@ package org.apache.archiva.redback.authorization.rbac.evaluator;
 
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.rbac.Permission;
 import org.springframework.stereotype.Service;
@@ -35,14 +36,13 @@ import javax.inject.Named;
  * of the person making the authorization check
  *
  * @author Jesse McConnell <jesse@codehaus.org>
- *
  */
 @Service("permissionEvaluator")
 public class DefaultPermissionEvaluator
     implements PermissionEvaluator
 {
     @Inject
-    @Named(value="userManager#configurable")
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     public boolean evaluate( Permission permission, Object operation, Object resource, Object principal )
@@ -61,9 +61,13 @@ public class DefaultPermissionEvaluator
                 {
                     permissionResource = userManager.findUser( principal.toString() ).getUsername();
                 }
-                catch ( UserNotFoundException ne )
+                catch ( UserNotFoundException e )
                 {
-                    throw new PermissionEvaluationException( "unable to locate user to retrieve username", ne );
+                    throw new PermissionEvaluationException( "unable to locate user to retrieve username", e );
+                }
+                catch ( UserManagerException e )
+                {
+                    throw new PermissionEvaluationException( "trouble finding user: " + e.getMessage(), e );
                 }
             }
         }
@@ -82,7 +86,7 @@ public class DefaultPermissionEvaluator
             {
                 return true;
             }
-            
+
             // check if the resource identifier of the permission matches the resource we are checking against
             // if it does then return true
             if ( permissionResource.equals( resource.toString() ) )

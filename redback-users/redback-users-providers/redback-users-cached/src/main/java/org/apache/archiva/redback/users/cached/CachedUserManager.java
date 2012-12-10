@@ -21,6 +21,7 @@ package org.apache.archiva.redback.users.cached;
 
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
@@ -37,7 +38,6 @@ import java.util.List;
  * CachedUserManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service( "userManager#cached" )
 public class CachedUserManager
@@ -60,11 +60,13 @@ public class CachedUserManager
     }
 
     public User createGuestUser()
+        throws UserManagerException
     {
         return userImpl.createGuestUser();
     }
 
     public User addUser( User user )
+        throws UserManagerException
     {
         if ( user != null )
         {
@@ -79,6 +81,7 @@ public class CachedUserManager
     }
 
     public void addUserUnchecked( User user )
+        throws UserManagerException
     {
         if ( user != null )
         {
@@ -88,13 +91,14 @@ public class CachedUserManager
     }
 
     public User createUser( String username, String fullName, String emailAddress )
+        throws UserManagerException
     {
         usersCache.remove( username );
         return this.userImpl.createUser( username, fullName, emailAddress );
     }
 
     public void deleteUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         usersCache.remove( username );
         this.userImpl.deleteUser( username );
@@ -113,7 +117,7 @@ public class CachedUserManager
     }
 
     public User findUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( GUEST_USERNAME.equals( username ) )
         {
@@ -134,7 +138,7 @@ public class CachedUserManager
     }
 
     public User getGuestUser()
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         Object el = usersCache.get( GUEST_USERNAME );
         if ( el != null )
@@ -156,24 +160,28 @@ public class CachedUserManager
 
 
     public List<User> findUsersByQuery( UserQuery query )
+        throws UserManagerException
     {
         log.debug( "NOT CACHED - .findUsersByQuery(UserQuery)" );
         return this.userImpl.findUsersByQuery( query );
     }
 
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
+        throws UserManagerException
     {
         log.debug( "NOT CACHED - .findUsersByEmailKey(String, boolean)" );
         return this.userImpl.findUsersByEmailKey( emailKey, orderAscending );
     }
 
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
+        throws UserManagerException
     {
         log.debug( "NOT CACHED - .findUsersByFullNameKey(String, boolean)" );
         return this.userImpl.findUsersByFullNameKey( fullNameKey, orderAscending );
     }
 
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
+        throws UserManagerException
     {
         log.debug( "NOT CACHED - .findUsersByUsernameKey(String, boolean)" );
         return this.userImpl.findUsersByUsernameKey( usernameKey, orderAscending );
@@ -185,12 +193,14 @@ public class CachedUserManager
     }
 
     public List<User> getUsers()
+        throws UserManagerException
     {
         log.debug( "NOT CACHED - .getUsers()" );
         return this.userImpl.getUsers();
     }
 
     public List<User> getUsers( boolean orderAscending )
+        throws UserManagerException
     {
         log.debug( "NOT CACHED - .getUsers(boolean)" );
         return this.userImpl.getUsers( orderAscending );
@@ -202,13 +212,13 @@ public class CachedUserManager
     }
 
     public User updateUser( User user )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return updateUser( user, false );
     }
 
     public User updateUser( User user, boolean passwordChangeRequired )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( user != null )
         {
@@ -218,6 +228,7 @@ public class CachedUserManager
     }
 
     public boolean userExists( String userName )
+        throws UserManagerException
     {
         if ( usersCache.hasKey( userName ) )
         {

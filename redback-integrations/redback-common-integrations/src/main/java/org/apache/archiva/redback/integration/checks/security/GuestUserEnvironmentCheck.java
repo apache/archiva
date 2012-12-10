@@ -22,6 +22,7 @@ package org.apache.archiva.redback.integration.checks.security;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.system.SecuritySystem;
@@ -36,9 +37,8 @@ import java.util.List;
  * RequiredRolesEnvironmentCheck:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
-@Service( "environmentCheck#guest-user-check" )
+@Service("environmentCheck#guest-user-check")
 public class GuestUserEnvironmentCheck
     implements EnvironmentCheck
 {
@@ -64,15 +64,23 @@ public class GuestUserEnvironmentCheck
             UserManager userManager = securitySystem.getUserManager();
             UserSecurityPolicy policy = securitySystem.getPolicy();
 
-            User guest;
+            User guest = null;
             try
             {
                 guest = userManager.getGuestUser();
             }
-            catch ( UserNotFoundException e )
+            catch ( UserManagerException e )
             {
                 policy.setEnabled( false );
-                guest = userManager.createGuestUser();
+                try
+                {
+                    guest = userManager.createGuestUser();
+                }
+                catch ( UserManagerException ume )
+                {
+                    violations.add( "unable to initialize guest user properly: " + ume.getMessage() );
+                    return;
+                }
                 policy.setEnabled( true );
             }
 

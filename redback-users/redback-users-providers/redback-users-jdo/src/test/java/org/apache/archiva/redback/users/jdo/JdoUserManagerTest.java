@@ -21,6 +21,7 @@ package org.apache.archiva.redback.users.jdo;
 
 import org.apache.archiva.redback.components.jdo.DefaultConfigurableJdoFactory;
 import org.apache.archiva.redback.common.jdo.test.StoreManagerDebug;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.provider.test.AbstractUserManagerTestCase;
 import org.jpox.AbstractPersistenceManagerFactory;
 import org.jpox.SchemaTool;
@@ -38,17 +39,16 @@ import java.util.Properties;
  * JdoUserManagerTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 public class JdoUserManagerTest
     extends AbstractUserManagerTestCase
 {
     @Inject
-    @Named( value = "jdoFactory#users" )
+    @Named(value = "jdoFactory#users")
     DefaultConfigurableJdoFactory jdoFactory;
 
     @Inject
-    @Named( value = "userManager#jdo" )
+    @Named(value = "userManager#jdo")
     JdoUserManager jdoUserManager;
 
     private StoreManagerDebug storeManager;
@@ -106,12 +106,10 @@ public class JdoUserManagerTest
     }
 
     protected void assertCleanUserManager()
+        throws UserManagerException
     {
         // database cleanup
-        ( (JdoUserManager) getUserManager()).eraseDatabase();
-
-
-
+        ( (JdoUserManager) getUserManager() ).eraseDatabase();
         super.assertCleanUserManager();
     }
 

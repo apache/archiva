@@ -55,6 +55,7 @@ import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -159,6 +160,10 @@ public class DefaultUserService
             //ignore we just want to prevent non human readable error message from backend :-)
             log.debug( "user {} not exists", user.getUsername() );
         }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
 
         // data validation
         if ( StringUtils.isEmpty( user.getUsername() ) )
@@ -176,35 +181,41 @@ public class DefaultUserService
             throw new RedbackServiceException( new ErrorMessage( "email cannot be empty" ) );
         }
 
-        org.apache.archiva.redback.users.User u =
-            userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
-        u.setPassword( user.getPassword() );
-        u.setLocked( user.isLocked() );
-        u.setPasswordChangeRequired( user.isPasswordChangeRequired() );
-        u.setPermanent( user.isPermanent() );
-        u.setValidated( user.isValidated() );
-        u = userManager.addUser( u );
-        if ( !user.isPasswordChangeRequired() )
-        {
-            u.setPasswordChangeRequired( false );
-            try
-            {
-                u = userManager.updateUser( u );
-                log.debug( "user {} created", u.getUsername() );
-            }
-            catch ( UserNotFoundException e )
-            {
-                throw new RedbackServiceException( e.getMessage() );
-            }
-        }
         try
         {
+
+            org.apache.archiva.redback.users.User u =
+                userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
+            u.setPassword( user.getPassword() );
+            u.setLocked( user.isLocked() );
+            u.setPasswordChangeRequired( user.isPasswordChangeRequired() );
+            u.setPermanent( user.isPermanent() );
+            u.setValidated( user.isValidated() );
+            u = userManager.addUser( u );
+            if ( !user.isPasswordChangeRequired() )
+            {
+                u.setPasswordChangeRequired( false );
+                try
+                {
+                    u = userManager.updateUser( u );
+                    log.debug( "user {} created", u.getUsername() );
+                }
+                catch ( UserNotFoundException e )
+                {
+                    throw new RedbackServiceException( e.getMessage() );
+                }
+            }
+
             roleManager.assignRole( RedbackRoleConstants.REGISTERED_USER_ROLE_ID, u.getUsername() );
         }
         catch ( RoleManagerException rpe )
         {
             log.error( "RoleProfile Error: " + rpe.getMessage(), rpe );
             throw new RedbackServiceException( new ErrorMessage( "assign.role.failure", null ) );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
         return Boolean.TRUE;
     }
@@ -238,6 +249,10 @@ public class DefaultUserService
             log.error( e.getMessage(), e );
             throw new RedbackServiceException( e.getMessage() );
         }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
         finally
         {
             removeFromCache( username );
@@ -257,20 +272,31 @@ public class DefaultUserService
         {
             return null;
         }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
     }
 
     public List<User> getUsers()
         throws RedbackServiceException
     {
-        List<org.apache.archiva.redback.users.User> users = userManager.getUsers();
-        List<User> simpleUsers = new ArrayList<User>( users.size() );
-
-        for ( org.apache.archiva.redback.users.User user : users )
+        try
         {
-            simpleUsers.add( getSimpleUser( user ) );
-        }
+            List<org.apache.archiva.redback.users.User> users = userManager.getUsers();
+            List<User> simpleUsers = new ArrayList<User>( users.size() );
 
-        return simpleUsers;
+            for ( org.apache.archiva.redback.users.User user : users )
+            {
+                simpleUsers.add( getSimpleUser( user ) );
+            }
+
+            return simpleUsers;
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
     }
 
     public Boolean updateMe( User user )
@@ -322,6 +348,10 @@ public class DefaultUserService
             throw new RedbackServiceException( new ErrorMessage( "user not found" ),
                                                Response.Status.BAD_REQUEST.getStatusCode() );
         }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
         // only 3 fields to update
         realUser.setFullName( user.getFullName() );
         realUser.setEmail( user.getEmail() );
@@ -358,6 +388,10 @@ public class DefaultUserService
         catch ( UserNotFoundException e )
         {
             throw new RedbackServiceException( e.getMessage() );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
     }
 
@@ -433,6 +467,10 @@ public class DefaultUserService
             log.error( e.getMessage(), e );
             throw new RedbackServiceException( e.getMessage() );
         }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
         finally
         {
 
@@ -466,25 +504,28 @@ public class DefaultUserService
             return Boolean.FALSE;
         }
 
-        org.apache.archiva.redback.users.User user =
-            userManager.createUser( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, adminUser.getFullName(),
-                                    adminUser.getEmail() );
-        user.setPassword( adminUser.getPassword() );
-
-        user.setLocked( false );
-        user.setPasswordChangeRequired( false );
-        user.setPermanent( true );
-        user.setValidated( true );
-
-        userManager.addUser( user );
-
         try
         {
+            org.apache.archiva.redback.users.User user =
+                userManager.createUser( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, adminUser.getFullName(),
+                                        adminUser.getEmail() );
+            user.setPassword( adminUser.getPassword() );
+
+            user.setLocked( false );
+            user.setPasswordChangeRequired( false );
+            user.setPermanent( true );
+            user.setValidated( true );
+
+            userManager.addUser( user );
             roleManager.assignRole( "system-administrator", user.getUsername() );
         }
         catch ( RoleManagerException e )
         {
             throw new RedbackServiceException( e.getMessage() );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
         return Boolean.TRUE;
     }
@@ -500,6 +541,10 @@ public class DefaultUserService
         catch ( UserNotFoundException e )
         {
             // ignore
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
         return Boolean.FALSE;
     }
@@ -543,6 +588,10 @@ public class DefaultUserService
             log.info( "Unable to issue password reset.", e );
             throw new RedbackServiceException( new ErrorMessage( "password.reset.email.generation.failure" ) );
         }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
 
         return Boolean.TRUE;
     }
@@ -570,28 +619,34 @@ public class DefaultUserService
             validateCredentialsStrict( user );
         }
 
-        // NOTE: Do not perform Password Rules Validation Here.
-
-        if ( userManager.userExists( user.getUsername() ) )
-        {
-            throw new RedbackServiceException(
-                new ErrorMessage( "user.already.exists", new String[]{ user.getUsername() } ) );
-        }
-
-        org.apache.archiva.redback.users.User u =
-            userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
-        u.setPassword( user.getPassword() );
-        u.setValidated( false );
-        u.setLocked( false );
+        org.apache.archiva.redback.users.User u = null;
 
         try
         {
+
+            // NOTE: Do not perform Password Rules Validation Here.
+
+            if ( userManager.userExists( user.getUsername() ) )
+            {
+                throw new RedbackServiceException(
+                    new ErrorMessage( "user.already.exists", new String[]{ user.getUsername() } ) );
+            }
+
+            u = userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
+            u.setPassword( user.getPassword() );
+            u.setValidated( false );
+            u.setLocked( false );
+
             roleManager.assignRole( RedbackRoleConstants.REGISTERED_USER_ROLE_ID, u.getUsername() );
         }
         catch ( RoleManagerException rpe )
         {
             log.error( "RoleProfile Error: " + rpe.getMessage(), rpe );
             throw new RedbackServiceException( new ErrorMessage( "assign.role.failure", null ) );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
 
         if ( emailValidationRequired )
@@ -624,6 +679,10 @@ public class DefaultUserService
                 log.error( "Unable to register a new user.", e );
                 throw new RedbackServiceException( new ErrorMessage( "cannot.register.user", null ) );
             }
+            catch ( UserManagerException e )
+            {
+                throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+            }
             finally
             {
                 securityPolicy.setEnabled( true );
@@ -631,8 +690,15 @@ public class DefaultUserService
         }
         else
         {
-            userManager.addUser( u );
-            return new RegistrationKey( "-1" );
+            try
+            {
+                userManager.addUser( u );
+                return new RegistrationKey( "-1" );
+            }
+            catch ( UserManagerException e )
+            {
+                throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+            }
         }
 
         // FIXME log this event
@@ -701,6 +767,10 @@ public class DefaultUserService
         catch ( AuthenticationException e )
         {
             throw new RedbackServiceException( e.getMessage(), Response.Status.FORBIDDEN.getStatusCode() );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
     }
 
@@ -845,17 +915,23 @@ public class DefaultUserService
         throws RedbackServiceException
     {
         validateCredentialsLoose( user );
-
-        org.apache.archiva.redback.users.User tmpuser =
-            userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
-
-        user.setPassword( user.getPassword() );
-
-        securitySystem.getPolicy().validatePassword( tmpuser );
-
-        if ( ( org.codehaus.plexus.util.StringUtils.isEmpty( user.getPassword() ) ) )
+        try
         {
-            throw new RedbackServiceException( new ErrorMessage( "password.required", null ) );
+            org.apache.archiva.redback.users.User tmpuser =
+                userManager.createUser( user.getUsername(), user.getFullName(), user.getEmail() );
+
+            user.setPassword( user.getPassword() );
+
+            securitySystem.getPolicy().validatePassword( tmpuser );
+
+            if ( ( org.codehaus.plexus.util.StringUtils.isEmpty( user.getPassword() ) ) )
+            {
+                throw new RedbackServiceException( new ErrorMessage( "password.required", null ) );
+            }
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
     }
 

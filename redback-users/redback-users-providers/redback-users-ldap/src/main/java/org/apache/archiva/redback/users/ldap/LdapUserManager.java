@@ -74,6 +74,7 @@ public class LdapUserManager
     }
 
     public User addUser( User user )
+        throws UserManagerException
     {
         try
         {
@@ -86,6 +87,7 @@ public class LdapUserManager
     }
 
     public void addUserUnchecked( User user )
+        throws UserManagerException
     {
         try
         {
@@ -144,7 +146,7 @@ public class LdapUserManager
 
 
     public void deleteUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( username != null )
         {
@@ -177,7 +179,7 @@ public class LdapUserManager
     }
 
     public User findUser( String username )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( username == null )
         {
@@ -248,6 +250,7 @@ public class LdapUserManager
     }
 
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
+        throws UserManagerException
     {
         LdapUserQuery query = new LdapUserQuery();
         query.setEmail( emailKey );
@@ -257,6 +260,7 @@ public class LdapUserManager
     }
 
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
+        throws UserManagerException
     {
         LdapUserQuery query = new LdapUserQuery();
         query.setFullName( fullNameKey );
@@ -266,6 +270,7 @@ public class LdapUserManager
     }
 
     public List<User> findUsersByQuery( UserQuery query )
+        throws UserManagerException
     {
         if ( query == null )
         {
@@ -304,6 +309,7 @@ public class LdapUserManager
      * @see org.apache.archiva.redback.users.UserManager#findUsersByUsernameKey(java.lang.String, boolean)
      */
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
+        throws UserManagerException
     {
         LdapUserQuery query = new LdapUserQuery();
         query.setUsername( usernameKey );
@@ -365,13 +371,13 @@ public class LdapUserManager
     }
 
     public User updateUser( User user )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         return updateUser( user, false );
     }
 
     public User updateUser( User user, boolean passwordChangeRequired )
-        throws UserNotFoundException
+        throws UserNotFoundException, UserManagerException
     {
         if ( user != null )
         {
@@ -406,6 +412,7 @@ public class LdapUserManager
     }
 
     public boolean userExists( String principal )
+        throws UserManagerException
     {
         if ( principal == null )
         {

@@ -22,6 +22,7 @@ package org.apache.archiva.redback.integration.filter.authentication.digest;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.TokenBasedAuthenticationDataSource;
@@ -44,14 +45,13 @@ import java.io.IOException;
  * HttpDigestAuthentication methods for working with <a href="http://www.faqs.org/rfcs/rfc2617.html">RFC 2617 HTTP Authentication</a>.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service("httpAuthenticator#digest")
 public class HttpDigestAuthentication
     extends HttpAuthenticator
 {
     @Inject
-    @Named(value="userManager#configurable")
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     /**
@@ -61,10 +61,8 @@ public class HttpDigestAuthentication
 
     /**
      * NOTE: Must be alphanumeric.
-     *
-     *
      */
-    private String digestKey ="OrycteropusAfer";
+    private String digestKey = "OrycteropusAfer";
 
     private String realm;
 
@@ -126,6 +124,11 @@ public class HttpDigestAuthentication
             log.error( msg, e );
             throw new HttpAuthenticationException( msg, e );
         }
+        catch ( UserManagerException e )
+        {
+            log.error( "issue find user {}, message: {}", username, e.getMessage(), e );
+            throw new HttpAuthenticationException( "issue find user " + username + ", message: " + e.getMessage(), e );
+        }
     }
 
     /**
@@ -135,7 +138,7 @@ public class HttpDigestAuthentication
      * @param response  the response to use.
      * @param realmName the realm name to state.
      * @param exception the exception to base the message off of.
-     * @throws IOException if there was a problem with the {@link HttpServletResponse#sendError(int,String)} call.
+     * @throws IOException if there was a problem with the {@link HttpServletResponse#sendError(int, String)} call.
      */
     public void challenge( HttpServletRequest request, HttpServletResponse response, String realmName,
                            AuthenticationException exception )
@@ -194,8 +197,8 @@ public class HttpDigestAuthentication
         }
         else
         {
-            throw new IllegalStateException( "Http Digest Parameter [qop] with value of [" + digestHeader.qop
-                + "] is unsupported." );
+            throw new IllegalStateException(
+                "Http Digest Parameter [qop] with value of [" + digestHeader.qop + "] is unsupported." );
         }
 
         return Digest.md5Hex( digest );

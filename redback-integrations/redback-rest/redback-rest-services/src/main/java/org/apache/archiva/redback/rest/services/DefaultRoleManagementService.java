@@ -30,6 +30,7 @@ import org.apache.archiva.redback.role.model.ModelRole;
 import org.apache.archiva.redback.role.model.ModelTemplate;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.integration.model.AdminEditUserCredentials;
@@ -62,7 +63,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.3
  */
-@Service( "roleManagementService#rest" )
+@Service("roleManagementService#rest")
 public class DefaultRoleManagementService
     implements RoleManagementService
 {
@@ -77,8 +78,8 @@ public class DefaultRoleManagementService
 
     @Inject
     public DefaultRoleManagementService( RoleManager roleManager,
-                                         @Named( value = "rBACManager#cached" ) RBACManager rbacManager,
-                                         @Named( value = "userManager#cached" ) UserManager userManager )
+                                         @Named(value = "rBACManager#cached") RBACManager rbacManager,
+                                         @Named(value = "userManager#cached") UserManager userManager )
     {
         this.roleManager = roleManager;
         this.rbacManager = rbacManager;
@@ -404,7 +405,8 @@ public class DefaultRoleManagementService
                         try
                         {
                             User user = userManager.findUser( userAssignment.getPrincipal() );
-                            role.getParentsRolesUsers().add( new org.apache.archiva.redback.rest.api.model.User( user ) );
+                            role.getParentsRolesUsers().add(
+                                new org.apache.archiva.redback.rest.api.model.User( user ) );
                         }
                         catch ( UserNotFoundException e )
                         {
@@ -418,8 +420,8 @@ public class DefaultRoleManagementService
                 new ArrayList<org.apache.archiva.redback.rest.api.model.User>();
             for ( User u : userManager.getUsers() )
             {
-                org.apache.archiva.redback.rest.api.model.User
-                    user = new org.apache.archiva.redback.rest.api.model.User( u );
+                org.apache.archiva.redback.rest.api.model.User user =
+                    new org.apache.archiva.redback.rest.api.model.User( u );
                 if ( role.getParentsRolesUsers().contains( user ) )
                 {
                     continue;
@@ -436,6 +438,10 @@ public class DefaultRoleManagementService
             return role;
         }
         catch ( RbacManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+        }
+        catch ( UserManagerException e )
         {
             throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
@@ -464,14 +470,17 @@ public class DefaultRoleManagementService
         for ( org.apache.archiva.redback.rest.api.model.User user : role.getUsers() )
         {
             String username = user.getUsername();
-            if ( !userManager.userExists( username ) )
-            {
-                log.error( "user {} not exits", username );
-                throw new RedbackServiceException( new ErrorMessage( "user.not.exists", new String[]{ username } ) );
-            }
 
             try
             {
+
+                if ( !userManager.userExists( username ) )
+                {
+                    log.error( "user {} not exits", username );
+                    throw new RedbackServiceException(
+                        new ErrorMessage( "user.not.exists", new String[]{ username } ) );
+                }
+
                 UserAssignment assignment;
 
                 if ( rbacManager.userAssignmentExists( username ) )
@@ -493,19 +502,26 @@ public class DefaultRoleManagementService
                 throw new RedbackServiceException(
                     new ErrorMessage( "error.assign.role.user", new String[]{ role.getName(), username } ) );
             }
+            catch ( UserManagerException e )
+            {
+                throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+            }
         }
 
         for ( org.apache.archiva.redback.rest.api.model.User user : role.getRemovedUsers() )
         {
             String username = user.getUsername();
-            if ( !userManager.userExists( username ) )
-            {
-                log.error( "user {} not exits", username );
-                throw new RedbackServiceException( new ErrorMessage( "user.not.exists", new String[]{ username } ) );
-            }
 
             try
             {
+
+                if ( !userManager.userExists( username ) )
+                {
+                    log.error( "user {} not exits", username );
+                    throw new RedbackServiceException(
+                        new ErrorMessage( "user.not.exists", new String[]{ username } ) );
+                }
+
                 UserAssignment assignment;
 
                 if ( rbacManager.userAssignmentExists( username ) )
@@ -527,6 +543,10 @@ public class DefaultRoleManagementService
                 throw new RedbackServiceException(
                     new ErrorMessage( "error.unassign.role.user", new String[]{ role.getName(), username } ) );
             }
+            catch ( UserManagerException e )
+            {
+                throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
+            }
         }
 
         return Boolean.TRUE;
@@ -541,13 +561,14 @@ public class DefaultRoleManagementService
             throw new RedbackServiceException( new ErrorMessage( "rbac.edit.user.empty.principal" ) );
         }
 
-        if ( !userManager.userExists( username ) )
-        {
-            throw new RedbackServiceException( new ErrorMessage( "user.does.not.exist", new String[]{ username } ) );
-        }
-
         try
         {
+            if ( !userManager.userExists( username ) )
+            {
+                throw new RedbackServiceException(
+                    new ErrorMessage( "user.does.not.exist", new String[]{ username } ) );
+            }
+
             User u = userManager.findUser( username );
 
             if ( u == null )
@@ -561,6 +582,10 @@ public class DefaultRoleManagementService
         {
             throw new RedbackServiceException(
                 new ErrorMessage( "user.does.not.exist", new String[]{ username, e.getMessage() } ) );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
         try
         {
@@ -597,18 +622,19 @@ public class DefaultRoleManagementService
                 applicationRoles.setRoleTemplates( toRoleTemplates( modelApplication.getTemplates() ) );
 
                 // cleanup app roles remove roles coming from templates
-                
+
                 List<String> appRoleNames = new ArrayList<String>( appRoles.size() );
-                
-                for (String appRoleName : applicationRoles.getGlobalRoles())
+
+                for ( String appRoleName : applicationRoles.getGlobalRoles() )
                 {
-                    if (!roleFromTemplate( appRoleName, modelApplication.getTemplates() )){
+                    if ( !roleFromTemplate( appRoleName, modelApplication.getTemplates() ) )
+                    {
                         appRoleNames.add( appRoleName );
                     }
                 }
-                
+
                 applicationRoles.setGlobalRoles( appRoleNames );
-                
+
                 applicationRolesList.add( applicationRoles );
             }
 
@@ -635,13 +661,15 @@ public class DefaultRoleManagementService
             throw new RedbackServiceException( new ErrorMessage( "rbac.edit.user.empty.principal" ) );
         }
 
-        if ( !userManager.userExists( username ) )
-        {
-            throw new RedbackServiceException( new ErrorMessage( "user.does.not.exist", new String[]{ username } ) );
-        }
-
         try
         {
+
+            if ( !userManager.userExists( username ) )
+            {
+                throw new RedbackServiceException(
+                    new ErrorMessage( "user.does.not.exist", new String[]{ username } ) );
+            }
+
             User u = userManager.findUser( username );
 
             if ( u == null )
@@ -654,6 +682,10 @@ public class DefaultRoleManagementService
         {
             throw new RedbackServiceException(
                 new ErrorMessage( "user.does.not.exist", new String[]{ username, e.getMessage() } ) );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
 
         try
@@ -692,7 +724,7 @@ public class DefaultRoleManagementService
     //----------------------------------------------------------------
 
     private org.apache.archiva.redback.rbac.Role isInList( String roleName,
-                                                            Collection<org.apache.archiva.redback.rbac.Role> roles )
+                                                           Collection<org.apache.archiva.redback.rbac.Role> roles )
     {
         for ( org.apache.archiva.redback.rbac.Role role : roles )
         {
@@ -705,8 +737,8 @@ public class DefaultRoleManagementService
     }
 
     private Collection<org.apache.archiva.redback.rbac.Role> filterApplicationRoles( ModelApplication application,
-                                                                                      List<org.apache.archiva.redback.rbac.Role> allRoles,
-                                                                                      List<ModelTemplate> applicationTemplates )
+                                                                                     List<org.apache.archiva.redback.rbac.Role> allRoles,
+                                                                                     List<ModelTemplate> applicationTemplates )
     {
         Set<org.apache.archiva.redback.rbac.Role> applicationRoles =
             new HashSet<org.apache.archiva.redback.rbac.Role>();

@@ -28,6 +28,7 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -56,8 +57,8 @@ import java.util.List;
 import java.util.Locale;
 
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public class DataManagementTest
     extends TestCase
 {
@@ -67,20 +68,20 @@ public class DataManagementTest
     private File targetDirectory;
 
     @Inject
-    @Named( value = "jdoFactory#users" )
+    @Named(value = "jdoFactory#users")
     UserConfigurableJdoFactory jdoFactory;
 
     @Inject
-    @Named( value = "userManager#jdo" )
+    @Named(value = "userManager#jdo")
     UserManager userManager;
 
     @Inject
-    @Named( value = "keyManager#jdo" )
+    @Named(value = "keyManager#jdo")
     KeyManager keyManager;
 
 
     @Inject
-    @Named( value = "rBACManager#jdo" )
+    @Named(value = "rBACManager#jdo")
     RBACManager rbacManager;
 
     @Before
@@ -184,6 +185,7 @@ public class DataManagementTest
     }
 
     private void createUserDatabase( UserManager manager )
+        throws UserManagerException
     {
         User user = manager.createUser( "smcqueen", "Steve McQueen", "the cooler king" );
         user.setPassword( "abc123" );
@@ -250,7 +252,7 @@ public class DataManagementTest
 
         FileWriter fw = new FileWriter( backupFile );
 
-        IOUtils.copy( is, fw);
+        IOUtils.copy( is, fw );
 
         is.close();
 
@@ -373,6 +375,7 @@ public class DataManagementTest
     }
 
     private void assertEmpty( UserManager manager )
+        throws UserManagerException
     {
         List<User> users = manager.getUsers();
         assertEquals( 0, users.size() );
@@ -392,7 +395,7 @@ public class DataManagementTest
 
         FileWriter fw = new FileWriter( backupFile );
 
-        IOUtils.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), fw);
+        IOUtils.copy( getClass().getResourceAsStream( "/expected-keys.xml" ), fw );
 
         fw.close();
 

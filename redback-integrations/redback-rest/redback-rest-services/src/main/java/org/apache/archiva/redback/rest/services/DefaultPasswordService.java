@@ -22,6 +22,7 @@ import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.PasswordRuleViolationException;
 import org.apache.archiva.redback.policy.PasswordRuleViolations;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.redback.keys.AuthenticationKey;
 import org.apache.archiva.redback.keys.KeyManagerException;
@@ -42,13 +43,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Olivier Lamy
  * @since 1.4
  */
-@Service( "passwordService#rest" )
+@Service("passwordService#rest")
 public class DefaultPasswordService
     implements PasswordService
 {
@@ -66,7 +68,7 @@ public class DefaultPasswordService
 
     @Inject
     public DefaultPasswordService( SecuritySystem securitySystem,
-                                   @Named( "httpAuthenticator#basic" ) HttpAuthenticator httpAuthenticator,
+                                   @Named("httpAuthenticator#basic") HttpAuthenticator httpAuthenticator,
                                    PasswordValidator passwordValidator )
     {
         this.securitySystem = securitySystem;
@@ -74,11 +76,11 @@ public class DefaultPasswordService
         this.passwordValidator = passwordValidator;
     }
 
-    public org.apache.archiva.redback.rest.api.model.User changePasswordWithKey( String password, String passwordConfirmation,
-                                                                           String key )
+    public org.apache.archiva.redback.rest.api.model.User changePasswordWithKey( String password,
+                                                                                 String passwordConfirmation,
+                                                                                 String key )
         throws RedbackServiceException
     {
-
 
         //RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
 
@@ -130,6 +132,13 @@ public class DefaultPasswordService
             errorMessages.add( errorMessage );
             throw new RedbackServiceException( errorMessages );
         }
+        catch ( UserManagerException e )
+        {
+            log.info( "UserManagerException: {}", e.getMessage() );
+            List<ErrorMessage> errorMessages =
+                Arrays.asList( new ErrorMessage().message( "UserManagerException: " + e.getMessage() ) );
+            throw new RedbackServiceException( errorMessages );
+        }
         catch ( PasswordRuleViolationException e )
         {
             PasswordRuleViolations violations = e.getViolations();
@@ -147,7 +156,7 @@ public class DefaultPasswordService
     }
 
     public org.apache.archiva.redback.rest.api.model.User changePassword( String userName, String previousPassword,
-                                                                    String password, String passwordConfirmation )
+                                                                          String password, String passwordConfirmation )
         throws RedbackServiceException
     {
         if ( StringUtils.isEmpty( userName ) )
@@ -202,6 +211,13 @@ public class DefaultPasswordService
         {
             throw new RedbackServiceException( new ErrorMessage( "user.not.found" ),
                                                Response.Status.BAD_REQUEST.getStatusCode() );
+        }
+        catch ( UserManagerException e )
+        {
+            log.info( "UserManagerException: {}", e.getMessage() );
+            List<ErrorMessage> errorMessages =
+                Arrays.asList( new ErrorMessage().message( "UserManagerException: " + e.getMessage() ) );
+            throw new RedbackServiceException( errorMessages );
         }
 
     }

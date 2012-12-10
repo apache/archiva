@@ -29,7 +29,7 @@ import java.util.List;
  */
 public interface UserManager
 {
-    
+
     static final String GUEST_USERNAME = "guest";
 
     /**
@@ -72,15 +72,19 @@ public interface UserManager
      * @param fullName     the full name for this user.
      * @param emailAddress the email address for this user.
      * @return the new user object ready to use.
+     * @throws UserManagerException
      */
-    User createUser( String username, String fullName, String emailAddress );
+    User createUser( String username, String fullName, String emailAddress )
+        throws UserManagerException;
 
     /**
      * Factory method to create the guest user.
      *
      * @return The guest user
+     * @throws UserManagerException
      */
-    User createGuestUser();
+    User createGuestUser()
+        throws UserManagerException;
 
     /**
      * Factory method to create {@link UserQuery}s based on provider specific
@@ -94,18 +98,23 @@ public interface UserManager
      * Get the List of {@link User} objects.
      *
      * @return the List of {@link User} Objects.
+     * @throws UserManagerException
      */
-    List<User> getUsers();
+    List<User> getUsers()
+        throws UserManagerException;
 
-    List<User> getUsers( boolean orderAscending );
+    List<User> getUsers( boolean orderAscending )
+        throws UserManagerException;
 
     /**
      * Add a User.
      *
      * @param user the user to add.
      * @return the user that was just added.
+     * @throws UserManagerException
      */
-    User addUser( User user );
+    User addUser( User user )
+        throws UserManagerException;
 
     /**
      * Update a User.
@@ -115,7 +124,7 @@ public interface UserManager
      * @throws UserNotFoundException if the user was not found to update.
      */
     User updateUser( User user )
-        throws UserNotFoundException;
+        throws UserNotFoundException, UserManagerException;
 
     /**
      * Find a User using a User name.
@@ -125,7 +134,7 @@ public interface UserManager
      * @throws UserNotFoundException if the user was not found.
      */
     User findUser( String username )
-        throws UserNotFoundException;
+        throws UserNotFoundException, UserManagerException;
 
     /**
      * Get the guest user.
@@ -133,13 +142,16 @@ public interface UserManager
      * @return the guest user.
      */
     User getGuestUser()
-        throws UserNotFoundException;
+        throws UserNotFoundException, UserManagerException;
 
-    List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending );
+    List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
+        throws UserManagerException;
 
-    List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending );
+    List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
+        throws UserManagerException;
 
-    List<User> findUsersByEmailKey( String emailKey, boolean orderAscending );
+    List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
+        throws UserManagerException;
 
     /**
      * Find users matching properties, ordering and range as specified by the
@@ -148,7 +160,8 @@ public interface UserManager
      * @param query the query.
      * @return a List of {@link User} objects.
      */
-    List<User> findUsersByQuery( UserQuery query );
+    List<User> findUsersByQuery( UserQuery query )
+        throws UserManagerException;
 
     /**
      * true if the user exists, false if it doesn't
@@ -156,7 +169,8 @@ public interface UserManager
      * @param principal
      * @return true, if user exists
      */
-    boolean userExists( String principal );
+    boolean userExists( String principal )
+        throws UserManagerException;
 
     /**
      * Delete a user using the username.
@@ -165,7 +179,7 @@ public interface UserManager
      * @throws UserNotFoundException the user was not found.
      */
     void deleteUser( String username )
-        throws UserNotFoundException;
+        throws UserNotFoundException, UserManagerException;
 
     /**
      * Add a user to the database without checking for consistency or adjusting the password. Should only be used for
@@ -173,30 +187,32 @@ public interface UserManager
      *
      * @param user the user to add
      */
-    void addUserUnchecked( User user );
+    void addUserUnchecked( User user )
+        throws UserManagerException;
 
     void eraseDatabase();
 
     User updateUser( User user, boolean passwordChangeRequired )
-        throws UserNotFoundException;
+        throws UserNotFoundException, UserManagerException;
 
 
     /**
      * consumer of user manager can use it to reload various configuration
      * with the configurable implementation is possible to change dynamically the real implementation used.
+     *
      * @since 2.1
      */
     void initialize();
 
     /**
-     * @since 2.1
      * @return true if this implementation is a final one and not a wrapper (configurable, cached)
+     * @since 2.1
      */
     boolean isFinalImplementation();
 
     /**
-     * @since 2.1
      * @return a key to be able to customize label in UI
+     * @since 2.1
      */
     String getDescriptionKey();
 }

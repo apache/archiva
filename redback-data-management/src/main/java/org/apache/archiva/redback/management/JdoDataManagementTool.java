@@ -52,6 +52,7 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.jdo.UserDatabase;
 import org.apache.archiva.redback.users.jdo.io.stax.UsersManagementStaxReader;
 import org.apache.archiva.redback.users.jdo.io.stax.UsersManagementStaxWriter;
@@ -97,7 +98,7 @@ public class JdoDataManagementTool
     }
 
     public void backupUserDatabase( UserManager manager, File backupDirectory )
-        throws IOException, XMLStreamException
+        throws IOException, XMLStreamException, UserManagerException
     {
         UserDatabase database = new UserDatabase();
         database.setUsers( manager.getUsers() );
@@ -232,7 +233,7 @@ public class JdoDataManagementTool
 
     @SuppressWarnings("unchecked")
     public void restoreUsersDatabase( UserManager manager, File backupDirectory )
-        throws IOException, XMLStreamException
+        throws IOException, XMLStreamException, UserManagerException
     {
         UsersManagementStaxReader reader = new UsersManagementStaxReader();
 

@@ -26,6 +26,7 @@ import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,6 @@ import java.util.List;
  * and unlocks them on startup.
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
 @Service( "environmentCheck#locked-admin-check" )
 public class LockedAdminEnvironmentCheck
@@ -97,6 +97,11 @@ public class LockedAdminEnvironmentCheck
                     catch ( UserNotFoundException ne )
                     {
                         log.warn( "Dangling UserAssignment -> {}", userAssignment.getPrincipal() );
+                    }
+                    catch ( UserManagerException e )
+                    {
+                        log.warn( "fail to find user {} for admin unlock check: {}", userAssignment.getPrincipal(),
+                                  e.getMessage() );
                     }
                 }
             }

@@ -23,7 +23,7 @@ package org.apache.archiva.redback.users;
  * @author Jason van Zyl
  */
 public class UserNotFoundException
-    extends Exception
+    extends UserManagerException
 {
     public UserNotFoundException( String string )
     {
