@@ -30,6 +30,7 @@ import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +116,11 @@ public class ArchivaServletAuthenticator
         catch ( AuthorizationException e )
         {
             throw new UnauthorizedException( e.getMessage(), e );
+        } catch ( UserManagerException e )
+        {
+            throw new UnauthorizedException( e.getMessage(), e );
         }
+
     }
 
 

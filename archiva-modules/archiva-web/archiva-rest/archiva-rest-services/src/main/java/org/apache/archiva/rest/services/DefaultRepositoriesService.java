@@ -49,6 +49,7 @@ import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -104,7 +105,7 @@ import java.util.TimeZone;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service ( "repositoriesService#rest" )
+@Service( "repositoriesService#rest" )
 public class DefaultRepositoriesService
     extends AbstractRestService
     implements RepositoriesService
@@ -112,7 +113,7 @@ public class DefaultRepositoriesService
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named ( value = "taskExecutor#indexing" )
+    @Named( value = "taskExecutor#indexing" )
     private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
 
     @Inject
@@ -131,14 +132,14 @@ public class DefaultRepositoriesService
     private RepositoryContentFactory repositoryFactory;
 
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named( value = "archivaTaskScheduler#repository" )
     private ArchivaTaskScheduler scheduler;
 
     @Inject
     private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
-    @Named ( value = "repositorySessionFactory" )
+    @Named( value = "repositorySessionFactory" )
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
@@ -297,6 +298,10 @@ public class DefaultRepositoriesService
         catch ( UserNotFoundException e )
         {
             throw new ArchivaRestServiceException( "user " + userName + " not found", e );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new ArchivaRestServiceException( "ArchivaRestServiceException:" + e.getMessage(), e );
         }
 
         // check karma on source : read

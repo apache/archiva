@@ -30,6 +30,7 @@ import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ import java.util.List;
 /**
  * DefaultUserRepositories
  */
-@Service ( "userRepositories" )
+@Service( "userRepositories" )
 public class DefaultUserRepositories
     implements UserRepositories
 {
@@ -150,6 +151,10 @@ public class DefaultUserRepositories
         catch ( UserNotFoundException e )
         {
             throw new PrincipalNotFoundException( "Unable to find principal " + principal + "", e );
+        }
+        catch ( UserManagerException e )
+        {
+            throw new ArchivaSecurityException( e.getMessage(), e );
         }
 
         if ( user.isLocked() )
