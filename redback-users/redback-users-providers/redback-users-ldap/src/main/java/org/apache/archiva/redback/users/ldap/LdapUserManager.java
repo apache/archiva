@@ -25,6 +25,7 @@ import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
@@ -45,22 +46,21 @@ import java.util.List;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- *
  */
-@Service( "userManager#ldap" )
+@Service("userManager#ldap")
 public class LdapUserManager
     extends AbstractUserManager
     implements UserManager
 {
     @Inject
-    @Named( value = "ldapConnectionFactory#configurable" )
+    @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory connectionFactory;
 
     @Inject
     private LdapController controller;
 
     @Inject
-    @Named( value = "userMapper#ldap" )
+    @Named(value = "userMapper#ldap")
     private UserMapper mapper;
 
     @Inject
@@ -75,15 +75,30 @@ public class LdapUserManager
 
     public User addUser( User user )
     {
-        return addUser( user, true );
+        try
+        {
+            return addUser( user, true );
+        }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
+        }
     }
 
     public void addUserUnchecked( User user )
     {
-        addUser( user, false );
+        try
+        {
+            addUser( user, false );
+        }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
+        }
     }
 
     private User addUser( User user, boolean checked )
+        throws LdapException
     {
         if ( user == null )
         {
@@ -135,16 +150,20 @@ public class LdapUserManager
         {
             clearFromCache( username );
         }
-
-        LdapConnection ldapConnection = getLdapConnection();
+        LdapConnection ldapConnection = null;
         try
         {
+            ldapConnection = getLdapConnection();
             DirContext context = ldapConnection.getDirContext();
             controller.removeUser( username, context );
         }
         catch ( LdapControllerException e )
         {
             log.error( "Failed to delete user: " + username, e );
+        }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
         }
         finally
         {
@@ -179,9 +198,11 @@ public class LdapUserManager
             return ldapUser;
         }
 
-        LdapConnection ldapConnection = getLdapConnection();
+        LdapConnection ldapConnection = null;
+
         try
         {
+            ldapConnection = getLdapConnection();
             DirContext context = ldapConnection.getDirContext();
             User user = controller.getUser( username, context );
             if ( user == null )
@@ -200,6 +221,10 @@ public class LdapUserManager
         {
             log.error( "Failed to find user: {}", username, e );
             return null;
+        }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
         }
         catch ( MappingException e )
         {
@@ -247,9 +272,11 @@ public class LdapUserManager
             return Collections.emptyList();
         }
 
-        LdapConnection ldapConnection = getLdapConnection();
+        LdapConnection ldapConnection = null;
+
         try
         {
+            ldapConnection = getLdapConnection();
             DirContext context = ldapConnection.getDirContext();
             return controller.getUsersByQuery( (LdapUserQuery) query, context );
         }
@@ -262,6 +289,10 @@ public class LdapUserManager
         {
             log.error( "Failed to map user", e );
             return null;
+        }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
         }
         finally
         {
@@ -291,9 +322,11 @@ public class LdapUserManager
      */
     public List<User> getUsers()
     {
-        LdapConnection ldapConnection = getLdapConnection();
+        LdapConnection ldapConnection = null;
+
         try
         {
+            ldapConnection = getLdapConnection();
             DirContext context = ldapConnection.getDirContext();
             List<User> users = new ArrayList<User>( controller.getUsers( context ) );
             //We add the guest user because it isn't in LDAP
@@ -311,6 +344,10 @@ public class LdapUserManager
             }
             return users;
         }
+        /*catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
+        }*/
         catch ( Exception e )
         {
             log.error( e.getMessage(), e );
@@ -341,9 +378,11 @@ public class LdapUserManager
             clearFromCache( user.getUsername() );
         }
 
-        LdapConnection ldapConnection = getLdapConnection();
+        LdapConnection ldapConnection = null;
+
         try
         {
+            ldapConnection = getLdapConnection();
             DirContext context = ldapConnection.getDirContext();
             controller.updateUser( user, context );
         }
@@ -354,6 +393,10 @@ public class LdapUserManager
         catch ( MappingException e )
         {
             log.error( "Failed to update user: " + user.getUsername(), e );
+        }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
         }
         finally
         {
@@ -378,9 +421,11 @@ public class LdapUserManager
             return true;
         }
 
-        LdapConnection ldapConnection = getLdapConnection();
+        LdapConnection ldapConnection = null;
+
         try
         {
+            ldapConnection = getLdapConnection();
             DirContext context = ldapConnection.getDirContext();
             return controller.userExists( principal, context );
         }
@@ -389,6 +434,10 @@ public class LdapUserManager
             log.warn( "Failed to search for user: " + principal, e );
             return false;
         }
+        catch ( LdapException e )
+        {
+            throw new UserManagerException( e.getMessage(), e );
+        }
         finally
         {
             closeLdapConnection( ldapConnection );
@@ -396,6 +445,7 @@ public class LdapUserManager
     }
 
     private LdapConnection getLdapConnection()
+        throws LdapException
     {
         try
         {
@@ -404,7 +454,7 @@ public class LdapUserManager
         catch ( LdapException e )
         {
             log.warn( "failed to get a ldap connection " + e.getMessage(), e );
-            throw new RuntimeException( "failed to get a ldap connection " + e.getMessage(), e );
+            throw new LdapException( "failed to get a ldap connection " + e.getMessage(), e );
         }
     }
 
