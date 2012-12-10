@@ -67,7 +67,7 @@ public class ArchivaRuntimeConfigurationServiceTest
         ArchivaRuntimeConfigurationService service = getArchivaRuntimeConfigurationService();
         List<UserManagerImplementationInformation> infos = service.getUserManagerImplementationInformations();
         Assertions.assertThat( infos ).isNotNull().isNotEmpty().contains(
-            new UserManagerImplementationInformation( "jdo", null ) );
+            new UserManagerImplementationInformation( "jdo", null, false ) );
 
     }
 

@@ -26,6 +26,7 @@ import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -42,14 +43,14 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * AbstractSecurityTest
- *
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public abstract class AbstractSecurityTest
     extends TestCase
 {
@@ -63,18 +64,18 @@ public abstract class AbstractSecurityTest
     protected static final String USER_ALPACA = "alpaca";
 
     @Inject
-    @Named( value = "securitySystem#testable" )
+    @Named(value = "securitySystem#testable")
     protected SecuritySystem securitySystem;
 
     @Inject
-    @Named( value = "rBACManager#memory" )
+    @Named(value = "rBACManager#memory")
     protected RBACManager rbacManager;
 
     @Inject
     protected RoleManager roleManager;
 
     @Inject
-    @Named( value = "archivaConfiguration#default" )
+    @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
@@ -104,6 +105,7 @@ public abstract class AbstractSecurityTest
     }
 
     protected User createUser( String principal, String fullname )
+        throws UserManagerException
     {
         UserManager userManager = securitySystem.getUserManager();
 
