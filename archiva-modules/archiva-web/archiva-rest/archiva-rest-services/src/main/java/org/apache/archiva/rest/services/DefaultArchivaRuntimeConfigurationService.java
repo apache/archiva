@@ -76,6 +76,11 @@ public class DefaultArchivaRuntimeConfigurationService
             // has user manager impl changed ?
             boolean userManagerChanged = archivaRuntimeConfiguration.getUserManagerImpls().size()
                 != archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls().size();
+
+            userManagerChanged =
+                userManagerChanged || ( archivaRuntimeConfiguration.getUserManagerImpls().toString().hashCode()
+                    != archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls().toString().hashCode() );
+
             archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
 
             if ( userManagerChanged )
