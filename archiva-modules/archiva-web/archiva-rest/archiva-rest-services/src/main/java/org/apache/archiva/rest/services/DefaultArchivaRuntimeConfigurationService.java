@@ -96,6 +96,8 @@ public class DefaultArchivaRuntimeConfigurationService
                 userManager.initialize();
             }
 
+            ldapConnectionFactory.initialize();
+
             return Boolean.TRUE;
         }
         catch ( RepositoryAdminException e )
@@ -131,8 +133,6 @@ public class DefaultArchivaRuntimeConfigurationService
                 informations.add( information );
             }
         }
-
-        ldapConnectionFactory.initialize();
 
         return informations;
     }
