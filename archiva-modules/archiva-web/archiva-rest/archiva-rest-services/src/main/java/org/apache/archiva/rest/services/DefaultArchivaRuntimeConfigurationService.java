@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
+import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +99,13 @@ public class DefaultArchivaRuntimeConfigurationService
             }
 
             ldapConnectionFactory.initialize();
+
+            Collection<PasswordRule> passwordRules = applicationContext.getBeansOfType( PasswordRule.class ).values();
+
+            for ( PasswordRule passwordRule : passwordRules )
+            {
+                passwordRule.initialize();
+            }
 
             return Boolean.TRUE;
         }
