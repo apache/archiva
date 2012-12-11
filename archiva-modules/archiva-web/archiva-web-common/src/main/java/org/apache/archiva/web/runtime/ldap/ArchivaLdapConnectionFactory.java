@@ -18,13 +18,20 @@ package org.apache.archiva.web.runtime.ldap;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
+import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.naming.InvalidNameException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Olivier Lamy
@@ -38,9 +45,59 @@ public class ArchivaLdapConnectionFactory
     @Inject
     private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
 
+    private LdapConnectionConfiguration ldapConnectionConfiguration;
+
     @PostConstruct
     public void initialize()
     {
-        // no op
+        try
+        {
+            LdapConfiguration ldapConfiguration =
+                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getLdapConfiguration();
+            ldapConnectionConfiguration = new LdapConnectionConfiguration();
+            ldapConnectionConfiguration.setHostname( ldapConfiguration.getHostName() );
+            ldapConnectionConfiguration.setPort( ldapConfiguration.getPort() );
+            ldapConnectionConfiguration.setSsl( ldapConfiguration.isSsl() );
+            ldapConnectionConfiguration.setBaseDn( ldapConfiguration.getBaseDn() );
+            ldapConnectionConfiguration.setContextFactory( ldapConfiguration.getContextFactory() );
+            ldapConnectionConfiguration.setBindDn( ldapConfiguration.getBindDn() );
+            ldapConnectionConfiguration.setPassword( ldapConfiguration.getPassword() );
+            ldapConnectionConfiguration.setAuthenticationMethod( ldapConfiguration.getAuthenticationMethod() );
+            ldapConnectionConfiguration.setExtraProperties( toProperties( ldapConfiguration.getExtraProperties() ) );
+        }
+        catch ( InvalidNameException e )
+        {
+            throw new RuntimeException( "Error while initializing connection factory.", e );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new RuntimeException( "Error while initializing ldapConnectionConfiguration: " + e.getMessage(), e );
+        }
+    }
+
+    private Properties toProperties( Map<String, String> map )
+    {
+        Properties properties = new Properties();
+        if ( map == null )
+        {
+            return properties;
+        }
+        for ( Map.Entry<String, String> entry : map.entrySet() )
+        {
+            properties.put( entry.getKey(), entry.getValue() );
+        }
+        return properties;
+    }
+
+    @Override
+    public LdapConnectionConfiguration getLdapConnectionConfiguration()
+    {
+        return this.ldapConnectionConfiguration;
+    }
+
+    @Override
+    public void setLdapConnectionConfiguration( LdapConnectionConfiguration ldapConnectionConfiguration )
+    {
+        this.ldapConnectionConfiguration = ldapConnectionConfiguration;
     }
 }

@@ -139,9 +139,8 @@
   
   <alias name="userManager#archiva" alias="userManager#configurable"/>
 
-  <bean name="ldapConnectionFactory" class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
-    <property name="userConf" ref="userConfiguration#default"/>
-  </bean>
+  <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory"/>
+  <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory#configurable"/>
     
     <!-- <component>
       <role>org.apache.archiva.webdav.util.MimeTypes</role>
