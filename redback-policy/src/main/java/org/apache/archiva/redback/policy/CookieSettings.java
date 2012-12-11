@@ -54,4 +54,9 @@ public interface CookieSettings
      * @return true if remember me settings are enabled.
      */
     boolean isEnabled();
+
+    /**
+     * @since 2.1
+     */
+    void initialize();
 }
