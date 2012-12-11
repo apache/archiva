@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
+import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
@@ -105,6 +106,14 @@ public class DefaultArchivaRuntimeConfigurationService
             for ( PasswordRule passwordRule : passwordRules )
             {
                 passwordRule.initialize();
+            }
+
+            Collection<CookieSettings> cookieSettingsList =
+                applicationContext.getBeansOfType( CookieSettings.class ).values();
+
+            for ( CookieSettings cookieSettings : cookieSettingsList )
+            {
+                cookieSettings.initialize();
             }
 
             return Boolean.TRUE;
