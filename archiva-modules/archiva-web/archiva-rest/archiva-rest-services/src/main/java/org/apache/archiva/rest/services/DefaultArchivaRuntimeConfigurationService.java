@@ -21,6 +21,8 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -54,6 +56,10 @@ public class DefaultArchivaRuntimeConfigurationService
 
     @Inject
     private ApplicationContext applicationContext;
+
+    @Inject
+    @Named( value = "ldapConnectionFactory#configurable" )
+    private LdapConnectionFactory ldapConnectionFactory;
 
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
         throws ArchivaRestServiceException
@@ -125,6 +131,8 @@ public class DefaultArchivaRuntimeConfigurationService
                 informations.add( information );
             }
         }
+
+        ldapConnectionFactory.initialize();
 
         return informations;
     }
