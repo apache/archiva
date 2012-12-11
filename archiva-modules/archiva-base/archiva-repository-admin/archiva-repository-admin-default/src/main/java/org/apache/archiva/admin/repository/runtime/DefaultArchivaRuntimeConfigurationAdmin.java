@@ -349,7 +349,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             return Boolean.valueOf( conf.getConfigurationProperties().get( key ) );
         }
 
-        boolean value = userConfiguration.getBoolean( key );
+        boolean value = userConfiguration.getBoolean( key, defaultValue );
 
         conf.getConfigurationProperties().put( key, Boolean.toString( value ) );
         try
