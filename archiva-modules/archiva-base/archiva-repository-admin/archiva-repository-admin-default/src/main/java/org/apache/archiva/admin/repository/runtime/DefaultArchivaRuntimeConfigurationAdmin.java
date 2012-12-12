@@ -105,6 +105,15 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
 
             }
+
+            // we must ensure userManagerImpls list is not empty if so put at least jdo one !
+            if ( archivaRuntimeConfiguration.getUserManagerImpls().isEmpty() )
+            {
+                log.info(
+                    "archivaRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
+                archivaRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
+            }
+
         }
         catch ( RepositoryAdminException e )
         {
