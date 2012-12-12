@@ -112,6 +112,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 log.info(
                     "archivaRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
                 archivaRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
+                updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
             }
 
         }
