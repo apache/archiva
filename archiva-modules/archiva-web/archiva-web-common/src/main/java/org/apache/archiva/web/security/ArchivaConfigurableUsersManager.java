@@ -206,7 +206,7 @@ public class ArchivaConfigurableUsersManager
             }
         }
 
-        if ( user == null )
+        if ( user == null && lastException != null )
         {
             throw lastException;
         }
