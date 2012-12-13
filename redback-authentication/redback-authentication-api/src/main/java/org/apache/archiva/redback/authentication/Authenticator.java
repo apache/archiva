@@ -36,4 +36,6 @@ public interface Authenticator
 
     AuthenticationResult authenticate( AuthenticationDataSource source )
         throws AccountLockedException, AuthenticationException, MustChangePasswordException;
+
+    void initialize() throws AuthenticationException;
 }

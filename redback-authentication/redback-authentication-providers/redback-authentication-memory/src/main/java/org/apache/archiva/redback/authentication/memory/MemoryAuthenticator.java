@@ -19,6 +19,7 @@ package org.apache.archiva.redback.authentication.memory;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
  */
 @Service("authenticator#memory")
 public class MemoryAuthenticator
+    extends AbstractAuthenticator
     implements Authenticator
 {
     private String login;

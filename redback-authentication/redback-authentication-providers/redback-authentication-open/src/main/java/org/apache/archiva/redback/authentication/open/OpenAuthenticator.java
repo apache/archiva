@@ -19,6 +19,7 @@ package org.apache.archiva.redback.authentication.open;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
@@ -29,14 +30,13 @@ import org.springframework.stereotype.Service;
 
 /**
  * OpenAuthenticator - Does not test user / password.
- * All attempts result in access. 
+ * All attempts result in access.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
- * 
  */
 @Service("authenticator#open")
 public class OpenAuthenticator
+    extends AbstractAuthenticator
     implements Authenticator
 {
 

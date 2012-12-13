@@ -19,6 +19,7 @@ package org.apache.archiva.redback.authentication.ldap;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.common.ldap.UserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
@@ -54,6 +55,7 @@ import java.util.Map;
  */
 @Service( "authenticator#ldap" )
 public class LdapBindAuthenticator
+    extends AbstractAuthenticator
     implements Authenticator
 {
 

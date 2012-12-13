@@ -19,6 +19,7 @@ package org.apache.archiva.redback.authentication.users;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -50,6 +51,7 @@ import java.util.Map;
  */
 @Service("authenticator#user-manager")
 public class UserManagerAuthenticator
+    extends AbstractAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -65,6 +67,7 @@ public class UserManagerAuthenticator
     {
         return "UserManagerAuthenticator";
     }
+
 
     /**
      * @throws org.apache.archiva.redback.policy.AccountLockedException

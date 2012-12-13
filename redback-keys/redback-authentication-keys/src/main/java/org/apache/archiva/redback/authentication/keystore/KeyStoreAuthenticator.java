@@ -19,6 +19,7 @@ package org.apache.archiva.redback.authentication.keystore;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
@@ -47,6 +48,7 @@ import javax.annotation.Resource;
  */
 @Service("authenticator#keystore")
 public class KeyStoreAuthenticator
+    extends AbstractAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
