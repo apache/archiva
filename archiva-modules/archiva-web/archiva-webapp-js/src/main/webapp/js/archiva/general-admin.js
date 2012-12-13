@@ -1152,52 +1152,84 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
 
   ArchivaRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries){
+    var self=this;
+    this.modified=ko.observable(false);
+    this.modified.subscribe(function(newValue){$.log("ArchivaRuntimeConfiguration modified")});
+
     this.userManagerImpls=ko.observableArray(userManagerImpls);
+    this.userManagerImpls.subscribe(function(newValue){self.modified(true)});
+
     this.ldapConfiguration=ko.observable(ldapConfiguration);
+    this.ldapConfiguration.subscribe(function(newValue){self.modified(true)});
+
     this.migratedFromRedbackConfiguration=ko.observable(migratedFromRedbackConfiguration);
+
     this.configurationPropertiesEntries=ko.observableArray(configurationPropertiesEntries?configurationPropertiesEntries:[]);
+    this.configurationPropertiesEntries.subscribe(function(newValue){
+      self.modified(true);
+      $.log("configurationPropertiesEntries modified")
+    });
   }
 
   mapArchivaRuntimeConfiguration=function(data){
+    var archivaRuntimeConfiguration =
+            new ArchivaRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration);
+
 
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
-      return new Entry(item.key, item.value);
+      return new Entry(item.key, item.value,function(newValue){
+        archivaRuntimeConfiguration.modified(true);
+      });
     });
     if (!$.isArray(configurationPropertiesEntries)){
-        configurationPropertiesEntries=[];
+      configurationPropertiesEntries=[];
     }
+    archivaRuntimeConfiguration.configurationPropertiesEntries(configurationPropertiesEntries);
+    archivaRuntimeConfiguration.modified(false);
+    return archivaRuntimeConfiguration;
 
-    return new ArchivaRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration,
-                                           configurationPropertiesEntries);
   }
 
   LdapConfiguration=function(hostName,port,ssl,baseDn,contextFactory,bindDn,password,authenticationMethod,
                              extraPropertiesEntries){
+
+    var self=this;
+    this.modified=ko.observable(false);
+
     //private String hostName;
     this.hostName=ko.observable(hostName);
+    this.hostName.subscribe(function(newValue){self.modified(true)});
 
     //private String port;
     this.port=ko.observable(port);
+    this.port.subscribe(function(newValue){self.modified(true)});
 
     //private boolean ssl = false;
     this.ssl=ko.observable(ssl);
+    this.ssl.subscribe(function(newValue){self.modified(true)});
 
     //private String baseDn;
     this.baseDn=ko.observable(baseDn);
+    this.baseDn.subscribe(function(newValue){self.modified(true)});
 
     //private String contextFactory;
     this.contextFactory=ko.observable(contextFactory);
+    this.contextFactory.subscribe(function(newValue){self.modified(true)});
 
     //private String bindDn;
     this.bindDn=ko.observable(bindDn);
+    this.bindDn.subscribe(function(newValue){self.modified(true)});
 
     //private String password;
     this.password=ko.observable(password);
+    this.password.subscribe(function(newValue){self.modified(true)});
 
     //private String authenticationMethod;
     this.authenticationMethod=ko.observable(authenticationMethod);
+    this.authenticationMethod.subscribe(function(newValue){self.modified(true)});
 
     this.extraPropertiesEntries=ko.observableArray(extraPropertiesEntries);
+    this.extraPropertiesEntries.subscribe(function(newValue){self.modified(true)});
   }
 
   mapLdapConfiguration=function(data){
@@ -1259,8 +1291,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
 
     userManagerImplMoved=function(arg){
-      $.log("userManagerImplMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
-      //self.usedUserManagerImpls().push(self.availableUserManagerImpls()[arg.sourceIndex]);
+      $.log("userManagerImplMoved");
+      self.archivaRuntimeConfiguration().modified(true);
     }
 
     saveArchivaRuntimeConfiguration=function(){

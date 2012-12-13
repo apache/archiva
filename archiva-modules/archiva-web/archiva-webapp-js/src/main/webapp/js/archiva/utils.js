@@ -355,11 +355,18 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
    * mapping for a java Map entry
    * @param key
    * @param value
+   * @param subscribeFn if any will be called as subscrible function field
    */
-  Entry=function(key,value){
+  Entry=function(key,value,subscribeFn){
     var self=this;
     this.key=ko.observable(key);
+    if(subscribeFn){
+      this.key.subscribe(function(newValue){subscribeFn(newValue)});
+    }
     this.value=ko.observable(value);
+    if(subscribeFn){
+      this.value.subscribe(function(newValue){$.log("value modified");subscribeFn(newValue);});
+    }
   }
 
   /**

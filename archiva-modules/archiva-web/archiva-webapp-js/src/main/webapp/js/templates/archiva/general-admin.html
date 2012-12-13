@@ -906,18 +906,16 @@
       <div class="well">
         <div class="row-fluid">
           <div class="span4 dotted">
-            <h5></h5>
-            <hr/>
+            <h5>${$.i18n.prop('redback.runtime.user-managers.impls.choosed')}</h5>
             <div style="min-height: 40px" id="user-mananagers-sortables-choosed"
-                 data-bind="sortable: { template: 'redback-runtime-general-content-usermanagers', data:usedUserManagerImpls}">
+                 data-bind="sortable: { template: 'redback-runtime-general-content-usermanagers', data:usedUserManagerImpls,afterMove: userManagerImplMoved}">
             </div>
           </div>
 
           <div class="span4 dotted">
-            <h5></h5>
-            <hr/>
+            <h5>${$.i18n.prop('redback.runtime.user-managers.impls.available')}</h5>
             <div style="min-height: 40px"id="user-mananagers-sortables-availables"
-                 data-bind="sortable: {template: 'redback-runtime-general-content-usermanagers',data:availableUserManagerImpls}">
+                 data-bind="sortable: {template: 'redback-runtime-general-content-usermanagers',data:availableUserManagerImpls,afterMove: userManagerImplMoved}">
             </div>
           </div>
         </div>
@@ -1003,8 +1001,8 @@
           <thead>
             <tr>
               <th></th>
-              <th>key</th>
-              <th>value</th>
+              <th>${$.i18n.prop('redback.runtime.properties.key.label')}</th>
+              <th>${$.i18n.prop('redback.runtime.properties.value.label')}</th>
             </tr>
           </thead>
           <tbody>
@@ -1026,14 +1024,16 @@
 
         </table>
       </div>
-    </div>
   </div>
 
   <div>
-    <button data-bind="click: saveArchivaRuntimeConfiguration" id="archiva-runtime-configuration-save"
-            class="btn">${$.i18n.prop('save')}
-    </button>
+    <button data-bind="click: saveArchivaRuntimeConfiguration,css:{ 'btn-warning': archivaRuntimeConfiguration().modified() | archivaRuntimeConfiguration().ldapConfiguration().modified()  }"
+            id="archiva-runtime-configuration-save"class="btn">${$.i18n.prop('save')}</button>
   </div>
+
+</script>
+
+<script id="configurationPropertiesEntries-tmpl" type="text/html">
 
 </script>
 
