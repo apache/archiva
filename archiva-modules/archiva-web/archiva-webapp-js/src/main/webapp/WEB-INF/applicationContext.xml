@@ -136,7 +136,8 @@
       </props>
     </property>
   </bean>
-  
+
+  <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
   <alias name="userManager#archiva" alias="userManager#configurable"/>
   <alias name="authenticator#archiva" alias="authenticator#user-manager"/>
 
