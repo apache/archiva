@@ -36,7 +36,7 @@ import java.util.Properties;
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  */
-@Service( "ldapConnectionFactory#configurable" )
+@Service("ldapConnectionFactory#configurable")
 public class ConfigurableLdapConnectionFactory
     implements LdapConnectionFactory
 {
@@ -63,7 +63,7 @@ public class ConfigurableLdapConnectionFactory
 
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     // ----------------------------------------------------------------------
@@ -75,14 +75,18 @@ public class ConfigurableLdapConnectionFactory
         try
         {
             ldapConnectionConfiguration = new LdapConnectionConfiguration();
-            ldapConnectionConfiguration.setHostname( userConf.getString( UserConfigurationKeys.LDAP_HOSTNAME, hostname ) );
+            ldapConnectionConfiguration.setHostname(
+                userConf.getString( UserConfigurationKeys.LDAP_HOSTNAME, hostname ) );
             ldapConnectionConfiguration.setPort( userConf.getInt( UserConfigurationKeys.LDAP_PORT, port ) );
             ldapConnectionConfiguration.setSsl( userConf.getBoolean( UserConfigurationKeys.LDAP_SSL, ssl ) );
-            ldapConnectionConfiguration.setBaseDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, baseDn ) );
+            ldapConnectionConfiguration.setBaseDn(
+                userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, baseDn ) );
             ldapConnectionConfiguration.setContextFactory(
                 userConf.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, contextFactory ) );
-            ldapConnectionConfiguration.setBindDn( userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, bindDn ) );
-            ldapConnectionConfiguration.setPassword( userConf.getString( UserConfigurationKeys.LDAP_PASSWORD, password ) );
+            ldapConnectionConfiguration.setBindDn(
+                userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, bindDn ) );
+            ldapConnectionConfiguration.setPassword(
+                userConf.getString( UserConfigurationKeys.LDAP_PASSWORD, password ) );
             ldapConnectionConfiguration.setAuthenticationMethod(
                 userConf.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, authenticationMethod ) );
             ldapConnectionConfiguration.setExtraProperties( extraProperties );
@@ -113,6 +117,12 @@ public class ConfigurableLdapConnectionFactory
         throws LdapException
     {
         return new LdapConnection( getLdapConnectionConfiguration(), bindDn, password );
+    }
+
+    public LdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
+        throws LdapException
+    {
+        return new LdapConnection( ldapConnectionConfiguration, null );
     }
 
     public LdapName getBaseDnLdapName()

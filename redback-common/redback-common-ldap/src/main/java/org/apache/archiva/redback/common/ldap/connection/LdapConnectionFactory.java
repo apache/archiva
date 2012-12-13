@@ -33,6 +33,9 @@ public interface LdapConnectionFactory
     LdapConnection getConnection()
         throws LdapException;
 
+    LdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
+        throws LdapException;
+
     LdapConnection getConnection( Rdn subRdn )
         throws LdapException;
 
