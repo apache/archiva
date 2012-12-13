@@ -111,9 +111,10 @@ public class ArchivaConfigurableUsersManager
         throws UserManagerException
     {
         UserManager userManager = findFirstWritable();
-        if ( userManager == null )
+        if ( userManager.isReadOnly() )
         {
-            throw new RuntimeException( "impossible to find a writable userManager" );
+            log.warn( "cannot find writable user manager implementation, skip user creation" );
+            return null;
         }
         return userManager.createUser( username, fullName, emailAddress );
     }
@@ -121,7 +122,7 @@ public class ArchivaConfigurableUsersManager
     @Override
     public UserQuery createUserQuery()
     {
-        return super.createUserQuery();    //To change body of overridden methods use File | Settings | File Templates.
+        return super.createUserQuery();
     }
 
 
@@ -130,9 +131,10 @@ public class ArchivaConfigurableUsersManager
         throws UserNotFoundException, UserManagerException
     {
         UserManager userManager = findFirstWritable();
-        if ( userManager == null )
+        if ( userManager.isReadOnly() )
         {
-            throw new RuntimeException( "impossible to find a writable userManager" );
+            log.warn( "cannot find writable user manager implementation, skip delete user" );
+            return;
         }
         userManager.deleteUser( username );
     }
@@ -325,8 +327,7 @@ public class ArchivaConfigurableUsersManager
     @Override
     public boolean isReadOnly()
     {
-        //olamy: must be it depends :-)
-        return true;
+        return findFirstWritable() != null;
     }
 
     @Override
@@ -402,7 +403,13 @@ public class ArchivaConfigurableUsersManager
     public User createGuestUser()
         throws UserManagerException
     {
-        return findFirstWritable().createGuestUser();
+        UserManager userManager = findFirstWritable();
+        if ( userManager.isReadOnly() )
+        {
+            log.warn( "cannot find writable user manager implementation, skip guest user creation" );
+            return null;
+        }
+        return userManager.createGuestUser();
     }
 
     @Override
