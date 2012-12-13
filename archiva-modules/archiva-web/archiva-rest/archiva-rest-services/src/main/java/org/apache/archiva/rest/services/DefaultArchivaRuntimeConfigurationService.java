@@ -20,9 +20,12 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
+import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
+import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.users.UserManager;
@@ -35,17 +38,19 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.InvalidNameException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "archivaRuntimeConfigurationService#rest" )
+@Service("archivaRuntimeConfigurationService#rest")
 public class DefaultArchivaRuntimeConfigurationService
     extends AbstractRestService
     implements ArchivaRuntimeConfigurationService
@@ -54,14 +59,14 @@ public class DefaultArchivaRuntimeConfigurationService
     private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named( value = "ldapConnectionFactory#configurable" )
+    @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory ldapConnectionFactory;
 
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
@@ -153,6 +158,83 @@ public class DefaultArchivaRuntimeConfigurationService
         }
 
         return informations;
+    }
+
+
+    public Boolean checkLdapConnection()
+        throws ArchivaRestServiceException
+    {
+        LdapConnection ldapConnection = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+        }
+        catch ( LdapException e )
+        {
+            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+
+    public Boolean checkLdapConnection( LdapConfiguration ldapConfiguration )
+        throws ArchivaRestServiceException
+    {
+        LdapConnection ldapConnection = null;
+        try
+        {
+            LdapConnectionConfiguration ldapConnectionConfiguration =
+                new LdapConnectionConfiguration( ldapConfiguration.getHostName(), ldapConfiguration.getPort(),
+                                                 ldapConfiguration.getBaseDn(), ldapConfiguration.getContextFactory(),
+                                                 ldapConfiguration.getBindDn(), ldapConfiguration.getPassword(),
+                                                 ldapConfiguration.getAuthenticationMethod(),
+                                                 toProperties( ldapConfiguration.getExtraProperties() ) );
+
+            ldapConnection = ldapConnectionFactory.getConnection( ldapConnectionConfiguration );
+        }
+        catch ( InvalidNameException e )
+        {
+            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
+        {
+            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+
+    private Properties toProperties( Map<String, String> map )
+    {
+        Properties properties = new Properties();
+        if ( map == null || map.isEmpty() )
+        {
+            return properties;
+        }
+        for ( Map.Entry<String, String> entry : map.entrySet() )
+        {
+            properties.put( entry.getKey(), entry.getValue() );
+        }
+        return properties;
     }
 }
 
