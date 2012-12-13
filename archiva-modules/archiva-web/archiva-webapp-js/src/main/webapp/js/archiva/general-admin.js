@@ -1265,6 +1265,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     checkLdapServerConfiguration=function(){
       $.log("checkLdapServerConfiguration");
       clearUserMessages();
+      var btn = $("#ldap-configuration-check-server");
+      btn.button('loading');
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       $.log("checkChangedLdapConfiguration");
@@ -1281,7 +1283,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                },
                complete:function(data){
                  removeMediumSpinnerImg(userMessages);
-                 //$("#archiva-runtime-configuration-save" ).button('reset');
+                 btn.button('reset');
                }
              }
       );
@@ -1289,6 +1291,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     checkChangedLdapConfiguration=function(){
       clearUserMessages();
+      var btn = $("#ldap-configuration-check-modification");
+      btn.button('loading');
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       $.log("checkChangedLdapConfiguration");
@@ -1308,7 +1312,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                },
                complete:function(data){
                  removeMediumSpinnerImg(userMessages);
-                 //$("#archiva-runtime-configuration-save" ).button('reset');
+                 btn.button('reset');
                }
              }
       );
