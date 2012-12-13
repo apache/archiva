@@ -52,7 +52,7 @@ import java.util.Map;
 public class UserManagerAuthenticator
     implements Authenticator
 {
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     @Named(value = "userManager#configurable")
