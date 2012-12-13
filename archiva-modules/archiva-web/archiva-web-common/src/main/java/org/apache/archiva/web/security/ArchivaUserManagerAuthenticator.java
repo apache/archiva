@@ -20,6 +20,7 @@ package org.apache.archiva.web.security;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
@@ -52,8 +53,9 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "authenticator#archiva" )
+@Service("authenticator#archiva")
 public class ArchivaUserManagerAuthenticator
+    extends AbstractAuthenticator
     implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -70,17 +72,25 @@ public class ArchivaUserManagerAuthenticator
     private List<UserManager> userManagers;
 
     @PostConstruct
-    protected void initialize()
-        throws RepositoryAdminException
+    @Override
+    public void initialize()
+        throws AuthenticationException
     {
-        List<String> userManagerImpls =
-            archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls();
-
-        userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
-
-        for ( String beanId : userManagerImpls )
+        try
         {
-            userManagers.add( applicationContext.getBean( "userManager#" + beanId, UserManager.class ) );
+            List<String> userManagerImpls =
+                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls();
+
+            userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
+
+            for ( String beanId : userManagerImpls )
+            {
+                userManagers.add( applicationContext.getBean( "userManager#" + beanId, UserManager.class ) );
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new AuthenticationException( e.getMessage(), e );
         }
     }
 

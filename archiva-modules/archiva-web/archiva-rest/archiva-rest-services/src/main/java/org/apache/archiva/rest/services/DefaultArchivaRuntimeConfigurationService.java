@@ -22,6 +22,8 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
@@ -121,7 +123,19 @@ public class DefaultArchivaRuntimeConfigurationService
                 cookieSettings.initialize();
             }
 
+            Collection<Authenticator> authenticators =
+                applicationContext.getBeansOfType( Authenticator.class ).values();
+
+            for ( Authenticator authenticator : authenticators )
+            {
+                authenticator.initialize();
+            }
+
             return Boolean.TRUE;
+        }
+        catch ( AuthenticationException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( RepositoryAdminException e )
         {
