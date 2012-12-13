@@ -53,57 +53,58 @@ public interface SearchService
     List<Artifact> quickSearch( @QueryParam( "queryString" ) String queryString )
         throws ArchivaRestServiceException;
 
+    /**
+     * <b>if not repositories in SearchRequest: search will be apply on all repositories the current user has karma</b>
+     */
     @Path( "quickSearchWithRepositories" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    /**
-     * <b>if not repositories in SearchRequest: search will be apply on all repositories the current user has karma</b>
-     */
-    List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
+
+   List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
 
-    @Path( "searchArtifacts" )
-    @POST
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true )
     /**
      * If searchRequest contains repositories, the search will be done only on those repositories.
      * <b>if no repositories, the search will be apply on all repositories the current user has karma</b>
      */
+    @Path( "searchArtifacts" )
+    @POST
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
     List<Artifact> searchArtifacts( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
 
+    /**
+     * <b>search will be apply on all repositories the current user has karma</b>
+     */
     @Path( "getArtifactVersions" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    /**
-     * <b>search will be apply on all repositories the current user has karma</b>
-     */
     List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
                                         @QueryParam( "artifactId" ) String artifactId,
                                         @QueryParam( "packaging" ) String packaging )
         throws ArchivaRestServiceException;
 
 
+    /**
+     * <b>this method applies on Maven Indexer lucene index, so datas not yet indexed won't be available</b>
+     */
     @Path( "getAllGroupIds" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = false )
-    /**
-     * <b>this method applies on Maven Indexer lucene index, so datas not yet indexed won't be available</b>
-     */
     GroupIdList getAllGroupIds( @QueryParam( "selectedRepos" ) List<String> selectedRepos )
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 1.4-M3
+     */
     @Path( "observableRepoIds" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    /**
-     * @since 1.4-M3
-     */
     StringList getObservablesRepoIds()
         throws ArchivaRestServiceException;
 

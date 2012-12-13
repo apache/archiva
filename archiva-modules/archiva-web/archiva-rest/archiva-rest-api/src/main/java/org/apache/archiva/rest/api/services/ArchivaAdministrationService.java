@@ -159,23 +159,23 @@ public interface ArchivaAdministrationService
     List<String> getKnownContentConsumers()
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 1.4-M3
+     */
     @Path( "getKnownContentAdminRepositoryConsumers" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    /**
-     * @since 1.4-M3
-     */
     List<AdminRepositoryConsumer> getKnownContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 1.4-M3
+     */
     @Path( "getInvalidContentAdminRepositoryConsumers" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    /**
-     * @since 1.4-M3
-     */
     List<AdminRepositoryConsumer> getInvalidContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException;
 
@@ -221,13 +221,13 @@ public interface ArchivaAdministrationService
     void setUiConfiguration( UiConfiguration uiConfiguration )
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 1.4-M3
+     */
     @Path( "applicationUrl" )
     @GET
     @Produces( MediaType.TEXT_PLAIN )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
-    /**
-     * @since 1.4-M3
-     */
     String getApplicationUrl()
         throws ArchivaRestServiceException;
 

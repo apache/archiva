@@ -55,14 +55,14 @@ public interface BrowseService
     BrowseResult getRootGroups( @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ("browseGroupId/{groupId}")
-    @GET
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization (noPermission = true, noRestriction = true)
     /**
      * @param groupId groupId to browse
      * @param repositoryId optionnal (repository to browse if <code>null</code> all available user repositories are used)
      */
+    @Path ("browseGroupId/{groupId}")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization (noPermission = true, noRestriction = true)
     BrowseResult browseGroupId( @PathParam ("groupId") String groupId,
                                 @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
@@ -93,35 +93,35 @@ public interface BrowseService
                                                @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
+    /**
+     * @return List of managed repositories current user can read
+     */
     @Path ("userRepositories")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization (noPermission = true, noRestriction = true)
-    /**
-     * @return List of managed repositories current user can read
-     */
     List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException;
 
-    @Path ("treeEntries/{g}/{a}/{v}")
-    @GET
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization (noPermission = true, noRestriction = true)
     /**
      * return the dependency Tree for an artifacts
      * <b>the List result has only one entry</b>
      */
+    @Path ("treeEntries/{g}/{a}/{v}")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization (noPermission = true, noRestriction = true)
     List<TreeEntry> getTreeEntries( @PathParam ("g") String groupId, @PathParam ("a") String artifactId,
                                     @PathParam ("v") String version, @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
+    /**
+     * List of artifacts using the artifact passed in parameter.
+     */
     @Path ("dependees/{g}/{a}/{v}")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization (noPermission = true, noRestriction = true)
-    /**
-     * List of artifacts using the artifact passed in parameter.
-     */
     List<Artifact> getDependees( @PathParam ("g") String groupId, @PathParam ("a") String artifactId,
                                  @PathParam ("v") String version, @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
@@ -179,35 +179,31 @@ public interface BrowseService
                                              @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
+    /**
+     * if path is empty content of the file is returned (for pom view)
+     */
     @Path ("artifactContentText/{g}/{a}/{v}")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization (noPermission = true, noRestriction = true)
-    /**
-     * if path is empty content of the file is returned (for pom view)
-     */
     ArtifactContent getArtifactContentText( @PathParam ("g") String groupId, @PathParam ("a") String artifactId,
                                             @PathParam ("v") String version, @QueryParam ("c") String classifier,
                                             @QueryParam ("t") String type, @QueryParam ("p") String path,
                                             @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ("artifactAvailable/{g}/{a}/{v}")
-    @GET
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization (noPermission = true, noRestriction = true)
     /**
      * verify if an artifact is available locally if not download from proxies will be try
      * @since 1.4-M3
      */
+    @Path ("artifactAvailable/{g}/{a}/{v}")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization (noPermission = true, noRestriction = true)
     Boolean artifactAvailable( @PathParam ("g") String groupId, @PathParam ("a") String artifactId,
                                @PathParam ("v") String version, @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ("artifacts/{r}")
-    @GET
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization (noPermission = true, noRestriction = true)
     /**
      *
      * return List of all artifacts from this repository
@@ -216,6 +212,10 @@ public interface BrowseService
      * @throws ArchivaRestServiceException
      * @since 1.4-M3
      */
+    @Path ("artifacts/{r}")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization (noPermission = true, noRestriction = true)
     List<Artifact> getArtifacts( @PathParam ( "r" ) String repositoryId )
         throws ArchivaRestServiceException;
 }

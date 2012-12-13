@@ -43,26 +43,26 @@ import javax.ws.rs.core.MediaType;
 public interface RepositoriesService
 {
 
+    /**
+     * index repository
+     */
     @Path ("scanRepository")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER)
-    /**
-     * index repository
-     */
     Boolean scanRepository( @QueryParam ("repositoryId") String repositoryId,
                             @QueryParam ("fullScan") boolean fullScan )
         throws ArchivaRestServiceException;
 
 
-    @Path ("scanRepositoryDirectoriesNow/{repositoryId}")
-    @GET
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
-    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER)
     /**
      * scan directories
      * @since 1.4-M3
      */
+    @Path ("scanRepositoryDirectoriesNow/{repositoryId}")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER)
     RepositoryScanStatistics scanRepositoryDirectoriesNow( @PathParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
@@ -89,15 +89,15 @@ public interface RepositoriesService
                                @QueryParam ("fullScan") boolean fullScan )
         throws ArchivaRestServiceException;
 
+    /**
+     * permissions are checked in impl
+     * will copy an artifact from the source repository to the target repository
+     */
     @Path ("copyArtifact")
     @POST
     @Consumes ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization (noPermission = true)
-    /**
-     * permissions are checked in impl
-     * will copy an artifact from the source repository to the target repository
-     */
     Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
         throws ArchivaRestServiceException;
 
@@ -111,26 +111,26 @@ public interface RepositoriesService
         throws ArchivaRestServiceException;
 
 
+    /**
+     * <b>permissions are checked in impl</b>
+     * @since 1.4-M2
+     */
     @Path ("deleteArtifact")
     @POST
     @Consumes ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization (noPermission = true)
-    /**
-     * <b>permissions are checked in impl</b>
-     * @since 1.4-M2
-     */
     Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException;
 
-    @Path ("projectVersion/{repositoryId}/{namespace}/{projectId}/{version}")
-    @DELETE
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
-    @RedbackAuthorization (noPermission = true)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M4
      */
+    @Path ("projectVersion/{repositoryId}/{namespace}/{projectId}/{version}")
+    @DELETE
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (noPermission = true)
     Boolean removeProjectVersion( @PathParam ( "repositoryId" ) String repositoryId,
                                   @PathParam ( "namespace" ) String namespace, @PathParam ( "projectId" ) String projectId,
                                   @PathParam ( "version" ) String version )
@@ -143,25 +143,25 @@ public interface RepositoriesService
     Boolean isAuthorizedToDeleteArtifacts( @PathParam ("repositoryId") String repoId )
         throws ArchivaRestServiceException;
 
-    @Path ("deleteGroupId")
-    @GET
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
-    @RedbackAuthorization (noPermission = true)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
+    @Path ("deleteGroupId")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (noPermission = true)
     Boolean deleteGroupId( @QueryParam ("groupId") String groupId, @QueryParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ("project/{repositoryId}/{groupId}/{projectId}")
-    @DELETE
-    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
-    @RedbackAuthorization (noPermission = true)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M4
      */
+    @Path ("project/{repositoryId}/{groupId}/{projectId}")
+    @DELETE
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (noPermission = true)
     Boolean deleteProject( @PathParam ("groupId") String groupId, @PathParam ("projectId") String projectId,
                            @PathParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;

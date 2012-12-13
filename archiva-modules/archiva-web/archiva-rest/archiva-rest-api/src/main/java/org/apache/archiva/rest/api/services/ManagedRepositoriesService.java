@@ -81,35 +81,35 @@ public interface ManagedRepositoriesService
     Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 1.4-M3
+     */
     @Path( "fileLocationExists" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    /**
-     * @since 1.4-M3
-     */
     Boolean fileLocationExists( @QueryParam( "fileLocation" ) String fileLocation )
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 1.4-M3
+     */
     @Path( "getManagedRepositoryStatistics/{repositoryId}/{lang}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    /**
-     * @since 1.4-M3
-     */
     ArchivaRepositoryStatistics getManagedRepositoryStatistics( @PathParam( "repositoryId" ) String repositoryId,
                                                                 @PathParam( "lang" ) String lang )
         throws ArchivaRestServiceException;
 
-    @Path( "getPomSnippet/{repositoryId}" )
-    @GET
-    @Produces( { MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     /**
      * return a pom snippet to use this repository with entities escaped (< > )
      * @since 1.4-M3
      */
+    @Path( "getPomSnippet/{repositoryId}" )
+    @GET
+    @Produces( { MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     String getPomSnippet( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 

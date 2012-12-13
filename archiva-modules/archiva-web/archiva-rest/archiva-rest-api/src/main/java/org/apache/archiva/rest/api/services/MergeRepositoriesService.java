@@ -38,25 +38,26 @@ import java.util.List;
 @Path ("/mergeRepositoriesService/")
 public interface MergeRepositoriesService
 {
+
+    /**
+     * <b>permissions are checked in impl</b>
+     * @since 1.4-M3
+     */
     @Path ("mergeConflictedArtifacts/{sourceRepositoryId}/{targetRepositoryId}")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
-    /**
-     * <b>permissions are checked in impl</b>
-     * @since 1.4-M3
-     */
     List<Artifact> getMergeConflictedArtifacts( @PathParam ("sourceRepositoryId") String sourceRepositoryId,
                                                 @PathParam ("targetRepositoryId") String targetRepositoryId )
         throws ArchivaRestServiceException;
 
-    @Path ("mergeRepositories/{sourceRepositoryId}/{targetRepositoryId}/{skipConflicts}")
-    @GET
-    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
     /**
      * <b>permissions are checked in impl</b>
      * @since 1.4-M3
      */
+    @Path ("mergeRepositories/{sourceRepositoryId}/{targetRepositoryId}/{skipConflicts}")
+    @GET
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
     void mergeRepositories( @PathParam ("sourceRepositoryId") String sourceRepositoryId,
                             @PathParam ("targetRepositoryId") String targetRepositoryId,
                             @PathParam ("skipConflicts") boolean skipConflicts )

@@ -35,28 +35,29 @@ import javax.ws.rs.core.MediaType;
 @Path( "/commonServices/" )
 public interface CommonServices
 {
-    @Path( "getI18nResources" )
-    @GET
-    @Produces( { MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true )
+
     /**
      * will return properties available in org/apache/archiva/i18n/default.properties
      * load default (en) then override with locale used so at least en are returned if no
      * translation in the locale asked.
      */
-    String getI18nResources( @QueryParam( "locale" ) String locale )
-        throws ArchivaRestServiceException;
-
-    @Path( "getAllI18nResources" )
+    @Path( "getI18nResources" )
     @GET
     @Produces( { MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true )
+    String getI18nResources( @QueryParam( "locale" ) String locale )
+        throws ArchivaRestServiceException;
+
     /**
      * will return properties available in org/apache/archiva/i18n/default.properties
      * load default (en) then override with locale used so at least en are returned if no
      * translation in the locale asked.
      * This method will add redback resources too. note Archva wins
      */
+    @Path( "getAllI18nResources" )
+    @GET
+    @Produces( { MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true )
     String getAllI18nResources( @QueryParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
 
