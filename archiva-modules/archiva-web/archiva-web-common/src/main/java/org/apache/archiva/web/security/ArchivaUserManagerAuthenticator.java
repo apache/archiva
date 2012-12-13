@@ -140,7 +140,10 @@ public class ArchivaUserManagerAuthenticator
                         if ( user.getCountFailedLoginAttempts() > 0 )
                         {
                             user.setCountFailedLoginAttempts( 0 );
-                            userManager.updateUser( user );
+                            if ( !userManager.isReadOnly() )
+                            {
+                                userManager.updateUser( user );
+                            }
                         }
 
                         return new AuthenticationResult( true, source.getPrincipal(), null );
@@ -162,11 +165,16 @@ public class ArchivaUserManagerAuthenticator
 
                     try
                     {
+
                         securityPolicy.extensionExcessiveLoginAttempts( user );
+
                     }
                     finally
                     {
-                        userManager.updateUser( user );
+                        if ( !userManager.isReadOnly() )
+                        {
+                            userManager.updateUser( user );
+                        }
                     }
 
                     //return new AuthenticationResult( false, source.getPrincipal(), null, authnResultExceptionsMap );
