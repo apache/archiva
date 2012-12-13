@@ -19,26 +19,31 @@
 <div id="modal-login" class="modal hide fade">
   <div class="modal-header">
     <a href="#" class="close" data-dismiss="modal">&times;</a>
+
     <h3>${$.i18n.prop('login.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-login-content">
-      <form id="user-login-form" class="form-horizontal">
-        <div id="modal-login-err-message" class="alert alert-error" style="display:none"></div>
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label" for="user-login-form-username">${$.i18n.prop('username')}</label>
-            <div class="controls">
-              <input type="text" id="user-login-form-username" name="user-login-form-username" class="required" placeholder="${$.i18n.prop('login.username.placehoder')}"/>
-            </div>
+    <form id="user-login-form" class="form-horizontal">
+      <div id="modal-login-err-message" class="alert alert-error" style="display:none"></div>
+      <fieldset>
+        <div class="control-group">
+          <label class="control-label" for="user-login-form-username">${$.i18n.prop('username')}</label>
+
+          <div class="controls">
+            <input type="text" id="user-login-form-username" name="user-login-form-username" class="required"
+                   placeholder="${$.i18n.prop('login.username.placehoder')}"/>
           </div>
-          <div class="control-group">
-            <label class="control-label" for="user-login-form-password">${$.i18n.prop('password')}</label>
-            <div class="controls">
-              <input type="password" id="user-login-form-password" name="user-login-form-password" class="required" placeholder="${$.i18n.prop('login.password.placehoder')}"/>
-            </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="user-login-form-password">${$.i18n.prop('password')}</label>
+
+          <div class="controls">
+            <input type="password" id="user-login-form-password" name="user-login-form-password" class="required"
+                   placeholder="${$.i18n.prop('login.password.placehoder')}"/>
           </div>
-        </fieldset>
-      </form>
+        </div>
+      </fieldset>
+    </form>
   </div>
   <div class="modal-footer" id="modal-login-footer">
     <div class="pull-left">
@@ -46,7 +51,9 @@
         <input type="checkbox" id="user-login-form-rememberme">${$.i18n.prop('rememberme')}
       </label>
     </div>
-    <button class="btn btn-primary" id="modal-login-ok" data-loading-text="${$.i18n.prop('common.loading')}">${$.i18n.prop('login')}</button>
+    <button class="btn btn-primary" id="modal-login-ok" data-loading-text="${$.i18n.prop('common.loading')}">
+      ${$.i18n.prop('login')}
+    </button>
     <button class="btn btn-info" id="modal-login-password-reset">${$.i18n.prop('password.reset')}</button>
   </div>
 </div>
@@ -54,71 +61,84 @@
 <div id="modal-register" class="modal hide fade">
   <div class="modal-header">
     <a href="#" class="close" data-dismiss="modal">&times;</a>
+
     <h3>${$.i18n.prop('register.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-register-content">
-      <form id="user-register-form" class="form-horizontal">
-        <div id="modal-register-err-message" class="alert-message error" style="display:none"></div>
-        <fieldset>
-          <div class="control-group">
-            <label class="control-label" for="user-register-form-username">${$.i18n.prop('username')}</label>
-            <div class="controls">
-              <input type="text" id="user-register-form-username" name="user-register-form-username" class="required" />
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="user-register-form-fullname">${$.i18n.prop('full.name')}</label>
-            <div class="controls">
-              <input type="text" id="user-register-form-fullname" name="user-register-form-fullname" class="required" />
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="user-register-form-email">${$.i18n.prop('email')}</label>
-            <div class="controls">
-              <input type="text" id="user-register-form-email" name="user-register-form-email" class="required email" />
-            </div>
-          </div>
+    <form id="user-register-form" class="form-horizontal">
+      <div id="modal-register-err-message" class="alert-message error" style="display:none"></div>
+      <fieldset>
+        <div class="control-group">
+          <label class="control-label" for="user-register-form-username">${$.i18n.prop('username')}</label>
 
-        </fieldset>
-      </form>
+          <div class="controls">
+            <input type="text" id="user-register-form-username" name="user-register-form-username" class="required"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="user-register-form-fullname">${$.i18n.prop('full.name')}</label>
+
+          <div class="controls">
+            <input type="text" id="user-register-form-fullname" name="user-register-form-fullname" class="required"/>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="user-register-form-email">${$.i18n.prop('email')}</label>
+
+          <div class="controls">
+            <input type="text" id="user-register-form-email" name="user-register-form-email" class="required email"/>
+          </div>
+        </div>
+
+      </fieldset>
+    </form>
   </div>
   <div class="modal-footer" id="modal-register-footer">
-      <button class="btn btn-primary" id="modal-register-ok">${$.i18n.prop('register')}</button>
+    <button class="btn btn-primary" id="modal-register-ok">${$.i18n.prop('register')}</button>
   </div>
 </div>
 
 <div id="modal-password-change" class="modal hide fade">
   <div class="modal-header">
     <a href="#" class="close" data-dismiss="modal">&times;</a>
+
     <h3>${$.i18n.prop('password.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-password-change-content">
-      <form id="password-change-form" class="form-horizontal">
-        <div id="modal-password-change-err-message" class="alert-message error" style="display:none"></div>
-        <fieldset>
-          <!-- part displayed only when a logged user want to change password will be hide when validate user registration -->
-          <div class="control-group" id="password-change-form-current-password-div">
-            <label class="control-label" for="password-change-form-current-password">${$.i18n.prop('password.existing')}</label>
-            <div class="controls">
-              <input type="password" id="password-change-form-current-password" name="password-change-form-current-password" class="required" value=""/>
-            </div>
-          </div>
+    <form id="password-change-form" class="form-horizontal">
+      <div id="modal-password-change-err-message" class="alert-message error" style="display:none"></div>
+      <fieldset>
+        <!-- part displayed only when a logged user want to change password will be hide when validate user registration -->
+        <div class="control-group" id="password-change-form-current-password-div">
+          <label class="control-label"
+                 for="password-change-form-current-password">${$.i18n.prop('password.existing')}</label>
 
-          <div class="control-group">
-            <label class="control-label" for="passwordChangeFormNewPassword">${$.i18n.prop('password.new')}</label>
-            <div class="controls">
-              <input type="password" id="passwordChangeFormNewPassword" name="passwordChangeFormNewPassword" class="required" value=""/>
-            </div>
+          <div class="controls">
+            <input type="password" id="password-change-form-current-password"
+                   name="password-change-form-current-password" class="required" value=""/>
           </div>
+        </div>
 
-          <div class="control-group">
-            <label class="control-label"  for="passwordChangeFormNewPasswordConfirm">${$.i18n.prop('password.new.confirm')}</label>
-            <div class="controls">
-              <input type="password" id="passwordChangeFormNewPasswordConfirm" name="passwordChangeFormNewPasswordConfirm" class="required" value=""/>
-            </div>
+        <div class="control-group">
+          <label class="control-label" for="passwordChangeFormNewPassword">${$.i18n.prop('password.new')}</label>
+
+          <div class="controls">
+            <input type="password" id="passwordChangeFormNewPassword" name="passwordChangeFormNewPassword"
+                   class="required" value=""/>
           </div>
-        </fieldset>
-      </form>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label"
+                 for="passwordChangeFormNewPasswordConfirm">${$.i18n.prop('password.new.confirm')}</label>
+
+          <div class="controls">
+            <input type="password" id="passwordChangeFormNewPasswordConfirm" name="passwordChangeFormNewPasswordConfirm"
+                   class="required" value=""/>
+          </div>
+        </div>
+      </fieldset>
+    </form>
   </div>
   <div class="modal-footer" id="modal-password-change-footer">
     <button class="btn btn-primary" onclick="return" id="modal-change-password-ok">${$.i18n.prop('ok')}</button>
@@ -128,6 +148,7 @@
 <div id="modal-user-edit" class="modal hide fade">
   <div class="modal-header">
     <a href="#" class="close" data-dismiss="modal">&times;</a>
+
     <h3>${$.i18n.prop('password.section.title')}</h3>
   </div>
   <div class="modal-body" id="modal-user-edit-content">

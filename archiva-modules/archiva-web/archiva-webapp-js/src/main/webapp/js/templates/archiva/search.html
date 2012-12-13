@@ -45,35 +45,39 @@
 
       <!-- if null we are on root level -->
       {{if $root.parentBrowseViewModel}}
-        <li class="browse-list" data-bind="click:function(){displayParentGroupId()}">
-          <a href="#">..</a>
-        </li>
+      <li class="browse-list" data-bind="click:function(){displayParentGroupId()}">
+        <a href="#">..</a>
+      </li>
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
-        {{if browseResultEntry.project}}
-          {{if deleteKarma}}
-            <li class="browse-list-project">
-              <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png" data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"/>
-              <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-            </li>
-          {{else}}
-            <li class="browse-list-project">
-              <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-              <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"></img></a>
-            </li>
-          {{/if}}
-        {{else}}
-          {{if deleteKarma}}
-            <li class="browse-list">
-              <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png" data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
-              <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#" title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-            </li>
-          {{else}}
-            <li class="browse-list" >
-              <a href="#" title="folder ${displayEntry(browseResultEntry.name)}" data-bind="click:function(){displayGroupId(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-            </li>
-          {{/if}}
-        {{/if}}          
+      {{if browseResultEntry.project}}
+      {{if deleteKarma}}
+      <li class="browse-list-project">
+        <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
+             data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"/>
+        <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+      </li>
+      {{else}}
+      <li class="browse-list-project">
+        <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+        <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"></img></a>
+      </li>
+      {{/if}}
+      {{else}}
+      {{if deleteKarma}}
+      <li class="browse-list">
+        <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
+             data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+        <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#"
+           title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+      </li>
+      {{else}}
+      <li class="browse-list">
+        <a href="#" title="folder ${displayEntry(browseResultEntry.name)}"
+           data-bind="click:function(){displayGroupId(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+      </li>
+      {{/if}}
+      {{/if}}
 
       {{/each}}
     </ul>
@@ -86,30 +90,32 @@
       <img class="cursor-hand" src="images/view-refresh.png" data-bind="click: function(){refreshContent()}"/>
     </li>
     <li>
-      <a href="#" data-bind="click: function(){ browseRoot()}"><img src="images/go-home.png"/></a>&nbsp;<span class="divider">/</span>
+      <a href="#" data-bind="click: function(){ browseRoot()}"><img src="images/go-home.png"/></a>&nbsp;<span
+            class="divider">/</span>
     </li>
     {{var number=breadCrumbEntries().length}}
     {{each(i,breadCrumbEntry) breadCrumbEntries}}
-      <li>
-        {{if i==(number-1)}}
-          ${breadCrumbEntry.displayValue}
-        {{else}}
-          {{if breadCrumbEntry.artifact}}
-            <a href="#" data-bind="click: function(){goToArtifactDetail(breadCrumbEntry.groupId,breadCrumbEntry.artifactId)}">${breadCrumbEntry.displayValue}</a>
-          {{else}}
-            <a href="#" data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
-          {{/if}}
-        {{/if}}
-        {{if i<(number-1)}}
-          <span class="divider">/</span>
-        {{/if}}
-      </li>
+    <li>
+      {{if i==(number-1)}}
+      ${breadCrumbEntry.displayValue}
+      {{else}}
+      {{if breadCrumbEntry.artifact}}
+      <a href="#" data-bind="click: function(){goToArtifactDetail(breadCrumbEntry.groupId,breadCrumbEntry.artifactId)}">${breadCrumbEntry.displayValue}</a>
+      {{else}}
+      <a href="#"
+         data-bind="click: function(){displayGroupId(breadCrumbEntry.groupId)}">${breadCrumbEntry.displayValue}</a>
+      {{/if}}
+      {{/if}}
+      {{if i<(number-1)}}
+      <span class="divider">/</span>
+      {{/if}}
+    </li>
     {{/each}}
     <li>
       {{if number>0}}
-        <span class="divider" id="browse-autocomplete-divider">/</span>
+      <span class="divider" id="browse-autocomplete-divider">/</span>
       {{/if}}
-        <input type="text" class="input-large" size="50" id="browse-autocomplete"/>
+      <input type="text" class="input-large" size="50" id="browse-autocomplete"/>
     </li>
   </ul>
 
@@ -124,56 +130,56 @@
       <div id="artifact-info" class="alert alert-info">
         <table class="table table-condensed">
           <tbody>
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.groupId')}</th>
-              <td>${groupId}</td>
-            </tr>
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
-              <td>${artifactId}</td>
-            </tr>
-            {{if projectVersionMetadata}}
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.name')}</th>
-              <td>${projectVersionMetadata.name}</td>
-            </tr>
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.groupId')}</th>
+            <td>${groupId}</td>
+          </tr>
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
+            <td>${artifactId}</td>
+          </tr>
+          {{if projectVersionMetadata}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.name')}</th>
+            <td>${projectVersionMetadata.name}</td>
+          </tr>
+          {{/if}}
+          {{if projectVersionMetadata}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.description')}</th>
+            <td>${projectVersionMetadata.description}</td>
+          </tr>
+          {{/if}}
+          {{if projectVersionMetadata && projectVersionMetadata.mavenFacet}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.packaging')}</th>
+            <td>${projectVersionMetadata.mavenFacet.packaging}</td>
+          </tr>
+          {{/if}}
+          {{if projectVersionMetadata && projectVersionMetadata.organization}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
+            {{if projectVersionMetadata.organization.url}}
+            <td>
+              <a href="${projectVersionMetadata.organization.url}" target="_blank">
+                <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
+              </a>
+            </td>
+            {{else}}
+            <td>${projectVersionMetadata.organization.name}</td>
             {{/if}}
-            {{if projectVersionMetadata}}
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.description')}</th>
-              <td>${projectVersionMetadata.description}</td>
-            </tr>
-            {{/if}}
-            {{if projectVersionMetadata && projectVersionMetadata.mavenFacet}}
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.packaging')}</th>
-              <td>${projectVersionMetadata.mavenFacet.packaging}</td>
-            </tr>
-            {{/if}}
-            {{if projectVersionMetadata && projectVersionMetadata.organization}}
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
-              {{if projectVersionMetadata.organization.url}}
-                <td>
-                  <a href="${projectVersionMetadata.organization.url}" target="_blank">
-                    <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
-                  </a>
-                </td>
-              {{else}}
-                <td>${projectVersionMetadata.organization.name}</td>
-              {{/if}}
-            </tr>
-            {{/if}}
-            {{if projectVersionMetadata && projectVersionMetadata.issueManagement}}
-            <tr>
-              <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
-              <td>
-                <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
-                  <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
-                </a>
-              </td>
-            </tr>
-            {{/if}}
+          </tr>
+          {{/if}}
+          {{if projectVersionMetadata && projectVersionMetadata.issueManagement}}
+          <tr>
+            <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
+            <td>
+              <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
+                <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
+              </a>
+            </td>
+          </tr>
+          {{/if}}
           </tbody>
         </table>
       </div>
@@ -184,15 +190,18 @@
       </div>
       <div class="alert alert-success">
         <table class="table table-condensed">
-        {{each(i,version) versions}}
+          {{each(i,version) versions}}
           <tr>
             {{if deleteKarma}}
-              <th><a id="delete-${version}" href="#" data-bind="click: function(){deleteVersion(version)}"><img src="images/trash.png"/></a>&nbsp;<a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
+            <th><a id="delete-${version}" href="#" data-bind="click: function(){deleteVersion(version)}"><img
+                    src="images/trash.png"/></a>&nbsp;<a href="#"
+                                                         data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a>
+            </th>
             {{else}}
-              <th><a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
+            <th><a href="#" data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a></th>
             {{/if}}
           </tr>
-        {{/each}}
+          {{/each}}
         </table>
       </div>
     </div>
@@ -213,70 +222,83 @@
         <li class="active" id="search-form-collapse-li">
           <a data-toggle="tab" href="#search-form-collapse">${$.i18n.prop('search.artifact.form.header')}</a>
         </li>
-          <li id="search-results-li">
-            <a data-toggle="tab" href="#search-results">${$.i18n.prop('search.artifact.results.header')}</a>
-          </li>
+        <li id="search-results-li">
+          <a data-toggle="tab" href="#search-results">${$.i18n.prop('search.artifact.results.header')}</a>
+        </li>
       </ul>
       <div class="tab-content">
 
-      <div id="search-form-collapse" class="tab-pane active">
-        <div class="tabbable tabs-below">
-          <ul class="nav nav-pills">
-            <li class="active">
-              <a href="#search-basic-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.basic')}</a>
-            </li>
-            <li>
-              <a href="#search-advanced-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.advanced')}</a>
-            </li>
-            <li>
-              <a href="#search-osgi-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.osgi')}</a>
-            </li>
-          </ul>
-          <div class="pill-content">
-            <div class="pill-pane active" id="search-basic-form-pane">
-              <form class="well form-inline" id="search-basic-form">
-                <fieldset>
-                  <div class="control-group" id="search-basic-repositories">
-                    <select data-placeholder="${$.i18n.prop('search.artifact.search.form.query.repositories')}"
-                            id="search-basic-repositories-select" class="chzn-select defaults"
-                            multiple style="width:350px;" tabindex="4">
-                      <option value="all">${$.i18n.prop('search.artifact.search.form.repositories.all')}</option>
-                      {{each(i,repoId) observableRepoIds}}
+        <div id="search-form-collapse" class="tab-pane active">
+          <div class="tabbable tabs-below">
+            <ul class="nav nav-pills">
+              <li class="active">
+                <a href="#search-basic-form-pane"
+                   data-toggle="tab">${$.i18n.prop('search.artifact.search.form.basic')}</a>
+              </li>
+              <li>
+                <a href="#search-advanced-form-pane" data-toggle="tab">${$.i18n.prop('search.artifact.search.form.advanced')}</a>
+              </li>
+              <li>
+                <a href="#search-osgi-form-pane"
+                   data-toggle="tab">${$.i18n.prop('search.artifact.search.form.osgi')}</a>
+              </li>
+            </ul>
+            <div class="pill-content">
+              <div class="pill-pane active" id="search-basic-form-pane">
+                <form class="well form-inline" id="search-basic-form">
+                  <fieldset>
+                    <div class="control-group" id="search-basic-repositories">
+                      <select data-placeholder="${$.i18n.prop('search.artifact.search.form.query.repositories')}"
+                              id="search-basic-repositories-select" class="chzn-select defaults"
+                              multiple style="width:350px;" tabindex="4">
+                        <option value="all">${$.i18n.prop('search.artifact.search.form.repositories.all')}</option>
+                        {{each(i,repoId) observableRepoIds}}
                         <option value="${repoId}">${repoId}</option>
-                      {{/each}}
-                    </select>
-                  </div>
-                  <div class="control-group">
-                    <label class="control-label" for="search-terms"></label>
-                    <div class="controls">
-                      <input type="text" class="defaults" id="search-terms" name="search-terms" size="50"
-                             data-bind="value: searchRequest().queryTerms" placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
+                        {{/each}}
+                      </select>
                     </div>
-                  </div>
-                  <button type="submit" id="btn-basic-search" class="btn btn-primary"
-                          data-loading-text="${$.i18n.prop('search.artifact.searching')}" data-bind="click: basicSearch" accesskey="${$.i18n.prop('search.artifact.search.form.btn.search')[0]}">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
-                </fieldset>
-              </form>
-            </div>
-            <div class="pill-pane" id="search-advanced-form-pane">
+                    <div class="control-group">
+                      <label class="control-label" for="search-terms"></label>
+
+                      <div class="controls">
+                        <input type="text" class="defaults" id="search-terms" name="search-terms" size="50"
+                               data-bind="value: searchRequest().queryTerms"
+                               placeholder="${$.i18n.prop('search.artifact.search.form.query.terms')}"/>
+                      </div>
+                    </div>
+                    <button type="submit" id="btn-basic-search" class="btn btn-primary"
+                            data-loading-text="${$.i18n.prop('search.artifact.searching')}"
+                            data-bind="click: basicSearch"
+                            accesskey="${$.i18n.prop('search.artifact.search.form.btn.search')[0]}">
+                      ${$.i18n.prop('search.artifact.search.form.btn.search')}
+                    </button>
+                  </fieldset>
+                </form>
+              </div>
+              <div class="pill-pane" id="search-advanced-form-pane">
                 <form class="well form-horizontal" id="search-advanced-form">
                   <fieldset>
                     <div class="control-group">
                       <label class="control-label" for="groupId">${$.i18n.prop('search.artifact.search.form.query.groupId')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="groupId" name="groupId" size="50" placeholder="my.group.id"
+                        <input type="text" class="defaults" id="groupId" name="groupId" size="50"
+                               placeholder="my.group.id"
                                data-bind="value: searchRequest().groupId"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="artifactId">${$.i18n.prop('search.artifact.search.form.query.artifactId')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="artifactId" name="artifactId" size="50" placeholder="my.artifact.id"
+                        <input type="text" class="defaults" id="artifactId" name="artifactId" size="50"
+                               placeholder="my.artifact.id"
                                data-bind="value: searchRequest().artifactId"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="version">${$.i18n.prop('search.artifact.search.form.query.version')}</label>
+
                       <div class="controls">
                         <input type="text" class="defaults" id="version" name="version" size="50" placeholder="0.0.0"
                                data-bind="value: searchRequest().version"/>
@@ -284,13 +306,16 @@
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="classifier">${$.i18n.prop('search.artifact.search.form.query.classifier')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="classifier" name="classifier" size="50" placeholder="bin"
+                        <input type="text" class="defaults" id="classifier" name="classifier" size="50"
+                               placeholder="bin"
                                data-bind="value: searchRequest().classifier"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="packaging">${$.i18n.prop('search.artifact.search.form.query.packaging')}</label>
+
                       <div class="controls">
                         <input type="text" class="defaults" id="packaging" name="packaging" size="50" placeholder="jar"
                                data-bind="value: searchRequest().packaging"/>
@@ -298,87 +323,107 @@
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="className">${$.i18n.prop('search.artifact.search.form.query.className')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="className" name="className" size="50" placeholder="my.ClassName"
+                        <input type="text" class="defaults" id="className" name="className" size="50"
+                               placeholder="my.ClassName"
                                data-bind="value: searchRequest().className"/>
                       </div>
                     </div>
 
                   </fieldset>
                   <button type="submit" id="btn-advanced-search" class="btn btn-primary"
-                          data-bind="click: advancedSearch" accesskey="${$.i18n.prop('search.artifact.search.form.btn.search')[0]}">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
+                          data-bind="click: advancedSearch"
+                          accesskey="${$.i18n.prop('search.artifact.search.form.btn.search')[0]}">
+                    ${$.i18n.prop('search.artifact.search.form.btn.search')}
+                  </button>
 
                 </form>
-            </div>
-            <div class="pill-pane" id="search-osgi-form-pane">
+              </div>
+              <div class="pill-pane" id="search-osgi-form-pane">
                 <form class="well form-horizontal" id="search-osgi-form">
                   <fieldset>
                     <div class="control-group">
                       <label class="control-label" for="bundleSymbolicName">${$.i18n.prop('search.artifact.search.form.query.bundleSymbolicName')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="bundleSymbolicName" name="bundleSymbolicName" size="50" placeholder="my.SymbolicName"
+                        <input type="text" class="defaults" id="bundleSymbolicName" name="bundleSymbolicName" size="50"
+                               placeholder="my.SymbolicName"
                                data-bind="value: searchRequest().bundleSymbolicName"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="bundleVersion">${$.i18n.prop('search.artifact.search.form.query.bundleVersion')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="bundleVersion" name="bundleVersion" size="50" placeholder="0.0.0"
+                        <input type="text" class="defaults" id="bundleVersion" name="bundleVersion" size="50"
+                               placeholder="0.0.0"
                                data-bind="value: searchRequest().bundleVersion"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="bundleExportPackage">${$.i18n.prop('search.artifact.search.form.query.bundleExportPackage')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="bundleExportPackage" name="bundleExportPackage" size="50" placeholder="my.package;version=0.0,..."
+                        <input type="text" class="defaults" id="bundleExportPackage" name="bundleExportPackage"
+                               size="50" placeholder="my.package;version=0.0,..."
                                data-bind="value: searchRequest().bundleExportPackage"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="bundleExportService">${$.i18n.prop('search.artifact.search.form.query.bundleExportService')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="bundleExportService" name="bundleExportService" size="50" placeholder="my.SomeService"
+                        <input type="text" class="defaults" id="bundleExportService" name="bundleExportService"
+                               size="50" placeholder="my.SomeService"
                                data-bind="value: searchRequest().bundleExportService"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="bundleImportPackage">${$.i18n.prop('search.artifact.search.form.query.bundleImportPackage')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="bundleImportPackage" name="bundleImportPackage" size="50" placeholder="my.package;version=0.0,..."
+                        <input type="text" class="defaults" id="bundleImportPackage" name="bundleImportPackage"
+                               size="50" placeholder="my.package;version=0.0,..."
                                data-bind="value: searchRequest().bundleImportPackage"/>
                       </div>
                     </div>
                     <div class="control-group">
                       <label class="control-label" for="bundleRequireBundle">${$.i18n.prop('search.artifact.search.form.query.bundleRequireBundle')}</label>
+
                       <div class="controls">
-                        <input type="text" class="defaults" id="bundleRequireBundle" name="bundleRequireBundle" size="50" placeholder="my.package;version=0.0,..."
+                        <input type="text" class="defaults" id="bundleRequireBundle" name="bundleRequireBundle"
+                               size="50" placeholder="my.package;version=0.0,..."
                                data-bind="value: searchRequest().bundleRequireBundle"/>
                       </div>
                     </div>
                   </fieldset>
                   <button type="submit" id="btn-osgi-search" class="btn btn-primary"
-                          data-bind="click: advancedSearch" accesskey="${$.i18n.prop('search.artifact.search.form.btn.search')[0]}">${$.i18n.prop('search.artifact.search.form.btn.search')}</button>
+                          data-bind="click: advancedSearch"
+                          accesskey="${$.i18n.prop('search.artifact.search.form.btn.search')[0]}">
+                    ${$.i18n.prop('search.artifact.search.form.btn.search')}
+                  </button>
 
                 </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
 
-      <div id="search-results" class="tab-pane">
-        <div class="row-fluid">
-          <div class="span6">
-            <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">${$.i18n.prop('search.artifact.result.filter')}</a>
+        <div id="search-results" class="tab-pane">
+          <div class="row-fluid">
+            <div class="span6">
+              <a href="#" class="btn btn-warning" data-bind="click: removeFilter" id="remove-filter-id">${$.i18n.prop('search.artifact.result.filter')}</a>
+            </div>
+            <div class="span6" id="search-result-number-div">
+            </div>
           </div>
-          <div class="span6" id="search-result-number-div">
-          </div>
+          <table class="table table-striped table-bordered" id="search-results-grid">
+          </table>
+          <div id="search-results-view-grid-pagination"></div>
+
         </div>
-        <table class="table table-striped table-bordered" id="search-results-grid">
-        </table>
-        <div id="search-results-view-grid-pagination"></div>
-
-      </div>
 
       </div>
     </div>
@@ -388,50 +433,54 @@
 
 <script type="text/html" id="search-result-number-div-tmpl">
   <blockquote>
-      ${$.i18n.prop('search.artifact.result.size')}:&nbsp;${resultViewModel.artifacts().length}
+    ${$.i18n.prop('search.artifact.result.size')}:&nbsp;${resultViewModel.artifacts().length}
   </blockquote>
 
 </script>
 
 <script id="search-results-view-grid-tmpl" type="text/html">
-    <thead>
-        <tr>
-            <th title="${$.i18n.prop('search.artifact.results.groupId')}">${$.i18n.prop('search.artifact.results.groupId')}</th>
-            <th title="${$.i18n.prop('search.artifact.results.artifactId')}">${$.i18n.prop('search.artifact.results.artifactId')}</th>
-            <th title="${$.i18n.prop('search.artifact.results.version')}">${$.i18n.prop('search.artifact.results.version')}</th>
-            <th title="${$.i18n.prop('search.artifact.results.classifier')}">${$.i18n.prop('search.artifact.results.classifier')}</th>
-        </tr>
-        <tr>
+  <thead>
+  <tr>
+    <th title="${$.i18n.prop('search.artifact.results.groupId')}">${$.i18n.prop('search.artifact.results.groupId')}</th>
+    <th title="${$.i18n.prop('search.artifact.results.artifactId')}">
+      ${$.i18n.prop('search.artifact.results.artifactId')}
+    </th>
+    <th title="${$.i18n.prop('search.artifact.results.version')}">${$.i18n.prop('search.artifact.results.version')}</th>
+    <th title="${$.i18n.prop('search.artifact.results.classifier')}">
+      ${$.i18n.prop('search.artifact.results.classifier')}
+    </th>
+  </tr>
+  <tr>
 
-            <th title="${$.i18n.prop('search.artifact.results.groupId')}">
-              <input type="text" class="form-search" id="search-filter-auto-groupId"
-                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
-            </th>
-            <th title="${$.i18n.prop('search.artifact.results.artifactId')}">
-              <input type="text" class="form-search" id="search-filter-auto-artifactId"
-                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
-            </th>
-            <th title="${$.i18n.prop('search.artifact.results.version')}">
-              <input type="text" class="form-search" id="search-filter-auto-version"
-                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
-            </th>
-            <th title="${$.i18n.prop('search.artifact.results.classifier')}">
-              <input type="text" class="form-search" id="search-filter-auto-classifier"
-                     placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
-            </th>
+    <th title="${$.i18n.prop('search.artifact.results.groupId')}">
+      <input type="text" class="form-search" id="search-filter-auto-groupId"
+             placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+    </th>
+    <th title="${$.i18n.prop('search.artifact.results.artifactId')}">
+      <input type="text" class="form-search" id="search-filter-auto-artifactId"
+             placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+    </th>
+    <th title="${$.i18n.prop('search.artifact.results.version')}">
+      <input type="text" class="form-search" id="search-filter-auto-version"
+             placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+    </th>
+    <th title="${$.i18n.prop('search.artifact.results.classifier')}">
+      <input type="text" class="form-search" id="search-filter-auto-classifier"
+             placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+    </th>
 
-        </tr>
-    </thead>
-    <tbody>
-    {{each(i, row) itemsOnCurrentPage()}}
-      <tr>
-        <td><a href="#" data-bind="click: function(){groupIdView(row)}">${row.groupId}</a></td>
-        <td><a href="#" data-bind="click: function(){artifactIdView(row)}">${row.artifactId}</a></td>
-        <td><a href="#" data-bind="click: function(){artifactDetailView(row)}">${row.version}</a></td>
-        <td>${row.classifier}</td>
-      </tr>
-    {{/each}}
-    </tbody>
+  </tr>
+  </thead>
+  <tbody>
+  {{each(i, row) itemsOnCurrentPage()}}
+  <tr>
+    <td><a href="#" data-bind="click: function(){groupIdView(row)}">${row.groupId}</a></td>
+    <td><a href="#" data-bind="click: function(){artifactIdView(row)}">${row.artifactId}</a></td>
+    <td><a href="#" data-bind="click: function(){artifactDetailView(row)}">${row.version}</a></td>
+    <td>${row.classifier}</td>
+  </tr>
+  {{/each}}
+  </tbody>
 </script>
 
 
@@ -439,456 +488,479 @@
   <select id="select_browse_repository" onchange="changeBrowseRepository()">
     <option value="">All</option>
     {{each(i,repository) repositories}}
-      {{if selected && selected==repository.id}}
-        <option value="${repository.id}" selected>${repository.name}</option>
-      {{else}}
-        <option value="${repository.id}">${repository.name}</option>
-      {{/if}}
+    {{if selected && selected==repository.id}}
+    <option value="${repository.id}" selected>${repository.name}</option>
+    {{else}}
+    <option value="${repository.id}">${repository.name}</option>
+    {{/if}}
     {{/each}}
   </select>
   {{if selected && feedsUrl}}
-    <a href="${feedsUrl}"><img src="images/atom.gif"/></a>
+  <a href="${feedsUrl}"><img src="images/atom.gif"/></a>
   {{/if}}
 </script>
 
 <script id="browse-artifact-detail-tmpl" type="text/html">
-    <ul id="artifact-details-tabs" class="nav nav-tabs">
-      <li class="active">
-        <a data-toggle="tab" id="artifact-details-info-content-a" data-target="#artifact-details-info-content" href="#artifact-details-info-content">${$.i18n.prop('artifact.detail.tab.header.info')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-dependencies-content-a" data-target="#artifact-details-dependencies-content" href="#artifact-details-dependencies-content">${$.i18n.prop('artifact.detail.tab.header.dependencies')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-dependency-tree-content-a" data-target="#artifact-details-dependency-tree-content" href="#artifact-details-dependency-tree-content">${$.i18n.prop('artifact.detail.tab.header.dependency.tree')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-files-content-a" data-target="#artifact-details-files-content" href="#artifact-details-files-content">${$.i18n.prop('artifact.detail.tab.header.file.content')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-download-content-a" data-target="#artifact-details-download-content" href="#artifact-details-download-content">${$.i18n.prop('artifact.detail.tab.header.file.download')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-used-by-content-a" data-target="#artifact-details-used-by-content" href="#artifact-details-used-by-content">${$.i18n.prop('artifact.detail.tab.header.used.by')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-mailing-list-content-a" data-target="#artifact-details-mailing-list-content" href="#artifact-details-mailing-list-content">${$.i18n.prop('artifact.detail.tab.header.mailing.list')}</a>
-      </li>
-      <li>
-        <a data-toggle="tab" id="artifact-details-metadatas-content-a" data-target="#artifact-details-metadatas-content" href="#artifact-details-metadatas-content">${$.i18n.prop('artifact.detail.tab.header.metadatas')}</a>
-      </li>
-    </ul>
-    <div class="tab-content">
-      {{if projectVersionMetadata}}
-  	  <div id="artifact-details-info-content" class="tab-pane active">
-        <blockquote>${projectVersionMetadata.description}</blockquote>
-        <div class="row-fluid">
-          <div class="span6">
-            <table class="table">
-              <tbody>
-                <tr>
-                  <th>${$.i18n.prop('browse.artifact.groupId')}</th>
-                  <td>${groupId}</td>
-                </tr>
-                <tr>
-                  <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
-                  <td>${artifactId}</td>
-                </tr>
-                <tr>
-                  <th>${$.i18n.prop('browse.artifact.version')}</th>
-                  <td>${version}</td>
-                </tr>
-                <tr>
-                  <th>${$.i18n.prop('browse.artifact.packaging')}</th>
-                  {{if projectVersionMetadata.mavenFacet}}
-                    <td>${projectVersionMetadata.mavenFacet.packaging}</td>
-                  {{else}}
-                    <td></td>
-                  {{/if}}
-                </tr>
-                {{if projectVersionMetadata.mavenFacet}}
-                  {{if projectVersionMetadata.mavenFacet.parent }}
-                  <tr>
-                    <th>${$.i18n.prop('browse.artifact.parent')}</th>
-                    <td>
-                      <a href="#" data-bind="click: displayParent">
-                      ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
-                      </a>
-                    </td>
-                  </tr>
-                  {{/if}}
-                {{/if}}
-              </tbody>
-            </table>
-          </div>
-          <div class="span6">
-            <h4>${$.i18n.prop('browse.artifact.pom.snippet')}</h4>
-              <pre class="prettyprint">&lt;dependency&gt;<br/>&nbsp;&nbsp;&lt;groupId&gt;${groupId}&lt;/groupId&gt;<br/>&nbsp;&nbsp;&lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;<br/>&nbsp;&nbsp;&lt;version&gt;${version}&lt;/version&gt;<br/>&lt;/dependency&gt;</pre>
-          </div>
-        </div>
-        <div>
-          <div class="page-header">
-            <h4>${$.i18n.prop('browse.artifact.other.details')}</h4>
-          </div>
-          <div>
-            <div class="row-fluid">
-              <div class="span9">
-                <table class="table">
-                  <tbody>
-                    {{if projectVersionMetadata.url}}
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.url')}</th>
-                      <td><a href="${projectVersionMetadata.url}" target="_blank">${projectVersionMetadata.url}</a></td>
-                    </tr>
-                    {{/if}}
-                    {{if projectVersionMetadata.organization}}
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
-                      {{if projectVersionMetadata.organization.url}}
-                        <td>
-                          <a href="${projectVersionMetadata.organization.url}" target="_blank">
-                            <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
-                          </a>
-                        </td>
-                      {{else}}
-                        <td>${projectVersionMetadata.organization.name}</td>
-                      {{/if}}
-                    </tr>
-                    {{/if}}
-                    {{each(i,license) projectVersionMetadata.licenses}}
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.license')}</th>
-                      {{if license.url}}
-                        <td>
-                          <a href="${license.url}" target="_blank">
-                            <img src="images/internet-web-browser.png" alt=""/>${license.name}
-                          </a>
-                        </td>
-                      {{else}}
-                        <td>${license.name}</td>
-                      {{/if}}
-                      </tr>
-                    {{/each}}
-                    {{if projectVersionMetadata.issueManagement}}
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
-                      <td>
-                        <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
-                          <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
-                        </a>
-                      </td>
-                    </tr>
-                    {{/if}}
-                    {{if projectVersionMetadata.ciManagement}}
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.organization.ciManagement')}</th>
-                      <td>
-                        <a href="${projectVersionMetadata.ciManagement.url}" target="_blank">
-                          <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.ciManagement.system}
-                        </a>
-                      </td>
-                    </tr>
-                    {{/if}}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{if projectVersionMetadata.scm}}
-        <div>
-          <div class="page-header">
-            <h4>${$.i18n.prop('browse.artifact.scm')}</h4>
-          </div>
-          <div>
-            <div class="row-fluid">
-              <div class="span12">
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.scm.connection')}</th>
-                      <td>${projectVersionMetadata.scm.connection}</td>
-                    </tr>
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.scm.devconnection')}</th>
-                      <td>${projectVersionMetadata.scm.developerConnection}</td>
-                    </tr>
-                    <tr>
-                      <th>${$.i18n.prop('browse.artifact.scm.viewer')}</th>
-                      <td>${projectVersionMetadata.scm.url}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+<ul id="artifact-details-tabs" class="nav nav-tabs">
+  <li class="active">
+    <a data-toggle="tab" id="artifact-details-info-content-a" data-target="#artifact-details-info-content"
+       href="#artifact-details-info-content">${$.i18n.prop('artifact.detail.tab.header.info')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-dependencies-content-a"
+       data-target="#artifact-details-dependencies-content" href="#artifact-details-dependencies-content">${$.i18n.prop('artifact.detail.tab.header.dependencies')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-dependency-tree-content-a"
+       data-target="#artifact-details-dependency-tree-content" href="#artifact-details-dependency-tree-content">${$.i18n.prop('artifact.detail.tab.header.dependency.tree')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-files-content-a" data-target="#artifact-details-files-content"
+       href="#artifact-details-files-content">${$.i18n.prop('artifact.detail.tab.header.file.content')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-download-content-a" data-target="#artifact-details-download-content"
+       href="#artifact-details-download-content">${$.i18n.prop('artifact.detail.tab.header.file.download')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-used-by-content-a" data-target="#artifact-details-used-by-content"
+       href="#artifact-details-used-by-content">${$.i18n.prop('artifact.detail.tab.header.used.by')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-mailing-list-content-a"
+       data-target="#artifact-details-mailing-list-content" href="#artifact-details-mailing-list-content">${$.i18n.prop('artifact.detail.tab.header.mailing.list')}</a>
+  </li>
+  <li>
+    <a data-toggle="tab" id="artifact-details-metadatas-content-a" data-target="#artifact-details-metadatas-content"
+       href="#artifact-details-metadatas-content">${$.i18n.prop('artifact.detail.tab.header.metadatas')}</a>
+  </li>
+</ul>
+<div class="tab-content">
+{{if projectVersionMetadata}}
+<div id="artifact-details-info-content" class="tab-pane active">
+  <blockquote>${projectVersionMetadata.description}</blockquote>
+  <div class="row-fluid">
+    <div class="span6">
+      <table class="table">
+        <tbody>
+        <tr>
+          <th>${$.i18n.prop('browse.artifact.groupId')}</th>
+          <td>${groupId}</td>
+        </tr>
+        <tr>
+          <th>${$.i18n.prop('browse.artifact.artifactId')}</th>
+          <td>${artifactId}</td>
+        </tr>
+        <tr>
+          <th>${$.i18n.prop('browse.artifact.version')}</th>
+          <td>${version}</td>
+        </tr>
+        <tr>
+          <th>${$.i18n.prop('browse.artifact.packaging')}</th>
+          {{if projectVersionMetadata.mavenFacet}}
+          <td>${projectVersionMetadata.mavenFacet.packaging}</td>
+          {{else}}
+          <td></td>
+          {{/if}}
+        </tr>
+        {{if projectVersionMetadata.mavenFacet}}
+        {{if projectVersionMetadata.mavenFacet.parent }}
+        <tr>
+          <th>${$.i18n.prop('browse.artifact.parent')}</th>
+          <td>
+            <a href="#" data-bind="click: displayParent">
+              ${projectVersionMetadata.mavenFacet.parent.groupId}:${projectVersionMetadata.mavenFacet.parent.artifactId}:${projectVersionMetadata.mavenFacet.parent.version}
+            </a>
+          </td>
+        </tr>
         {{/if}}
-  	  </div>
-      {{/if}}
-
-
-  	  <div id="artifact-details-dependencies-content" class="tab-pane">
-            <table class="table table-striped table-bordered" id="artifact-dependencies-table"
-                   data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_dependenciesGrid',pageLinksId:'dependenciesPagination',data:'dependencies'">
-            </table>
-            <div id="dependenciesPagination"></div>
-  	  </div>
-
-      <div id="artifact-details-dependency-tree-content" class="tab-pane"></div>
-
-      <div id="artifact-details-files-content" class="tab-pane"></div>
-
-      <div id="artifact-details-download-content" class="tab-pane"></div>
-
-      <div id="artifact-details-used-by-content" class="tab-pane">
-          <table class="table table-striped table-bordered" id="artifact-usedby-table">
-          </table>
-          <div id="usedbyPagination"></div>
-      </div>
-
-      <div id="artifact-details-mailing-list-content" class="tab-pane">
-        {{if projectVersionMetadata.mailingLists && projectVersionMetadata.mailingLists.length>0}}
-          <div id="accordion_mailing_lists" class="accordion">
-          {{each(i,mailingList) projectVersionMetadata.mailingLists}}
-            <div class="accordion-group">
-              <div class="accordion-heading">
-                <a class="accordion-toggle" href="#ml_collapse_${i}" data-parent="#accordion_mailing_lists" data-toggle="collapse">${mailingList.name}</a>
-              </div>
-              {{if i==0}}
-                <div id="ml_collapse_${i}" class="accordion-body collapse in">
-              {{else}}
-                <div id="ml_collapse_${i}" class="accordion-body collapse">
-              {{/if}}
-                <div class="accordion-inner">
-                  {{if mailingList.subscribeAddress}}
-                  <div>
-                    <b>${$.i18n.prop('browse.artifact.mailingList.subscribe')}</b>: <a href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a>
-                  </div>
-                  {{/if}}
-                  {{if mailingList.postAddress}}
-                  <div>
-                    <b>${$.i18n.prop('browse.artifact.mailingList.post')}</b>: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a>
-                  </div>
-                  {{/if}}
-                  {{if mailingList.unsubscribeAddress}}
-                  <div>
-                    <b>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}</b>: <a href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a>
-                  </div>
-                  {{/if}}
-                  {{if mailingList.mainArchiveUrl}}
-                  <div>
-                    <b>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}</b>: <a href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a>
-                  </div>
-                  {{/if}}
-                  {{if mailingList.otherArchives && mailingList.otherArchives.length>0}}
-                  <div>
-                    <b>${$.i18n.prop('browse.artifact.mailingList.otherArchivesUrls')}:</b>
-                    <ul>
-                    {{each(j,otherArchive) mailingList.otherArchives}}
-                      <li><b>${$.i18n.prop('browse.artifact.mailingList.otherArchiveUrl')}</b>: <a href="${otherArchive}" target="_blank">${otherArchive}</a></li>
-                    {{/each}}
-                    </ul>
-                  </div>
-                  {{/if}}
-                </div>
-              </div>
-            </div>
-          {{/each}}
-          </div>
-        {{else}}
-          ${$.i18n.prop('browse.artifact.mailingList.none')}
         {{/if}}
-      </div>
-
-      <div id="artifact-details-metadatas-content" class="tab-pane">
-        <table class="table table-striped table-bordered" id="artifact-details-metadatas-content-table"
-               data-bind="simpleGrid: gridMetatadasViewModel,simpleGridTemplate:'artifact_metadata_properties_tmpl',pageLinksId:'artifactMetadata_Pagination'">
-
-        </table>
-        <div id="artifactMetadata_Pagination"></div>
-        {{if hasSavePropertyKarma()}}
-          <a href="#" class="btn btn-primary" data-bind="click: addProperty">${$.i18n.prop('browse.artifact.metadatas.add')}</a>
-        {{/if}}
-      </div>
-
+        </tbody>
+      </table>
+    </div>
+    <div class="span6">
+      <h4>${$.i18n.prop('browse.artifact.pom.snippet')}</h4>
+      <pre class="prettyprint">&lt;dependency&gt;<br/>&nbsp;&nbsp;&lt;groupId&gt;${groupId}&lt;/groupId&gt;<br/>&nbsp;&nbsp;&lt;artifactId&gt;${artifactId}&lt;/artifactId&gt;<br/>&nbsp;&nbsp;&lt;version&gt;${version}&lt;/version&gt;<br/>&lt;/dependency&gt;</pre>
     </div>
   </div>
+  <div>
+    <div class="page-header">
+      <h4>${$.i18n.prop('browse.artifact.other.details')}</h4>
+    </div>
+    <div>
+      <div class="row-fluid">
+        <div class="span9">
+          <table class="table">
+            <tbody>
+            {{if projectVersionMetadata.url}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.url')}</th>
+              <td><a href="${projectVersionMetadata.url}" target="_blank">${projectVersionMetadata.url}</a></td>
+            </tr>
+            {{/if}}
+            {{if projectVersionMetadata.organization}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.organization.name')}</th>
+              {{if projectVersionMetadata.organization.url}}
+              <td>
+                <a href="${projectVersionMetadata.organization.url}" target="_blank">
+                  <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.organization.name}
+                </a>
+              </td>
+              {{else}}
+              <td>${projectVersionMetadata.organization.name}</td>
+              {{/if}}
+            </tr>
+            {{/if}}
+            {{each(i,license) projectVersionMetadata.licenses}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.license')}</th>
+              {{if license.url}}
+              <td>
+                <a href="${license.url}" target="_blank">
+                  <img src="images/internet-web-browser.png" alt=""/>${license.name}
+                </a>
+              </td>
+              {{else}}
+              <td>${license.name}</td>
+              {{/if}}
+            </tr>
+            {{/each}}
+            {{if projectVersionMetadata.issueManagement}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.organization.issueManagement')}</th>
+              <td>
+                <a href="${projectVersionMetadata.issueManagement.url}" target="_blank">
+                  <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.issueManagement.system}
+                </a>
+              </td>
+            </tr>
+            {{/if}}
+            {{if projectVersionMetadata.ciManagement}}
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.organization.ciManagement')}</th>
+              <td>
+                <a href="${projectVersionMetadata.ciManagement.url}" target="_blank">
+                  <img src="images/internet-web-browser.png" alt=""/>${projectVersionMetadata.ciManagement.system}
+                </a>
+              </td>
+            </tr>
+            {{/if}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{if projectVersionMetadata.scm}}
+  <div>
+    <div class="page-header">
+      <h4>${$.i18n.prop('browse.artifact.scm')}</h4>
+    </div>
+    <div>
+      <div class="row-fluid">
+        <div class="span12">
+          <table class="table">
+            <tbody>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.scm.connection')}</th>
+              <td>${projectVersionMetadata.scm.connection}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.scm.devconnection')}</th>
+              <td>${projectVersionMetadata.scm.developerConnection}</td>
+            </tr>
+            <tr>
+              <th>${$.i18n.prop('browse.artifact.scm.viewer')}</th>
+              <td>${projectVersionMetadata.scm.url}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+</div>
+{{/if}}
+
+
+<div id="artifact-details-dependencies-content" class="tab-pane">
+  <table class="table table-striped table-bordered" id="artifact-dependencies-table"
+         data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_dependenciesGrid',pageLinksId:'dependenciesPagination',data:'dependencies'">
+  </table>
+  <div id="dependenciesPagination"></div>
+</div>
+
+<div id="artifact-details-dependency-tree-content" class="tab-pane"></div>
+
+<div id="artifact-details-files-content" class="tab-pane"></div>
+
+<div id="artifact-details-download-content" class="tab-pane"></div>
+
+<div id="artifact-details-used-by-content" class="tab-pane">
+  <table class="table table-striped table-bordered" id="artifact-usedby-table">
+  </table>
+  <div id="usedbyPagination"></div>
+</div>
+
+<div id="artifact-details-mailing-list-content" class="tab-pane">
+  {{if projectVersionMetadata.mailingLists && projectVersionMetadata.mailingLists.length>0}}
+  <div id="accordion_mailing_lists" class="accordion">
+    {{each(i,mailingList) projectVersionMetadata.mailingLists}}
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" href="#ml_collapse_${i}" data-parent="#accordion_mailing_lists"
+           data-toggle="collapse">${mailingList.name}</a>
+      </div>
+      {{if i==0}}
+      <div id="ml_collapse_${i}" class="accordion-body collapse in">
+        {{else}}
+        <div id="ml_collapse_${i}" class="accordion-body collapse">
+          {{/if}}
+          <div class="accordion-inner">
+            {{if mailingList.subscribeAddress}}
+            <div>
+              <b>${$.i18n.prop('browse.artifact.mailingList.subscribe')}</b>: <a
+                    href="mailto:${mailingList.subscribeAddress}">${mailingList.subscribeAddress}</a>
+            </div>
+            {{/if}}
+            {{if mailingList.postAddress}}
+            <div>
+              <b>${$.i18n.prop('browse.artifact.mailingList.post')}</b>: <a href="mailto:${mailingList.postAddress}">${mailingList.postAddress}</a>
+            </div>
+            {{/if}}
+            {{if mailingList.unsubscribeAddress}}
+            <div>
+              <b>${$.i18n.prop('browse.artifact.mailingList.unsubscribe')}</b>: <a
+                    href="mailto:${mailingList.unsubscribeAddress}">${mailingList.unsubscribeAddress}</a>
+            </div>
+            {{/if}}
+            {{if mailingList.mainArchiveUrl}}
+            <div>
+              <b>${$.i18n.prop('browse.artifact.mailingList.mainArchiveUrl')}</b>: <a
+                    href="${mailingList.mainArchiveUrl}" target="_blank">${mailingList.mainArchiveUrl}</a>
+            </div>
+            {{/if}}
+            {{if mailingList.otherArchives && mailingList.otherArchives.length>0}}
+            <div>
+              <b>${$.i18n.prop('browse.artifact.mailingList.otherArchivesUrls')}:</b>
+              <ul>
+                {{each(j,otherArchive) mailingList.otherArchives}}
+                <li><b>${$.i18n.prop('browse.artifact.mailingList.otherArchiveUrl')}</b>: <a href="${otherArchive}"
+                                                                                             target="_blank">${otherArchive}</a>
+                </li>
+                {{/each}}
+              </ul>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    ${$.i18n.prop('browse.artifact.mailingList.none')}
+    {{/if}}
+  </div>
+
+  <div id="artifact-details-metadatas-content" class="tab-pane">
+    <table class="table table-striped table-bordered" id="artifact-details-metadatas-content-table"
+           data-bind="simpleGrid: gridMetatadasViewModel,simpleGridTemplate:'artifact_metadata_properties_tmpl',pageLinksId:'artifactMetadata_Pagination'">
+
+    </table>
+    <div id="artifactMetadata_Pagination"></div>
+    {{if hasSavePropertyKarma()}}
+    <a href="#" class="btn btn-primary"
+       data-bind="click: addProperty">${$.i18n.prop('browse.artifact.metadatas.add')}</a>
+    {{/if}}
+  </div>
+
+</div>
+</div>
 </script>
 
 <script id="ko_dependenciesGrid" type="text/html">
   <tbody>
 
 
-    {{each(i, row) itemsOnCurrentPage()}}
-      <tr>
-        <th>${row.artifactId}</th>
-      </tr>
-      <tr>
-        <td>
-          {{var entries=row.crumbEntries()}}
-          {{each(j,crumbEntry) entries}}
-            {{if j < entries.length - 2}}
-              <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
-            {{else j == entries.length - 2}}
-              <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
-            {{else j == entries.length - 1}}
-              &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
-               <a href="#" data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${row.version}</a>&nbsp;
-            {{/if}}
-            {{if j < entries.length - 2}}
-               &nbsp;/&nbsp;
-            {{/if}}
-          {{/each}}
+  {{each(i, row) itemsOnCurrentPage()}}
+  <tr>
+    <th>${row.artifactId}</th>
+  </tr>
+  <tr>
+    <td>
+      {{var entries=row.crumbEntries()}}
+      {{each(j,crumbEntry) entries}}
+      {{if j < entries.length - 2}}
+      <a href="#" data-bind="click: function(){displayGroup(crumbEntry.groupId)}">${crumbEntry.displayValue}</a>
+      {{else j == entries.length - 2}}
+      <a href="#" data-bind="click: function(){displayArtifactDetailView(crumbEntry.groupId,crumbEntry.artifactId)}">${crumbEntry.displayValue}</a>
+      {{else j == entries.length - 1}}
+      &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+      <a href="#"
+         data-bind="click: function(){displayArtifactVersionDetailViewModel(crumbEntry.groupId,crumbEntry.artifactId,crumbEntry.version)}">${row.version}</a>&nbsp;
+      {{/if}}
+      {{if j < entries.length - 2}}
+      &nbsp;/&nbsp;
+      {{/if}}
+      {{/each}}
 
-          {{if row.scope}}
-            |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${row.scope}
-          {{/if}}
-        </td>
-      </tr>
-    {{/each}}
+      {{if row.scope}}
+      |&nbsp;<b>${$.i18n.prop('browse.artifact.scope')}:</b>&nbsp;${row.scope}
+      {{/if}}
+    </td>
+  </tr>
+  {{/each}}
 
   </tbody>
 </script>
 
 <script id="dependency_tree_tmpl" type="text/html">
   <ul>
-  {{each(i,treeEntry) treeEntries}}
+    {{each(i,treeEntry) treeEntries}}
     <li>
-        {{var entries=treeEntry.artifact.crumbEntries()}}
-        {{each(j,crumbEntry) entries}}
-          {{if j < entries.length - 2}}
-            <a class="cursor-hand" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
-          {{else j == entries.length - 2}}
-            <a class="cursor-hand" onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
-          {{else j == entries.length - 1}}
-            &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
-             <a class="cursor-hand" onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
-          {{/if}}
-          {{if j < entries.length - 2}}
-             &nbsp;/&nbsp;
-          {{/if}}
-        {{/each}}
+      {{var entries=treeEntry.artifact.crumbEntries()}}
+      {{each(j,crumbEntry) entries}}
+      {{if j < entries.length - 2}}
+      <a class="cursor-hand" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
+      {{else j == entries.length - 2}}
+      <a class="cursor-hand"
+         onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
+      {{else j == entries.length - 1}}
+      &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+      <a class="cursor-hand"
+         onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
+      {{/if}}
+      {{if j < entries.length - 2}}
+      &nbsp;/&nbsp;
+      {{/if}}
+      {{/each}}
     </li>
     {{if treeEntry.childs.length>0}}
-      {{tmpl({treeEntries:treeEntry.childs}) "#dependency_tree_tmpl"}}
+    {{tmpl({treeEntries:treeEntry.childs}) "#dependency_tree_tmpl"}}
     {{/if}}
-  {{/each}}
+    {{/each}}
   </ul>
 </script>
 
 <script id="dependees_tmpl" type="text/html">
-    <ul>
+  <ul>
     {{each(i, artifact) itemsOnCurrentPage()}}
 
-      <li>
-          {{var entries=artifact.crumbEntries()}}
-          {{each(j,crumbEntry) entries}}
-            {{if j < entries.length - 2}}
-              <a class="cursor-hand" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
-            {{else j == entries.length - 2}}
-              <a class="cursor-hand" onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
-            {{else j == entries.length - 1}}
-              &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
-               <a class="cursor-hand" onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
-            {{/if}}
-            {{if j < entries.length - 2}}
-               &nbsp;/&nbsp;
-            {{/if}}
-          {{/each}}
-      </li>
+    <li>
+      {{var entries=artifact.crumbEntries()}}
+      {{each(j,crumbEntry) entries}}
+      {{if j < entries.length - 2}}
+      <a class="cursor-hand" onclick="generalDisplayGroup(encodeURIComponent('${crumbEntry.groupId}'))">${crumbEntry.displayValue}</a>
+      {{else j == entries.length - 2}}
+      <a class="cursor-hand"
+         onclick="generalDisplayArtifactDetailView(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'))">${crumbEntry.displayValue}</a>
+      {{else j == entries.length - 1}}
+      &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
+      <a class="cursor-hand"
+         onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
+      {{/if}}
+      {{if j < entries.length - 2}}
+      &nbsp;/&nbsp;
+      {{/if}}
+      {{/each}}
+    </li>
     {{/each}}
-    </ul>
+  </ul>
 </script>
 
 <script id="artifact_metadata_properties_tmpl" type="text/html">
-    <thead>
-      <tr>
-        <th title="${$.i18n.prop('browse.artifact.metadatas.key')}">${$.i18n.prop('browse.artifact.metadatas.key')}</th>
-        <th title="${$.i18n.prop('browse.artifact.metadatas.value')}">${$.i18n.prop('browse.artifact.metadatas.value')}</th>
-        <th title="${$.i18n.prop('browse.artifact.metadatas.delete')}">${$.i18n.prop('browse.artifact.metadatas.delete')}</th>
-        <th title="${$.i18n.prop('browse.artifact.metadatas.save')}">${$.i18n.prop('browse.artifact.metadatas.save')}</th>
-      </tr>
+  <thead>
+  <tr>
+    <th title="${$.i18n.prop('browse.artifact.metadatas.key')}">${$.i18n.prop('browse.artifact.metadatas.key')}</th>
+    <th title="${$.i18n.prop('browse.artifact.metadatas.value')}">${$.i18n.prop('browse.artifact.metadatas.value')}</th>
+    <th title="${$.i18n.prop('browse.artifact.metadatas.delete')}">${$.i18n.prop('browse.artifact.metadatas.delete')}
+    </th>
+    <th title="${$.i18n.prop('browse.artifact.metadatas.save')}">${$.i18n.prop('browse.artifact.metadatas.save')}</th>
+  </tr>
 
-    </thead>
-    <tbody>
-    {{each(i, row) itemsOnCurrentPage()}}
-      <tr>
-        {{if row.editable && hasSavePropertyKarma()}}
-          <td><input type="text" data-bind="value: row.key"/></td>
-        {{else}}
-          <td>${row.key}</td>
-        {{/if}}
-        <td>
-          {{if hasSavePropertyKarma()}}
-            <input type="text" data-bind="value: row.value"/>
-          {{else}}
-            ${row.value}
-          {{/if}}
-        </td>
-        <td>
-          {{if hasDeletePropertyKarma()}}
-          <a href="#" class="btn btn-danger" data-bind="click: function(){deleteProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.delete')}</a>
-          {{/if}}
-        </td>
-        <td>
-          {{if row.modified && hasSavePropertyKarma()}}
-            <a href="#" class="btn btn-warning" data-bind="click: function(){saveProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.save')}</a>
-          {{/if}}
-        </td>
-      </tr>
-    {{/each}}
-    </tbody>
+  </thead>
+  <tbody>
+  {{each(i, row) itemsOnCurrentPage()}}
+  <tr>
+    {{if row.editable && hasSavePropertyKarma()}}
+    <td><input type="text" data-bind="value: row.key"/></td>
+    {{else}}
+    <td>${row.key}</td>
+    {{/if}}
+    <td>
+      {{if hasSavePropertyKarma()}}
+      <input type="text" data-bind="value: row.value"/>
+      {{else}}
+      ${row.value}
+      {{/if}}
+    </td>
+    <td>
+      {{if hasDeletePropertyKarma()}}
+      <a href="#" class="btn btn-danger" data-bind="click: function(){deleteProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.delete')}</a>
+      {{/if}}
+    </td>
+    <td>
+      {{if row.modified && hasSavePropertyKarma()}}
+      <a href="#" class="btn btn-warning" data-bind="click: function(){saveProperty(row)}">${$.i18n.prop('browse.artifact.metadatas.save')}</a>
+      {{/if}}
+    </td>
+  </tr>
+  {{/each}}
+  </tbody>
 </script>
 
 <script id="artifact_content_tree_partial" type="text/html">
   <ul class="jqueryFileTree" style="display: none;">
     {{each artifactContentEntries}}
-      {{if $value.file == true}}
-        <li class="file">
-          <a href="#" rel="${$value.path}/">${$value.text}</a>
-        </li>
-      {{else}}
-        <li class="directory collapsed">
-          <a href="#" rel="${$value.path}/">${$value.text}</a>
-        </li>
-      {{/if}}
+    {{if $value.file == true}}
+    <li class="file">
+      <a href="#" rel="${$value.path}/">${$value.text}</a>
+    </li>
+    {{else}}
+    <li class="directory collapsed">
+      <a href="#" rel="${$value.path}/">${$value.text}</a>
+    </li>
+    {{/if}}
     {{/each}}
   </ul>
 </script>
 
 <script id="artifact-details-files-content_tmpl" type="text/html">
-      <div class="row-fluid">
-        <div class="span5">
-           <ul id="artifact-content-list-files" class="package-list">
-           {{each artifactDownloadInfos}}
-             <li id="${$value.classifier}:${$value.version}:${$value.packaging}">
-               <a>${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
-             </li>
-           {{/each}}
-           </ul>
-        </div>
-        <div class="span7">
-          <div id="artifact_content_tree">
-          </div>
-        </div>
+  <div class="row-fluid">
+    <div class="span5">
+      <ul id="artifact-content-list-files" class="package-list">
+        {{each artifactDownloadInfos}}
+        <li id="${$value.classifier}:${$value.version}:${$value.packaging}">
+          <a>${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+    <div class="span7">
+      <div id="artifact_content_tree">
       </div>
-      <h4 id="artifact-content-text-header">${$.i18n.prop('browse.artifact.content.header')}</h4>
-      <div class="source">
-         <pre class="prettyprint linenums" id="artifact-content-text"></pre>
-      </div>
+    </div>
+  </div>
+  <h4 id="artifact-content-text-header">${$.i18n.prop('browse.artifact.content.header')}</h4>
+
+  <div class="source">
+    <pre class="prettyprint linenums" id="artifact-content-text"></pre>
+  </div>
 </script>
 
 <script id="artifact-details-download-content_tmpl" type="text/html">
-    <ul id="artifact-download-list-files" class="package-list">
+  <ul id="artifact-download-list-files" class="package-list">
     {{each(i, row) artifacts()}}
-      <li>
-        {{if deleteKarma}}
-          <a href="#" data-bind="click: function(){deleteArtifact(row)}"><img src="images/trash.png"/></a>&nbsp;<a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
-        {{else}}
-          <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
-        {{/if}}
-      </li>
+    <li>
+      {{if deleteKarma}}
+      <a href="#" data-bind="click: function(){deleteArtifact(row)}"><img src="images/trash.png"/></a>&nbsp;<a
+            href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+      {{else}}
+      <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+      {{/if}}
+    </li>
     {{/each}}
-    </ul>
+  </ul>
 </script>

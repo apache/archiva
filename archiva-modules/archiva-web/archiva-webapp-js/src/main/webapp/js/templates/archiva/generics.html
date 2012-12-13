@@ -46,21 +46,22 @@
     <a target="_blank" href="http://archiva.apache.org/">Apache Archiva&nbsp;-&nbsp;${version}</a>
   </div>
   <div class="pull-right">
-    Copyright &#169;  ${copyrightRange}  <a target="_blank" href="http://www.apache.org/">The Apache Software Foundation</a>
+    Copyright &#169; ${copyrightRange} <a target="_blank" href="http://www.apache.org/">The Apache Software
+    Foundation</a>
   </div>
 </script>
 
 <script id="ko_simpleGrid_pageLinks" type="text/html">
   <div class="pagination">
-      <ul>
+    <ul>
       {{each(i) ko.utils.range(1, maxPageIndex)}}
-          <li data-bind="css: { active: i == currentPageIndex() }">
-            <a href="#" data-bind="click: function() { currentPageIndex(i) }">
-              ${ i + 1 }
-            </a>
-          </li>
+      <li data-bind="css: { active: i == currentPageIndex() }">
+        <a href="#" data-bind="click: function() { currentPageIndex(i) }">
+          ${ i + 1 }
+        </a>
+      </li>
       {{/each}}
-      </ul>
+    </ul>
   </div>
 </script>
 

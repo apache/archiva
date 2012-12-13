@@ -20,17 +20,6 @@
   <div id="main-menu">
 
     <ul class="nav nav-list" data-bind="foreach: artifactMenuItems">
-       <!-- ko ifnot: id -->
-       <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
-       <!-- /ko -->
-       <!-- ko if: id -->
-       <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
-          <a data-bind="text: text, attr: { id: id, href: href}"></a>
-       </li>
-       <!-- /ko -->
-    </ul>
-
-    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-configuration']}" data-bind="foreach: administrationMenuItems">
       <!-- ko ifnot: id -->
       <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
       <!-- /ko -->
@@ -41,7 +30,20 @@
       <!-- /ko -->
     </ul>
 
-    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}" data-bind="foreach: usersMenuItems">
+    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-configuration']}"
+        data-bind="foreach: administrationMenuItems">
+      <!-- ko ifnot: id -->
+      <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
+      <!-- /ko -->
+      <!-- ko if: id -->
+      <li data-bind='redbackP: $data.redback, css: { active: $data.href == "#"+$root.activeMenuId() }'>
+        <a data-bind="text: text, attr: { id: id, href: href}"></a>
+      </li>
+      <!-- /ko -->
+    </ul>
+
+    <ul class="nav nav-list" redback-permissions="{permissions: ['archiva-manage-users']}"
+        data-bind="foreach: usersMenuItems">
       <!-- ko ifnot: id -->
       <li class="nav-header archiva-nav-header" data-bind="text: text"></li>
       <!-- /ko -->
@@ -67,7 +69,7 @@
 </script>
 
 <script id="topbar_menu_tmpl" type="text/html">
-    <div id="topbar-menu">
+  <div id="topbar-menu">
     <div class="navbar navbar-fixed-top"><!-- navbar-inverse for black topbar olamy: prefer non black :-) -->
 
       <div style="max-height: 40px" class="navbar-inner">
@@ -102,7 +104,7 @@
             <li>
               <div class="ui-widget navbar-search">
                 <input type="text" class="ui-autocomplete-input search-query" id="quick-search-autocomplete"
-                                   placeholder="${$.i18n.prop('menu.topbar.quicksearch')}" />
+                       placeholder="${$.i18n.prop('menu.topbar.quicksearch')}"/>
               </div>
             </li>
           </ul>
@@ -110,5 +112,5 @@
       </div>
 
     </div>
-    </div>
+  </div>
 </script>

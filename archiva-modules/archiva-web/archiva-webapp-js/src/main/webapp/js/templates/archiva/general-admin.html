@@ -925,7 +925,7 @@
     <div class="tab-pane" id="redback-runtime-ldap-content">
       <div class="well">
         <form class="form-horizontal" id="redback-runtime-ldap-form-id">
-          <fieldset id="redback-runtime-ldap-form">
+
             <div class="control-group">
               <label for="ldap-host" class="control-label">
                 ${$.i18n.prop('redback.runtime.ldap.host.label')}
@@ -990,7 +990,7 @@
               </div>
             </div>
             <!-- TODO extraPropertiesEntries -->
-          </fieldset>
+
         </form>
 
         <button data-bind="click: checkChangedLdapConfiguration,css:{ 'btn-warning': archivaRuntimeConfiguration().ldapConfiguration().modified() },
