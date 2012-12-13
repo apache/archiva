@@ -59,7 +59,7 @@ public class UserManagerAuthenticator
     private UserManager userManager;
 
     @Inject
-    private UserSecurityPolicy securityPolicy;
+    protected UserSecurityPolicy securityPolicy;
 
     public String getId()
     {
