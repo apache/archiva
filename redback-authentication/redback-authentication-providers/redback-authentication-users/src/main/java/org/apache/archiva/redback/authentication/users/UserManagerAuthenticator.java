@@ -52,14 +52,14 @@ import java.util.Map;
 public class UserManagerAuthenticator
     implements Authenticator
 {
-    protected Logger log = LoggerFactory.getLogger( getClass() );
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
-    protected UserSecurityPolicy securityPolicy;
+    private UserSecurityPolicy securityPolicy;
 
     public String getId()
     {
