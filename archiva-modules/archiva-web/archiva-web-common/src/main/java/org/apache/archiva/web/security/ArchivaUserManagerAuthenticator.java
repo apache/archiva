@@ -159,7 +159,8 @@ public class ArchivaUserManagerAuthenticator
                 }
                 else
                 {
-                    log.warn( "Password is Invalid for user {}.", source.getPrincipal() );
+                    log.warn( "Password is Invalid for user {} and userManager '{}'.", source.getPrincipal(),
+                              userManager.getId() );
                     authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                                   "Password is Invalid for user " + source.getPrincipal() + "." );
 
