@@ -59,36 +59,36 @@ public interface LoginService
     Boolean pingWithAutz()
         throws RedbackServiceException;
 
-    @Path( "logIn" )
-    @POST
-    @RedbackAuthorization( noRestriction = true, noPermission = true )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     /**
      * check username/password and create a http session.
      * So no more need of reuse username/password for all ajaxRequest
      */
+    @Path( "logIn" )
+    @POST
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     User logIn( LoginRequest loginRequest )
         throws RedbackServiceException;
 
-    @Path( "isLogged" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true )
     /**
      * simply check if current user has an http session opened with authz passed
      * @since 1.4
      */
+    @Path( "isLogged" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true )
     Boolean isLogged()
         throws RedbackServiceException;
 
-    @Path( "logout" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true, noPermission = true )
     /**
      * clear user http session
      * @since 1.4
      */
+    @Path( "logout" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
     Boolean logout()
         throws RedbackServiceException;
 }

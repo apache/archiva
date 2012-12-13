@@ -34,28 +34,29 @@ import javax.ws.rs.core.MediaType;
 @Path( "/passwordService/" )
 public interface PasswordService
 {
-    @GET
-    @Path( "changePasswordWithKey" )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true, noPermission = true )
+
     /**
      * used to change the password on first user connection after registration use.
      * the key is mandatory and a control will be done on the username provided.
      * <b>need to be logged by {@link UserService#validateUserFromKey(String)}</b>
      * @return username
      */
+    @GET
+    @Path( "changePasswordWithKey" )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
     User changePasswordWithKey( @QueryParam( "password" ) String password,
                                   @QueryParam( "passwordConfirmation" ) String passwordConfirmation,
                                   @QueryParam( "key" ) String key )
         throws RedbackServiceException;
 
+    /**
+     * used to change the password on passwordChangeRequired state.
+     */
     @GET
     @Path( "changePassword" )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
-    /**
-     * used to change the password on passwordChangeRequired state.
-     */
     User changePassword( @QueryParam( "userName" ) String userName,
                             @QueryParam( "previousPassword" ) String previousPassword,
                             @QueryParam( "password" ) String password,

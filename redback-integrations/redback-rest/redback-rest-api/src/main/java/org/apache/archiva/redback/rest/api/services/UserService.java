@@ -98,57 +98,57 @@ public interface UserService
     Boolean updateUser( User user )
         throws RedbackServiceException;
 
+    /**
+     * @since 2.0
+     */
     @Path( "lockUser/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
-    /**
-     * @since 2.0
-     */
     Boolean lockUser( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
+    /**
+     * @since 2.0
+     */
     @Path( "unlockUser/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
-    /**
-     * @since 2.0
-     */
     Boolean unlockUser( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
 
+    /**
+     * @since 2.0
+     */
     @Path( "passwordChangeRequired/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
-    /**
-     * @since 2.0
-     */
     Boolean passwordChangeRequired( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
+    /**
+     * @since 2.0
+     */
     @Path( "passwordChangeNotRequired/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_EDIT_OPERATION )
-    /**
-     * @since 2.0
-     */
     Boolean passwordChangeNotRequired( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
 
-    @Path( "updateMe" )
-    @POST
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = false, noPermission = true )
     /**
      * update only the current user and this fields: fullname, email, password.
      * the service verify the curent logged user with the one passed in the method
      * @since 1.4
      */
+    @Path( "updateMe" )
+    @POST
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = false, noPermission = true )
     Boolean updateMe( User user )
         throws RedbackServiceException;
 
@@ -180,83 +180,83 @@ public interface UserService
     User createGuestUser()
         throws RedbackServiceException;
 
-    @Path( "registerUser" )
-    @POST
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true, noPermission = true )
     /**
      * if redback is not configured for email validation is required, -1 is returned as key
      * @since 1.4
      */
+    @Path( "registerUser" )
+    @POST
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
     RegistrationKey registerUser( UserRegistrationRequest userRegistrationRequest )
         throws RedbackServiceException;
 
 
-    @Path( "validateKey/{key}" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noRestriction = true, noPermission = true )
     /**
      * validate the key and the user with forcing a password change for next login.
      * http session is created.
      * @param key authentication key
      * @since 1.4
      */
+    @Path( "validateKey/{key}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @RedbackAuthorization( noRestriction = true, noPermission = true )
     Boolean validateUserFromKey( @PathParam( "key" ) String key )
         throws RedbackServiceException;
 
+    /**
+     *
+     * @param resetPasswordRequest contains username for send a password reset email
+     * @since 1.4
+     */
     @Path( "resetPassword" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
-    /**
-     *
-     * @param user username for send a password reset email
-     * @since 1.4
-     */
     Boolean resetPassword( ResetPasswordRequest resetPasswordRequest )
         throws RedbackServiceException;
 
+    /**
+     * @since 1.4
+     */
     @Path( "getUserPermissions/{userName}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_LIST_OPERATION )
-    /**
-     * @since 1.4
-     */
     Collection<Permission> getUserPermissions( @PathParam( "userName" ) String userName )
         throws RedbackServiceException;
 
+    /**
+     * @since 1.4
+     */
     @Path( "getUserOperations/{userName}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_USER_LIST_OPERATION )
-    /**
-     * @since 1.4
-     */
     Collection<Operation> getUserOperations( @PathParam( "userName" ) String userName )
         throws RedbackServiceException;
 
+    /**
+     * @return  the current logged user permissions, if no logged user guest permissions are returned
+     * @since 1.4
+     */
     @Path( "getCurrentUserPermissions" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
-    /**
-     * return the current logged user permissions, if no logged user guest permissions are returned
-     * @since 1.4
-     */
     Collection<Permission> getCurrentUserPermissions()
         throws RedbackServiceException;
 
+    /**
+     * @return the current logged user operations, if no logged user guest operations are returned
+     * @since 1.4
+     */
     @Path( "getCurrentUserOperations" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true, noPermission = true )
-    /**
-     * return the current logged user operations, if no logged user guest operations are returned
-     * @since 1.4
-     */
     Collection<Operation> getCurrentUserOperations()
         throws RedbackServiceException;
 

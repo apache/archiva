@@ -208,101 +208,101 @@ public interface RoleManagementService
                                  @QueryParam( "resource" ) String resource )
         throws RedbackServiceException;
 
+    /**
+     * @since 1.4
+     */
     @Path( "getEffectivelyAssignedRoles/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 1.4
-     */
     List<Role> getEffectivelyAssignedRoles( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
 
+    /**
+     * @since 2.0
+     */
     @Path( "allRoles" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 2.0
-     */
     List<Role> getAllRoles()
         throws RedbackServiceException;
 
+    /**
+     * @since 2.0
+     */
     @Path( "detailledAllRoles" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 2.0
-     */
     List<Role> getDetailedAllRoles()
         throws RedbackServiceException;
 
 
+    /**
+     * @since 2.0
+     */
     @Path( "getApplications/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 2.0
-     */
     List<Application> getApplications( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
 
+    /**
+     * @since 2.0
+     */
     @Path( "getRole/{roleName}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 2.0
-     */
     Role getRole( @PathParam( "roleName" ) String roleName )
         throws RedbackServiceException;
 
+    /**
+     * @since 2.0
+     */
     @Path( "updateRoleDescription" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 2.0
-     */
     Boolean updateRoleDescription( @QueryParam( "roleName" ) String roleName,
                                    @QueryParam( "roleDescription" ) String description )
         throws RedbackServiceException;
 
+    /**
+     * update users assigned to a role
+     * @since 2.0
+     */
     @Path( "updateRoleUsers" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * update users assigned to a role
-     * @since 2.0
-     */
     Boolean updateRoleUsers( Role role )
         throws RedbackServiceException;
 
+    /**
+     * @since 2.0
+     */
     @Path( "getApplicationRoles/{username}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * @since 2.0
-     */
     List<ApplicationRoles> getApplicationRoles( @PathParam( "username" ) String username )
         throws RedbackServiceException;
 
+    /**
+     * update roles assigned to a user
+     * @since 2.0
+     */
     @Path( "updateUserRoles" )
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_MANAGEMENT_RBAC_ADMIN_OPERATION )
-    /**
-     * update roles assigned to a user
-     * @since 2.0
-     */
     Boolean updateUserRoles( User user )
         throws RedbackServiceException;
 
