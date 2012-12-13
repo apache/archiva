@@ -1019,6 +1019,21 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <webResource>
+              <directory>.</directory>
+              <includes>
+                <include>LICENSE</include>
+              </includes>
+            </webResource>
+          </webResources>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 
