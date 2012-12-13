@@ -24,6 +24,7 @@ import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.authentication.users.UserManagerAuthenticator;
 import org.apache.archiva.redback.policy.AccountLockedException;
@@ -53,7 +54,7 @@ import java.util.Map;
  */
 @Service( "authenticator#archiva" )
 public class ArchivaUserManagerAuthenticator
-    extends UserManagerAuthenticator
+    implements Authenticator
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -84,7 +85,6 @@ public class ArchivaUserManagerAuthenticator
     }
 
 
-    @Override
     public AuthenticationResult authenticate( AuthenticationDataSource ds )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException
     {
@@ -191,7 +191,11 @@ public class ArchivaUserManagerAuthenticator
         return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultExceptionsMap );
     }
 
-    @Override
+    public boolean supportsDataSource( AuthenticationDataSource source )
+    {
+        return ( source instanceof PasswordBasedAuthenticationDataSource );
+    }
+
     public String getId()
     {
         return "ArchivaUserManagerAuthenticator";
