@@ -1262,6 +1262,58 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }
     }
 
+    checkLdapServerConfiguration=function(){
+      $.log("checkLdapServerConfiguration");
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      $.log("checkChangedLdapConfiguration");
+      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/checkLdapConnection",
+             {
+               type: "GET",
+               success: function(data) {
+                 var message=$.i18n.prop('archiva-runtime-configuration.ldap.verified');
+                 displaySuccessMessage(message);
+               },
+               error: function(data) {
+                 var res = $.parseJSON(data.responseText);
+                 displayRestError(res);
+               },
+               complete:function(data){
+                 removeMediumSpinnerImg(userMessages);
+                 //$("#archiva-runtime-configuration-save" ).button('reset');
+               }
+             }
+      );
+    }
+
+    checkChangedLdapConfiguration=function(){
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      $.log("checkChangedLdapConfiguration");
+      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/checkLdapConnection",
+             {
+               type: "POST",
+               contentType: 'application/json',
+               data:ko.toJSON(self.archivaRuntimeConfiguration().ldapConfiguration),
+               dataType: 'json',
+               success: function(data) {
+                 var message=$.i18n.prop('archiva-runtime-configuration.ldap.verified');
+                 displaySuccessMessage(message);
+               },
+               error: function(data) {
+                 var res = $.parseJSON(data.responseText);
+                 displayRestError(res);
+               },
+               complete:function(data){
+                 removeMediumSpinnerImg(userMessages);
+                 //$("#archiva-runtime-configuration-save" ).button('reset');
+               }
+             }
+      );
+    }
+
     for(var i= 0;i<archivaRuntimeConfiguration.userManagerImpls().length;i++){
       var id=archivaRuntimeConfiguration.userManagerImpls()[i];
       $.log("id:"+id);

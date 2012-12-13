@@ -992,6 +992,14 @@
             <!-- TODO extraPropertiesEntries -->
           </fieldset>
         </form>
+
+        <button data-bind="click: checkChangedLdapConfiguration,css:{ 'btn-warning': archivaRuntimeConfiguration().ldapConfiguration().modified() },
+                          enabled: archivaRuntimeConfiguration().ldapConfiguration().modified()"
+                id="ldap-configuration-check-modification"class="btn">${$.i18n.prop('redback.runtime.ldap.checkModification')}</button>
+
+        <button data-bind="click: checkLdapServerConfiguration"
+                id="ldap-configuration-check-server"class="btn">${$.i18n.prop('redback.runtime.ldap.checkServer')}</button>
+
       </div>
     </div>
 
