@@ -1272,7 +1272,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
              {
                type: "GET",
                success: function(data) {
-                 var message=$.i18n.prop('archiva-runtime-configuration.ldap.verified');
+                 var message=$.i18n.prop('redback.runtime.ldap.verified');
                  displaySuccessMessage(message);
                },
                error: function(data) {
@@ -1299,7 +1299,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                data:ko.toJSON(self.archivaRuntimeConfiguration().ldapConfiguration),
                dataType: 'json',
                success: function(data) {
-                 var message=$.i18n.prop('archiva-runtime-configuration.ldap.verified');
+                 var message=$.i18n.prop('redback.runtime.ldap.verified');
                  displaySuccessMessage(message);
                },
                error: function(data) {
@@ -1349,11 +1349,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     saveArchivaRuntimeConfiguration=function(){
       $.log("saveArchivaRuntimeConfiguration");
-      $("#archiva-runtime-configuration-save" ).button('loading');
+      var saveButton = $("#archiva-runtime-configuration-save" );
+      saveButton.button('loading');
       clearUserMessages();
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
-      $("#repository-group-save" ).button('loading');
       self.archivaRuntimeConfiguration().userManagerImpls=ko.observableArray([]);
       $.log("length:"+self.usedUserManagerImpls().length);
       for(var i=0;i<self.usedUserManagerImpls().length;i++){
@@ -1370,7 +1370,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           data:ko.toJSON(self.archivaRuntimeConfiguration),
           dataType: 'json',
           success: function(data) {
-            var message=$.i18n.prop('archiva-runtime-configuration.updated');//,self.archivaRuntimeConfiguration().userManagerImpl());
+            var message=$.i18n.prop('archiva-runtime-configuration.updated');
             displaySuccessMessage(message);
           },
           error: function(data) {
@@ -1379,7 +1379,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           },
           complete:function(data){
             removeMediumSpinnerImg(userMessages);
-            $("#archiva-runtime-configuration-save" ).button('reset');
+            saveButton.button('reset');
           }
         }
       );
