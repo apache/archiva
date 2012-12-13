@@ -307,7 +307,8 @@ public class LdapConnectionConfiguration
             "baseDn: " + getBaseDn() + ", " +
             "contextFactory: " + getContextFactory() + ", " +
             "bindDn: " + getBindDn() + ", " +
-            "password: " + getPassword() + ", " +
+            // not display password
+            //"password: " + getPassword() + ", " +
             "authenticationMethod: " + getAuthenticationMethod() + ", " +
             "objectFactories: " + getObjectFactories() + ", " +
             "stateFactories: " + getStateFactories() + ", " +
