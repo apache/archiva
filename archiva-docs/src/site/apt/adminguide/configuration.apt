@@ -48,7 +48,7 @@ Runtime Configuration of Apache Archiva
 
     * {{{./ui-configuration.html} UI configuration}}
 
-    * {{{./runtime-configuration.html} Runtime configuration}}
+    * {{{./redback-runtime-configuration.html} Redback Runtime configuration}}
 
     []
 
