@@ -30,8 +30,8 @@
   <url>http://archiva.apache.org/docs/${project.version}/</url>
 
   <properties>
-    <siteFilePath>${user.home}/archiva-docs-${project.version}/</siteFilePath>
-    <scmPubCheckoutDirectory>${user.home}/archiva-docs-${project.version}-content</scmPubCheckoutDirectory>
+    <siteFilePath>${user.home}/archiva-sites/archiva-docs-${project.version}/</siteFilePath>
+    <scmPubCheckoutDirectory>${user.home}/archiva-sites/archiva-docs-${project.version}-content</scmPubCheckoutDirectory>
   </properties>
 
   <build>
