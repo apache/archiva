@@ -954,6 +954,15 @@
               </div>
             </div>
             <div class="control-group">
+              <label for="ldap-bindDn" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.bindDn.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="ldap-bindDn" name="ldap-bindDn" class="input-xxlarge"
+                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().bindDn"/>
+              </div>
+            </div>
+            <div class="control-group">
               <label for="ldap-ssl" class="control-label">
                 ${$.i18n.prop('redback.runtime.ldap.ssl.label')}
               </label>
