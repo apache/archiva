@@ -1384,6 +1384,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           complete:function(data){
             removeMediumSpinnerImg(userMessages);
             saveButton.button('reset');
+            self.archivaRuntimeConfiguration().modified(false);
+            self.archivaRuntimeConfiguration().ldapConfiguration().modified(false);
           }
         }
       );
