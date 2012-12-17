@@ -933,7 +933,7 @@
       <ul id="artifact-content-list-files" class="package-list">
         {{each artifactDownloadInfos}}
         <li id="${$value.classifier}:${$value.version}:${$value.packaging}">
-          <a>${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
+          <a class="cursor-hand">${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
         </li>
         {{/each}}
       </ul>
