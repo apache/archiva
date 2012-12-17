@@ -735,7 +735,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       $("#artifact-details-files-content" ).html($("#artifact-details-files-content_tmpl").tmpl({artifactDownloadInfos:data}));
       mainContent.find("#artifact-content-list-files li" ).on("click",function(){
         mainContent.find("#artifact_content_tree").empty();
-        mainContent.find("#artifact-content-text" ).empty();
+        var contentText = mainContent.find("#artifact-content-text" );
+        contentText.empty();
         var idValue = $(this ).attr("id");
         var splitted = idValue.split(":");
 
@@ -750,13 +751,13 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           pomContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
           pomContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
           pomContentUrl+="&t=pom";
-          mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
+          contentText.html(mediumSpinnerImg());
           $.ajax({
             url: pomContentUrl,
             success: function(data) {
               var text = data.content.replace(/</g,'&lt;');
               text=text.replace(/>/g,"&gt;");
-              mainContent.find("#artifact-content-text" ).html(text);
+              contentText.html(text);
               prettyPrint();
               // olamy do not move to anchor to not loose nav history
               //goToAnchor("artifact-content-text-header");
