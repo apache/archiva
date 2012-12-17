@@ -176,3 +176,9 @@ code {
     white-space: pre;
     vertical-align: baseline;
 }
+
+ol.linenums {
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-left: 5px;
+}
