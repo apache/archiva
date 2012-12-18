@@ -35,6 +35,7 @@ import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.role.template.RoleTemplateProcessor;
 import org.apache.archiva.redback.role.util.RoleModelUtils;
 import org.apache.archiva.redback.role.validator.RoleModelValidator;
+import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,9 +58,8 @@ import java.util.Map;
  * RoleProfileManager:
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
-@Service( "roleManager" )
+@Service("roleManager")
 public class DefaultRoleManager
     implements RoleManager
 {
@@ -81,23 +81,23 @@ public class DefaultRoleManager
     private Map<String, ModelApplication> knownResources = new HashMap<String, ModelApplication>();
 
     @Inject
-    @Named( value = "roleModelValidator" )
+    @Named(value = "roleModelValidator")
     private RoleModelValidator modelValidator;
 
     @Inject
-    @Named( value = "roleModelProcessor" )
+    @Named(value = "roleModelProcessor")
     private RoleModelProcessor modelProcessor;
 
     @Inject
-    @Named( value = "roleTemplateProcessor" )
+    @Named(value = "roleTemplateProcessor")
     private RoleTemplateProcessor templateProcessor;
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named(value = "rBACManager#cached")
     private RBACManager rbacManager;
 
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public void loadRoleModel( URL resource )
         throws RoleManagerException
     {
@@ -139,7 +139,7 @@ public class DefaultRoleManager
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public void loadRoleModel( RedbackRoleModel roleModel )
         throws RoleManagerException
     {
@@ -479,6 +479,10 @@ public class DefaultRoleManager
     @PostConstruct
     public void initialize()
     {
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         try
         {
             URL baseResource = RoleManager.class.getResource( "/META-INF/redback/redback-core.xml" );
@@ -508,6 +512,9 @@ public class DefaultRoleManager
         {
             throw new RuntimeException( "unable to initialize RoleManager, problem with redback.xml loading", e );
         }
+
+        stopWatch.stop();
+        log.info( "DefaultRoleManager initialize time {}", stopWatch.getTime() );
     }
 
     public RedbackRoleModel getModel()
