@@ -720,6 +720,80 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
       var artifactDetailsDownloadViewModel = new ArtifactDetailsDownloadViewModel(mapArtifacts(data),artifactVersionDetailViewModel);
       mainContent.find("#artifact-details-download-content" ).attr("data-bind",'template:{name:"artifact-details-download-content_tmpl"}');
       ko.applyBindings(artifactDetailsDownloadViewModel,mainContent.find("#artifact-details-download-content" ).get(0));
+
+
+      mainContent.find("#artifact-download-list-files li img" ).on("click",function(){
+        mainContent.find("#artifact_content_tree").empty();
+        var contentText = mainContent.find("#artifact-content-text" );
+        contentText.empty();
+        var idValue = $(this ).attr("id");
+        var splitted = idValue.split(":");
+
+        var classifier=splitted[0];
+        var version=splitted[1];
+        var type = splitted[2];
+
+        $.log("click:" + idValue + " -> " + classifier + ":" + type + ":" + version);
+        if (type=="pom"){
+          $.log("show pom");
+          var pomContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+          pomContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
+          pomContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+          pomContentUrl+="&t=pom";
+          contentText.html(mediumSpinnerImg());
+          $.ajax({
+                   url: pomContentUrl,
+                   success: function(data) {
+                     var text = data.content.replace(/</g,'&lt;');
+                     text=text.replace(/>/g,"&gt;");
+                     contentText.html(text);
+                     prettyPrint();
+                     // olamy do not move to anchor to not loose nav history
+                     //goToAnchor("artifact-content-text-header");
+                     //window.location.href=window.location+"#artifact-content-text-header";
+                   }
+                 });
+          return;
+        }
+        var entriesUrl = "restServices/archivaServices/browseService/artifactContentEntries/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+        entriesUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
+        entriesUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+        if(classifier){
+          entriesUrl+="&c="+encodeURIComponent(classifier);
+        }
+        $("#main-content").find("#artifact_content_tree").fileTree({
+                                                                     script: entriesUrl,
+                                                                     root: ""
+                                                                   },function(file) {
+                                                                     $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
+                                                                     var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+                                                                     fileContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
+                                                                     fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+                                                                     if(type){
+                                                                       fileContentUrl+="&t="+encodeURIComponent(type);
+                                                                     }
+                                                                     if(classifier){
+                                                                       fileContentUrl+="&c="+encodeURIComponent(classifier);
+                                                                     }
+                                                                     fileContentUrl+="&p="+encodeURIComponent(file.substringBeforeLast("/"));
+                                                                     $.ajax({
+                                                                              url: fileContentUrl,
+                                                                              success: function(data) {
+                                                                                var text = data.content.replace(/</g,'&lt;');
+                                                                                text=text.replace(/>/g,"&gt;");
+                                                                                mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
+                                                                                mainContent.find("#artifact-content-text" ).html(text);
+                                                                                prettyPrint();
+                                                                                // olamy do not move to anchor to not loose nav history
+                                                                                //goToAnchor("artifact-content-text-header");
+                                                                                //window.location.href=window.location+"#artifact-content-text-header";
+                                                                              }
+                                                                            });
+                                                                   }
+        );
+      });
+
+
     });
     return;
   }
@@ -740,7 +814,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         var idValue = $(this ).attr("id");
         var splitted = idValue.split(":");
 
-        var classifier=splitted[0];//idValue.substringBeforeLast(":");
+        var classifier=splitted[0];
         var version=splitted[1];
         var type = splitted[2];
 

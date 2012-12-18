@@ -515,10 +515,6 @@
        data-target="#artifact-details-dependency-tree-content" href="#artifact-details-dependency-tree-content">${$.i18n.prop('artifact.detail.tab.header.dependency.tree')}</a>
   </li>
   <li>
-    <a data-toggle="tab" id="artifact-details-files-content-a" data-target="#artifact-details-files-content"
-       href="#artifact-details-files-content">${$.i18n.prop('artifact.detail.tab.header.file.content')}</a>
-  </li>
-  <li>
     <a data-toggle="tab" id="artifact-details-download-content-a" data-target="#artifact-details-download-content"
        href="#artifact-details-download-content">${$.i18n.prop('artifact.detail.tab.header.file.download')}</a>
   </li>
@@ -927,13 +923,20 @@
   </ul>
 </script>
 
-<script id="artifact-details-files-content_tmpl" type="text/html">
+<script id="artifact-details-download-content_tmpl" type="text/html">
+
   <div class="row-fluid">
     <div class="span5">
-      <ul id="artifact-content-list-files" class="package-list">
-        {{each artifactDownloadInfos}}
-        <li id="${$value.classifier}:${$value.version}:${$value.packaging}">
-          <a class="cursor-hand">${$value.packaging}:${$value.version}&nbsp;-&nbsp;${$value.size}</a>
+      <ul id="artifact-download-list-files" class="package-list">
+        {{each(i, row) artifacts()}}
+        <li>
+          <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"/>
+          {{if deleteKarma}}
+          <a href="#" data-bind="click: function(){deleteArtifact(row)}"><img src="images/trash.png"/></a>&nbsp;<a
+                href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+          {{else}}
+          <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+          {{/if}}
         </li>
         {{/each}}
       </ul>
@@ -943,24 +946,11 @@
       </div>
     </div>
   </div>
+
   <h4 id="artifact-content-text-header">${$.i18n.prop('browse.artifact.content.header')}</h4>
 
   <div class="source">
     <pre class="prettyprint linenums" id="artifact-content-text"></pre>
   </div>
-</script>
 
-<script id="artifact-details-download-content_tmpl" type="text/html">
-  <ul id="artifact-download-list-files" class="package-list">
-    {{each(i, row) artifacts()}}
-    <li>
-      {{if deleteKarma}}
-      <a href="#" data-bind="click: function(){deleteArtifact(row)}"><img src="images/trash.png"/></a>&nbsp;<a
-            href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
-      {{else}}
-      <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
-      {{/if}}
-    </li>
-    {{/each}}
-  </ul>
 </script>

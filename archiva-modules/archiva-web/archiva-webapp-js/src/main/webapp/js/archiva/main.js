@@ -465,32 +465,6 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependencies-content-a");
         });
 
-        this.get('#artifact-details-files-content/:groupId/:artifactId/:version',function(context){
-
-          var groupId= this.params.groupId;
-          var artifactId= this.params.artifactId;
-          var version= this.params.version;
-
-          checkArtifactDetailContent(groupId,artifactId,version,null,"artifact-details-files-content-a","artifact-details-files-content",
-                                     function(groupId,artifactId,version,artifactVersionDetailViewModel){
-                                       displayArtifactFilesContent(artifactVersionDetailViewModel);
-                                     });
-
-        });
-
-        this.get('#artifact-details-files-content~:repositoryId/:groupId/:artifactId/:version',function(context){
-
-          var repositoryId = this.params.repositoryId;
-          var groupId= this.params.groupId;
-          var artifactId= this.params.artifactId;
-          var version= this.params.version;
-          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-files-content-a","artifact-details-files-content",
-                                     function(groupId,artifactId,version,artifactVersionDetailViewModel){
-                                       displayArtifactFilesContent(artifactVersionDetailViewModel);
-                                     });
-        });
-
-
         this.get('#artifact-details-download-content/:groupId/:artifactId/:version',function(context){
 
           var repositoryId = this.params.repositoryId;
