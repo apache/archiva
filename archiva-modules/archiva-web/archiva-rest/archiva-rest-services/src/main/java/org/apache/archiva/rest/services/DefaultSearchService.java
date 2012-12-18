@@ -91,7 +91,8 @@ public class DefaultSearchService
         {
             repositories = getObservableRepos();
         }
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        SearchResultLimits limits =
+            new SearchResultLimits( searchRequest.getPageSize(), searchRequest.getSelectedPage() );
         try
         {
             SearchResults searchResults = repositorySearch.search( getPrincipal(), repositories, queryString, limits,

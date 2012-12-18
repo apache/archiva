@@ -117,6 +117,15 @@ public class SearchRequest
      */
     private boolean includePomArtifacts = false;
 
+    /**
+     * @since 1.4-M4
+     */
+    private int pageSize = 30;
+
+    /**
+     * @since 1.4-M4
+     */
+    private int selectedPage = 0;
 
 
     public SearchRequest()
@@ -286,6 +295,26 @@ public class SearchRequest
         this.bundleRequireBundle = bundleRequireBundle;
     }
 
+    public int getPageSize()
+    {
+        return pageSize;
+    }
+
+    public void setPageSize( int pageSize )
+    {
+        this.pageSize = pageSize;
+    }
+
+    public int getSelectedPage()
+    {
+        return selectedPage;
+    }
+
+    public void setSelectedPage( int selectedPage )
+    {
+        this.selectedPage = selectedPage;
+    }
+
     @Override
     public String toString()
     {
@@ -306,6 +335,8 @@ public class SearchRequest
         sb.append( ", bundleRequireBundle='" ).append( bundleRequireBundle ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
         sb.append( ", includePomArtifacts=" ).append( includePomArtifacts );
+        sb.append( ", pageSize=" ).append( pageSize );
+        sb.append( ", selectedPage=" ).append( selectedPage );
         sb.append( '}' );
         return sb.toString();
     }
