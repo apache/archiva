@@ -21,12 +21,11 @@ package org.apache.archiva.admin.repository.runtime;
 import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
-import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
+import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.RedbackRuntimeConfiguration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationException;
@@ -65,24 +64,24 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         try
         {
-            ArchivaRuntimeConfiguration archivaRuntimeConfiguration = getArchivaRuntimeConfiguration();
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration = getArchivaRuntimeConfiguration();
             // migrate or not data from redback
-            if ( !archivaRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
+            if ( !redbackRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
             {
                 // so migrate if available
                 String userManagerImpl = userConfiguration.getString( UserConfigurationKeys.USER_MANAGER_IMPL );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
-                    archivaRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
+                    redbackRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
                 }
 
                 // now ldap
 
-                LdapConfiguration ldapConfiguration = archivaRuntimeConfiguration.getLdapConfiguration();
+                LdapConfiguration ldapConfiguration = redbackRuntimeConfiguration.getLdapConfiguration();
                 if ( ldapConfiguration == null )
                 {
                     ldapConfiguration = new LdapConfiguration();
-                    archivaRuntimeConfiguration.setLdapConfiguration( ldapConfiguration );
+                    redbackRuntimeConfiguration.setLdapConfiguration( ldapConfiguration );
                 }
 
                 ldapConfiguration.setHostName(
@@ -100,19 +99,19 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 ldapConfiguration.setAuthenticationMethod(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, null ) );
 
-                archivaRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
+                redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
-                updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
+                updateArchivaRuntimeConfiguration( redbackRuntimeConfiguration );
 
             }
 
             // we must ensure userManagerImpls list is not empty if so put at least jdo one !
-            if ( archivaRuntimeConfiguration.getUserManagerImpls().isEmpty() )
+            if ( redbackRuntimeConfiguration.getUserManagerImpls().isEmpty() )
             {
                 log.info(
-                    "archivaRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
-                archivaRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
-                updateArchivaRuntimeConfiguration( archivaRuntimeConfiguration );
+                    "redbackRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
+                redbackRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
+                updateArchivaRuntimeConfiguration( redbackRuntimeConfiguration );
             }
 
         }
@@ -122,15 +121,16 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
     }
 
-    public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
+    public RedbackRuntimeConfiguration getArchivaRuntimeConfiguration()
     {
         return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
-    public void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+    public void updateArchivaRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException
     {
-        RedbackRuntimeConfiguration runtimeConfiguration = build( archivaRuntimeConfiguration );
+        org.apache.archiva.configuration.RedbackRuntimeConfiguration
+            runtimeConfiguration = build( redbackRuntimeConfiguration );
         Configuration configuration = archivaConfiguration.getConfiguration();
         configuration.setRedbackRuntimeConfiguration( runtimeConfiguration );
         try
@@ -147,31 +147,31 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
     }
 
-    private ArchivaRuntimeConfiguration build( RedbackRuntimeConfiguration runtimeConfiguration )
+    private RedbackRuntimeConfiguration build( org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
     {
-        ArchivaRuntimeConfiguration archivaRuntimeConfiguration =
-            new BeanReplicator().replicateBean( runtimeConfiguration, ArchivaRuntimeConfiguration.class );
+        RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+            new BeanReplicator().replicateBean( runtimeConfiguration, RedbackRuntimeConfiguration.class );
 
         if ( runtimeConfiguration.getLdapConfiguration() != null )
         {
-            archivaRuntimeConfiguration.setLdapConfiguration(
+            redbackRuntimeConfiguration.setLdapConfiguration(
                 new BeanReplicator().replicateBean( runtimeConfiguration.getLdapConfiguration(),
                                                     LdapConfiguration.class ) );
         }
 
-        if ( archivaRuntimeConfiguration.getLdapConfiguration() == null )
+        if ( redbackRuntimeConfiguration.getLdapConfiguration() == null )
         {
             // prevent NPE
-            archivaRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
+            redbackRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
         }
 
-        return archivaRuntimeConfiguration;
+        return redbackRuntimeConfiguration;
     }
 
-    private RedbackRuntimeConfiguration build( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+    private org.apache.archiva.configuration.RedbackRuntimeConfiguration build( RedbackRuntimeConfiguration archivaRuntimeConfiguration )
     {
-        RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            new BeanReplicator().replicateBean( archivaRuntimeConfiguration, RedbackRuntimeConfiguration.class );
+        org.apache.archiva.configuration.RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+            new BeanReplicator().replicateBean( archivaRuntimeConfiguration, org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
 
         redbackRuntimeConfiguration.setLdapConfiguration(
             new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getLdapConfiguration(),
@@ -191,7 +191,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             return getArchivaRuntimeConfiguration().getUserManagerImpls().get( 0 );
         }
 
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -211,7 +211,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 
@@ -237,7 +237,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             return getArchivaRuntimeConfiguration().getLdapConfiguration().getAuthenticationMethod();
         }
 
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -258,7 +258,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 
@@ -267,7 +267,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     public int getInt( String key )
     {
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -283,7 +283,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 
@@ -297,7 +297,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             return getArchivaRuntimeConfiguration().getLdapConfiguration().getPort();
         }
 
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -313,7 +313,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 
@@ -322,7 +322,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     public boolean getBoolean( String key )
     {
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -338,7 +338,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 
@@ -352,7 +352,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             return getArchivaRuntimeConfiguration().getLdapConfiguration().isSsl();
         }
 
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -368,7 +368,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 
@@ -379,7 +379,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         List<String> value = userConfiguration.getList( key );
 
-        ArchivaRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
         // TODO concat values
         conf.getConfigurationProperties().put( key, "" );
         try
@@ -388,7 +388,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "fail to save ArchivaRuntimeConfiguration: {}", e.getMessage(), e );
+            log.error( "fail to save RedbackRuntimeConfiguration: {}", e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
 

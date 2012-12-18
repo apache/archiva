@@ -932,7 +932,7 @@
               </label>
               <div class="controls">
                 <input type="text" id="ldap-host" name="ldap-host" class="input-xlarge"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().hostName"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().hostName"/>
               </div>
             </div>
             <div class="control-group">
@@ -941,7 +941,7 @@
               </label>
               <div class="controls">
                 <input type="text" id="ldap-port" name="ldap-port" class="input-large"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().port"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().port"/>
               </div>
             </div>
             <div class="control-group">
@@ -950,7 +950,7 @@
               </label>
               <div class="controls">
                 <input type="text" id="ldap-baseDn" name="ldap-baseDn" class="input-xxlarge"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().baseDn"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().baseDn"/>
               </div>
             </div>
             <div class="control-group">
@@ -959,7 +959,7 @@
               </label>
               <div class="controls">
                 <input type="text" id="ldap-bindDn" name="ldap-bindDn" class="input-xxlarge"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().bindDn"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().bindDn"/>
               </div>
             </div>
             <div class="control-group">
@@ -968,7 +968,7 @@
               </label>
               <div class="controls">
                 <input type="checkbox" id="ldap-ssl" name="ldap-ssl"
-                       data-bind="checked: archivaRuntimeConfiguration().ldapConfiguration().ssl"/>
+                       data-bind="checked: redbackRuntimeConfiguration().ldapConfiguration().ssl"/>
               </div>
             </div>
             <div class="control-group">
@@ -977,7 +977,7 @@
               </label>
               <div class="controls">
                 <input type="password" id="ldap-password" name="ldap-password" class="input-xlarge"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().password"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().password"/>
               </div>
             </div>
             <div class="control-group">
@@ -986,7 +986,7 @@
               </label>
               <div class="controls">
                 <input type="text" id="ldap-context-factory" name="ldap-context-factory" class="input-xlarge"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().contextFactory"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().contextFactory"/>
               </div>
             </div>
             <div class="control-group">
@@ -995,15 +995,15 @@
               </label>
               <div class="controls">
                 <input type="text" id="ldap-authenticationMethod" name="ldap-authenticationMethod" class="input-xlarge"
-                       data-bind="value: archivaRuntimeConfiguration().ldapConfiguration().authenticationMethod"/>
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().authenticationMethod"/>
               </div>
             </div>
             <!-- TODO extraPropertiesEntries -->
 
         </form>
 
-        <button data-bind="click: checkChangedLdapConfiguration,css:{ 'btn-warning': archivaRuntimeConfiguration().ldapConfiguration().modified() },
-                          enabled: archivaRuntimeConfiguration().ldapConfiguration().modified()"
+        <button data-bind="click: checkChangedLdapConfiguration,css:{ 'btn-warning': redbackRuntimeConfiguration().ldapConfiguration().modified() },
+                          enabled: redbackRuntimeConfiguration().ldapConfiguration().modified()"
                 id="ldap-configuration-check-modification"class="btn">${$.i18n.prop('redback.runtime.ldap.checkModification')}</button>
 
         <button data-bind="click: checkLdapServerConfiguration"
@@ -1023,7 +1023,7 @@
             </tr>
           </thead>
           <tbody>
-            {{each(i, property) archivaRuntimeConfiguration().configurationPropertiesEntries}}
+            {{each(i, property) redbackRuntimeConfiguration().configurationPropertiesEntries}}
               <tr>
                 <td>
                   {{var key = property.key}}
@@ -1044,7 +1044,7 @@
   </div>
 
   <div>
-    <button data-bind="click: saveArchivaRuntimeConfiguration,css:{ 'btn-warning': archivaRuntimeConfiguration().modified() | archivaRuntimeConfiguration().ldapConfiguration().modified()  }"
+    <button data-bind="click: saveArchivaRuntimeConfiguration,css:{ 'btn-warning': redbackRuntimeConfiguration().modified() | redbackRuntimeConfiguration().ldapConfiguration().modified()  }"
             id="archiva-runtime-configuration-save"class="btn">${$.i18n.prop('save')}</button>
   </div>
 

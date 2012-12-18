@@ -1151,10 +1151,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
 
-  ArchivaRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries){
+  RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries){
     var self=this;
     this.modified=ko.observable(false);
-    this.modified.subscribe(function(newValue){$.log("ArchivaRuntimeConfiguration modified")});
+    this.modified.subscribe(function(newValue){$.log("RedbackRuntimeConfiguration modified")});
 
     this.userManagerImpls=ko.observableArray(userManagerImpls);
     this.userManagerImpls.subscribe(function(newValue){self.modified(true)});
@@ -1171,22 +1171,22 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     });
   }
 
-  mapArchivaRuntimeConfiguration=function(data){
-    var archivaRuntimeConfiguration =
-            new ArchivaRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration);
+  mapRedbackRuntimeConfiguration=function(data){
+    var redbackRuntimeConfiguration =
+            new RedbackRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration);
 
 
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
       return new Entry(item.key, item.value,function(newValue){
-        archivaRuntimeConfiguration.modified(true);
+        redbackRuntimeConfiguration.modified(true);
       });
     });
     if (!$.isArray(configurationPropertiesEntries)){
       configurationPropertiesEntries=[];
     }
-    archivaRuntimeConfiguration.configurationPropertiesEntries(configurationPropertiesEntries);
-    archivaRuntimeConfiguration.modified(false);
-    return archivaRuntimeConfiguration;
+    redbackRuntimeConfiguration.configurationPropertiesEntries(configurationPropertiesEntries);
+    redbackRuntimeConfiguration.modified(false);
+    return redbackRuntimeConfiguration;
 
   }
 
@@ -1246,9 +1246,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       return null;
   }
 
-  ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration,userManagerImplementationInformations){
+  RedbackRuntimeConfigurationViewModel=function(redbackRuntimeConfiguration,userManagerImplementationInformations){
     var self=this;
-    this.archivaRuntimeConfiguration=ko.observable(archivaRuntimeConfiguration);
+    this.redbackRuntimeConfiguration=ko.observable(redbackRuntimeConfiguration);
     this.userManagerImplementationInformations=ko.observable(userManagerImplementationInformations);
 
     this.usedUserManagerImpls=ko.observableArray([]);
@@ -1300,7 +1300,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
              {
                type: "POST",
                contentType: 'application/json',
-               data:ko.toJSON(self.archivaRuntimeConfiguration().ldapConfiguration),
+               data:ko.toJSON(self.redbackRuntimeConfiguration().ldapConfiguration),
                dataType: 'json',
                success: function(data) {
                  var message=$.i18n.prop('redback.runtime.ldap.verified');
@@ -1318,8 +1318,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       );
     }
 
-    for(var i= 0;i<archivaRuntimeConfiguration.userManagerImpls().length;i++){
-      var id=archivaRuntimeConfiguration.userManagerImpls()[i];
+    for(var i= 0;i<redbackRuntimeConfiguration.userManagerImpls().length;i++){
+      var id=redbackRuntimeConfiguration.userManagerImpls()[i];
       $.log("id:"+id);
       var userManagerImplementationInformation=findUserManagerImplementationInformation(id);
 
@@ -1348,7 +1348,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     userManagerImplMoved=function(arg){
       $.log("userManagerImplMoved");
-      self.archivaRuntimeConfiguration().modified(true);
+      self.redbackRuntimeConfiguration().modified(true);
     }
 
     saveArchivaRuntimeConfiguration=function(){
@@ -1358,20 +1358,20 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       clearUserMessages();
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
-      self.archivaRuntimeConfiguration().userManagerImpls=ko.observableArray([]);
+      self.redbackRuntimeConfiguration().userManagerImpls=ko.observableArray([]);
       $.log("length:"+self.usedUserManagerImpls().length);
       for(var i=0;i<self.usedUserManagerImpls().length;i++){
         var beanId=self.usedUserManagerImpls()[i].beanId;
         $.log("beanId:"+beanId);
-        self.archivaRuntimeConfiguration().userManagerImpls.push(beanId);
+        self.redbackRuntimeConfiguration().userManagerImpls.push(beanId);
       }
-      $.log("length:"+self.archivaRuntimeConfiguration().userManagerImpls().length);
-      $.log("json:"+ko.toJSON(self.archivaRuntimeConfiguration));
+      $.log("length:"+self.redbackRuntimeConfiguration().userManagerImpls().length);
+      $.log("json:"+ko.toJSON(self.redbackRuntimeConfiguration));
       $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration",
         {
           type: "PUT",
           contentType: 'application/json',
-          data:ko.toJSON(self.archivaRuntimeConfiguration),
+          data:ko.toJSON(self.redbackRuntimeConfiguration),
           dataType: 'json',
           success: function(data) {
             var message=$.i18n.prop('archiva-runtime-configuration.updated');
@@ -1384,8 +1384,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           complete:function(data){
             removeMediumSpinnerImg(userMessages);
             saveButton.button('reset');
-            self.archivaRuntimeConfiguration().modified(false);
-            self.archivaRuntimeConfiguration().ldapConfiguration().modified(false);
+            self.redbackRuntimeConfiguration().modified(false);
+            self.redbackRuntimeConfiguration().ldapConfiguration().modified(false);
           }
         }
       );
@@ -1427,11 +1427,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          var archivaRuntimeConfiguration = mapArchivaRuntimeConfiguration(data);
-          var archivaRuntimeConfigurationViewModel =
-              new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration,userManagerImplementationInformations);
+          var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
+          var redbackRuntimeConfigurationViewModel =
+              new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
           mainContent.html( $( "#runtime-configuration-main" ).tmpl() );
-          ko.applyBindings(archivaRuntimeConfigurationViewModel,$("#runtime-configuration-content" ).get(0));
+          ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#runtime-configuration-content" ).get(0));
           activatePopoverDoc();
         }
       });

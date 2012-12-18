@@ -19,7 +19,7 @@ package org.apache.archiva.admin.model.runtime;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
+import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 
 /**
  * @author Olivier Lamy
@@ -27,10 +27,10 @@ import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
  */
 public interface ArchivaRuntimeConfigurationAdmin
 {
-    ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
+    RedbackRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws RepositoryAdminException;
 
-    void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+    void updateArchivaRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException;
 
 }

@@ -30,7 +30,7 @@ import java.util.Map;
  * @since 1.4-M4
  */
 @XmlRootElement(name = "redbackRuntimeConfiguration")
-public class ArchivaRuntimeConfiguration
+public class RedbackRuntimeConfiguration
     implements Serializable
 {
 
@@ -53,7 +53,7 @@ public class ArchivaRuntimeConfiguration
      */
     private List<PropertyEntry> configurationPropertiesEntries;
 
-    public ArchivaRuntimeConfiguration()
+    public RedbackRuntimeConfiguration()
     {
         // no op
     }
@@ -128,7 +128,7 @@ public class ArchivaRuntimeConfiguration
     @Override
     public String toString()
     {
-        return "ArchivaRuntimeConfiguration{" +
+        return "RedbackRuntimeConfiguration{" +
             "userManagerImpls=" + userManagerImpls +
             ", ldapConfiguration=" + ldapConfiguration +
             ", migratedFromRedbackConfiguration=" + migratedFromRedbackConfiguration +

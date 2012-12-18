@@ -19,12 +19,10 @@ package org.apache.archiva.web.runtime.ldap;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
-import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
