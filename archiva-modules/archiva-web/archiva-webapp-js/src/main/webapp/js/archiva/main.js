@@ -216,6 +216,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       window.sammyArchivaApplication = Sammy(function () {
 
         this.get('#quicksearch~:artifactId',function(){
+          self.activeMenuId("search");
           $("#main-content" ).html(mediumSpinnerImg());
           var artifactId= this.params.artifactId;
           // user can be in a non search view so init the search view first
@@ -229,6 +230,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         });
 
         this.get('#basicsearch/:queryterms',function(){
+          self.activeMenuId("search");
           var queryterms= this.params.queryterms;
           $.log("queryterms:"+queryterms);
           var searchViewModel = new SearchViewModel();
@@ -241,6 +243,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
         });
         this.get('#basicsearch~:repositoryIds/:queryterms',function(){
+          self.activeMenuId("search");
           var queryterms= this.params.queryterms;
           var repositoryIds = this.params.repositoryIds;
           var repos = repositoryIds.split("~");
@@ -256,6 +259,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         });
 
         this.get('#basicsearch~:repositoryIds/:queryterms',function(){
+          self.activeMenuId("search");
           var queryterms= this.params.queryterms;
           var repositoryIds = this.params.repositoryIds;
           var repos = repositoryIds.split("~");
@@ -271,6 +275,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         });
 
         this.get('#basicsearch/:queryterms',function(){
+          self.activeMenuId("search");
           var queryterms= this.params.queryterms;
           $.log("queryterms:"+queryterms);
           var searchViewModel = new SearchViewModel();
@@ -283,6 +288,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         });
 
         var advancedSearchRoute=function(params){
+          self.activeMenuId("search");
           var repositoryIds = params.repositoryIds;
           var repos = repositoryIds ? repositoryIds.split("~"):[];
           var queryTerms = params.queryterms;
@@ -332,17 +338,20 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           var groupId= this.params.groupId;
           var artifactId= this.params.artifactId;
           $.log("get #artifact:"+groupId+":"+artifactId);
+          self.activeMenuId("browse");
           goToBrowseArtifactDetail(groupId,artifactId);//,null,null);
         });
         this.get('#artifact~:repositoryId/:groupId/:artifactId',function(context){
           var groupId= this.params.groupId;
           var artifactId= this.params.artifactId;
           var repositoryId = this.params.repositoryId;
+          self.activeMenuId("browse");
           $.log("get #artifact:"+groupId+":"+artifactId);
           goToBrowseArtifactDetail(groupId,artifactId,repositoryId);//,null,null);
         });
 
         var checkArtifactDetailContent=function(groupId,artifactId,version,repositoryId,tabToActivate,idContentToCheck,contentDisplayFn){
+          self.activeMenuId("browse");
           // no need to recalculate all stuff just activate the tab
           var htmlId = idContentToCheck?idContentToCheck:"browse_artifact_detail";
           // olamy: cause some issues when browsing so desactivate this fix until more check
@@ -425,7 +434,6 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
         this.get('#artifact-details-files-content/:groupId/:artifactId/:version',function(context){
 
-          var repositoryId = this.params.repositoryId;
           var groupId= this.params.groupId;
           var artifactId= this.params.artifactId;
           var version= this.params.version;
