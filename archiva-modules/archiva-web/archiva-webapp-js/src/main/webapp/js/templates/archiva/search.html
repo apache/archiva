@@ -930,12 +930,24 @@
       <ul id="artifact-download-list-files" class="package-list">
         {{each(i, row) artifacts()}}
         <li>
-          <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"/>
+          <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"
+                  title="${$.i18n.prop('browse.artifact.content.view.tooltip')}"/>
           {{if deleteKarma}}
-          <a href="#" data-bind="click: function(){deleteArtifact(row)}"><img src="images/trash.png"/></a>&nbsp;<a
-                href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+            <a href="#" data-bind="click: function(){deleteArtifact(row)}">
+              <img src="images/trash.png" title="${$.i18n.prop('browse.artifact.content.delete.tooltip')}"/>
+            </a>
+            &nbsp;
+            <a href="${row.url}">
+              <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
+            </a>
+            &nbsp;
+            <span class="text-info">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</span>
           {{else}}
-          <a href="${row.url}">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</a>
+            <a href="${row.url}">
+              <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
+            </a>
+            &nbsp;
+            <span class="text-info">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</span>
           {{/if}}
         </li>
         {{/each}}
