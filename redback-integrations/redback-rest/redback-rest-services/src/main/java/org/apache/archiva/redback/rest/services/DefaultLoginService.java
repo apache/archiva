@@ -19,7 +19,9 @@ package org.apache.archiva.redback.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationFailureCause;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.keys.AuthenticationKey;
@@ -59,7 +61,7 @@ import java.util.TimeZone;
  * @author Olivier Lamy
  * @since 1.3
  */
-@Service( "loginService#rest" )
+@Service("loginService#rest")
 public class DefaultLoginService
     implements LoginService
 {
@@ -75,7 +77,7 @@ public class DefaultLoginService
 
     @Inject
     public DefaultLoginService( SecuritySystem securitySystem,
-                                @Named( "httpAuthenticator#basic" ) HttpAuthenticator httpAuthenticator )
+                                @Named("httpAuthenticator#basic") HttpAuthenticator httpAuthenticator )
     {
         this.securitySystem = securitySystem;
         this.httpAuthenticator = httpAuthenticator;
@@ -152,12 +154,19 @@ public class DefaultLoginService
                 return restUser;
             }
             if ( securitySession.getAuthenticationResult() != null
-                && securitySession.getAuthenticationResult().getExceptionsMap() != null )
+                && securitySession.getAuthenticationResult().getAuthenticationFailureCauses() != null )
             {
                 List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
-                for ( Map.Entry<String, String> entry : securitySession.getAuthenticationResult().getExceptionsMap().entrySet() )
+                for ( AuthenticationFailureCause authenticationFailureCause : securitySession.getAuthenticationResult().getAuthenticationFailureCauses() )
                 {
-                    errorMessages.add( new ErrorMessage().message( entry.getValue() ) );
+                    if ( authenticationFailureCause.getCause() == AuthenticationConstants.AUTHN_NO_SUCH_USER )
+                    {
+                        errorMessages.add( new ErrorMessage( "incorrect.username.password" ) );
+                    }
+                    else
+                    {
+                        errorMessages.add( new ErrorMessage().message( authenticationFailureCause.getMessage() ) );
+                    }
                 }
 
                 throw new RedbackServiceException( errorMessages );

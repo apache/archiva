@@ -77,29 +77,31 @@ public class DefaultAuthenticationManager
         }
 
         // put AuthenticationResult exceptions in a map
-        Map<String, String> authnResultExceptionsMap = new HashMap<String, String>();
+        List<AuthenticationFailureCause> authnResultErrors = new ArrayList<AuthenticationFailureCause>();
         for ( Authenticator authenticator : authenticators )
         {
             if ( authenticator.supportsDataSource( source ) )
             {
                 AuthenticationResult authResult = authenticator.authenticate( source );
-                Map<String, String> exceptionsMap = authResult.getExceptionsMap();
+                List<AuthenticationFailureCause> authenticationFailureCauses =
+                    authResult.getAuthenticationFailureCauses();
 
                 if ( authResult.isAuthenticated() )
                 {
                     return authResult;
                 }
 
-                if ( exceptionsMap != null )
+                if ( authenticationFailureCauses != null )
                 {
-                    authnResultExceptionsMap.putAll( exceptionsMap );
+                    authnResultErrors.addAll( authenticationFailureCauses );
                 }
                 else
                 {
                     if ( authResult.getException() != null )
                     {
-                        authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
-                                                      authResult.getException().getMessage() );
+                        authnResultErrors.add(
+                            new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
+                                                            authResult.getException().getMessage() ) );
                     }
                 }
 
@@ -108,7 +110,7 @@ public class DefaultAuthenticationManager
         }
 
         return ( new AuthenticationResult( false, null, new AuthenticationException(
-            "authentication failed on authenticators: " + knownAuthenticators() ), authnResultExceptionsMap ) );
+            "authentication failed on authenticators: " + knownAuthenticators() ), authnResultErrors ) );
     }
 
     public List<Authenticator> getAuthenticators()

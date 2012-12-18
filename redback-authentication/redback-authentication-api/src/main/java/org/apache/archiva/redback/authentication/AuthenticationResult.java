@@ -23,6 +23,7 @@ import org.apache.archiva.redback.users.User;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,7 +51,7 @@ public class AuthenticationResult
     // TODO: why aren't these just thrown from the authenticate() method?
     private Exception exception;
 
-    private Map<String, String> exceptionsMap;
+    private List<AuthenticationFailureCause> authenticationFailureCauses;
 
     public AuthenticationResult()
     {
@@ -67,12 +68,12 @@ public class AuthenticationResult
     }
 
     public AuthenticationResult( boolean authenticated, String principal, Exception exception,
-                                 Map<String, String> exceptionsMap )
+                                 List<AuthenticationFailureCause> authenticationFailureCauses )
     {
         isAuthenticated = authenticated;
         this.principal = principal;
         this.exception = exception;
-        this.exceptionsMap = exceptionsMap;
+        this.authenticationFailureCauses = authenticationFailureCauses;
     }
 
     public boolean isAuthenticated()
@@ -90,9 +91,9 @@ public class AuthenticationResult
         return exception;
     }
 
-    public Map<String, String> getExceptionsMap()
+    public List<AuthenticationFailureCause> getAuthenticationFailureCauses()
     {
-        return exceptionsMap;
+        return authenticationFailureCauses;
     }
 
     /**

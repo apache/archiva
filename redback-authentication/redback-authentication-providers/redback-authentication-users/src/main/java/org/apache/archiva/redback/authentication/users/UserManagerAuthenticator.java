@@ -23,6 +23,7 @@ import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationFailureCause;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
@@ -41,7 +42,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -84,7 +87,7 @@ public class UserManagerAuthenticator
         String username = null;
         Exception resultException = null;
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) ds;
-        Map<String, String> authnResultExceptionsMap = new HashMap<String, String>();
+        List<AuthenticationFailureCause> authenticationFailureCauses = new ArrayList<AuthenticationFailureCause>();
 
         try
         {
@@ -134,8 +137,9 @@ public class UserManagerAuthenticator
             else
             {
                 log.warn( "Password is Invalid for user {}.", source.getPrincipal() );
-                authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                              "Password is Invalid for user " + source.getPrincipal() + "." );
+                authenticationFailureCauses.add(
+                    new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
+                                                    "Password is Invalid for user " + source.getPrincipal() + "." ) );
 
                 try
                 {
@@ -146,26 +150,29 @@ public class UserManagerAuthenticator
                     userManager.updateUser( user );
                 }
 
-                return new AuthenticationResult( false, source.getPrincipal(), null, authnResultExceptionsMap );
+                return new AuthenticationResult( false, source.getPrincipal(), null, authenticationFailureCauses );
             }
         }
         catch ( UserNotFoundException e )
         {
             log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
             resultException = e;
-            authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                          "Login for user " + source.getPrincipal() + " failed. user not found." );
+            authenticationFailureCauses.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
+                                                                             "Login for user " + source.getPrincipal()
+                                                                                 + " failed. user not found." ) );
         }
         catch ( UserManagerException e )
         {
             log.warn( "Login for user {} failed, message: {}", source.getPrincipal(), e.getMessage() );
             resultException = e;
-            authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
-                                          "Login for user " + source.getPrincipal() + " failed, message: "
-                                              + e.getMessage() );
+            authenticationFailureCauses.add(
+                new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
+                                                "Login for user " + source.getPrincipal() + " failed, message: "
+                                                    + e.getMessage() ) );
         }
 
-        return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultExceptionsMap );
+        return new AuthenticationResult( authenticationSuccess, username, resultException,
+                                         authenticationFailureCauses );
     }
 
     /**
