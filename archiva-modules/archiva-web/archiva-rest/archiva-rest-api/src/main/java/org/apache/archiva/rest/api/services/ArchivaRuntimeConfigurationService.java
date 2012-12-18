@@ -40,11 +40,11 @@ import java.util.List;
 @Path("/archivaRuntimeConfigurationService/")
 public interface ArchivaRuntimeConfigurationService
 {
-    @Path("archivaRuntimeConfiguration")
+    @Path("redbackRuntimeConfiguration")
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    RedbackRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
+    RedbackRuntimeConfiguration getRedbackRuntimeConfigurationAdmin()
         throws ArchivaRestServiceException;
 
     @Path("redbackRuntimeConfiguration")
@@ -52,7 +52,7 @@ public interface ArchivaRuntimeConfigurationService
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    Boolean updateArchivaRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException;
 
     @Path("userManagerImplementationInformation")

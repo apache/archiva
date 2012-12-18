@@ -1175,7 +1175,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var redbackRuntimeConfiguration =
             new RedbackRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration);
 
-
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
       return new Entry(item.key, item.value,function(newValue){
         redbackRuntimeConfiguration.modified(true);
@@ -1351,9 +1350,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       self.redbackRuntimeConfiguration().modified(true);
     }
 
-    saveArchivaRuntimeConfiguration=function(){
-      $.log("saveArchivaRuntimeConfiguration");
-      var saveButton = $("#archiva-runtime-configuration-save" );
+    saveRedbackRuntimeConfiguration=function(){
+      $.log("saveRedbackRuntimeConfiguration");
+      var saveButton = $("#redback-runtime-configuration-save" );
       saveButton.button('loading');
       clearUserMessages();
       var userMessages=$("#user-messages");
@@ -1367,14 +1366,14 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }
       $.log("length:"+self.redbackRuntimeConfiguration().userManagerImpls().length);
       $.log("json:"+ko.toJSON(self.redbackRuntimeConfiguration));
-      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration",
+      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/redbackRuntimeConfiguration",
         {
           type: "PUT",
           contentType: 'application/json',
           data:ko.toJSON(self.redbackRuntimeConfiguration),
           dataType: 'json',
           success: function(data) {
-            var message=$.i18n.prop('archiva-runtime-configuration.updated');
+            var message=$.i18n.prop('redback-runtime-configuration.updated');
             displaySuccessMessage(message);
           },
           error: function(data) {
@@ -1423,7 +1422,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       dataType: 'json',
       success: function(data) {
       var userManagerImplementationInformations=mapUserManagerImplementationInformations(data);
-      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration", {
+      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/redbackRuntimeConfiguration", {
         type: "GET",
         dataType: 'json',
         success: function(data) {

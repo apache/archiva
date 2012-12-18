@@ -888,13 +888,13 @@
 
 <script type="text/html" id="runtime-configuration-main">
   <div class="page-header">
-    <h2>${$.i18n.prop('runtime-configuration.title')}</h2>
+    <h2>${$.i18n.prop('redback-runtime-configuration.title')}</h2>
   </div>
-  <div id="runtime-configuration-content" data-bind='template: {name:"runtime-configuration-content-tmpl"}'>
+  <div id="runtime-configuration-content" data-bind='template: {name:"redback-runtime-configuration-content-tmpl"}'>
   </div>
 </script>
 
-<script type="text/html" id="runtime-configuration-content-tmpl">
+<script type="text/html" id="redback-runtime-configuration-content-tmpl">
   <ul class="nav nav-tabs">
     <li class="active" id="redback-runtime-general-li"><a href="#redback-runtime-general-content" data-toggle="tab">${$.i18n.prop('redback.runtime.general.title')}</a></li>
     <li id="redback-runtime-ldap-li"><a href="#redback-runtime-ldap-content" data-toggle="tab">${$.i18n.prop('redback.runtime.ldap.title')}</a></li>
@@ -1044,8 +1044,8 @@
   </div>
 
   <div>
-    <button data-bind="click: saveArchivaRuntimeConfiguration,css:{ 'btn-warning': redbackRuntimeConfiguration().modified() | redbackRuntimeConfiguration().ldapConfiguration().modified()  }"
-            id="archiva-runtime-configuration-save"class="btn">${$.i18n.prop('save')}</button>
+    <button data-bind="click: saveRedbackRuntimeConfiguration,css:{ 'btn-warning': redbackRuntimeConfiguration().modified() | redbackRuntimeConfiguration().ldapConfiguration().modified()  }"
+            id="redback-archiva-runtime-configuration-save"class="btn">${$.i18n.prop('save')}</button>
   </div>
 
 </script>

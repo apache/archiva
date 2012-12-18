@@ -71,7 +71,7 @@ public class DefaultArchivaRuntimeConfigurationService
     @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory ldapConnectionFactory;
 
-    public RedbackRuntimeConfiguration getArchivaRuntimeConfigurationAdmin()
+    public RedbackRuntimeConfiguration getRedbackRuntimeConfigurationAdmin()
         throws ArchivaRestServiceException
     {
         try
@@ -84,7 +84,7 @@ public class DefaultArchivaRuntimeConfigurationService
         }
     }
 
-    public Boolean updateArchivaRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    public Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException
     {
         try
