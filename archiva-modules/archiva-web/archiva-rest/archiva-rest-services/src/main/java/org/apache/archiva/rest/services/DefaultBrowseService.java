@@ -62,6 +62,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
@@ -771,7 +773,8 @@ public class DefaultBrowseService
         return new ArtifactContent();
     }
 
-    public Boolean artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
+    public Boolean artifactAvailable( String groupId, String artifactId, String version, String classifier,
+                                      String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
@@ -793,8 +796,10 @@ public class DefaultBrowseService
                 ManagedRepositoryContent managedRepositoryContent =
                     repositoryContentFactory.getManagedRepositoryContent( repoId );
                 // FIXME default to jar which can be wrong for war zip etc....
-                ArchivaArtifact archivaArtifact =
-                    new ArchivaArtifact( groupId, artifactId, version, "", "jar", repoId );
+                ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version,
+                                                                       StringUtils.isEmpty( classifier )
+                                                                           ? ""
+                                                                           : classifier, "jar", repoId );
                 File file = managedRepositoryContent.toFile( archivaArtifact );
 
                 if ( file != null && file.exists() )
@@ -829,6 +834,12 @@ public class DefaultBrowseService
         }
 
         return false;
+    }
+
+    public Boolean artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        return artifactAvailable( groupId, artifactId, version, null, repositoryId );
     }
 
     public List<Artifact> getArtifacts( String repositoryId )

@@ -964,6 +964,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
    * @param artifactId
    * @param parentBrowseViewModel
    * @param restUrl
+   * @param repositoryId
    */
   displayArtifactDetail=function(groupId,artifactId,parentBrowseViewModel,restUrl,repositoryId){
     $.log("displayArtifactDetail:"+groupId+":"+artifactId);
@@ -1757,6 +1758,10 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
         location+="~"+selectedRepo;
       }
       location+="/"+artifact.groupId+"/"+artifact.artifactId+"/"+artifact.version;
+
+      if(artifact.classifier){
+        location+="/"+artifact.classifier;
+      }
 
       window.sammyArchivaApplication.setLocation(location);
     }
