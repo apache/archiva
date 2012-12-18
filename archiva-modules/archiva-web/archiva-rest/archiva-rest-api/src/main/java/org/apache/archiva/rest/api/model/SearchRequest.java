@@ -117,6 +117,8 @@ public class SearchRequest
      */
     private boolean includePomArtifacts = false;
 
+
+
     public SearchRequest()
     {
         // no op
