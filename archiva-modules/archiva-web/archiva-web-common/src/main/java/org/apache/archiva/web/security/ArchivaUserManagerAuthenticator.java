@@ -24,6 +24,7 @@ import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationFailureCause;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
@@ -53,7 +54,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("authenticator#archiva")
+@Service( "authenticator#archiva" )
 public class ArchivaUserManagerAuthenticator
     extends AbstractAuthenticator
     implements Authenticator
@@ -102,7 +103,7 @@ public class ArchivaUserManagerAuthenticator
         String username = null;
         Exception resultException = null;
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) ds;
-        Map<String, String> authnResultExceptionsMap = new HashMap<String, String>();
+        List<AuthenticationFailureCause> authnResultErrors = new ArrayList<AuthenticationFailureCause>();
 
         for ( UserManager userManager : userManagers )
         {
@@ -119,7 +120,9 @@ public class ArchivaUserManagerAuthenticator
                         new AccountLockedException( "Account " + source.getPrincipal() + " is locked.", user );
                     log.warn( "{}", e.getMessage() );
                     resultException = e;
-                    authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_LOCKED_USER_EXCEPTION, e.getMessage() );
+                    authnResultErrors.add(
+                        new AuthenticationFailureCause( AuthenticationConstants.AUTHN_LOCKED_USER_EXCEPTION,
+                                                        e.getMessage() ) );
                 }
 
                 if ( user.isPasswordChangeRequired() && source.isEnforcePasswordChange() )
@@ -128,8 +131,9 @@ public class ArchivaUserManagerAuthenticator
                     MustChangePasswordException e = new MustChangePasswordException( "Password expired.", user );
                     log.warn( "{}", e.getMessage() );
                     resultException = e;
-                    authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION,
-                                                  e.getMessage() );
+                    authnResultErrors.add(
+                        new AuthenticationFailureCause( AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION,
+                                                        e.getMessage() ) );
                 }
 
                 PasswordEncoder encoder = securityPolicy.getPasswordEncoder();
@@ -163,16 +167,17 @@ public class ArchivaUserManagerAuthenticator
                         user.setPasswordChangeRequired( true );
                         //throw e;
                         resultException = e;
-                        authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION,
-                                                      e.getMessage() );
+                        authnResultErrors.add( new AuthenticationFailureCause(
+                            AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION, e.getMessage() ) );
                     }
                 }
                 else
                 {
                     log.warn( "Password is Invalid for user {} and userManager '{}'.", source.getPrincipal(),
                               userManager.getId() );
-                    authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                                  "Password is Invalid for user " + source.getPrincipal() + "." );
+                    authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
+                                                                           "Password is Invalid for user "
+                                                                               + source.getPrincipal() + "." ) );
 
                     try
                     {
@@ -195,19 +200,20 @@ public class ArchivaUserManagerAuthenticator
             {
                 log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
                 resultException = e;
-                authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                              "Login for user " + source.getPrincipal() + " failed. user not found." );
+                authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
+                                                                       "Login for user " + source.getPrincipal()
+                                                                           + " failed. user not found." ) );
             }
             catch ( UserManagerException e )
             {
                 log.warn( "Login for user {} failed, message: {}", source.getPrincipal(), e.getMessage() );
                 resultException = e;
-                authnResultExceptionsMap.put( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
-                                              "Login for user " + source.getPrincipal() + " failed, message: "
-                                                  + e.getMessage() );
+                authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
+                                                                       "Login for user " + source.getPrincipal()
+                                                                           + " failed, message: " + e.getMessage() ) );
             }
         }
-        return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultExceptionsMap );
+        return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultErrors );
     }
 
     public boolean supportsDataSource( AuthenticationDataSource source )
