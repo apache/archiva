@@ -81,6 +81,8 @@
 
     <logger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
 
+    <logger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
+
     <root level="info">
       <appender-ref ref="console"/>
     </root>

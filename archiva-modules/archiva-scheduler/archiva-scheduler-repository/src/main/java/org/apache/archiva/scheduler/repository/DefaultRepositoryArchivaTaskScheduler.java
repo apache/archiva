@@ -56,7 +56,7 @@ import java.util.Set;
 /**
  * Default implementation of a scheduling component for archiva.
  */
-@Service("archivaTaskScheduler#repository")
+@Service( "archivaTaskScheduler#repository" )
 public class DefaultRepositoryArchivaTaskScheduler
     implements RepositoryArchivaTaskScheduler, ConfigurationListener
 {
@@ -75,7 +75,7 @@ public class DefaultRepositoryArchivaTaskScheduler
      *
      */
     @Inject
-    @Named(value = "taskQueue#repository-scanning")
+    @Named( value = "taskQueue#repository-scanning" )
     private TaskQueue repositoryScanningQueue;
 
     /**
@@ -88,7 +88,7 @@ public class DefaultRepositoryArchivaTaskScheduler
      *
      */
     @Inject
-    @Named(value = "repositoryStatisticsManager#default")
+    @Named( value = "repositoryStatisticsManager#default" )
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
@@ -181,7 +181,7 @@ public class DefaultRepositoryArchivaTaskScheduler
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         synchronized ( repositoryScanningQueue )
@@ -309,8 +309,15 @@ public class DefaultRepositoryArchivaTaskScheduler
                                          MetadataRepository metadataRepository )
         throws MetadataRepositoryException
     {
+        long start = System.currentTimeMillis();
 
-        return repositoryStatisticsManager.getLastStatistics( metadataRepository, repoConfig.getId() ) != null;
+        boolean res = repositoryStatisticsManager.hasStatistics( metadataRepository, repoConfig.getId() );
+
+        long end = System.currentTimeMillis();
+
+        log.debug( "isPreviouslyScanned repo {} {} time: {} ms", repoConfig.getId(), res, ( end - start ) );
+
+        return res;
     }
 
     // MRM-848: Pre-configured repository initially appear to be empty
