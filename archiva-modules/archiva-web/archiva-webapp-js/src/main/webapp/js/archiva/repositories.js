@@ -462,6 +462,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
     directoriesScan=function(managedRepository){
       $.log("directoriesScan:"+managedRepository.id());
+      clearUserMessages();
       var url = "restServices/archivaServices/repositoriesService/scanRepositoryDirectoriesNow/"+managedRepository.id();
       $.ajax(url,
         {
