@@ -41,10 +41,10 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-asm</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.apache.archiva.redback.components.cache</groupId>
       <artifactId>spring-cache-api</artifactId>
