@@ -38,7 +38,6 @@ public interface UserConfigurationKeys
 
     String PASSWORD_ENCODER = "security.policy.password.encoder";
 
-
     String EMAIL_VALIDATION_SUBJECT = "email.validation.subject";
 
     String REMEMBER_ME_PATH = "security.rememberme.path";
@@ -46,6 +45,10 @@ public interface UserConfigurationKeys
     String REMEMBER_ME_DOMAIN = "security.rememberme.domain";
 
     String REMEMBER_ME_ENABLED = "security.rememberme.enabled";
+
+    String REMEMBERME_TIMEOUT = "security.rememberme.timeout";
+
+    String REMEMBERME_SECURE = "security.rememberme.secure";
 
     String SIGNON_DOMAIN = "security.signon.domain";
 
@@ -104,8 +107,6 @@ public interface UserConfigurationKeys
     String EMAIL_VALIDATION_TIMEOUT = "email.validation.timeout";
 
     String EMAIL_VALIDATION_REQUIRED = "email.validation.required";
-
-    String REMEMBERME_TIMEOUT = "security.rememberme.timeout";
 
     String ALPHA_COUNT_MIN = "security.policy.password.rule.alphacount.minimum";
 
