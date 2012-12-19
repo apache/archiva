@@ -1276,7 +1276,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       ],
       pageSize: 10,//self.redbackRuntimeConfiguration().configurationPropertiesEntries.length,
       gridUpdateCallBack: function(){
-
+        activatePopoverDoc();
       }
       });
 
@@ -1459,7 +1459,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
               new RedbackRuntimeConfigurationViewModel(window.redbackRuntimeConfiguration,userManagerImplementationInformations);
           mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
           ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
-          activatePopoverDoc();
         }
       });
 
