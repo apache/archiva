@@ -32,21 +32,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
-    <!-- TODO: look at making this optional -->
-    <!--dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>maven2-repository</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency-->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model-maven2</artifactId>
@@ -112,6 +97,7 @@
               org.apache.archiva.metadata.repository.storage.maven2;version=${project.version},
               org.apache.archiva.metadata.model.maven2,
               org.springframework*;version="[3,4)",
+              org.apache.commons.lang.time,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
