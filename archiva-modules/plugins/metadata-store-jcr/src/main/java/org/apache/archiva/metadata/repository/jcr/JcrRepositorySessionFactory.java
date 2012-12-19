@@ -25,6 +25,9 @@ import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +41,12 @@ import java.util.Map;
 /**
  *
  */
-@Service( "repositorySessionFactory#jcr" )
+@Service("repositorySessionFactory#jcr")
 public class JcrRepositorySessionFactory
     implements RepositorySessionFactory
 {
+
+    private Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
     private ApplicationContext applicationContext;
@@ -87,6 +92,9 @@ public class JcrRepositorySessionFactory
     public void initialize()
         throws Exception
     {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         metadataFacetFactories = applicationContext.getBeansOfType( MetadataFacetFactory.class );
         // olamy with spring the "id" is now "metadataFacetFactory#hint"
         // whereas was only hint with plexus so let remove  metadataFacetFactory#
@@ -118,5 +126,8 @@ public class JcrRepositorySessionFactory
                 metadataRepository.close();
             }
         }
+
+        stopWatch.stop();
+        logger.info( "time to initialize JcrRepositorySessionFactory: {}", stopWatch.getTime() );
     }
 }

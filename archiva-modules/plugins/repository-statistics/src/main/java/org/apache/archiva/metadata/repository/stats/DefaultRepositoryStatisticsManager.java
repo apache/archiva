@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +62,11 @@ public class DefaultRepositoryStatisticsManager
     public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         // TODO: consider a more efficient implementation that directly gets the last one from the content repository
         List<String> scans = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
-        if (scans == null)
+        if ( scans == null )
         {
             return null;
         }
@@ -71,8 +74,12 @@ public class DefaultRepositoryStatisticsManager
         if ( !scans.isEmpty() )
         {
             String name = scans.get( scans.size() - 1 );
-            return (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,
-                                                                               RepositoryStatistics.FACET_ID, name );
+            RepositoryStatistics repositoryStatistics =
+                (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
+                                                                            name );
+            stopWatch.stop();
+            log.debug( "time to find last RepositoryStatistics: {} ms", stopWatch.getTime() );
+            return repositoryStatistics;
         }
         else
         {
@@ -105,8 +112,8 @@ public class DefaultRepositoryStatisticsManager
                         stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );
                         stats.setTotalArtifactFileSize( stats.getTotalArtifactFileSize() + artifact.getSize() );
 
-                        MavenArtifactFacet facet = (MavenArtifactFacet) artifact.getFacet(
-                            MavenArtifactFacet.FACET_ID );
+                        MavenArtifactFacet facet =
+                            (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
                         if ( facet != null )
                         {
                             String type = facet.getType();
@@ -268,8 +275,10 @@ public class DefaultRepositoryStatisticsManager
                 if ( ( startTime == null || !date.before( startTime ) ) && ( endTime == null || !date.after(
                     endTime ) ) )
                 {
-                    RepositoryStatistics stats = (RepositoryStatistics) metadataRepository.getMetadataFacet(
-                        repositoryId, RepositoryStatistics.FACET_ID, name );
+                    RepositoryStatistics stats =
+                        (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,
+                                                                                    RepositoryStatistics.FACET_ID,
+                                                                                    name );
                     results.add( stats );
                 }
             }

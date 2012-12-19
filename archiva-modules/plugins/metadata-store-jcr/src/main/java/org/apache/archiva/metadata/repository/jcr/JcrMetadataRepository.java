@@ -75,6 +75,7 @@ import java.util.Set;
 public class JcrMetadataRepository
     implements MetadataRepository
 {
+
     private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
 
     static final String NAMESPACE_NODE_TYPE = "archiva:namespace";
@@ -108,6 +109,7 @@ public class JcrMetadataRepository
     static void initialize( Session session )
         throws RepositoryException
     {
+
         // TODO: consider using namespaces for facets instead of the current approach:
         // (if used, check if actually called by normal injection)
 //        for ( String facetId : metadataFacetFactories.keySet() )
@@ -130,6 +132,7 @@ public class JcrMetadataRepository
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.ARTIFACT_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.FACET_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.DEPENDENCY_NODE_TYPE );
+
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String name )

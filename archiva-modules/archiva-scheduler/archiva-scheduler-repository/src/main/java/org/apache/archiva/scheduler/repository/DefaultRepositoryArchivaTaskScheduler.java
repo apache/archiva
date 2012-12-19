@@ -35,6 +35,7 @@ import org.apache.archiva.redback.components.taskqueue.TaskQueue;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
+import org.apache.commons.lang.time.StopWatch;
 import org.quartz.SchedulerException;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -55,7 +56,7 @@ import java.util.Set;
 /**
  * Default implementation of a scheduling component for archiva.
  */
-@Service ("archivaTaskScheduler#repository")
+@Service("archivaTaskScheduler#repository")
 public class DefaultRepositoryArchivaTaskScheduler
     implements RepositoryArchivaTaskScheduler, ConfigurationListener
 {
@@ -74,7 +75,7 @@ public class DefaultRepositoryArchivaTaskScheduler
      *
      */
     @Inject
-    @Named (value = "taskQueue#repository-scanning")
+    @Named(value = "taskQueue#repository-scanning")
     private TaskQueue repositoryScanningQueue;
 
     /**
@@ -87,7 +88,7 @@ public class DefaultRepositoryArchivaTaskScheduler
      *
      */
     @Inject
-    @Named (value = "repositoryStatisticsManager#default")
+    @Named(value = "repositoryStatisticsManager#default")
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
@@ -116,6 +117,10 @@ public class DefaultRepositoryArchivaTaskScheduler
     public void startup()
         throws ArchivaException
     {
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         archivaConfiguration.addListener( this );
 
         List<ManagedRepositoryConfiguration> repositories =
@@ -158,6 +163,8 @@ public class DefaultRepositoryArchivaTaskScheduler
             repositorySession.close();
         }
 
+        stopWatch.stop();
+        log.info( "Time to initalize DefaultRepositoryArchivaTaskScheduler: {} ms", stopWatch.getTime() );
     }
 
 
@@ -174,7 +181,7 @@ public class DefaultRepositoryArchivaTaskScheduler
 
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         synchronized ( repositoryScanningQueue )
@@ -298,7 +305,6 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
-    @SuppressWarnings ("unchecked")
     private boolean isPreviouslyScanned( ManagedRepositoryConfiguration repoConfig,
                                          MetadataRepository metadataRepository )
         throws MetadataRepositoryException

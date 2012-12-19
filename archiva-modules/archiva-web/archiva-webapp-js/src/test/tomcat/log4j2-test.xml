@@ -20,12 +20,38 @@
 
 
 <configuration status="debug">
+
+  <properties>
+    <property name="logsDirectory">${sys:appserver.base}/logs</property>
+  </properties>
+
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
+
+    <!--RollingFile name="console" fileName="${logsDirectory}/archiva.log"
+                 filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log">
+      <PatternLayout>
+        <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy />
+      </Policies>
+    </RollingFile-->
+
   </appenders>
   <loggers>
+
+    <!-- apache httpclient debug content transfer-->
+    <!--
+    <logger name="org.apache.http.wire">
+      <level value="debug"/>
+    </logger>
+    <logger name="org.apache.http.headers" level="debug"/>
+    -->
+
+
     <logger name="org.apache.archiva.indexer.search.MavenRepositorySearch" level="info"/>
 
     <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
@@ -37,16 +63,6 @@
 
 
     <logger name="org.apache.archiva.admin.repository.managed" level="info"/>
-
-
-    <!-- apache httpclient debug content transfer-->
-    <!--
-    <logger name="org.apache.http.wire">
-      <level value="debug"/>
-    </logger>
-    -->
-    <logger name="org.apache.http.headers" level="debug"/>
-
 
     <logger name="org.springframework" level="info"/>
 
@@ -62,6 +78,8 @@
     <logger name="org.quartz" level="info"/>
 
     <logger name="org.apache.archiva.indexer.merger" level="info"/>
+
+    <logger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
 
     <root level="info">
       <appender-ref ref="console"/>
