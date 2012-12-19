@@ -1454,9 +1454,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         dataType: 'json',
         success: function(data) {
           // TODO use window.redbackRuntimeConfiguration ?
-          var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
+          window.redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
           var redbackRuntimeConfigurationViewModel =
-              new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
+              new RedbackRuntimeConfigurationViewModel(window.redbackRuntimeConfiguration,userManagerImplementationInformations);
           mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
           ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
           activatePopoverDoc();
