@@ -64,6 +64,12 @@ public class MockRepositorySessionFactory
                 return new MetadataRepository()
                 {
 
+                    public boolean hasMetadataFacet( String repositoryId, String facetId )
+                        throws MetadataRepositoryException
+                    {
+                        return false;
+                    }
+
                     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
                         throws MetadataRepositoryException
                     {

@@ -214,4 +214,10 @@ public class TestMetadataRepository
         throw new UnsupportedOperationException();
     }
 
+    public boolean hasMetadataFacet( String repositoryId, String facetId )
+        throws MetadataRepositoryException
+    {
+        return false;
+    }
+
 }

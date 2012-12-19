@@ -309,6 +309,13 @@ public class FileMetadataRepository
         return facets;
     }
 
+    public boolean hasMetadataFacet( String repositoryId, String facetId )
+        throws MetadataRepositoryException
+    {
+        // TODO could be improved a bit
+        return !getMetadataFacets( repositoryId, facetId ).isEmpty();
+    }
+
     private void recurse( List<String> facets, String prefix, File directory )
     {
         File[] list = directory.listFiles();

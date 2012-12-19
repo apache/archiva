@@ -407,7 +407,7 @@ public class JcrMetadataRepository
         try
         {
             Node node = getJcrSession().getRootNode().getNode( getFacetPath( repositoryId, facetId ) );
-            return JcrUtils.getChildNodes( node ).iterator().hasNext();
+            return node.getNodes().hasNext();
         }
         catch ( PathNotFoundException e )
         {

@@ -377,6 +377,11 @@ public class RepositoryContentConsumersTest
             this.invalidRepositoryContentConsumers = invalidRepositoryContentConsumers;
         }
 
+        public String getApplicationName()
+        {
+            return "foo";
+        }
+
         public AutowireCapableBeanFactory getAutowireCapableBeanFactory( )
             throws IllegalStateException
         {
