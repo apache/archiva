@@ -18,6 +18,7 @@ package org.apache.archiva.web.api;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
@@ -32,19 +33,20 @@ import javax.ws.rs.core.MediaType;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@Path( "/runtimeInfoService/" )
+@Path("/runtimeInfoService/")
 public interface RuntimeInfoService
 {
-    @Path( "archivaRuntimeInfo/{locale}" )
+    @Path("archivaRuntimeInfo/{locale}")
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true )
-    ApplicationRuntimeInfo getApplicationRuntimeInfo( @PathParam( "locale" ) String locale );
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(noRestriction = true)
+    ApplicationRuntimeInfo getApplicationRuntimeInfo( @PathParam("locale") String locale )
+        throws ArchivaRestServiceException;
 
 
-    @Path( "logMissingI18n" )
+    @Path("logMissingI18n")
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( noRestriction = true )
-    Boolean logMissingI18n( @QueryParam( "key" ) String key );
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(noRestriction = true)
+    Boolean logMissingI18n( @QueryParam("key") String key );
 }

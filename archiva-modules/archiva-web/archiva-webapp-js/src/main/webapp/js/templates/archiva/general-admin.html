@@ -886,11 +886,11 @@
     </tbody>
 </script>
 
-<script type="text/html" id="runtime-configuration-main">
+<script type="text/html" id="redback-runtime-configuration-main">
   <div class="page-header">
     <h2>${$.i18n.prop('redback-runtime-configuration.title')}</h2>
   </div>
-  <div id="runtime-configuration-content" data-bind='template: {name:"redback-runtime-configuration-content-tmpl"}'>
+  <div id="redback-runtime-configuration-content" data-bind='template: {name:"redback-runtime-configuration-content-tmpl"}'>
   </div>
 </script>
 
@@ -1013,44 +1013,46 @@
     </div>
 
     <div class="tab-pane" id="redback-runtime-properties-content">
-      <div class="well">
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>${$.i18n.prop('redback.runtime.properties.key.label')}</th>
-              <th>${$.i18n.prop('redback.runtime.properties.value.label')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{each(i, property) redbackRuntimeConfiguration().configurationPropertiesEntries}}
-              <tr>
-                <td>
-                  {{var key = property.key}}
-                  <a class="popover-doc"
-                     data-original-title="${$.i18n.prop('redback.runtime.properties.help.title')}"
-                     data-content="${$.i18n.prop(key+'.help.content')}">
-                    <span class="btn btn-info"><i class="icon-question-sign icon-white"></i></span>
-                  </a>
-                </td>
-                <td><input type="text" class="input-xxlarge" value="${property.key}"></td>
-                <td><input type="text" class="input-xlarge" value="${property.value}"></td>
-              </tr>
-            {{/each}}
-          </tbody>
 
+      <div class="well">
+        <table id="proxyConnectorsTable"
+               data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'properties-grid',pageLinksId:'properties-grid-pagination'">
         </table>
+        <div id="properties-grid-pagination"></div>
       </div>
   </div>
 
   <div>
     <button data-bind="click: saveRedbackRuntimeConfiguration,css:{ 'btn-warning': redbackRuntimeConfiguration().modified() | redbackRuntimeConfiguration().ldapConfiguration().modified()  }"
-            id="redback-archiva-runtime-configuration-save"class="btn">${$.i18n.prop('save')}</button>
+            id="redback-runtime-configuration-save"class="btn">${$.i18n.prop('save')}</button>
   </div>
 
 </script>
 
-<script id="configurationPropertiesEntries-tmpl" type="text/html">
+<script id='properties-grid' type='text/html'>
+  <thead>
+  <tr>
+    <th></th>
+    <th>${$.i18n.prop('redback.runtime.properties.key.label')}</th>
+    <th>${$.i18n.prop('redback.runtime.properties.value.label')}</th>
+  </tr>
+  </thead>
+  <tbody>
+  {{each(i, row) itemsOnCurrentPage()}}
+    <tr>
+      <td>
+        {{var key = row.key}}
+        <a class="popover-doc"
+           data-original-title="${$.i18n.prop('redback.runtime.properties.help.title')}"
+           data-content="${$.i18n.prop(key+'.help.content')}">
+          <span class="btn btn-info"><i class="icon-question-sign icon-white"></i></span>
+        </a>
+      </td>
+      <td>${row.key}</td>
+      <td><input type="text" class="input-xxlarge" data-bind="value: row.value"></td>
+    </tr>
+  {{/each}}
+  </tbody>
 
 </script>
 

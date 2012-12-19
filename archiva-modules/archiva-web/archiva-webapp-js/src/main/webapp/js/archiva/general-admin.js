@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
-  "knockout.sortable","jquery.validate","bootstrap"]
+  "knockout.sortable","jquery.validate","bootstrap","archiva.knockout.properties"]
     , function(jquery,i18n,utils,jqueryTmpl,ko) {
 
   //-------------------------
@@ -1169,6 +1169,16 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       self.modified(true);
       $.log("configurationPropertiesEntries modified")
     });
+
+    this.findPropertyValue=function(key){
+      for(var i=0;i<self.configurationPropertiesEntries().length;i++){
+        if(self.configurationPropertiesEntries()[i].key==key){
+          var val = self.configurationPropertiesEntries()[i].value;
+          $.log("findPropertyValue " + key + "->" + val);
+          return val;
+        }
+      }
+    }
   }
 
   mapRedbackRuntimeConfiguration=function(data){
@@ -1251,6 +1261,24 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.userManagerImplementationInformations=ko.observable(userManagerImplementationInformations);
 
     this.usedUserManagerImpls=ko.observableArray([]);
+
+    self.gridViewModel = new ko.simpleGrid.viewModel({
+      data: self.redbackRuntimeConfiguration().configurationPropertiesEntries,
+      columns: [
+       {
+         headerText: $.i18n.prop('redback.runtime.properties.key.label'),
+         rowText: "key"
+       },
+       {
+         headerText: $.i18n.prop('redback.runtime.properties.value.label'),
+         rowText: "value"
+       }
+      ],
+      pageSize: 10,//self.redbackRuntimeConfiguration().configurationPropertiesEntries.length,
+      gridUpdateCallBack: function(){
+
+      }
+      });
 
     findUserManagerImplementationInformation=function(id){
       for(var i= 0;i<self.userManagerImplementationInformations().length;i++){
@@ -1358,14 +1386,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       self.redbackRuntimeConfiguration().userManagerImpls=ko.observableArray([]);
-      $.log("length:"+self.usedUserManagerImpls().length);
+
       for(var i=0;i<self.usedUserManagerImpls().length;i++){
         var beanId=self.usedUserManagerImpls()[i].beanId;
         $.log("beanId:"+beanId);
         self.redbackRuntimeConfiguration().userManagerImpls.push(beanId);
       }
-      $.log("length:"+self.redbackRuntimeConfiguration().userManagerImpls().length);
-      $.log("json:"+ko.toJSON(self.redbackRuntimeConfiguration));
+      $.log("rememberme enabled:"+self.redbackRuntimeConfiguration().findPropertyValue("security.rememberme.enabled"));
       $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/redbackRuntimeConfiguration",
         {
           type: "PUT",
@@ -1426,11 +1453,12 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         type: "GET",
         dataType: 'json',
         success: function(data) {
+          // TODO use window.redbackRuntimeConfiguration ?
           var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
           var redbackRuntimeConfigurationViewModel =
               new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
-          mainContent.html( $( "#runtime-configuration-main" ).tmpl() );
-          ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#runtime-configuration-content" ).get(0));
+          mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
+          ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
           activatePopoverDoc();
         }
       });

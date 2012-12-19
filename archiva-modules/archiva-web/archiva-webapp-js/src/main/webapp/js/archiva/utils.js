@@ -359,14 +359,28 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
    */
   Entry=function(key,value,subscribeFn){
     var self=this;
+    this.modified=ko.observable(false);
+    this.modified.subscribe(function(newValue){
+      $.log("Entry modified");
+    });
+
     this.key=ko.observable(key);
-    if(subscribeFn){
-      this.key.subscribe(function(newValue){subscribeFn(newValue)});
-    }
+    this.key.subscribe(function(newValue){
+      self.modified(true);
+      if(subscribeFn){
+        subscribeFn(newValue)
+      }
+    });
+
     this.value=ko.observable(value);
-    if(subscribeFn){
-      this.value.subscribe(function(newValue){$.log("value modified");subscribeFn(newValue);});
-    }
+    this.value.subscribe(function(newValue){
+      self.modified(true);
+      if(subscribeFn){
+        subscribeFn(newValue)
+      }
+    });
+
+
   }
 
   /**

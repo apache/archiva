@@ -18,6 +18,8 @@ package org.apache.archiva.web.api;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
 import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +37,7 @@ import java.util.Locale;
 /**
  * @author Olivier Lamy
  */
-@Service( "runtimeInfoService#rest" )
+@Service("runtimeInfoService#rest")
 public class DefaultRuntimeInfoService
     implements RuntimeInfoService
 {
@@ -43,6 +45,9 @@ public class DefaultRuntimeInfoService
     private Logger i18nLogger = LoggerFactory.getLogger( "archivaMissingi18n.logger" );
 
     private ArchivaRuntimeInfo archivaRuntimeInfo;
+
+    @Inject
+    private ArchivaRuntimeConfigurationService archivaRuntimeConfigurationService;
 
     @Context
     protected HttpServletRequest httpServletRequest;
@@ -54,6 +59,7 @@ public class DefaultRuntimeInfoService
     }
 
     public ApplicationRuntimeInfo getApplicationRuntimeInfo( String locale )
+        throws ArchivaRestServiceException
     {
         ApplicationRuntimeInfo applicationRuntimeInfo = new ApplicationRuntimeInfo();
         applicationRuntimeInfo.setBuildNumber( this.archivaRuntimeInfo.getBuildNumber() );
@@ -64,6 +70,9 @@ public class DefaultRuntimeInfoService
         SimpleDateFormat sfd = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz",
                                                      new Locale( StringUtils.isEmpty( locale ) ? "en" : locale ) );
         applicationRuntimeInfo.setTimestampStr( sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) ) );
+
+        applicationRuntimeInfo.setRedbackRuntimeConfiguration(
+            archivaRuntimeConfigurationService.getRedbackRuntimeConfigurationAdmin() );
 
         return applicationRuntimeInfo;
     }

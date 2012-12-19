@@ -18,6 +18,8 @@ package org.apache.archiva.web.model;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 
@@ -25,7 +27,7 @@ import java.util.Calendar;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@XmlRootElement( name = "applicationRuntimeInfo" )
+@XmlRootElement(name = "applicationRuntimeInfo")
 public class ApplicationRuntimeInfo
 {
     private boolean devMode = false;
@@ -45,6 +47,8 @@ public class ApplicationRuntimeInfo
     private String baseUrl;
 
     private String timestampStr;
+
+    private RedbackRuntimeConfiguration redbackRuntimeConfiguration;
 
     public ApplicationRuntimeInfo()
     {
@@ -147,6 +151,16 @@ public class ApplicationRuntimeInfo
         this.timestampStr = timestampStr;
     }
 
+    public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
+    {
+        return redbackRuntimeConfiguration;
+    }
+
+    public void setRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    {
+        this.redbackRuntimeConfiguration = redbackRuntimeConfiguration;
+    }
+
     @Override
     public String toString()
     {
@@ -161,6 +175,7 @@ public class ApplicationRuntimeInfo
         sb.append( ", logMissingI18n=" ).append( logMissingI18n );
         sb.append( ", baseUrl='" ).append( baseUrl ).append( '\'' );
         sb.append( ", timestampStr='" ).append( timestampStr ).append( '\'' );
+        sb.append( ", redbackRuntimeConfiguration=" ).append( redbackRuntimeConfiguration );
         sb.append( '}' );
         return sb.toString();
     }

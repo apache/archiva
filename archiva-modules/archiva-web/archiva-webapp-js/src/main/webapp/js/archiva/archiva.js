@@ -96,25 +96,30 @@ $.ajax({
                     "archiva.search": "archiva/search",
                     "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
                     "archiva.docs": "archiva/docs",
-                    "archiva.main": "archiva/main"
+                    "archiva.main": "archiva/main",
+                    "archiva.knockout.properties": "archiva/knockout-properties"
                 }
             });
 
-                requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main'], function () {
+                requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main','archiva.general-admin'], function () {
                   loadi18n(function () {
                     $.ajax({
                       url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
                       dataType: 'json',
                       success:function(data){
-                          window.archivaDevMode=data.devMode;
-                          window.archivaJavascriptLog=data.javascriptLog;
-                          window.archivaRuntimeInfo=data;
+                        window.archivaDevMode=data.devMode;
+                        window.archivaJavascriptLog=data.javascriptLog;
+                        window.archivaRuntimeInfo=data;
 
-                          require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
-                              startArchivaApplication();
-                              $("#loadingDiv").hide();
-                              drawQuickSearchAutocomplete();
-                          })
+                        window.redbackRuntimeConfiguration=mapRedbackRuntimeConfiguration(data.redbackRuntimeConfiguration);
+
+                        $.log("security.rememberme.enabled key value:"+ window.redbackRuntimeConfiguration.findPropertyValue('security.rememberme.enabled'));
+
+                        require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
+                            startArchivaApplication();
+                            $("#loadingDiv").hide();
+                            drawQuickSearchAutocomplete();
+                        })
                       }
                     })
                   });
