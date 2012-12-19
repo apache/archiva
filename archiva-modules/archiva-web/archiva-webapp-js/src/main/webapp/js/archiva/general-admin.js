@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
-  "knockout.sortable","jquery.validate","bootstrap","archiva.knockout.properties"]
+  "knockout.sortable","jquery.validate","bootstrap"]
     , function(jquery,i18n,utils,jqueryTmpl,ko) {
 
   //-------------------------
