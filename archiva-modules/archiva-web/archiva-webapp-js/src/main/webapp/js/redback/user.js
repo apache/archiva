@@ -368,12 +368,14 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
     var rememberMe=window.redbackRuntimeConfiguration.findPropertyValue('security.rememberme.enabled');
     $.log("rememberMe:"+rememberMe);
-    if (rememberMe!='true'){
+    if (rememberMe=='false'){
       $("#user-login-form-rememberme-label" ).hide();
       $("#user-login-form-rememberme" ).attr("disabled","true");
       if($("#user-login-form-rememberme" ).get(0 ).checked){
         $("#user-login-form-rememberme" ).get(0 ).checked=false;
       }
+      $("#user-login-form-username" ).val("");
+      $("#user-login-form-password" ).val("");
     }
 
     var userLoginForm = $("#user-login-form");
