@@ -421,11 +421,11 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
         changePasswordBox(true,false,user);
         return;
       }
-      // not really needed as an exception is returned but "ceintures et bretelles" as we said in French :-)
+      // not really needed as an exception is returned but "ceintures et bretelles" as we say in French :-)
       if (user.locked()==true){
         $.log("user locked");
         displayErrorMessage($.i18n.prop("account.locked"));
-        return
+        return;
       }
 
       // FIXME check validated
@@ -435,6 +435,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       }
       $.log("user.rememberme:"+(user.rememberme));
       reccordLoginCookie(user);
+      window.user=user;
       $("#login-link").hide();
       $("#logout-link").show();
       $("#register-link").hide();
@@ -582,11 +583,9 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
     }
     $("#modal-login-ok").button("loading");
 
-    //#modal-login-footer
     $('#modal-login-footer').append(smallSpinnerImg());
 
     var rememberme=($("#user-login-form-rememberme" ).attr('checked')=='checked');
-    $.log("rememberme:"+rememberme);
     window.redbackModel.rememberme=rememberme;
     window.redbackModel.password=$("#user-login-form-password").val();
 

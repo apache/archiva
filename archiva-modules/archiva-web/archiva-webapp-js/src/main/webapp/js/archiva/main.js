@@ -28,7 +28,20 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
    * @param user see user.js
    */
   reccordLoginCookie=function(user) {
-    $.cookie('archiva_login', ko.toJSON(user),{ expires: 7, path: '/' });
+    var path = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.timeout");
+    path = path ? path : "/";
+
+    var domain = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.domain");
+    var secure = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.secure");
+
+    $.cookie('archiva_login', ko.toJSON(user),
+             {
+               expires: Number(window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.timeout")),
+               path: path,
+               domain: domain,
+               secure: secure
+             }
+    );
   };
 
   getUserFromLoginCookie=function(){
