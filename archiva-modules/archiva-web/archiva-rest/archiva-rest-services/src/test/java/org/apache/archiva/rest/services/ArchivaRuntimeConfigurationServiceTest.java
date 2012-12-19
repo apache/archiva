@@ -38,7 +38,7 @@ public class ArchivaRuntimeConfigurationServiceTest
         throws Exception
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            getArchivaRuntimeConfigurationService().getRedbackRuntimeConfigurationAdmin();
+            getArchivaRuntimeConfigurationService().getRedbackRuntimeConfiguration();
         assertEquals( "jdo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
     }
 
@@ -47,14 +47,14 @@ public class ArchivaRuntimeConfigurationServiceTest
         throws Exception
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            getArchivaRuntimeConfigurationService().getRedbackRuntimeConfigurationAdmin();
+            getArchivaRuntimeConfigurationService().getRedbackRuntimeConfiguration();
         assertEquals( "jdo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
         redbackRuntimeConfiguration.setUserManagerImpls( Arrays.asList( "foo" ) );
 
         getArchivaRuntimeConfigurationService().updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
 
-        redbackRuntimeConfiguration = getArchivaRuntimeConfigurationService().getRedbackRuntimeConfigurationAdmin();
+        redbackRuntimeConfiguration = getArchivaRuntimeConfigurationService().getRedbackRuntimeConfiguration();
         assertEquals( "foo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
     }

@@ -72,7 +72,7 @@ public class DefaultRuntimeInfoService
         applicationRuntimeInfo.setTimestampStr( sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) ) );
 
         applicationRuntimeInfo.setRedbackRuntimeConfiguration(
-            archivaRuntimeConfigurationService.getRedbackRuntimeConfigurationAdmin() );
+            archivaRuntimeConfigurationService.getRedbackRuntimeConfiguration() );
 
         return applicationRuntimeInfo;
     }

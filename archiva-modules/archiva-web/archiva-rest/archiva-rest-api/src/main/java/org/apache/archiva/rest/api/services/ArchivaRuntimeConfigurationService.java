@@ -44,7 +44,7 @@ public interface ArchivaRuntimeConfigurationService
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    RedbackRuntimeConfiguration getRedbackRuntimeConfigurationAdmin()
+    RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws ArchivaRestServiceException;
 
     @Path("redbackRuntimeConfiguration")
