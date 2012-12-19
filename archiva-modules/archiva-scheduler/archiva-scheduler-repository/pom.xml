@@ -147,7 +147,8 @@
               org.apache.archiva.redback.components.scheduler,
               org.quartz*;version="[2,3)",
               org.springframework*;version="[3,4)",
-              org.slf4j;resolution:=optional
+              org.slf4j;resolution:=optional,
+              org.apache.commons.lang.time
             </Import-Package>
           </instructions>
         </configuration>
