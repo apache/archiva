@@ -309,6 +309,7 @@ public class DefaultRepositoryArchivaTaskScheduler
                                          MetadataRepository metadataRepository )
         throws MetadataRepositoryException
     {
+
         return repositoryStatisticsManager.getLastStatistics( metadataRepository, repoConfig.getId() ) != null;
     }
 

@@ -59,6 +59,12 @@ public class DefaultRepositoryStatisticsManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        return metadataRepository.hasMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID );
+    }
+
     public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {

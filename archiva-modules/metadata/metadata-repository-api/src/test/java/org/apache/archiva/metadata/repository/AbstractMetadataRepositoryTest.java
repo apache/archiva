@@ -40,8 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,9 +51,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
-@RunWith (ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -704,6 +707,52 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     @Test
+    public void hasMetadataFacetStart()
+        throws Exception
+    {
+        assertFalse( repository.hasMetadataFacet( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() ) );
+
+    }
+
+    @Test
+    public void hasMetadataFacet()
+        throws Exception
+    {
+
+        assertFalse( repository.hasMetadataFacet( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() ) );
+
+        Calendar cal = Calendar.getInstance();
+
+        repository.addMetadataFacet( TEST_REPO_ID, new KindOfRepositoryStatistics( "first", cal.getTime() ) );
+
+        assertTrue( repository.hasMetadataFacet( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() ) );
+
+        cal.add( Calendar.MINUTE, 2 );
+
+        repository.addMetadataFacet( TEST_REPO_ID, new KindOfRepositoryStatistics( "second", cal.getTime() ) );
+
+        cal.add( Calendar.MINUTE, 2 );
+
+        repository.addMetadataFacet( TEST_REPO_ID, new KindOfRepositoryStatistics( "third", cal.getTime() ) );
+
+        List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() );
+
+        Assertions.assertThat( facets ).isNotNull().isNotEmpty().hasSize( 3 );
+
+        assertTrue( repository.hasMetadataFacet( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() ) );
+
+        repository.removeMetadataFacets( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() );
+
+        assertFalse( repository.hasMetadataFacet( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() ) );
+
+        facets = repository.getMetadataFacets( TEST_REPO_ID, KindOfRepositoryStatistics.class.getName() );
+
+        Assertions.assertThat( facets ).isNotNull().isEmpty();
+
+    }
+
+
+    @Test
     public void testGetArtifacts()
         throws Exception
     {
@@ -1231,6 +1280,7 @@ public abstract class AbstractMetadataRepositoryTest
         Assertions.assertThat( artifactMetadatas ).isNotNull().isEmpty();
     }
 
+
     private static ProjectMetadata createProject()
     {
         return createProject( TEST_NAMESPACE );
@@ -1271,6 +1321,51 @@ public abstract class AbstractMetadataRepositoryTest
         public final int compare( ArtifactMetadata a, ArtifactMetadata b )
         {
             return a.getProject().compareTo( b.getProject() );
+        }
+    }
+
+    private static class KindOfRepositoryStatistics
+        implements MetadataFacet
+    {
+        private String value;
+
+        private Date date;
+
+        static final String SCAN_TIMESTAMP_FORMAT = "yyyy/MM/dd/HHmmss.SSS";
+
+        private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
+
+        private KindOfRepositoryStatistics( String value, Date date )
+        {
+            this.value = value;
+            this.date = date;
+        }
+
+        public String getName()
+        {
+            return createNameFormat().format( date );
+        }
+
+        private static SimpleDateFormat createNameFormat()
+        {
+            SimpleDateFormat fmt = new SimpleDateFormat( SCAN_TIMESTAMP_FORMAT );
+            fmt.setTimeZone( UTC_TIME_ZONE );
+            return fmt;
+        }
+
+        public String getFacetId()
+        {
+            return KindOfRepositoryStatistics.class.getName();
+        }
+
+        public Map<String, String> toProperties()
+        {
+            return Collections.emptyMap();
+        }
+
+        public void fromProperties( Map<String, String> properties )
+        {
+            // no op
         }
     }
 

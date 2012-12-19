@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
@@ -48,7 +49,7 @@ public class JcrMetadataRepositoryTest
         super.setUp();
 
         File directory = new File( "target/test-repositories" );
-        if (directory.exists())
+        if ( directory.exists() )
         {
             FileUtils.deleteDirectory( directory );
         }
@@ -86,4 +87,6 @@ public class JcrMetadataRepositoryTest
 
         super.tearDown();
     }
+
+
 }

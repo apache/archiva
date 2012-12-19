@@ -400,6 +400,26 @@ public class JcrMetadataRepository
 
     }
 
+
+    public boolean hasMetadataFacet( String repositoryId, String facetId )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+            Node node = getJcrSession().getRootNode().getNode( getFacetPath( repositoryId, facetId ) );
+            return JcrUtils.getChildNodes( node ).iterator().hasNext();
+        }
+        catch ( PathNotFoundException e )
+        {
+            // ignored - the facet doesn't exist, so return false
+            return false;
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
     public List<String> getMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {

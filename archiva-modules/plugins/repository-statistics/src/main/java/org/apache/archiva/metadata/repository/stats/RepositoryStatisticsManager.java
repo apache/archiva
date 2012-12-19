@@ -30,6 +30,9 @@ public interface RepositoryStatisticsManager
     RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException;
 
+    boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
+        throws MetadataRepositoryException;
+
     void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
                                  Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException;
