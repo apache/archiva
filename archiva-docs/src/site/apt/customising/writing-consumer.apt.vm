@@ -4,7 +4,7 @@
  Maria Odea Ching
  Olivier Lamy
  ------
- 2011-09-16
+ 2012-12-20
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one
@@ -33,10 +33,6 @@ Writing a Consumer Plugin
  Prior to release 1.4, plexus components are not anymore supported, you must use Spring components.
 
 * Writing manually
-
-+----+
-http://svn.apache.org/repos/asf/archiva/sandbox/archiva-consumer-plugin
-+----+
 
  Below are the steps on how to create a custom repository consumer and plug it in Archiva:
 
