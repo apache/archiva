@@ -149,6 +149,17 @@
     <property name="resource" value="archiva-mime-types.txt"/>
   </bean>
   -->
+  <!-- for change configuration of the users cache -->
+  <bean name="cache#users" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+        init-method="initialize">
+    <property name="diskPersistent" value="false"/>
+    <property name="eternal" value="false"/>
+    <property name="maxElementsInMemory" value="1000"/>
+    <property name="memoryEvictionPolicy" value="LRU"/>
+    <property name="name" value="usersCache"/>
+    <property name="timeToIdleSeconds" value="1800"/>
+    <property name="timeToLiveSeconds" value="14400"/>
+  </bean>
 
   <!-- override jcr repository location -->
   <!-- START SNIPPET: jcr-location -->
