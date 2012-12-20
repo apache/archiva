@@ -19,7 +19,7 @@ package org.apache.archiva.web.security;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
@@ -48,7 +48,7 @@ public class ArchivaConfigurableUsersManager
 {
 
     @Inject
-    private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
+    private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
     private ApplicationContext applicationContext;
@@ -67,7 +67,7 @@ public class ArchivaConfigurableUsersManager
         try
         {
             List<String> userManagerImpls =
-                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls();
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
             log.info( "use userManagerImpls: '{}'", userManagerImpls );
 
             userManagerPerId = new LinkedHashMap<String, UserManager>( userManagerImpls.size() );
@@ -90,7 +90,7 @@ public class ArchivaConfigurableUsersManager
     {
         try
         {
-            return archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().isUseUsersCache();
+            return redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().isUseUsersCache();
         }
         catch ( RepositoryAdminException e )
         {

@@ -21,7 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
-import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
@@ -58,7 +58,7 @@ public class DefaultArchivaRuntimeConfigurationService
     implements ArchivaRuntimeConfigurationService
 {
     @Inject
-    private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
+    private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
     @Named(value = "userManager#configurable")
@@ -76,7 +76,7 @@ public class DefaultArchivaRuntimeConfigurationService
     {
         try
         {
-            return archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration();
+            return redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
         }
         catch ( RepositoryAdminException e )
         {
@@ -91,13 +91,13 @@ public class DefaultArchivaRuntimeConfigurationService
         {
             // has user manager impl changed ?
             boolean userManagerChanged = redbackRuntimeConfiguration.getUserManagerImpls().size()
-                != archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls().size();
+                != redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls().size();
 
             userManagerChanged =
                 userManagerChanged || ( redbackRuntimeConfiguration.getUserManagerImpls().toString().hashCode()
-                    != archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls().toString().hashCode() );
+                    != redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls().toString().hashCode() );
 
-            archivaRuntimeConfigurationAdmin.updateArchivaRuntimeConfiguration( redbackRuntimeConfiguration );
+            redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
 
             if ( userManagerChanged )
             {

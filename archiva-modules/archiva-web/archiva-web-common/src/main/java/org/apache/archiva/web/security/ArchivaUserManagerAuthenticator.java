@@ -19,7 +19,7 @@ package org.apache.archiva.web.security;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
@@ -28,7 +28,6 @@ import org.apache.archiva.redback.authentication.AuthenticationFailureCause;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
-import org.apache.archiva.redback.authentication.users.UserManagerAuthenticator;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.policy.PasswordEncoder;
@@ -44,11 +43,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -68,7 +64,7 @@ public class ArchivaUserManagerAuthenticator
     private ApplicationContext applicationContext;
 
     @Inject
-    private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
+    private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     private List<UserManager> userManagers;
 
@@ -80,7 +76,7 @@ public class ArchivaUserManagerAuthenticator
         try
         {
             List<String> userManagerImpls =
-                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls();
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
             userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
 

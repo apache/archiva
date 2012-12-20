@@ -19,7 +19,7 @@ package org.apache.archiva.web.security;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
@@ -64,7 +64,7 @@ public class ArchivaLockedAdminEnvironmentCheck
     private ApplicationContext applicationContext;
 
     @Inject
-    private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
+    private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     private List<UserManager> userManagers;
 
@@ -73,7 +73,7 @@ public class ArchivaLockedAdminEnvironmentCheck
         throws RepositoryAdminException
     {
         List<String> userManagerImpls =
-            archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getUserManagerImpls();
+            redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
         userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
 

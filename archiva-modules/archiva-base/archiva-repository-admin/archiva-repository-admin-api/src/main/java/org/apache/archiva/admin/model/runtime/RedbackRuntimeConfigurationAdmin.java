@@ -25,12 +25,12 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-public interface ArchivaRuntimeConfigurationAdmin
+public interface RedbackRuntimeConfigurationAdmin
 {
-    RedbackRuntimeConfiguration getArchivaRuntimeConfiguration()
+    RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws RepositoryAdminException;
 
-    void updateArchivaRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException;
 
 }

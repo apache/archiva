@@ -22,7 +22,7 @@ import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
-import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
@@ -45,8 +45,8 @@ import java.util.List;
  * @since 1.4-M4
  */
 @Service( "userConfiguration#archiva" )
-public class DefaultArchivaRuntimeConfigurationAdmin
-    implements ArchivaRuntimeConfigurationAdmin, UserConfiguration
+public class DefaultRedbackRuntimeConfigurationAdmin
+    implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
@@ -64,7 +64,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         try
         {
-            RedbackRuntimeConfiguration redbackRuntimeConfiguration = getArchivaRuntimeConfiguration();
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration = getRedbackRuntimeConfiguration();
             // migrate or not data from redback
             if ( !redbackRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
             {
@@ -101,7 +101,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
                 redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
-                updateArchivaRuntimeConfiguration( redbackRuntimeConfiguration );
+                updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
 
             }
 
@@ -111,7 +111,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 log.info(
                     "redbackRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
                 redbackRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
-                updateArchivaRuntimeConfiguration( redbackRuntimeConfiguration );
+                updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
             }
 
         }
@@ -121,12 +121,12 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
     }
 
-    public RedbackRuntimeConfiguration getArchivaRuntimeConfiguration()
+    public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
     {
         return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
-    public void updateArchivaRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    public void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException
     {
         org.apache.archiva.configuration.RedbackRuntimeConfiguration
@@ -188,10 +188,10 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         if ( UserConfigurationKeys.USER_MANAGER_IMPL.equals( key ) )
         {
             // possible false for others than archiva user manager
-            return getArchivaRuntimeConfiguration().getUserManagerImpls().get( 0 );
+            return getRedbackRuntimeConfiguration().getUserManagerImpls().get( 0 );
         }
 
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -207,7 +207,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -222,22 +222,22 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_HOSTNAME.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getHostName();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getHostName();
         }
         if ( UserConfigurationKeys.LDAP_CONTEX_FACTORY.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getContextFactory();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getContextFactory();
         }
         if ( UserConfigurationKeys.LDAP_PASSWORD.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getPassword();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getPassword();
         }
         if ( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getAuthenticationMethod();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getAuthenticationMethod();
         }
 
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -254,7 +254,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         conf.getConfigurationProperties().put( key, value );
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -267,7 +267,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     public int getInt( String key )
     {
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -279,7 +279,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         conf.getConfigurationProperties().put( key, Integer.toString( value ) );
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -294,10 +294,10 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_PORT.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getPort();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getPort();
         }
 
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -309,7 +309,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         conf.getConfigurationProperties().put( key, Integer.toString( value ) );
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -322,7 +322,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     public boolean getBoolean( String key )
     {
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -334,7 +334,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         conf.getConfigurationProperties().put( key, Boolean.toString( value ) );
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -349,10 +349,10 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().isSsl();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().isSsl();
         }
 
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -364,7 +364,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         conf.getConfigurationProperties().put( key, Boolean.toString( value ) );
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -379,12 +379,12 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         List<String> value = userConfiguration.getList( key );
 
-        RedbackRuntimeConfiguration conf = getArchivaRuntimeConfiguration();
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
         // TODO concat values
         conf.getConfigurationProperties().put( key, "" );
         try
         {
-            updateArchivaRuntimeConfiguration( conf );
+            updateRedbackRuntimeConfiguration( conf );
         }
         catch ( RepositoryAdminException e )
         {
@@ -399,11 +399,11 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     {
         if ( UserConfigurationKeys.LDAP_BASEDN.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getBaseDn();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getBaseDn();
         }
         if ( UserConfigurationKeys.LDAP_BINDDN.equals( key ) )
         {
-            return getArchivaRuntimeConfiguration().getLdapConfiguration().getBindDn();
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getBindDn();
         }
         return userConfiguration.getConcatenatedList( key, defaultValue );
     }

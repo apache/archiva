@@ -20,7 +20,7 @@ package org.apache.archiva.web.runtime.ldap;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
-import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class ArchivaLdapConnectionFactory
 {
 
     @Inject
-    private ArchivaRuntimeConfigurationAdmin archivaRuntimeConfigurationAdmin;
+    private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     private LdapConnectionConfiguration ldapConnectionConfiguration;
 
@@ -51,7 +51,7 @@ public class ArchivaLdapConnectionFactory
         try
         {
             LdapConfiguration ldapConfiguration =
-                archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().getLdapConfiguration();
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getLdapConfiguration();
             ldapConnectionConfiguration = new LdapConnectionConfiguration();
             ldapConnectionConfiguration.setHostname( ldapConfiguration.getHostName() );
             ldapConnectionConfiguration.setPort( ldapConfiguration.getPort() );
