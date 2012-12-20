@@ -400,8 +400,6 @@ public class DefaultRepositoriesService
 
             String filename = artifactPath.substring( lastIndex + 1 );
 
-            // FIXME some dupe with uploadaction
-
             boolean fixChecksums =
                 !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
@@ -470,8 +468,6 @@ public class DefaultRepositoriesService
         }
         return true;
     }
-
-    //FIXME some duplicate with UploadAction 
 
     private void queueRepositoryTask( String repositoryId, File localFile )
     {

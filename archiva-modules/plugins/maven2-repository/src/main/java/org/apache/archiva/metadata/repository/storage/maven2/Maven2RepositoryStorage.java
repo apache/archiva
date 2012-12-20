@@ -96,7 +96,6 @@ import java.util.Map;
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
  * deal with rather than being instantiated per-repository.
  * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
- * TODO: finish Maven 1 implementation to prove this API
  * <p/>
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.

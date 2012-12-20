@@ -1022,7 +1022,6 @@ public class DefaultBrowseService
 
         if ( CollectionUtils.isEmpty( selectedRepos ) )
         {
-            // FIXME 403 ???
             return Collections.emptyList();
         }
 

@@ -188,7 +188,10 @@ public class DefaultSystemStatusService
     private List<ConsumerScanningStatistics> mapConsumerScanningStatistics( RepositoryScannerInstance instance )
     {
         DecimalFormat decimalFormat = new DecimalFormat( "###.##" );
-        // FIXME take care of NPE here !!!
+        if ( instance.getConsumerCounts() == null )
+        {
+            return Collections.emptyList();
+        }
         List<ConsumerScanningStatistics> ret =
             new ArrayList<ConsumerScanningStatistics>( instance.getConsumerCounts().size() );
         for ( Map.Entry<String, Long> entry : instance.getConsumerCounts().entrySet() )

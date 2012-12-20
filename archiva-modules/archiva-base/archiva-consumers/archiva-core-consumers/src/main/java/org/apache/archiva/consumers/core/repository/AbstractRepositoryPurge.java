@@ -81,7 +81,6 @@ public abstract class AbstractRepositoryPurge
             {
                 File artifactFile = repository.toFile( reference );
 
-                // FIXME: looks incomplete, might not delete related metadata?
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId(), reference.getGroupId(),

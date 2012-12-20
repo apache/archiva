@@ -114,7 +114,7 @@ public class DefaultProxyConnectorAdmin
 
     }
 
-    // FIXME take of proxyConnectorRules !
+    // FIXME take care of proxyConnectorRules !
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -134,7 +134,7 @@ public class DefaultProxyConnectorAdmin
         return Boolean.TRUE;
     }
 
-    // FIXME take of proxyConnectorRules !
+    // FIXME care take of proxyConnectorRules !
     public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
