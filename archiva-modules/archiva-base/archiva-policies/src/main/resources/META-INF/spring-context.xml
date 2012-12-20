@@ -33,12 +33,7 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.policies"/>
 
-  <bean id="urlFailureCache"
-        class="org.apache.archiva.policies.urlcache.DefaultUrlFailureCache" lazy-init="true">
-    <!-- collaborators and configuration for this bean go here -->
-    <constructor-arg ref="url-failures-cache"
-                     type="org.apache.archiva.redback.components.cache.Cache"/>
-  </bean>
+
 
   <bean id="url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache" lazy-init="true"
         destroy-method="dispose">

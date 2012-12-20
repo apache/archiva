@@ -20,22 +20,21 @@ package org.apache.archiva.policies.urlcache;
  */
 
 import org.apache.archiva.redback.components.cache.Cache;
+import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.Date;
 
 /**
- * DefaultUrlFailureCache 
- *
- *
+ * DefaultUrlFailureCache
  */
+@Service( "urlFailureCache" )
 public class DefaultUrlFailureCache
     implements UrlFailureCache
 {
-    /**
-     * @todo spring cache instead
-     */
     private Cache urlCache;
 
+    @Inject
     public DefaultUrlFailureCache( Cache urlCache )
     {
         this.urlCache = urlCache;
