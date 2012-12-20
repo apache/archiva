@@ -37,7 +37,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Path("/archivaRuntimeConfigurationService/")
+@Path("/redbackRuntimeConfigurationService/")
 public interface RedbackRuntimeConfigurationService
 {
     @Path("redbackRuntimeConfiguration")

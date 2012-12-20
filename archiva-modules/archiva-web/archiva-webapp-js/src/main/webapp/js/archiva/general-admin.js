@@ -1313,7 +1313,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       $.log("checkChangedLdapConfiguration");
-      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/checkLdapConnection",
+      $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/checkLdapConnection",
              {
                type: "GET",
                success: function(data) {
@@ -1339,7 +1339,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       $.log("checkChangedLdapConfiguration");
-      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/checkLdapConnection",
+      $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/checkLdapConnection",
              {
                type: "POST",
                contentType: 'application/json',
@@ -1409,7 +1409,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         self.redbackRuntimeConfiguration().userManagerImpls.push(beanId);
       }
       $.log("rememberme enabled:"+self.redbackRuntimeConfiguration().findPropertyValue("security.rememberme.enabled"));
-      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/redbackRuntimeConfiguration",
+      $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackRuntimeConfiguration",
         {
           type: "PUT",
           contentType: 'application/json',
@@ -1460,12 +1460,12 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
 
-    $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/userManagerImplementationInformation", {
+    $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/userManagerImplementationInformation", {
       type: "GET",
       dataType: 'json',
       success: function(data) {
       var userManagerImplementationInformations=mapUserManagerImplementationInformations(data);
-      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/redbackRuntimeConfiguration", {
+      $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackRuntimeConfiguration", {
         type: "GET",
         dataType: 'json',
         success: function(data) {
