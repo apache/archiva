@@ -143,30 +143,12 @@
 
   <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory"/>
   <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory#configurable"/>
-    
-    <!-- <component>
-      <role>org.apache.archiva.webdav.util.MimeTypes</role>
-      <implementation>org.apache.archiva.webdav.util.MimeTypes</implementation>
-      <description>MimeTypes</description>
-      <configuration>
-        <resource>archiva-mime-types.txt</resource>
-      </configuration>
-    </component> -->
 
-    <!--
-     
-    If caching is desired to improve performance then make uncomment this and make sure the following configuration parameter is in the security.properties
-     
-    user.manager.impl=cached
-    -->
-     
-    <!--
-    <bean name="userManager#cached" class="org.apache.archiva.redback.users.cached.CachedUserManager">
-      <property name="userImpl" ref="userMapper#ldap"/>
-      <property name="usersCache" ref="cache#users"/>
-    </bean>     
-    -->
-
+  <!--
+  <bean name="mimeTpes" class="org.apache.archiva.webdav.util.MimeTypes">
+    <property name="resource" value="archiva-mime-types.txt"/>
+  </bean>
+  -->
 
   <!-- override jcr repository location -->
   <!-- START SNIPPET: jcr-location -->
