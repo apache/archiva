@@ -1151,7 +1151,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
 
-  RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries){
+  RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries
+                                      ,useUsersCache){
+    $.log("new RedbackRuntimeConfiguration");
     var self=this;
     this.modified=ko.observable(false);
     this.modified.subscribe(function(newValue){$.log("RedbackRuntimeConfiguration modified")});
@@ -1164,11 +1166,15 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.migratedFromRedbackConfiguration=ko.observable(migratedFromRedbackConfiguration);
 
+    $.log("new RedbackRuntimeConfiguration before configurationPropertiesEntries mapping:");
+
     this.configurationPropertiesEntries=ko.observableArray(configurationPropertiesEntries?configurationPropertiesEntries:[]);
     this.configurationPropertiesEntries.subscribe(function(newValue){
       self.modified(true);
       $.log("configurationPropertiesEntries modified")
     });
+
+    $.log("new RedbackRuntimeConfiguration before configurationPropertiesEntries mapping done");
 
     this.findPropertyValue=function(key){
       for(var i=0;i<self.configurationPropertiesEntries().length;i++){
@@ -1179,12 +1185,20 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         }
       }
     }
+
+    this.useUsersCache=ko.observable(useUsersCache);
+    this.useUsersCache.subscribe(function(newValue){self.modified(true)});
   }
 
   mapRedbackRuntimeConfiguration=function(data){
-    var redbackRuntimeConfiguration =
-            new RedbackRuntimeConfiguration(data.userManagerImpls,mapLdapConfiguration(data.ldapConfiguration),data.migratedFromRedbackConfiguration);
+    $.log("mapRedbackRuntimeConfiguration");
+    var ldapConfiguration=mapLdapConfiguration(data.ldapConfiguration);
+    $.log("mapLdapConfiguration done for ");
 
+    var redbackRuntimeConfiguration =
+            new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[],data.useUsersCache);
+
+    $.log("mapRedbackRuntimeConfiguration done");
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
       return new Entry(item.key, item.value,function(newValue){
         redbackRuntimeConfiguration.modified(true);
@@ -1242,6 +1256,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   mapLdapConfiguration=function(data){
+    $.log("mapLdapConfiguration");
       if(data){
         var extraPropertiesEntries = data.extraPropertiesEntries == null ? []: $.each(data.extraPropertiesEntries,function(item){
             return new Entry(item.key, item.value);
@@ -1249,6 +1264,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         if (!$.isArray(extraPropertiesEntries)){
             extraPropertiesEntries=[];
         }
+        $.log("mapLdapConfiguration done");
         return new LdapConfiguration(data.hostName,data.port,data.ssl,data.baseDn,data.contextFactory,data.bindDn,data.password,
                                     data.authenticationMethod,extraPropertiesEntries);
       }

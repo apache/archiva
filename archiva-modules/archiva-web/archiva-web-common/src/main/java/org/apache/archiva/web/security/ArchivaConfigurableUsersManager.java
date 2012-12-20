@@ -20,6 +20,7 @@ package org.apache.archiva.web.security;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
@@ -31,6 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,6 +56,10 @@ public class ArchivaConfigurableUsersManager
     private Map<String, UserManager> userManagerPerId;
 
     private List<UserManagerListener> listeners = new ArrayList<UserManagerListener>();
+
+    @Inject
+    @Named( value = "cache#users" )
+    private Cache usersCache;
 
     @Override
     public void initialize()
@@ -80,11 +86,31 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
+    protected boolean useUsersCache()
+    {
+        try
+        {
+            return archivaRuntimeConfigurationAdmin.getArchivaRuntimeConfiguration().isUseUsersCache();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.warn( "skip fail to get RedbackRuntimeConfiguration: {}, use false", e.getMessage(), e );
+            return false;
+        }
+    }
+
     @Override
     public User addUser( User user )
         throws UserManagerException
     {
-        return userManagerPerId.get( user.getUserManagerId() ).addUser( user );
+        user = userManagerPerId.get( user.getUserManagerId() ).addUser( user );
+
+        if ( useUsersCache() )
+        {
+            usersCache.put( user.getUsername(), user );
+        }
+
+        return user;
     }
 
     @Override
@@ -92,6 +118,11 @@ public class ArchivaConfigurableUsersManager
         throws UserManagerException
     {
         userManagerPerId.get( user.getUserManagerId() ).addUserUnchecked( user );
+
+        if ( useUsersCache() )
+        {
+            usersCache.put( user.getUsername(), user );
+        }
     }
 
     protected UserManager findFirstWritable()
@@ -116,7 +147,12 @@ public class ArchivaConfigurableUsersManager
             log.warn( "cannot find writable user manager implementation, skip user creation" );
             return null;
         }
-        return userManager.createUser( username, fullName, emailAddress );
+        User user = userManager.createUser( username, fullName, emailAddress );
+        if ( useUsersCache() )
+        {
+            usersCache.put( user.getUsername(), user );
+        }
+        return user;
     }
 
     @Override
@@ -137,6 +173,10 @@ public class ArchivaConfigurableUsersManager
             return;
         }
         userManager.deleteUser( username );
+        if ( useUsersCache() )
+        {
+            usersCache.remove( username );
+        }
     }
 
     @Override
@@ -152,7 +192,17 @@ public class ArchivaConfigurableUsersManager
     public User findUser( String username )
         throws UserManagerException
     {
+
         User user = null;
+        if ( useUsersCache() )
+        {
+            user = (User) usersCache.get( username );
+            if ( user != null )
+            {
+                return user;
+            }
+
+        }
         UserManagerException lastException = null;
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -161,6 +211,10 @@ public class ArchivaConfigurableUsersManager
                 user = userManager.findUser( username );
                 if ( user != null )
                 {
+                    if ( useUsersCache() )
+                    {
+                        usersCache.put( username, user );
+                    }
                     return user;
                 }
             }
@@ -191,6 +245,14 @@ public class ArchivaConfigurableUsersManager
         throws UserNotFoundException, UserManagerException
     {
         User user = null;
+        if ( useUsersCache() )
+        {
+            user = (User) usersCache.get( GUEST_USERNAME );
+            if ( user != null )
+            {
+                return user;
+            }
+        }
         UserNotFoundException lastException = null;
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -334,14 +396,28 @@ public class ArchivaConfigurableUsersManager
     public User updateUser( User user )
         throws UserNotFoundException, UserManagerException
     {
-        return userManagerPerId.get( user.getUserManagerId() ).updateUser( user );
+        user = userManagerPerId.get( user.getUserManagerId() ).updateUser( user );
+
+        if ( useUsersCache() )
+        {
+            usersCache.put( user.getUsername(), user );
+        }
+
+        return user;
     }
 
     @Override
     public User updateUser( User user, boolean passwordChangeRequired )
         throws UserNotFoundException, UserManagerException
     {
-        return userManagerPerId.get( user.getUserManagerId() ).updateUser( user, passwordChangeRequired );
+        user = userManagerPerId.get( user.getUserManagerId() ).updateUser( user, passwordChangeRequired );
+
+        if ( useUsersCache() )
+        {
+            usersCache.put( user.getUsername(), user );
+        }
+
+        return user;
     }
 
     @Override

@@ -53,6 +53,12 @@ public class RedbackRuntimeConfiguration
      */
     private List<PropertyEntry> configurationPropertiesEntries;
 
+    /**
+     * flag to know if redback will use a cache to prevent
+     * searching users already found.
+     */
+    private boolean useUsersCache = false;
+
     public RedbackRuntimeConfiguration()
     {
         // no op
@@ -125,15 +131,28 @@ public class RedbackRuntimeConfiguration
         }
     }
 
+    public boolean isUseUsersCache()
+    {
+        return useUsersCache;
+    }
+
+    public void setUseUsersCache( boolean useUsersCache )
+    {
+        this.useUsersCache = useUsersCache;
+    }
+
     @Override
     public String toString()
     {
-        return "RedbackRuntimeConfiguration{" +
-            "userManagerImpls=" + userManagerImpls +
-            ", ldapConfiguration=" + ldapConfiguration +
-            ", migratedFromRedbackConfiguration=" + migratedFromRedbackConfiguration +
-            ", configurationProperties=" + configurationProperties +
-            ", configurationPropertiesEntries=" + configurationPropertiesEntries +
-            '}';
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "RedbackRuntimeConfiguration" );
+        sb.append( "{userManagerImpls=" ).append( userManagerImpls );
+        sb.append( ", ldapConfiguration=" ).append( ldapConfiguration );
+        sb.append( ", migratedFromRedbackConfiguration=" ).append( migratedFromRedbackConfiguration );
+        sb.append( ", configurationProperties=" ).append( configurationProperties );
+        sb.append( ", configurationPropertiesEntries=" ).append( configurationPropertiesEntries );
+        sb.append( ", useUsersCache=" ).append( useUsersCache );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

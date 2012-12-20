@@ -1486,6 +1486,13 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
+        <field>
+          <name>useUsersCache</name>
+          <description>flag to know if redback will use a cache to prevent searching users already found.</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
     </class>
 
