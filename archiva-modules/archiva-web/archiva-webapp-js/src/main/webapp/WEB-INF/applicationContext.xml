@@ -157,7 +157,7 @@
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
     <property name="name" value="usersCache"/>
-    <property name="timeToIdleSeconds" value="1800"/>
+    <property name="timeToIdleSeconds" value="14400"/>
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
