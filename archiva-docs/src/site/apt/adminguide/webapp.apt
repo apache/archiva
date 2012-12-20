@@ -3,7 +3,7 @@
  ------
  Olivier Lamy
  ------
- 2011-09-29
+ 2012-12-20
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -140,19 +140,20 @@ Aug 17, 2009 11:04:04 AM org.apache.coyote.http11.Http11BaseProtocol start
 +-----------+
 
   One of the common causes for this <<<listenerStart Error>>> is a failure during Spring's initialization. One way to diagnose or confirm the
-  exact cause of the error is by adding the following configuration to the unpacked Archiva webapp's <<<WEB-INF/classes/log4j.xml>>>:
+  exact cause of the error is by adding the following configuration to the unpacked Archiva webapp's <<<WEB-INF/classes/log4j2.xml>>>:
 
 +-----------+
-<appender name="console" class="org.apache.log4j.ConsoleAppender">
-  <layout class="org.apache.log4j.PatternLayout">
-    <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n"/>
-  </layout>
-</appender>
+    <appenders>
 
-<logger name="org.springframework.web">
-  <level value="debug"/>
-  <appender-ref ref="console"/>
-</logger>
+      <Console name="console" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      </Console>
+
+    </appenders>
+
+    <logger name="org.springframework.web" level="debug">
+      <appender-ref ref="console"/>
+    </logger>
 +-----------+
 
    The above configuration directs Spring's output logs to the Tomcat console and be recorded in Tomcat's log files. 
