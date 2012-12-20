@@ -29,7 +29,7 @@ Apache Archiva Redback Runtime Configuration
 
   Since 1.4-M4, you can choose to switch User Manager Implementations you are using dynamically.
 
-[../images/user-manager-impl.png]
+[../images/redback-runtime-conf-general.png]
 
 * LDAP configuration
 
