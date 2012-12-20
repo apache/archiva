@@ -1491,7 +1491,7 @@
           <description>flag to know if redback will use a cache to prevent searching users already found.</description>
           <version>1.4.0+</version>
           <type>boolean</type>
-          <defaultValue>false</defaultValue>
+          <defaultValue>true</defaultValue>
         </field>
       </fields>
     </class>
