@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
@@ -38,7 +39,6 @@ import org.apache.jackrabbit.webdav.WebdavRequestImpl;
 import org.apache.jackrabbit.webdav.WebdavResponse;
 import org.apache.jackrabbit.webdav.WebdavResponseImpl;
 import org.apache.jackrabbit.webdav.server.AbstractWebdavServlet;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -170,6 +170,9 @@ public class RepositoryServlet
     public synchronized void initServers( ServletConfig servletConfig )
         throws RepositoryAdminException
     {
+
+        long start = System.currentTimeMillis();
+
         WebApplicationContext wac =
             WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
 
@@ -203,7 +206,9 @@ public class RepositoryServlet
 
         sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
 
-        log.info( "initServers done" );
+        long end = System.currentTimeMillis();
+
+        log.info( "initServers done in {} ms", (end - start) );
     }
 
     public void configurationEvent( ConfigurationEvent event )
