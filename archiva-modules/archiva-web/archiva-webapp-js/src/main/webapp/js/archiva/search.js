@@ -1008,6 +1008,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
                   mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" )
                                                                      .tmpl({repositories:data,selected:repositoryId,feedsUrl:feedsUrl}));
                 }else{
+                  feedsUrl+="/feeds";
                   mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" )
                                                                      .tmpl({repositories:data,selected:"",feedsUrl:null}));
                 }

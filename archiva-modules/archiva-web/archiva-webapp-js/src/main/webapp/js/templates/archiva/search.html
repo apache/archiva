@@ -51,32 +51,33 @@
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
       {{if browseResultEntry.project}}
-      {{if deleteKarma}}
-      <li class="browse-list-project">
-        <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
-             data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"/>
-        <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-      </li>
+        {{if deleteKarma}}
+          <li class="browse-list-project">
+            <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
+                 data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"/>
+            <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+            <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"/></a>
+          </li>
+        {{else}}
+          <li class="browse-list-project">
+            <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+            <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"/></a>
+          </li>
+        {{/if}}
       {{else}}
-      <li class="browse-list-project">
-        <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-        <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"></img></a>
-      </li>
-      {{/if}}
-      {{else}}
-      {{if deleteKarma}}
-      <li class="browse-list">
-        <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
-             data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
-        <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#"
-           title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-      </li>
-      {{else}}
-      <li class="browse-list">
-        <a href="#" title="folder ${displayEntry(browseResultEntry.name)}"
-           data-bind="click:function(){displayGroupId(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
-      </li>
-      {{/if}}
+        {{if deleteKarma}}
+          <li class="browse-list">
+            <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
+                 data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+            <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#"
+               title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+          </li>
+        {{else}}
+          <li class="browse-list">
+            <a href="#" title="folder ${displayEntry(browseResultEntry.name)}"
+               data-bind="click:function(){displayGroupId(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
+          </li>
+        {{/if}}
       {{/if}}
 
       {{/each}}
