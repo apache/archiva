@@ -23,6 +23,7 @@ import org.apache.archiva.redback.components.cache.Cache;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Date;
 
 /**
@@ -35,7 +36,7 @@ public class DefaultUrlFailureCache
     private Cache urlCache;
 
     @Inject
-    public DefaultUrlFailureCache( Cache urlCache )
+    public DefaultUrlFailureCache( @Named( "url-failures-cache" ) Cache urlCache )
     {
         this.urlCache = urlCache;
     }
