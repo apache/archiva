@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
-import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
+import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -223,11 +223,11 @@ public abstract class AbstractArchivaRestTest
         return service;
     }
 
-    protected ArchivaRuntimeConfigurationService getArchivaRuntimeConfigurationService()
+    protected RedbackRuntimeConfigurationService getArchivaRuntimeConfigurationService()
     {
-        ArchivaRuntimeConfigurationService service = JAXRSClientFactory.create(
+        RedbackRuntimeConfigurationService service = JAXRSClientFactory.create(
             getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-            ArchivaRuntimeConfigurationService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+            RedbackRuntimeConfigurationService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );

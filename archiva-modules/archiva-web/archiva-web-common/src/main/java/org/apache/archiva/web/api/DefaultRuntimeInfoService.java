@@ -19,7 +19,7 @@ package org.apache.archiva.web.api;
  */
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
+import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
 import org.apache.archiva.web.runtime.ArchivaRuntimeInfo;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +47,7 @@ public class DefaultRuntimeInfoService
     private ArchivaRuntimeInfo archivaRuntimeInfo;
 
     @Inject
-    private ArchivaRuntimeConfigurationService archivaRuntimeConfigurationService;
+    private RedbackRuntimeConfigurationService redbackRuntimeConfigurationService;
 
     @Context
     protected HttpServletRequest httpServletRequest;
@@ -72,7 +72,7 @@ public class DefaultRuntimeInfoService
         applicationRuntimeInfo.setTimestampStr( sfd.format( new Date( archivaRuntimeInfo.getTimestamp() ) ) );
 
         applicationRuntimeInfo.setRedbackRuntimeConfiguration(
-            archivaRuntimeConfigurationService.getRedbackRuntimeConfiguration() );
+            redbackRuntimeConfigurationService.getRedbackRuntimeConfiguration() );
 
         return applicationRuntimeInfo;
     }

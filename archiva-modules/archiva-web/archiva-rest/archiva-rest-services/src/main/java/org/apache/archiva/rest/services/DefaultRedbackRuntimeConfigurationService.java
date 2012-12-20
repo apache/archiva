@@ -33,7 +33,7 @@ import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
+import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -53,9 +53,9 @@ import java.util.Properties;
  * @since 1.4-M4
  */
 @Service("archivaRuntimeConfigurationService#rest")
-public class DefaultArchivaRuntimeConfigurationService
+public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
-    implements ArchivaRuntimeConfigurationService
+    implements RedbackRuntimeConfigurationService
 {
     @Inject
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;

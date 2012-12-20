@@ -38,7 +38,7 @@ import java.util.List;
  * @since 1.4-M4
  */
 @Path("/archivaRuntimeConfigurationService/")
-public interface ArchivaRuntimeConfigurationService
+public interface RedbackRuntimeConfigurationService
 {
     @Path("redbackRuntimeConfiguration")
     @GET

@@ -20,7 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
-import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
+import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
 import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public class ArchivaRuntimeConfigurationServiceTest
     public void usermanagersinformations()
         throws Exception
     {
-        ArchivaRuntimeConfigurationService service = getArchivaRuntimeConfigurationService();
+        RedbackRuntimeConfigurationService service = getArchivaRuntimeConfigurationService();
         List<UserManagerImplementationInformation> infos = service.getUserManagerImplementationInformations();
         Assertions.assertThat( infos ).isNotNull().isNotEmpty().contains(
             new UserManagerImplementationInformation( "jdo", null, false ) );
