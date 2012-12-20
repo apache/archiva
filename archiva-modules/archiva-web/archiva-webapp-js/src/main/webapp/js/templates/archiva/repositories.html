@@ -577,14 +577,23 @@
         <div class="controls">
           <input type="text" class="input-xlarge" id="userName" name="userName" size="50"
                  data-bind="value: remoteRepository.userName"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-userName-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.userName.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.userName.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="password">${$.i18n.prop('password')}</label>
-
         <div class="controls">
           <input type="password" class="input-xlarge" id="password" name="password" size="50"
                  data-bind="value: remoteRepository.password"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-password-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.password.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.password.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
       <div class="control-group">
@@ -593,6 +602,11 @@
         <div class="controls">
           <input type="text" id="timeout" class="digits" name="daysOlder" size="5"
                  data-bind="value: remoteRepository.timeout"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-timeout-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.timeout.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.timeout.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
 
@@ -610,6 +624,11 @@
         <div class="controls">
           <input type="checkbox" id="downloadRemoteIndex" name="downloadRemoteIndex" size="5"
                  data-bind="checked: remoteRepository.downloadRemoteIndex"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-downloadRemoteIndex-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.downloadRemoteIndex.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.downloadRemoteIndex.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
 
@@ -619,6 +638,11 @@
         <div class="controls">
           <input type="text" class="input-xxlarge" id="remoteIndexUrl" name="remoteIndexUrl" size="5"
                  data-bind="value: remoteRepository.remoteIndexUrl"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-remoteIndexUrl-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.remoteIndexUrl.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.remoteIndexUrl.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
       <div class="control-group">
@@ -640,6 +664,11 @@
         <div class="controls">
           <input type="text" class="input-xlarge" id="indexDirectory" name="indexDirectory" size="50"
                  data-bind="value: remoteRepository.indexDirectory"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-indexDirectory-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.indexDirectory.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.indexDirectory.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
       <div class="control-group">
@@ -648,6 +677,11 @@
         <div class="controls">
           <input type="text" id="remoteDownloadTimeout" class="digits" name="remoteDownloadTimeout" size="5"
                  data-bind="value: remoteRepository.remoteDownloadTimeout"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-remoteDownloadTimeout-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.remoteDownloadTimeout.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.remoteDownloadTimeout.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
 
@@ -658,6 +692,11 @@
         <div class="controls">
           <select id="remoteDownloadNetworkProxyId"
                   data-bind="options: networkProxies, optionsText: 'id',optionsValue:'id', value: remoteRepository.remoteDownloadNetworkProxyId, optionsCaption: 'Choose...'"></select>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-remoteDownloadNetworkProxyId-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.remoteDownloadNetworkProxyId.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.remoteDownloadNetworkProxyId.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
 
@@ -668,22 +707,37 @@
         <div class="controls">
           <input type="checkbox" id="downloadRemoteIndexOnStartup" name="downloadRemoteIndexOnStartup"
                  data-bind="checked: remoteRepository.downloadRemoteIndexOnStartup"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-remoteDownloadNetworkProxyId-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.remoteDownloadNetworkProxyId.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.remoteDownloadNetworkProxyId.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
 
       <div class="control-group">
-        <label class="control-label" for="daysOlder">${$.i18n.prop('description')}</label>
+        <label class="control-label" for="description">${$.i18n.prop('description')}</label>
 
         <div class="controls">
           <textarea rows="3" id="description" name="description"
                     data-bind="value: remoteRepository.description"></textarea>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-description-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.description.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.description.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
         </div>
       </div>
 
       <div class="row-fluid">
         <div class="control-group span6">
-          <h4>${$.i18n.prop('remoteRepository.extraParametersEntries')}</h4>
-
+          <h4>${$.i18n.prop('remoteRepository.extraParametersEntries')}
+          </h4>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-extraParametersEntries-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.extraParametersEntries.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.extraParametersEntries.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
           <div id="extra-parameters-error"></div>
           <table class="table">
             <thead>
@@ -707,8 +761,13 @@
 
       <div class="row-fluid">
         <div class="control-group span6">
-          <h4>${$.i18n.prop('remoteRepository.extraHeadersEntries')}</h4>
-
+          <h4>${$.i18n.prop('remoteRepository.extraHeadersEntries')}
+          </h4>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-extraHeadersEntries-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.extraHeadersEntries.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.extraHeadersEntries.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
           <div id="extra-headers-error"></div>
           <table class="table">
             <thead>
