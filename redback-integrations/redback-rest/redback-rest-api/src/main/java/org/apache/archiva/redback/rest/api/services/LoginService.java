@@ -71,14 +71,14 @@ public interface LoginService
         throws RedbackServiceException;
 
     /**
-     * simply check if current user has an http session opened with authz passed
+     * simply check if current user has an http session opened with authz passed and return user data
      * @since 1.4
      */
     @Path( "isLogged" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    Boolean isLogged()
+    User isLogged()
         throws RedbackServiceException;
 
     /**

@@ -61,7 +61,7 @@ import java.util.TimeZone;
  * @author Olivier Lamy
  * @since 1.3
  */
-@Service("loginService#rest")
+@Service( "loginService#rest" )
 public class DefaultLoginService
     implements LoginService
 {
@@ -77,7 +77,7 @@ public class DefaultLoginService
 
     @Inject
     public DefaultLoginService( SecuritySystem securitySystem,
-                                @Named("httpAuthenticator#basic") HttpAuthenticator httpAuthenticator )
+                                @Named( "httpAuthenticator#basic" ) HttpAuthenticator httpAuthenticator )
     {
         this.securitySystem = securitySystem;
         this.httpAuthenticator = httpAuthenticator;
@@ -199,12 +199,13 @@ public class DefaultLoginService
 
     }
 
-    public Boolean isLogged()
+    public User isLogged()
         throws RedbackServiceException
     {
-        Boolean isLogged = httpAuthenticator.getSecuritySession( httpServletRequest.getSession( true ) ) != null;
+        SecuritySession securitySession = httpAuthenticator.getSecuritySession( httpServletRequest.getSession( true ) );
+        Boolean isLogged = securitySession != null;
         log.debug( "isLogged {}", isLogged );
-        return isLogged;
+        return isLogged ? buildRestUser( securitySession.getUser() ) : null;
     }
 
     public Boolean logout()
