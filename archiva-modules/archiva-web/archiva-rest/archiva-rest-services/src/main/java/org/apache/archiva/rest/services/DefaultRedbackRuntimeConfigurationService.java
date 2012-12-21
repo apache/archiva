@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InvalidNameException;
@@ -75,6 +76,16 @@ public class DefaultRedbackRuntimeConfigurationService
     @Inject
     @Named( value = "cache#users" )
     private Cache usersCache;
+
+    @PostConstruct
+    public void initialize()
+        throws RepositoryAdminException
+    {
+        RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+            redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
+        usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToIdleSeconds() );
+        usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToLiveSeconds() );
+    }
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws ArchivaRestServiceException
