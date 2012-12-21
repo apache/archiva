@@ -82,7 +82,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
     this.userManagerId=userManagerId;
 
-    this.rememberme=false;
+    this.rememberme=ko.observable(false);
 
     this.logged=false;
 
@@ -356,10 +356,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
     var user=getUserFromLoginCookie();
     if(user){
-      $.log("found user in cookie rememberme:"+(user.rememberme));
-      if(user.rememberme){
-        $("#user-login-form-username" ).val(user.username);
-        $("#user-login-form-password" ).val(user.password);
+      $.log("found user in cookie rememberme:"+(user.rememberme()));
+      if(user.rememberme()){
+        $("#user-login-form-username" ).val(user.username());
+        $("#user-login-form-password" ).val(user.password());
         $("#user-login-form-rememberme" ).attr("checked","true");
       }
     } else {
@@ -429,11 +429,11 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       }
 
       // FIXME check validated
-      user.rememberme=window.redbackModel.rememberme;
-      if(user.rememberme){
+      user.rememberme(window.redbackModel.rememberme);
+      if(user.rememberme()){
         user.password(window.redbackModel.password);
       }
-      $.log("user.rememberme:"+(user.rememberme));
+      $.log("user.rememberme:"+(user.rememberme()));
       reccordLoginCookie(user);
       window.user=user;
       $("#login-link").hide();

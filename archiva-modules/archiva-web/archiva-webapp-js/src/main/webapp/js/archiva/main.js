@@ -28,34 +28,56 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
    * @param user see user.js
    */
   reccordLoginCookie=function(user) {
-    var path = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.timeout");
+
+    var path = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.path");
     path = path ? path : "/";
 
     var domain = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.domain");
     var secure = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.secure");
 
-    $.cookie('archiva_login', ko.toJSON(user),
-             {
-               expires: Number(window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.timeout")),
-               path: path,
-               domain: domain,
-               secure: secure
-             }
-    );
+    var expires= Number(window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.timeout"));
+
+    var userJson=ko.toJSON(user);
+
+    $.log("reccordLoginCookie:expires:"+expires+",path:"+path+",domain:"+domain+",secure:"+secure+",user:"+userJson);
+
+    var options = null;
+    if (secure == 'true'){
+      options = {
+        expires: expires,
+        path: path,
+        domain: domain,
+        secure: secure
+      }
+    }else {
+      options = {
+        expires: expires,
+        path: path,
+        domain: domain
+      }
+    }
+
+    $.cookie('archiva_login', userJson,options);
   };
 
   getUserFromLoginCookie=function(){
     var cookieContent=$.cookie('archiva_login');
     $.log("archiva_login cookie content:"+cookieContent);
-    return $.parseJSON(cookieContent);
+    var user = $.parseJSON(cookieContent);
+    if(!user){
+      return null;
+    }
+    var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
+                    user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
+                    user.passwordChangeRequired,null,user.readOnly,user.userManagerId)
+
+    kUser.rememberme(user.rememberme);
+    return kUser;
   };
 
-  deleteLoginCookie=function(){
-    $.cookie('archiva_login', null,{ expires: 7, path: '/' });
-  };
+
 
   logout=function(doScreenChange){
-    //deleteLoginCookie();
     var user = getUserFromLoginCookie();
     if(user){
       user.logged=false;
@@ -719,7 +741,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   };
 
   userLoggedCallbackFn=function(user){
-    $.log("userLoggedCallbackFn:"+ (user?user.username:null));
+    $.log("userLoggedCallbackFn:"+ (user?user.username():null));
     var loginLink=$("#login-link");
     var registerLink=$("#register-link");
     var changePasswordLink=$("#change-password-link");
