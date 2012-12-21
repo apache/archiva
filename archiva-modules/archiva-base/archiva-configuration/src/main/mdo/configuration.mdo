@@ -1493,6 +1493,20 @@
           <type>boolean</type>
           <defaultValue>true</defaultValue>
         </field>
+        <field>
+          <name>useUsersCacheTimeToIdleSeconds</name>
+          <description>TimeToIdleSeconds for users cache</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>14400</defaultValue>
+        </field>
+        <field>
+          <name>useUsersCacheTimeToLiveSeconds</name>
+          <description>TimeToLiveSeconds for users cache</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>14400</defaultValue>
+        </field>
       </fields>
     </class>
 

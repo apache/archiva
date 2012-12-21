@@ -59,6 +59,16 @@ public class RedbackRuntimeConfiguration
      */
     private boolean useUsersCache = false;
 
+    /**
+     * TimeToIdleSeconds for users cache.
+     */
+    private int useUsersCacheTimeToIdleSeconds = 14400;
+
+    /**
+     * TimeToLiveSeconds for users cache.
+     */
+    private int useUsersCacheTimeToLiveSeconds = 14400;
+
     public RedbackRuntimeConfiguration()
     {
         // no op
@@ -141,6 +151,26 @@ public class RedbackRuntimeConfiguration
         this.useUsersCache = useUsersCache;
     }
 
+    public int getUseUsersCacheTimeToIdleSeconds()
+    {
+        return useUsersCacheTimeToIdleSeconds;
+    }
+
+    public void setUseUsersCacheTimeToIdleSeconds( int useUsersCacheTimeToIdleSeconds )
+    {
+        this.useUsersCacheTimeToIdleSeconds = useUsersCacheTimeToIdleSeconds;
+    }
+
+    public int getUseUsersCacheTimeToLiveSeconds()
+    {
+        return useUsersCacheTimeToLiveSeconds;
+    }
+
+    public void setUseUsersCacheTimeToLiveSeconds( int useUsersCacheTimeToLiveSeconds )
+    {
+        this.useUsersCacheTimeToLiveSeconds = useUsersCacheTimeToLiveSeconds;
+    }
+
     @Override
     public String toString()
     {
@@ -152,6 +182,8 @@ public class RedbackRuntimeConfiguration
         sb.append( ", configurationProperties=" ).append( configurationProperties );
         sb.append( ", configurationPropertiesEntries=" ).append( configurationPropertiesEntries );
         sb.append( ", useUsersCache=" ).append( useUsersCache );
+        sb.append( ", useUsersCacheTimeToIdleSeconds=" ).append( useUsersCacheTimeToIdleSeconds );
+        sb.append( ", useUsersCacheTimeToLiveSeconds=" ).append( useUsersCacheTimeToLiveSeconds );
         sb.append( '}' );
         return sb.toString();
     }
