@@ -401,7 +401,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
 
     disableKnowContentConsumer=function(adminRepositoryConsumer){
+      $.log("disableKnowContentConsumer");
       clearUserMessages();
+      var userMessages=$("#user-messages" )
+      userMessages.html(mediumSpinnerImg());
       var url="restServices/archivaServices/archivaAdministrationService/disabledKnownContentConsumer/"
       url+=encodeURIComponent(adminRepositoryConsumer.id());
       $.ajax(url, {
@@ -410,12 +413,15 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           success: function(data){
             adminRepositoryConsumer.enabled(false);
             displaySuccessMessage( $.i18n.prop("repository-scanning.consumers.know.disabled",adminRepositoryConsumer.id()));
+            removeMediumSpinnerImg(userMessages);
           }
       });
     }
 
     enableKnowContentConsumer=function(adminRepositoryConsumer){
       clearUserMessages();
+      var userMessages=$("#user-messages" )
+      userMessages.html(mediumSpinnerImg());
       var url="restServices/archivaServices/archivaAdministrationService/enabledKnownContentConsumer/"
       url+=encodeURIComponent(adminRepositoryConsumer.id());
       $.ajax(url, {
@@ -424,6 +430,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           success: function(data){
             adminRepositoryConsumer.enabled(true);
             displaySuccessMessage( $.i18n.prop("repository-scanning.consumers.know.enabled",adminRepositoryConsumer.id()));
+            removeMediumSpinnerImg(userMessages);
           }
       });
     }

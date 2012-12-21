@@ -224,13 +224,13 @@
       <tr>
         {{if knownAdminRepositoryConsumer.enabled()==true}}
           <td>
-            <a href="#" data-bind="click: function(){ disableKnowContentConsumer(knownAdminRepositoryConsumer) }">
+            <a class="cursor-hand" data-bind="click: function(){ disableKnowContentConsumer(knownAdminRepositoryConsumer) }">
               <img src="images/weather-clear-22-22.png"/>
             </a>
           </td>
           {{else}}
           <td>
-            <a href="#" data-bind="click: function(){ enableKnowContentConsumer(knownAdminRepositoryConsumer) }">
+            <a class="cursor-hand" data-bind="click: function(){ enableKnowContentConsumer(knownAdminRepositoryConsumer) }">
               <img src="images/dialog-error-22-22.png"/>
             </a>
           </td>
