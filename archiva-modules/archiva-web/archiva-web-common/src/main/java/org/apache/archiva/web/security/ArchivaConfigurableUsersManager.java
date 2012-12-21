@@ -42,7 +42,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "userManager#archiva" )
+@Service("userManager#archiva")
 public class ArchivaConfigurableUsersManager
     extends ConfigurableUserManager
 {
@@ -58,7 +58,7 @@ public class ArchivaConfigurableUsersManager
     private List<UserManagerListener> listeners = new ArrayList<UserManagerListener>();
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
     @Override
@@ -244,42 +244,7 @@ public class ArchivaConfigurableUsersManager
     public User getGuestUser()
         throws UserNotFoundException, UserManagerException
     {
-        User user = null;
-        if ( useUsersCache() )
-        {
-            user = (User) usersCache.get( GUEST_USERNAME );
-            if ( user != null )
-            {
-                return user;
-            }
-        }
-        UserNotFoundException lastException = null;
-        for ( UserManager userManager : userManagerPerId.values() )
-        {
-            try
-            {
-                user = userManager.getGuestUser();
-                if ( user != null )
-                {
-                    if ( useUsersCache() )
-                    {
-                        usersCache.put( user.getUsername(), user );
-                    }
-                    return user;
-                }
-            }
-            catch ( UserNotFoundException e )
-            {
-                lastException = e;
-            }
-        }
-
-        if ( user == null && lastException != null )
-        {
-            throw lastException;
-        }
-
-        return user;
+        return findUser( GUEST_USERNAME );
     }
 
     @Override
