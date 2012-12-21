@@ -62,12 +62,12 @@ public class RedbackRuntimeConfiguration
     /**
      * TimeToIdleSeconds for users cache.
      */
-    private int useUsersCacheTimeToIdleSeconds = 14400;
+    private int usersCacheTimeToIdleSeconds = 14400;
 
     /**
      * TimeToLiveSeconds for users cache.
      */
-    private int useUsersCacheTimeToLiveSeconds = 14400;
+    private int usersCacheTimeToLiveSeconds = 14400;
 
     public RedbackRuntimeConfiguration()
     {
@@ -151,24 +151,24 @@ public class RedbackRuntimeConfiguration
         this.useUsersCache = useUsersCache;
     }
 
-    public int getUseUsersCacheTimeToIdleSeconds()
+    public int getUsersCacheTimeToIdleSeconds()
     {
-        return useUsersCacheTimeToIdleSeconds;
+        return usersCacheTimeToIdleSeconds;
     }
 
-    public void setUseUsersCacheTimeToIdleSeconds( int useUsersCacheTimeToIdleSeconds )
+    public void setUsersCacheTimeToIdleSeconds( int usersCacheTimeToIdleSeconds )
     {
-        this.useUsersCacheTimeToIdleSeconds = useUsersCacheTimeToIdleSeconds;
+        this.usersCacheTimeToIdleSeconds = usersCacheTimeToIdleSeconds;
     }
 
-    public int getUseUsersCacheTimeToLiveSeconds()
+    public int getUsersCacheTimeToLiveSeconds()
     {
-        return useUsersCacheTimeToLiveSeconds;
+        return usersCacheTimeToLiveSeconds;
     }
 
-    public void setUseUsersCacheTimeToLiveSeconds( int useUsersCacheTimeToLiveSeconds )
+    public void setUsersCacheTimeToLiveSeconds( int usersCacheTimeToLiveSeconds )
     {
-        this.useUsersCacheTimeToLiveSeconds = useUsersCacheTimeToLiveSeconds;
+        this.usersCacheTimeToLiveSeconds = usersCacheTimeToLiveSeconds;
     }
 
     @Override
@@ -182,8 +182,8 @@ public class RedbackRuntimeConfiguration
         sb.append( ", configurationProperties=" ).append( configurationProperties );
         sb.append( ", configurationPropertiesEntries=" ).append( configurationPropertiesEntries );
         sb.append( ", useUsersCache=" ).append( useUsersCache );
-        sb.append( ", useUsersCacheTimeToIdleSeconds=" ).append( useUsersCacheTimeToIdleSeconds );
-        sb.append( ", useUsersCacheTimeToLiveSeconds=" ).append( useUsersCacheTimeToLiveSeconds );
+        sb.append( ", usersCacheTimeToIdleSeconds=" ).append( usersCacheTimeToIdleSeconds );
+        sb.append( ", usersCacheTimeToLiveSeconds=" ).append( usersCacheTimeToLiveSeconds );
         sb.append( '}' );
         return sb.toString();
     }

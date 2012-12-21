@@ -1152,7 +1152,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
 
   RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries
-                                      ,useUsersCache,useUsersCacheTimeToIdleSeconds,useUsersCacheTimeToLiveSeconds){
+                                      ,useUsersCache,usersCacheTimeToIdleSeconds,usersCacheTimeToLiveSeconds){
     $.log("new RedbackRuntimeConfiguration");
     var self=this;
     this.modified=ko.observable(false);
@@ -1189,11 +1189,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.useUsersCache=ko.observable(useUsersCache);
     this.useUsersCache.subscribe(function(newValue){self.modified(true)});
 
-    this.useUsersCacheTimeToIdleSeconds=ko.observable(useUsersCacheTimeToIdleSeconds);
-    this.useUsersCacheTimeToIdleSeconds.subscribe(function(newValue){self.modified(true)});
+    this.usersCacheTimeToIdleSeconds=ko.observable(usersCacheTimeToIdleSeconds);
+    this.usersCacheTimeToIdleSeconds.subscribe(function(newValue){self.modified(true)});
 
-    this.useUsersCacheTimeToLiveSeconds=ko.observable(useUsersCacheTimeToLiveSeconds);
-    this.useUsersCacheTimeToLiveSeconds.subscribe(function(newValue){self.modified(true)});
+    this.usersCacheTimeToLiveSeconds=ko.observable(usersCacheTimeToLiveSeconds);
+    this.usersCacheTimeToLiveSeconds.subscribe(function(newValue){self.modified(true)});
 
   }
 
@@ -1204,7 +1204,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     var redbackRuntimeConfiguration =
             new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[]
-                    ,data.useUsersCache,data.useUsersCacheTimeToIdleSeconds,data.useUsersCacheTimeToLiveSeconds);
+                    ,data.useUsersCache,data.usersCacheTimeToIdleSeconds,data.usersCacheTimeToLiveSeconds);
 
     $.log("mapRedbackRuntimeConfiguration done");
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){

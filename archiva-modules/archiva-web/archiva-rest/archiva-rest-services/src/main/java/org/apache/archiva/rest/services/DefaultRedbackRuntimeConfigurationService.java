@@ -83,8 +83,8 @@ public class DefaultRedbackRuntimeConfigurationService
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
-        usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToIdleSeconds() );
-        usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToLiveSeconds() );
+        usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToIdleSeconds() );
+        usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToLiveSeconds() );
     }
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
@@ -148,8 +148,8 @@ public class DefaultRedbackRuntimeConfigurationService
             }
 
             // users cache
-            usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToIdleSeconds() );
-            usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToLiveSeconds() );
+            usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToIdleSeconds() );
+            usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToLiveSeconds() );
 
             return Boolean.TRUE;
         }
