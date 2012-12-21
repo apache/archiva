@@ -43,12 +43,16 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
     $.ajax("restServices/redbackServices/loginService/isLogged", {
       type: "GET",
       success: function(data) {
-        userLogged = data;
-        $.log("userLogged:"+userLogged);
-        if (successFn){
-          successFn(userLogged ? getUserFromLoginCookie():null);
+        var user = data ? mapUser(data):null;
+        window.user=user;
+        if(user){
+          reccordLoginCookie(user);
         }
-        if(!userLogged){
+        $.log("userLogged:"+(user!=null));
+        if (successFn){
+          successFn(user ? user:null);
+        }
+        if(!user){
           if(notLoggedFn){
             notLoggedFn();
           }
