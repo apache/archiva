@@ -205,7 +205,7 @@ public class DefaultLoginService
         SecuritySession securitySession = httpAuthenticator.getSecuritySession( httpServletRequest.getSession( true ) );
         Boolean isLogged = securitySession != null;
         log.debug( "isLogged {}", isLogged );
-        return isLogged ? buildRestUser( securitySession.getUser() ) : null;
+        return isLogged && securitySession.getUser() != null ? buildRestUser( securitySession.getUser() ) : null;
     }
 
     public Boolean logout()
