@@ -899,25 +899,12 @@
     <li class="active" id="redback-runtime-general-li"><a href="#redback-runtime-general-content" data-toggle="tab">${$.i18n.prop('redback.runtime.general.title')}</a></li>
     <li id="redback-runtime-ldap-li"><a href="#redback-runtime-ldap-content" data-toggle="tab">${$.i18n.prop('redback.runtime.ldap.title')}</a></li>
     <li id="redback-runtime-properties-li"><a href="#redback-runtime-properties-content" data-toggle="tab">${$.i18n.prop('redback.runtime.properties.title')}</a></li>
+    <li id="redback-runtime-users-cache-li"><a href="#redback-runtime-users-cache-content" data-toggle="tab">${$.i18n.prop('redback.runtime.users.cache.title')}</a></li>
   </ul>
 
   <div class="tab-content">
     <div class="tab-pane active" id="redback-runtime-general-content">
       <div class="well">
-        <div class="row-fluid">
-          <form class="form-horizontal" id="redback-runtime-general-form-id">
-            <div class="control-group">
-              <label for="redback-runtime-useUsersCache" class="control-label">
-                ${$.i18n.prop('redback.runtime.useUsersCache.label')}
-              </label>
-              <div class="controls">
-                <input type="checkbox" id="redback-runtime-useUsersCache" name="redback-runtime-useUsersCache"
-                       data-bind="checked: redbackRuntimeConfiguration().useUsersCache"/>
-              </div>
-            </div>
-          </form>
-        </div>
-        <hr/>
         <div class="row-fluid">
           <div class="span4 dotted">
             <h5>${$.i18n.prop('redback.runtime.user-managers.impls.choosed')}</h5>
@@ -1034,7 +1021,43 @@
         </table>
         <div id="properties-grid-pagination"></div>
       </div>
-  </div>
+    </div>
+
+    <div class="tab-pane" id="redback-runtime-users-cache-content">
+
+      <div class="well">
+
+
+          <form class="form-horizontal" id="redback-runtime-general-form-id">
+            <div class="control-group">
+              <label for="redback-runtime-useUsersCache" class="control-label">${$.i18n.prop('redback.runtime.useUsersCache.label')}</label>
+              <div class="controls">
+                <input type="checkbox" id="redback-runtime-useUsersCache" name="redback-runtime-useUsersCache"
+                       data-bind="checked: redbackRuntimeConfiguration().useUsersCache"/>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="useUsersCacheTimeToLiveSeconds">${$.i18n.prop('redback.runtime.useUsersCacheTimeToLiveSeconds.label')}</label>
+              <div class="controls">
+                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().useUsersCacheTimeToLiveSeconds"
+                       id="useUsersCacheTimeToLiveSeconds" name="useUsersCacheTimeToLiveSeconds" />
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="useUsersCacheTimeToIdleSeconds">${$.i18n.prop('redback.runtime.useUsersCacheTimeToIdleSeconds.label')}</label>
+              <div class="controls">
+                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().useUsersCacheTimeToIdleSeconds"
+                       id="useUsersCacheTimeToIdleSeconds" name="useUsersCacheTimeToIdleSeconds" />
+              </div>
+            </div>
+
+          </form>
+
+
+      </div>
+    </div>
 
   <div>
     <button data-bind="click: saveRedbackRuntimeConfiguration,css:{ 'btn-warning': redbackRuntimeConfiguration().modified() | redbackRuntimeConfiguration().ldapConfiguration().modified()  }"

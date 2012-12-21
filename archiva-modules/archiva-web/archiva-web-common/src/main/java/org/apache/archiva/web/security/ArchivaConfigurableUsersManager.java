@@ -261,6 +261,10 @@ public class ArchivaConfigurableUsersManager
                 user = userManager.getGuestUser();
                 if ( user != null )
                 {
+                    if ( useUsersCache() )
+                    {
+                        usersCache.put( user.getUsername(), user );
+                    }
                     return user;
                 }
             }

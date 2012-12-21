@@ -28,6 +28,7 @@ import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.users.UserManager;
@@ -70,6 +71,10 @@ public class DefaultRedbackRuntimeConfigurationService
     @Inject
     @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory ldapConnectionFactory;
+
+    @Inject
+    @Named( value = "cache#users" )
+    private Cache usersCache;
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws ArchivaRestServiceException
@@ -130,6 +135,10 @@ public class DefaultRedbackRuntimeConfigurationService
             {
                 authenticator.initialize();
             }
+
+            // users cache
+            usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToIdleSeconds() );
+            usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUseUsersCacheTimeToLiveSeconds() );
 
             return Boolean.TRUE;
         }

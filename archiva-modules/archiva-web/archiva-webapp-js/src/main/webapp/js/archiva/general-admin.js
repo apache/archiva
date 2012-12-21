@@ -1152,7 +1152,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
 
   RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries
-                                      ,useUsersCache){
+                                      ,useUsersCache,useUsersCacheTimeToIdleSeconds,useUsersCacheTimeToLiveSeconds){
     $.log("new RedbackRuntimeConfiguration");
     var self=this;
     this.modified=ko.observable(false);
@@ -1188,6 +1188,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.useUsersCache=ko.observable(useUsersCache);
     this.useUsersCache.subscribe(function(newValue){self.modified(true)});
+
+    this.useUsersCacheTimeToIdleSeconds=ko.observable(useUsersCacheTimeToIdleSeconds);
+    this.useUsersCacheTimeToIdleSeconds.subscribe(function(newValue){self.modified(true)});
+
+    this.useUsersCacheTimeToLiveSeconds=ko.observable(useUsersCacheTimeToLiveSeconds);
+    this.useUsersCacheTimeToLiveSeconds.subscribe(function(newValue){self.modified(true)});
+
   }
 
   mapRedbackRuntimeConfiguration=function(data){
@@ -1196,7 +1203,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     $.log("mapLdapConfiguration done for ");
 
     var redbackRuntimeConfiguration =
-            new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[],data.useUsersCache);
+            new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[]
+                    ,data.useUsersCache,data.useUsersCacheTimeToIdleSeconds,data.useUsersCacheTimeToLiveSeconds);
 
     $.log("mapRedbackRuntimeConfiguration done");
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
