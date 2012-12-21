@@ -3,7 +3,7 @@
  ------
  Olivier Lamy
  ------
- 2012-11-24
+ 2012-12-21
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -44,3 +44,9 @@ Apache Archiva Redback Runtime Configuration
   You can now too modify some Redback configuration properties. You have a help button which explains to you what the property is doing.
 
 [../images/redback-properties.png]
+
+* Users Cache
+
+  You can enable/disable users cache and configure various ttl values
+
+[../images/redback-runtime-conf-users-cache.png]
