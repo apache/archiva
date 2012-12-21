@@ -199,9 +199,9 @@
     {{/each}}
     <td id="users-grid-user-id-${row.username()}">
       <a href="#" data-bind="click: function(){ editUserBox(row) }">
-              <span class="btn btn-primary">
-                <i class="icon-pencil icon-white"/>
-              </span>
+        <span class="btn btn-primary">
+          <i class="icon-pencil icon-white"/>
+        </span>
       </a>
     </td>
     {{if row.username()=="admin" || row.username()=="guest"}}
@@ -209,9 +209,9 @@
     {{else}}
     <td>
       <a href="#" data-bind="click: function(){ deleteUser(row) }" id="users-grid-delete-${row.username()}">
-                <span class="btn btn-danger">
-                  <i class="icon-trash icon-white"/>
-                </span>
+        <span class="btn btn-danger">
+          <i class="icon-trash icon-white"/>
+        </span>
       </a>
     </td>
     {{/if}}
@@ -491,9 +491,9 @@
     {{/each}}
     <td>
       <a id="edit-role-${row.name()}" href="#" data-bind="click: function(){ editRole(row) }">
-                  <span class="btn btn-primary">
-                    <i class="icon-pencil icon-white"/>
-                  </span>
+        <span class="btn btn-primary">
+          <i class="icon-pencil icon-white"/>
+        </span>
       </a>
     </td>
     <td>
