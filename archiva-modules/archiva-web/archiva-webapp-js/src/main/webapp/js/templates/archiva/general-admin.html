@@ -354,7 +354,7 @@
     <img src="images/small-spinner.gif"/>
   </div>
   <div class="page-header">
-    <h3>${$.i18n.prop('system-status.header.main')}&nbsp;<a href="#" onclick="refreshSystemStatus()"><img src="images/view-refresh-22-22.png"/></a></h3>
+    <h3>${$.i18n.prop('system-status.header.main')}&nbsp;<a class="cursor-hand" onclick="refreshSystemStatus()"><img src="images/view-refresh-22-22.png"/></a></h3>
   </div>
   <div class="page-header">
     <h4>${$.i18n.prop('system-status.header.queues')}</h4>
@@ -364,21 +364,21 @@
   </div>
 
   <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.scanning')}&nbsp;<a href="#" onclick="displayScanningStats()"><img src="images/view-refresh.png"/></a></h4>
+    <h4>${$.i18n.prop('system-status.header.scanning')}&nbsp;<a class="cursor-hand" onclick="displayScanningStats()"><img src="images/view-refresh.png"/></a></h4>
   </div>
   <div id="status_scanning">
     <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.caches')}&nbsp;<a href="#" onclick="displayCacheEntries()"><img src="images/view-refresh.png"/></a></h4>
+    <h4>${$.i18n.prop('system-status.header.caches')}&nbsp;<a class="cursor-hand" onclick="displayCacheEntries()"><img src="images/view-refresh.png"/></a></h4>
   </div>
   <div id="status_caches">
       <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.memory')}&nbsp;<a href="#" onclick="displayMemoryUsage()"><img src="images/view-refresh.png"/></a></h4>
+    <h4>${$.i18n.prop('system-status.header.memory')}&nbsp;<a class="cursor-hand" onclick="displayMemoryUsage()"><img src="images/view-refresh.png"/></a></h4>
   </div>
   <div id="status_memory_info">
     <img src="images/small-spinner.gif"/>
@@ -394,7 +394,7 @@
 </script>
 
 <script id="status_caches_tmpl" type="text/html">
-  <a href="#" class="btn btn-warning" onclick="flushAllCaches()">
+  <a class="btn btn-warning" onclick="flushAllCaches()">
     ${$.i18n.prop('system-status.caches.flushAll')}
   </a>
   <table class="table table-condensed">
@@ -405,7 +405,7 @@
         <th>${$.i18n.prop('system-status.caches.grid.header.cacheHits')}</th>
         <th>${$.i18n.prop('system-status.caches.grid.header.cacheMiss')}</th>
         <th>${$.i18n.prop('system-status.caches.grid.header.cacheHitRate')}</th>
-          <th>${$.i18n.prop('system-status.caches.grid.header.inMemorySize')}</th>
+        <th>${$.i18n.prop('system-status.caches.grid.header.inMemorySize')}</th>
         <th>${$.i18n.prop('system-status.caches.grid.header.flush')}</th>
       </tr>
     </thead>
@@ -419,7 +419,7 @@
         <td>${cacheEntry.cacheHitRate}</td>
         <td>${cacheEntry.inMemorySize}</td>
         <td>
-          <a href="#" onclick="flushCache('${cacheEntry.key}')">
+          <a onclick="flushCache('${cacheEntry.key}')">
             {{if  cacheEntry.size > 0 }}
               <img src="images/user-trash-full.png"/>
             {{else}}
