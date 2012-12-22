@@ -36,7 +36,7 @@ public class DefaultUrlFailureCache
     private Cache urlCache;
 
     @Inject
-    public DefaultUrlFailureCache( @Named( "url-failures-cache" ) Cache urlCache )
+    public DefaultUrlFailureCache( @Named( "cache#url-failures-cache" ) Cache urlCache )
     {
         this.urlCache = urlCache;
     }

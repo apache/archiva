@@ -329,7 +329,7 @@
     <property name="eternal" value="false"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="cache"/>
+    <property name="name" value="url-failures-cache"/>
     <property name="overflowToDisk" value="false"/>
     <property name="timeToIdleSeconds" value="2700"/>
     <property name="timeToLiveSeconds" value="1800"/>

@@ -35,7 +35,7 @@
 
 
 
-  <bean id="url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache" lazy-init="true"
+  <bean name="cache#url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache" lazy-init="true"
         destroy-method="dispose">
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="true"/>

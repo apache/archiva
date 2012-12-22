@@ -29,13 +29,13 @@
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
-  <bean name="url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache">
+  <bean name="cache#url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache">
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="cache"/>
+    <property name="name" value="url-failures-cache"/>
     <property name="overflowToDisk" value="false"/>
     <property name="timeToIdleSeconds" value="2700"/>
     <property name="timeToLiveSeconds" value="1800"/>
