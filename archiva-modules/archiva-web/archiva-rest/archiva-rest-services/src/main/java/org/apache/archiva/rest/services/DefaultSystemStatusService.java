@@ -134,6 +134,8 @@ public class DefaultSystemStatusService
                                               cacheStatistics.getInMemorySize() ) );
         }
 
+        Collections.sort( cacheEntries );
+
         return cacheEntries;
     }
 

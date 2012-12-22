@@ -25,9 +25,9 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@XmlRootElement( name = "cacheEntry" )
+@XmlRootElement(name = "cacheEntry")
 public class CacheEntry
-    implements Serializable
+    implements Serializable, Comparable
 {
     private String key;
 
@@ -108,7 +108,6 @@ public class CacheEntry
     }
 
     /**
-     *
      * @return cache size in kb
      */
     public long getInMemorySize()
@@ -119,6 +118,39 @@ public class CacheEntry
     public void setInMemorySize( long inMemorySize )
     {
         this.inMemorySize = inMemorySize;
+    }
+
+    public int compareTo( Object o )
+    {
+        return this.key.compareTo( ( (CacheEntry) o ).key );
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        CacheEntry that = (CacheEntry) o;
+
+        if ( !key.equals( that.key ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return key.hashCode();
     }
 
     @Override
