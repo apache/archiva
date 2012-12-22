@@ -1040,7 +1040,7 @@
             <div class="control-group">
               <label class="control-label" for="usersCacheTimeToLiveSeconds">${$.i18n.prop('redback.runtime.usersCacheTimeToLiveSeconds.label')}</label>
               <div class="controls">
-                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheTimeToLiveSeconds"
+                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().timeToLiveSeconds"
                        id="usersCacheTimeToLiveSeconds" name="usersCacheTimeToLiveSeconds" />
               </div>
             </div>
@@ -1048,7 +1048,7 @@
             <div class="control-group">
               <label class="control-label" for="usersCacheTimeToIdleSeconds">${$.i18n.prop('redback.runtime.usersCacheTimeToIdleSeconds.label')}</label>
               <div class="controls">
-                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheTimeToIdleSeconds"
+                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().timeToIdleSeconds"
                        id="usersCacheTimeToIdleSeconds" name="usersCacheTimeToIdleSeconds" />
               </div>
             </div>

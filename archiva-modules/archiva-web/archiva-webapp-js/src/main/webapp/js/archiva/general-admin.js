@@ -1160,7 +1160,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
 
   RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries
-                                      ,useUsersCache,usersCacheTimeToIdleSeconds,usersCacheTimeToLiveSeconds){
+                                      ,useUsersCache,cacheConfiguration){
     $.log("new RedbackRuntimeConfiguration");
     var self=this;
     this.modified=ko.observable(false);
@@ -1197,11 +1197,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.useUsersCache=ko.observable(useUsersCache);
     this.useUsersCache.subscribe(function(newValue){self.modified(true)});
 
-    this.usersCacheTimeToIdleSeconds=ko.observable(usersCacheTimeToIdleSeconds);
-    this.usersCacheTimeToIdleSeconds.subscribe(function(newValue){self.modified(true)});
+    this.usersCacheConfiguration=ko.observable(cacheConfiguration);
+    this.usersCacheConfiguration.subscribe(function(newValue){self.modified(true)});
 
-    this.usersCacheTimeToLiveSeconds=ko.observable(usersCacheTimeToLiveSeconds);
-    this.usersCacheTimeToLiveSeconds.subscribe(function(newValue){self.modified(true)});
 
   }
 
@@ -1212,7 +1210,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     var redbackRuntimeConfiguration =
             new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[]
-                    ,data.useUsersCache,data.usersCacheTimeToIdleSeconds,data.usersCacheTimeToLiveSeconds);
+                    ,data.useUsersCache,mapCacheConfiguration(data.usersCacheConfiguration));
 
     $.log("mapRedbackRuntimeConfiguration done");
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
@@ -1499,6 +1497,23 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   }
 
+  CacheConfiguration=function(timeToIdleSeconds,timeToLiveSeconds){
+    var self=this;
+    this.modified=ko.observable(false);
 
+    this.timeToIdleSeconds=ko.observable(timeToIdleSeconds);
+    this.timeToIdleSeconds.subscribe(function(newValue){self.modified(true)});
+
+    this.timeToLiveSeconds=ko.observable(timeToLiveSeconds);
+    this.timeToLiveSeconds.subscribe(function(newValue){self.modified(true)});
+
+  }
+
+  mapCacheConfiguration=function(data){
+    if(!data){
+      return new CacheConfiguration();
+    }
+    return new CacheConfiguration(data.timeToIdleSeconds,data.timeToLiveSeconds);
+  }
 
 });
