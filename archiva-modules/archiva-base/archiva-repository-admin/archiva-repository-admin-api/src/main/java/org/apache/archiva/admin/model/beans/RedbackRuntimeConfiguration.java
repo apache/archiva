@@ -59,15 +59,7 @@ public class RedbackRuntimeConfiguration
      */
     private boolean useUsersCache = false;
 
-    /**
-     * TimeToIdleSeconds for users cache.
-     */
-    private int usersCacheTimeToIdleSeconds = 14400;
-
-    /**
-     * TimeToLiveSeconds for users cache.
-     */
-    private int usersCacheTimeToLiveSeconds = 14400;
+    private CacheConfiguration usersCacheConfiguration;
 
     public RedbackRuntimeConfiguration()
     {
@@ -151,24 +143,14 @@ public class RedbackRuntimeConfiguration
         this.useUsersCache = useUsersCache;
     }
 
-    public int getUsersCacheTimeToIdleSeconds()
+    public CacheConfiguration getUsersCacheConfiguration()
     {
-        return usersCacheTimeToIdleSeconds;
+        return usersCacheConfiguration;
     }
 
-    public void setUsersCacheTimeToIdleSeconds( int usersCacheTimeToIdleSeconds )
+    public void setUsersCacheConfiguration( CacheConfiguration usersCacheConfiguration )
     {
-        this.usersCacheTimeToIdleSeconds = usersCacheTimeToIdleSeconds;
-    }
-
-    public int getUsersCacheTimeToLiveSeconds()
-    {
-        return usersCacheTimeToLiveSeconds;
-    }
-
-    public void setUsersCacheTimeToLiveSeconds( int usersCacheTimeToLiveSeconds )
-    {
-        this.usersCacheTimeToLiveSeconds = usersCacheTimeToLiveSeconds;
+        this.usersCacheConfiguration = usersCacheConfiguration;
     }
 
     @Override
@@ -182,8 +164,7 @@ public class RedbackRuntimeConfiguration
         sb.append( ", configurationProperties=" ).append( configurationProperties );
         sb.append( ", configurationPropertiesEntries=" ).append( configurationPropertiesEntries );
         sb.append( ", useUsersCache=" ).append( useUsersCache );
-        sb.append( ", usersCacheTimeToIdleSeconds=" ).append( usersCacheTimeToIdleSeconds );
-        sb.append( ", usersCacheTimeToLiveSeconds=" ).append( usersCacheTimeToLiveSeconds );
+        sb.append( ", usersCacheConfiguration=" ).append( usersCacheConfiguration );
         sb.append( '}' );
         return sb.toString();
     }

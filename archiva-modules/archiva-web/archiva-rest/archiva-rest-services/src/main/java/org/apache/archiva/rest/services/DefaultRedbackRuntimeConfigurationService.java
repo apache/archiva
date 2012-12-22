@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
@@ -54,7 +55,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("archivaRuntimeConfigurationService#rest")
+@Service( "archivaRuntimeConfigurationService#rest" )
 public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
     implements RedbackRuntimeConfigurationService
@@ -63,14 +64,14 @@ public class DefaultRedbackRuntimeConfigurationService
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named( value = "userManager#configurable" )
     private UserManager userManager;
 
     @Inject
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named(value = "ldapConnectionFactory#configurable")
+    @Named( value = "ldapConnectionFactory#configurable" )
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
@@ -83,8 +84,31 @@ public class DefaultRedbackRuntimeConfigurationService
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
-        usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToIdleSeconds() );
-        usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToLiveSeconds() );
+
+        // NPE free
+        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration() == null )
+        {
+            redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
+        }
+        // if -1 it means non initialized to take values from the spring bean
+        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToIdleSeconds() < 0 )
+        {
+            redbackRuntimeConfiguration.getUsersCacheConfiguration().setTimeToIdleSeconds(
+                usersCache.getTimeToIdleSeconds() );
+
+        }
+        usersCache.setTimeToIdleSeconds(
+            redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToIdleSeconds() );
+
+        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() < 0 )
+        {
+            redbackRuntimeConfiguration.getUsersCacheConfiguration().setTimeToLiveSeconds(
+                usersCache.getTimeToLiveSeconds() );
+
+        }
+        usersCache.setTimeToLiveSeconds(
+            redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() );
+
     }
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
@@ -148,8 +172,10 @@ public class DefaultRedbackRuntimeConfigurationService
             }
 
             // users cache
-            usersCache.setTimeToIdleSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToIdleSeconds() );
-            usersCache.setTimeToLiveSeconds( redbackRuntimeConfiguration.getUsersCacheTimeToLiveSeconds() );
+            usersCache.setTimeToIdleSeconds(
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToIdleSeconds() );
+            usersCache.setTimeToLiveSeconds(
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() );
 
             return Boolean.TRUE;
         }

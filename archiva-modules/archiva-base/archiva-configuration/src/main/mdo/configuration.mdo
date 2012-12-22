@@ -1494,18 +1494,12 @@
           <defaultValue>true</defaultValue>
         </field>
         <field>
-          <name>usersCacheTimeToIdleSeconds</name>
-          <description>TimeToIdleSeconds for users cache</description>
+          <name>usersCacheConfiguration</name>
+          <description>the users cache configuration</description>
           <version>1.4.0+</version>
-          <type>int</type>
-          <defaultValue>14400</defaultValue>
-        </field>
-        <field>
-          <name>usersCacheTimeToLiveSeconds</name>
-          <description>TimeToLiveSeconds for users cache</description>
-          <version>1.4.0+</version>
-          <type>int</type>
-          <defaultValue>14400</defaultValue>
+          <association>
+            <type>CacheConfiguration</type>
+          </association>
         </field>
       </fields>
     </class>
@@ -1580,6 +1574,29 @@
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
+        </field>
+      </fields>
+    </class>
+
+
+    <class>
+      <name>CacheConfiguration</name>
+      <version>1.4.0+</version>
+      <description>Cache configuration.</description>
+      <fields>
+        <field>
+          <name>timeToIdleSeconds</name>
+          <description>TimeToIdleSeconds</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>-1</defaultValue>
+        </field>
+        <field>
+          <name>timeToLiveSeconds</name>
+          <description>TimeToLiveSeconds</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>-1</defaultValue>
         </field>
       </fields>
     </class>
