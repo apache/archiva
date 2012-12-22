@@ -78,38 +78,6 @@ public class DefaultRedbackRuntimeConfigurationService
     @Named( value = "cache#users" )
     private Cache usersCache;
 
-    @PostConstruct
-    public void initialize()
-        throws RepositoryAdminException
-    {
-        RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
-
-        // NPE free
-        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration() == null )
-        {
-            redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
-        }
-        // if -1 it means non initialized to take values from the spring bean
-        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToIdleSeconds() < 0 )
-        {
-            redbackRuntimeConfiguration.getUsersCacheConfiguration().setTimeToIdleSeconds(
-                usersCache.getTimeToIdleSeconds() );
-
-        }
-        usersCache.setTimeToIdleSeconds(
-            redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToIdleSeconds() );
-
-        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() < 0 )
-        {
-            redbackRuntimeConfiguration.getUsersCacheConfiguration().setTimeToLiveSeconds(
-                usersCache.getTimeToLiveSeconds() );
-
-        }
-        usersCache.setTimeToLiveSeconds(
-            redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() );
-
-    }
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws ArchivaRestServiceException
