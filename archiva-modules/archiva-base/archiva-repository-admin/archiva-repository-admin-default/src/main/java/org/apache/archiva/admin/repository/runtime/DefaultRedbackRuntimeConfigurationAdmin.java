@@ -226,9 +226,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             new BeanReplicator().replicateBean( archivaRuntimeConfiguration,
                                                 org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
 
+        if ( archivaRuntimeConfiguration.getLdapConfiguration() == null )
+        {
+            archivaRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
+        }
         redbackRuntimeConfiguration.setLdapConfiguration(
             new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getLdapConfiguration(),
                                                 org.apache.archiva.configuration.LdapConfiguration.class ) );
+
+        if ( archivaRuntimeConfiguration.getUsersCacheConfiguration() == null )
+        {
+            archivaRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
+        }
 
         redbackRuntimeConfiguration.setUsersCacheConfiguration(
             new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUsersCacheConfiguration(),
