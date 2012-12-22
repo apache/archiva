@@ -79,7 +79,7 @@ public abstract class AbstractRestService
 
 
     @Inject
-    @Named (value = "repositorySessionFactory")
+    @Named(value = "repositorySessionFactory")
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
@@ -92,7 +92,7 @@ public abstract class AbstractRestService
     protected RepositoryContentFactory repositoryContentFactory;
 
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     protected DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Context
@@ -173,7 +173,9 @@ public abstract class AbstractRestService
 
         for ( Map.Entry<String, T> entry : springBeans.entrySet() )
         {
-            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
+            String key = StringUtils.contains( entry.getKey(), '#' )
+                ? StringUtils.substringAfterLast( entry.getKey(), "#" )
+                : entry.getKey();
             beans.put( key, entry.getValue() );
         }
         return beans;
