@@ -794,8 +794,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var mainContent=$("#main-content");
     mainContent.html($("#system-status-main").tmpl());
 
-    var versionInfo=$.i18n.prop('system-status.header.version.buildNumber')+": "+window.archivaRuntimeInfo.buildNumber
-        +" - "+$.i18n.prop('system-status.header.version.timestampStr')+": "+window.archivaRuntimeInfo.timestampStr;
+    var versionInfo=window.archivaRuntimeInfo.version+" - "
+            +$.i18n.prop('system-status.header.version.buildNumber')+": "+window.archivaRuntimeInfo.buildNumber
+            +" - "+$.i18n.prop('system-status.header.version.timestampStr')+": "+window.archivaRuntimeInfo.timestampStr;
     mainContent.find("#status_version_info").html(versionInfo);
 
     displayMemoryUsage();
