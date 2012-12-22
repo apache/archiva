@@ -114,6 +114,7 @@
       <item name="REST Apis"                    href="/adminguide/webservices/rest.html"/>
 
       <item name="Configuration Files"       href="/adminguide/configuration-files.html" />
+      <item name="System Status"             href="/adminguide/system-status.html" />
       <item name="Log Files"                 href="/adminguide/logging.html" collapse="true">
         <item name="Archiva Logs"            href="/adminguide/archiva-logs.html" />
         <item name="Audit Logs"              href="/adminguide/audit-logs.html" />
