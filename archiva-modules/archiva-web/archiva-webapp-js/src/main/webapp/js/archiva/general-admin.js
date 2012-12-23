@@ -1409,6 +1409,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
 
     saveRedbackRuntimeConfiguration=function(){
+      var valid = $("#main-content").find("#redback-runtime-general-form-id").valid();
+      if (valid==false) {
+        return;
+      }
       $.log("saveRedbackRuntimeConfiguration");
       var saveButton = $("#redback-runtime-configuration-save" );
       saveButton.button('loading');
@@ -1469,6 +1473,26 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     return new UserManagerImplementationInformation(data.beanId,data.descriptionKey,data.readOnly);
   }
 
+  activateRedbackRuntimeGeneralFormValidation=function(){
+    var validator = $("#main-content" ).find("#redback-runtime-general-form-id").validate({
+      rules: {
+        usersCacheTimeToLiveSeconds : {
+         digits: true,
+         min: 1,
+         required: true
+       },
+        usersCacheTimeToIdleSeconds : {
+          digits: true,
+          min: 1,
+          required: true
+        }
+      },
+      showErrors: function(validator, errorMap, errorList) {
+       customShowError("#main-content #redback-runtime-general-form-id",validator,errorMap,errorMap);
+      }
+      });
+  }
+
   displayRuntimeConfiguration=function(){
     $.log("displayRuntimeConfiguration");
     var mainContent = $("#main-content");
@@ -1489,6 +1513,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
               new RedbackRuntimeConfigurationViewModel(window.redbackRuntimeConfiguration,userManagerImplementationInformations);
           mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
           ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
+          activateRedbackRuntimeGeneralFormValidation();
         }
       });
 
