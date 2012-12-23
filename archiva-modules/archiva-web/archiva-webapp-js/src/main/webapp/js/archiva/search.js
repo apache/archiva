@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","select2","knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
-, function(jquery,i18n,jqueryTmpl,choosen,select2,ko,koSimpleGrid) {
+define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
+, function(jquery,i18n,jqueryTmpl,select2,ko,koSimpleGrid) {
 
   //-----------------------------------------
   // browse part
@@ -2089,7 +2089,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","select2","knoc
           $.log("repos:"+repos);
           searchViewModel.observableRepoIds(repos);
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
-          mainContent.find("#search-basic-repositories-select" ).select2();// .chosen();
+          mainContent.find("#search-basic-repositories-select" ).select2();
           if (successCallbackFn && $.isFunction(successCallbackFn)) successCallbackFn();
         }
     });
