@@ -80,6 +80,7 @@ $.ajax({
                     "purl": "purl-2.2.1",
                     "prettify": "prettify",
                     "sammy": "sammy.0.7.1",
+                    "select2": "select2.min-3.2",
                     "jqueryFileTree": "jqueryFileTree-1.0.1",
                     "redback": "redback/redback",
                     "redback.roles": "redback/roles",

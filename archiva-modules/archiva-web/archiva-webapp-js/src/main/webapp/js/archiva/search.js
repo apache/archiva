@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
-, function(jquery,i18n,jqueryTmpl,choosen,ko,koSimpleGrid) {
+define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","select2","knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
+, function(jquery,i18n,jqueryTmpl,choosen,select2,ko,koSimpleGrid) {
 
   //-----------------------------------------
   // browse part
@@ -762,34 +762,34 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           entriesUrl+="&c="+encodeURIComponent(classifier);
         }
         $("#main-content").find("#artifact_content_tree").fileTree({
-                                                                     script: entriesUrl,
-                                                                     root: ""
-                                                                   },function(file) {
-                                                                     $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
-                                                                     var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
-                                                                     fileContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
-                                                                     fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
-                                                                     if(type){
-                                                                       fileContentUrl+="&t="+encodeURIComponent(type);
-                                                                     }
-                                                                     if(classifier){
-                                                                       fileContentUrl+="&c="+encodeURIComponent(classifier);
-                                                                     }
-                                                                     fileContentUrl+="&p="+encodeURIComponent(file.substringBeforeLast("/"));
-                                                                     $.ajax({
-                                                                              url: fileContentUrl,
-                                                                              success: function(data) {
-                                                                                var text = data.content.replace(/</g,'&lt;');
-                                                                                text=text.replace(/>/g,"&gt;");
-                                                                                mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
-                                                                                mainContent.find("#artifact-content-text" ).html(text);
-                                                                                prettyPrint();
-                                                                                // olamy do not move to anchor to not loose nav history
-                                                                                //goToAnchor("artifact-content-text-header");
-                                                                                //window.location.href=window.location+"#artifact-content-text-header";
-                                                                              }
-                                                                            });
-                                                                   }
+           script: entriesUrl,
+           root: ""
+          },function(file) {
+           $.log("file:"+file.substringBeforeLast("/")+',classifier:'+classifier);
+           var fileContentUrl = "restServices/archivaServices/browseService/artifactContentText/"+encodeURIComponent(artifactVersionDetailViewModel.groupId);
+           fileContentUrl+="/"+encodeURIComponent(artifactVersionDetailViewModel.artifactId)+"/"+encodeURIComponent(version);
+           fileContentUrl+="?repositoryId="+encodeURIComponent(getSelectedBrowsingRepository());
+           if(type){
+             fileContentUrl+="&t="+encodeURIComponent(type);
+           }
+           if(classifier){
+             fileContentUrl+="&c="+encodeURIComponent(classifier);
+           }
+           fileContentUrl+="&p="+encodeURIComponent(file.substringBeforeLast("/"));
+           $.ajax({
+                    url: fileContentUrl,
+                    success: function(data) {
+                      var text = data.content.replace(/</g,'&lt;');
+                      text=text.replace(/>/g,"&gt;");
+                      mainContent.find("#artifact-content-text" ).html(smallSpinnerImg());
+                      mainContent.find("#artifact-content-text" ).html(text);
+                      prettyPrint();
+                      // olamy do not move to anchor to not loose nav history
+                      //goToAnchor("artifact-content-text-header");
+                      //window.location.href=window.location+"#artifact-content-text-header";
+                    }
+                  });
+          }
         );
       });
 
@@ -2089,7 +2089,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","choosen","knockout","kno
           $.log("repos:"+repos);
           searchViewModel.observableRepoIds(repos);
           ko.applyBindings(searchViewModel,mainContent.find("#search-artifacts-div").get(0));
-          mainContent.find("#search-basic-repositories-select" ).chosen();
+          mainContent.find("#search-basic-repositories-select" ).select2();// .chosen();
           if (successCallbackFn && $.isFunction(successCallbackFn)) successCallbackFn();
         }
     });
