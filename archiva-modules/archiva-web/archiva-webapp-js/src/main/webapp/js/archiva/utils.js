@@ -324,15 +324,25 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     removeValidationErrorMessages(selector);
     for ( var i = 0; errorList[i]; i++ ) {
       var error = errorList[i];
-      var field = $(selector).find("#"+error.element.id);
+      if (typeof selector == 'string') {
+        var field = $(selector).find("#"+error.element.id);
+      } else {
+        var field = selector.find("#"+error.element.id);
+      }
       field.parents( "div.control-group" ).addClass( "error" );
       field.parent().append( "<span class=\"help-inline\">" + error.message + "</span>" );
     }
   }
 
   removeValidationErrorMessages=function(selector){
-    $(selector).find("div.control-group" ).removeClass( "error" );
-    $(selector).find("span.help-inline").remove();
+    if (typeof selector == 'string') {
+      $(selector).find("div.control-group" ).removeClass( "error" );
+      $(selector).find("span.help-inline").remove();
+    } else {
+      selector.find("div.control-group" ).removeClass( "error" );
+      selector.find("span.help-inline").remove();
+    }
+
   }
 
   appendArchivaVersion=function(){

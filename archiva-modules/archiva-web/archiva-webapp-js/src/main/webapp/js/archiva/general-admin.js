@@ -1409,12 +1409,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
 
     saveRedbackRuntimeConfiguration=function(){
-      var valid = $("#main-content").find("#redback-runtime-general-form-id").valid();
+      var mainContent=$("#main-content");
+      var valid = mainContent.find("#redback-runtime-general-form-id").valid();
       if (valid==false) {
         return;
       }
       $.log("saveRedbackRuntimeConfiguration");
-      var saveButton = $("#redback-runtime-configuration-save" );
+      var saveButton = mainContent.find("#redback-runtime-configuration-save" );
       saveButton.button('loading');
       clearUserMessages();
       var userMessages=$("#user-messages");
@@ -1474,7 +1475,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   activateRedbackRuntimeGeneralFormValidation=function(){
-    var validator = $("#main-content" ).find("#redback-runtime-general-form-id").validate({
+    var formSelector=$("#main-content" ).find("#redback-runtime-general-form-id");
+    var validator = formSelector.validate({
       rules: {
         usersCacheTimeToLiveSeconds : {
          digits: true,
@@ -1488,7 +1490,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         }
       },
       showErrors: function(validator, errorMap, errorList) {
-       customShowError("#main-content #redback-runtime-general-form-id",validator,errorMap,errorMap);
+       customShowError(formSelector,validator,errorMap,errorMap);
       }
       });
   }
