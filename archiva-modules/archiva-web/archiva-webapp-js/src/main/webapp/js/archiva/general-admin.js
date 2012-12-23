@@ -1414,6 +1414,23 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       if (valid==false) {
         return;
       }
+      var useLdap = false;
+      for(var i=0;i<self.usedUserManagerImpls().length;i++){
+        var beanId=self.usedUserManagerImpls()[i].beanId;
+        $.log("beanId:"+beanId);
+        if(beanId=='ldap'){
+          useLdap=true;
+        }
+      }
+      $.log("useLdap:"+useLdap);
+      if(useLdap==true) {
+        valid = mainContent.find("#redback-runtime-ldap-form-id").valid();
+        $.log("ldap valid:"+valid);
+        if (valid==false) {
+          return;
+        }
+      }
+
       $.log("saveRedbackRuntimeConfiguration");
       var saveButton = mainContent.find("#redback-runtime-configuration-save" );
       saveButton.button('loading');
@@ -1495,6 +1512,27 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       });
   }
 
+  activateLdapConfigurationFormValidation=function(){
+    var formSelector=$("#main-content" ).find("#redback-runtime-ldap-form-id");
+    var validator = formSelector.validate({
+      rules: {
+        ldapHost : {
+          digits: true,
+          min: 1,
+          required: true
+        },
+        ldapPort : {
+          digits: true,
+          min: 1,
+          required: true
+        }
+      },
+      showErrors: function(validator, errorMap, errorList) {
+        customShowError(formSelector,validator,errorMap,errorMap);
+      }
+    });
+  }
+
   displayRuntimeConfiguration=function(){
     $.log("displayRuntimeConfiguration");
     var mainContent = $("#main-content");
@@ -1516,6 +1554,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
           ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
           activateRedbackRuntimeGeneralFormValidation();
+          activateLdapConfigurationFormValidation();
         }
       });
 
