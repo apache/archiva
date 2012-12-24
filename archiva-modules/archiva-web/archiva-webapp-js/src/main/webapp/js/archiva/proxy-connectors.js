@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
-  ,"knockout.simpleGrid","knockout.sortable"],
+  ,"knockout.simpleGrid","knockout.sortable","select2"],
   function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   ProxyConnector=function(sourceRepoId,targetRepoId,proxyId,blackListPatterns,whiteListPatterns,policiesEntries,propertiesEntries,
@@ -463,6 +463,8 @@ define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jq
           var proxyConnectorViewModel=new ProxyConnectorViewModel(proxyConnector,false,self);
           mainContent.find("#proxy-connectors-edit").html($("#proxy-connector-edit-form-tmpl").tmpl());
           ko.applyBindings(proxyConnectorViewModel,mainContent.find("#proxy-connectors-edit").get(0));
+          mainContent.find("#sourceRepoId" ).select2();
+          mainContent.find("#targetRepoId" ).select2();
         }
         if ($(e.target).attr("href")=="#proxy-connectors-view") {
           $("#proxy-connectors-view-tabs-a-network-proxies-grid").html($.i18n.prop("proxy-connectors.grid.tab.title"));

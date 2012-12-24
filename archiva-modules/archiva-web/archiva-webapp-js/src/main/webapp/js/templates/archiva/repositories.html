@@ -125,25 +125,25 @@
         <ul class="dropdown-menu">
           <li>
             <a href="#" data-bind="click: function(){ scanNow(row) }">
-                          <span class="btn btn-success">
-                            <i class="icon-refresh icon-white"></i>
-                          </span>
+              <span class="btn btn-success">
+                <i class="icon-refresh icon-white"></i>
+              </span>
               ${$.i18n.prop('managedrepository.scan.grid.header')}
             </a>
           </li>
           <li>
             <a href="#" data-bind="click: function(){directoriesScan(row)}">
-                          <span class="btn btn-warning">
-                            <i class="icon-wrench icon-white"></i>
-                          </span>
+              <span class="btn btn-warning">
+                <i class="icon-wrench icon-white"></i>
+              </span>
               ${$.i18n.prop('managedrepository.scan.directories.grid.header')}
             </a>
           </li>
           <li>
             <a href="#" data-bind="click: function(){ showPomSnippet(row) }">
-                            <span class="btn btn-info">
-                              <i class="icon-user icon-white"></i>
-                            </span>
+              <span class="btn btn-info">
+                <i class="icon-user icon-white"></i>
+              </span>
               ${$.i18n.prop('managedrepository.pomsnippet')}
             </a>
           </li>
@@ -155,9 +155,9 @@
           <li>
             <!-- todo check archiva-merge-repository operation -->
             <a href="#" data-bind="click: function(){ mergeRepo(row) }">
-                            <span class="btn btn-info">
-                              <i class="icon-share icon-white"></i>
-                            </span>
+              <span class="btn btn-info">
+                <i class="icon-share icon-white"></i>
+              </span>
               ${$.i18n.prop('managedrepository.mergerepo')}
             </a>
           </li>
@@ -166,16 +166,16 @@
     </td>
     <td>
       <a href="#" data-bind="click: function(){ editManagedRepository(row) }">
-                <span class="btn btn-primary">
-                  <i class="icon-pencil icon-white"/>
-                </span>
+        <span class="btn btn-primary">
+          <i class="icon-pencil icon-white"/>
+        </span>
       </a>
     </td>
     <td>
       <a href="#" data-bind="click: function(){ removeManagedRepository(row) }">
-                <span class="btn btn-danger">
-                  <i class="icon-trash icon-white"/>
-                </span>
+        <span class="btn btn-danger">
+          <i class="icon-trash icon-white"/>
+        </span>
       </a>
     </td>
     {{if row.modified()}}
