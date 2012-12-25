@@ -19,14 +19,17 @@ package org.apache.archiva.web.test;
  */
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.apache.commons.lang3.StringUtils;
 import org.fluentlenium.adapter.FluentTest;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.safari.SafariDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,6 +74,24 @@ public class WebDriverTest
     @Override
     public WebDriver getDefaultDriver()
     {
+        String seleniumBrowser = System.getProperty( "selenium.browser" );
+
+        if ( StringUtils.contains( seleniumBrowser, "chrome" ) )
+        {
+            return new ChromeDriver();
+        }
+
+        if ( StringUtils.contains( seleniumBrowser, "safari" ) )
+        {
+            return new SafariDriver();
+        }
+
+        if ( StringUtils.contains( seleniumBrowser, "iexplore" ) )
+        {
+            return new InternetExplorerDriver();
+        }
+
         return new FirefoxDriver();
+
     }
 }
