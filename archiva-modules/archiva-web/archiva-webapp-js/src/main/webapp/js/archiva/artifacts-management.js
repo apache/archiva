@@ -90,6 +90,7 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
                 var artifactUploadViewModel=new ArtifactUploadViewModel(data);
                 ko.applyBindings(artifactUploadViewModel,mainContent.find("#file-upload-main" ).get(0));
                 var fileUpload=$("#main-content" ).find("#fileupload");
+                $("#repositoryId" ).select2();
                 var validator =  fileUpload.validate({
                   showErrors: function(validator, errorMap, errorList) {
                    customShowError("#main-content #fileupload",validator,errorMap,errorMap);

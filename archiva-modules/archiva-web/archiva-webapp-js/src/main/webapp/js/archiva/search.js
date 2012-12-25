@@ -1096,6 +1096,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
                           artifactDetailViewModel.versions=ko.observableArray( mapVersionsList(data));
                           ko.applyBindings(artifactDetailViewModel,mainContent.find("#browse_artifact").get(0));
                           ko.applyBindings(artifactDetailViewModel,mainContent.find("#browse_breadcrumb").get(0));
+
                          }
                       });
                     }
