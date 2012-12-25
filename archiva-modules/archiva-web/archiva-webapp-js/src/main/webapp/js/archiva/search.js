@@ -1156,7 +1156,6 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
                   dataType: 'json',
                   success: function(data) {
                     var browseResultEntries = mapBrowseResultEntries(data);
-                    $.log("size:"+browseResultEntries.length);
                     var browseViewModel = new BrowseViewModel(browseResultEntries,null,null,repositoryId);
                     ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
                     ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
@@ -1203,6 +1202,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
   }
 
   enableAutocompleBrowse=function(groupId){
+    $("#select_browse_repository" ).select2({width: "resolve"});
     // browse-autocomplete
     var url="restServices/archivaServices/browseService/rootGroups";
     if (groupId){
