@@ -25,10 +25,10 @@
     <artifactId>archiva</artifactId>
     <version>1.4-M4-SNAPSHOT</version>
   </parent>
-  <artifactId>archiva-jetty-js</artifactId>
+  <artifactId>archiva-jetty</artifactId>
   <packaging>pom</packaging>
   <!-- This is filtered into the scripts, so should be set to Apache Archiva -->
-  <name>Apache Archiva Javascript</name>
+  <name>Apache Archiva</name>
 
   <dependencies>
     <dependency>

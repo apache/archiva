@@ -41,7 +41,7 @@
     <module>archiva-cli</module>
     <module>archiva-modules</module>
     <module>archiva-docs</module>
-    <module>archiva-jetty-js</module>
+    <module>archiva-jetty</module>
     <!--module>archiva-tomcat-js</module-->
   </modules>
 
