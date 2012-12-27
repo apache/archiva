@@ -1598,6 +1598,20 @@
           <type>int</type>
           <defaultValue>-1</defaultValue>
         </field>
+        <field>
+          <name>maxElementsInMemory</name>
+          <description>max elements in memory</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>-1</defaultValue>
+        </field>
+        <field>
+          <name>maxElementsOnDisk</name>
+          <description>max elements on disk</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>-1</defaultValue>
+        </field>
       </fields>
     </class>
 
