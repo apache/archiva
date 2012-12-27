@@ -25,7 +25,7 @@
     <artifactId>archiva-web</artifactId>
     <version>1.4-M4-SNAPSHOT</version>
   </parent>
-  <artifactId>archiva-webapp-test-js</artifactId>
+  <artifactId>archiva-webapp-test</artifactId>
   <packaging>pom</packaging>
   <name>Archiva Web :: Javascript Application Tests</name>
 

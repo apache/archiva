@@ -1827,7 +1827,7 @@
       <!-- profile to run javascript webapp and it tests -->
       <id>it-js</id>
       <modules>
-        <module>archiva-modules/archiva-web/archiva-webapp-test-js</module>
+        <module>archiva-modules/archiva-web/archiva-webapp-test</module>
       </modules>
     </profile>
 
