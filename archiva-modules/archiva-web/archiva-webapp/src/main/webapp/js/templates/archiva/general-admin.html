@@ -1054,6 +1054,22 @@
               </div>
             </div>
 
+            <div class="control-group">
+              <label class="control-label" for="maxElementsInMemory">${$.i18n.prop('redback.runtime.maxElementsInMemory.label')}</label>
+              <div class="controls">
+                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().maxElementsInMemory"
+                       id="maxElementsInMemory" name="maxElementsInMemory" />
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="maxElementsOnDisk">${$.i18n.prop('redback.runtime.maxElementsOnDisk.label')}</label>
+              <div class="controls">
+                <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().maxElementsOnDisk"
+                       id="maxElementsOnDisk" name="maxElementsOnDisk" />
+              </div>
+            </div>
+
           </form>
 
 

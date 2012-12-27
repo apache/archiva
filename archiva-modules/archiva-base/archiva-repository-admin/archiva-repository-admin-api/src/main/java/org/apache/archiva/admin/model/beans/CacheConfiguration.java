@@ -39,6 +39,16 @@ public class CacheConfiguration
      */
     private int timeToLiveSeconds = -1;
 
+    /**
+     * max elements in memory.
+     */
+    private int maxElementsInMemory = -1;
+
+    /**
+     * max elements on disk.
+     */
+    private int maxElementsOnDisk = -1;
+
     public CacheConfiguration()
     {
         // no op
@@ -64,6 +74,26 @@ public class CacheConfiguration
         this.timeToLiveSeconds = timeToLiveSeconds;
     }
 
+    public int getMaxElementsInMemory()
+    {
+        return maxElementsInMemory;
+    }
+
+    public void setMaxElementsInMemory( int maxElementsInMemory )
+    {
+        this.maxElementsInMemory = maxElementsInMemory;
+    }
+
+    public int getMaxElementsOnDisk()
+    {
+        return maxElementsOnDisk;
+    }
+
+    public void setMaxElementsOnDisk( int maxElementsOnDisk )
+    {
+        this.maxElementsOnDisk = maxElementsOnDisk;
+    }
+
     @Override
     public String toString()
     {
@@ -71,6 +101,8 @@ public class CacheConfiguration
         sb.append( "CacheConfiguration" );
         sb.append( "{timeToIdleSeconds=" ).append( timeToIdleSeconds );
         sb.append( ", timeToLiveSeconds=" ).append( timeToLiveSeconds );
+        sb.append( ", maxElementsInMemory=" ).append( maxElementsInMemory );
+        sb.append( ", maxElementsOnDisk=" ).append( maxElementsOnDisk );
         sb.append( '}' );
         return sb.toString();
     }

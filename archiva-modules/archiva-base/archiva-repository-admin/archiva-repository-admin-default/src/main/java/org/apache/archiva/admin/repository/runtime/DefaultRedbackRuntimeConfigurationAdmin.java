@@ -147,6 +147,24 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             usersCache.setTimeToLiveSeconds(
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() );
 
+            if ( redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsInMemory() < 0 )
+            {
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().setMaxElementsInMemory(
+                    usersCache.getMaxElementsInMemory() );
+                save = true;
+            }
+            usersCache.setMaxElementsInMemory(
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsInMemory() );
+
+            if ( redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsOnDisk() < 0 )
+            {
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().setMaxElementsOnDisk(
+                    usersCache.getMaxElementsOnDisk() );
+                save = true;
+            }
+            usersCache.setMaxElementsOnDisk(
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsOnDisk() );
+
             if ( save )
             {
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );

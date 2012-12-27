@@ -55,7 +55,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "archivaRuntimeConfigurationService#rest" )
+@Service("archivaRuntimeConfigurationService#rest")
 public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
     implements RedbackRuntimeConfigurationService
@@ -64,18 +64,18 @@ public class DefaultRedbackRuntimeConfigurationService
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named( value = "ldapConnectionFactory#configurable" )
+    @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
 
@@ -144,6 +144,10 @@ public class DefaultRedbackRuntimeConfigurationService
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToIdleSeconds() );
             usersCache.setTimeToLiveSeconds(
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getTimeToLiveSeconds() );
+            usersCache.setMaxElementsInMemory(
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsInMemory() );
+            usersCache.setMaxElementsOnDisk(
+                redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsOnDisk() );
 
             return Boolean.TRUE;
         }

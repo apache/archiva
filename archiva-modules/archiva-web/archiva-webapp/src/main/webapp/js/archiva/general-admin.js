@@ -1504,6 +1504,16 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           digits: true,
           min: 1,
           required: true
+        },
+        maxElementsInMemory : {
+          digits: true,
+          min: 1,
+          required: true
+        },
+        maxElementsOnDisk : {
+          digits: true,
+          min: 1,
+          required: true
         }
       },
       showErrors: function(validator, errorMap, errorList) {
@@ -1563,7 +1573,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
   }
 
-  CacheConfiguration=function(timeToIdleSeconds,timeToLiveSeconds){
+  CacheConfiguration=function(timeToIdleSeconds,timeToLiveSeconds,maxElementsInMemory,maxElementsOnDisk){
     var self=this;
     this.modified=ko.observable(false);
 
@@ -1573,13 +1583,19 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.timeToLiveSeconds=ko.observable(timeToLiveSeconds);
     this.timeToLiveSeconds.subscribe(function(newValue){self.modified(true)});
 
+    this.maxElementsInMemory=ko.observable(maxElementsInMemory);
+    this.maxElementsInMemory.subscribe(function(newValue){self.modified(true)});
+
+    this.maxElementsOnDisk=ko.observable(maxElementsOnDisk);
+    this.maxElementsOnDisk.subscribe(function(newValue){self.modified(true)});
+
   }
 
   mapCacheConfiguration=function(data){
     if(!data){
       return new CacheConfiguration();
     }
-    return new CacheConfiguration(data.timeToIdleSeconds,data.timeToLiveSeconds);
+    return new CacheConfiguration(data.timeToIdleSeconds,data.timeToLiveSeconds,data.maxElementsInMemory,data.maxElementsOnDisk);
   }
 
 });
