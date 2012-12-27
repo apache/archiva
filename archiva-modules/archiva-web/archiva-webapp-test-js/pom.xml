@@ -43,7 +43,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-webapp-js</artifactId>
+      <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
     <dependency>
@@ -271,7 +271,7 @@
                   <artifactItems>
                     <artifactItem>
                       <groupId>${project.groupId}</groupId>
-                      <artifactId>archiva-webapp-js</artifactId>
+                      <artifactId>archiva-webapp</artifactId>
                       <version>${project.version}</version>
                       <type>war</type>
                     </artifactItem>

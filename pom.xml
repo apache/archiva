@@ -419,7 +419,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-webapp-js</artifactId>
+        <artifactId>archiva-webapp</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>

@@ -24,7 +24,7 @@
     <artifactId>archiva-web</artifactId>
     <version>1.4-M4-SNAPSHOT</version>
   </parent>
-  <artifactId>archiva-webapp-js</artifactId>
+  <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
 
   <name>Archiva Web :: Javascript Application</name>

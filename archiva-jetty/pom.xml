@@ -37,7 +37,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-webapp-js</artifactId>
+      <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
     <!-- Runtime dependencies that need to be included in the generated binaries -->

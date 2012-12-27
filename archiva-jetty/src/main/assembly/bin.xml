@@ -114,7 +114,7 @@
       <unpack>true</unpack>
       <outputDirectory>apps/archiva</outputDirectory>
       <includes>
-        <include>org.apache.archiva:archiva-webapp-js</include>
+        <include>org.apache.archiva:archiva-webapp</include>
       </includes>
       <fileMode>0755</fileMode>
       <directoryMode>0755</directoryMode>
