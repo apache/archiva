@@ -1,2 +1,2 @@
 set -x
-mvn tomcat7:run -pl :archiva-webapp-js -am  $@
+mvn tomcat7:run -pl :archiva-webapp -am  $@
