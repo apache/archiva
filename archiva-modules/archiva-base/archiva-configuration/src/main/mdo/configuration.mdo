@@ -178,6 +178,15 @@
           <description>The RedbackRuntimeConfiguration.</description>
         </field>
         <field>
+          <name>archivaRuntimeConfiguration</name>
+          <version>1.4.0+</version>
+          <association>
+            <type>ArchivaRuntimeConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>The ArchivaRuntimeConfiguration.</description>
+        </field>
+        <field>
           <name>proxyConnectorRuleConfigurations</name>
           <version>1.4.0+</version>
           <association>
@@ -1441,6 +1450,24 @@
           <version>1.4.0+</version>
           <type>boolean</type>
           <defaultValue>true</defaultValue>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>ArchivaRuntimeConfiguration</name>
+      <version>1.4.0+</version>
+      <description>
+        The runtime configuration.
+      </description>
+      <fields>
+        <field>
+          <name>urlFailureCacheConfiguration</name>
+          <description>the url failure cache configuration</description>
+          <version>1.4.0+</version>
+          <association>
+            <type>CacheConfiguration</type>
+          </association>
         </field>
       </fields>
     </class>
