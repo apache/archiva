@@ -419,7 +419,7 @@
         <td>${cacheEntry.cacheHitRate}</td>
         <td>${cacheEntry.inMemorySize}</td>
         <td>
-          <a onclick="flushCache('${cacheEntry.key}')">
+          <a class="cursor-hand" onclick="flushCache('${cacheEntry.key}')" title="flush cache">
             {{if  cacheEntry.size > 0 }}
               <img src="images/user-trash-full.png"/>
             {{else}}
