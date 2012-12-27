@@ -419,7 +419,8 @@
         <td>${cacheEntry.cacheHitRate}</td>
         <td>${cacheEntry.inMemorySize}</td>
         <td>
-          <a class="cursor-hand" onclick="flushCache('${cacheEntry.key}')" title="flush cache">
+          <a class="cursor-hand" onclick="flushCache('${cacheEntry.key}')"
+             title="${$.i18n.prop('system-status.caches.grid.flush.icon.title')}">
             {{if  cacheEntry.size > 0 }}
               <img src="images/user-trash-full.png"/>
             {{else}}
