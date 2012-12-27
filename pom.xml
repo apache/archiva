@@ -82,7 +82,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
 
-    <lucene.version>3.6.1</lucene.version>
+    <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.5.2</jackrabbit.version>
 
     <cxfVersion>2.6.4</cxfVersion>
