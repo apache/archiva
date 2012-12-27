@@ -64,7 +64,7 @@
     <releaseDeployId>archiva-repository.releases</releaseDeployId>
     <gpg.useagent>true</gpg.useagent>
 
-    <surefireVersion>2.13-SNAPSHOT</surefireVersion>
+    <surefireVersion>2.13</surefireVersion>
 
     <!-- svnsubpub configuration -->
 
