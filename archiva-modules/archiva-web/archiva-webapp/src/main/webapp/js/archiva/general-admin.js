@@ -575,6 +575,100 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   //---------------------------
+  // organisation/appearance configuration part
+  //---------------------------
+  OrganisationInformation=function(name,url,logoLocation){
+    this.name=ko.observable(name);
+    this.url=ko.observable(url);
+    this.logoLocation=ko.observable(logoLocation);
+  }
+  mapOrganisationInformation=function(data){
+    return new OrganisationInformation(data.name, data.url, data.logoLocation);
+  }
+  mapOrganisationInformations=function(data){
+    if (data!=null){
+      return $.isArray(data)? $.map(data, function(item){
+        return mapOrganisationInformation(item);
+      }):[mapOrganisationInformation(data)];
+    }
+  }
+  activateOrganisationInformationFormValidation=function(){
+    var validate = $("#main-content" ).find("#appearance-configuration-form-id")
+      .validate({
+        rules: {
+          name: {
+            required: true
+          },
+          url: {
+            required:true,
+            url:true
+          },
+          logoLocation: {
+            required:false,
+            url:true
+          }
+        },
+        showErrors: function(validator, errorMap, errorList) {
+          customShowError("#main-content #appearance-configuration-form-id", validator, errorMap, errorMap);
+        }
+      });
+  }
+  OrganisationInformationViewModel=function(organisationInformation){
+    activateOrganisationInformationFormValidation();
+    this.organisationInformation=ko.observable(organisationInformation);
+
+    this.save=function(){
+      var mainContent=$("#main-content" );
+      if (!mainContent.find("#appearance-configuration-form-id").valid()) {
+        return;
+      }
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      mainContent.find("#appearance-configuration-btn-save" ).button('loading');
+      $.ajax("restServices/archivaServices/archivaAdministrationService/setOrganisationInformation", {
+        type: "POST",
+        contentType: "application/json",
+        data: ko.toJSON(this.organisationInformation),
+        dataType: "json",
+        success: function(data){
+          displaySuccessMessage($.i18n.prop('appearance-configuration.updated'));
+          updateAppearanceToolBar();
+        },
+        error: function(data){
+          displayErrorMessage($.i18n.prop('appearance-configuration.updating-error'));
+        },
+        complete: function(){
+          removeMediumSpinnerImg(userMessages);
+          mainContent.find("#appearance-configuration-btn-save" ).button('reset');
+        }
+      });
+    }
+  }
+  displayAppearanceConfiguration=function(){
+    screenChange();
+    var mainContent=$("#main-content");
+    mainContent.html(mediumSpinnerImg());
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        mainContent.html($("#changeAppearance").tmpl());
+        var organisationInformation=new OrganisationInformation(data.name,data.url,data.logoLocation);
+        var organisationInformationViewModel=new OrganisationInformationViewModel(organisationInformation);
+        ko.applyBindings(organisationInformationViewModel, mainContent.get(0));
+        var validator = $("#main-content" ).find("#appearance-configuration-form-id")
+                .validate({
+                 showErrors: function(validator,errorMap,errorList) {
+                   customShowError(mainContent.find("#appearance-configuration-form-id").get(0),validator,errorMap,errorMap);
+                 }
+                });
+      }
+    });
+  }
+
+  //---------------------------
   // UiConfiguration part
   //---------------------------
 
@@ -816,98 +910,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     displayMemoryUsage();
     displayQueueEntries();
     displayServerTime();
-  }
-
-  //---------------------------
-  // network configuration part
-  //---------------------------
-  OrganisationInformation=function(name,url,logoLocation){
-    this.name=ko.observable(name);
-    this.url=ko.observable(url);
-    this.logoLocation=ko.observable(logoLocation);
-  }
-  mapOrganisationInformation=function(data){
-    return new OrganisationInformation(data.name, data.url, data.logoLocation);
-  }
-  mapOrganisationInformations=function(data){
-    if (data!=null){
-      return $.isArray(data)? $.map(data, function(item){
-        return mapOrganisationInformation(item);
-      }):[mapOrganisationInformation(data)];
-    }
-  }
-  activateOrganisationInformationFormValidation=function(){
-    var validate = $("#main-content" ).find("#appearance-configuration-form-id").validate({
-      rules: {
-        name: {
-          required: true
-        },
-        url: {
-          required:true,
-          url:true
-        },
-        logoLocation: {
-          required:false,
-          url:true
-        }
-      },
-      showErrors: function(validator, errorMap, errorList) {
-        customShowError("#main-content #appearance-configuration-form-id", validator, errorMap, errorMap);
-      }
-    })
-  }
-  OrganisationInformationViewModel=function(organisationInformation){
-    activateOrganisationInformationFormValidation();
-    this.organisationInformation=ko.observable(organisationInformation);
-
-    this.save=function(){
-      var mainContent=$("#main-content" );
-      if (!mainContent.find("#appearance-configuration-form-id").valid()) {
-          return;
-      }
-      clearUserMessages();
-      var userMessages=$("#user-messages");
-      userMessages.html(mediumSpinnerImg());
-      mainContent.find("#appearance-configuration-btn-save" ).button('loading');
-      $.ajax("restServices/archivaServices/archivaAdministrationService/setOrganisationInformation", {
-        type: "POST",
-        contentType: "application/json",
-        data: ko.toJSON(this.organisationInformation),
-        dataType: "json",
-        success: function(data){
-          displaySuccessMessage($.i18n.prop('appearance-configuration.updated'));
-          updateAppearanceToolBar();
-        },
-        error: function(data){
-          displayErrorMessage($.i18n.prop('appearance-configuration.updating-error'));
-        },
-        complete: function(){
-          removeMediumSpinnerImg(userMessages);
-          mainContent.find("#appearance-configuration-btn-save" ).button('reset');
-        }
-      });
-    }
-  }
-  displayAppearanceConfiguration=function(){
-    screenChange();
-    var mainContent=$("#main-content");
-    mainContent.html(mediumSpinnerImg());
-
-    $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
-      type: "GET",
-      dataType: 'json',
-      success: function(data) {
-        mainContent.html($("#changeAppearance").tmpl());
-        var organisationInformation=new OrganisationInformation(data.name,data.url,data.logoLocation);
-        var organisationInformationViewModel=new OrganisationInformationViewModel(organisationInformation);
-        ko.applyBindings(organisationInformationViewModel, mainContent.get(0));
-        var validator = $("#main-content" ).find("#appearance-configuration-form-id").validate({
-          showErrors: function(validator,errorMap,errorList) {
-            customShowError(mainContent.find("#appearance-configuration-form-id").get(0),validator,errorMap,errorMap);
-          }
-        });
-      }
-    });
   }
 
   //---------------------------

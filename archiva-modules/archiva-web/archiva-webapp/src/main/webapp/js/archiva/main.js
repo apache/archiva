@@ -219,30 +219,30 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       ]);
       this.administrationMenuItems = ko.observableArray([
         {  text : $.i18n.prop('menu.administration') , id: null},
-        {  text : $.i18n.prop('menu.repository.groups')        , id: "menu-repository-groups-list-a"     , href: "#repositorygroup"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
-        {  text : $.i18n.prop('menu.repositories')             , id: "menu-repositories-list-a"           , href: "#repositorylist"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoriesGrid()}},
-        {  text : $.i18n.prop('menu.proxy-connectors')         , id: "menu-proxy-connectors-list-a"       , href: "#proxyconnectors"  , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectors()}},
+        {  text : $.i18n.prop('menu.repository.groups')        , id: "menu-repository-groups-list-a"      , href: "#repositorygroup"      , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryGroups()}},
+        {  text : $.i18n.prop('menu.repositories')             , id: "menu-repositories-list-a"           , href: "#repositorylist"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoriesGrid()}},
+        {  text : $.i18n.prop('menu.proxy-connectors')         , id: "menu-proxy-connectors-list-a"       , href: "#proxyconnectors"      , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectors()}},
         {  text : $.i18n.prop('menu.proxy-connectors-rules')   , id: "menu.proxy-connectors-rules-list-a" , href: "#proxyconnectorsrules" , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayProxyConnectorsRules()}},
-        {  text : $.i18n.prop('menu.network-proxies')          , id: "menu-network-proxies-list-a"        , href: "#networkproxies"   , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}},
-        {  text : $.i18n.prop('menu.legacy-artifact-support')  , id: "menu-legacy-support-list-a"         , href: "#legacy"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayLegacyArtifactPathSupport()}},
-        {  text : $.i18n.prop('menu.repository-scanning')      , id: "menu-repository-scanning-list-a"    , href: "#scanningList"     , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning()}},
-        {  text : $.i18n.prop('menu.network-configuration')    , id: "menu-network-configuration-list-a"  , href: "#network"          , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkConfiguration()}},
-        {  text : $.i18n.prop('menu.system-status')            , id: "menu-system-status-list-a"          , href: "#status"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus()}},
-        {  text : $.i18n.prop('menu.appearance-configuration') , id: "menu-appearance-list-a"             , href: "#appearance"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayAppearanceConfiguration()}},
-        {  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#uiconfig"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration()}},
-        {  text : $.i18n.prop('menu.reports')                  , id: "menu-report-list-a"                 , href: "#reports"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage()}}
+        {  text : $.i18n.prop('menu.network-proxies')          , id: "menu-network-proxies-list-a"        , href: "#networkproxies"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}},
+        {  text : $.i18n.prop('menu.legacy-artifact-support')  , id: "menu-legacy-support-list-a"         , href: "#legacy"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayLegacyArtifactPathSupport()}},
+        {  text : $.i18n.prop('menu.repository-scanning')      , id: "menu-repository-scanning-list-a"    , href: "#scanningList"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning()}},
+        {  text : $.i18n.prop('menu.network-configuration')    , id: "menu-network-configuration-list-a"  , href: "#network"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkConfiguration()}},
+        {  text : $.i18n.prop('menu.system-status')            , id: "menu-system-status-list-a"          , href: "#status"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus()}},
+        {  text : $.i18n.prop('menu.appearance-configuration') , id: "menu-appearance-list-a"             , href: "#appearance"           , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayAppearanceConfiguration()}},
+        {  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#uiconfig"             , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration()}},
+        {  text : $.i18n.prop('menu.reports')                  , id: "menu-report-list-a"                 , href: "#reports"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage()}}
       ]);
       
       this.usersMenuItems = ko.observableArray([
         {  text : $.i18n.prop('menu.users') , id: null},
-        {  text : $.i18n.prop('menu.users.manage')    , id: "menu-users-list-a", href: "#users" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayUsersGrid()}},
-        {  text : $.i18n.prop('menu.users.roles')     , id: "menu-roles-list-a", href: "#roles" , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayRolesGrid()}},
-        {  text : $.i18n.prop('menu.runtime-configuration')    , id: "menu-runtime-configuration-list-a"  , href: "#runtimeconfig"    , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRuntimeConfiguration()}}
+        {  text : $.i18n.prop('menu.users.manage')          , id: "menu-users-list-a"                  , href: "#users"         , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayUsersGrid()}},
+        {  text : $.i18n.prop('menu.users.roles')           , id: "menu-roles-list-a"                  , href: "#roles"         , redback: "{permissions: ['archiva-manage-users']}", func: function(){displayRolesGrid()}},
+        {  text : $.i18n.prop('menu.runtime-configuration') , id: "menu-runtime-configuration-list-a"  , href: "#runtimeconfig" , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRuntimeConfiguration()}}
       ]);
 
       this.docsMenuItems = ko.observableArray([
         {  text : $.i18n.prop('menu.docs') , id: null},
-        {  text : $.i18n.prop('menu.docs.rest')    , id: "menu-docs-rest-list-a", href: "#docs-rest", target: "", func: function(){displayRestDocs()}},
+        {  text : $.i18n.prop('menu.docs.rest')    , id: "menu-docs-rest-list-a" , href: "#docs-rest", target: "", func: function(){displayRestDocs()}},
         {  text : $.i18n.prop('menu.docs.users')   , id: "menu-docs-users-list-a", href: "http://archiva.apache.org/docs/"+window.archivaRuntimeInfo.version, target: "_blank", func: function(){displayUsersDocs()}}
       ]);
 
