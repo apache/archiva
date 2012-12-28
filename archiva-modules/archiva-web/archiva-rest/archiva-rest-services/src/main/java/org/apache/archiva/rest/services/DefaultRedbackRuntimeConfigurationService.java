@@ -55,7 +55,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("archivaRuntimeConfigurationService#rest")
+@Service("redbackRuntimeConfigurationService#rest")
 public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
     implements RedbackRuntimeConfigurationService
