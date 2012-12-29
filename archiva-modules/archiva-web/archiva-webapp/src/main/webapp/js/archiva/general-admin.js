@@ -529,11 +529,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     save=function(){
       var userMessages=$("#user-messages");
-      userMessages.html(mediumSpinnerImg());
+
       var mainContent=$("#main-content");
+
       if (!mainContent.find("#network-configuration-edit-form").valid()){
         return;
       }
+      userMessages.html(mediumSpinnerImg());
       mainContent.find("#network-configuration-btn-save" ).button('loading');
       $.ajax("restServices/archivaServices/archivaAdministrationService/setNetworkConfiguration", {
         type: "POST",
@@ -565,11 +567,12 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           var networkConfiguration=new NetworkConfiguration(data.maxTotal,data.maxTotalPerHost,data.usePooling);
           var networkConfigurationViewModel=new NetworkConfigurationViewModel(networkConfiguration);
           ko.applyBindings(networkConfigurationViewModel,mainContent.get(0));
-          var validator = mainContent.find("#network-configuration-edit-form").validate({
-            showErrors: function(validator, errorMap, errorList) {
-             customShowError(mainContent.find("#network-configuration-edit-form" ).get(0),validator,errorMap,errorMap);
-            }
-          });
+          var validator = mainContent.find("#network-configuration-edit-form")
+                  .validate({
+                              showErrors: function(validator, errorMap, errorList) {
+                                customShowError(mainContent.find("#network-configuration-edit-form" ),validator,errorMap,errorMap);
+                              }
+                            });
         }
     });
 
