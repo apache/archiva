@@ -280,12 +280,22 @@
   </table>
 </script>
 
-<script id="network-configuration-screen" type="text/html">
-  <div class="page-header">
-    <h4>${$.i18n.prop('network-configuration.header')}</h4>
+<script id="runtime-configuration-screen" type="text/html">
+  <ul class="nav nav-tabs">
+    <li class="active" id="network-configuration-form-li"><a href="#network-configuration-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.maven.network.title')}</a></li>
+
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="network-configuration-form-content">
+      <div class="page-header">
+        <h4>${$.i18n.prop('network-configuration.header')}</h4>
+      </div>
+      <div id="network-configuration-form" data-bind='template: {name:"network-configuration-form-tmpl"}'></div>
+    </div>
   </div>
-  <div id="network-configuration-form" data-bind='template: {name:"network-configuration-form-tmpl"}'></div>
 </script>
+
 
 <script id="network-configuration-form-tmpl" type="text/html">
     <form id="network-configuration-edit-form" class="well form-horizontal">

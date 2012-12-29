@@ -551,16 +551,17 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
   }
 
-  displayNetworkConfiguration=function(){
+  displayRuntimeConfiguration=function(){
     screenChange();
     var mainContent=$("#main-content");
-    mainContent.html(mediumSpinnerImg());
+
+    mainContent.html($("#runtime-configuration-screen").tmpl());
 
     $.ajax("restServices/archivaServices/archivaAdministrationService/getNetworkConfiguration", {
         type: "GET",
         dataType: 'json',
         success: function(data){
-          mainContent.html($("#network-configuration-screen").tmpl());
+
           var networkConfiguration=new NetworkConfiguration(data.maxTotal,data.maxTotalPerHost,data.usePooling);
           var networkConfigurationViewModel=new NetworkConfigurationViewModel(networkConfiguration);
           ko.applyBindings(networkConfigurationViewModel,mainContent.get(0));
@@ -1538,7 +1539,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     });
   }
 
-  displayRuntimeConfiguration=function(){
+  displayRedbackRuntimeConfiguration=function(){
     $.log("displayRuntimeConfiguration");
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
