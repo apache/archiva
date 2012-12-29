@@ -316,36 +316,6 @@
     </form>
 </script>
 
-<script id="ui-configuration-screen" type="text/html">
-  <div class="page-header">
-    <h4>${$.i18n.prop('ui-configuration.header')}</h4>
-  </div>
-  <div id="ui-configuration-form" data-bind='template: {name:"ui-configuration-form-tmpl"}'></div>
-</script>
-
-<script id="ui-configuration-form-tmpl" type="text/html">
-    <form id="ui-configuration-edit-form" class="well form-horizontal">
-      <fieldset id="ui-configuration-edit-fieldset">
-        <div class="control-group">
-          <label class="control-label" for="maxTotal">${$.i18n.prop('ui-configuration.applicationUrl')}</label>
-          <div class="controls">
-            <input type="text" class="input-xxlarge required digits" id="applicationUrl" name="applicationUrl" size="8"
-                   data-bind="value: uiConfiguration().applicationUrl"/>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label" for="disableRegistration">${$.i18n.prop('ui-configuration.disableRegistration')}</label>
-          <div class="controls">
-            <input type="checkbox" id="disableRegistration" name="disableRegistration" data-bind="checked: uiConfiguration().disableRegistration"/>
-          </div>
-        </div>
-
-      </fieldset>
-      <button id="ui-configuration-btn-save" data-bind="click: save" class="btn" data-loading-text="${$.i18n.prop('common.loading')}">${$.i18n.prop('save')}</button>
-    </form>
-</script>
-
 <script id="system-status-main" type="text/html">
   <div class="page-header">
     <h4>${$.i18n.prop('system-status.header.version.info')}</h4>
@@ -505,15 +475,10 @@
 </script>
 
 <script id="changeAppearance" type="text/html">
-    <div class="page-header">
-        <h2>${$.i18n.prop('appearance-configuration.title-page')}</h2>
-    </div>
 
-    <h2>${$.i18n.prop('appearance-configuration.organisation-details')}</h2>
+    <h4>${$.i18n.prop('appearance-configuration.organisation-details')}</h4>
 
-    <p>
-        ${$.i18n.prop('apperance-configuration.details-description')}
-    </p>
+    <p>${$.i18n.prop('apperance-configuration.details-description')}</p>
 
     <form id="appearance-configuration-form-id" class="well form-horizontal">
         <fieldset id="appearance-configuration-fielset-id">
@@ -542,6 +507,58 @@
         </fieldset>
         <button id="appearance-configuration-btn-save" data-loading-text="${$.i18n.prop('common.loading')}" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
     </form>
+</script>
+
+<script id="ui-configuration-screen" type="text/html">
+  <div class="page-header">
+    <h4>${$.i18n.prop('ui-configuration.header')}</h4>
+  </div>
+  <div id="ui-configuration-form" data-bind='template: {name:"ui-configuration-form-tmpl"}'></div>
+</script>
+
+<script id="ui-configuration-form-tmpl" type="text/html">
+  <form id="ui-configuration-edit-form" class="well form-horizontal">
+    <fieldset id="ui-configuration-edit-fieldset">
+      <div class="control-group">
+        <label class="control-label" for="maxTotal">${$.i18n.prop('ui-configuration.applicationUrl')}</label>
+        <div class="controls">
+          <input type="text" class="input-xxlarge required digits" id="applicationUrl" name="applicationUrl" size="8"
+                 data-bind="value: uiConfiguration().applicationUrl"/>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="disableRegistration">${$.i18n.prop('ui-configuration.disableRegistration')}</label>
+        <div class="controls">
+          <input type="checkbox" id="disableRegistration" name="disableRegistration" data-bind="checked: uiConfiguration().disableRegistration"/>
+        </div>
+      </div>
+
+    </fieldset>
+    <button id="ui-configuration-btn-save" data-bind="click: save" class="btn" data-loading-text="${$.i18n.prop('common.loading')}">${$.i18n.prop('save')}</button>
+  </form>
+</script>
+
+<script id="ui-configuration" type="text/html">
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('ui-configuration.header')}</h4>
+  </div>
+
+  <ul class="nav nav-tabs">
+    <li class="active" id="ui-configuration-form-li"><a href="#ui-configuration-tab" data-toggle="tab">${$.i18n.prop('ui-configuration.header')}</a></li>
+    <li id="change-appearance-form-li"><a href="#change-appearance-form-tab" data-toggle="tab">${$.i18n.prop('appearance-configuration.title-page')}</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="ui-configuration-tab">
+      <div id="ui-configuration-form" data-bind='template: {name:"ui-configuration-form-tmpl"}'></div>
+    </div>
+    <div class="tab-pane" id="change-appearance-form-tab">
+      <div id="change-appearance-form" data-bind='template: {name:"changeAppearance"}'></div>
+    </div>
+  </div>
+
 </script>
 
 

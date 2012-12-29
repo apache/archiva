@@ -609,15 +609,17 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           }
         },
         showErrors: function(validator, errorMap, errorList) {
-          customShowError("#main-content #appearance-configuration-form-id", validator, errorMap, errorMap);
+          $.log("activateOrganisationInformationFormValidation#customShowError");
+          customShowError($("#main-content" ).find("#appearance-configuration-form-id"), validator, errorMap, errorMap);
         }
       });
   }
   OrganisationInformationViewModel=function(organisationInformation){
-    activateOrganisationInformationFormValidation();
+
     this.organisationInformation=ko.observable(organisationInformation);
 
     this.save=function(){
+      $.log("OrganisationInformationViewModel#save");
       var mainContent=$("#main-content" );
       if (!mainContent.find("#appearance-configuration-form-id").valid()) {
         return;
@@ -645,34 +647,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       });
     }
   }
-  displayAppearanceConfiguration=function(){
-    screenChange();
-    var mainContent=$("#main-content");
-    mainContent.html(mediumSpinnerImg());
 
-    $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
-      type: "GET",
-      dataType: 'json',
-      success: function(data) {
-        mainContent.html($("#changeAppearance").tmpl());
-        var organisationInformation=new OrganisationInformation(data.name,data.url,data.logoLocation);
-        var organisationInformationViewModel=new OrganisationInformationViewModel(organisationInformation);
-        ko.applyBindings(organisationInformationViewModel, mainContent.get(0));
-        var validator = $("#main-content" ).find("#appearance-configuration-form-id")
-                .validate({
-                 showErrors: function(validator,errorMap,errorList) {
-                   customShowError(mainContent.find("#appearance-configuration-form-id").get(0),validator,errorMap,errorMap);
-                 }
-                });
-      }
-    });
-  }
 
   //---------------------------
   // UiConfiguration part
   //---------------------------
 
-  displayUiConfiguration=function(){
+  displayUiConfigurationOnly=function(){
     screenChange();
     var mainContent=$("#main-content");
     mainContent.html(mediumSpinnerImg());
@@ -726,6 +707,35 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
   }
 
+  displayUiConfiguration=function(){
+    var mainContent=$("#main-content");
+
+    mainContent.html($("#ui-configuration" ).tmpl());
+
+    mainContent.find("#ui-configuration-form").html(mediumSpinnerImg());
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getUiConfiguration", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data){
+        var uiConfiguration=new UiConfiguration(data.showFindArtifacts,data.appletFindEnabled,data.disableEasterEggs,
+                                                data.applicationUrl,data.disableRegistration);
+        var uiConfigurationViewModel=new UiConfigurationViewModel(uiConfiguration);
+        ko.applyBindings(uiConfigurationViewModel,mainContent.find("#ui-configuration-form").get(0));
+      }
+    });
+
+    $.ajax("restServices/archivaServices/archivaAdministrationService/getOrganisationInformation", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data) {
+        var organisationInformation=new OrganisationInformation(data.name,data.url,data.logoLocation);
+        var organisationInformationViewModel=new OrganisationInformationViewModel(organisationInformation);
+        ko.applyBindings(organisationInformationViewModel, mainContent.find("#change-appearance-form").get(0));
+        activateOrganisationInformationFormValidation();
+      }
+    });
+  }
 
   //---------------------------
   // System status part
