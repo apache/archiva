@@ -133,7 +133,6 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     if(window.archivaModel.adminExists==false){
       displayErrorMessage($.i18n.prop("admin.creation.mandatory"));
     }
-
   }
 
   /**

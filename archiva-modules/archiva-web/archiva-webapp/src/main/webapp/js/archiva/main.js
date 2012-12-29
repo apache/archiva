@@ -92,6 +92,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     hideElementWithKarma();
     $("#main-content").empty();
     $("#user-messages" ).empty();
+    $("#login-welcome" ).hide();
     $.ajax({
       url: 'restServices/redbackServices/loginService/logout',
       complete: function(){
