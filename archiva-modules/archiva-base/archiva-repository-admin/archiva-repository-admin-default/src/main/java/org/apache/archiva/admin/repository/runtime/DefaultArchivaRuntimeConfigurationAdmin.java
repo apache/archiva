@@ -24,7 +24,10 @@ import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.redback.components.registry.RegistryException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +38,7 @@ import javax.inject.Named;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "archivaRuntimeConfigurationAdmin#default" )
+@Service("archivaRuntimeConfigurationAdmin#default")
 public class DefaultArchivaRuntimeConfigurationAdmin
     implements ArchivaRuntimeConfigurationAdmin
 {
@@ -45,7 +48,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     @Inject
     @Named( value = "cache#url-failures-cache" )
-    private Cache usersCache;
+    private Cache urlFailureCache;
 
     @PostConstruct
     public void initialize()
@@ -65,39 +68,39 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getTimeToIdleSeconds() < 0 )
         {
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().setTimeToIdleSeconds(
-                usersCache.getTimeToIdleSeconds() );
+                urlFailureCache.getTimeToIdleSeconds() );
             save = true;
 
         }
-        usersCache.setTimeToIdleSeconds(
+        urlFailureCache.setTimeToIdleSeconds(
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getTimeToIdleSeconds() );
 
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getTimeToLiveSeconds() < 0 )
         {
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().setTimeToLiveSeconds(
-                usersCache.getTimeToLiveSeconds() );
+                urlFailureCache.getTimeToLiveSeconds() );
             save = true;
 
         }
-        usersCache.setTimeToLiveSeconds(
+        urlFailureCache.setTimeToLiveSeconds(
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getTimeToLiveSeconds() );
 
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getMaxElementsInMemory() < 0 )
         {
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().setMaxElementsInMemory(
-                usersCache.getMaxElementsInMemory() );
+                urlFailureCache.getMaxElementsInMemory() );
             save = true;
         }
-        usersCache.setMaxElementsInMemory(
+        urlFailureCache.setMaxElementsInMemory(
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getMaxElementsInMemory() );
 
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getMaxElementsOnDisk() < 0 )
         {
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().setMaxElementsOnDisk(
-                usersCache.getMaxElementsOnDisk() );
+                urlFailureCache.getMaxElementsOnDisk() );
             save = true;
         }
-        usersCache.setMaxElementsOnDisk(
+        urlFailureCache.setMaxElementsOnDisk(
             archivaRuntimeConfiguration.getUrlFailureCacheConfiguration().getMaxElementsOnDisk() );
 
         if ( save )
@@ -116,7 +119,20 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     public void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws RepositoryAdminException
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        configuration.setArchivaRuntimeConfiguration( build( archivaRuntimeConfiguration ) );
+        try
+        {
+            archivaConfiguration.save( configuration );
+        }
+        catch ( RegistryException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            throw new RepositoryAdminException( e.getMessage(), e );
+        }
     }
 
     protected ArchivaRuntimeConfiguration build(
@@ -136,6 +152,30 @@ public class DefaultArchivaRuntimeConfigurationAdmin
             res.setUrlFailureCacheConfiguration(
                 new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
                                                     CacheConfiguration.class ) );
+
+        }
+
+        return res;
+    }
+
+    protected org.apache.archiva.configuration.ArchivaRuntimeConfiguration build(
+        ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+    {
+        if ( archivaRuntimeConfiguration == null )
+        {
+            return new org.apache.archiva.configuration.ArchivaRuntimeConfiguration();
+        }
+
+        org.apache.archiva.configuration.ArchivaRuntimeConfiguration res =
+            new BeanReplicator().replicateBean( archivaRuntimeConfiguration,
+                                                org.apache.archiva.configuration.ArchivaRuntimeConfiguration.class );
+
+        if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration() != null )
+        {
+
+            res.setUrlFailureCacheConfiguration(
+                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
+                                                    org.apache.archiva.configuration.CacheConfiguration.class ) );
 
         }
 
