@@ -446,7 +446,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       clearForm("#user-login-form");
       decorateMenuWithKarma(user);
       $("#login-welcome" ).show();
-      $("#welcome-label" ).html("Welcome " + user.username());
+      $("#welcome-label" ).html( $.i18n.prop("user.login.welcome",user.username()));
       return;
     }
     var modalLoginErrMsg=$("#modal-login-err-message");

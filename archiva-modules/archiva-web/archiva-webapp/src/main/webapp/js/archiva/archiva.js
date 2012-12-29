@@ -42,86 +42,86 @@ $.ajax({
     cache: false,
     success:function(data){
 
-        window.archivaDevMode=data.devMode;
-        window.archivaJavascriptLog=data.javascriptLog;
-        window.archivaRuntimeInfo=data;
+      window.archivaDevMode=data.devMode;
+      window.archivaJavascriptLog=data.javascriptLog;
+      window.archivaRuntimeInfo=data;
 
-            requirejs.config({
-                baseUrl: "js/",
-                urlArgs: ""+appendJsNoCacheUrl(),
-                shim: {
-                      'sammy':['jquery','jquery.tmpl'],
-                      'archiva.main':['jquery','jquery.ui','sammy','jquery.tmpl','utils','i18n'],
-                      'utils':['jquery','jquery.tmpl','i18n'],
-                      'archiva.templates': ['jquery','jquery.tmpl','utils'],
-                      'redback.templates': ['jquery','jquery.tmpl','utils']
-                      },
-                paths: {
-                    "i18n":"jquery.i18n.properties-1.0.9",
-                    "jquery": "jquery-1.8.3.min",
-                    "jquery.tmpl": "jquery.tmpl",
-                    "utils": "archiva/utils",
-                    "startup": "archiva/startup",
-                    "jquery.ui": "jquery-ui-1.9.2.custom.min",
-                    "jquery.ui.widget": "jquery.ui.widget-1.9.2",
-                    "jquery.cookie": "jquery.cookie.1.0.0",
-                    "bootstrap": "bootstrap.2.2.1",
-                    "jquery.validate": "jquery.validate-1.9.0",
-                    "jquery.json": "jquery.json-2.3.min",
-                    "knockout": "knockout-2.2.0.debug",
-                    "knockout.simpleGrid": "knockout.simpleGrid",
-                    "knockout.sortable": "knockout-sortable",
-                    "jquery.iframe.transport": "jquery.iframe-transport-1.4",
-                    "jquery.fileupload": "jquery.fileupload-5.10.0",
-                    "jquery.fileupload.ip":"jquery.fileupload-ip-1.0.6",
-                    "jquery.fileupload.ui":"jquery.fileupload-ui-6.6.3",
-                    "tmpl": "tmpl.min",
-                    "purl": "purl-2.2.1",
-                    "prettify": "prettify",
-                    "sammy": "sammy.0.7.1",
-                    "select2": "select2.min-3.2",
-                    "jqueryFileTree": "jqueryFileTree-1.0.1",
-                    "redback": "redback/redback",
-                    "redback.roles": "redback/roles",
-                    "redback.user": "redback/user",
-                    "redback.users": "redback/users",
-                    "redback.templates": "redback/redback-tmpl",
-                    "archiva.general-admin":"archiva/general-admin",
-                    "archiva.templates": "archiva/main-tmpl",
-                    "archiva.repositories": "archiva/repositories",
-                    "archiva.network-proxies": "archiva/network-proxies",
-                    "archiva.proxy-connectors": "archiva/proxy-connectors",
-                    "archiva.repository-groups": "archiva/repository-groups",
-                    "archiva.artifacts-management": "archiva/artifacts-management",
-                    "archiva.search": "archiva/search",
-                    "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
-                    "archiva.docs": "archiva/docs",
-                    "archiva.main": "archiva/main"
-                }
-            });
+      requirejs.config({
+          baseUrl: "js/",
+          urlArgs: ""+appendJsNoCacheUrl(),
+          shim: {
+                'sammy':['jquery','jquery.tmpl'],
+                'archiva.main':['jquery','jquery.ui','sammy','jquery.tmpl','utils','i18n'],
+                'utils':['jquery','jquery.tmpl','i18n'],
+                'archiva.templates': ['jquery','jquery.tmpl','utils'],
+                'redback.templates': ['jquery','jquery.tmpl','utils']
+                },
+          paths: {
+              "i18n":"jquery.i18n.properties-1.0.9",
+              "jquery": "jquery-1.8.3.min",
+              "jquery.tmpl": "jquery.tmpl",
+              "utils": "archiva/utils",
+              "startup": "archiva/startup",
+              "jquery.ui": "jquery-ui-1.9.2.custom.min",
+              "jquery.ui.widget": "jquery.ui.widget-1.9.2",
+              "jquery.cookie": "jquery.cookie.1.0.0",
+              "bootstrap": "bootstrap.2.2.1",
+              "jquery.validate": "jquery.validate-1.9.0",
+              "jquery.json": "jquery.json-2.3.min",
+              "knockout": "knockout-2.2.0.debug",
+              "knockout.simpleGrid": "knockout.simpleGrid",
+              "knockout.sortable": "knockout-sortable",
+              "jquery.iframe.transport": "jquery.iframe-transport-1.4",
+              "jquery.fileupload": "jquery.fileupload-5.10.0",
+              "jquery.fileupload.ip":"jquery.fileupload-ip-1.0.6",
+              "jquery.fileupload.ui":"jquery.fileupload-ui-6.6.3",
+              "tmpl": "tmpl.min",
+              "purl": "purl-2.2.1",
+              "prettify": "prettify",
+              "sammy": "sammy.0.7.1",
+              "select2": "select2.min-3.2",
+              "jqueryFileTree": "jqueryFileTree-1.0.1",
+              "redback": "redback/redback",
+              "redback.roles": "redback/roles",
+              "redback.user": "redback/user",
+              "redback.users": "redback/users",
+              "redback.templates": "redback/redback-tmpl",
+              "archiva.general-admin":"archiva/general-admin",
+              "archiva.templates": "archiva/main-tmpl",
+              "archiva.repositories": "archiva/repositories",
+              "archiva.network-proxies": "archiva/network-proxies",
+              "archiva.proxy-connectors": "archiva/proxy-connectors",
+              "archiva.repository-groups": "archiva/repository-groups",
+              "archiva.artifacts-management": "archiva/artifacts-management",
+              "archiva.search": "archiva/search",
+              "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
+              "archiva.docs": "archiva/docs",
+              "archiva.main": "archiva/main"
+          }
+      });
 
-                requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main','archiva.general-admin'], function () {
-                  loadi18n(function () {
-                    $.ajax({
-                      url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
-                      dataType: 'json',
-                      success:function(data){
-                        window.archivaDevMode=data.devMode;
-                        window.archivaJavascriptLog=data.javascriptLog;
-                        window.archivaRuntimeInfo=data;
+      requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main','archiva.general-admin'], function () {
+        loadi18n(function () {
+          $.ajax({
+            url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),
+            dataType: 'json',
+            success:function(data){
+              window.archivaDevMode=data.devMode;
+              window.archivaJavascriptLog=data.javascriptLog;
+              window.archivaRuntimeInfo=data;
 
-                        window.redbackRuntimeConfiguration=mapRedbackRuntimeConfiguration(data.redbackRuntimeConfiguration);
+              window.redbackRuntimeConfiguration=mapRedbackRuntimeConfiguration(data.redbackRuntimeConfiguration);
 
-                        $.log("security.rememberme.enabled key value:"+ window.redbackRuntimeConfiguration.findPropertyValue('security.rememberme.enabled'));
+              $.log("security.rememberme.enabled key value:"+ window.redbackRuntimeConfiguration.findPropertyValue('security.rememberme.enabled'));
 
-                        require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
-                            startArchivaApplication();
-                            $("#loadingDiv").hide();
-                            drawQuickSearchAutocomplete();
-                        })
-                      }
-                    })
-                  });
-                })
+              require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
+                  startArchivaApplication();
+                  $("#loadingDiv").hide();
+                  drawQuickSearchAutocomplete();
+              })
+            }
+          })
+        });
+      });
     }
 });
