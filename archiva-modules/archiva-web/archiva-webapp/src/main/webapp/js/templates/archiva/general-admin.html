@@ -281,9 +281,12 @@
 </script>
 
 <script id="runtime-configuration-screen" type="text/html">
+  <div class="page-header">
+    <h2>${$.i18n.prop('archiva-runtime-configuration.title')}</h2>
+  </div>
   <ul class="nav nav-tabs">
     <li class="active" id="network-configuration-form-li"><a href="#network-configuration-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.maven.network.title')}</a></li>
-
+    <li id="cache-failure-form-li"><a href="#cache-failure-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.cache.failure.title')}</a></li>
   </ul>
 
   <div class="tab-content">
@@ -292,6 +295,10 @@
         <h4>${$.i18n.prop('network-configuration.header')}</h4>
       </div>
       <div id="network-configuration-form" data-bind='template: {name:"network-configuration-form-tmpl"}'></div>
+    </div>
+    <div class="tab-pane" id="cache-failure-form-content">
+
+      <div id="cache-failure-form" data-bind='template: {name:"cache-failure-form-tmpl"}'></div>
     </div>
   </div>
 </script>
@@ -324,6 +331,53 @@
       <button id="network-configuration-btn-save" data-loading-text="${$.i18n.prop('common.loading')}"
               data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
     </form>
+</script>
+
+<script id="cache-failure-form-tmpl" type="text/html">
+
+  <div class="well">
+
+
+    <form class="form-horizontal" id="cache-failure-form-id">
+
+
+      <div class="control-group">
+        <label class="control-label" for="usersCacheTimeToLiveSeconds">${$.i18n.prop('runtime.cache.timeToLiveSeconds.label')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().timeToLiveSeconds"
+                 id="usersCacheTimeToLiveSeconds" name="usersCacheTimeToLiveSeconds" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="usersCacheTimeToIdleSeconds">${$.i18n.prop('runtime.cache.timeToIdleSeconds.label')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().timeToIdleSeconds"
+                 id="usersCacheTimeToIdleSeconds" name="usersCacheTimeToIdleSeconds" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="maxElementsInMemory">${$.i18n.prop('runtime.cache.maxElementsInMemory.label')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().maxElementsInMemory"
+                 id="maxElementsInMemory" name="maxElementsInMemory" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="maxElementsOnDisk">${$.i18n.prop('runtime.cache.maxElementsOnDisk.label')}</label>
+        <div class="controls">
+          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().maxElementsOnDisk"
+                 id="maxElementsOnDisk" name="maxElementsOnDisk" />
+        </div>
+      </div>
+
+    </form>
+
+
+  </div>
+
 </script>
 
 <script id="system-status-main" type="text/html">
@@ -1066,7 +1120,7 @@
             </div>
 
             <div class="control-group">
-              <label class="control-label" for="usersCacheTimeToLiveSeconds">${$.i18n.prop('redback.runtime.usersCacheTimeToLiveSeconds.label')}</label>
+              <label class="control-label" for="usersCacheTimeToLiveSeconds">${$.i18n.prop('runtime.cache.timeToLiveSeconds.label')}</label>
               <div class="controls">
                 <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().timeToLiveSeconds"
                        id="usersCacheTimeToLiveSeconds" name="usersCacheTimeToLiveSeconds" />
@@ -1074,7 +1128,7 @@
             </div>
 
             <div class="control-group">
-              <label class="control-label" for="usersCacheTimeToIdleSeconds">${$.i18n.prop('redback.runtime.usersCacheTimeToIdleSeconds.label')}</label>
+              <label class="control-label" for="usersCacheTimeToIdleSeconds">${$.i18n.prop('runtime.cache.timeToIdleSeconds.label')}</label>
               <div class="controls">
                 <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().timeToIdleSeconds"
                        id="usersCacheTimeToIdleSeconds" name="usersCacheTimeToIdleSeconds" />
@@ -1082,7 +1136,7 @@
             </div>
 
             <div class="control-group">
-              <label class="control-label" for="maxElementsInMemory">${$.i18n.prop('redback.runtime.maxElementsInMemory.label')}</label>
+              <label class="control-label" for="maxElementsInMemory">${$.i18n.prop('runtime.cache.maxElementsInMemory.label')}</label>
               <div class="controls">
                 <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().maxElementsInMemory"
                        id="maxElementsInMemory" name="maxElementsInMemory" />
@@ -1090,7 +1144,7 @@
             </div>
 
             <div class="control-group">
-              <label class="control-label" for="maxElementsOnDisk">${$.i18n.prop('redback.runtime.maxElementsOnDisk.label')}</label>
+              <label class="control-label" for="maxElementsOnDisk">${$.i18n.prop('runtime.cache.maxElementsOnDisk.label')}</label>
               <div class="controls">
                 <input type="text" class="xlarge required numeric" data-bind="value: redbackRuntimeConfiguration().usersCacheConfiguration().maxElementsOnDisk"
                        id="maxElementsOnDisk" name="maxElementsOnDisk" />

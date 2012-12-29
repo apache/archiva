@@ -558,7 +558,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var mainContent=$("#main-content");
 
     mainContent.html($("#runtime-configuration-screen").tmpl());
-
+    mainContent.find("#network-configuration-form" ).html(mediumSpinnerImg());
     $.ajax("restServices/archivaServices/archivaAdministrationService/getNetworkConfiguration", {
         type: "GET",
         dataType: 'json',
@@ -566,7 +566,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
           var networkConfiguration=new NetworkConfiguration(data.maxTotal,data.maxTotalPerHost,data.usePooling);
           var networkConfigurationViewModel=new NetworkConfigurationViewModel(networkConfiguration);
-          ko.applyBindings(networkConfigurationViewModel,mainContent.get(0));
+          ko.applyBindings(networkConfigurationViewModel,mainContent.find("#network-configuration-form-content").get(0));
           var validator = mainContent.find("#network-configuration-edit-form")
                   .validate({
                               showErrors: function(validator, errorMap, errorList) {
@@ -576,8 +576,36 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         }
     });
 
+
+    $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration", {
+      type: "GET",
+      dataType: 'json',
+      success: function(data){
+
+        var archivaRuntimeConfiguration=mapArchivaRuntimeConfiguration(data);
+        var archivaRuntimeConfigurationViewModel=new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration);
+        ko.applyBindings(archivaRuntimeConfigurationViewModel,mainContent.find("#cache-failure-form").get(0));
+
+      }
+    });
+
+  }
+  ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration){
+    var self=this;
+    this.archivaRuntimeConfiguration=ko.observable(archivaRuntimeConfiguration);
   }
 
+  ArchivaRuntimeConfiguration=function(cacheConfiguration){
+    this.urlFailureCacheConfiguration=ko.observable(cacheConfiguration);
+  }
+
+
+  mapArchivaRuntimeConfiguration=function(data){
+    if(!data){
+      return null;
+    }
+    return new ArchivaRuntimeConfiguration(data.urlFailureCacheConfiguration?mapCacheConfiguration(data.urlFailureCacheConfiguration):null);
+  }
   //---------------------------
   // organisation/appearance configuration part
   //---------------------------
