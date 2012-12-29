@@ -653,23 +653,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   // UiConfiguration part
   //---------------------------
 
-  displayUiConfigurationOnly=function(){
-    screenChange();
-    var mainContent=$("#main-content");
-    mainContent.html(mediumSpinnerImg());
-    $.ajax("restServices/archivaServices/archivaAdministrationService/getUiConfiguration", {
-        type: "GET",
-        dataType: 'json',
-        success: function(data){
-          mainContent.html($("#ui-configuration-screen").tmpl());
-          var uiConfiguration=new UiConfiguration(data.showFindArtifacts,data.appletFindEnabled,data.disableEasterEggs,
-                                                  data.applicationUrl,data.disableRegistration);
-          var uiConfigurationViewModel=new UiConfigurationViewModel(uiConfiguration);
-          ko.applyBindings(uiConfigurationViewModel,mainContent.get(0));
-        }
-    });
-  }
-
   UiConfiguration=function(showFindArtifacts,appletFindEnabled,disableEasterEggs,applicationUrl,disableRegistration){
     this.showFindArtifacts = ko.observable(showFindArtifacts);
 
